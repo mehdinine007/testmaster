@@ -1,0 +1,47 @@
+﻿@page
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Mvc.Localization
+@using OrderManagement
+@using OrderManagement.Localization
+@model OrderManagement.Pages.OrderManagement.Orders.IndexModel
+@using Volo.Abp.AspNetCore.Mvc.UI.Theming
+@inject IThemeManager ThemeManager
+@inject IAuthorizationService Authorization
+@inject IHtmlLocalizer<OrderManagementResource> L
+@{
+    ViewBag.PageTitle = "Orders";
+    Layout = ThemeManager.CurrentTheme.GetApplicationLayout();
+}
+
+@section scripts {
+    <abp-script src="/Pages/OrderManagement/Orders/index.js" />
+}
+
+<abp-card>
+    <abp-card-header>
+        <abp-row>
+            <abp-column size-md="_6">
+                <h2>@L["Orders"]</h2>
+            </abp-column>
+            <abp-column size-md="_6" class="text-right">
+                @if (await Authorization.IsGrantedAsync(OrderManagementPermissions.Orders.Create))
+                {
+                    <abp-button icon="plus" text="@L["CreateANewOrder"].Value" button-type="Primary" id="CreateNewOrderButtonId"></abp-button>
+                }
+            </abp-column>
+        </abp-row>
+    </abp-card-header>
+    <abp-card-body>
+        <abp-table striped-rows="true" id="OrdersTable" class="nowrap">
+            <thead>
+                <tr>
+                    <th>@L["Actions"]</th>
+                    <th>@L["Code"]</th>
+                    <th>@L["Name"]</th>
+                    <th>@L["Price"]</th>
+                    <th>@L["StockCount"]</th>
+                </tr>
+            </thead>
+        </abp-table>
+    </abp-card-body>
+</abp-card>
