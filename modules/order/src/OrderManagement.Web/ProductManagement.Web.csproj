@@ -26,4 +26,8 @@
       <ProjectReference Include="..\OrderManagement.HttpApi\OrderManagement.HttpApi.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Pages\OrderManagement\" />
+    </ItemGroup>
+
 </Project>

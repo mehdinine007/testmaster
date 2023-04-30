@@ -1,7 +1,7 @@
 ﻿using System;
 using Volo.Abp.Domain.Entities.Events.Distributed;
 
-namespace OrderManagement
+namespace OrderManagement.Domain.Shared
 {
     [Serializable]
     public class OrderStockCountChangedEto : EtoBase

@@ -2,7 +2,7 @@
 using Volo.Abp.Authorization.Permissions;
 using Volo.Abp.Localization;
 
-namespace OrderManagement
+namespace OrderManagement.Application.Contracts
 {
     public class OrderManagementPermissionDefinitionProvider : PermissionDefinitionProvider
     {

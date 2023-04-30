@@ -1,7 +1,8 @@
 ﻿using JetBrains.Annotations;
+using OrderManagement.Domain;
 using Volo.Abp.EntityFrameworkCore.Modeling;
 
-namespace OrderManagement.EntityFrameworkCore
+namespace OrderManagement.EfCore
 {
     public class OrderManagementModelBuilderConfigurationOptions : AbpModelBuilderConfigurationOptions
     {

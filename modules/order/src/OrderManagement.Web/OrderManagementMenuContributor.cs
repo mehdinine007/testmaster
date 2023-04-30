@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
+using OrderManagement.Application.Contracts;
 using OrderManagement.Localization;
 using Volo.Abp.UI.Navigation;
 

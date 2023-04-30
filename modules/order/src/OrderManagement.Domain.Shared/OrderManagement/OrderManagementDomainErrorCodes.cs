@@ -1,4 +1,4 @@
-﻿namespace OrderManagement
+﻿namespace OrderManagement.Domain.Shared
 {
     public static class OrderManagementDomainErrorCodes
     {

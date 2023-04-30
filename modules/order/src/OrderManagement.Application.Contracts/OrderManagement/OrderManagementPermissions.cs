@@ -1,6 +1,6 @@
 ﻿using Volo.Abp.Reflection;
 
-namespace OrderManagement
+namespace OrderManagement.Application.Contracts
 {
     public class OrderManagementPermissions
     {

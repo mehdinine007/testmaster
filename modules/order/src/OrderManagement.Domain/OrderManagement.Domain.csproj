@@ -1,10 +1,13 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>net7.0</TargetFramework>
-        <RootNamespace />
     </PropertyGroup>
 
+	<PropertyGroup>
+		<RootNamespace>OrderManagement.Domain</RootNamespace>
+	</PropertyGroup>
+	
     <ItemGroup>
         <PackageReference Include="Volo.Abp.EntityFrameworkCore" Version="5.0.0" />
     </ItemGroup>

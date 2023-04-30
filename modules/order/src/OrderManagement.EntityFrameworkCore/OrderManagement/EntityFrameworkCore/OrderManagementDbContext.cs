@@ -1,8 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using OrderManagement.Domain;
 using Volo.Abp.Data;
 using Volo.Abp.EntityFrameworkCore;
 
-namespace OrderManagement.EntityFrameworkCore
+namespace OrderManagement.EfCore
 {
     [ConnectionStringName("OrderManagement")]
     public class OrderManagementDbContext : AbpDbContext<OrderManagementDbContext>, IOrderManagementDbContext
@@ -11,7 +12,7 @@ namespace OrderManagement.EntityFrameworkCore
 
         public static string Schema { get; set; } = OrderManagementConsts.DefaultDbSchema;
 
-        public DbSet<Order> Orders { get; set; }
+        public DbSet<CustomerOrder> CustomerOrders { get; }
 
         public OrderManagementDbContext(DbContextOptions<OrderManagementDbContext> options) 
             : base(options)
@@ -25,8 +26,8 @@ namespace OrderManagement.EntityFrameworkCore
 
             builder.ConfigureOrderManagement(options =>
             {
-                options.TablePrefix = TablePrefix;
-                options.Schema = Schema;
+                //options.TablePrefix = TablePrefix;
+                //options.Schema = Schema;
             });
         }
     }

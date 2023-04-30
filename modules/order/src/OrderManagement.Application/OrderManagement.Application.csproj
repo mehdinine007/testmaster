@@ -5,6 +5,10 @@
         <RootNamespace />
     </PropertyGroup>
 
+	<PropertyGroup>
+		<RootNamespace>OrderManagement.Application</RootNamespace>
+	</PropertyGroup>
+
     <ItemGroup>
         <PackageReference Include="Volo.Abp.AutoMapper" Version="5.0.0" />
     </ItemGroup>

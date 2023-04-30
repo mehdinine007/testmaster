@@ -10,6 +10,7 @@ using Volo.Abp.Validation.Localization;
 using Volo.Abp.Modularity;
 using Volo.Abp.UI.Navigation;
 using Volo.Abp.VirtualFileSystem;
+using OrderManagement.HttpApi;
 
 namespace OrderManagement
 {

@@ -2,8 +2,10 @@
 
     <PropertyGroup>
         <TargetFramework>net7.0</TargetFramework>
-        <RootNamespace />
     </PropertyGroup>
+	<PropertyGroup>
+		<RootNamespace>OrderManagement.EfCore</RootNamespace>
+	</PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.0" />

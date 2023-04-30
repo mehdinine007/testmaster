@@ -1,7 +1,7 @@
 ﻿using System;
 using Volo.Abp.Application.Dtos;
 
-namespace OrderManagement
+namespace OrderManagement.Application.Contracts
 {
     public class OrderDto : AuditedEntityDto<Guid>
     {

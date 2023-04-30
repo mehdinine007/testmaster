@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using OrderManagement.Application.Contracts;
 using Volo.Abp.Http.Client;
 using Volo.Abp.Modularity;
 

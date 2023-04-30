@@ -1,8 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using OrderManagement.Domain;
 using Volo.Abp.EntityFrameworkCore;
 using Volo.Abp.Modularity;
 
-namespace OrderManagement.EntityFrameworkCore
+namespace OrderManagement.EfCore
 {
     [DependsOn(
         typeof(OrderManagementDomainModule),

@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using OrderManagement.EntityFrameworkCore;
+using OrderManagement.EfCore;
 using Volo.Abp.EntityFrameworkCore;
 
 namespace OrderService.Host.EntityFrameworkCore

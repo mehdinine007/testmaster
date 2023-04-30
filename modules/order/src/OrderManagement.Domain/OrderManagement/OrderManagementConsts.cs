@@ -1,4 +1,4 @@
-﻿namespace OrderManagement
+﻿namespace OrderManagement.Domain
 {
     public static class OrderManagementConsts
     {

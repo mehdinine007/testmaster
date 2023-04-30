@@ -3,7 +3,7 @@ using Volo.Abp.Modularity;
 using Volo.Abp.Localization;
 using OrderManagement.Localization;
 
-namespace OrderManagement
+namespace OrderManagement.Domain.Shared
 {
     [DependsOn(
         typeof(AbpLocalizationModule)

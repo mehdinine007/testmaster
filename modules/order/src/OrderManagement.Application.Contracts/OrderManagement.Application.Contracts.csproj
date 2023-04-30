@@ -5,6 +5,10 @@
         <RootNamespace />
     </PropertyGroup>
 
+	<PropertyGroup>
+		<RootNamespace>OrderManagement.Application.Contracts</RootNamespace>
+	</PropertyGroup>
+	
     <ItemGroup>
         <PackageReference Include="Volo.Abp.Ddd.Application" Version="5.0.0" />
     </ItemGroup>

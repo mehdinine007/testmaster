@@ -1,8 +1,9 @@
 ﻿using Volo.Abp.AspNetCore.Mvc;
 using Volo.Abp.Modularity;
 using Microsoft.Extensions.DependencyInjection;
+using OrderManagement.Application.Contracts;
 
-namespace OrderManagement
+namespace OrderManagement.HttpApi
 {
     [DependsOn(
         typeof(OrderManagementApplicationContractsModule),

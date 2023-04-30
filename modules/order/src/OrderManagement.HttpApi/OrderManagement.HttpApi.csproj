@@ -2,8 +2,11 @@
 
     <PropertyGroup>
         <TargetFramework>net7.0</TargetFramework>
-        <RootNamespace />
     </PropertyGroup>
+
+	<PropertyGroup>
+		<RootNamespace>OrderManagement.HttpApi</RootNamespace>
+	</PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="Volo.Abp.AspNetCore.Mvc" Version="5.0.0" />

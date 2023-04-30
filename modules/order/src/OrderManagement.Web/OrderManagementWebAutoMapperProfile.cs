@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using OrderManagement.Pages.OrderManagement.Orders;
 
 namespace OrderManagement
 {
@@ -7,8 +6,6 @@ namespace OrderManagement
     {
         public OrderManagementWebAutoMapperProfile()
         {
-            CreateMap<CreateModel.OrderCreateViewModel, CreateOrderDto>();
-            CreateMap<OrderDto, EditModel.OrderEditViewModel>();
         }
     }
 }

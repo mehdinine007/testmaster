@@ -6,7 +6,6 @@ namespace OrderManagement
     {
         public OrderManagementApplicationAutoMapperProfile()
         {
-            CreateMap<Order, OrderDto>();
         }
     }
 }

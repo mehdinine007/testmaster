@@ -1,6 +1,6 @@
 ﻿using Volo.Abp.Settings;
 
-namespace OrderManagement
+namespace OrderManagement.Application.Contracts
 {
     /* These setting definitions will be visible to clients that has a OrderManagement.Application.Contracts
      * reference. Settings those should be hidden from clients should be defined in the OrderManagement.Application

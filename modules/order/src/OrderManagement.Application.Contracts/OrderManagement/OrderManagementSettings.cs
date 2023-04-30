@@ -1,4 +1,4 @@
-﻿namespace OrderManagement
+﻿namespace OrderManagement.Application.Contracts
 {
     public static class OrderManagementSettings
     {

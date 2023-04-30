@@ -1,7 +1,9 @@
-﻿using Volo.Abp.AutoMapper;
+﻿using OrderManagement.Application.Contracts;
+using OrderManagement.Domain;
+using Volo.Abp.AutoMapper;
 using Volo.Abp.Modularity;
 
-namespace OrderManagement
+namespace OrderManagement.Application
 {
     [DependsOn(
         typeof(OrderManagementDomainModule),

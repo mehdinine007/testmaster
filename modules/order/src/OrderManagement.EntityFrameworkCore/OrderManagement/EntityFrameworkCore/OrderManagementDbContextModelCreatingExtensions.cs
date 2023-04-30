@@ -1,37 +1,53 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Volo.Abp;
-using Volo.Abp.EntityFrameworkCore.Modeling;
+using OrderManagement.Domain;
 
-namespace OrderManagement.EntityFrameworkCore
+namespace OrderManagement.EfCore;
+
+public static class OrderManagementDbContextModelCreatingExtensions
 {
-    public static class OrderManagementDbContextModelCreatingExtensions
+    public static void ConfigureOrderManagement(
+        this ModelBuilder builder,
+        Action<OrderManagementModelBuilderConfigurationOptions> optionsAction = null)
     {
-        public static void ConfigureOrderManagement(
-            this ModelBuilder builder,
-            Action<OrderManagementModelBuilderConfigurationOptions> optionsAction = null)
+        Check.NotNull(builder, nameof(builder));
+
+        var options = new OrderManagementModelBuilderConfigurationOptions();
+
+        optionsAction?.Invoke(options);
+
+        builder.Entity<CustomerOrder>(entity =>
         {
-            Check.NotNull(builder, nameof(builder));
+            entity.ToTable(nameof(CustomerOrder));
 
-            var options = new OrderManagementModelBuilderConfigurationOptions();
+            entity.HasIndex(co => new { co.SaleDetailId, co.UserId })
+                .HasFilter($"{nameof(CustomerOrder.IsDeleted)} = 0 and " +
+                $"{nameof(CustomerOrder.PriorityId)} IS NOT NULL and " +
+                $"{nameof(CustomerOrder.OrderStatus)} =" + (int)OrderStatusType.RecentlyAdded)
+                .IsUnique();
 
-            optionsAction?.Invoke(options);
-            
-            builder.Entity<Order>(b =>
-            {
-                b.ToTable(options.TablePrefix + "Orders", options.Schema);
+            entity.HasIndex(co => new { co.SaleId, co.UserId, co.OrderStatus, co.PriorityId })
+                .HasFilter($"{nameof(CustomerOrder.IsDeleted)} = 0 and " +
+                $"{nameof(CustomerOrder.PriorityId)} IS NOT NULL and " +
+                $"{nameof(CustomerOrder.OrderStatus)} =" + (int)OrderStatusType.RecentlyAdded)
+                .IsUnique();
 
-                b.ConfigureConcurrencyStamp();
-                b.ConfigureExtraProperties();
-                b.ConfigureAudited();
+            entity//emkan sabte dota priority dar yek sale nabashe
+                .HasIndex(co => new { co.UserId, co.OrderStatus })
+                .HasFilter($"{nameof(CustomerOrder.IsDeleted)} = 0  ");
 
-                b.Property(x => x.Code).IsRequired().HasMaxLength(OrderConsts.MaxCodeLength);
-                b.Property(x => x.Name).IsRequired().HasMaxLength(OrderConsts.MaxNameLength);
-                b.Property(x => x.ImageName).HasMaxLength(OrderConsts.MaxImageNameLength);
+            entity.
+                HasIndex(co => new { co.SaleId, co.UserId, co.OrderStatus })
+                .HasFilter($"{nameof(CustomerOrder.IsDeleted)} = 0 and " +
+                $"{nameof(CustomerOrder.PriorityId)} IS NULL and " +
+                $"{nameof(CustomerOrder.OrderStatus)} =" + (int)OrderStatusType.RecentlyAdded)
+                .IsUnique();
 
-                b.HasIndex(q => q.Code);
-                b.HasIndex(q => q.Name);
-            });
-        }
+            //entity.HasOne<SaleDetail>(x => x.SaleDetail)
+            //    .WithMany(x => x.CustomerOrders)
+            //    .HasForeignKey(x => x.SaleDetailId)
+            //    .OnDelete(DeleteBehavior.NoAction)
+        });
     }
 }

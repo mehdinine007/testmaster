@@ -1,11 +1,12 @@
-﻿using OrderManagement.Localization;
+﻿using OrderManagement.Domain.Shared;
+using OrderManagement.Localization;
 using Volo.Abp.EntityFrameworkCore;
 using Volo.Abp.Localization;
 using Volo.Abp.Localization.ExceptionHandling;
 using Volo.Abp.Modularity;
 using Volo.Abp.VirtualFileSystem;
 
-namespace OrderManagement
+namespace OrderManagement.Domain
 {
     /* This module directly depends on EF Core by its design.
      * In this way, we can directly use EF Core async LINQ extension methods.
