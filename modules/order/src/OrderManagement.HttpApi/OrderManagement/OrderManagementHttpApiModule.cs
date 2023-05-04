@@ -3,19 +3,18 @@ using Volo.Abp.Modularity;
 using Microsoft.Extensions.DependencyInjection;
 using OrderManagement.Application.Contracts;
 
-namespace OrderManagement.HttpApi
+namespace OrderManagement.HttpApi;
+
+[DependsOn(
+    typeof(OrderManagementApplicationContractsModule),
+    typeof(AbpAspNetCoreMvcModule))]
+public class OrderManagementHttpApiModule : AbpModule
 {
-    [DependsOn(
-        typeof(OrderManagementApplicationContractsModule),
-        typeof(AbpAspNetCoreMvcModule))]
-    public class OrderManagementHttpApiModule : AbpModule
+    public override void PreConfigureServices(ServiceConfigurationContext context)
     {
-        public override void PreConfigureServices(ServiceConfigurationContext context)
+        PreConfigure<IMvcBuilder>(mvcBuilder =>
         {
-            PreConfigure<IMvcBuilder>(mvcBuilder =>
-            {
-                mvcBuilder.AddApplicationPartIfNotExists(typeof(OrderManagementHttpApiModule).Assembly);
-            });
-        }
+            mvcBuilder.AddApplicationPartIfNotExists(typeof(OrderManagementHttpApiModule).Assembly);
+        });
     }
 }

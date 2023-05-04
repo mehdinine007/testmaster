@@ -1,4 +1,4 @@
-﻿namespace OrderManagement.Domain
+﻿namespace OrderManagement.Domain.Shared
 {
     public enum PriorityEnum
     {
