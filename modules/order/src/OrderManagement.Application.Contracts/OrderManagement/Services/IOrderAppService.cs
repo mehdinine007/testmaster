@@ -15,5 +15,9 @@ namespace OrderManagement.Application.Contracts.Services
         Task<List<CustomerOrderReportDto>> GetCompaniesCustomerOrders();
 
         Task<List<CustomerOrderPriorityUserDto>> GetCustomerInfoPriorityUser();
+
+        Task CommitOrder(CommitOrderDto commitOrderDto);
+
+        Task<bool> UserRejectionStatus();
     }
 }

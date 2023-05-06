@@ -46,5 +46,13 @@ namespace OrderManagement.EfCore
         DbSet<ExternalApiResponsLog> ExternalApiResponsLogs { get; set; }
 
         DbSet<Logs> Logs { get; set; }
+
+        DbSet<CarMakerBlackList> CarMakerBlackLists { get; set; }
+
+        DbSet<City> Cities { get; set; }
+
+        DbSet<Province> Provinces { get; set; }
+
+        DbSet<PreSale> PreSales { get; set; }
     }
 }

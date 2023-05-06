@@ -20,5 +20,4 @@ namespace OrderManagement.Domain
             protected set => _carTip_Gallery_Mappings = value;
         }
     }
-
 }

@@ -17,9 +17,9 @@ using Volo.Abp.EntityFrameworkCore.SqlServer;
 using Volo.Abp.EventBus.RabbitMq;
 using Volo.Abp.Localization;
 using Volo.Abp.Modularity;
-using Volo.Abp.MultiTenancy;
+//using Volo.Abp.MultiTenancy;
 using Volo.Abp.PermissionManagement.EntityFrameworkCore;
-using Volo.Abp.SettingManagement.EntityFrameworkCore;
+//using Volo.Abp.SettingManagement.EntityFrameworkCore;
 using Volo.Abp.TenantManagement.EntityFrameworkCore;
 using Volo.Abp.Threading;
 using OrderManagement.Application;
@@ -34,12 +34,12 @@ namespace OrderService.Host
         typeof(AbpEventBusRabbitMqModule),
         typeof(AbpEntityFrameworkCoreSqlServerModule),
         typeof(AbpAuditLoggingEntityFrameworkCoreModule),
-        typeof(AbpPermissionManagementEntityFrameworkCoreModule),
-        typeof(AbpSettingManagementEntityFrameworkCoreModule),
+        //typeof(AbpPermissionManagementEntityFrameworkCoreModule),
+        //typeof(AbpSettingManagementEntityFrameworkCoreModule),
         typeof(OrderManagementApplicationModule),
         typeof(OrderManagementHttpApiModule),
         typeof(OrderManagementEntityFrameworkCoreModule),
-        typeof(AbpAspNetCoreMultiTenancyModule),
+        //typeof(AbpAspNetCoreMultiTenancyModule),
         typeof(AbpTenantManagementEntityFrameworkCoreModule)
         )]
     public class OrderServiceHostModule : AbpModule
@@ -48,10 +48,10 @@ namespace OrderService.Host
         {
             var configuration = context.Services.GetConfiguration();
 
-            Configure<AbpMultiTenancyOptions>(options =>
-            {
-                options.IsEnabled = MsDemoConsts.IsMultiTenancyEnabled;
-            });
+            //Configure<AbpMultiTenancyOptions>(options =>
+            //{
+            //    options.IsEnabled = MsDemoConsts.IsMultiTenancyEnabled;
+            //});
 
             context.Services.AddAuthentication("Bearer")
                 .AddIdentityServerAuthentication(options =>
@@ -104,10 +104,10 @@ namespace OrderService.Host
             app.UseAuthentication();
             app.UseAbpClaimsMap();
 
-            if (MsDemoConsts.IsMultiTenancyEnabled)
-            {
-                app.UseMultiTenancy();
-            }
+            //if (MsDemoConsts.IsMultiTenancyEnabled)
+            //{
+            //    app.UseMultiTenancy();
+            //}
 
             app.UseAbpRequestLocalization(); //TODO: localization?
             app.UseSwagger();

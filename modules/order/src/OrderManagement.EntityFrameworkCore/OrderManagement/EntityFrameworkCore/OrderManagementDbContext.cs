@@ -50,6 +50,14 @@ namespace OrderManagement.EfCore
 
         public DbSet<Logs> Logs { get; set; }
 
+        public DbSet<CarMakerBlackList> CarMakerBlackLists { get; set; }
+
+        public DbSet<City> Cities { get; set; }
+
+        public DbSet<Province> Provinces { get; set; }
+
+        public DbSet<PreSale> PreSales { get; set; }
+
         public OrderManagementDbContext(DbContextOptions<OrderManagementDbContext> options)
             : base(options)
         {
@@ -58,6 +66,7 @@ namespace OrderManagement.EfCore
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+            //System.Diagnostics.Debugger.Launch();
             base.OnModelCreating(builder);
 
             builder.ConfigureOrderManagement(options =>

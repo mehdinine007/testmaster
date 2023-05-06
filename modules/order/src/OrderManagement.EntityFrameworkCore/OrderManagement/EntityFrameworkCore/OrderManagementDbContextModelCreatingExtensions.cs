@@ -197,7 +197,12 @@ public static class OrderManagementDbContextModelCreatingExtensions
             entity.ToTable(nameof(ExternalApiResponsLog));
             entity.Property(x => x.NationalCode).HasMaxLength(10);
             entity.Property(x => x.ServiceName).HasMaxLength(100);
+        });
 
+        builder.Entity<CarMakerBlackList>(entity =>
+        {
+            entity.ToTable(nameof(CarMakerBlackList));
+            entity.HasIndex(co => new { co.Nationalcode, co.EsaleTypeId });
         });
     }
 }

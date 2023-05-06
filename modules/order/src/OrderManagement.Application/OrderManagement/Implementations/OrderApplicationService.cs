@@ -696,7 +696,13 @@ public class OrderApplicationService : ApplicationService, IOrderAppService
         //var commitOrderQuery = (await _commitOrderRepository.GetQueryableAsync())
         //    .Include(x => x.SaleDetail.CarTip.CarType.CarFamily.Company)
         //    .Include(x => x.)
-        //var result = await _commitOrderRepository.GetAllIncluding(x => x.SaleDetail.CarTip.CarType.CarFamily.Company, x => x.User, x => x.User.BirthCity, x => x.User.HabitationCity, x => x.User.IssuingCity, x => x.User.BirthProvince, x => x.User.HabitationProvince, x => x.User.IssuingProvince)
+        //var result = await _commitOrderRepository.GetAllIncluding(x => x.SaleDetail.CarTip.CarType.CarFamily.Company, 
+        //    x => x.User, x => x.User.BirthCity, 
+        //    x => x.User.HabitationCity, 
+        //    x => x.User.IssuingCity, 
+        //    x => x.User.BirthProvince, 
+        //    x => x.User.HabitationProvince, 
+        //    x => x.User.IssuingProvince)
         //    .Select(x => new
         //    {
         //        //x.DeliveryDate,
