@@ -79,27 +79,28 @@ public class BaseInfromationService : ApplicationService, IBaseInformationServic
         unitOfWorkOptions.IsTransactional = false;
         unitOfWorkOptions.IsolationLevel = System.Transactions.IsolationLevel.Snapshot;
         unitOfWorkOptions.Scope = System.Transactions.TransactionScopeOption.RequiresNew;
-        using (var unitOfWork = _unitOfWorkManager.Begin(unitOfWorkOptions))
+        //using (var unitOfWork = _unitOfWorkManager.Begin(unitOfWorkOptions))
+        //{
+
+        var advocacyuser = _advocacyUsersFromBankRepository
+            .WithDetails()
+            .Select(x => new { x.price, x.nationalcode })
+            .FirstOrDefault(x => x.nationalcode == Nationalcode);
+        if (advocacyuser == null)
         {
-            var advocacyuser = _advocacyUsersFromBankRepository
-                .WithDetails()
-                .Select(x => new { x.price, x.nationalcode })
-                .FirstOrDefault(x => x.nationalcode == Nationalcode);
-            if (advocacyuser == null)
-            {
-                unitOfWork.Complete();
-                throw new UserFriendlyException("اطلاعات حساب وکالتی یافت نشد");
-            }
-            else
-            {
-                if (advocacyuser.price < MinimumAmountOfProxyDeposit)
-                {
-                    unitOfWork.Complete();
-                    throw new UserFriendlyException("موجودی حساب وکالتی برای خودروی انتخابی کافی نمی باشد");
-                }
-            }
-            unitOfWork.Complete();
+            await UnitOfWorkManager.Current.CompleteAsync();
+            throw new UserFriendlyException("اطلاعات حساب وکالتی یافت نشد");
         }
+        else
+        {
+            if (advocacyuser.price < MinimumAmountOfProxyDeposit)
+            {
+                await UnitOfWorkManager.Current.CompleteAsync();
+                throw new UserFriendlyException("موجودی حساب وکالتی برای خودروی انتخابی کافی نمی باشد");
+            }
+        }
+        await UnitOfWorkManager.Current.CompleteAsync();
+        //}
 
 
 
@@ -264,12 +265,12 @@ public class BaseInfromationService : ApplicationService, IBaseInformationServic
     }
     public List<PublicDto> GetProvince()
     {
-        return ObjectMapper.Map< List < Province > ,List <PublicDto>>(_provinceRepository.WithDetails().ToList());
+        return ObjectMapper.Map<List<Province>, List<PublicDto>>(_provinceRepository.WithDetails().ToList());
 
     }
     public List<PublicDto> GetCities(int ProvienceId)
     {
-        return ObjectMapper.Map<List<City>,List<PublicDto>>(_cityRepository.WithDetails().Where(y => y.ProvinceId == ProvienceId).ToList());
+        return ObjectMapper.Map<List<City>, List<PublicDto>>(_cityRepository.WithDetails().Where(y => y.ProvinceId == ProvienceId).ToList());
 
     }
 }

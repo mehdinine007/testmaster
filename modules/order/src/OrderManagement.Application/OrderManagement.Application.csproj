@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>net7.0</TargetFramework>
@@ -10,11 +10,18 @@
 	</PropertyGroup>
 
     <ItemGroup>
+		<PackageReference Include="google.protobuf" Version="3.22.4" />
+		<PackageReference Include="grpc.net.client" Version="2.53.0" />
+		<PackageReference Include="grpc.tools" Version="2.54.0"/>
         <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
         <PackageReference Include="Volo.Abp.AutoMapper" Version="5.0.0" />
 		<PackageReference Include="Abp.RedisCache" Version="8.0.0" />
 		<PackageReference Include="restsharp" Version="108.0.3" />
     </ItemGroup>
+
+	<ItemGroup>
+		<Protobuf Include="OrderManagement\Protos\EsaleUserService.proto" GrpcService="Client" />
+	</ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\OrderManagement.Application.Contracts\OrderManagement.Application.Contracts.csproj" />

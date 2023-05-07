@@ -9,6 +9,12 @@
 	</PropertyGroup>
 	
     <ItemGroup>
+        <PackageReference Include="google.protobuf" Version="3.22.4" />
+        <PackageReference Include="grpc.net.client" Version="2.53.0" />
+        <PackageReference Include="grpc.tools" Version="2.54.0">
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+          <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
         <PackageReference Include="Volo.Abp.EntityFrameworkCore" Version="5.0.0" />
     </ItemGroup>
 
@@ -19,6 +25,9 @@
 
     <ItemGroup>
       <ProjectReference Include="..\OrderManagement.Domain.Shared\OrderManagement.Domain.Shared.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+      <Folder Include="OrderManagement\Protos\" />
     </ItemGroup>
 
 </Project>

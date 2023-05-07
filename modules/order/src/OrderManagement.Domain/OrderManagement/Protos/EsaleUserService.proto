@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+option csharp_namespace = "OrderManagement.Domain.Esale.UserServiceGrpc";
+
+import "google/protobuf/wrappers.proto";
+
+package UserService;
+
+service UserServiceGrpc{
+	rpc GetUserById(GetUserModel) returns (UserModel);
+}
+
+message GetUserModel{
+	int64 userId = 1;
+}
+
+message UserModel{
+	string NationalCode = 1;
+
+	sfixed32 BankId = 2;
+
+	string AccountNumber = 3;
+
+	string Shaba = 4;
+
+	google.protobuf.Int32Value BirthCityId = 5;
+
+	google.protobuf.Int32Value IssuingCityId = 6;
+
+	google.protobuf.Int32Value HabitationCityId = 7;
+
+	google.protobuf.Int32Value BirthProvinceId = 8;
+
+	google.protobuf.Int32Value IssuingProvinceId = 9;
+
+	google.protobuf.Int32Value HabitationProvinceId = 10;
+}
