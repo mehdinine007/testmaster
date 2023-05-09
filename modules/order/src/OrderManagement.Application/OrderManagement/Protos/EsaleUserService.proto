@@ -34,4 +34,8 @@ message UserModel{
 	google.protobuf.Int32Value IssuingProvinceId = 9;
 
 	google.protobuf.Int32Value HabitationProvinceId = 10;
+
+	string MobileNumber = 11;
+
+	google.protobuf.Int32Value CompanyId = 12;
 }

@@ -1,13 +1,11 @@
-﻿using Abp.Domain.Uow;
-using Abp.Runtime.Caching;
-using Abp.Runtime.Session;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.Services;
+using OrderManagement.Application.OrderManagement.Constants;
 using OrderManagement.Application.OrderManagement.Utitlities;
 using OrderManagement.Domain;
 using RestSharp;
@@ -27,11 +25,8 @@ namespace OrderManagement.Application.OrderManagement.Implementations;
 
 public class CommonAppService : ApplicationService, ICommonAppService
 {
-    private readonly ICacheManager _cacheManager;
     private readonly IDistributedCache _distributedCache;
     private IConfiguration _configuration { get; set; }
-    public IAbpSession AbpSession { get; set; }
-    private readonly IUnitOfWorkManager _unitOfWorkManager;
     private readonly IRepository<Logs, long> _logsRespository;
     private readonly IRepository<UserRejectionAdvocacy, int> _userRejectionAdcocacyRepository;
     private IHttpContextAccessor _httpContextAccessor;
@@ -39,9 +34,7 @@ public class CommonAppService : ApplicationService, ICommonAppService
     private readonly IRepository<ExternalApiResponsLog, int> _externalApiResponsLogRepository;
     private readonly IHttpContextAccessor _contextAccessor;
 
-    public CommonAppService(ICacheManager cacheManager,
-                            IDistributedCache distributedCache,
-                            IUnitOfWorkManager unitOfWorkManager,
+    public CommonAppService(IDistributedCache distributedCache,
                             IConfiguration configuration,
                             IRepository<Logs, long> LogsRespository,
                             IRepository<UserRejectionAdvocacy, int> UserRejectionAdcocacyRepository,
@@ -51,9 +44,6 @@ public class CommonAppService : ApplicationService, ICommonAppService
                             IHttpContextAccessor contextAccessor
         )
     {
-        _cacheManager = cacheManager;
-        AbpSession = NullAbpSession.Instance;
-        _unitOfWorkManager = unitOfWorkManager;
         _distributedCache = distributedCache;
         _configuration = configuration;
         _logsRespository = LogsRespository;
@@ -64,58 +54,58 @@ public class CommonAppService : ApplicationService, ICommonAppService
         _contextAccessor = contextAccessor;
     }
 
-    private async Task<AuthtenticateResult> AuthenticateBank()
-    {
-        Logs logs = new Logs();
-        logs.StartDate = DateTime.Now;
-        try
-        {
+    //private async Task<AuthtenticateResult> AuthenticateBank()
+    //{
+    //    Logs logs = new Logs();
+    //    logs.StartDate = DateTime.Now;
+    //    try
+    //    {
 
-            logs.Ip = "";
-            logs.Type = 1;
-            logs.EndDate = DateTime.Now;
-            logs.Method = "TejaratAuth";
-            logs.LocationId = 3;
-            logs.Servername = Utility.GetServerIPAddress();
-            var authenticateResult = await _cacheManager.GetCache("AuthenticateTejarat").GetAsync("AuthenticateTejarat"
-           , async async =>
-           {
-               var options = new RestClientOptions("https://ws.farava.ir")
-               {
-                   MaxTimeout = -1,
-               };
-               var client = new RestClient(options);
-               var request = new RestRequest("/api/Account/Authenticate?userName=" + _configuration.GetSection("TejaratUser").Value + "&password=" + _configuration.GetSection("TejaratPassword").Value, Method.Post);
-               request.AddHeader("accept", "application/json");
-               request.AddHeader("content-type", "application/json");
-               RestResponse response = await client.ExecuteAsync(request);
-               AuthtenticateResult authenticateResult = JsonConvert.DeserializeObject<AuthtenticateResult>(response.Content);
-               logs.EndDate = DateTime.Now;
-               return authenticateResult;
-           }) as AuthtenticateResult;
-            logs.EndDate = DateTime.Now;
-            await _logsRespository.InsertAsync(logs);
-            return authenticateResult;
+    //        logs.Ip = "";
+    //        logs.Type = 1;
+    //        logs.EndDate = DateTime.Now;
+    //        logs.Method = "TejaratAuth";
+    //        logs.LocationId = 3;
+    //        logs.Servername = Utility.GetServerIPAddress();
+    //        var authenticateResult = await _cacheManager.GetCache("AuthenticateTejarat").GetAsync("AuthenticateTejarat"
+    //       , async async =>
+    //       {
+    //           var options = new RestClientOptions("https://ws.farava.ir")
+    //           {
+    //               MaxTimeout = -1,
+    //           };
+    //           var client = new RestClient(options);
+    //           var request = new RestRequest("/api/Account/Authenticate?userName=" + _configuration.GetSection("TejaratUser").Value + "&password=" + _configuration.GetSection("TejaratPassword").Value, Method.Post);
+    //           request.AddHeader("accept", "application/json");
+    //           request.AddHeader("content-type", "application/json");
+    //           RestResponse response = await client.ExecuteAsync(request);
+    //           AuthtenticateResult authenticateResult = JsonConvert.DeserializeObject<AuthtenticateResult>(response.Content);
+    //           logs.EndDate = DateTime.Now;
+    //           return authenticateResult;
+    //       }) as AuthtenticateResult;
+    //        logs.EndDate = DateTime.Now;
+    //        await _logsRespository.InsertAsync(logs);
+    //        return authenticateResult;
 
-        }
-        catch (Exception ex)
-        {
-            logs.EndDate = DateTime.Now;
-            logs.Type = 0;
-            logs.Message = ex.Message;
-            UnitOfWorkOptions unitOfWorkOptions = new UnitOfWorkOptions();
-            unitOfWorkOptions.IsTransactional = false;
-            unitOfWorkOptions.Scope = System.Transactions.TransactionScopeOption.RequiresNew;
-            using (var unitOfWork = _unitOfWorkManager.Begin(unitOfWorkOptions))
-            {
-                await _logsRespository.InsertAsync(logs);
-                unitOfWork.Complete();
-            }
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        logs.EndDate = DateTime.Now;
+    //        logs.Type = 0;
+    //        logs.Message = ex.Message;
+    //        UnitOfWorkOptions unitOfWorkOptions = new UnitOfWorkOptions();
+    //        unitOfWorkOptions.IsTransactional = false;
+    //        unitOfWorkOptions.Scope = System.Transactions.TransactionScopeOption.RequiresNew;
+    //        using (var unitOfWork = _unitOfWorkManager.Begin(unitOfWorkOptions))
+    //        {
+    //            await _logsRespository.InsertAsync(logs);
+    //            unitOfWork.Complete();
+    //        }
 
-        }
-        return null;
+    //    }
+    //    return null;
 
-    }
+    //}
     public bool IsInRole(string Role)
     {
         var identity = (ClaimsPrincipal)Thread.CurrentPrincipal;
@@ -128,7 +118,7 @@ public class CommonAppService : ApplicationService, ICommonAppService
     {
         var identity = (ClaimsPrincipal)Thread.CurrentPrincipal;
         // Get the claims values
-        var nationalcode = _httpContextAccessor.HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.Name)
+        var nationalcode = _httpContextAccessor.HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.Surname)
                            .Select(c => c.Value).SingleOrDefault();
         if (nationalcode == null)
         {
@@ -140,14 +130,14 @@ public class CommonAppService : ApplicationService, ICommonAppService
     {
         var identity = (ClaimsPrincipal)Thread.CurrentPrincipal;
         // Get the claims values
-        var Role = _httpContextAccessor.HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.Role)
-                           .Select(c => c.Value).SingleOrDefault();
-        if (Role == null)
+        var Role = _httpContextAccessor.HttpContext.User.Claims.SingleOrDefault(c => c.Type == ClaimTypes.Role).Value;
+        if (string.IsNullOrWhiteSpace(Role))
         {
             throw new UserFriendlyException("دسترسی کافی نمی باشد");
         }
         return Role;
     }
+
     public async Task IsUserRejected()
     {
         var identity = (ClaimsPrincipal)Thread.CurrentPrincipal;
@@ -160,7 +150,8 @@ public class CommonAppService : ApplicationService, ICommonAppService
         }
         object UserRejectFromCache = null;
         UserRejectionAdvocacy userReject = null;
-        _cacheManager.GetCache("UserRejection").TryGetValue(Nationalcode, out UserRejectFromCache);
+        //_cacheManager.GetCache("UserRejection").TryGetValue(Nationalcode, out UserRejectFromCache);
+        UserRejectFromCache = await _distributedCache.GetStringAsync(string.Format(RedisConstants.UserRejectionPrefix, Nationalcode));
         if (UserRejectFromCache != null && (UserRejectFromCache as string) == "1")
         {
             throw new UserFriendlyException("شما انصراف داده اید و امکان ثبت سفارش نمی باشد");
@@ -179,79 +170,87 @@ public class CommonAppService : ApplicationService, ICommonAppService
 
         if (!string.IsNullOrEmpty(userRejection))
         {
-            await _cacheManager.GetCache("UserRejection").SetAsync(Nationalcode, "1");
+            //await _cacheManager.GetCache("UserRejection").SetAsync(Nationalcode, "1");
+            await _distributedCache.SetStringAsync(string.Format(RedisConstants.UserRejectionPrefix, Nationalcode), "1", new DistributedCacheEntryOptions
+            {
+                AbsoluteExpiration = RedisConstants.UserRejectionTimeOffset
+            });
             throw new UserFriendlyException("شما انصراف داده اید و امکان ثبت سفارش نمی باشد");
         }
         else
         {
-            await _cacheManager.GetCache("UserRejection").SetAsync(Nationalcode, "0");
+            //await _cacheManager.GetCache("UserRejection").SetAsync(Nationalcode, "0");
+            await _distributedCache.SetStringAsync(string.Format(RedisConstants.UserRejectionPrefix, Nationalcode), "0", new DistributedCacheEntryOptions
+            {
+                AbsoluteExpiration = RedisConstants.UserRejectionTimeOffset
+            });
         }
     }
-    public async Task<AdvocacyAcountResult> CheckAccount(string nationalCode, string mobileNo)
-    {
-        Logs logs = new Logs();
-        logs.StartDate = DateTime.Now;
-        try
-        {
-            logs.Ip = "";
-            logs.Type = 1;
-            logs.EndDate = DateTime.Now;
-            logs.Method = "TejaratCheck";
-            logs.LocationId = 4;
-            logs.Servername = Utility.GetServerIPAddress();
-            AuthtenticateResult authenticateResult = await AuthenticateBank();
-            if (authenticateResult == null)
-            {
-                return null;
-            }
-            var options = new RestClientOptions("https://ws.farava.ir")
-            {
-                MaxTimeout = -1,
-            };
-            var client = new RestClient(options);
-            var request = new RestRequest("/Samt/BlockMoney?nationalCode=" + nationalCode + "&mobileNo=" + mobileNo + "&price=" + _configuration.GetSection("AdvocacyPrice").Value, Method.Get);
-            request.AddHeader("accept", "application/json");
-            request.AddHeader("content-type", "application/json");
-            request.AddHeader("Authorization", "Bearer " + authenticateResult.Model.Token);
-            var body = @"";
-            request.AddStringBody(body, DataFormat.Json);
-            RestResponse response = await client.ExecuteAsync(request);
-            AdvocacyAcountResult advocacyAcountResult = JsonConvert.DeserializeObject<AdvocacyAcountResult>(response.Content);
-            logs.EndDate = DateTime.Now;
+    //public async Task<AdvocacyAcountResult> CheckAccount(string nationalCode, string mobileNo)
+    //{
+    //    Logs logs = new Logs();
+    //    logs.StartDate = DateTime.Now;
+    //    try
+    //    {
+    //        logs.Ip = "";
+    //        logs.Type = 1;
+    //        logs.EndDate = DateTime.Now;
+    //        logs.Method = "TejaratCheck";
+    //        logs.LocationId = 4;
+    //        logs.Servername = Utility.GetServerIPAddress();
+    //        AuthtenticateResult authenticateResult = await AuthenticateBank();
+    //        if (authenticateResult == null)
+    //        {
+    //            return null;
+    //        }
+    //        var options = new RestClientOptions("https://ws.farava.ir")
+    //        {
+    //            MaxTimeout = -1,
+    //        };
+    //        var client = new RestClient(options);
+    //        var request = new RestRequest("/Samt/BlockMoney?nationalCode=" + nationalCode + "&mobileNo=" + mobileNo + "&price=" + _configuration.GetSection("AdvocacyPrice").Value, Method.Get);
+    //        request.AddHeader("accept", "application/json");
+    //        request.AddHeader("content-type", "application/json");
+    //        request.AddHeader("Authorization", "Bearer " + authenticateResult.Model.Token);
+    //        var body = @"";
+    //        request.AddStringBody(body, DataFormat.Json);
+    //        RestResponse response = await client.ExecuteAsync(request);
+    //        AdvocacyAcountResult advocacyAcountResult = JsonConvert.DeserializeObject<AdvocacyAcountResult>(response.Content);
+    //        logs.EndDate = DateTime.Now;
 
-            await _logsRespository.InsertAsync(logs);
+    //        await _logsRespository.InsertAsync(logs);
 
-            return advocacyAcountResult;
-        }
-        catch (Exception ex)
-        {
-            logs.EndDate = DateTime.Now;
-            logs.Type = 0;
-            logs.Message = ex.Message;
-            UnitOfWorkOptions unitOfWorkOptions = new UnitOfWorkOptions();
-            unitOfWorkOptions.IsTransactional = false;
-            logs.Ip = "";
-            logs.Type = 7;
-            logs.EndDate = DateTime.Now;
-            logs.Method = "Recaptcha";
-            logs.LocationId = 4;
-            logs.Servername = Utility.GetServerIPAddress();
-            unitOfWorkOptions.Scope = System.Transactions.TransactionScopeOption.RequiresNew;
-            using (var unitOfWork = _unitOfWorkManager.Begin(unitOfWorkOptions))
-            {
-                await _logsRespository.InsertAsync(logs);
-                unitOfWork.Complete();
-            }
-        }
-        return null;
+    //        return advocacyAcountResult;
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        logs.EndDate = DateTime.Now;
+    //        logs.Type = 0;
+    //        logs.Message = ex.Message;
+    //        //unitOfWorkOptions.IsTransactional = false;
+    //        logs.Ip = "";
+    //        logs.Type = 7;
+    //        logs.EndDate = DateTime.Now;
+    //        logs.Method = "Recaptcha";
+    //        logs.LocationId = 4;
+    //        logs.Servername = Utility.GetServerIPAddress();
+    //        //unitOfWorkOptions.Scope = System.Transactions.TransactionScopeOption.RequiresNew;
+    //        //using (var unitOfWork = _unitOfWorkManager.Begin(unitOfWorkOptions))
+    //        //{
+    //        await _logsRespository.InsertAsync(logs);
+    //        await UnitOfWorkManager.Current.CompleteAsync();
+    //        //}
+    //    }
+    //    return null;
 
-    }
+    //}
 
     public async Task<bool> ValidateSMS(string Mobile, string NationalCode, string UserSMSCode, SMSType sMSType)
     {
         Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
         object ObjectSMSCode = null;
-        _cacheManager.GetCache("SMS").TryGetValue(sMSType.ToString() + Mobile + NationalCode, out ObjectSMSCode);
+        //_cacheManager.GetCache("SMS").TryGetValue(sMSType.ToString() + Mobile + NationalCode, out ObjectSMSCode);
+        ObjectSMSCode = await _distributedCache.GetStringAsync(string.Format(RedisConstants.ValidateSmsPrefix, NationalCode));
         RegistrationSMSDto smsCodeDto = ObjectSMSCode as RegistrationSMSDto;
         if (smsCodeDto == null)
         {
@@ -321,9 +320,9 @@ public class CommonAppService : ApplicationService, ICommonAppService
                 logs.EndDate = DateTime.Now;
                 logs.Type = 0;
                 logs.Message = ex.Message;
-                UnitOfWorkOptions unitOfWorkOptions = new UnitOfWorkOptions();
-                unitOfWorkOptions.IsTransactional = false;
-                unitOfWorkOptions.Scope = System.Transactions.TransactionScopeOption.RequiresNew;
+                //UnitOfWorkOptions unitOfWorkOptions = new UnitOfWorkOptions();
+                //unitOfWorkOptions.IsTransactional = false;
+                //unitOfWorkOptions.Scope = System.Transactions.TransactionScopeOption.RequiresNew;
                 //using (var unitOfWork = _unitOfWorkManager.Begin(unitOfWorkOptions))
                 //{
                 await _logsRespository.InsertAsync(logs);
@@ -452,7 +451,7 @@ public class CommonAppService : ApplicationService, ICommonAppService
 
     public long GetUserId()
     {
-        var userIdStr = _httpContextAccessor.HttpContext.User.Claims.SingleOrDefault(x => x.Type.Equals("UserId"))?.Value ?? string.Empty;
+        var userIdStr = _httpContextAccessor.HttpContext.User.Claims.SingleOrDefault(x => x.Type.Equals(ClaimTypes.NameIdentifier))?.Value ?? string.Empty;
         if (string.IsNullOrWhiteSpace(userIdStr))
             throw new UserFriendlyException("لطفا لاگین کنید");
 

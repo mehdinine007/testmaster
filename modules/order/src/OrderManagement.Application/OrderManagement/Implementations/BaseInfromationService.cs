@@ -1,5 +1,4 @@
-﻿using Abp.Domain.Uow;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.Services;
 using OrderManagement.Domain;
@@ -75,10 +74,10 @@ public class BaseInfromationService : ApplicationService, IBaseInformationServic
             throw new UserFriendlyException("کد ملی صحیح نمی باشد");
         }
 
-        UnitOfWorkOptions unitOfWorkOptions = new UnitOfWorkOptions();
-        unitOfWorkOptions.IsTransactional = false;
-        unitOfWorkOptions.IsolationLevel = System.Transactions.IsolationLevel.Snapshot;
-        unitOfWorkOptions.Scope = System.Transactions.TransactionScopeOption.RequiresNew;
+        //UnitOfWorkOptions unitOfWorkOptions = new UnitOfWorkOptions();
+        //unitOfWorkOptions.IsTransactional = false;
+        //unitOfWorkOptions.IsolationLevel = System.Transactions.IsolationLevel.Snapshot;
+        //unitOfWorkOptions.Scope = System.Transactions.TransactionScopeOption.RequiresNew;
         //using (var unitOfWork = _unitOfWorkManager.Begin(unitOfWorkOptions))
         //{
 
@@ -146,7 +145,7 @@ public class BaseInfromationService : ApplicationService, IBaseInformationServic
 
     }
 
-    [UnitOfWork(System.Transactions.IsolationLevel.Unspecified)]
+    //[UnitOfWork(System.Transactions.IsolationLevel.Unspecified)]
     public void CheckBlackList(int esaleTypeId)
     {
         var identity = (ClaimsPrincipal)Thread.CurrentPrincipal;

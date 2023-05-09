@@ -1,4 +1,5 @@
-﻿using OrderManagement.Domain.Bases;
+﻿using System.Text;
+using OrderManagement.Domain.Bases;
 using OrderManagement.Domain;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Uow;
@@ -13,16 +14,15 @@ using OrderManagement.Application.Contracts.Services;
 using System.Collections.Generic;
 using System;
 using Volo.Abp.Auditing;
-using Abp.Runtime.Caching;
 using Volo.Abp.Application.Services;
 using System.Linq;
-using Abp.Authorization;
-using Abp.Domain.Uow;
-using Abp.Runtime.Session;
 using Microsoft.EntityFrameworkCore;
 using UnitOfWorkAttribute = Volo.Abp.Uow.UnitOfWorkAttribute;
 using System.Data;
 using OrderManagement.Domain.Shared;
+using OrderManagement.Application.OrderManagement.Constants;
+using Newtonsoft.Json;
+using System.Diagnostics;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -31,55 +31,83 @@ public class OrderApplicationService : ApplicationService, IOrderAppService
     private readonly ICommonAppService _commonAppService;
     private readonly IBaseInformationService _baseInformationAppService;
     private readonly IHttpContextAccessor _contextAccessor;
-    //private readonly IRandomGenerator _iRandomGenerator;
-    private readonly ICacheManager _cacheManager;
-    //private readonly IRepository<User, long> _userRepository;
     private readonly IRepository<SaleDetail, int> _saleDetailRepository;
     private readonly IRepository<UserRejectionAdvocacy, int> _userRejectionAdcocacyRepository;
+    private readonly IRepository<AdvocacyUsers, int> _advocacyUsers;
     private readonly IRepository<CustomerOrder, int> _commitOrderRepository;
     private readonly IRepository<Logs, long> _logsRepository;
     private readonly IBankAppService _bankAppService;
-    //private readonly IAbpSession _abpSession;
     private readonly IRepository<OrderStatusTypeReadOnly, int> _orderStatusTypeReadOnlyRepository;
     private readonly IRepository<OrderRejectionTypeReadOnly, int> _orderRejectionTypeReadOnlyRepository;
+    private readonly IEsaleGrpcClient _esaleGrpcClient;
     private IConfiguration _configuration { get; set; }
+    private readonly IDistributedCache _distributedCache;
 
     public OrderApplicationService(ICommonAppService CommonAppService,
                                    //IRandomGenerator RandomGenerator,
                                    IHttpContextAccessor ContextAccessor,
-                                   ICacheManager CacheManager,
                                    //IRepository<User, long> UserRepository,
                                    IRepository<Logs, long> LogsRepository,
                                    //IUnitOfWorkManager UnitOfWorkManager,
                                    IRepository<UserRejectionAdvocacy, int> UserRejectionAdcocacyRepository,
-                                   Microsoft.Extensions.Configuration.IConfiguration Configuration,
+                                   IConfiguration Configuration,
                                    IRepository<CustomerOrder, int> CommitOrderRepository,
                                    IRepository<SaleDetail, int> SaleDetailRepository,
                                    IBaseInformationService BaseInformationAppService,
                                    IBankAppService BankAppService,
                                    IRepository<OrderStatusTypeReadOnly, int> orderStatusTypeReadOnlyRepository,
-                                   IRepository<OrderRejectionTypeReadOnly, int> orderRejectionTypeReadOnlyRepository
+                                   IRepository<OrderRejectionTypeReadOnly, int> orderRejectionTypeReadOnlyRepository,
+                                   IEsaleGrpcClient esaleGrpcClient,
+                                   IDistributedCache distributedCache,
+                                   IRepository<AdvocacyUsers, int> advocacyUsers
             )
     {
         _configuration = Configuration;
         _commonAppService = CommonAppService;
         _contextAccessor = ContextAccessor;
-        //_iRandomGenerator = RandomGenerator;
-        _cacheManager = CacheManager;
-        //_userRepository = UserRepository;
         _logsRepository = LogsRepository;
         _commitOrderRepository = CommitOrderRepository;
-        //_unitOfWorkManager = UnitOfWorkManager;
-        //  _configuration = Configuration;
         _saleDetailRepository = SaleDetailRepository;
         _userRejectionAdcocacyRepository = UserRejectionAdcocacyRepository;
-        //_abpSession = abpSession;
         _baseInformationAppService = BaseInformationAppService;
         _bankAppService = BankAppService;
         _orderStatusTypeReadOnlyRepository = orderStatusTypeReadOnlyRepository;
         _orderRejectionTypeReadOnlyRepository = orderRejectionTypeReadOnlyRepository;
-        // _ctx = dbContextProvider;
+        _esaleGrpcClient = esaleGrpcClient;
+        _distributedCache = distributedCache;
+        _advocacyUsers = advocacyUsers;
     }
+
+    private AdvocacyUserFromBankDto CheckAdvocacy(string NationalCode)
+    {
+
+
+        var advocacyuser = _advocacyUsers.WithDetails()
+            .Select(x => new
+            {
+                x.shabaNumber,
+                x.accountNumber,
+                x.Id,
+                x.nationalcode,
+                x.BanksId
+            })
+            .OrderByDescending(x => x.Id).FirstOrDefault(x => x.nationalcode == NationalCode);
+        if (advocacyuser == null)
+        {
+            throw new UserFriendlyException("اطلاعات حساب وکالتی یافت نشد");
+        }
+        AdvocacyUserFromBankDto advocacyUserFromBankDto = new AdvocacyUserFromBankDto();
+        advocacyUserFromBankDto.AccountNumber = advocacyuser.accountNumber;
+        advocacyUserFromBankDto.ShebaNumber = advocacyuser.shabaNumber;
+        advocacyUserFromBankDto.BankId = (int)advocacyuser.BanksId;
+
+        return advocacyUserFromBankDto;
+
+
+
+
+    }
+
 
     [Audited]
     //[UnitOfWork(isTransactional: false)]
@@ -112,12 +140,13 @@ public class OrderApplicationService : ApplicationService, IOrderAppService
             }
 
         }
-        object SaleDetailFromCache = null;
+        var nationalCode = _commonAppService.GetNationalCode();
         SaleDetailOrderDto SaleDetailDto = null;
-        _cacheManager.GetCache("SaleDetail").TryGetValue(commitOrderDto.SaleDetailUId.ToString(), out SaleDetailFromCache);
+        var cacheResponse = await _distributedCache.GetAsync(string.Format(RedisConstants.SaleDetailPrefix, nationalCode));
+        var SaleDetailFromCache = System.Text.Json.JsonSerializer.Deserialize<SaleDetail>(cacheResponse);
         if (SaleDetailFromCache != null)
         {
-            SaleDetailDto = ObjectMapper.Map<SaleDetail, SaleDetailOrderDto>(SaleDetailFromCache as SaleDetail);
+            SaleDetailDto = ObjectMapper.Map<SaleDetail, SaleDetailOrderDto>(SaleDetailFromCache);
         }
         else
         {
@@ -141,7 +170,13 @@ public class OrderApplicationService : ApplicationService, IOrderAppService
             else
             {
                 SaleDetailDto = SaleDetailFromDb;
-                await _cacheManager.GetCache("SaleDetail").SetAsync(commitOrderDto.SaleDetailUId.ToString(), SaleDetailDto);
+                //await _cacheManager.GetCache("SaleDetail").SetAsync(commitOrderDto.SaleDetailUId.ToString(), SaleDetailDto);
+
+                await _distributedCache.SetStringAsync(string.Format(RedisConstants.SaleDetailPrefix, nationalCode),
+                    JsonConvert.SerializeObject(SaleDetailDto), new DistributedCacheEntryOptions()
+                    {
+                        AbsoluteExpiration = RedisConstants.SaleDetailTimeOffset
+                    });
             }
         }
         //if(SaleDetailDto.EsaleTypeId == (Int16)EsaleTypeEnum.Youth)
@@ -169,7 +204,7 @@ public class OrderApplicationService : ApplicationService, IOrderAppService
         CheckSaleDetailValidation(SaleDetailDto);
         await _commonAppService.IsUserRejected(); //if user reject from advocacy
                                                   //_baseInformationAppService.CheckBlackList(SaleDetailDto.EsaleTypeId); //if user not exsist in blacklist
-        _bankAppService.CheckAdvocacy(_commonAppService.GetNationalCode()); //if hesab vekalati darad
+        CheckAdvocacy(nationalCode); //if hesab vekalati darad
         _baseInformationAppService.CheckWhiteList(WhiteListEnumType.WhiteListOrder);
         var orderQuery = await _commitOrderRepository.GetQueryableAsync();
         var userId = _commonAppService.GetUserId();
@@ -190,11 +225,12 @@ public class OrderApplicationService : ApplicationService, IOrderAppService
         if (_configuration.GetSection("IsIranCellActive").Value == "7")
         {
             object objectCommitOrderIran = null;
-            _cacheManager.GetCache("CommitOrderIran").
-            TryGetValue(
-                userId.ToString() + "_" +
-                SaleDetailDto.SaleId.ToString()
-                , out objectCommitOrderIran);
+            //_cacheManager.GetCache("CommitOrderIran").
+            //TryGetValue(
+            //    userId.ToString() + "_" +
+            //    SaleDetailDto.SaleId.ToString()
+            //    , out objectCommitOrderIran);
+            objectCommitOrderIran = _distributedCache.GetStringAsync(userId.ToString() + "_" + SaleDetailDto.SaleId.ToString());
             if (objectCommitOrderIran != null)
             {
                 throw new UserFriendlyException("درخواست شما برای خودروی دیگری در حال بررسی می باشد. جهت سفارش جدید از درخواست قبلی خود انصراف دهید");
@@ -218,12 +254,20 @@ public class OrderApplicationService : ApplicationService, IOrderAppService
                    );
                 if (customerOrderIranFromDb != null)
                 {
-                    await _cacheManager.GetCache("CommitOrderIran").
-                       SetAsync(
-                           userId.ToString() + "_" +
-                           SaleDetailDto.SaleId.ToString()
-                           , customerOrderIranFromDb.Id
-                           , TimeSpan.FromSeconds(ttl.TotalSeconds));
+                    //await _cacheManager.GetCache("CommitOrderIran").
+                    //   SetAsync(
+                    //       userId.ToString() + "_" +
+                    //       SaleDetailDto.SaleId.ToString()
+                    //       , customerOrderIranFromDb.Id
+                    //       , TimeSpan.FromSeconds(ttl.TotalSeconds));
+
+                    await _distributedCache.SetStringAsync(userId.ToString() + "_" +
+                           SaleDetailDto.SaleId.ToString(),
+                           customerOrderIranFromDb.Id.ToString(),
+                           new DistributedCacheEntryOptions()
+                           {
+                               AbsoluteExpiration = new DateTimeOffset(DateTime.Now.AddSeconds(ttl.TotalSeconds))
+                           });
                     throw new UserFriendlyException("درخواست شما برای خودروی دیگری در حال بررسی می باشد. جهت سفارش جدید از درخواست قبلی خود انصراف دهید");
 
 
@@ -234,12 +278,17 @@ public class OrderApplicationService : ApplicationService, IOrderAppService
         else
         {
             object objectCommitOrderIran = null;
-            _cacheManager.GetCache("CommitOrderimport").
-            TryGetValue(
-                userId.ToString() + "_" +
+            //_cacheManager.GetCache("CommitOrderimport").
+            //TryGetValue(
+            //    userId.ToString() + "_" +
+            //    commitOrderDto.PriorityId.ToString() + "_" +
+            //    SaleDetailDto.SaleId.ToString()
+            //    , out objectCommitOrderIran);
+
+            objectCommitOrderIran = await _distributedCache.GetStringAsync(userId.ToString() + "_" +
                 commitOrderDto.PriorityId.ToString() + "_" +
-                SaleDetailDto.SaleId.ToString()
-                , out objectCommitOrderIran);
+                SaleDetailDto.SaleId.ToString());
+
             if (objectCommitOrderIran != null)
             {
                 throw new UserFriendlyException("درخواست شما برای خودروی دیگری در حال بررسی می باشد. جهت سفارش جدید، درخواست قبلی خود را لغو نمایید یا اولویت دیگری را انتخاب نمایید");
@@ -263,24 +312,37 @@ public class OrderApplicationService : ApplicationService, IOrderAppService
                    && y.PriorityId == (PriorityEnum)commitOrderDto.PriorityId);
                 if (customerOrderIranFromDb != null)
                 {
-                    await _cacheManager.GetCache("CommitOrderimport").
-                       SetAsync(
+                    //await _cacheManager.GetCache("CommitOrderimport").
+                    //   SetAsync(
+                    //      userId.ToString() + "_" +
+                    //        commitOrderDto.PriorityId.ToString() + "_" +
+                    //        SaleDetailDto.SaleId.ToString()
+                    //       , customerOrderIranFromDb.Id
+                    //       , TimeSpan.FromSeconds(ttl.TotalSeconds));
+                    await _distributedCache.SetStringAsync(
                           userId.ToString() + "_" +
                             commitOrderDto.PriorityId.ToString() + "_" +
                             SaleDetailDto.SaleId.ToString()
-                           , customerOrderIranFromDb.Id
-                           , TimeSpan.FromSeconds(ttl.TotalSeconds));
+                           , customerOrderIranFromDb.Id.ToString(),
+                          new DistributedCacheEntryOptions
+                          {
+                              AbsoluteExpiration = new DateTimeOffset(DateTime.Now.AddSeconds(ttl.TotalSeconds))
+                          });
                     throw new UserFriendlyException("درخواست شما برای خودروی دیگری در حال بررسی می باشد. جهت سفارش جدید، درخواست قبلی خود را لغو نمایید یا اولویت دیگری را انتخاب نمایید");
                 }
 
             }
             object objectCustomerOrderFromCache = null;
-            _cacheManager.GetCache("CommitOrderimport")
-                .TryGetValue(
+            //_cacheManager.GetCache("CommitOrderimport")
+            //    .TryGetValue(
+            //    userId.ToString() + "_" +
+            //        SaleDetailDto.Id.ToString(),
+            //    out objectCustomerOrderFromCache
+            //    );
+            objectCustomerOrderFromCache = await _distributedCache.GetStringAsync(
                 userId.ToString() + "_" +
-                    SaleDetailDto.Id.ToString(),
-                out objectCustomerOrderFromCache
-                );
+                    SaleDetailDto.Id.ToString());
+
             if (objectCustomerOrderFromCache != null)
             {
                 throw new UserFriendlyException("این خودرو را قبلا انتخاب نموده اید");
@@ -304,12 +366,19 @@ public class OrderApplicationService : ApplicationService, IOrderAppService
                 && x.OrderStatus == OrderStatusType.RecentlyAdded);
                 if (CustomerOrderFromDb != null)
                 {
-                    await _cacheManager.GetCache("CommitOrderimport").
-                   SetAsync(
-                       userId.ToString() + "_" +
+                    // await _cacheManager.GetCache("CommitOrderimport").
+                    //SetAsync(
+                    //    userId.ToString() + "_" +
+                    //    SaleDetailDto.Id.ToString()
+                    //    , CustomerOrderFromDb.Id
+                    //    , TimeSpan.FromSeconds(ttl.TotalSeconds));
+                    await _distributedCache.SetStringAsync(userId.ToString() + "_" +
                        SaleDetailDto.Id.ToString()
-                       , CustomerOrderFromDb.Id
-                       , TimeSpan.FromSeconds(ttl.TotalSeconds));
+                       , CustomerOrderFromDb.Id.ToString(),
+                       new DistributedCacheEntryOptions()
+                       {
+                           AbsoluteExpiration = new DateTimeOffset(DateTime.Now.AddSeconds(ttl.TotalSeconds))
+                       });
                     throw new UserFriendlyException("این خودرو را قبلا انتخاب نموده اید.");
 
                 }
@@ -335,38 +404,69 @@ public class OrderApplicationService : ApplicationService, IOrderAppService
         //CurrentUnitOfWork.SaveChanges();
         //unitOfWork.Complete();
         //}
-        await _cacheManager.GetCache("CommitOrder").
-                   SetAsync(
-               userId.ToString() + "_" +
+        //await _cacheManager.GetCache("CommitOrder").
+        //           SetAsync(
+        //       userId.ToString() + "_" +
+        //       commitOrderDto.SaleDetailUId.ToString()
+        //       , customerOrder.Id,
+        //       TimeSpan.FromSeconds(ttl.TotalSeconds));
+        await _distributedCache.SetStringAsync(
+            userId.ToString() + "_" +
                commitOrderDto.SaleDetailUId.ToString()
-               , customerOrder.Id,
-               TimeSpan.FromSeconds(ttl.TotalSeconds));
+               , customerOrder.Id.ToString(),
+            new DistributedCacheEntryOptions()
+            {
+                AbsoluteExpiration = new DateTimeOffset(DateTime.Now.AddSeconds(ttl.TotalSeconds))
+            });
         //if iran
         if (_configuration.GetSection("IsIranCellActive").Value == "7")
         {
-            await _cacheManager.GetCache("CommitOrderIran").
-              SetAsync(
-                  userId.ToString() + "_" +
+            //await _cacheManager.GetCache("CommitOrderIran").
+            //  SetAsync(
+            //      userId.ToString() + "_" +
+            //      SaleDetailDto.SaleId.ToString()
+            //    , customerOrder.Id
+            //    , TimeSpan.FromSeconds(ttl.TotalSeconds)
+            //  );
+            await _distributedCache.SetStringAsync(userId.ToString() + "_" +
                   SaleDetailDto.SaleId.ToString()
-                , customerOrder.Id
-                , TimeSpan.FromSeconds(ttl.TotalSeconds)
-              );
+                , customerOrder.Id.ToString(),
+                new DistributedCacheEntryOptions
+                {
+                    AbsoluteExpiration = new DateTimeOffset(DateTime.Now.AddSeconds(ttl.TotalSeconds))
+                });
         }//vardat
         if (_configuration.GetSection("IsIranCellActive").Value == "1")
         {
-            await _cacheManager.GetCache("CommitOrderimport").
-                       SetAsync(
-                          userId.ToString() + "_" +
+            //await _cacheManager.GetCache("CommitOrderimport").
+            //           SetAsync(
+            //              userId.ToString() + "_" +
+            //                commitOrderDto.PriorityId.ToString() + "_" +
+            //                SaleDetailDto.SaleId.ToString()
+            //               , customerOrder.Id,
+            //              TimeSpan.FromSeconds(ttl.TotalSeconds));
+            await _distributedCache.SetStringAsync(userId.ToString() + "_" +
                             commitOrderDto.PriorityId.ToString() + "_" +
                             SaleDetailDto.SaleId.ToString()
-                           , customerOrder.Id,
-                          TimeSpan.FromSeconds(ttl.TotalSeconds));
-            await _cacheManager.GetCache("CommitOrderimport").
-                 SetAsync(
-                     userId.ToString() + "_" +
+                           , customerOrder.Id.ToString(),
+                           new DistributedCacheEntryOptions()
+                           {
+                               AbsoluteExpiration = new DateTimeOffset(DateTime.Now.AddSeconds(ttl.TotalSeconds))
+                           });
+
+            await _distributedCache.SetStringAsync(userId.ToString() + "_" +
                      SaleDetailDto.Id.ToString()
-                     , customerOrder.Id
-                     , TimeSpan.FromSeconds(ttl.TotalSeconds));
+                     , customerOrder.Id.ToString(),
+                     new DistributedCacheEntryOptions
+                     {
+                         AbsoluteExpiration = new DateTimeOffset(DateTime.Now.AddSeconds(ttl.TotalSeconds))
+                     });
+            //await _cacheManager.GetCache("CommitOrderimport").
+            //     SetAsync(
+            //         userId.ToString() + "_" +
+            //         SaleDetailDto.Id.ToString()
+            //         , customerOrder.Id
+            //         , TimeSpan.FromSeconds(ttl.TotalSeconds));
         }
 
 
@@ -397,7 +497,7 @@ public class OrderApplicationService : ApplicationService, IOrderAppService
             }
         }
     }
-    [UnitOfWork(false,IsolationLevel.ReadUncommitted)]
+    [UnitOfWork(false, IsolationLevel.ReadUncommitted)]
     public List<CustomerOrder_OrderDetailDto> GetCustomerOrderList()
     {
         if (!_commonAppService.IsInRole("Customer"))
@@ -490,16 +590,28 @@ public class OrderApplicationService : ApplicationService, IOrderAppService
             throw new UserFriendlyException("شماره سفارش صحیح نمی باشد");
 
         SaleDetailOrderDto saleDetailOrderDto;
-        if (_cacheManager.GetCache("SaleDetail").TryGetValue(customerOrder.SaleDetailId.ToString(), out var saleDetailFromCache))
+        var saleDetailCahce = await _distributedCache.GetStringAsync(string.Format(RedisConstants.SaleDetailPrefix, _commonAppService.GetNationalCode()));
+        if (!string.IsNullOrWhiteSpace(saleDetailCahce))
         {
-            saleDetailOrderDto = ObjectMapper.Map<SaleDetail, SaleDetailOrderDto>(saleDetailFromCache as SaleDetail);
+
+            //if (_cacheManager.GetCache("SaleDetail").TryGetValue(customerOrder.SaleDetailId.ToString(), out var saleDetailFromCache))
+            //{
+            saleDetailOrderDto = ObjectMapper.Map<SaleDetail, SaleDetailOrderDto>(JsonConvert.DeserializeObject<SaleDetail>(saleDetailCahce));
+            //}
         }
         else
         {
             var saleDetail = _saleDetailRepository.WithDetails().FirstOrDefault(x => x.Id == customerOrder.SaleDetailId)
                 ?? throw new UserFriendlyException("جزئیات برنامه فروش یافت نشد");
             saleDetailOrderDto = ObjectMapper.Map<SaleDetail, SaleDetailOrderDto>(saleDetail);
-            await _cacheManager.GetCache("SaleDetail").SetAsync(saleDetailOrderDto.Id.ToString(), saleDetailOrderDto);
+            //await _cacheManager.GetCache("SaleDetail").SetAsync(saleDetailOrderDto.Id.ToString(), saleDetailOrderDto);
+            await _distributedCache.SetStringAsync(string.Format(RedisConstants.SaleDetailPrefix,_commonAppService.GetNationalCode()),
+                JsonConvert.SerializeObject(saleDetailOrderDto),
+                new DistributedCacheEntryOptions
+                {
+                    AbsoluteExpiration = new DateTimeOffset(DateTime.Now.AddDays(10))
+                });
+
         }
         // CheckSaleDetailValidation(saleDetailOrderDto);
         //var currentTime = DateTime.Now;
@@ -508,25 +620,34 @@ public class OrderApplicationService : ApplicationService, IOrderAppService
         //if iran
         if (_configuration.GetSection("IsIranCellActive").Value == "7")
         {
-            await _cacheManager.GetCache("CommitOrderIran").
-              RemoveAsync(
-                  userId.ToString() + "_" +
-                  customerOrder.SaleId.ToString()
-              );
+            //await _cacheManager.GetCache("CommitOrderIran").
+            //  RemoveAsync(
+            //      userId.ToString() + "_" +
+            //      customerOrder.SaleId.ToString()
+            //  );
+            await _distributedCache.RemoveAsync(
+                userId.ToString() + "_" +
+                  customerOrder.SaleId.ToString());
         }//vardat
         if (_configuration.GetSection("IsIranCellActive").Value == "1")
         {
-            await _cacheManager.GetCache("CommitOrderimport").
-                       RemoveAsync(
-                          userId.ToString() + "_" +
+            //await _cacheManager.GetCache("CommitOrderimport").
+            //           RemoveAsync(
+            //              userId.ToString() + "_" +
+            //                customerOrder.PriorityId.ToString() + "_" +
+            //                customerOrder.SaleId.ToString())
+            //               ;
+            await _distributedCache.RemoveAsync(userId.ToString() + "_" +
                             customerOrder.PriorityId.ToString() + "_" +
-                            customerOrder.SaleId.ToString())
-                           ;
-            await _cacheManager.GetCache("CommitOrderimport").
-                 RemoveAsync(
+                            customerOrder.SaleId.ToString());
+            //await _cacheManager.GetCache("CommitOrderimport").
+            //     RemoveAsync(
+            //         userId.ToString() + "_" +
+            //         customerOrder.SaleDetailId.ToString()
+            //         );
+            await _distributedCache.RemoveAsync(
                      userId.ToString() + "_" +
-                     customerOrder.SaleDetailId.ToString()
-                     );
+                     customerOrder.SaleDetailId.ToString());
         }
 
 
@@ -535,79 +656,7 @@ public class OrderApplicationService : ApplicationService, IOrderAppService
         await CurrentUnitOfWork.SaveChangesAsync();
         return ObjectMapper.Map<CustomerOrder, CustomerOrderDto>(customerOrder, new CustomerOrderDto());
     }
-    //[Audited]
-    [AbpAllowAnonymous]
-    //[Audited]
-    public async Task<string> TestAdvocacy(string nc)
-    {
-        //UserRejectionAdvocacy ur;
-        UserRejectionAdvocacy userRejectionAdvocacy = new UserRejectionAdvocacy();
-        userRejectionAdvocacy.Archived = false;
-        userRejectionAdvocacy.BatchId = 1;
-        userRejectionAdvocacy.accountNumber = "12568";
-        userRejectionAdvocacy.ShabaNumber = "sheba";
-        userRejectionAdvocacy.datetime = DateTime.Now;
-        userRejectionAdvocacy.NationalCode = nc;
-        UnitOfWorkOptions unitOfWorkOptions = new UnitOfWorkOptions();
-        // var xx = await _userRejectionAdcocacyRepository.FirstOrDefaultAsync(x => x.NationalCode == nc);
-        //   System.Threading.Thread.Sleep(5000);
 
-        unitOfWorkOptions.IsTransactional = false;
-        unitOfWorkOptions.Scope = System.Transactions.TransactionScopeOption.RequiresNew;
-        unitOfWorkOptions.IsolationLevel = System.Transactions.IsolationLevel.ReadUncommitted;
-        //using (var unitOfWork = _unitOfWorkManager.Begin(unitOfWorkOptions))
-        //{
-        var ur = _userRejectionAdcocacyRepository.WithDetails().FirstOrDefault(x => x.NationalCode == nc);
-        await CurrentUnitOfWork.SaveChangesAsync();
-        // System.Threading.Thread.Sleep(5000);
-        //}
-        //unitOfWorkOptions.IsTransactional = false;
-        //unitOfWorkOptions.Scope = System.Transactions.TransactionScopeOption.RequiresNew;
-        //unitOfWorkOptions.IsolationLevel = IsolationLevel.ReadUncommitted;
-        //using (var unitOfWork = _unitOfWorkManager.Begin(unitOfWorkOptions))
-        //{
-
-        // await _userRejectionAdcocacyRepository.DeleteAsync(userRejectionAdvocacy);
-
-        // await _userRejectionAdcocacyRepository.InsertAsync(userRejectionAdvocacy);
-        // await CurrentUnitOfWork.SaveChangesAsync();
-        //    unitOfWork.Complete();
-
-        //}
-        //var dbcontext = _ctx.GetDbContext();
-        //  dbcontext.UserRejectionAdvocacies.Add(userRejectionAdvocacy);
-
-        unitOfWorkOptions = new UnitOfWorkOptions();
-        unitOfWorkOptions.IsTransactional = false;
-        unitOfWorkOptions.Scope = System.Transactions.TransactionScopeOption.RequiresNew;
-        unitOfWorkOptions.IsolationLevel = System.Transactions.IsolationLevel.ReadUncommitted;
-        //using (var unitOfWork = _unitOfWorkManager.Begin(unitOfWorkOptions))
-        //{
-        await _userRejectionAdcocacyRepository.InsertAsync(userRejectionAdvocacy);
-        await CurrentUnitOfWork.SaveChangesAsync();
-
-        //}
-
-        //  var ur = _userRejectionAdcocacyRepository.GetAll().AsNoTracking().FirstOrDefaultAsync(x => x.NationalCode == nc);
-        unitOfWorkOptions = new UnitOfWorkOptions();
-        unitOfWorkOptions.IsTransactional = false;
-        unitOfWorkOptions.Scope = System.Transactions.TransactionScopeOption.RequiresNew;
-        unitOfWorkOptions.IsolationLevel = System.Transactions.IsolationLevel.ReadUncommitted;
-        //using (var unitOfWork = _unitOfWorkManager.Begin(unitOfWorkOptions))
-        //{
-        await _userRejectionAdcocacyRepository.DeleteAsync(userRejectionAdvocacy);
-
-
-        await CurrentUnitOfWork.SaveChangesAsync();
-
-        //}
-
-
-
-
-        return nc;
-
-    }
 
 
     [Audited]
@@ -621,33 +670,37 @@ public class OrderApplicationService : ApplicationService, IOrderAppService
         //var userId = _abpSession.UserId ?? throw new UserFriendlyException("لطفا لاگین کنید");
         //var user = _userRepository.FirstOrDefault(userId);
         var userNationalCode = _commonAppService.GetNationalCode();
-        //TODO: fill userMobile, usershaba, userAccountNumber with right data some how
-        var (userMobile, userShaba, userAccountNumber) = (string.Empty, string.Empty, string.Empty);
+        var userId = _commonAppService.GetUserId();
+        var user = await _esaleGrpcClient.GetUserById(userId);
+        var (userMobile, userShaba, userAccountNumber) = (user.MobileNumber, user.Shaba, user.AccountNumber);
 
         await _commonAppService.ValidateSMS(userMobile, userNationalCode, userSmsCode, SMSType.UserRejectionAdvocacy);
-        //var saleDetail = await _saleDetailRepository.GetAll()
-        //    .Select(x => new { x.SalePlanStartDate , x.SalePlanEndDate, x.SaleId})
-        //    .FirstOrDefaultAsync(x => x.SalePlanStartDate <= DateTime.Now && x.SalePlanEndDate >= DateTime.Now);
-        //if (saleDetail == null)
-        //    throw new UserFriendlyException("هیچ برنامه فروش فعالی وجود ندارد");
+        var saleDetail = await _saleDetailRepository.WithDetails()
+            .Select(x => new { x.SalePlanStartDate, x.SalePlanEndDate, x.SaleId })
+            .FirstOrDefaultAsync(x => x.SalePlanStartDate <= DateTime.Now && x.SalePlanEndDate >= DateTime.Now);
+        if (saleDetail == null)
+            throw new UserFriendlyException("هیچ برنامه فروش فعالی وجود ندارد");
         var saleId = 1;
-        //var order = await _commitOrderRepository
-        //    .GetAll()
-        //        .Select(x => new 
-        //        {
-        //            x.OrderStatus,
-        //            x.UserId
-        //        })
-        //    .FirstOrDefaultAsync(x => x.UserId == userId && x.OrderStatus == OrderStatusType.RecentlyAdded);
-        //if (order != null)
-        //{
-        //    throw new UserFriendlyException("سفارش در حال بررسی دارید. جهت درخواست حذف از درخواست قبلی خود انصراف دهید");
-        //}
+        var order = await _commitOrderRepository
+            .WithDetails()
+                .Select(x => new
+                {
+                    x.OrderStatus,
+                    x.UserId
+                })
+            .FirstOrDefaultAsync(x => x.UserId == userId && x.OrderStatus == OrderStatusType.RecentlyAdded);
+        if (order != null)
+        {
+            throw new UserFriendlyException("سفارش در حال بررسی دارید. جهت درخواست حذف از درخواست قبلی خود انصراف دهید");
+        }
 
         var userRejectionAdvocacyDisable = _configuration.GetValue<bool?>("UserRejectionAdvocacyIsDisable") ?? false;
         if (userRejectionAdvocacyDisable)
             throw new UserFriendlyException("تا اطلاع ثانوی انصراف از طرح های فروش ممکن نیست");
-        await _cacheManager.GetCache("UserRejection").RemoveAsync(userNationalCode);
+        //await _cacheManager.GetCache("UserRejection").RemoveAsync(userNationalCode);
+        //TODO: check removing the right key
+        await _distributedCache.RemoveAsync(string.Format(RedisConstants.UserRejectionPrefix, userNationalCode));
+        await _distributedCache.RemoveAsync(userNationalCode);
 
         var userRejected = _userRejectionAdcocacyRepository.WithDetails()
             .Select(x => x.NationalCode)

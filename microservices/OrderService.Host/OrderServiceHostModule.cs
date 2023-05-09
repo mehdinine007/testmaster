@@ -25,6 +25,7 @@ using Volo.Abp.Threading;
 using OrderManagement.Application;
 using OrderManagement.HttpApi;
 using OrderManagement.EfCore;
+using Autofac.Core;
 
 namespace OrderService.Host
 {
@@ -88,10 +89,14 @@ namespace OrderService.Host
                 options.IsEnabledForGetRequests = true;
                 options.ApplicationName = "OrderService";
             });
+            context.Services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = configuration["RedisCache:ConnectionString"];
+            });
 
-            var redis = ConnectionMultiplexer.Connect(configuration["Redis:Configuration"]);
-            context.Services.AddDataProtection()
-                .PersistKeysToStackExchangeRedis(redis, "MsDemo-DataProtection-Keys");
+            //var redis = ConnectionMultiplexer.Connect(configuration["Redis:Configuration"]);
+            //context.Services.AddDataProtection()
+            //    .PersistKeysToStackExchangeRedis(redis, "MsDemo-DataProtection-Keys");
         }
 
         public override void OnApplicationInitialization(ApplicationInitializationContext context)

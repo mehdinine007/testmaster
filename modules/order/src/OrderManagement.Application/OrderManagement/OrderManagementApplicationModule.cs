@@ -1,4 +1,5 @@
-﻿using Abp.Domain.Uow;
+﻿using System;
+using Microsoft.Extensions.Caching.Distributed;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Domain;
 using Volo.Abp;
@@ -19,6 +20,19 @@ public class OrderManagementApplicationModule : AbpModule
         {
             options.AddProfile<OrderManagementApplicationAutoMapperProfile>(validate: true);
         });
+
+        //Configure<AbpDistributedCacheOptions>(options =>
+        //{
+        //    options.GlobalCacheEntryOptions = new DistributedCacheEntryOptions()
+        //    {
+        //        AbsoluteExpiration = new DateTimeOffset(DateTime.Now.AddMinutes(20)) //20 mins default
+        //    };
+        //    options.KeyPrefix = "MyApp1";
+        //    //options.CacheConfigurators.Add(x =>
+        //    //{
+        //    //    x.
+        //    //});
+        //});
     }
 
     public override void OnPreApplicationInitialization(ApplicationInitializationContext context)
