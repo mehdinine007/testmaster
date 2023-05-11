@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
 using OrderManagement.Domain;
+using OrderManagement.Domain.Bases;
 using Volo.Abp.Data;
 using Volo.Abp.EntityFrameworkCore;
 
@@ -54,5 +55,14 @@ namespace OrderManagement.EfCore
         DbSet<Province> Provinces { get; set; }
 
         DbSet<PreSale> PreSales { get; set; }
+
+        DbSet<Gallery> Gallery { get; set; }
+
+        DbSet<UserRejectionAdvocacy> UserRejectionAdvocacies { get; set; }
+
+        DbSet<OrderRejectionTypeReadOnly> OrderRejectionTypeReadOnly { get; set; }
+
+        DbSet<OrderStatusTypeReadOnly> OrderStatusTypeReadOnly { get; set; }
+
     }
 }

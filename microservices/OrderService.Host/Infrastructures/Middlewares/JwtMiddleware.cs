@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using OrderService.Host.Infrastructures;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -13,9 +15,15 @@ namespace ProductService.Host.Infrastructure.Middlewares;
 public class JwtMiddleware
 {
     private readonly RequestDelegate _next;
+    private readonly IOptions<AppSecret> _appSecret;
 
-    public JwtMiddleware(RequestDelegate next)
-    => _next = next;
+    public JwtMiddleware(RequestDelegate next,
+                         IOptions<AppSecret> appSecret
+        )
+    {
+        _next = next;
+        _appSecret = appSecret;
+    }
 
     public async Task InvokeAsync(HttpContext httpContext)
     {
@@ -31,7 +39,7 @@ public class JwtMiddleware
     private void AttachUserToContext(HttpContext httpContext, string token)
     {
         JwtSecurityTokenHandler jwtTokenHandler = new();
-        //var key = Encoding.ASCII.GetBytes(TokenSecretKey);
+        //var key = Encoding.ASCII.GetBytes(_appSecret.Value.SecretKey);
         try
         {
             jwtTokenHandler.ValidateToken(token, new TokenValidationParameters()

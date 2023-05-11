@@ -19,10 +19,10 @@ namespace OrderManagement.EfCore.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("_Abp_DatabaseProvider", EfCoreDatabaseProvider.SqlServer)
-                .HasAnnotation("ProductVersion", "6.0.5")
+                .HasAnnotation("ProductVersion", "7.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
             modelBuilder.Entity("OrderManagement.Domain.AdvocacyUsers", b =>
                 {
@@ -30,7 +30,7 @@ namespace OrderManagement.EfCore.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int?>("BanksId")
                         .HasColumnType("int");
@@ -98,7 +98,7 @@ namespace OrderManagement.EfCore.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int?>("BanksId")
                         .HasColumnType("int");
@@ -176,7 +176,7 @@ namespace OrderManagement.EfCore.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int?>("LogoId")
                         .HasColumnType("int");
@@ -193,13 +193,194 @@ namespace OrderManagement.EfCore.Migrations
                     b.ToTable("Bank", (string)null);
                 });
 
+            modelBuilder.Entity("OrderManagement.Domain.Bases.OrderRejectionTypeReadOnly", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("OrderRejectionCode")
+                        .HasColumnType("int");
+
+                    b.Property<string>("OrderRejectionTitle")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OrderRejectionTitleEn")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("OrderRejectionTypeReadOnly", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            OrderRejectionCode = 1,
+                            OrderRejectionTitle = "عدم تطابق کدملی و شماره موبایل",
+                            OrderRejectionTitleEn = "PhoneNumberAndNationalCodeConflict"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            OrderRejectionCode = 2,
+                            OrderRejectionTitle = "نداشتن گواهی نامه معتبر",
+                            OrderRejectionTitleEn = "DoesntHadQualifiedDrivingLicense"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            OrderRejectionCode = 3,
+                            OrderRejectionTitle = "دارای پلاک فعال",
+                            OrderRejectionTitleEn = "ActivePlaqueDetected"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            OrderRejectionCode = 4,
+                            OrderRejectionTitle = "ثبت سفارش در سامانه خودروهای وارداتی",
+                            OrderRejectionTitleEn = "OrderRegisteredInInternalVehicleSite"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            OrderRejectionCode = 5,
+                            OrderRejectionTitle = "لیست خرید خودروساز (سایپا)",
+                            OrderRejectionTitleEn = "SaipaVehicleManufactureList"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            OrderRejectionCode = 6,
+                            OrderRejectionTitle = "لیست خرید خودروساز (ایران خودرو)",
+                            OrderRejectionTitleEn = "IkcoVehicleManufactureList"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            OrderRejectionCode = 7,
+                            OrderRejectionTitle = "لیست خرید خودروساز (کرمان موتور)",
+                            OrderRejectionTitleEn = "KermanMotorVehicleManufactureList"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            OrderRejectionCode = 8,
+                            OrderRejectionTitle = "لیست خرید خودروساز (صنایع خودرو سازی ایلیا)",
+                            OrderRejectionTitleEn = "IliaAutoVehicleManufactureList"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            OrderRejectionCode = 9,
+                            OrderRejectionTitle = "لیست خرید خودروساز (فردا موتورز)",
+                            OrderRejectionTitleEn = "FardaMotorsVehicleManufactureList"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            OrderRejectionCode = 10,
+                            OrderRejectionTitle = "لیست خرید خودروساز (آرین پارس)",
+                            OrderRejectionTitleEn = "ArianParsVehicleManufactureList"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            OrderRejectionCode = 11,
+                            OrderRejectionTitle = "لیست خرید خودروساز (مکث موتور)",
+                            OrderRejectionTitleEn = "MaxMotorVehicleManufactureList"
+                        },
+                        new
+                        {
+                            Id = 12,
+                            OrderRejectionCode = 12,
+                            OrderRejectionTitle = "لیست خرید خودروساز (بهمن موتور)",
+                            OrderRejectionTitleEn = "BahmanMotorVehicleManufactureList"
+                        },
+                        new
+                        {
+                            Id = 13,
+                            OrderRejectionCode = 13,
+                            OrderRejectionTitle = "لیست خرید خودروساز (مدیران خودرو)",
+                            OrderRejectionTitleEn = "MvmVehicleManufactureList"
+                        },
+                        new
+                        {
+                            Id = 14,
+                            OrderRejectionCode = 14,
+                            OrderRejectionTitle = "عدم احراز در طرح جوانی توسط ثبت احول",
+                            OrderRejectionTitleEn = "YoungPlan"
+                        });
+                });
+
+            modelBuilder.Entity("OrderManagement.Domain.Bases.OrderStatusTypeReadOnly", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("OrderStatusCode")
+                        .HasColumnType("int");
+
+                    b.Property<string>("OrderStatusTitle")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OrderStatusTitleEn")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("OrderStatusTypeReadOnly", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            OrderStatusCode = 10,
+                            OrderStatusTitle = "ثبت سفارش اولیه با موفقیت انجام شد",
+                            OrderStatusTitleEn = "RecentlyAdded"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            OrderStatusCode = 20,
+                            OrderStatusTitle = "انصراف داده شده",
+                            OrderStatusTitleEn = "Canceled"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            OrderStatusCode = 30,
+                            OrderStatusTitle = "انتخاب نشده اید",
+                            OrderStatusTitleEn = "loser"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            OrderStatusCode = 40,
+                            OrderStatusTitle = "برنده شده اید",
+                            OrderStatusTitleEn = "Winner"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            OrderStatusCode = 50,
+                            OrderStatusTitle = "انصراف کلی از اولیت بندی",
+                            OrderStatusTitleEn = "FullCancel"
+                        });
+                });
+
             modelBuilder.Entity("OrderManagement.Domain.CarFamily", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("CompanyId")
                         .HasColumnType("int");
@@ -250,7 +431,7 @@ namespace OrderManagement.EfCore.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<int?>("CarMaker")
                         .HasColumnType("int");
@@ -310,7 +491,7 @@ namespace OrderManagement.EfCore.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("CarTypeId")
                         .HasColumnType("int");
@@ -361,7 +542,7 @@ namespace OrderManagement.EfCore.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("CarTipId")
                         .HasColumnType("int");
@@ -424,7 +605,7 @@ namespace OrderManagement.EfCore.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("CarFamilyId")
                         .HasColumnType("int");
@@ -485,7 +666,7 @@ namespace OrderManagement.EfCore.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
                         .HasColumnType("NVARCHAR(100)");
@@ -506,7 +687,7 @@ namespace OrderManagement.EfCore.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int?>("BannerId")
                         .HasColumnType("int");
@@ -578,7 +759,7 @@ namespace OrderManagement.EfCore.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2")
@@ -663,7 +844,7 @@ namespace OrderManagement.EfCore.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -719,7 +900,7 @@ namespace OrderManagement.EfCore.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Body")
                         .HasColumnType("nvarchar(max)");
@@ -781,7 +962,7 @@ namespace OrderManagement.EfCore.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2")
@@ -841,7 +1022,7 @@ namespace OrderManagement.EfCore.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2")
@@ -887,7 +1068,7 @@ namespace OrderManagement.EfCore.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
@@ -918,13 +1099,67 @@ namespace OrderManagement.EfCore.Migrations
                     b.ToTable("Logs");
                 });
 
+            modelBuilder.Entity("OrderManagement.Domain.PreSale", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Brand")
+                        .IsRequired()
+                        .HasColumnType("NVARCHAR(150)");
+
+                    b.Property<int>("Count")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("CreationTime");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("CreatorId");
+
+                    b.Property<Guid?>("DeleterId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("DeleterId");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("DeletionTime");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false)
+                        .HasColumnName("IsDeleted");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("LastModificationTime");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("LastModifierId");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("NVARCHAR(150)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PreSales");
+                });
+
             modelBuilder.Entity("OrderManagement.Domain.Province", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
                         .HasColumnType("NVARCHAR(100)");
@@ -940,7 +1175,7 @@ namespace OrderManagement.EfCore.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CarDeliverDate")
                         .HasColumnType("datetime2");
@@ -1046,7 +1281,7 @@ namespace OrderManagement.EfCore.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -1102,7 +1337,7 @@ namespace OrderManagement.EfCore.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("CarTipId")
                         .HasColumnType("int");
@@ -1175,13 +1410,80 @@ namespace OrderManagement.EfCore.Migrations
                     b.ToTable("Season_Company_CarTip", (string)null);
                 });
 
+            modelBuilder.Entity("OrderManagement.Domain.UserRejectionAdvocacy", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Archived")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("BatchId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("CreationTime");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("CreatorId");
+
+                    b.Property<Guid?>("DeleterId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("DeleterId");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("DeletionTime");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false)
+                        .HasColumnName("IsDeleted");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("LastModificationTime");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("LastModifierId");
+
+                    b.Property<string>("NationalCode")
+                        .IsRequired()
+                        .HasColumnType("VARCHAR(10)");
+
+                    b.Property<int>("SaleId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ShabaNumber")
+                        .IsRequired()
+                        .HasColumnType("VARCHAR(26)");
+
+                    b.Property<string>("accountNumber")
+                        .IsRequired()
+                        .HasColumnType("NVARCHAR(50)");
+
+                    b.Property<DateTime>("datetime")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UserRejectionAdvocacies");
+                });
+
             modelBuilder.Entity("OrderManagement.Domain.UserRejectionFromBank", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int?>("BanksId")
                         .HasColumnType("int");
@@ -1259,7 +1561,7 @@ namespace OrderManagement.EfCore.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2")
@@ -1314,7 +1616,7 @@ namespace OrderManagement.EfCore.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()

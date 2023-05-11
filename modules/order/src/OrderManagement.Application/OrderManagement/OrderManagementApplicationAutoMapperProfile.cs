@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using OrderManagement.Application.Contracts;
+using OrderManagement.Application.OrderManagement.Implementations;
 using OrderManagement.Application.OrderManagement.Utitlities;
 using OrderManagement.Domain;
+using Volo.Abp.AutoMapper;
 
 namespace OrderManagement
 {
@@ -41,6 +43,15 @@ namespace OrderManagement
                 .ForMember(x => x.OrderStatusCode, opt => opt.MapFrom(y => (int)y.OrderStatus))
                 .ReverseMap()
                 .ForMember(x => x.OrderStatus, opt => opt.MapFrom(y => (OrderStatusType)y.OrderStatusCode));
+
+            CreateMap<ESaleType, ESaleTypeDto>()
+                .ReverseMap()
+                .IgnoreFullAuditedObjectProperties();
+
+            CreateMap<City, PublicDto>()
+                .ReverseMap();
+            CreateMap<Province, PublicDto>()
+                .ReverseMap();
         }
     }
 }

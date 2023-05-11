@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ProductService.Host.Infrastructure.Middlewares;
+using Volo.Abp.Threading;
 
 namespace OrderService.Host
 {
@@ -22,8 +23,11 @@ namespace OrderService.Host
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
+            app.UseCors(options => options.SetIsOriginAllowed(x => _ = true).AllowAnyMethod().AllowAnyHeader().AllowCredentials());
             app.UseMiddleware<JwtMiddleware>();
+            
             app.InitializeApplication();
+
         }
     }
 }

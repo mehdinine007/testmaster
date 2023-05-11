@@ -34,17 +34,12 @@ namespace ProductService.Host
 {
     [DependsOn(
         typeof(AbpAutofacModule),
-        typeof(AbpAspNetCoreMvcModule),
-        typeof(AbpEventBusRabbitMqModule),
+        typeof(AbpAspNetCoreMvcModule), 
         typeof(AbpEntityFrameworkCoreSqlServerModule),
         typeof(AbpAuditLoggingEntityFrameworkCoreModule),
-        typeof(AbpPermissionManagementEntityFrameworkCoreModule),
-        typeof(AbpSettingManagementEntityFrameworkCoreModule),
         typeof(ProductManagementApplicationModule),
         typeof(ProductManagementHttpApiModule),
-        typeof(ProductManagementEntityFrameworkCoreModule),
-        typeof(AbpAspNetCoreMultiTenancyModule),
-        typeof(AbpTenantManagementEntityFrameworkCoreModule)
+        typeof(ProductManagementEntityFrameworkCoreModule)
         )]
     public class ProductServiceHostModule : AbpModule
     {

@@ -26,6 +26,12 @@ using OrderManagement.Application;
 using OrderManagement.HttpApi;
 using OrderManagement.EfCore;
 using Autofac.Core;
+using OrderService.Host.Infrastructures;
+using System.Net;
+using System.Linq;
+using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
+using ProductService.Host.Infrastructure.Middlewares;
 
 namespace OrderService.Host
 {
@@ -48,7 +54,7 @@ namespace OrderService.Host
         public override void ConfigureServices(ServiceConfigurationContext context)
         {
             var configuration = context.Services.GetConfiguration();
-
+            context.Services.Configure<AppSecret>(configuration.GetSection("Authentication:JwtBearer:SecurityKey"));
             //Configure<AbpMultiTenancyOptions>(options =>
             //{
             //    options.IsEnabled = MsDemoConsts.IsMultiTenancyEnabled;
@@ -64,7 +70,7 @@ namespace OrderService.Host
 
             context.Services.AddSwaggerGen(options =>
             {
-                options.SwaggerDoc("v1", new OpenApiInfo {Title = "Order Service API", Version = "v1"});
+                options.SwaggerDoc("v1", new OpenApiInfo { Title = "Order Service API", Version = "v1" });
                 options.DocInclusionPredicate((docName, description) => true);
                 options.CustomSchemaIds(type => type.FullName);
             });
@@ -94,6 +100,15 @@ namespace OrderService.Host
                 options.Configuration = configuration["RedisCache:ConnectionString"];
             });
 
+            using var scope = context.Services.BuildServiceProvider();
+            var service = scope.GetRequiredService<IActionResultWrapperFactory>();
+
+
+            context.Services.AddControllers(x =>
+            {
+                x.Filters.Add(new EsaleResultFilter(service));
+            });
+
             //var redis = ConnectionMultiplexer.Connect(configuration["Redis:Configuration"]);
             //context.Services.AddDataProtection()
             //    .PersistKeysToStackExchangeRedis(redis, "MsDemo-DataProtection-Keys");
@@ -102,7 +117,6 @@ namespace OrderService.Host
         public override void OnApplicationInitialization(ApplicationInitializationContext context)
         {
             var app = context.GetApplicationBuilder();
-
             app.UseCorrelationId();
             app.UseStaticFiles();
             app.UseRouting();
@@ -122,7 +136,6 @@ namespace OrderService.Host
             });
             app.UseAuditing();
             app.UseConfiguredEndpoints();
-
             //TODO: Problem on a clustered environment
             AsyncHelper.RunSync(async () =>
             {

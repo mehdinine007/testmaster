@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using OrderManagement.Domain;
+using OrderManagement.Domain.Bases;
 using Volo.Abp.Data;
 using Volo.Abp.EntityFrameworkCore;
 
@@ -36,6 +37,8 @@ namespace OrderManagement.EfCore
 
         public DbSet<Season_Company_CarTip> Season_Company_CarTip { get; set; }
 
+        public DbSet<UserRejectionAdvocacy> UserRejectionAdvocacies { get; set; }
+
         public DbSet<ESaleType> ESaleTypes { get; set; }
 
         public DbSet<Year> Year { get; set; }
@@ -53,10 +56,15 @@ namespace OrderManagement.EfCore
         public DbSet<CarMakerBlackList> CarMakerBlackLists { get; set; }
 
         public DbSet<City> Cities { get; set; }
+        public DbSet<Gallery> Gallery { get; set; }
 
         public DbSet<Province> Provinces { get; set; }
 
         public DbSet<PreSale> PreSales { get; set; }
+
+        public DbSet<OrderRejectionTypeReadOnly> OrderRejectionTypeReadOnly { get; set; }
+
+        public DbSet<OrderStatusTypeReadOnly> OrderStatusTypeReadOnly { get; set; }
 
         public OrderManagementDbContext(DbContextOptions<OrderManagementDbContext> options)
             : base(options)

@@ -20,7 +20,7 @@ public class SaleController : ISaleService
 
     [HttpGet]
     public async Task<List<PreSaleDto>> GetPreSales()
-        => await _saleService.GetPreSales();
+          => await _saleService.GetPreSales();
 
 
     [HttpGet]

@@ -14,8 +14,9 @@ using Volo.Abp.Domain.Repositories;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
-public class BaseInfromationService : ApplicationService, IBaseInformationService
+public class BaseInformationService : ApplicationService, IBaseInformationService
 {
+
     private readonly IRepository<Company, int> _companyRepository;
     //private readonly IRepository<User, long> _userRepository;
     private readonly IRepository<CarTip, int> _carTipRepository;
@@ -27,13 +28,26 @@ public class BaseInfromationService : ApplicationService, IBaseInformationServic
     private readonly IRepository<WhiteList, int> _whiteListRepository;
     private readonly IRepository<AdvocacyUsers, int> _advocacyUsersRepository;
     //private readonly IPasswordHasher<User> _passwordHasher;
+    private readonly IEsaleGrpcClient _esaleGrpcClient;
 
     private Microsoft.Extensions.Configuration.IConfiguration _configuration { get; set; }
     private IHttpContextAccessor _httpContextAccessor;
 
     private readonly ICommonAppService _commonAppService;
 
-    public BaseInfromationService(IRepository<Company, int> companyRepository,
+    //    public BaseInformationService(IEsaleGrpcClient esaleGrpcClient,
+    //                                  IRepository<Company, int> companyRepository
+    //                                  , IRepository<CarTip, int> carTipRepository
+    //,
+    //IRepository<Gallery, int> galleryRepository = null)
+    //    {
+    //        _esaleGrpcClient = esaleGrpcClient;
+    //        _companyRepository = companyRepository;
+    //        _carTipRepository = carTipRepository;
+    //        _galleryRepository = galleryRepository;
+    //    }
+
+    public BaseInformationService(IRepository<Company, int> companyRepository,
                                   IRepository<CarTip, int> carTipRepsoitory,
                                   IRepository<Gallery, int> galleryRepository,
                                   ICommonAppService CommonAppService,
@@ -45,9 +59,11 @@ public class BaseInfromationService : ApplicationService, IBaseInformationServic
                                   //IPasswordHasher<User> PasswordHasher,
                                   Microsoft.Extensions.Configuration.IConfiguration Configuration,
                                   IRepository<City, int> CityRepository,
-                                  IRepository<AdvocacyUsersFromBank, int> AdvocacyUsersFromBankRepository
+                                  IRepository<AdvocacyUsersFromBank, int> AdvocacyUsersFromBankRepository,
+                                  IEsaleGrpcClient esaleGrpcClient
         )
     {
+        _esaleGrpcClient = esaleGrpcClient;
         _companyRepository = companyRepository;
         _carTipRepository = carTipRepsoitory;
         _galleryRepository = galleryRepository;
@@ -62,6 +78,7 @@ public class BaseInfromationService : ApplicationService, IBaseInformationServic
         _advocacyUsersRepository = AdvocacyUsersRepository;
         //_passwordHasher = PasswordHasher;
     }
+
     [RemoteService(false)]
     public async Task CheckAdvocacyPrice(decimal MinimumAmountOfProxyDeposit)
     {

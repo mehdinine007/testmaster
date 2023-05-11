@@ -2,6 +2,10 @@
 using Microsoft.EntityFrameworkCore;
 using Volo.Abp;
 using OrderManagement.Domain;
+using OrderManagement.Domain.Bases;
+using System.Collections.Generic;
+using System.Linq;
+using OrderManagement.EfCore.Helpers;
 
 namespace OrderManagement.EfCore;
 
@@ -203,6 +207,52 @@ public static class OrderManagementDbContextModelCreatingExtensions
         {
             entity.ToTable(nameof(CarMakerBlackList));
             entity.HasIndex(co => new { co.Nationalcode, co.EsaleTypeId });
+        });
+
+        builder.Entity<OrderRejectionTypeReadOnly>(entity =>
+        {
+            entity.ToTable(nameof(OrderRejectionTypeReadOnly));
+
+            var records = Enum.GetValues(typeof(OrderRejectionType))
+                .Cast<OrderRejectionType>()
+                .OrderBy(x => (int)x)
+                .Select(x => new Tuple<int, string, string>((int)x, x.ToString(), x.GetDisplayName()))
+                .ToList();
+            var dataToWrite = new List<OrderRejectionTypeReadOnly>(records.Count);
+            for (var i = 0; i < records.Count; i++)
+            {
+                var current = records[i];
+                dataToWrite.Add(new OrderRejectionTypeReadOnly(
+                    id : i + 1,
+                    orderRejectionCode : current.Item1,
+                    orderRejectionTitleEn : current.Item2,
+                    orderRejectionTitle : current.Item3
+                ));
+            }
+            entity.HasData(dataToWrite);
+        });
+
+        builder.Entity<OrderStatusTypeReadOnly>(entity =>
+        {
+            entity.ToTable(nameof(OrderStatusTypeReadOnly));
+
+            var statuses = Enum.GetValues(typeof(OrderStatusType))
+                .Cast<OrderStatusType>()
+                .OrderBy(x => (int)x)
+                .Select(x => new Tuple<int, string, string>((int)x, x.ToString(), x.GetDisplayName()))
+                .ToList();
+            var dataToWrite = new List<OrderStatusTypeReadOnly>(statuses.Count);
+            for (var i = 0; i < statuses.Count; i++)
+            {
+                var status = statuses[i];
+                dataToWrite.Add(new OrderStatusTypeReadOnly(
+                    id : i + 1,
+                    orderStatusCode :status.Item1,
+                    orderStatusTitleEn : status.Item2,
+                    orderStatusTitle : status.Item3
+                ));
+            }
+            entity.HasData(dataToWrite);
         });
     }
 }

@@ -1,0 +1,982 @@
+2023-05-09 15:09:46.824 +03:30 [INF] Starting IdentityService.Host.
+2023-05-09 15:09:56.710 +03:30 [INF] Loaded ABP modules:
+2023-05-09 15:09:56.713 +03:30 [INF] - ProductService.Host.ProductServiceHostModule
+2023-05-09 15:09:56.714 +03:30 [INF]   - Volo.Abp.Autofac.AbpAutofacModule
+2023-05-09 15:09:56.714 +03:30 [INF]     - Volo.Abp.Castle.AbpCastleCoreModule
+2023-05-09 15:09:56.714 +03:30 [INF]   - Volo.Abp.AspNetCore.Mvc.AbpAspNetCoreMvcModule
+2023-05-09 15:09:56.714 +03:30 [INF]     - Volo.Abp.AspNetCore.AbpAspNetCoreModule
+2023-05-09 15:09:56.714 +03:30 [INF]       - Volo.Abp.Auditing.AbpAuditingModule
+2023-05-09 15:09:56.714 +03:30 [INF]         - Volo.Abp.Data.AbpDataModule
+2023-05-09 15:09:56.714 +03:30 [INF]           - Volo.Abp.ObjectExtending.AbpObjectExtendingModule
+2023-05-09 15:09:56.715 +03:30 [INF]             - Volo.Abp.Localization.AbpLocalizationAbstractionsModule
+2023-05-09 15:09:56.715 +03:30 [INF]             - Volo.Abp.Validation.AbpValidationAbstractionsModule
+2023-05-09 15:09:56.715 +03:30 [INF]           - Volo.Abp.Uow.AbpUnitOfWorkModule
+2023-05-09 15:09:56.716 +03:30 [INF]           - Volo.Abp.EventBus.Abstractions.AbpEventBusAbstractionsModule
+2023-05-09 15:09:56.716 +03:30 [INF]         - Volo.Abp.Json.AbpJsonModule
+2023-05-09 15:09:56.716 +03:30 [INF]           - Volo.Abp.Timing.AbpTimingModule
+2023-05-09 15:09:56.716 +03:30 [INF]             - Volo.Abp.Localization.AbpLocalizationModule
+2023-05-09 15:09:56.716 +03:30 [INF]               - Volo.Abp.VirtualFileSystem.AbpVirtualFileSystemModule
+2023-05-09 15:09:56.716 +03:30 [INF]               - Volo.Abp.Settings.AbpSettingsModule
+2023-05-09 15:09:56.716 +03:30 [INF]                 - Volo.Abp.Security.AbpSecurityModule
+2023-05-09 15:09:56.716 +03:30 [INF]                 - Volo.Abp.MultiTenancy.AbpMultiTenancyModule
+2023-05-09 15:09:56.716 +03:30 [INF]         - Volo.Abp.Threading.AbpThreadingModule
+2023-05-09 15:09:56.716 +03:30 [INF]         - Volo.Abp.Auditing.AbpAuditingContractsModule
+2023-05-09 15:09:56.716 +03:30 [INF]       - Volo.Abp.Http.AbpHttpModule
+2023-05-09 15:09:56.716 +03:30 [INF]         - Volo.Abp.Http.AbpHttpAbstractionsModule
+2023-05-09 15:09:56.716 +03:30 [INF]         - Volo.Abp.Minify.AbpMinifyModule
+2023-05-09 15:09:56.716 +03:30 [INF]       - Volo.Abp.Authorization.AbpAuthorizationModule
+2023-05-09 15:09:56.716 +03:30 [INF]         - Volo.Abp.Authorization.AbpAuthorizationAbstractionsModule
+2023-05-09 15:09:56.716 +03:30 [INF]       - Volo.Abp.Validation.AbpValidationModule
+2023-05-09 15:09:56.716 +03:30 [INF]       - Volo.Abp.ExceptionHandling.AbpExceptionHandlingModule
+2023-05-09 15:09:56.716 +03:30 [INF]     - Volo.Abp.ApiVersioning.AbpApiVersioningAbstractionsModule
+2023-05-09 15:09:56.716 +03:30 [INF]     - Volo.Abp.AspNetCore.Mvc.AbpAspNetCoreMvcContractsModule
+2023-05-09 15:09:56.716 +03:30 [INF]       - Volo.Abp.Application.AbpDddApplicationContractsModule
+2023-05-09 15:09:56.716 +03:30 [INF]     - Volo.Abp.UI.Navigation.AbpUiNavigationModule
+2023-05-09 15:09:56.716 +03:30 [INF]       - Volo.Abp.UI.AbpUiModule
+2023-05-09 15:09:56.716 +03:30 [INF]     - Volo.Abp.GlobalFeatures.AbpGlobalFeaturesModule
+2023-05-09 15:09:56.716 +03:30 [INF]     - Volo.Abp.Application.AbpDddApplicationModule
+2023-05-09 15:09:56.716 +03:30 [INF]       - Volo.Abp.Domain.AbpDddDomainModule
+2023-05-09 15:09:56.716 +03:30 [INF]         - Volo.Abp.EventBus.AbpEventBusModule
+2023-05-09 15:09:56.716 +03:30 [INF]           - Volo.Abp.Guids.AbpGuidsModule
+2023-05-09 15:09:56.716 +03:30 [INF]           - Volo.Abp.BackgroundWorkers.AbpBackgroundWorkersModule
+2023-05-09 15:09:56.716 +03:30 [INF]           - Volo.Abp.DistributedLocking.AbpDistributedLockingAbstractionsModule
+2023-05-09 15:09:56.717 +03:30 [INF]         - Volo.Abp.ObjectMapping.AbpObjectMappingModule
+2023-05-09 15:09:56.717 +03:30 [INF]         - Volo.Abp.Specifications.AbpSpecificationsModule
+2023-05-09 15:09:56.717 +03:30 [INF]       - Volo.Abp.Features.AbpFeaturesModule
+2023-05-09 15:09:56.717 +03:30 [INF]   - Volo.Abp.EventBus.RabbitMq.AbpEventBusRabbitMqModule
+2023-05-09 15:09:56.717 +03:30 [INF]     - Volo.Abp.RabbitMQ.AbpRabbitMqModule
+2023-05-09 15:09:56.717 +03:30 [INF]   - Volo.Abp.EntityFrameworkCore.SqlServer.AbpEntityFrameworkCoreSqlServerModule
+2023-05-09 15:09:56.717 +03:30 [INF]     - Volo.Abp.EntityFrameworkCore.AbpEntityFrameworkCoreModule
+2023-05-09 15:09:56.717 +03:30 [INF]   - Volo.Abp.AuditLogging.EntityFrameworkCore.AbpAuditLoggingEntityFrameworkCoreModule
+2023-05-09 15:09:56.717 +03:30 [INF]     - Volo.Abp.AuditLogging.AbpAuditLoggingDomainModule
+2023-05-09 15:09:56.717 +03:30 [INF]       - Volo.Abp.AuditLogging.AbpAuditLoggingDomainSharedModule
+2023-05-09 15:09:56.717 +03:30 [INF]   - Volo.Abp.PermissionManagement.EntityFrameworkCore.AbpPermissionManagementEntityFrameworkCoreModule
+2023-05-09 15:09:56.717 +03:30 [INF]     - Volo.Abp.PermissionManagement.AbpPermissionManagementDomainModule
+2023-05-09 15:09:56.717 +03:30 [INF]       - Volo.Abp.PermissionManagement.AbpPermissionManagementDomainSharedModule
+2023-05-09 15:09:56.717 +03:30 [INF]       - Volo.Abp.Caching.AbpCachingModule
+2023-05-09 15:09:56.717 +03:30 [INF]         - Volo.Abp.Serialization.AbpSerializationModule
+2023-05-09 15:09:56.717 +03:30 [INF]   - Volo.Abp.SettingManagement.EntityFrameworkCore.AbpSettingManagementEntityFrameworkCoreModule
+2023-05-09 15:09:56.717 +03:30 [INF]     - Volo.Abp.SettingManagement.AbpSettingManagementDomainModule
+2023-05-09 15:09:56.717 +03:30 [INF]       - Volo.Abp.SettingManagement.AbpSettingManagementDomainSharedModule
+2023-05-09 15:09:56.717 +03:30 [INF]   - ProductManagement.ProductManagementApplicationModule
+2023-05-09 15:09:56.717 +03:30 [INF]     - ProductManagement.ProductManagementDomainModule
+2023-05-09 15:09:56.717 +03:30 [INF]       - ProductManagement.ProductManagementDomainSharedModule
+2023-05-09 15:09:56.717 +03:30 [INF]     - ProductManagement.ProductManagementApplicationContractsModule
+2023-05-09 15:09:56.717 +03:30 [INF]     - Volo.Abp.AutoMapper.AbpAutoMapperModule
+2023-05-09 15:09:56.717 +03:30 [INF]   - ProductManagement.ProductManagementHttpApiModule
+2023-05-09 15:09:56.717 +03:30 [INF]   - ProductManagement.EntityFrameworkCore.ProductManagementEntityFrameworkCoreModule
+2023-05-09 15:09:56.717 +03:30 [INF]   - Volo.Abp.AspNetCore.MultiTenancy.AbpAspNetCoreMultiTenancyModule
+2023-05-09 15:09:56.717 +03:30 [INF]   - Volo.Abp.TenantManagement.EntityFrameworkCore.AbpTenantManagementEntityFrameworkCoreModule
+2023-05-09 15:09:56.717 +03:30 [INF]     - Volo.Abp.TenantManagement.AbpTenantManagementDomainModule
+2023-05-09 15:09:56.717 +03:30 [INF]       - Volo.Abp.TenantManagement.AbpTenantManagementDomainSharedModule
+2023-05-09 15:10:01.572 +03:30 [WRN] None of the specified endpoints were reachable
+RabbitMQ.Client.Exceptions.BrokerUnreachableException: None of the specified endpoints were reachable
+ ---> System.AggregateException: One or more errors occurred. (Connection failed)
+ ---> RabbitMQ.Client.Exceptions.ConnectFailureException: Connection failed
+ ---> System.Net.Sockets.SocketException (10061): No connection could be made because the target machine actively refused it.
+   at System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs.ThrowException(SocketError error, CancellationToken cancellationToken)
+   at System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs.System.Threading.Tasks.Sources.IValueTaskSource.GetResult(Int16 token)
+   at System.Threading.Tasks.ValueTask.ValueTaskSourceAsTask.<>c.<.cctor>b__4_0(Object state)
+--- End of stack trace from previous location ---
+   at RabbitMQ.Client.Impl.TcpClientAdapter.ConnectAsync(String host, Int32 port)
+   at RabbitMQ.Client.Impl.TaskExtensions.TimeoutAfter(Task task, TimeSpan timeout)
+   at RabbitMQ.Client.Impl.SocketFrameHandler.ConnectOrFail(ITcpClient socket, AmqpTcpEndpoint endpoint, TimeSpan timeout)
+   --- End of inner exception stack trace ---
+   at RabbitMQ.Client.Impl.SocketFrameHandler.ConnectOrFail(ITcpClient socket, AmqpTcpEndpoint endpoint, TimeSpan timeout)
+   at RabbitMQ.Client.Impl.SocketFrameHandler.ConnectUsingAddressFamily(AmqpTcpEndpoint endpoint, Func`2 socketFactory, TimeSpan timeout, AddressFamily family)
+   at RabbitMQ.Client.Impl.SocketFrameHandler.ConnectUsingIPv4(AmqpTcpEndpoint endpoint, Func`2 socketFactory, TimeSpan timeout)
+   at RabbitMQ.Client.Impl.SocketFrameHandler..ctor(AmqpTcpEndpoint endpoint, Func`2 socketFactory, TimeSpan connectionTimeout, TimeSpan readTimeout, TimeSpan writeTimeout)
+   at RabbitMQ.Client.Framing.Impl.IProtocolExtensions.CreateFrameHandler(IProtocol protocol, AmqpTcpEndpoint endpoint, Func`2 socketFactory, TimeSpan connectionTimeout, TimeSpan readTimeout, TimeSpan writeTimeout)
+   at RabbitMQ.Client.ConnectionFactory.CreateFrameHandler(AmqpTcpEndpoint endpoint)
+   at RabbitMQ.Client.EndpointResolverExtensions.SelectOne[T](IEndpointResolver resolver, Func`2 selector)
+   --- End of inner exception stack trace ---
+   at RabbitMQ.Client.EndpointResolverExtensions.SelectOne[T](IEndpointResolver resolver, Func`2 selector)
+   at RabbitMQ.Client.Framing.Impl.AutorecoveringConnection.Init(IEndpointResolver endpoints)
+   at RabbitMQ.Client.ConnectionFactory.CreateConnection(IEndpointResolver endpointResolver, String clientProvidedName)
+   --- End of inner exception stack trace ---
+   at RabbitMQ.Client.ConnectionFactory.CreateConnection(IEndpointResolver endpointResolver, String clientProvidedName)
+   at RabbitMQ.Client.ConnectionFactory.CreateConnection(String clientProvidedName)
+   at RabbitMQ.Client.ConnectionFactory.CreateConnection()
+   at Volo.Abp.RabbitMQ.ConnectionPool.<>c__DisplayClass8_0.<Get>b__1()
+   at System.Lazy`1.ViaFactory(LazyThreadSafetyMode mode)
+   at System.Lazy`1.ExecutionAndPublication(LazyHelper executionAndPublication, Boolean useDefaultConstructor)
+   at System.Lazy`1.CreateValue()
+   at Volo.Abp.RabbitMQ.ConnectionPool.Get(String connectionName)
+   at Volo.Abp.RabbitMQ.RabbitMqMessageConsumer.TryCreateChannelAsync()
+2023-05-09 15:10:02.920 +03:30 [ERR] An error occurred using the connection to database 'MsDemo_Identity' on server 'localhost'.
+2023-05-09 15:15:17.803 +03:30 [INF] Starting IdentityService.Host.
+2023-05-09 15:15:20.334 +03:30 [INF] Loaded ABP modules:
+2023-05-09 15:15:20.336 +03:30 [INF] - ProductService.Host.ProductServiceHostModule
+2023-05-09 15:15:20.336 +03:30 [INF]   - Volo.Abp.Autofac.AbpAutofacModule
+2023-05-09 15:15:20.336 +03:30 [INF]     - Volo.Abp.Castle.AbpCastleCoreModule
+2023-05-09 15:15:20.336 +03:30 [INF]   - Volo.Abp.AspNetCore.Mvc.AbpAspNetCoreMvcModule
+2023-05-09 15:15:20.336 +03:30 [INF]     - Volo.Abp.AspNetCore.AbpAspNetCoreModule
+2023-05-09 15:15:20.336 +03:30 [INF]       - Volo.Abp.Auditing.AbpAuditingModule
+2023-05-09 15:15:20.336 +03:30 [INF]         - Volo.Abp.Data.AbpDataModule
+2023-05-09 15:15:20.336 +03:30 [INF]           - Volo.Abp.ObjectExtending.AbpObjectExtendingModule
+2023-05-09 15:15:20.336 +03:30 [INF]             - Volo.Abp.Localization.AbpLocalizationAbstractionsModule
+2023-05-09 15:15:20.336 +03:30 [INF]             - Volo.Abp.Validation.AbpValidationAbstractionsModule
+2023-05-09 15:15:20.336 +03:30 [INF]           - Volo.Abp.Uow.AbpUnitOfWorkModule
+2023-05-09 15:15:20.336 +03:30 [INF]           - Volo.Abp.EventBus.Abstractions.AbpEventBusAbstractionsModule
+2023-05-09 15:15:20.336 +03:30 [INF]         - Volo.Abp.Json.AbpJsonModule
+2023-05-09 15:15:20.336 +03:30 [INF]           - Volo.Abp.Timing.AbpTimingModule
+2023-05-09 15:15:20.336 +03:30 [INF]             - Volo.Abp.Localization.AbpLocalizationModule
+2023-05-09 15:15:20.336 +03:30 [INF]               - Volo.Abp.VirtualFileSystem.AbpVirtualFileSystemModule
+2023-05-09 15:15:20.336 +03:30 [INF]               - Volo.Abp.Settings.AbpSettingsModule
+2023-05-09 15:15:20.336 +03:30 [INF]                 - Volo.Abp.Security.AbpSecurityModule
+2023-05-09 15:15:20.336 +03:30 [INF]                 - Volo.Abp.MultiTenancy.AbpMultiTenancyModule
+2023-05-09 15:15:20.336 +03:30 [INF]         - Volo.Abp.Threading.AbpThreadingModule
+2023-05-09 15:15:20.336 +03:30 [INF]         - Volo.Abp.Auditing.AbpAuditingContractsModule
+2023-05-09 15:15:20.336 +03:30 [INF]       - Volo.Abp.Http.AbpHttpModule
+2023-05-09 15:15:20.336 +03:30 [INF]         - Volo.Abp.Http.AbpHttpAbstractionsModule
+2023-05-09 15:15:20.336 +03:30 [INF]         - Volo.Abp.Minify.AbpMinifyModule
+2023-05-09 15:15:20.336 +03:30 [INF]       - Volo.Abp.Authorization.AbpAuthorizationModule
+2023-05-09 15:15:20.336 +03:30 [INF]         - Volo.Abp.Authorization.AbpAuthorizationAbstractionsModule
+2023-05-09 15:15:20.336 +03:30 [INF]       - Volo.Abp.Validation.AbpValidationModule
+2023-05-09 15:15:20.336 +03:30 [INF]       - Volo.Abp.ExceptionHandling.AbpExceptionHandlingModule
+2023-05-09 15:15:20.336 +03:30 [INF]     - Volo.Abp.ApiVersioning.AbpApiVersioningAbstractionsModule
+2023-05-09 15:15:20.336 +03:30 [INF]     - Volo.Abp.AspNetCore.Mvc.AbpAspNetCoreMvcContractsModule
+2023-05-09 15:15:20.336 +03:30 [INF]       - Volo.Abp.Application.AbpDddApplicationContractsModule
+2023-05-09 15:15:20.336 +03:30 [INF]     - Volo.Abp.UI.Navigation.AbpUiNavigationModule
+2023-05-09 15:15:20.336 +03:30 [INF]       - Volo.Abp.UI.AbpUiModule
+2023-05-09 15:15:20.336 +03:30 [INF]     - Volo.Abp.GlobalFeatures.AbpGlobalFeaturesModule
+2023-05-09 15:15:20.336 +03:30 [INF]     - Volo.Abp.Application.AbpDddApplicationModule
+2023-05-09 15:15:20.336 +03:30 [INF]       - Volo.Abp.Domain.AbpDddDomainModule
+2023-05-09 15:15:20.336 +03:30 [INF]         - Volo.Abp.EventBus.AbpEventBusModule
+2023-05-09 15:15:20.336 +03:30 [INF]           - Volo.Abp.Guids.AbpGuidsModule
+2023-05-09 15:15:20.336 +03:30 [INF]           - Volo.Abp.BackgroundWorkers.AbpBackgroundWorkersModule
+2023-05-09 15:15:20.336 +03:30 [INF]           - Volo.Abp.DistributedLocking.AbpDistributedLockingAbstractionsModule
+2023-05-09 15:15:20.336 +03:30 [INF]         - Volo.Abp.ObjectMapping.AbpObjectMappingModule
+2023-05-09 15:15:20.336 +03:30 [INF]         - Volo.Abp.Specifications.AbpSpecificationsModule
+2023-05-09 15:15:20.336 +03:30 [INF]       - Volo.Abp.Features.AbpFeaturesModule
+2023-05-09 15:15:20.336 +03:30 [INF]   - Volo.Abp.EntityFrameworkCore.SqlServer.AbpEntityFrameworkCoreSqlServerModule
+2023-05-09 15:15:20.336 +03:30 [INF]     - Volo.Abp.EntityFrameworkCore.AbpEntityFrameworkCoreModule
+2023-05-09 15:15:20.336 +03:30 [INF]   - Volo.Abp.AuditLogging.EntityFrameworkCore.AbpAuditLoggingEntityFrameworkCoreModule
+2023-05-09 15:15:20.337 +03:30 [INF]     - Volo.Abp.AuditLogging.AbpAuditLoggingDomainModule
+2023-05-09 15:15:20.337 +03:30 [INF]       - Volo.Abp.AuditLogging.AbpAuditLoggingDomainSharedModule
+2023-05-09 15:15:20.337 +03:30 [INF]   - ProductManagement.ProductManagementApplicationModule
+2023-05-09 15:15:20.337 +03:30 [INF]     - ProductManagement.ProductManagementDomainModule
+2023-05-09 15:15:20.337 +03:30 [INF]       - ProductManagement.ProductManagementDomainSharedModule
+2023-05-09 15:15:20.337 +03:30 [INF]     - ProductManagement.ProductManagementApplicationContractsModule
+2023-05-09 15:15:20.337 +03:30 [INF]     - Volo.Abp.AutoMapper.AbpAutoMapperModule
+2023-05-09 15:15:20.337 +03:30 [INF]   - ProductManagement.ProductManagementHttpApiModule
+2023-05-09 15:15:20.337 +03:30 [INF]   - ProductManagement.EntityFrameworkCore.ProductManagementEntityFrameworkCoreModule
+2023-05-09 15:15:22.335 +03:30 [ERR] An error occurred using the connection to database 'MsDemo_ProductManagement' on server 'localhost,1433'.
+2023-05-09 15:36:42.890 +03:30 [INF] Starting IdentityService.Host.
+2023-05-09 15:36:46.972 +03:30 [FTL] IdentityService.Host terminated unexpectedly!
+Volo.Abp.AbpInitializationException: An error occurred during PreConfigureServices phase of the module Volo.Abp.GlobalFeatures.AbpGlobalFeaturesModule, Volo.Abp.GlobalFeatures, Version=5.0.0.0, Culture=neutral, PublicKeyToken=null. See the inner exception for details.
+ ---> System.MissingMethodException: Method not found: 'Void Microsoft.Extensions.DependencyInjection.ServiceCollectionRegistrationActionExtensions.OnRegistred(Microsoft.Extensions.DependencyInjection.IServiceCollection, System.Action`1<Volo.Abp.DependencyInjection.IOnServiceRegistredContext>)'.
+   at Volo.Abp.GlobalFeatures.AbpGlobalFeaturesModule.PreConfigureServices(ServiceConfigurationContext context)
+   at Volo.Abp.AbpApplicationBase.ConfigureServices()
+   --- End of inner exception stack trace ---
+   at Volo.Abp.AbpApplicationBase.ConfigureServices()
+   at Volo.Abp.AbpApplicationBase..ctor(Type startupModuleType, IServiceCollection services, Action`1 optionsAction)
+   at Volo.Abp.AbpApplicationWithExternalServiceProvider..ctor(Type startupModuleType, IServiceCollection services, Action`1 optionsAction)
+   at Volo.Abp.AbpApplicationFactory.Create(Type startupModuleType, IServiceCollection services, Action`1 optionsAction)
+   at Volo.Abp.AbpApplicationFactory.Create[TStartupModule](IServiceCollection services, Action`1 optionsAction)
+   at Microsoft.Extensions.DependencyInjection.ServiceCollectionApplicationExtensions.AddApplication[TStartupModule](IServiceCollection services, Action`1 optionsAction)
+   at ProductService.Host.Startup.ConfigureServices(IServiceCollection services) in C:\dev\esalecar-microservice\esalecarmicroservice-backend\microservices\ProductService.Host\Startup.cs:line 14
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodInvoker.Invoke(Object obj, IntPtr* args, BindingFlags invokeAttr)
+   at System.Reflection.RuntimeMethodInfo.Invoke(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+   at Microsoft.AspNetCore.Hosting.ConfigureServicesBuilder.InvokeCore(Object instance, IServiceCollection services)
+   at Microsoft.AspNetCore.Hosting.GenericWebHostBuilder.UseStartup(Type startupType, HostBuilderContext context, IServiceCollection services, Object instance)
+   at Microsoft.AspNetCore.Hosting.GenericWebHostBuilder.<>c__DisplayClass14_0.<UseStartup>b__0(HostBuilderContext context, IServiceCollection services)
+   at Microsoft.Extensions.Hosting.HostBuilder.InitializeServiceProvider()
+   at Microsoft.Extensions.Hosting.HostBuilder.Build()
+   at ProductService.Host.Program.Main(String[] args) in C:\dev\esalecar-microservice\esalecarmicroservice-backend\microservices\ProductService.Host\Program.cs:line 42
+2023-05-09 16:14:59.265 +03:30 [INF] Starting IdentityService.Host.
+2023-05-09 16:15:12.296 +03:30 [INF] Loaded ABP modules:
+2023-05-09 16:15:12.298 +03:30 [INF] - ProductService.Host.ProductServiceHostModule
+2023-05-09 16:15:12.298 +03:30 [INF]   - Volo.Abp.Autofac.AbpAutofacModule
+2023-05-09 16:15:12.298 +03:30 [INF]     - Volo.Abp.Castle.AbpCastleCoreModule
+2023-05-09 16:15:12.298 +03:30 [INF]   - Volo.Abp.AspNetCore.Mvc.AbpAspNetCoreMvcModule
+2023-05-09 16:15:12.298 +03:30 [INF]     - Volo.Abp.AspNetCore.AbpAspNetCoreModule
+2023-05-09 16:15:12.298 +03:30 [INF]       - Volo.Abp.Auditing.AbpAuditingModule
+2023-05-09 16:15:12.298 +03:30 [INF]         - Volo.Abp.Data.AbpDataModule
+2023-05-09 16:15:12.298 +03:30 [INF]           - Volo.Abp.ObjectExtending.AbpObjectExtendingModule
+2023-05-09 16:15:12.298 +03:30 [INF]             - Volo.Abp.Localization.AbpLocalizationAbstractionsModule
+2023-05-09 16:15:12.298 +03:30 [INF]             - Volo.Abp.Validation.AbpValidationAbstractionsModule
+2023-05-09 16:15:12.298 +03:30 [INF]           - Volo.Abp.Uow.AbpUnitOfWorkModule
+2023-05-09 16:15:12.298 +03:30 [INF]           - Volo.Abp.EventBus.Abstractions.AbpEventBusAbstractionsModule
+2023-05-09 16:15:12.298 +03:30 [INF]         - Volo.Abp.Json.AbpJsonModule
+2023-05-09 16:15:12.298 +03:30 [INF]           - Volo.Abp.Json.SystemTextJson.AbpJsonSystemTextJsonModule
+2023-05-09 16:15:12.298 +03:30 [INF]             - Volo.Abp.Json.AbpJsonAbstractionsModule
+2023-05-09 16:15:12.298 +03:30 [INF]             - Volo.Abp.Timing.AbpTimingModule
+2023-05-09 16:15:12.298 +03:30 [INF]               - Volo.Abp.Localization.AbpLocalizationModule
+2023-05-09 16:15:12.298 +03:30 [INF]                 - Volo.Abp.VirtualFileSystem.AbpVirtualFileSystemModule
+2023-05-09 16:15:12.298 +03:30 [INF]                 - Volo.Abp.Settings.AbpSettingsModule
+2023-05-09 16:15:12.298 +03:30 [INF]                   - Volo.Abp.Security.AbpSecurityModule
+2023-05-09 16:15:12.298 +03:30 [INF]                   - Volo.Abp.MultiTenancy.AbpMultiTenancyModule
+2023-05-09 16:15:12.298 +03:30 [INF]                 - Volo.Abp.Threading.AbpThreadingModule
+2023-05-09 16:15:12.298 +03:30 [INF]         - Volo.Abp.Auditing.AbpAuditingContractsModule
+2023-05-09 16:15:12.298 +03:30 [INF]       - Volo.Abp.Http.AbpHttpModule
+2023-05-09 16:15:12.298 +03:30 [INF]         - Volo.Abp.Http.AbpHttpAbstractionsModule
+2023-05-09 16:15:12.298 +03:30 [INF]         - Volo.Abp.Minify.AbpMinifyModule
+2023-05-09 16:15:12.298 +03:30 [INF]       - Volo.Abp.Authorization.AbpAuthorizationModule
+2023-05-09 16:15:12.298 +03:30 [INF]         - Volo.Abp.Authorization.AbpAuthorizationAbstractionsModule
+2023-05-09 16:15:12.298 +03:30 [INF]       - Volo.Abp.Validation.AbpValidationModule
+2023-05-09 16:15:12.299 +03:30 [INF]       - Volo.Abp.ExceptionHandling.AbpExceptionHandlingModule
+2023-05-09 16:15:12.299 +03:30 [INF]     - Volo.Abp.ApiVersioning.AbpApiVersioningAbstractionsModule
+2023-05-09 16:15:12.299 +03:30 [INF]     - Volo.Abp.AspNetCore.Mvc.AbpAspNetCoreMvcContractsModule
+2023-05-09 16:15:12.299 +03:30 [INF]       - Volo.Abp.Application.AbpDddApplicationContractsModule
+2023-05-09 16:15:12.299 +03:30 [INF]     - Volo.Abp.UI.Navigation.AbpUiNavigationModule
+2023-05-09 16:15:12.299 +03:30 [INF]       - Volo.Abp.UI.AbpUiModule
+2023-05-09 16:15:12.299 +03:30 [INF]     - Volo.Abp.GlobalFeatures.AbpGlobalFeaturesModule
+2023-05-09 16:15:12.299 +03:30 [INF]     - Volo.Abp.Application.AbpDddApplicationModule
+2023-05-09 16:15:12.299 +03:30 [INF]       - Volo.Abp.Domain.AbpDddDomainModule
+2023-05-09 16:15:12.299 +03:30 [INF]         - Volo.Abp.EventBus.AbpEventBusModule
+2023-05-09 16:15:12.299 +03:30 [INF]           - Volo.Abp.Guids.AbpGuidsModule
+2023-05-09 16:15:12.299 +03:30 [INF]           - Volo.Abp.BackgroundWorkers.AbpBackgroundWorkersModule
+2023-05-09 16:15:12.299 +03:30 [INF]           - Volo.Abp.DistributedLocking.AbpDistributedLockingAbstractionsModule
+2023-05-09 16:15:12.299 +03:30 [INF]         - Volo.Abp.ObjectMapping.AbpObjectMappingModule
+2023-05-09 16:15:12.299 +03:30 [INF]         - Volo.Abp.Specifications.AbpSpecificationsModule
+2023-05-09 16:15:12.299 +03:30 [INF]         - Volo.Abp.Caching.AbpCachingModule
+2023-05-09 16:15:12.299 +03:30 [INF]           - Volo.Abp.Serialization.AbpSerializationModule
+2023-05-09 16:15:12.299 +03:30 [INF]       - Volo.Abp.Features.AbpFeaturesModule
+2023-05-09 16:15:12.299 +03:30 [INF]   - Volo.Abp.EntityFrameworkCore.SqlServer.AbpEntityFrameworkCoreSqlServerModule
+2023-05-09 16:15:12.299 +03:30 [INF]     - Volo.Abp.EntityFrameworkCore.AbpEntityFrameworkCoreModule
+2023-05-09 16:15:12.299 +03:30 [INF]   - Volo.Abp.AuditLogging.EntityFrameworkCore.AbpAuditLoggingEntityFrameworkCoreModule
+2023-05-09 16:15:12.299 +03:30 [INF]     - Volo.Abp.AuditLogging.AbpAuditLoggingDomainModule
+2023-05-09 16:15:12.299 +03:30 [INF]       - Volo.Abp.AuditLogging.AbpAuditLoggingDomainSharedModule
+2023-05-09 16:15:12.299 +03:30 [INF]   - ProductManagement.ProductManagementApplicationModule
+2023-05-09 16:15:12.299 +03:30 [INF]     - ProductManagement.ProductManagementDomainModule
+2023-05-09 16:15:12.299 +03:30 [INF]       - ProductManagement.ProductManagementDomainSharedModule
+2023-05-09 16:15:12.299 +03:30 [INF]     - ProductManagement.ProductManagementApplicationContractsModule
+2023-05-09 16:15:12.299 +03:30 [INF]     - Volo.Abp.AutoMapper.AbpAutoMapperModule
+2023-05-09 16:15:12.299 +03:30 [INF]   - ProductManagement.ProductManagementHttpApiModule
+2023-05-09 16:15:12.299 +03:30 [INF]   - ProductManagement.EntityFrameworkCore.ProductManagementEntityFrameworkCoreModule
+2023-05-09 16:15:20.044 +03:30 [INF] Initialized all ABP modules.
+2023-05-09 16:15:20.077 +03:30 [INF] Application started. Press Ctrl+C to shut down.
+2023-05-09 16:15:20.077 +03:30 [INF] Hosting environment: Development
+2023-05-09 16:15:20.078 +03:30 [INF] Content root path: C:\dev\esalecar-microservice\esalecarmicroservice-backend\microservices\ProductService.Host
+2023-05-09 16:15:20.142 +03:30 [INF] Request starting HTTP/2 GET https://localhost:44344/ - -
+2023-05-09 16:15:20.315 +03:30 [DBG] AuthenticationScheme: Bearer was not authenticated.
+2023-05-09 16:15:20.413 +03:30 [ERR] Connection ID "17654110553787859022", Request ID "8000004f-0003-f500-b63f-84710c7967bb": An unhandled exception was thrown by the application.
+Autofac.Core.Registration.ComponentNotRegisteredException: The requested service 'Volo.Abp.AspNetCore.MultiTenancy.MultiTenancyMiddleware' has not been registered. To avoid this exception, either register a component to provide the service, check for service registration using IsRegistered(), or use the ResolveOptional() method to resolve an optional dependency.
+
+See https://autofac.rtfd.io/help/service-not-registered for more info.
+   at Autofac.ResolutionExtensions.ResolveService(IComponentContext context, Service service, IEnumerable`1 parameters)
+   at Microsoft.AspNetCore.Http.MiddlewareFactory.Create(Type middlewareType)
+   at Microsoft.AspNetCore.Builder.UseMiddlewareExtensions.<>c__DisplayClass6_1.<<UseMiddlewareInterface>b__1>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Volo.Abp.AspNetCore.Security.Claims.AbpClaimsMapMiddleware.InvokeAsync(HttpContext context, RequestDelegate next)
+   at Microsoft.AspNetCore.Builder.UseMiddlewareExtensions.<>c__DisplayClass6_1.<<UseMiddlewareInterface>b__1>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Volo.Abp.AspNetCore.Tracing.AbpCorrelationIdMiddleware.InvokeAsync(HttpContext context, RequestDelegate next)
+   at Microsoft.AspNetCore.Builder.UseMiddlewareExtensions.<>c__DisplayClass6_1.<<UseMiddlewareInterface>b__1>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Microsoft.WebTools.BrowserLink.Net.BrowserLinkMiddleware.ExecuteWithFilterAsync(IHttpSocketAdapter injectScriptSocket, String requestId, HttpContext httpContext)
+   at Microsoft.AspNetCore.Watch.BrowserRefresh.BrowserRefreshMiddleware.InvokeAsync(HttpContext context)
+   at Microsoft.AspNetCore.Server.IIS.Core.IISHttpContextOfT`1.ProcessRequestAsync()
+2023-05-09 16:15:20.734 +03:30 [INF] Request finished HTTP/2 GET https://localhost:44344/ - - - 500 - - 593.1605ms
+2023-05-09 16:15:21.123 +03:30 [INF] Request starting HTTP/2 GET https://localhost:44344/swagger/index.html - -
+2023-05-09 16:15:21.130 +03:30 [DBG] AuthenticationScheme: Bearer was not authenticated.
+2023-05-09 16:15:21.132 +03:30 [ERR] Connection ID "17942340925644603424", Request ID "80000021-0002-f900-b63f-84710c7967bb": An unhandled exception was thrown by the application.
+Autofac.Core.Registration.ComponentNotRegisteredException: The requested service 'Volo.Abp.AspNetCore.MultiTenancy.MultiTenancyMiddleware' has not been registered. To avoid this exception, either register a component to provide the service, check for service registration using IsRegistered(), or use the ResolveOptional() method to resolve an optional dependency.
+
+See https://autofac.rtfd.io/help/service-not-registered for more info.
+   at Autofac.ResolutionExtensions.ResolveService(IComponentContext context, Service service, IEnumerable`1 parameters)
+   at Microsoft.AspNetCore.Http.MiddlewareFactory.Create(Type middlewareType)
+   at Microsoft.AspNetCore.Builder.UseMiddlewareExtensions.<>c__DisplayClass6_1.<<UseMiddlewareInterface>b__1>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Volo.Abp.AspNetCore.Security.Claims.AbpClaimsMapMiddleware.InvokeAsync(HttpContext context, RequestDelegate next)
+   at Microsoft.AspNetCore.Builder.UseMiddlewareExtensions.<>c__DisplayClass6_1.<<UseMiddlewareInterface>b__1>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Volo.Abp.AspNetCore.Tracing.AbpCorrelationIdMiddleware.InvokeAsync(HttpContext context, RequestDelegate next)
+   at Microsoft.AspNetCore.Builder.UseMiddlewareExtensions.<>c__DisplayClass6_1.<<UseMiddlewareInterface>b__1>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Microsoft.WebTools.BrowserLink.Net.BrowserLinkMiddleware.ExecuteWithFilterAsync(IHttpSocketAdapter injectScriptSocket, String requestId, HttpContext httpContext)
+   at Microsoft.AspNetCore.Watch.BrowserRefresh.BrowserRefreshMiddleware.InvokeAsync(HttpContext context)
+   at Microsoft.AspNetCore.Server.IIS.Core.IISHttpContextOfT`1.ProcessRequestAsync()
+2023-05-09 16:15:21.191 +03:30 [INF] Request finished HTTP/2 GET https://localhost:44344/swagger/index.html - - - 500 - - 68.5181ms
+2023-05-09 16:16:39.750 +03:30 [INF] Request starting HTTP/2 GET https://localhost:44344/swagger/index.html - -
+2023-05-09 16:16:39.756 +03:30 [DBG] AuthenticationScheme: Bearer was not authenticated.
+2023-05-09 16:16:39.758 +03:30 [ERR] Connection ID "17654110553787859024", Request ID "80000051-0003-f500-b63f-84710c7967bb": An unhandled exception was thrown by the application.
+Autofac.Core.Registration.ComponentNotRegisteredException: The requested service 'Volo.Abp.AspNetCore.MultiTenancy.MultiTenancyMiddleware' has not been registered. To avoid this exception, either register a component to provide the service, check for service registration using IsRegistered(), or use the ResolveOptional() method to resolve an optional dependency.
+
+See https://autofac.rtfd.io/help/service-not-registered for more info.
+   at Autofac.ResolutionExtensions.ResolveService(IComponentContext context, Service service, IEnumerable`1 parameters)
+   at Microsoft.AspNetCore.Http.MiddlewareFactory.Create(Type middlewareType)
+   at Microsoft.AspNetCore.Builder.UseMiddlewareExtensions.<>c__DisplayClass6_1.<<UseMiddlewareInterface>b__1>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Volo.Abp.AspNetCore.Security.Claims.AbpClaimsMapMiddleware.InvokeAsync(HttpContext context, RequestDelegate next)
+   at Microsoft.AspNetCore.Builder.UseMiddlewareExtensions.<>c__DisplayClass6_1.<<UseMiddlewareInterface>b__1>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Volo.Abp.AspNetCore.Tracing.AbpCorrelationIdMiddleware.InvokeAsync(HttpContext context, RequestDelegate next)
+   at Microsoft.AspNetCore.Builder.UseMiddlewareExtensions.<>c__DisplayClass6_1.<<UseMiddlewareInterface>b__1>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Microsoft.WebTools.BrowserLink.Net.BrowserLinkMiddleware.ExecuteWithFilterAsync(IHttpSocketAdapter injectScriptSocket, String requestId, HttpContext httpContext)
+   at Microsoft.AspNetCore.Watch.BrowserRefresh.BrowserRefreshMiddleware.InvokeAsync(HttpContext context)
+   at Microsoft.AspNetCore.Server.IIS.Core.IISHttpContextOfT`1.ProcessRequestAsync()
+2023-05-09 16:16:39.759 +03:30 [INF] Request finished HTTP/2 GET https://localhost:44344/swagger/index.html - - - 500 - - 9.2300ms
+2023-05-09 16:18:23.496 +03:30 [INF] Starting IdentityService.Host.
+2023-05-09 16:18:26.034 +03:30 [INF] Loaded ABP modules:
+2023-05-09 16:18:26.036 +03:30 [INF] - ProductService.Host.ProductServiceHostModule
+2023-05-09 16:18:26.036 +03:30 [INF]   - Volo.Abp.Autofac.AbpAutofacModule
+2023-05-09 16:18:26.036 +03:30 [INF]     - Volo.Abp.Castle.AbpCastleCoreModule
+2023-05-09 16:18:26.036 +03:30 [INF]   - Volo.Abp.AspNetCore.Mvc.AbpAspNetCoreMvcModule
+2023-05-09 16:18:26.036 +03:30 [INF]     - Volo.Abp.AspNetCore.AbpAspNetCoreModule
+2023-05-09 16:18:26.036 +03:30 [INF]       - Volo.Abp.Auditing.AbpAuditingModule
+2023-05-09 16:18:26.036 +03:30 [INF]         - Volo.Abp.Data.AbpDataModule
+2023-05-09 16:18:26.036 +03:30 [INF]           - Volo.Abp.ObjectExtending.AbpObjectExtendingModule
+2023-05-09 16:18:26.036 +03:30 [INF]             - Volo.Abp.Localization.AbpLocalizationAbstractionsModule
+2023-05-09 16:18:26.036 +03:30 [INF]             - Volo.Abp.Validation.AbpValidationAbstractionsModule
+2023-05-09 16:18:26.036 +03:30 [INF]           - Volo.Abp.Uow.AbpUnitOfWorkModule
+2023-05-09 16:18:26.036 +03:30 [INF]           - Volo.Abp.EventBus.Abstractions.AbpEventBusAbstractionsModule
+2023-05-09 16:18:26.036 +03:30 [INF]         - Volo.Abp.Json.AbpJsonModule
+2023-05-09 16:18:26.036 +03:30 [INF]           - Volo.Abp.Json.SystemTextJson.AbpJsonSystemTextJsonModule
+2023-05-09 16:18:26.036 +03:30 [INF]             - Volo.Abp.Json.AbpJsonAbstractionsModule
+2023-05-09 16:18:26.036 +03:30 [INF]             - Volo.Abp.Timing.AbpTimingModule
+2023-05-09 16:18:26.036 +03:30 [INF]               - Volo.Abp.Localization.AbpLocalizationModule
+2023-05-09 16:18:26.036 +03:30 [INF]                 - Volo.Abp.VirtualFileSystem.AbpVirtualFileSystemModule
+2023-05-09 16:18:26.036 +03:30 [INF]                 - Volo.Abp.Settings.AbpSettingsModule
+2023-05-09 16:18:26.036 +03:30 [INF]                   - Volo.Abp.Security.AbpSecurityModule
+2023-05-09 16:18:26.036 +03:30 [INF]                   - Volo.Abp.MultiTenancy.AbpMultiTenancyModule
+2023-05-09 16:18:26.036 +03:30 [INF]                 - Volo.Abp.Threading.AbpThreadingModule
+2023-05-09 16:18:26.036 +03:30 [INF]         - Volo.Abp.Auditing.AbpAuditingContractsModule
+2023-05-09 16:18:26.037 +03:30 [INF]       - Volo.Abp.Http.AbpHttpModule
+2023-05-09 16:18:26.037 +03:30 [INF]         - Volo.Abp.Http.AbpHttpAbstractionsModule
+2023-05-09 16:18:26.037 +03:30 [INF]         - Volo.Abp.Minify.AbpMinifyModule
+2023-05-09 16:18:26.037 +03:30 [INF]       - Volo.Abp.Authorization.AbpAuthorizationModule
+2023-05-09 16:18:26.037 +03:30 [INF]         - Volo.Abp.Authorization.AbpAuthorizationAbstractionsModule
+2023-05-09 16:18:26.037 +03:30 [INF]       - Volo.Abp.Validation.AbpValidationModule
+2023-05-09 16:18:26.037 +03:30 [INF]       - Volo.Abp.ExceptionHandling.AbpExceptionHandlingModule
+2023-05-09 16:18:26.037 +03:30 [INF]     - Volo.Abp.ApiVersioning.AbpApiVersioningAbstractionsModule
+2023-05-09 16:18:26.037 +03:30 [INF]     - Volo.Abp.AspNetCore.Mvc.AbpAspNetCoreMvcContractsModule
+2023-05-09 16:18:26.037 +03:30 [INF]       - Volo.Abp.Application.AbpDddApplicationContractsModule
+2023-05-09 16:18:26.037 +03:30 [INF]     - Volo.Abp.UI.Navigation.AbpUiNavigationModule
+2023-05-09 16:18:26.037 +03:30 [INF]       - Volo.Abp.UI.AbpUiModule
+2023-05-09 16:18:26.037 +03:30 [INF]     - Volo.Abp.GlobalFeatures.AbpGlobalFeaturesModule
+2023-05-09 16:18:26.037 +03:30 [INF]     - Volo.Abp.Application.AbpDddApplicationModule
+2023-05-09 16:18:26.037 +03:30 [INF]       - Volo.Abp.Domain.AbpDddDomainModule
+2023-05-09 16:18:26.037 +03:30 [INF]         - Volo.Abp.EventBus.AbpEventBusModule
+2023-05-09 16:18:26.037 +03:30 [INF]           - Volo.Abp.Guids.AbpGuidsModule
+2023-05-09 16:18:26.037 +03:30 [INF]           - Volo.Abp.BackgroundWorkers.AbpBackgroundWorkersModule
+2023-05-09 16:18:26.037 +03:30 [INF]           - Volo.Abp.DistributedLocking.AbpDistributedLockingAbstractionsModule
+2023-05-09 16:18:26.037 +03:30 [INF]         - Volo.Abp.ObjectMapping.AbpObjectMappingModule
+2023-05-09 16:18:26.037 +03:30 [INF]         - Volo.Abp.Specifications.AbpSpecificationsModule
+2023-05-09 16:18:26.037 +03:30 [INF]         - Volo.Abp.Caching.AbpCachingModule
+2023-05-09 16:18:26.037 +03:30 [INF]           - Volo.Abp.Serialization.AbpSerializationModule
+2023-05-09 16:18:26.037 +03:30 [INF]       - Volo.Abp.Features.AbpFeaturesModule
+2023-05-09 16:18:26.037 +03:30 [INF]   - Volo.Abp.EntityFrameworkCore.SqlServer.AbpEntityFrameworkCoreSqlServerModule
+2023-05-09 16:18:26.037 +03:30 [INF]     - Volo.Abp.EntityFrameworkCore.AbpEntityFrameworkCoreModule
+2023-05-09 16:18:26.037 +03:30 [INF]   - Volo.Abp.AuditLogging.EntityFrameworkCore.AbpAuditLoggingEntityFrameworkCoreModule
+2023-05-09 16:18:26.037 +03:30 [INF]     - Volo.Abp.AuditLogging.AbpAuditLoggingDomainModule
+2023-05-09 16:18:26.037 +03:30 [INF]       - Volo.Abp.AuditLogging.AbpAuditLoggingDomainSharedModule
+2023-05-09 16:18:26.037 +03:30 [INF]   - ProductManagement.ProductManagementApplicationModule
+2023-05-09 16:18:26.037 +03:30 [INF]     - ProductManagement.ProductManagementDomainModule
+2023-05-09 16:18:26.037 +03:30 [INF]       - ProductManagement.ProductManagementDomainSharedModule
+2023-05-09 16:18:26.037 +03:30 [INF]     - ProductManagement.ProductManagementApplicationContractsModule
+2023-05-09 16:18:26.037 +03:30 [INF]     - Volo.Abp.AutoMapper.AbpAutoMapperModule
+2023-05-09 16:18:26.037 +03:30 [INF]   - ProductManagement.ProductManagementHttpApiModule
+2023-05-09 16:18:26.037 +03:30 [INF]   - ProductManagement.EntityFrameworkCore.ProductManagementEntityFrameworkCoreModule
+2023-05-09 16:18:28.716 +03:30 [INF] Initialized all ABP modules.
+2023-05-09 16:18:28.740 +03:30 [INF] Application started. Press Ctrl+C to shut down.
+2023-05-09 16:18:28.741 +03:30 [INF] Hosting environment: Development
+2023-05-09 16:18:28.742 +03:30 [INF] Content root path: C:\dev\esalecar-microservice\esalecarmicroservice-backend\microservices\ProductService.Host
+2023-05-09 16:18:28.769 +03:30 [INF] Request starting HTTP/2 GET https://localhost:44344/ - -
+2023-05-09 16:18:28.846 +03:30 [DBG] AuthenticationScheme: Bearer was not authenticated.
+2023-05-09 16:18:28.989 +03:30 [INF] Executing endpoint 'ProductService.Host.Controllers.HomeController.Index (ProductService.Host)'
+2023-05-09 16:18:29.087 +03:30 [INF] Route matched with {action = "Index", controller = "Home", area = ""}. Executing controller action with signature Microsoft.AspNetCore.Mvc.ActionResult Index() on controller ProductService.Host.Controllers.HomeController (ProductService.Host).
+2023-05-09 16:18:29.613 +03:30 [INF] Executing action method ProductService.Host.Controllers.HomeController.Index (ProductService.Host) - Validation state: "Valid"
+2023-05-09 16:18:29.617 +03:30 [INF] Executed action method ProductService.Host.Controllers.HomeController.Index (ProductService.Host), returned result Microsoft.AspNetCore.Mvc.RedirectResult in 0.3048ms.
+2023-05-09 16:18:29.626 +03:30 [INF] Executing RedirectResult, redirecting to /swagger.
+2023-05-09 16:18:29.651 +03:30 [INF] Executed action ProductService.Host.Controllers.HomeController.Index (ProductService.Host) in 561.0203ms
+2023-05-09 16:18:29.651 +03:30 [INF] Executed endpoint 'ProductService.Host.Controllers.HomeController.Index (ProductService.Host)'
+2023-05-09 16:18:30.533 +03:30 [ERR] Failed executing DbCommand (139ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?' (Size = 96), @p2='?' (Size = 512), @p3='?' (Size = 64), @p4='?' (Size = 64), @p5='?' (Size = 128), @p6='?' (Size = 256), @p7='?' (Size = 40), @p8='?' (Size = 64), @p9='?' (Size = 4000), @p10='?' (DbType = Int32), @p11='?' (DbType = DateTime2), @p12='?' (Size = 4000), @p13='?' (Size = 16), @p14='?' (DbType = Int32), @p15='?' (DbType = Guid), @p16='?' (Size = 64), @p17='?' (DbType = Guid), @p18='?' (Size = 256), @p19='?' (DbType = Guid), @p20='?' (Size = 64), @p21='?' (Size = 256), @p22='?' (DbType = Guid), @p23='?' (Size = 256), @p24='?' (DbType = Guid), @p25='?' (DbType = Guid), @p26='?' (DbType = Int32), @p27='?' (DbType = DateTime2), @p28='?' (Size = 4000), @p29='?' (Size = 128), @p30='?' (Size = 2000), @p31='?' (Size = 256), @p32='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SET NOCOUNT ON;
+INSERT INTO [AbpAuditLogs] ([Id], [ApplicationName], [BrowserInfo], [ClientId], [ClientIpAddress], [ClientName], [Comments], [ConcurrencyStamp], [CorrelationId], [Exceptions], [ExecutionDuration], [ExecutionTime], [ExtraProperties], [HttpMethod], [HttpStatusCode], [ImpersonatorTenantId], [ImpersonatorTenantName], [ImpersonatorUserId], [ImpersonatorUserName], [TenantId], [TenantName], [Url], [UserId], [UserName])
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11, @p12, @p13, @p14, @p15, @p16, @p17, @p18, @p19, @p20, @p21, @p22, @p23);
+INSERT INTO [AbpAuditLogActions] ([Id], [AuditLogId], [ExecutionDuration], [ExecutionTime], [ExtraProperties], [MethodName], [Parameters], [ServiceName], [TenantId])
+VALUES (@p24, @p25, @p26, @p27, @p28, @p29, @p30, @p31, @p32);
+2023-05-09 16:18:30.622 +03:30 [ERR] An exception occurred in the database while saving changes for context type 'Volo.Abp.AuditLogging.EntityFrameworkCore.AbpAuditLoggingDbContext'.
+Microsoft.EntityFrameworkCore.DbUpdateException: An error occurred while saving the entity changes. See the inner exception for details.
+ ---> Microsoft.Data.SqlClient.SqlException (0x80131904): Invalid object name 'AbpAuditLogs'.
+   at Microsoft.Data.SqlClient.SqlCommand.<>c.<ExecuteDbDataReaderAsync>b__208_0(Task`1 result)
+   at System.Threading.Tasks.ContinuationResultTaskFromResultTask`2.InnerInvoke()
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+--- End of stack trace from previous location ---
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+ClientConnectionId:378383e5-324d-4b3f-805f-07029c0e4c1b
+Error Number:208,State:1,Class:16
+   --- End of inner exception stack trace ---
+   at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.SqlServer.Update.Internal.SqlServerModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(IList`1 entriesToSave, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(StateManager stateManager, Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.DbContext.SaveChangesAsync(Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+Microsoft.EntityFrameworkCore.DbUpdateException: An error occurred while saving the entity changes. See the inner exception for details.
+ ---> Microsoft.Data.SqlClient.SqlException (0x80131904): Invalid object name 'AbpAuditLogs'.
+   at Microsoft.Data.SqlClient.SqlCommand.<>c.<ExecuteDbDataReaderAsync>b__208_0(Task`1 result)
+   at System.Threading.Tasks.ContinuationResultTaskFromResultTask`2.InnerInvoke()
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+--- End of stack trace from previous location ---
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+ClientConnectionId:378383e5-324d-4b3f-805f-07029c0e4c1b
+Error Number:208,State:1,Class:16
+   --- End of inner exception stack trace ---
+   at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.SqlServer.Update.Internal.SqlServerModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(IList`1 entriesToSave, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(StateManager stateManager, Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.DbContext.SaveChangesAsync(Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+2023-05-09 16:18:30.629 +03:30 [WRN] Could not save the audit log object: 
+AUDIT LOG: [302: GET    ] /
+- UserName - UserId                 :  - 
+- ClientIpAddress        : ::1
+- ExecutionDuration      : 667
+- Actions:
+  - ProductService.Host.Controllers.HomeController.Index (488 ms.)
+    {}
+
+2023-05-09 16:18:30.629 +03:30 [ERR] An error occurred while saving the entity changes. See the inner exception for details.
+Microsoft.EntityFrameworkCore.DbUpdateException: An error occurred while saving the entity changes. See the inner exception for details.
+ ---> Microsoft.Data.SqlClient.SqlException (0x80131904): Invalid object name 'AbpAuditLogs'.
+   at Microsoft.Data.SqlClient.SqlCommand.<>c.<ExecuteDbDataReaderAsync>b__208_0(Task`1 result)
+   at System.Threading.Tasks.ContinuationResultTaskFromResultTask`2.InnerInvoke()
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+--- End of stack trace from previous location ---
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+ClientConnectionId:378383e5-324d-4b3f-805f-07029c0e4c1b
+Error Number:208,State:1,Class:16
+   --- End of inner exception stack trace ---
+   at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.SqlServer.Update.Internal.SqlServerModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(IList`1 entriesToSave, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(StateManager stateManager, Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.DbContext.SaveChangesAsync(Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.DbContext.SaveChangesAsync(Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+   at Volo.Abp.EntityFrameworkCore.AbpDbContext`1.SaveChangesAsync(Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+   at Volo.Abp.Uow.UnitOfWork.SaveChangesAsync(CancellationToken cancellationToken)
+   at Volo.Abp.Uow.UnitOfWork.CompleteAsync(CancellationToken cancellationToken)
+   at Volo.Abp.AuditLogging.AuditingStore.SaveLogAsync(AuditLogInfo auditInfo)
+   at Volo.Abp.AuditLogging.AuditingStore.SaveAsync(AuditLogInfo auditInfo)
+2023-05-09 16:18:30.669 +03:30 [INF] Request starting HTTP/2 GET https://localhost:44344/swagger/index.html - -
+2023-05-09 16:18:30.676 +03:30 [DBG] AuthenticationScheme: Bearer was not authenticated.
+2023-05-09 16:18:30.722 +03:30 [INF] Request finished HTTP/2 GET https://localhost:44344/ - - - 302 - - 1954.6839ms
+2023-05-09 16:18:31.075 +03:30 [INF] Request finished HTTP/2 GET https://localhost:44344/swagger/index.html - - - 200 - text/html;charset=utf-8 405.9512ms
+2023-05-09 16:18:31.120 +03:30 [INF] Request starting HTTP/2 GET https://localhost:44344/_vs/browserLink - -
+2023-05-09 16:18:31.120 +03:30 [INF] Request starting HTTP/2 GET https://localhost:44344/_framework/aspnetcore-browser-refresh.js - -
+2023-05-09 16:18:31.124 +03:30 [INF] Request finished HTTP/2 GET https://localhost:44344/_framework/aspnetcore-browser-refresh.js - - - 200 12008 application/javascript;+charset=utf-8 4.2934ms
+2023-05-09 16:18:31.337 +03:30 [INF] Request finished HTTP/2 GET https://localhost:44344/_vs/browserLink - - - 200 - text/javascript;+charset=UTF-8 217.7375ms
+2023-05-09 16:18:31.631 +03:30 [INF] Request starting HTTP/2 GET https://localhost:44344/swagger/v1/swagger.json - -
+2023-05-09 16:18:31.633 +03:30 [DBG] AuthenticationScheme: Bearer was not authenticated.
+2023-05-09 16:18:31.843 +03:30 [INF] Request finished HTTP/2 GET https://localhost:44344/swagger/v1/swagger.json - - - 200 - application/json;charset=utf-8 212.3923ms
+2023-05-09 16:22:13.937 +03:30 [INF] Request starting HTTP/2 GET https://localhost:44344/swagger/index.html - -
+2023-05-09 16:22:13.940 +03:30 [INF] Request starting HTTP/2 GET https://localhost:44344/swagger/index.html - -
+2023-05-09 16:22:13.956 +03:30 [DBG] AuthenticationScheme: Bearer was not authenticated.
+2023-05-09 16:22:13.956 +03:30 [DBG] AuthenticationScheme: Bearer was not authenticated.
+2023-05-09 16:22:13.989 +03:30 [INF] Request finished HTTP/2 GET https://localhost:44344/swagger/index.html - - - 200 - text/html;charset=utf-8 52.1758ms
+2023-05-09 16:22:13.989 +03:30 [INF] Request finished HTTP/2 GET https://localhost:44344/swagger/index.html - - - 200 - text/html;charset=utf-8 49.4315ms
+2023-05-09 16:27:24.985 +03:30 [INF] Starting IdentityService.Host.
+2023-05-09 16:27:27.330 +03:30 [INF] Loaded ABP modules:
+2023-05-09 16:27:27.332 +03:30 [INF] - ProductService.Host.ProductServiceHostModule
+2023-05-09 16:27:27.332 +03:30 [INF]   - Volo.Abp.Autofac.AbpAutofacModule
+2023-05-09 16:27:27.332 +03:30 [INF]     - Volo.Abp.Castle.AbpCastleCoreModule
+2023-05-09 16:27:27.332 +03:30 [INF]   - Volo.Abp.AspNetCore.Mvc.AbpAspNetCoreMvcModule
+2023-05-09 16:27:27.332 +03:30 [INF]     - Volo.Abp.AspNetCore.AbpAspNetCoreModule
+2023-05-09 16:27:27.332 +03:30 [INF]       - Volo.Abp.Auditing.AbpAuditingModule
+2023-05-09 16:27:27.332 +03:30 [INF]         - Volo.Abp.Data.AbpDataModule
+2023-05-09 16:27:27.332 +03:30 [INF]           - Volo.Abp.ObjectExtending.AbpObjectExtendingModule
+2023-05-09 16:27:27.332 +03:30 [INF]             - Volo.Abp.Localization.AbpLocalizationAbstractionsModule
+2023-05-09 16:27:27.332 +03:30 [INF]             - Volo.Abp.Validation.AbpValidationAbstractionsModule
+2023-05-09 16:27:27.332 +03:30 [INF]           - Volo.Abp.Uow.AbpUnitOfWorkModule
+2023-05-09 16:27:27.332 +03:30 [INF]           - Volo.Abp.EventBus.Abstractions.AbpEventBusAbstractionsModule
+2023-05-09 16:27:27.332 +03:30 [INF]         - Volo.Abp.Json.AbpJsonModule
+2023-05-09 16:27:27.332 +03:30 [INF]           - Volo.Abp.Json.SystemTextJson.AbpJsonSystemTextJsonModule
+2023-05-09 16:27:27.332 +03:30 [INF]             - Volo.Abp.Json.AbpJsonAbstractionsModule
+2023-05-09 16:27:27.332 +03:30 [INF]             - Volo.Abp.Timing.AbpTimingModule
+2023-05-09 16:27:27.332 +03:30 [INF]               - Volo.Abp.Localization.AbpLocalizationModule
+2023-05-09 16:27:27.332 +03:30 [INF]                 - Volo.Abp.VirtualFileSystem.AbpVirtualFileSystemModule
+2023-05-09 16:27:27.332 +03:30 [INF]                 - Volo.Abp.Settings.AbpSettingsModule
+2023-05-09 16:27:27.332 +03:30 [INF]                   - Volo.Abp.Security.AbpSecurityModule
+2023-05-09 16:27:27.332 +03:30 [INF]                   - Volo.Abp.MultiTenancy.AbpMultiTenancyModule
+2023-05-09 16:27:27.332 +03:30 [INF]                 - Volo.Abp.Threading.AbpThreadingModule
+2023-05-09 16:27:27.332 +03:30 [INF]         - Volo.Abp.Auditing.AbpAuditingContractsModule
+2023-05-09 16:27:27.332 +03:30 [INF]       - Volo.Abp.Http.AbpHttpModule
+2023-05-09 16:27:27.332 +03:30 [INF]         - Volo.Abp.Http.AbpHttpAbstractionsModule
+2023-05-09 16:27:27.332 +03:30 [INF]         - Volo.Abp.Minify.AbpMinifyModule
+2023-05-09 16:27:27.332 +03:30 [INF]       - Volo.Abp.Authorization.AbpAuthorizationModule
+2023-05-09 16:27:27.332 +03:30 [INF]         - Volo.Abp.Authorization.AbpAuthorizationAbstractionsModule
+2023-05-09 16:27:27.332 +03:30 [INF]       - Volo.Abp.Validation.AbpValidationModule
+2023-05-09 16:27:27.332 +03:30 [INF]       - Volo.Abp.ExceptionHandling.AbpExceptionHandlingModule
+2023-05-09 16:27:27.332 +03:30 [INF]     - Volo.Abp.ApiVersioning.AbpApiVersioningAbstractionsModule
+2023-05-09 16:27:27.332 +03:30 [INF]     - Volo.Abp.AspNetCore.Mvc.AbpAspNetCoreMvcContractsModule
+2023-05-09 16:27:27.332 +03:30 [INF]       - Volo.Abp.Application.AbpDddApplicationContractsModule
+2023-05-09 16:27:27.332 +03:30 [INF]     - Volo.Abp.UI.Navigation.AbpUiNavigationModule
+2023-05-09 16:27:27.332 +03:30 [INF]       - Volo.Abp.UI.AbpUiModule
+2023-05-09 16:27:27.332 +03:30 [INF]     - Volo.Abp.GlobalFeatures.AbpGlobalFeaturesModule
+2023-05-09 16:27:27.332 +03:30 [INF]     - Volo.Abp.Application.AbpDddApplicationModule
+2023-05-09 16:27:27.332 +03:30 [INF]       - Volo.Abp.Domain.AbpDddDomainModule
+2023-05-09 16:27:27.332 +03:30 [INF]         - Volo.Abp.EventBus.AbpEventBusModule
+2023-05-09 16:27:27.332 +03:30 [INF]           - Volo.Abp.Guids.AbpGuidsModule
+2023-05-09 16:27:27.332 +03:30 [INF]           - Volo.Abp.BackgroundWorkers.AbpBackgroundWorkersModule
+2023-05-09 16:27:27.333 +03:30 [INF]           - Volo.Abp.DistributedLocking.AbpDistributedLockingAbstractionsModule
+2023-05-09 16:27:27.333 +03:30 [INF]         - Volo.Abp.ObjectMapping.AbpObjectMappingModule
+2023-05-09 16:27:27.333 +03:30 [INF]         - Volo.Abp.Specifications.AbpSpecificationsModule
+2023-05-09 16:27:27.333 +03:30 [INF]         - Volo.Abp.Caching.AbpCachingModule
+2023-05-09 16:27:27.333 +03:30 [INF]           - Volo.Abp.Serialization.AbpSerializationModule
+2023-05-09 16:27:27.333 +03:30 [INF]       - Volo.Abp.Features.AbpFeaturesModule
+2023-05-09 16:27:27.333 +03:30 [INF]   - Volo.Abp.EntityFrameworkCore.SqlServer.AbpEntityFrameworkCoreSqlServerModule
+2023-05-09 16:27:27.333 +03:30 [INF]     - Volo.Abp.EntityFrameworkCore.AbpEntityFrameworkCoreModule
+2023-05-09 16:27:27.333 +03:30 [INF]   - Volo.Abp.AuditLogging.EntityFrameworkCore.AbpAuditLoggingEntityFrameworkCoreModule
+2023-05-09 16:27:27.333 +03:30 [INF]     - Volo.Abp.AuditLogging.AbpAuditLoggingDomainModule
+2023-05-09 16:27:27.333 +03:30 [INF]       - Volo.Abp.AuditLogging.AbpAuditLoggingDomainSharedModule
+2023-05-09 16:27:27.333 +03:30 [INF]   - ProductManagement.ProductManagementApplicationModule
+2023-05-09 16:27:27.333 +03:30 [INF]     - ProductManagement.ProductManagementDomainModule
+2023-05-09 16:27:27.333 +03:30 [INF]       - ProductManagement.ProductManagementDomainSharedModule
+2023-05-09 16:27:27.333 +03:30 [INF]     - ProductManagement.ProductManagementApplicationContractsModule
+2023-05-09 16:27:27.333 +03:30 [INF]     - Volo.Abp.AutoMapper.AbpAutoMapperModule
+2023-05-09 16:27:27.333 +03:30 [INF]   - ProductManagement.ProductManagementHttpApiModule
+2023-05-09 16:27:27.333 +03:30 [INF]   - ProductManagement.EntityFrameworkCore.ProductManagementEntityFrameworkCoreModule
+2023-05-09 16:27:29.795 +03:30 [INF] Initialized all ABP modules.
+2023-05-09 16:27:29.822 +03:30 [INF] Application started. Press Ctrl+C to shut down.
+2023-05-09 16:27:29.823 +03:30 [INF] Hosting environment: Development
+2023-05-09 16:27:29.824 +03:30 [INF] Content root path: C:\dev\esalecar-microservice\esalecarmicroservice-backend\microservices\ProductService.Host
+2023-05-09 16:27:29.850 +03:30 [INF] Request starting HTTP/2 GET https://localhost:44344/ - -
+2023-05-09 16:27:29.916 +03:30 [DBG] AuthenticationScheme: Bearer was not authenticated.
+2023-05-09 16:27:30.001 +03:30 [INF] Executing endpoint 'ProductService.Host.Controllers.HomeController.Index (ProductService.Host)'
+2023-05-09 16:27:30.034 +03:30 [INF] Route matched with {action = "Index", controller = "Home", area = ""}. Executing controller action with signature Microsoft.AspNetCore.Mvc.ActionResult Index() on controller ProductService.Host.Controllers.HomeController (ProductService.Host).
+2023-05-09 16:27:30.186 +03:30 [INF] Executing action method ProductService.Host.Controllers.HomeController.Index (ProductService.Host) - Validation state: "Valid"
+2023-05-09 16:27:30.191 +03:30 [INF] Executed action method ProductService.Host.Controllers.HomeController.Index (ProductService.Host), returned result Microsoft.AspNetCore.Mvc.RedirectResult in 0.3397ms.
+2023-05-09 16:27:30.199 +03:30 [INF] Executing RedirectResult, redirecting to /swagger.
+2023-05-09 16:27:30.204 +03:30 [INF] Executed action ProductService.Host.Controllers.HomeController.Index (ProductService.Host) in 166.8534ms
+2023-05-09 16:27:30.204 +03:30 [INF] Executed endpoint 'ProductService.Host.Controllers.HomeController.Index (ProductService.Host)'
+2023-05-09 16:27:30.818 +03:30 [ERR] Failed executing DbCommand (29ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?' (Size = 96), @p2='?' (Size = 512), @p3='?' (Size = 64), @p4='?' (Size = 64), @p5='?' (Size = 128), @p6='?' (Size = 256), @p7='?' (Size = 40), @p8='?' (Size = 64), @p9='?' (Size = 4000), @p10='?' (DbType = Int32), @p11='?' (DbType = DateTime2), @p12='?' (Size = 4000), @p13='?' (Size = 16), @p14='?' (DbType = Int32), @p15='?' (DbType = Guid), @p16='?' (Size = 64), @p17='?' (DbType = Guid), @p18='?' (Size = 256), @p19='?' (DbType = Guid), @p20='?' (Size = 64), @p21='?' (Size = 256), @p22='?' (DbType = Guid), @p23='?' (Size = 256), @p24='?' (DbType = Guid), @p25='?' (DbType = Guid), @p26='?' (DbType = Int32), @p27='?' (DbType = DateTime2), @p28='?' (Size = 4000), @p29='?' (Size = 128), @p30='?' (Size = 2000), @p31='?' (Size = 256), @p32='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SET NOCOUNT ON;
+INSERT INTO [AbpAuditLogs] ([Id], [ApplicationName], [BrowserInfo], [ClientId], [ClientIpAddress], [ClientName], [Comments], [ConcurrencyStamp], [CorrelationId], [Exceptions], [ExecutionDuration], [ExecutionTime], [ExtraProperties], [HttpMethod], [HttpStatusCode], [ImpersonatorTenantId], [ImpersonatorTenantName], [ImpersonatorUserId], [ImpersonatorUserName], [TenantId], [TenantName], [Url], [UserId], [UserName])
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11, @p12, @p13, @p14, @p15, @p16, @p17, @p18, @p19, @p20, @p21, @p22, @p23);
+INSERT INTO [AbpAuditLogActions] ([Id], [AuditLogId], [ExecutionDuration], [ExecutionTime], [ExtraProperties], [MethodName], [Parameters], [ServiceName], [TenantId])
+VALUES (@p24, @p25, @p26, @p27, @p28, @p29, @p30, @p31, @p32);
+2023-05-09 16:27:30.859 +03:30 [ERR] An exception occurred in the database while saving changes for context type 'Volo.Abp.AuditLogging.EntityFrameworkCore.AbpAuditLoggingDbContext'.
+Microsoft.EntityFrameworkCore.DbUpdateException: An error occurred while saving the entity changes. See the inner exception for details.
+ ---> Microsoft.Data.SqlClient.SqlException (0x80131904): Invalid object name 'AbpAuditLogs'.
+   at Microsoft.Data.SqlClient.SqlCommand.<>c.<ExecuteDbDataReaderAsync>b__208_0(Task`1 result)
+   at System.Threading.Tasks.ContinuationResultTaskFromResultTask`2.InnerInvoke()
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+--- End of stack trace from previous location ---
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+ClientConnectionId:8cb2e29b-9fc3-4d04-95bc-0bdb592973d2
+Error Number:208,State:1,Class:16
+   --- End of inner exception stack trace ---
+   at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.SqlServer.Update.Internal.SqlServerModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(IList`1 entriesToSave, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(StateManager stateManager, Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.DbContext.SaveChangesAsync(Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+Microsoft.EntityFrameworkCore.DbUpdateException: An error occurred while saving the entity changes. See the inner exception for details.
+ ---> Microsoft.Data.SqlClient.SqlException (0x80131904): Invalid object name 'AbpAuditLogs'.
+   at Microsoft.Data.SqlClient.SqlCommand.<>c.<ExecuteDbDataReaderAsync>b__208_0(Task`1 result)
+   at System.Threading.Tasks.ContinuationResultTaskFromResultTask`2.InnerInvoke()
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+--- End of stack trace from previous location ---
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+ClientConnectionId:8cb2e29b-9fc3-4d04-95bc-0bdb592973d2
+Error Number:208,State:1,Class:16
+   --- End of inner exception stack trace ---
+   at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.SqlServer.Update.Internal.SqlServerModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(IList`1 entriesToSave, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(StateManager stateManager, Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.DbContext.SaveChangesAsync(Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+2023-05-09 16:27:30.865 +03:30 [WRN] Could not save the audit log object: 
+AUDIT LOG: [302: GET    ] /
+- UserName - UserId                 :  - 
+- ClientIpAddress        : ::1
+- ExecutionDuration      : 208
+- Actions:
+  - ProductService.Host.Controllers.HomeController.Index (139 ms.)
+    {}
+
+2023-05-09 16:27:30.866 +03:30 [ERR] An error occurred while saving the entity changes. See the inner exception for details.
+Microsoft.EntityFrameworkCore.DbUpdateException: An error occurred while saving the entity changes. See the inner exception for details.
+ ---> Microsoft.Data.SqlClient.SqlException (0x80131904): Invalid object name 'AbpAuditLogs'.
+   at Microsoft.Data.SqlClient.SqlCommand.<>c.<ExecuteDbDataReaderAsync>b__208_0(Task`1 result)
+   at System.Threading.Tasks.ContinuationResultTaskFromResultTask`2.InnerInvoke()
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+--- End of stack trace from previous location ---
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+ClientConnectionId:8cb2e29b-9fc3-4d04-95bc-0bdb592973d2
+Error Number:208,State:1,Class:16
+   --- End of inner exception stack trace ---
+   at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.SqlServer.Update.Internal.SqlServerModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(IList`1 entriesToSave, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(StateManager stateManager, Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.DbContext.SaveChangesAsync(Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.DbContext.SaveChangesAsync(Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+   at Volo.Abp.EntityFrameworkCore.AbpDbContext`1.SaveChangesAsync(Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+   at Volo.Abp.Uow.UnitOfWork.SaveChangesAsync(CancellationToken cancellationToken)
+   at Volo.Abp.Uow.UnitOfWork.CompleteAsync(CancellationToken cancellationToken)
+   at Volo.Abp.AuditLogging.AuditingStore.SaveLogAsync(AuditLogInfo auditInfo)
+   at Volo.Abp.AuditLogging.AuditingStore.SaveAsync(AuditLogInfo auditInfo)
+2023-05-09 16:27:30.885 +03:30 [INF] Request finished HTTP/2 GET https://localhost:44344/ - - - 0 - - 1036.3470ms
+2023-05-09 16:28:05.166 +03:30 [INF] Request starting HTTP/2 GET https://localhost:44344/ - -
+2023-05-09 16:28:05.170 +03:30 [DBG] AuthenticationScheme: Bearer was not authenticated.
+2023-05-09 16:28:05.174 +03:30 [INF] Executing endpoint 'ProductService.Host.Controllers.HomeController.Index (ProductService.Host)'
+2023-05-09 16:28:05.175 +03:30 [INF] Route matched with {action = "Index", controller = "Home", area = ""}. Executing controller action with signature Microsoft.AspNetCore.Mvc.ActionResult Index() on controller ProductService.Host.Controllers.HomeController (ProductService.Host).
+2023-05-09 16:28:05.213 +03:30 [INF] Executing action method ProductService.Host.Controllers.HomeController.Index (ProductService.Host) - Validation state: "Valid"
+2023-05-09 16:28:05.213 +03:30 [INF] Executed action method ProductService.Host.Controllers.HomeController.Index (ProductService.Host), returned result Microsoft.AspNetCore.Mvc.RedirectResult in 0.0246ms.
+2023-05-09 16:28:05.214 +03:30 [INF] Executing RedirectResult, redirecting to /swagger.
+2023-05-09 16:28:05.215 +03:30 [INF] Executed action ProductService.Host.Controllers.HomeController.Index (ProductService.Host) in 39.8697ms
+2023-05-09 16:28:05.215 +03:30 [INF] Executed endpoint 'ProductService.Host.Controllers.HomeController.Index (ProductService.Host)'
+2023-05-09 16:28:05.304 +03:30 [ERR] Failed executing DbCommand (18ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?' (Size = 96), @p2='?' (Size = 512), @p3='?' (Size = 64), @p4='?' (Size = 64), @p5='?' (Size = 128), @p6='?' (Size = 256), @p7='?' (Size = 40), @p8='?' (Size = 64), @p9='?' (Size = 4000), @p10='?' (DbType = Int32), @p11='?' (DbType = DateTime2), @p12='?' (Size = 4000), @p13='?' (Size = 16), @p14='?' (DbType = Int32), @p15='?' (DbType = Guid), @p16='?' (Size = 64), @p17='?' (DbType = Guid), @p18='?' (Size = 256), @p19='?' (DbType = Guid), @p20='?' (Size = 64), @p21='?' (Size = 256), @p22='?' (DbType = Guid), @p23='?' (Size = 256), @p24='?' (DbType = Guid), @p25='?' (DbType = Guid), @p26='?' (DbType = Int32), @p27='?' (DbType = DateTime2), @p28='?' (Size = 4000), @p29='?' (Size = 128), @p30='?' (Size = 2000), @p31='?' (Size = 256), @p32='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SET NOCOUNT ON;
+INSERT INTO [AbpAuditLogs] ([Id], [ApplicationName], [BrowserInfo], [ClientId], [ClientIpAddress], [ClientName], [Comments], [ConcurrencyStamp], [CorrelationId], [Exceptions], [ExecutionDuration], [ExecutionTime], [ExtraProperties], [HttpMethod], [HttpStatusCode], [ImpersonatorTenantId], [ImpersonatorTenantName], [ImpersonatorUserId], [ImpersonatorUserName], [TenantId], [TenantName], [Url], [UserId], [UserName])
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11, @p12, @p13, @p14, @p15, @p16, @p17, @p18, @p19, @p20, @p21, @p22, @p23);
+INSERT INTO [AbpAuditLogActions] ([Id], [AuditLogId], [ExecutionDuration], [ExecutionTime], [ExtraProperties], [MethodName], [Parameters], [ServiceName], [TenantId])
+VALUES (@p24, @p25, @p26, @p27, @p28, @p29, @p30, @p31, @p32);
+2023-05-09 16:28:05.311 +03:30 [ERR] An exception occurred in the database while saving changes for context type 'Volo.Abp.AuditLogging.EntityFrameworkCore.AbpAuditLoggingDbContext'.
+Microsoft.EntityFrameworkCore.DbUpdateException: An error occurred while saving the entity changes. See the inner exception for details.
+ ---> Microsoft.Data.SqlClient.SqlException (0x80131904): Invalid object name 'AbpAuditLogs'.
+   at Microsoft.Data.SqlClient.SqlCommand.<>c.<ExecuteDbDataReaderAsync>b__208_0(Task`1 result)
+   at System.Threading.Tasks.ContinuationResultTaskFromResultTask`2.InnerInvoke()
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+--- End of stack trace from previous location ---
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+ClientConnectionId:8cb2e29b-9fc3-4d04-95bc-0bdb592973d2
+Error Number:208,State:1,Class:16
+   --- End of inner exception stack trace ---
+   at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.SqlServer.Update.Internal.SqlServerModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(IList`1 entriesToSave, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(StateManager stateManager, Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.DbContext.SaveChangesAsync(Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+Microsoft.EntityFrameworkCore.DbUpdateException: An error occurred while saving the entity changes. See the inner exception for details.
+ ---> Microsoft.Data.SqlClient.SqlException (0x80131904): Invalid object name 'AbpAuditLogs'.
+   at Microsoft.Data.SqlClient.SqlCommand.<>c.<ExecuteDbDataReaderAsync>b__208_0(Task`1 result)
+   at System.Threading.Tasks.ContinuationResultTaskFromResultTask`2.InnerInvoke()
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+--- End of stack trace from previous location ---
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+ClientConnectionId:8cb2e29b-9fc3-4d04-95bc-0bdb592973d2
+Error Number:208,State:1,Class:16
+   --- End of inner exception stack trace ---
+   at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.SqlServer.Update.Internal.SqlServerModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(IList`1 entriesToSave, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(StateManager stateManager, Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.DbContext.SaveChangesAsync(Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+2023-05-09 16:28:05.313 +03:30 [WRN] Could not save the audit log object: 
+AUDIT LOG: [302: GET    ] /
+- UserName - UserId                 :  - 
+- ClientIpAddress        : ::1
+- ExecutionDuration      : 41
+- Actions:
+  - ProductService.Host.Controllers.HomeController.Index (36 ms.)
+    {}
+
+2023-05-09 16:28:05.313 +03:30 [ERR] An error occurred while saving the entity changes. See the inner exception for details.
+Microsoft.EntityFrameworkCore.DbUpdateException: An error occurred while saving the entity changes. See the inner exception for details.
+ ---> Microsoft.Data.SqlClient.SqlException (0x80131904): Invalid object name 'AbpAuditLogs'.
+   at Microsoft.Data.SqlClient.SqlCommand.<>c.<ExecuteDbDataReaderAsync>b__208_0(Task`1 result)
+   at System.Threading.Tasks.ContinuationResultTaskFromResultTask`2.InnerInvoke()
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+--- End of stack trace from previous location ---
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+ClientConnectionId:8cb2e29b-9fc3-4d04-95bc-0bdb592973d2
+Error Number:208,State:1,Class:16
+   --- End of inner exception stack trace ---
+   at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.SqlServer.Update.Internal.SqlServerModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(IList`1 entriesToSave, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(StateManager stateManager, Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.DbContext.SaveChangesAsync(Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.DbContext.SaveChangesAsync(Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+   at Volo.Abp.EntityFrameworkCore.AbpDbContext`1.SaveChangesAsync(Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+   at Volo.Abp.Uow.UnitOfWork.SaveChangesAsync(CancellationToken cancellationToken)
+   at Volo.Abp.Uow.UnitOfWork.CompleteAsync(CancellationToken cancellationToken)
+   at Volo.Abp.AuditLogging.AuditingStore.SaveLogAsync(AuditLogInfo auditInfo)
+   at Volo.Abp.AuditLogging.AuditingStore.SaveAsync(AuditLogInfo auditInfo)
+2023-05-09 16:28:05.331 +03:30 [INF] Request finished HTTP/2 GET https://localhost:44344/ - - - 302 - - 165.3450ms
+2023-05-09 16:28:05.365 +03:30 [INF] Request starting HTTP/2 GET https://localhost:44344/swagger/index.html - -
+2023-05-09 16:28:05.375 +03:30 [DBG] AuthenticationScheme: Bearer was not authenticated.
+2023-05-09 16:28:05.857 +03:30 [INF] Request finished HTTP/2 GET https://localhost:44344/swagger/index.html - - - 200 - text/html;charset=utf-8 492.1365ms
+2023-05-09 16:28:06.019 +03:30 [INF] Request starting HTTP/2 GET https://localhost:44344/_framework/aspnetcore-browser-refresh.js - -
+2023-05-09 16:28:06.024 +03:30 [INF] Request starting HTTP/2 GET https://localhost:44344/_vs/browserLink - -
+2023-05-09 16:28:06.032 +03:30 [INF] Request finished HTTP/2 GET https://localhost:44344/_framework/aspnetcore-browser-refresh.js - - - 200 12008 application/javascript;+charset=utf-8 13.2257ms
+2023-05-09 16:28:06.228 +03:30 [INF] Request finished HTTP/2 GET https://localhost:44344/_vs/browserLink - - - 200 - text/javascript;+charset=UTF-8 204.2622ms
+2023-05-09 16:28:06.261 +03:30 [INF] Request starting HTTP/2 GET https://localhost:44344/swagger/v1/swagger.json - -
+2023-05-09 16:28:06.263 +03:30 [DBG] AuthenticationScheme: Bearer was not authenticated.
+2023-05-09 16:28:06.480 +03:30 [INF] Request finished HTTP/2 GET https://localhost:44344/swagger/v1/swagger.json - - - 200 - application/json;charset=utf-8 219.3683ms
+2023-05-09 16:28:25.045 +03:30 [INF] Request starting HTTP/2 GET https://localhost:44344/api/productManagement/products - -
+2023-05-09 16:28:25.046 +03:30 [DBG] AuthenticationScheme: Bearer was not authenticated.
+2023-05-09 16:28:25.047 +03:30 [INF] Executing endpoint 'ProductManagement.ProductsController.GetListPagedAsync (ProductManagement.HttpApi)'
+2023-05-09 16:28:25.259 +03:30 [INF] Route matched with {area = "productManagement", action = "GetListPaged", controller = "Products"}. Executing controller action with signature System.Threading.Tasks.Task`1[Volo.Abp.Application.Dtos.PagedResultDto`1[ProductManagement.ProductDto]] GetListPagedAsync(Volo.Abp.Application.Dtos.PagedAndSortedResultRequestDto) on controller ProductManagement.ProductsController (ProductManagement.HttpApi).
+2023-05-09 16:28:25.470 +03:30 [INF] Executing action method ProductManagement.ProductsController.GetListPagedAsync (ProductManagement.HttpApi) - Validation state: "Valid"
+2023-05-09 16:28:25.530 +03:30 [INF] Authorization failed. These requirements were not met:
+PermissionRequirement: ProductManagement.Product
+2023-05-09 16:28:25.588 +03:30 [WRN] ---------- RemoteServiceErrorInfo ----------
+{
+  "code": "Volo.Authorization:010001",
+  "message": "Authorization failed! Given policy has not granted.",
+  "details": null,
+  "data": {},
+  "validationErrors": null
+}
+
+2023-05-09 16:28:25.588 +03:30 [WRN] Exception of type 'Volo.Abp.Authorization.AbpAuthorizationException' was thrown.
+Volo.Abp.Authorization.AbpAuthorizationException: Exception of type 'Volo.Abp.Authorization.AbpAuthorizationException' was thrown.
+   at Microsoft.AspNetCore.Authorization.AbpAuthorizationServiceExtensions.CheckAsync(IAuthorizationService authorizationService, AuthorizationPolicy policy)
+   at Volo.Abp.Authorization.MethodInvocationAuthorizationService.CheckAsync(MethodInvocationAuthorizationContext context)
+   at Volo.Abp.Authorization.AuthorizationInterceptor.AuthorizeAsync(IAbpMethodInvocation invocation)
+   at Volo.Abp.Authorization.AuthorizationInterceptor.InterceptAsync(IAbpMethodInvocation invocation)
+   at Volo.Abp.Castle.DynamicProxy.CastleAsyncAbpInterceptorAdapter`1.InterceptAsync[TResult](IInvocation invocation, IInvocationProceedInfo proceedInfo, Func`3 proceed)
+   at Castle.DynamicProxy.AsyncInterceptorBase.ProceedAsynchronous[TResult](IInvocation invocation, IInvocationProceedInfo proceedInfo)
+   at Volo.Abp.Castle.DynamicProxy.CastleAbpMethodInvocationAdapterWithReturnValue`1.ProceedAsync()
+   at Volo.Abp.Auditing.AuditingInterceptor.ProceedByLoggingAsync(IAbpMethodInvocation invocation, AbpAuditingOptions options, IAuditingHelper auditingHelper, IAuditLogScope auditLogScope)
+   at Volo.Abp.Auditing.AuditingInterceptor.InterceptAsync(IAbpMethodInvocation invocation)
+   at Volo.Abp.Castle.DynamicProxy.CastleAsyncAbpInterceptorAdapter`1.InterceptAsync[TResult](IInvocation invocation, IInvocationProceedInfo proceedInfo, Func`3 proceed)
+   at Castle.DynamicProxy.AsyncInterceptorBase.ProceedAsynchronous[TResult](IInvocation invocation, IInvocationProceedInfo proceedInfo)
+   at Volo.Abp.Castle.DynamicProxy.CastleAbpMethodInvocationAdapterWithReturnValue`1.ProceedAsync()
+   at Volo.Abp.Uow.UnitOfWorkInterceptor.InterceptAsync(IAbpMethodInvocation invocation)
+   at Volo.Abp.Castle.DynamicProxy.CastleAsyncAbpInterceptorAdapter`1.InterceptAsync[TResult](IInvocation invocation, IInvocationProceedInfo proceedInfo, Func`3 proceed)
+   at lambda_method1257(Closure, Object)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.AwaitableObjectResultExecutor.Execute(ActionContext actionContext, IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Logged|12_1(ControllerActionInvoker invoker)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeInnerFilterAsync()
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextExceptionFilterAsync>g__Awaited|26_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+2023-05-09 16:28:25.590 +03:30 [WRN] Code:Volo.Authorization:010001
+2023-05-09 16:28:25.853 +03:30 [INF] AuthenticationScheme: BearerIdentityServerAuthenticationJwt was challenged.
+2023-05-09 16:28:25.853 +03:30 [INF] AuthenticationScheme: Bearer was challenged.
+2023-05-09 16:28:25.853 +03:30 [INF] Executed action ProductManagement.ProductsController.GetListPagedAsync (ProductManagement.HttpApi) in 594.7297ms
+2023-05-09 16:28:25.853 +03:30 [INF] Executed endpoint 'ProductManagement.ProductsController.GetListPagedAsync (ProductManagement.HttpApi)'
+2023-05-09 16:28:25.884 +03:30 [ERR] Failed executing DbCommand (7ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?' (Size = 96), @p2='?' (Size = 512), @p3='?' (Size = 64), @p4='?' (Size = 64), @p5='?' (Size = 128), @p6='?' (Size = 256), @p7='?' (Size = 40), @p8='?' (Size = 64), @p9='?' (Size = 4000), @p10='?' (DbType = Int32), @p11='?' (DbType = DateTime2), @p12='?' (Size = 4000), @p13='?' (Size = 16), @p14='?' (DbType = Int32), @p15='?' (DbType = Guid), @p16='?' (Size = 64), @p17='?' (DbType = Guid), @p18='?' (Size = 256), @p19='?' (DbType = Guid), @p20='?' (Size = 64), @p21='?' (Size = 256), @p22='?' (DbType = Guid), @p23='?' (Size = 256), @p24='?' (DbType = Guid), @p25='?' (DbType = Guid), @p26='?' (DbType = Int32), @p27='?' (DbType = DateTime2), @p28='?' (Size = 4000), @p29='?' (Size = 128), @p30='?' (Size = 2000), @p31='?' (Size = 256), @p32='?' (DbType = Guid), @p33='?' (DbType = Guid), @p34='?' (DbType = Guid), @p35='?' (DbType = Int32), @p36='?' (DbType = DateTime2), @p37='?' (Size = 4000), @p38='?' (Size = 128), @p39='?' (Size = 2000), @p40='?' (Size = 256), @p41='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SET NOCOUNT ON;
+INSERT INTO [AbpAuditLogs] ([Id], [ApplicationName], [BrowserInfo], [ClientId], [ClientIpAddress], [ClientName], [Comments], [ConcurrencyStamp], [CorrelationId], [Exceptions], [ExecutionDuration], [ExecutionTime], [ExtraProperties], [HttpMethod], [HttpStatusCode], [ImpersonatorTenantId], [ImpersonatorTenantName], [ImpersonatorUserId], [ImpersonatorUserName], [TenantId], [TenantName], [Url], [UserId], [UserName])
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11, @p12, @p13, @p14, @p15, @p16, @p17, @p18, @p19, @p20, @p21, @p22, @p23);
+INSERT INTO [AbpAuditLogActions] ([Id], [AuditLogId], [ExecutionDuration], [ExecutionTime], [ExtraProperties], [MethodName], [Parameters], [ServiceName], [TenantId])
+VALUES (@p24, @p25, @p26, @p27, @p28, @p29, @p30, @p31, @p32),
+(@p33, @p34, @p35, @p36, @p37, @p38, @p39, @p40, @p41);
+2023-05-09 16:28:25.889 +03:30 [ERR] An exception occurred in the database while saving changes for context type 'Volo.Abp.AuditLogging.EntityFrameworkCore.AbpAuditLoggingDbContext'.
+Microsoft.EntityFrameworkCore.DbUpdateException: An error occurred while saving the entity changes. See the inner exception for details.
+ ---> Microsoft.Data.SqlClient.SqlException (0x80131904): Invalid object name 'AbpAuditLogs'.
+   at Microsoft.Data.SqlClient.SqlCommand.<>c.<ExecuteDbDataReaderAsync>b__208_0(Task`1 result)
+   at System.Threading.Tasks.ContinuationResultTaskFromResultTask`2.InnerInvoke()
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+--- End of stack trace from previous location ---
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+ClientConnectionId:8cb2e29b-9fc3-4d04-95bc-0bdb592973d2
+Error Number:208,State:1,Class:16
+   --- End of inner exception stack trace ---
+   at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.SqlServer.Update.Internal.SqlServerModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(IList`1 entriesToSave, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(StateManager stateManager, Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.DbContext.SaveChangesAsync(Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+Microsoft.EntityFrameworkCore.DbUpdateException: An error occurred while saving the entity changes. See the inner exception for details.
+ ---> Microsoft.Data.SqlClient.SqlException (0x80131904): Invalid object name 'AbpAuditLogs'.
+   at Microsoft.Data.SqlClient.SqlCommand.<>c.<ExecuteDbDataReaderAsync>b__208_0(Task`1 result)
+   at System.Threading.Tasks.ContinuationResultTaskFromResultTask`2.InnerInvoke()
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+--- End of stack trace from previous location ---
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+ClientConnectionId:8cb2e29b-9fc3-4d04-95bc-0bdb592973d2
+Error Number:208,State:1,Class:16
+   --- End of inner exception stack trace ---
+   at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.SqlServer.Update.Internal.SqlServerModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(IList`1 entriesToSave, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(StateManager stateManager, Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.DbContext.SaveChangesAsync(Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+2023-05-09 16:28:25.893 +03:30 [WRN] Could not save the audit log object: 
+AUDIT LOG: [401: GET    ] /api/productManagement/products
+- UserName - UserId                 :  - 
+- ClientIpAddress        : ::1
+- ExecutionDuration      : 806
+- Actions:
+  - ProductManagement.ProductAppService.GetListPagedAsync (56 ms.)
+    {"input":{"sorting":null,"skipCount":0,"maxResultCount":10}}
+  - ProductManagement.ProductsController.GetListPagedAsync (122 ms.)
+    {"input":{"sorting":null,"skipCount":0,"maxResultCount":10}}
+- Exceptions:
+  - Exception of type 'Volo.Abp.Authorization.AbpAuthorizationException' was thrown.
+    Volo.Abp.Authorization.AbpAuthorizationException: Exception of type 'Volo.Abp.Authorization.AbpAuthorizationException' was thrown.
+   at Microsoft.AspNetCore.Authorization.AbpAuthorizationServiceExtensions.CheckAsync(IAuthorizationService authorizationService, AuthorizationPolicy policy)
+   at Volo.Abp.Authorization.MethodInvocationAuthorizationService.CheckAsync(MethodInvocationAuthorizationContext context)
+   at Volo.Abp.Authorization.AuthorizationInterceptor.AuthorizeAsync(IAbpMethodInvocation invocation)
+   at Volo.Abp.Authorization.AuthorizationInterceptor.InterceptAsync(IAbpMethodInvocation invocation)
+   at Volo.Abp.Castle.DynamicProxy.CastleAsyncAbpInterceptorAdapter`1.InterceptAsync[TResult](IInvocation invocation, IInvocationProceedInfo proceedInfo, Func`3 proceed)
+   at Castle.DynamicProxy.AsyncInterceptorBase.ProceedAsynchronous[TResult](IInvocation invocation, IInvocationProceedInfo proceedInfo)
+   at Volo.Abp.Castle.DynamicProxy.CastleAbpMethodInvocationAdapterWithReturnValue`1.ProceedAsync()
+   at Volo.Abp.Auditing.AuditingInterceptor.ProceedByLoggingAsync(IAbpMethodInvocation invocation, AbpAuditingOptions options, IAuditingHelper auditingHelper, IAuditLogScope auditLogScope)
+   at Volo.Abp.Auditing.AuditingInterceptor.InterceptAsync(IAbpMethodInvocation invocation)
+   at Volo.Abp.Castle.DynamicProxy.CastleAsyncAbpInterceptorAdapter`1.InterceptAsync[TResult](IInvocation invocation, IInvocationProceedInfo proceedInfo, Func`3 proceed)
+   at Castle.DynamicProxy.AsyncInterceptorBase.ProceedAsynchronous[TResult](IInvocation invocation, IInvocationProceedInfo proceedInfo)
+   at Volo.Abp.Castle.DynamicProxy.CastleAbpMethodInvocationAdapterWithReturnValue`1.ProceedAsync()
+   at Volo.Abp.Uow.UnitOfWorkInterceptor.InterceptAsync(IAbpMethodInvocation invocation)
+   at Volo.Abp.Castle.DynamicProxy.CastleAsyncAbpInterceptorAdapter`1.InterceptAsync[TResult](IInvocation invocation, IInvocationProceedInfo proceedInfo, Func`3 proceed)
+   at lambda_method1257(Closure, Object)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.AwaitableObjectResultExecutor.Execute(ActionContext actionContext, IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Logged|12_1(ControllerActionInvoker invoker)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeInnerFilterAsync()
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextExceptionFilterAsync>g__Awaited|26_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+  - Exception of type 'Volo.Abp.Authorization.AbpAuthorizationException' was thrown.
+    Volo.Abp.Authorization.AbpAuthorizationException: Exception of type 'Volo.Abp.Authorization.AbpAuthorizationException' was thrown.
+   at Microsoft.AspNetCore.Authorization.AbpAuthorizationServiceExtensions.CheckAsync(IAuthorizationService authorizationService, AuthorizationPolicy policy)
+   at Volo.Abp.Authorization.MethodInvocationAuthorizationService.CheckAsync(MethodInvocationAuthorizationContext context)
+   at Volo.Abp.Authorization.AuthorizationInterceptor.AuthorizeAsync(IAbpMethodInvocation invocation)
+   at Volo.Abp.Authorization.AuthorizationInterceptor.InterceptAsync(IAbpMethodInvocation invocation)
+   at Volo.Abp.Castle.DynamicProxy.CastleAsyncAbpInterceptorAdapter`1.InterceptAsync[TResult](IInvocation invocation, IInvocationProceedInfo proceedInfo, Func`3 proceed)
+   at Castle.DynamicProxy.AsyncInterceptorBase.ProceedAsynchronous[TResult](IInvocation invocation, IInvocationProceedInfo proceedInfo)
+   at Volo.Abp.Castle.DynamicProxy.CastleAbpMethodInvocationAdapterWithReturnValue`1.ProceedAsync()
+   at Volo.Abp.Auditing.AuditingInterceptor.ProceedByLoggingAsync(IAbpMethodInvocation invocation, AbpAuditingOptions options, IAuditingHelper auditingHelper, IAuditLogScope auditLogScope)
+   at Volo.Abp.Auditing.AuditingInterceptor.InterceptAsync(IAbpMethodInvocation invocation)
+   at Volo.Abp.Castle.DynamicProxy.CastleAsyncAbpInterceptorAdapter`1.InterceptAsync[TResult](IInvocation invocation, IInvocationProceedInfo proceedInfo, Func`3 proceed)
+   at Castle.DynamicProxy.AsyncInterceptorBase.ProceedAsynchronous[TResult](IInvocation invocation, IInvocationProceedInfo proceedInfo)
+   at Volo.Abp.Castle.DynamicProxy.CastleAbpMethodInvocationAdapterWithReturnValue`1.ProceedAsync()
+   at Volo.Abp.Uow.UnitOfWorkInterceptor.InterceptAsync(IAbpMethodInvocation invocation)
+   at Volo.Abp.Castle.DynamicProxy.CastleAsyncAbpInterceptorAdapter`1.InterceptAsync[TResult](IInvocation invocation, IInvocationProceedInfo proceedInfo, Func`3 proceed)
+   at lambda_method1257(Closure, Object)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.AwaitableObjectResultExecutor.Execute(ActionContext actionContext, IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Logged|12_1(ControllerActionInvoker invoker)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeInnerFilterAsync()
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextExceptionFilterAsync>g__Awaited|26_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+
+2023-05-09 16:28:25.893 +03:30 [ERR] An error occurred while saving the entity changes. See the inner exception for details.
+Microsoft.EntityFrameworkCore.DbUpdateException: An error occurred while saving the entity changes. See the inner exception for details.
+ ---> Microsoft.Data.SqlClient.SqlException (0x80131904): Invalid object name 'AbpAuditLogs'.
+   at Microsoft.Data.SqlClient.SqlCommand.<>c.<ExecuteDbDataReaderAsync>b__208_0(Task`1 result)
+   at System.Threading.Tasks.ContinuationResultTaskFromResultTask`2.InnerInvoke()
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+--- End of stack trace from previous location ---
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+ClientConnectionId:8cb2e29b-9fc3-4d04-95bc-0bdb592973d2
+Error Number:208,State:1,Class:16
+   --- End of inner exception stack trace ---
+   at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.SqlServer.Update.Internal.SqlServerModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(IList`1 entriesToSave, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(StateManager stateManager, Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.DbContext.SaveChangesAsync(Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.DbContext.SaveChangesAsync(Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+   at Volo.Abp.EntityFrameworkCore.AbpDbContext`1.SaveChangesAsync(Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+   at Volo.Abp.Uow.UnitOfWork.SaveChangesAsync(CancellationToken cancellationToken)
+   at Volo.Abp.Uow.UnitOfWork.CompleteAsync(CancellationToken cancellationToken)
+   at Volo.Abp.AuditLogging.AuditingStore.SaveLogAsync(AuditLogInfo auditInfo)
+   at Volo.Abp.AuditLogging.AuditingStore.SaveAsync(AuditLogInfo auditInfo)
+2023-05-09 16:28:25.896 +03:30 [INF] Request finished HTTP/2 GET https://localhost:44344/api/productManagement/products - - - 401 - - 851.9092ms

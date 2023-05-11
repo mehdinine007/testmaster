@@ -26,7 +26,7 @@ using System.Diagnostics;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
-public class OrderApplicationService : ApplicationService, IOrderAppService
+public class OrderAppService : ApplicationService, IOrderAppService
 {
     private readonly ICommonAppService _commonAppService;
     private readonly IBaseInformationService _baseInformationAppService;
@@ -36,47 +36,51 @@ public class OrderApplicationService : ApplicationService, IOrderAppService
     private readonly IRepository<AdvocacyUsers, int> _advocacyUsers;
     private readonly IRepository<CustomerOrder, int> _commitOrderRepository;
     private readonly IRepository<Logs, long> _logsRepository;
-    private readonly IBankAppService _bankAppService;
     private readonly IRepository<OrderStatusTypeReadOnly, int> _orderStatusTypeReadOnlyRepository;
     private readonly IRepository<OrderRejectionTypeReadOnly, int> _orderRejectionTypeReadOnlyRepository;
     private readonly IEsaleGrpcClient _esaleGrpcClient;
     private IConfiguration _configuration { get; set; }
     private readonly IDistributedCache _distributedCache;
+    private readonly IRepository<Company, int> _companyRepository;
 
-    public OrderApplicationService(ICommonAppService CommonAppService,
-                                   //IRandomGenerator RandomGenerator,
-                                   IHttpContextAccessor ContextAccessor,
-                                   //IRepository<User, long> UserRepository,
-                                   IRepository<Logs, long> LogsRepository,
-                                   //IUnitOfWorkManager UnitOfWorkManager,
-                                   IRepository<UserRejectionAdvocacy, int> UserRejectionAdcocacyRepository,
-                                   IConfiguration Configuration,
-                                   IRepository<CustomerOrder, int> CommitOrderRepository,
-                                   IRepository<SaleDetail, int> SaleDetailRepository,
-                                   IBaseInformationService BaseInformationAppService,
-                                   IBankAppService BankAppService,
-                                   IRepository<OrderStatusTypeReadOnly, int> orderStatusTypeReadOnlyRepository,
-                                   IRepository<OrderRejectionTypeReadOnly, int> orderRejectionTypeReadOnlyRepository,
-                                   IEsaleGrpcClient esaleGrpcClient,
-                                   IDistributedCache distributedCache,
-                                   IRepository<AdvocacyUsers, int> advocacyUsers
-            )
+    public OrderAppService(ICommonAppService commonAppService,
+                           IBaseInformationService baseInformationAppService,
+                           IHttpContextAccessor contextAccessor,
+                           IRepository<SaleDetail, int> saleDetailRepository,
+                           IRepository<UserRejectionAdvocacy, int> userRejectionAdcocacyRepository,
+                           IRepository<AdvocacyUsers, int> advocacyUsers,
+                           IRepository<CustomerOrder, int> commitOrderRepository,
+
+                           IRepository<Logs, long> logsRepository,
+                           IRepository<OrderStatusTypeReadOnly, int> orderStatusTypeReadOnlyRepository,
+                           IRepository<OrderRejectionTypeReadOnly, int> orderRejectionTypeReadOnlyRepository
+        ,
+                           IEsaleGrpcClient esaleGrpcClient,
+                           IConfiguration configuration,
+                           IDistributedCache distributedCache,
+                           IRepository<Company, int> companyRepository
+        )
     {
-        _configuration = Configuration;
-        _commonAppService = CommonAppService;
-        _contextAccessor = ContextAccessor;
-        _logsRepository = LogsRepository;
-        _commitOrderRepository = CommitOrderRepository;
-        _saleDetailRepository = SaleDetailRepository;
-        _userRejectionAdcocacyRepository = UserRejectionAdcocacyRepository;
-        _baseInformationAppService = BaseInformationAppService;
-        _bankAppService = BankAppService;
+        _commonAppService = commonAppService;
+        _baseInformationAppService = baseInformationAppService;
+        _contextAccessor = contextAccessor;
+        _saleDetailRepository = saleDetailRepository;
+        _userRejectionAdcocacyRepository = userRejectionAdcocacyRepository;
+        _advocacyUsers = advocacyUsers;
+        _commitOrderRepository = commitOrderRepository;
+
+        _logsRepository = logsRepository;
         _orderStatusTypeReadOnlyRepository = orderStatusTypeReadOnlyRepository;
         _orderRejectionTypeReadOnlyRepository = orderRejectionTypeReadOnlyRepository;
+
         _esaleGrpcClient = esaleGrpcClient;
         _distributedCache = distributedCache;
-        _advocacyUsers = advocacyUsers;
+        _configuration = configuration;
+        _companyRepository = companyRepository;
+
     }
+
+
 
     private AdvocacyUserFromBankDto CheckAdvocacy(string NationalCode)
     {
@@ -605,7 +609,7 @@ public class OrderApplicationService : ApplicationService, IOrderAppService
                 ?? throw new UserFriendlyException("جزئیات برنامه فروش یافت نشد");
             saleDetailOrderDto = ObjectMapper.Map<SaleDetail, SaleDetailOrderDto>(saleDetail);
             //await _cacheManager.GetCache("SaleDetail").SetAsync(saleDetailOrderDto.Id.ToString(), saleDetailOrderDto);
-            await _distributedCache.SetStringAsync(string.Format(RedisConstants.SaleDetailPrefix,_commonAppService.GetNationalCode()),
+            await _distributedCache.SetStringAsync(string.Format(RedisConstants.SaleDetailPrefix, _commonAppService.GetNationalCode()),
                 JsonConvert.SerializeObject(saleDetailOrderDto),
                 new DistributedCacheEntryOptions
                 {
@@ -809,6 +813,4 @@ public class OrderApplicationService : ApplicationService, IOrderAppService
         //    }).ToListAsync();
         //return result;
     }
-
-
 }
