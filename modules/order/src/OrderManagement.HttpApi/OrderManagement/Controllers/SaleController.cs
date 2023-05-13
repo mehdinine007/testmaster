@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using My.Abp.Authorize;
+﻿using Esale.Share.Authorize;
+using Microsoft.AspNetCore.Mvc;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.Services;
 using System;
@@ -11,7 +11,6 @@ namespace OrderManagement.HttpApi;
 
 [RemoteService]
 [Route("api/services/app/SaleService/[action]")]
-[UserAuthorization]
 public class SaleController : ISaleService
 {
     private readonly ISaleService _saleService;
@@ -21,6 +20,7 @@ public class SaleController : ISaleService
 
 
     [HttpGet]
+    [UserAuthorization]
     public async Task<List<PreSaleDto>> GetPreSales()
           => await _saleService.GetPreSales();
 
@@ -39,16 +39,19 @@ public class SaleController : ISaleService
         => await _saleService.GetSalePlans(companyId);
 
     [HttpGet]
+    [UserAuthorization]
     public async Task<List<ESaleTypeDto>> GetSaleTypes()
         => await _saleService.GetSaleTypes();
 
     [HttpGet]
     [RemoteService(IsEnabled = false)]
+    [UserAuthorization]
     public async Task UserValidationByBirthDate(int saleId)
         => await _saleService.UserValidationByBirthDate(saleId);
 
     [HttpGet]
     [RemoteService(IsEnabled = false)]
+    [UserAuthorization]
     public async Task UserValidationByMobile(int saleId)
         => await _saleService.UserValidationByMobile(saleId);
 }

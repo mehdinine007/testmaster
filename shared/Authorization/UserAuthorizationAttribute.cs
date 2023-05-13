@@ -5,12 +5,14 @@ using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Mvc;
 
-namespace My.Abp.Authorize
+namespace Esale.Share.Authorize
 {
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
     public class UserAuthorization : Attribute, IAuthorizationFilter
     {
         private string _permissions;
+
+        private bool _disabled = false;
 
         public UserAuthorization(string permissions)
         {
@@ -24,8 +26,16 @@ namespace My.Abp.Authorize
 
         }
 
+        public UserAuthorization(bool disabled = false)
+        {
+            _disabled = disabled;
+        }
+
         public void OnAuthorization(AuthorizationFilterContext context)
         {
+            if (_disabled)
+                return;
+
             if (context.HttpContext.Items["UserId"] == null)
             {
                 context.Result = new UnauthorizedResult();

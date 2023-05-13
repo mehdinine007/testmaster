@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using My.Abp.Authorize;
+﻿using Esale.Share.Authorize;
+using Microsoft.AspNetCore.Mvc;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.Services;
 using OrderManagement.Domain.Shared;
@@ -11,7 +11,6 @@ namespace OrderManagement.HttpApi;
 
 [RemoteService]
 [Route("api/services/app/BaseInformationService/[action]")]
-[UserAuthorization]
 public class BaseController : IBaseInformationService
 {
     private readonly IBaseInformationService _baseInformationService;
@@ -20,21 +19,25 @@ public class BaseController : IBaseInformationService
         => _baseInformationService = baseInformationService;
 
     [HttpGet]
+    [UserAuthorization]
     [RemoteService(IsEnabled = false)]
     public async Task CheckAdvocacyPrice(decimal MinimumAmountOfProxyDeposit)
         => await _baseInformationService.CheckAdvocacyPrice(MinimumAmountOfProxyDeposit);
 
+    [UserAuthorization]
     [HttpGet]
     [RemoteService(IsEnabled = false)]
     public void CheckBlackList(int esaleTypeId)
         => _baseInformationService.CheckBlackList(esaleTypeId);
 
     [HttpGet]
+    [UserAuthorization]
     [RemoteService(IsEnabled = false)]
     public void CheckWhiteList(WhiteListEnumType whiteListEnumType, string Nationalcode = "")
         => _baseInformationService.CheckWhiteList(whiteListEnumType, Nationalcode);
 
     [HttpGet]
+    [UserAuthorization]
     public async Task<List<CarTipDto>> GetCarTipsByCompanyId(int companyId)
         => await _baseInformationService.GetCarTipsByCompanyId(companyId);
 
@@ -51,15 +54,17 @@ public class BaseController : IBaseInformationService
         => _baseInformationService.GetProvince();
 
     [HttpPost]
+    [UserAuthorization]
     public async Task RegistrationValidation(RegistrationValidationDto input)
         => await _baseInformationService.RegistrationValidation(input);
 
     [HttpGet]
-    [RemoteService(IsEnabled =false)]
+    [RemoteService(false)]
     public void RegistrationValidationWithoutCaptcha(RegistrationValidationDto input)
         => _baseInformationService.RegistrationValidationWithoutCaptcha(input);
 
     [HttpGet]
+    [UserAuthorization]
     public async Task TestMe()
         => await _baseInformationService.TestMe();
 }

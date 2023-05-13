@@ -4,10 +4,10 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Volo.Abp;
-using My.Abp.Authorize;
+using Esale.Share.Authorize;
 
 namespace OrderManagement.HttpApi;
-
+    
 [RemoteService]
 [Route("api/services/app/OrderService/[action]")]
 [UserAuthorization]
