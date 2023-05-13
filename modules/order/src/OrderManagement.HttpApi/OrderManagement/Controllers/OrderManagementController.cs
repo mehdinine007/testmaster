@@ -27,10 +27,12 @@ public class OrderManagementController : IOrderAppService
         => await _orderAppService.CommitOrder(commitOrderDto);
 
     [HttpGet]
+    [RemoteService(false)]
     public async Task<List<CustomerOrderReportDto>> GetCompaniesCustomerOrders()
         => await _orderAppService.GetCompaniesCustomerOrders();
 
     [HttpGet]
+    [RemoteService(false)]
     public async Task<List<CustomerOrderPriorityUserDto>> GetCustomerInfoPriorityUser()
         => await _orderAppService.GetCustomerInfoPriorityUser();
 

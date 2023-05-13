@@ -114,7 +114,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
 
     [Audited]
-    //[UnitOfWork(isTransactional: false)]
+    [UnitOfWork(isTransactional: false)]
     public async Task CommitOrder(CommitOrderDto commitOrderDto)
     {
         Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
@@ -753,12 +753,12 @@ public class OrderAppService : ApplicationService, IOrderAppService
         //var commitOrderQuery = (await _commitOrderRepository.GetQueryableAsync())
         //    .Include(x => x.SaleDetail.CarTip.CarType.CarFamily.Company)
         //    .Include(x => x.)
-        //var result = await _commitOrderRepository.GetAllIncluding(x => x.SaleDetail.CarTip.CarType.CarFamily.Company, 
-        //    x => x.User, x => x.User.BirthCity, 
-        //    x => x.User.HabitationCity, 
-        //    x => x.User.IssuingCity, 
-        //    x => x.User.BirthProvince, 
-        //    x => x.User.HabitationProvince, 
+        //var result = await _commitOrderRepository.GetAllIncluding(x => x.SaleDetail.CarTip.CarType.CarFamily.Company,
+        //    x => x.User, x => x.User.BirthCity,
+        //    x => x.User.HabitationCity,
+        //    x => x.User.IssuingCity,
+        //    x => x.User.BirthProvince,
+        //    x => x.User.HabitationProvince,
         //    x => x.User.IssuingProvince)
         //    .Select(x => new
         //    {
@@ -785,30 +785,29 @@ public class OrderAppService : ApplicationService, IOrderAppService
     {
         throw new NotImplementedException();
         //var userId = CurrentUser.Id;
-        //var user = await _userRepository.GetAsync(userId);
         //if (!_commonAppService.IsInRole("Company"))
         //    throw new UserFriendlyException("دسترسی کاربر جاری برای دیدن سفارشات کافی نیست");
+        //var user = await _esaleGrpcClient.GetUserById(_commonAppService.GetUserId());
         //if (!user.CompanyId.HasValue)
         //    throw new UserFriendlyException("کاربرجاری شناسه فعال ندارد.");
-
         //var compayId = user.CompanyId.Value;
-        //var result = await _commitOrderRepository.GetAllIncluding(x => x.SaleDetail.CarTip.CarType.CarFamily.Company, x => x.User, x => x.User.BirthCity, x => x.User.HabitationCity, x => x.User.IssuingCity, x => x.User.BirthProvince, x => x.User.HabitationProvince, x => x.User.IssuingProvince)
+        //var result = await _commitOrderRepository.WithDetails(x => x.SaleDetail.CarTip.CarType.CarFamily.Company)
         //    .Select(x => new
         //    {
-
-        //        x.User,
         //        x.OrderStatus,
         //        x.OrderRejectionStatus,
         //        CompanyId = x.SaleDetail.CarTip.CarType.CarFamily.Company.Id,
         //        PriorityUser = x.PriorityUser
-
-
         //    })
         //    .Where(x => x.OrderRejectionStatus != OrderRejectionType.PhoneNumberAndNationalCodeConflict && x.OrderStatus == OrderStatusType.Winner && x.CompanyId == compayId)
         //    .Select(x => new CustomerOrderPriorityUserDto()
         //    {
         //        PriorityUser = x.PriorityUser,
-        //        CustomerInformation = ObjectMapper.Map<User, UserInfoPriorityDto>(x.User, new UserInfoPriorityDto()),
+        //        CustomerInformation = new UserInfoPriorityDto()
+        //        {
+        //            BirthCityName = "",
+        //            Mobile = 
+        //        },
 
         //    }).ToListAsync();
         //return result;
