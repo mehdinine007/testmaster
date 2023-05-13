@@ -6,6 +6,7 @@ using OrderManagement.Domain.Bases;
 using System.Collections.Generic;
 using System.Linq;
 using OrderManagement.EfCore.Helpers;
+using Volo.Abp.EntityFrameworkCore.Modeling;
 
 namespace OrderManagement.EfCore;
 
@@ -23,6 +24,8 @@ public static class OrderManagementDbContextModelCreatingExtensions
 
         builder.Entity<CustomerOrder>(entity =>
         {
+            entity.ConfigureFullAudited();
+            entity.ConfigureSoftDelete();
             entity.ToTable(nameof(CustomerOrder));
 
             entity.HasIndex(co => new { co.SaleDetailId, co.UserId })
@@ -77,6 +80,11 @@ public static class OrderManagementDbContextModelCreatingExtensions
                .HasMaxLength(26);
             entity.HasIndex(u => u.nationalcode)
               .HasFilter($"{nameof(UserRejectionFromBank.IsDeleted)} = 0");
+        });
+
+        builder.Entity<AdvocacyUser>(entity =>
+        {
+            entity.ToTable(nameof(AdvocacyUser));
         });
 
         builder.Entity<AdvocacyUsersFromBank>(entity =>
@@ -253,6 +261,16 @@ public static class OrderManagementDbContextModelCreatingExtensions
                 ));
             }
             entity.HasData(dataToWrite);
+        });
+
+        builder.Entity<UserRejectionAdvocacy>(entity =>
+        {
+            entity.ToTable(nameof(UserRejectionAdvocacy));
+        });
+
+        builder.Entity<WhiteList>(entity =>
+        {
+            entity.ToTable(nameof(WhiteList));
         });
     }
 }

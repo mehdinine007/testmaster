@@ -2,7 +2,7 @@
 
 namespace OrderManagement.Domain
 {
-    public class CarTip_Gallery_Mapping : FullAuditedAggregateRoot<int>
+    public class CarTip_Gallery_Mapping : FullAuditedEntity<int>
     {
         public int GalleryId { get; set; }
 

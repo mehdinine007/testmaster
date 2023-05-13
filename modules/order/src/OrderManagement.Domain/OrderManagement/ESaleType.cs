@@ -3,7 +3,7 @@ using Volo.Abp.Domain.Entities.Auditing;
 
 namespace OrderManagement.Domain
 {
-    public class ESaleType : FullAuditedAggregateRoot<int>
+    public class ESaleType : FullAuditedEntity<int>
     {
         //private ICollection<SalePlan> _salePlans;
 

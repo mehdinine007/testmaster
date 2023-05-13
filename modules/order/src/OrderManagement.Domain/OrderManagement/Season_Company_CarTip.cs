@@ -3,7 +3,7 @@ using Volo.Abp.Domain.Entities.Auditing;
 
 namespace OrderManagement.Domain
 {
-    public class Season_Company_CarTip : FullAuditedAggregateRoot<int>
+    public class Season_Company_CarTip : FullAuditedEntity<int>
     {
         public int CompanyId { get; set; }
         [ForeignKey("Season")]

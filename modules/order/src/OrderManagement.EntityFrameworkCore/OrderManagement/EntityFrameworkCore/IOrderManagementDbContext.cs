@@ -18,7 +18,7 @@ namespace OrderManagement.EfCore
 
         DbSet<AdvocacyUsersFromBank> AdvocacyUsersFromBanks { get; }
 
-        DbSet<AdvocacyUsers> AdvocacyUsers { get; set; }
+        DbSet<AdvocacyUser> AdvocacyUsers { get; set; }
 
         DbSet<UserRejectionFromBank> UserRejectionFromBank { get; set; }
 

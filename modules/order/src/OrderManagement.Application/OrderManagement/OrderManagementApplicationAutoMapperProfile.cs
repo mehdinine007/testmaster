@@ -52,6 +52,11 @@ namespace OrderManagement
                 .ReverseMap();
             CreateMap<Province, PublicDto>()
                 .ReverseMap();
+
+            CreateMap<SaleDetail, SaleDetailDto>()
+                .ReverseMap()
+                .IgnoreFullAuditedObjectProperties();
+            CreateMap<SaleDetail, SaleDetailOrderDto>();
         }
     }
 }
