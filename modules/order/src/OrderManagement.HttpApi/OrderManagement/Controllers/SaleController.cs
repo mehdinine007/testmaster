@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using My.Abp.Authorize;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.Services;
 using System;
@@ -10,6 +11,7 @@ namespace OrderManagement.HttpApi;
 
 [RemoteService]
 [Route("api/services/app/SaleService/[action]")]
+[UserAuthorization]
 public class SaleController : ISaleService
 {
     private readonly ISaleService _saleService;

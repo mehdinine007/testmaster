@@ -32,6 +32,9 @@ using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using ProductService.Host.Infrastructure.Middlewares;
+using System.Threading.Tasks;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace OrderService.Host
 {
@@ -54,7 +57,7 @@ namespace OrderService.Host
         public override void ConfigureServices(ServiceConfigurationContext context)
         {
             var configuration = context.Services.GetConfiguration();
-            context.Services.Configure<AppSecret>(configuration.GetSection("Authentication:JwtBearer:SecurityKey"));
+            context.Services.Configure<AppSecret>(configuration.GetSection("Authentication:JwtBearer"));
             //Configure<AbpMultiTenancyOptions>(options =>
             //{
             //    options.IsEnabled = MsDemoConsts.IsMultiTenancyEnabled;

@@ -39,13 +39,13 @@ public class JwtMiddleware
     private void AttachUserToContext(HttpContext httpContext, string token)
     {
         JwtSecurityTokenHandler jwtTokenHandler = new();
-        //var key = Encoding.ASCII.GetBytes(_appSecret.Value.SecretKey);
+        var key = Encoding.ASCII.GetBytes(_appSecret.Value.SecurityKey);
         try
         {
             jwtTokenHandler.ValidateToken(token, new TokenValidationParameters()
             {
                 ValidateIssuerSigningKey = true,
-                //IssuerSigningKey = new SymmetricSecurityKey(key),
+                IssuerSigningKey = new SymmetricSecurityKey(key),
                 ValidateIssuer = false,
                 ValidateAudience = false,
                 // set clockskew to zero so tokens expire exactly at token expiration time (instead of 5 minutes later)

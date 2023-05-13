@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using My.Abp.Authorize;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.Services;
 using OrderManagement.Domain.Shared;
@@ -10,6 +11,7 @@ namespace OrderManagement.HttpApi;
 
 [RemoteService]
 [Route("api/services/app/BaseInformationService/[action]")]
+[UserAuthorization]
 public class BaseController : IBaseInformationService
 {
     private readonly IBaseInformationService _baseInformationService;
@@ -56,4 +58,8 @@ public class BaseController : IBaseInformationService
     [RemoteService(IsEnabled =false)]
     public void RegistrationValidationWithoutCaptcha(RegistrationValidationDto input)
         => _baseInformationService.RegistrationValidationWithoutCaptcha(input);
+
+    [HttpGet]
+    public async Task TestMe()
+        => await _baseInformationService.TestMe();
 }
