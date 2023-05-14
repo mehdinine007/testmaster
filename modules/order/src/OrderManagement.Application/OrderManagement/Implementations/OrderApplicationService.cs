@@ -179,11 +179,11 @@ public class OrderAppService : ApplicationService, IOrderAppService
             {
                 SaleDetailDto = SaleDetailFromDb;
                 //await _cacheManager.GetCache("SaleDetail").SetAsync(commitOrderDto.SaleDetailUId.ToString(), SaleDetailDto);
-
+                var f = RedisConstants.SaleDetailTimeOffset;
                 await _distributedCache.SetStringAsync(string.Format(RedisConstants.SaleDetailPrefix, nationalCode),
                     JsonConvert.SerializeObject(SaleDetailDto), new DistributedCacheEntryOptions()
                     {
-                        AbsoluteExpiration = RedisConstants.SaleDetailTimeOffset
+                        AbsoluteExpiration = f
                     });
             }
         }
