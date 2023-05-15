@@ -14,12 +14,13 @@ namespace OrderService.Host
         public static int Main(string[] args)
         {
             //TODO: Temporary: it's not good to read appsettings.json here just to configure logging
+            var environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+
             var configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json")
+                .AddJsonFile(!string.IsNullOrEmpty(environmentName) ? $"appsettings.{environmentName}.json" : "appsettings.json")
                 .AddEnvironmentVariables()
                 .Build();
-
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Error()
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
