@@ -8,7 +8,7 @@ using OrderService.Host.Infrastructures.Middlewares;
 using System;
 using Volo.Abp.Auditing;
 
-namespace Elk.Host.Extensions
+namespace OrderService.Host.Infrastructures.Extensions
 {
     public static class ElkExtension
     {

@@ -8,8 +8,8 @@ using ProductService.Host.Infrastructure.Middlewares;
 using Volo.Abp.Threading;
 using Volo.Abp.Auditing;
 using Volo.Abp.AuditLogging;
-using Elk.Host.Extensions;
 using OrderService.Host.Infrastructures.Middlewares;
+using OrderService.Host.Infrastructures.Extensions;
 
 namespace OrderService.Host
 {
