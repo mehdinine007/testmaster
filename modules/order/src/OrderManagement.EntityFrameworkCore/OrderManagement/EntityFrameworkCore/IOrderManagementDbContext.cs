@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Volo.Abp.AuditLogging;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
 using OrderManagement.Domain;
 using OrderManagement.Domain.Bases;
@@ -64,5 +65,6 @@ namespace OrderManagement.EfCore
 
         DbSet<OrderStatusTypeReadOnly> OrderStatusTypeReadOnly { get; set; }
 
+        DbSet<SaleSchema> SaleSchema { get; set; }
     }
 }

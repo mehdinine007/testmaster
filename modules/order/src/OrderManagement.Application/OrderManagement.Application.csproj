@@ -18,13 +18,15 @@
 		<PackageReference Include="restsharp" Version="110.2.0" />
 		<PackageReference Include="StackExchange.Redis.Extensions.Newtonsoft" Version="9.1.0" />
 		<PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="7.0.1" />
-    </ItemGroup>
+
+	</ItemGroup>
 
 	<ItemGroup>
 		<Protobuf Include="OrderManagement\Protos\EsaleUserService.proto" GrpcService="Client" />
 	</ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\..\..\shared\Extensions\Extensions.csproj" />
       <ProjectReference Include="..\OrderManagement.Application.Contracts\OrderManagement.Application.Contracts.csproj" />
       <ProjectReference Include="..\OrderManagement.Domain\OrderManagement.Domain.csproj" />
     </ItemGroup>

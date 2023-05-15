@@ -6,6 +6,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ProductService.Host.Infrastructure.Middlewares;
 using Volo.Abp.Threading;
+using Volo.Abp.Auditing;
+using Volo.Abp.AuditLogging;
+using Elk.Host.Extensions;
+using Esale.Web.Host.Middelwares;
 
 namespace OrderService.Host
 {
@@ -19,6 +23,14 @@ namespace OrderService.Host
             {
                 options.Configuration = configurations["RedisCache:ConnectionString"];
             });
+            if (configurations["IsElkEnabled"] == "1")
+            {
+                services.ElkNest(configurations, configurations["ElkIndexName"]);
+            }
+            else
+            {
+                services.AddScoped<IAuditingStore, AuditingStoreDb>();
+            }
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)

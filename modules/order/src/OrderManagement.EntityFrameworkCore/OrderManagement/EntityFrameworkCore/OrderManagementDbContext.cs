@@ -1,8 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using OrderManagement.Domain;
 using OrderManagement.Domain.Bases;
+using System.ComponentModel.DataAnnotations;
+using System;
+using Volo.Abp.AuditLogging;
+using Volo.Abp.AuditLogging.EntityFrameworkCore;
 using Volo.Abp.Data;
 using Volo.Abp.EntityFrameworkCore;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace OrderManagement.EfCore
 {
@@ -66,6 +71,8 @@ namespace OrderManagement.EfCore
 
         public DbSet<OrderStatusTypeReadOnly> OrderStatusTypeReadOnly { get; set; }
 
+        public DbSet<SaleSchema> SaleSchema { get; set; }
+
         public OrderManagementDbContext(DbContextOptions<OrderManagementDbContext> options)
             : base(options)
         {
@@ -77,6 +84,7 @@ namespace OrderManagement.EfCore
             //System.Diagnostics.Debugger.Launch();
             base.OnModelCreating(builder);
 
+            builder.ConfigureAuditLogging();
             builder.ConfigureOrderManagement(options =>
             {
                 //options.TablePrefix = TablePrefix;

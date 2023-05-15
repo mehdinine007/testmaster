@@ -148,6 +148,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         SaleDetailOrderDto SaleDetailDto = null;
         var cacheKey = string.Format(RedisConstants.SaleDetailPrefix, nationalCode);
         var cacheResponse = await _distributedCache.GetStringAsync(cacheKey);
+        var ttl = SaleDetailDto.SalePlanEndDate.Subtract(DateTime.Now);
         if (!string.IsNullOrWhiteSpace(cacheResponse))
         {
             var SaleDetailFromCache = System.Text.Json.JsonSerializer.Deserialize<SaleDetail>(cacheResponse);
@@ -179,11 +180,10 @@ public class OrderAppService : ApplicationService, IOrderAppService
             {
                 SaleDetailDto = SaleDetailFromDb;
                 //await _cacheManager.GetCache("SaleDetail").SetAsync(commitOrderDto.SaleDetailUId.ToString(), SaleDetailDto);
-                var f = RedisConstants.SaleDetailTimeOffset;
                 await _distributedCache.SetStringAsync(string.Format(RedisConstants.SaleDetailPrefix, nationalCode),
                     JsonConvert.SerializeObject(SaleDetailDto), new DistributedCacheEntryOptions()
                     {
-                        AbsoluteExpiration = f
+                        AbsoluteExpiration = new DateTimeOffset(DateTime.Now.AddSeconds(ttl.TotalSeconds))
                     });
             }
         }
@@ -228,7 +228,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         // await _baseInformationAppService.CheckAdvocacyPrice(SaleDetailDto.MinimumAmountOfProxyDeposit);
         ///////////////////////////////////iran/////////////
-        var ttl = SaleDetailDto.SalePlanEndDate.Subtract(DateTime.Now);
         ///
         if (_configuration.GetSection("IsIranCellActive").Value == "7")
         {
