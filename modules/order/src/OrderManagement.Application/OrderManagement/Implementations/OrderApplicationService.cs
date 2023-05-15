@@ -42,6 +42,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
     private IConfiguration _configuration { get; set; }
     private readonly IDistributedCache _distributedCache;
     private readonly IRepository<Company, int> _companyRepository;
+    private readonly IUnitOfWorkManager _unitOfWorkManager;
 
     public OrderAppService(ICommonAppService commonAppService,
                            IBaseInformationService baseInformationAppService,
@@ -58,7 +59,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
                            IEsaleGrpcClient esaleGrpcClient,
                            IConfiguration configuration,
                            IDistributedCache distributedCache,
-                           IRepository<Company, int> companyRepository
+                           IRepository<Company, int> companyRepository,
+                           IUnitOfWorkManager UnitOfWorkManager
         )
     {
         _commonAppService = commonAppService;
@@ -77,6 +79,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         _distributedCache = distributedCache;
         _configuration = configuration;
         _companyRepository = companyRepository;
+        _unitOfWorkManager = UnitOfWorkManager;
 
     }
 
@@ -107,6 +110,28 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         return advocacyUserFromBankDto;
 
+
+
+
+    }
+   public async Task Test()
+    {
+        var orderrep = await _advocacyUsers.GetQueryableAsync();
+        AdvocacyUsers users = new AdvocacyUsers();
+        Random rnd = new Random();
+        int month = rnd.Next(1, 1000000);  // creates a number between 1 and 12
+        string nc = month.ToString();
+        users.nationalcode = month.ToString();
+        users.price = 100;
+        users.bankName = "vbn";
+        users.BanksId = 3;
+        users.dateTime = DateTime.Now;
+        users.shabaNumber = "123";
+        await _advocacyUsers.InsertAsync(users);
+        await _unitOfWorkManager.Current.SaveChangesAsync();
+        users = orderrep.FirstOrDefault(x => x.nationalcode == nc);
+        await _advocacyUsers.DeleteAsync(users);
+        await _unitOfWorkManager.Current.SaveChangesAsync();
 
 
 
@@ -405,7 +430,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         customerOrder.OrderStatus = OrderStatusType.RecentlyAdded;
         customerOrder.SaleId = SaleDetailDto.SaleId;
         await _commitOrderRepository.InsertAsync(customerOrder, autoSave: true);
-        //CurrentUnitOfWork.SaveChanges();
+        await CurrentUnitOfWork.SaveChangesAsync();
         //unitOfWork.Complete();
         //}
         //await _cacheManager.GetCache("CommitOrder").
