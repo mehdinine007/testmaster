@@ -13,7 +13,7 @@ using Volo.Abp.DependencyInjection;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Uow;
 
-namespace Esale.Web.Host.Middelwares
+namespace OrderService.Host.Infrastructures.Middlewares
 {
     public class AuditingStoreDb : IAuditingStore, ITransientDependency
     {

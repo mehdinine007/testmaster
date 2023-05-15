@@ -48,8 +48,4 @@
         <None Remove="Logs\**" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Compile Remove="Middelwares\AuditLogInfoToAuditLogConverter.cs" />
-    </ItemGroup>
-
 </Project>

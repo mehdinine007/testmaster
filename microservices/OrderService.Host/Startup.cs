@@ -9,7 +9,7 @@ using Volo.Abp.Threading;
 using Volo.Abp.Auditing;
 using Volo.Abp.AuditLogging;
 using Elk.Host.Extensions;
-using Esale.Web.Host.Middelwares;
+using OrderService.Host.Infrastructures.Middlewares;
 
 namespace OrderService.Host
 {
