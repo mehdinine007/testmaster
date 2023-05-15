@@ -290,9 +290,6 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
 
     }
 
-    public async Task TestMe()
-    {
-        var user = await _esaleGrpcClient.GetUserById(50);
-
-    }
+    public async Task<UserDto> GrpcTest()
+        => await _esaleGrpcClient.GetUserById(_commonAppService.GetUserId());
 }

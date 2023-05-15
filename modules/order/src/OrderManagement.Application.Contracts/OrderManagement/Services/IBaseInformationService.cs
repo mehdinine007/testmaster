@@ -18,6 +18,6 @@ namespace OrderManagement.Application.Contracts.Services
         void RegistrationValidationWithoutCaptcha(RegistrationValidationDto input);
         void CheckWhiteList(WhiteListEnumType whiteListEnumType, string Nationalcode = "");
 
-        Task TestMe();
+        Task<UserDto> GrpcTest();
     }
 }

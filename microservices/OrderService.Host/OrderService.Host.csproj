@@ -22,7 +22,9 @@
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-    </ItemGroup>
+		<PackageReference Include="NEST" Version="7.17.5" />
+		<PackageReference Include="NEST.JsonNetSerializer" Version="7.17.5" />
+	</ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="Volo.Abp.Autofac" Version="7.2.1" />
