@@ -21,6 +21,8 @@ using OrderManagement.Application;
 using OrderManagement.HttpApi;
 using OrderManagement.EfCore;
 using OrderService.Host.Infrastructures;
+using Volo.Abp.Uow;
+using Microsoft.IdentityModel.Logging;
 
 namespace OrderService.Host
 {
@@ -73,7 +75,10 @@ namespace OrderService.Host
             {
                 options.UseSqlServer();
             });
-
+            Configure<AbpUnitOfWorkDefaultOptions>(options =>
+            {
+                options.TransactionBehavior = UnitOfWorkTransactionBehavior.Disabled;
+            });
             context.Services.AddStackExchangeRedisCache(options =>
             {
                 options.Configuration = configuration["Redis:Configuration"];
@@ -97,6 +102,7 @@ namespace OrderService.Host
             {
                 x.Filters.Add(new EsaleResultFilter(service));
             });
+            IdentityModelEventSource.ShowPII = true;
 
             //var redis = ConnectionMultiplexer.Connect(configuration["Redis:Configuration"]);
             //context.Services.AddDataProtection()
