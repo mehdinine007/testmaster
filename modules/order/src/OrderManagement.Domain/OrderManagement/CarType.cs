@@ -3,7 +3,7 @@ using Volo.Abp.Domain.Entities.Auditing;
 
 namespace OrderManagement.Domain
 {
-    public class CarType : FullAuditedAggregateRoot<int>
+    public class CarType : FullAuditedEntity<int>
     {
         private ICollection<CarTip> _carTips;
 

@@ -1,12 +1,8 @@
 using System;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.DependencyInjection;
-using StackExchange.Redis;
 using Microsoft.OpenApi.Models;
-using MsDemo.Shared;
 using Volo.Abp;
-using Volo.Abp.AspNetCore.MultiTenancy;
 using Volo.Abp.AspNetCore.Mvc;
 using Volo.Abp.Auditing;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
@@ -18,20 +14,13 @@ using Volo.Abp.EventBus.RabbitMq;
 using Volo.Abp.Localization;
 using Volo.Abp.Modularity;
 //using Volo.Abp.MultiTenancy;
-using Volo.Abp.PermissionManagement.EntityFrameworkCore;
 //using Volo.Abp.SettingManagement.EntityFrameworkCore;
 using Volo.Abp.TenantManagement.EntityFrameworkCore;
 using Volo.Abp.Threading;
 using OrderManagement.Application;
 using OrderManagement.HttpApi;
 using OrderManagement.EfCore;
-using Autofac.Core;
 using OrderService.Host.Infrastructures;
-using System.Net;
-using System.Linq;
-using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json;
-using ProductService.Host.Infrastructure.Middlewares;
 
 namespace OrderService.Host
 {
@@ -54,7 +43,7 @@ namespace OrderService.Host
         public override void ConfigureServices(ServiceConfigurationContext context)
         {
             var configuration = context.Services.GetConfiguration();
-            context.Services.Configure<AppSecret>(configuration.GetSection("Authentication:JwtBearer:SecurityKey"));
+            context.Services.Configure<AppSecret>(configuration.GetSection("Authentication:JwtBearer"));
             //Configure<AbpMultiTenancyOptions>(options =>
             //{
             //    options.IsEnabled = MsDemoConsts.IsMultiTenancyEnabled;
@@ -134,6 +123,7 @@ namespace OrderService.Host
             {
                 options.SwaggerEndpoint("/swagger/v1/swagger.json", "Order Service API");
             });
+
             app.UseAuditing();
             app.UseConfiguredEndpoints();
             //TODO: Problem on a clustered environment

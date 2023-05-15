@@ -289,4 +289,10 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
         return ObjectMapper.Map<List<City>, List<PublicDto>>(_cityRepository.WithDetails().Where(y => y.ProvinceId == ProvienceId).ToList());
 
     }
+
+    public async Task TestMe()
+    {
+        var user = await _esaleGrpcClient.GetUserById(50);
+
+    }
 }

@@ -17,5 +17,7 @@ namespace OrderManagement.Application.Contracts.Services
         Task CheckAdvocacyPrice(decimal MinimumAmountOfProxyDeposit);
         void RegistrationValidationWithoutCaptcha(RegistrationValidationDto input);
         void CheckWhiteList(WhiteListEnumType whiteListEnumType, string Nationalcode = "");
+
+        Task TestMe();
     }
 }
