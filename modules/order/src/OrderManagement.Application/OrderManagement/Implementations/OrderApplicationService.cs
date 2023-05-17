@@ -117,7 +117,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
    public async Task Test()
     {
         var orderrep = await _advocacyUsers.GetQueryableAsync();
-        AdvocacyUsers users = new AdvocacyUsers();
+        AdvocacyUser users = new AdvocacyUser();
         Random rnd = new Random();
         int month = rnd.Next(1, 1000000);  // creates a number between 1 and 12
         string nc = month.ToString();
