@@ -24,7 +24,7 @@ namespace OrderManagement.EfCore.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("OrderManagement.Domain.AdvocacyUsers", b =>
+            modelBuilder.Entity("OrderManagement.Domain.AdvocacyUser", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -36,34 +36,25 @@ namespace OrderManagement.EfCore.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("CreationTime");
+                        .HasColumnType("datetime2");
 
                     b.Property<Guid?>("CreatorId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("CreatorId");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("DeleterId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("DeleterId");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("DeletionTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("DeletionTime");
+                        .HasColumnType("datetime2");
 
                     b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false)
-                        .HasColumnName("IsDeleted");
+                        .HasColumnType("bit");
 
                     b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("LastModificationTime");
+                        .HasColumnType("datetime2");
 
                     b.Property<Guid?>("LastModifierId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("LastModifierId");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<long>("UserId")
                         .HasColumnType("bigint");
@@ -89,7 +80,7 @@ namespace OrderManagement.EfCore.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AdvocacyUsers");
+                    b.ToTable("AdvocacyUser", (string)null);
                 });
 
             modelBuilder.Entity("OrderManagement.Domain.AdvocacyUsersFromBank", b =>
@@ -107,34 +98,25 @@ namespace OrderManagement.EfCore.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("CreationTime");
+                        .HasColumnType("datetime2");
 
                     b.Property<Guid?>("CreatorId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("CreatorId");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("DeleterId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("DeleterId");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("DeletionTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("DeletionTime");
+                        .HasColumnType("datetime2");
 
                     b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false)
-                        .HasColumnName("IsDeleted");
+                        .HasColumnType("bit");
 
                     b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("LastModificationTime");
+                        .HasColumnType("datetime2");
 
                     b.Property<Guid?>("LastModifierId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("LastModifierId");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<long>("UserId")
                         .HasColumnType("bigint");
@@ -386,34 +368,25 @@ namespace OrderManagement.EfCore.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("CreationTime");
+                        .HasColumnType("datetime2");
 
                     b.Property<Guid?>("CreatorId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("CreatorId");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("DeleterId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("DeleterId");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("DeletionTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("DeletionTime");
+                        .HasColumnType("datetime2");
 
                     b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false)
-                        .HasColumnName("IsDeleted");
+                        .HasColumnType("bit");
 
                     b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("LastModificationTime");
+                        .HasColumnType("datetime2");
 
                     b.Property<Guid?>("LastModifierId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("LastModifierId");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Title")
                         .HasColumnType("nvarchar(max)");
@@ -437,37 +410,28 @@ namespace OrderManagement.EfCore.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("CreationTime");
+                        .HasColumnType("datetime2");
 
                     b.Property<Guid?>("CreatorId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("CreatorId");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("DeleterId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("DeleterId");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("DeletionTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("DeletionTime");
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("EsaleTypeId")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false)
-                        .HasColumnName("IsDeleted");
+                        .HasColumnType("bit");
 
                     b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("LastModificationTime");
+                        .HasColumnType("datetime2");
 
                     b.Property<Guid?>("LastModifierId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("LastModifierId");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Nationalcode")
                         .HasColumnType("nvarchar(450)");
@@ -497,34 +461,25 @@ namespace OrderManagement.EfCore.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("CreationTime");
+                        .HasColumnType("datetime2");
 
                     b.Property<Guid?>("CreatorId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("CreatorId");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("DeleterId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("DeleterId");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("DeletionTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("DeletionTime");
+                        .HasColumnType("datetime2");
 
                     b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false)
-                        .HasColumnName("IsDeleted");
+                        .HasColumnType("bit");
 
                     b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("LastModificationTime");
+                        .HasColumnType("datetime2");
 
                     b.Property<Guid?>("LastModifierId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("LastModifierId");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Title")
                         .HasColumnType("nvarchar(max)");
@@ -547,48 +502,29 @@ namespace OrderManagement.EfCore.Migrations
                     b.Property<int>("CarTipId")
                         .HasColumnType("int");
 
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasMaxLength(40)
-                        .HasColumnType("nvarchar(40)")
-                        .HasColumnName("ConcurrencyStamp");
-
                     b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("CreationTime");
+                        .HasColumnType("datetime2");
 
                     b.Property<Guid?>("CreatorId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("CreatorId");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("DeleterId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("DeleterId");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("DeletionTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("DeletionTime");
-
-                    b.Property<string>("ExtraProperties")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("ExtraProperties");
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("GalleryId")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false)
-                        .HasColumnName("IsDeleted");
+                        .HasColumnType("bit");
 
                     b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("LastModificationTime");
+                        .HasColumnType("datetime2");
 
                     b.Property<Guid?>("LastModifierId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("LastModifierId");
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
@@ -610,45 +546,26 @@ namespace OrderManagement.EfCore.Migrations
                     b.Property<int>("CarFamilyId")
                         .HasColumnType("int");
 
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasMaxLength(40)
-                        .HasColumnType("nvarchar(40)")
-                        .HasColumnName("ConcurrencyStamp");
-
                     b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("CreationTime");
+                        .HasColumnType("datetime2");
 
                     b.Property<Guid?>("CreatorId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("CreatorId");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("DeleterId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("DeleterId");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("DeletionTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("DeletionTime");
-
-                    b.Property<string>("ExtraProperties")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("ExtraProperties");
+                        .HasColumnType("datetime2");
 
                     b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false)
-                        .HasColumnName("IsDeleted");
+                        .HasColumnType("bit");
 
                     b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("LastModificationTime");
+                        .HasColumnType("datetime2");
 
                     b.Property<Guid?>("LastModifierId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("LastModifierId");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Title")
                         .HasColumnType("nvarchar(max)");
@@ -658,27 +575,6 @@ namespace OrderManagement.EfCore.Migrations
                     b.HasIndex("CarFamilyId");
 
                     b.ToTable("CarType", (string)null);
-                });
-
-            modelBuilder.Entity("OrderManagement.Domain.City", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .HasColumnType("NVARCHAR(100)");
-
-                    b.Property<int>("ProvinceId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProvinceId");
-
-                    b.ToTable("City", "aucbase");
                 });
 
             modelBuilder.Entity("OrderManagement.Domain.Company", b =>
@@ -693,34 +589,25 @@ namespace OrderManagement.EfCore.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("CreationTime");
+                        .HasColumnType("datetime2");
 
                     b.Property<Guid?>("CreatorId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("CreatorId");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("DeleterId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("DeleterId");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("DeletionTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("DeletionTime");
+                        .HasColumnType("datetime2");
 
                     b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false)
-                        .HasColumnName("IsDeleted");
+                        .HasColumnType("bit");
 
                     b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("LastModificationTime");
+                        .HasColumnType("datetime2");
 
                     b.Property<Guid?>("LastModifierId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("LastModifierId");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int?>("LogoId")
                         .HasColumnType("int");
@@ -846,45 +733,26 @@ namespace OrderManagement.EfCore.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasMaxLength(40)
-                        .HasColumnType("nvarchar(40)")
-                        .HasColumnName("ConcurrencyStamp");
-
                     b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("CreationTime");
+                        .HasColumnType("datetime2");
 
                     b.Property<Guid?>("CreatorId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("CreatorId");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("DeleterId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("DeleterId");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("DeletionTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("DeletionTime");
-
-                    b.Property<string>("ExtraProperties")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("ExtraProperties");
+                        .HasColumnType("datetime2");
 
                     b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false)
-                        .HasColumnName("IsDeleted");
+                        .HasColumnType("bit");
 
                     b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("LastModificationTime");
+                        .HasColumnType("datetime2");
 
                     b.Property<Guid?>("LastModifierId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("LastModifierId");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("SaleTypeName")
                         .HasColumnType("nvarchar(max)");
@@ -906,34 +774,25 @@ namespace OrderManagement.EfCore.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("CreationTime");
+                        .HasColumnType("datetime2");
 
                     b.Property<Guid?>("CreatorId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("CreatorId");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("DeleterId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("DeleterId");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("DeletionTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("DeletionTime");
+                        .HasColumnType("datetime2");
 
                     b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false)
-                        .HasColumnName("IsDeleted");
+                        .HasColumnType("bit");
 
                     b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("LastModificationTime");
+                        .HasColumnType("datetime2");
 
                     b.Property<Guid?>("LastModifierId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("LastModifierId");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("NationalCode")
                         .HasMaxLength(10)
@@ -965,34 +824,25 @@ namespace OrderManagement.EfCore.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("CreationTime");
+                        .HasColumnType("datetime2");
 
                     b.Property<Guid?>("CreatorId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("CreatorId");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("DeleterId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("DeleterId");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("DeletionTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("DeletionTime");
+                        .HasColumnType("datetime2");
 
                     b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false)
-                        .HasColumnName("IsDeleted");
+                        .HasColumnType("bit");
 
                     b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("LastModificationTime");
+                        .HasColumnType("datetime2");
 
                     b.Property<Guid?>("LastModifierId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("LastModifierId");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("NationalCode")
                         .HasMaxLength(10)
@@ -1025,78 +875,32 @@ namespace OrderManagement.EfCore.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("CreationTime");
+                        .HasColumnType("datetime2");
 
                     b.Property<Guid?>("CreatorId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("CreatorId");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("DeleterId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("DeleterId");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("DeletionTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("DeletionTime");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("ImageUrl")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false)
-                        .HasColumnName("IsDeleted");
+                        .HasColumnType("bit");
 
                     b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("LastModificationTime");
+                        .HasColumnType("datetime2");
 
                     b.Property<Guid?>("LastModifierId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("LastModifierId");
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
                     b.ToTable("Gallery", (string)null);
-                });
-
-            modelBuilder.Entity("OrderManagement.Domain.Logs", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
-
-                    b.Property<DateTime>("EndDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Ip")
-                        .HasColumnType("VARCHAR(50)");
-
-                    b.Property<int>("LocationId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Message")
-                        .HasColumnType("VARCHAR(max)");
-
-                    b.Property<string>("Method")
-                        .HasColumnType("VARCHAR(100)");
-
-                    b.Property<string>("Servername")
-                        .HasColumnType("VARCHAR(50)");
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<short>("Type")
-                        .HasColumnType("smallint");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Logs");
                 });
 
             modelBuilder.Entity("OrderManagement.Domain.PreSale", b =>
@@ -1109,64 +913,39 @@ namespace OrderManagement.EfCore.Migrations
 
                     b.Property<string>("Brand")
                         .IsRequired()
-                        .HasColumnType("NVARCHAR(150)");
+                        .HasColumnType("string(150)");
 
                     b.Property<int>("Count")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("CreationTime");
+                        .HasColumnType("datetime2");
 
                     b.Property<Guid?>("CreatorId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("CreatorId");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("DeleterId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("DeleterId");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("DeletionTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("DeletionTime");
+                        .HasColumnType("datetime2");
 
                     b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false)
-                        .HasColumnName("IsDeleted");
+                        .HasColumnType("bit");
 
                     b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("LastModificationTime");
+                        .HasColumnType("datetime2");
 
                     b.Property<Guid?>("LastModifierId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("LastModifierId");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("NVARCHAR(150)");
+                        .HasColumnType("string(150)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("PreSales");
-                });
-
-            modelBuilder.Entity("OrderManagement.Domain.Province", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .HasColumnType("NVARCHAR(100)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Province", "aucbase");
+                    b.ToTable("PreSale", (string)null);
                 });
 
             modelBuilder.Entity("OrderManagement.Domain.SaleDetail", b =>
@@ -1193,20 +972,16 @@ namespace OrderManagement.EfCore.Migrations
                         .HasColumnType("float");
 
                     b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("CreationTime");
+                        .HasColumnType("datetime2");
 
                     b.Property<Guid?>("CreatorId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("CreatorId");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("DeleterId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("DeleterId");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("DeletionTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("DeletionTime");
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("DeliverDaysCount")
                         .HasColumnType("int");
@@ -1215,18 +990,13 @@ namespace OrderManagement.EfCore.Migrations
                         .HasColumnType("int");
 
                     b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false)
-                        .HasColumnName("IsDeleted");
+                        .HasColumnType("bit");
 
                     b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("LastModificationTime");
+                        .HasColumnType("datetime2");
 
                     b.Property<Guid?>("LastModifierId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("LastModifierId");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("ManufactureDate")
                         .HasColumnType("datetime2");
@@ -1275,6 +1045,49 @@ namespace OrderManagement.EfCore.Migrations
                     b.ToTable("SaleDetail", (string)null);
                 });
 
+            modelBuilder.Entity("OrderManagement.Domain.SaleSchema", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("DeleterId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("SaleStatus")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SaleSchema", (string)null);
+                });
+
             modelBuilder.Entity("OrderManagement.Domain.Season", b =>
                 {
                     b.Property<int>("Id")
@@ -1283,52 +1096,33 @@ namespace OrderManagement.EfCore.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasMaxLength(40)
-                        .HasColumnType("nvarchar(40)")
-                        .HasColumnName("ConcurrencyStamp");
-
                     b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("CreationTime");
+                        .HasColumnType("datetime2");
 
                     b.Property<Guid?>("CreatorId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("CreatorId");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("DeleterId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("DeleterId");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("DeletionTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("DeletionTime");
-
-                    b.Property<string>("ExtraProperties")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("ExtraProperties");
+                        .HasColumnType("datetime2");
 
                     b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false)
-                        .HasColumnName("IsDeleted");
+                        .HasColumnType("bit");
 
                     b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("LastModificationTime");
+                        .HasColumnType("datetime2");
 
                     b.Property<Guid?>("LastModifierId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("LastModifierId");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Seasons");
+                    b.ToTable("Season", (string)null);
                 });
 
             modelBuilder.Entity("OrderManagement.Domain.Season_Company_CarTip", b =>
@@ -1345,51 +1139,32 @@ namespace OrderManagement.EfCore.Migrations
                     b.Property<int>("CompanyId")
                         .HasColumnType("int");
 
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasMaxLength(40)
-                        .HasColumnType("nvarchar(40)")
-                        .HasColumnName("ConcurrencyStamp");
-
                     b.Property<int>("Count")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("CreationTime");
+                        .HasColumnType("datetime2");
 
                     b.Property<Guid?>("CreatorId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("CreatorId");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("DeleterId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("DeleterId");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("DeletionTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("DeletionTime");
+                        .HasColumnType("datetime2");
 
                     b.Property<int?>("EsaleTypeId")
                         .HasColumnType("int");
 
-                    b.Property<string>("ExtraProperties")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("ExtraProperties");
-
                     b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false)
-                        .HasColumnName("IsDeleted");
+                        .HasColumnType("bit");
 
                     b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("LastModificationTime");
+                        .HasColumnType("datetime2");
 
                     b.Property<Guid?>("LastModifierId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("LastModifierId");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("SeasonId")
                         .HasColumnType("int");
@@ -1425,34 +1200,25 @@ namespace OrderManagement.EfCore.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("CreationTime");
+                        .HasColumnType("datetime2");
 
                     b.Property<Guid?>("CreatorId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("CreatorId");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("DeleterId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("DeleterId");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("DeletionTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("DeletionTime");
+                        .HasColumnType("datetime2");
 
                     b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false)
-                        .HasColumnName("IsDeleted");
+                        .HasColumnType("bit");
 
                     b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("LastModificationTime");
+                        .HasColumnType("datetime2");
 
                     b.Property<Guid?>("LastModifierId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("LastModifierId");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("NationalCode")
                         .IsRequired()
@@ -1474,7 +1240,7 @@ namespace OrderManagement.EfCore.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("UserRejectionAdvocacies");
+                    b.ToTable("UserRejectionAdvocacy", (string)null);
                 });
 
             modelBuilder.Entity("OrderManagement.Domain.UserRejectionFromBank", b =>
@@ -1492,34 +1258,25 @@ namespace OrderManagement.EfCore.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("CreationTime");
+                        .HasColumnType("datetime2");
 
                     b.Property<Guid?>("CreatorId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("CreatorId");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("DeleterId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("DeleterId");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("DeletionTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("DeletionTime");
+                        .HasColumnType("datetime2");
 
                     b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false)
-                        .HasColumnName("IsDeleted");
+                        .HasColumnType("bit");
 
                     b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("LastModificationTime");
+                        .HasColumnType("datetime2");
 
                     b.Property<Guid?>("LastModifierId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("LastModifierId");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<long>("UserId")
                         .HasColumnType("bigint");
@@ -1564,34 +1321,25 @@ namespace OrderManagement.EfCore.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("CreationTime");
+                        .HasColumnType("datetime2");
 
                     b.Property<Guid?>("CreatorId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("CreatorId");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("DeleterId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("DeleterId");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("DeletionTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("DeletionTime");
+                        .HasColumnType("datetime2");
 
                     b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false)
-                        .HasColumnName("IsDeleted");
+                        .HasColumnType("bit");
 
                     b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("LastModificationTime");
+                        .HasColumnType("datetime2");
 
                     b.Property<Guid?>("LastModifierId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("LastModifierId");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("NationalCode")
                         .HasColumnType("nvarchar(450)");
@@ -1607,7 +1355,7 @@ namespace OrderManagement.EfCore.Migrations
                     b.HasIndex("NationalCode", "WhiteListType")
                         .HasFilter("IsDeleted = 0");
 
-                    b.ToTable("WhiteLists");
+                    b.ToTable("WhiteList", (string)null);
                 });
 
             modelBuilder.Entity("OrderManagement.Domain.Year", b =>
@@ -1618,45 +1366,26 @@ namespace OrderManagement.EfCore.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasMaxLength(40)
-                        .HasColumnType("nvarchar(40)")
-                        .HasColumnName("ConcurrencyStamp");
-
                     b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("CreationTime");
+                        .HasColumnType("datetime2");
 
                     b.Property<Guid?>("CreatorId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("CreatorId");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("DeleterId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("DeleterId");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("DeletionTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("DeletionTime");
-
-                    b.Property<string>("ExtraProperties")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("ExtraProperties");
+                        .HasColumnType("datetime2");
 
                     b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false)
-                        .HasColumnName("IsDeleted");
+                        .HasColumnType("bit");
 
                     b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("LastModificationTime");
+                        .HasColumnType("datetime2");
 
                     b.Property<Guid?>("LastModifierId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("LastModifierId");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Title")
                         .HasColumnType("nvarchar(max)");
@@ -1664,6 +1393,268 @@ namespace OrderManagement.EfCore.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Year");
+                });
+
+            modelBuilder.Entity("Volo.Abp.AuditLogging.AuditLog", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ApplicationName")
+                        .HasMaxLength(96)
+                        .HasColumnType("nvarchar(96)")
+                        .HasColumnName("ApplicationName");
+
+                    b.Property<string>("BrowserInfo")
+                        .HasMaxLength(512)
+                        .HasColumnType("nvarchar(512)")
+                        .HasColumnName("BrowserInfo");
+
+                    b.Property<string>("ClientId")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)")
+                        .HasColumnName("ClientId");
+
+                    b.Property<string>("ClientIpAddress")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)")
+                        .HasColumnName("ClientIpAddress");
+
+                    b.Property<string>("ClientName")
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)")
+                        .HasColumnName("ClientName");
+
+                    b.Property<string>("Comments")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)")
+                        .HasColumnName("Comments");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)")
+                        .HasColumnName("ConcurrencyStamp");
+
+                    b.Property<string>("CorrelationId")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)")
+                        .HasColumnName("CorrelationId");
+
+                    b.Property<string>("Exceptions")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ExecutionDuration")
+                        .HasColumnType("int")
+                        .HasColumnName("ExecutionDuration");
+
+                    b.Property<DateTime>("ExecutionTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ExtraProperties")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("ExtraProperties");
+
+                    b.Property<string>("HttpMethod")
+                        .HasMaxLength(16)
+                        .HasColumnType("nvarchar(16)")
+                        .HasColumnName("HttpMethod");
+
+                    b.Property<int?>("HttpStatusCode")
+                        .HasColumnType("int")
+                        .HasColumnName("HttpStatusCode");
+
+                    b.Property<Guid?>("ImpersonatorTenantId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("ImpersonatorTenantId");
+
+                    b.Property<string>("ImpersonatorTenantName")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)")
+                        .HasColumnName("ImpersonatorTenantName");
+
+                    b.Property<Guid?>("ImpersonatorUserId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("ImpersonatorUserId");
+
+                    b.Property<string>("ImpersonatorUserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)")
+                        .HasColumnName("ImpersonatorUserName");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("TenantId");
+
+                    b.Property<string>("TenantName")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)")
+                        .HasColumnName("TenantName");
+
+                    b.Property<string>("Url")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)")
+                        .HasColumnName("Url");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("UserId");
+
+                    b.Property<string>("UserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)")
+                        .HasColumnName("UserName");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId", "ExecutionTime");
+
+                    b.HasIndex("TenantId", "UserId", "ExecutionTime");
+
+                    b.ToTable("AbpAuditLogs", (string)null);
+                });
+
+            modelBuilder.Entity("Volo.Abp.AuditLogging.AuditLogAction", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AuditLogId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("AuditLogId");
+
+                    b.Property<int>("ExecutionDuration")
+                        .HasColumnType("int")
+                        .HasColumnName("ExecutionDuration");
+
+                    b.Property<DateTime>("ExecutionTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("ExecutionTime");
+
+                    b.Property<string>("ExtraProperties")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("ExtraProperties");
+
+                    b.Property<string>("MethodName")
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)")
+                        .HasColumnName("MethodName");
+
+                    b.Property<string>("Parameters")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)")
+                        .HasColumnName("Parameters");
+
+                    b.Property<string>("ServiceName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)")
+                        .HasColumnName("ServiceName");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("TenantId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AuditLogId");
+
+                    b.HasIndex("TenantId", "ServiceName", "MethodName", "ExecutionTime");
+
+                    b.ToTable("AbpAuditLogActions", (string)null);
+                });
+
+            modelBuilder.Entity("Volo.Abp.AuditLogging.EntityChange", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AuditLogId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("AuditLogId");
+
+                    b.Property<DateTime>("ChangeTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("ChangeTime");
+
+                    b.Property<byte>("ChangeType")
+                        .HasColumnType("tinyint")
+                        .HasColumnName("ChangeType");
+
+                    b.Property<string>("EntityId")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)")
+                        .HasColumnName("EntityId");
+
+                    b.Property<Guid?>("EntityTenantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("EntityTypeFullName")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)")
+                        .HasColumnName("EntityTypeFullName");
+
+                    b.Property<string>("ExtraProperties")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("ExtraProperties");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("TenantId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AuditLogId");
+
+                    b.HasIndex("TenantId", "EntityTypeFullName", "EntityId");
+
+                    b.ToTable("AbpEntityChanges", (string)null);
+                });
+
+            modelBuilder.Entity("Volo.Abp.AuditLogging.EntityPropertyChange", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("EntityChangeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("NewValue")
+                        .HasMaxLength(512)
+                        .HasColumnType("nvarchar(512)")
+                        .HasColumnName("NewValue");
+
+                    b.Property<string>("OriginalValue")
+                        .HasMaxLength(512)
+                        .HasColumnType("nvarchar(512)")
+                        .HasColumnName("OriginalValue");
+
+                    b.Property<string>("PropertyName")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)")
+                        .HasColumnName("PropertyName");
+
+                    b.Property<string>("PropertyTypeFullName")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)")
+                        .HasColumnName("PropertyTypeFullName");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("TenantId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EntityChangeId");
+
+                    b.ToTable("AbpEntityPropertyChanges", (string)null);
                 });
 
             modelBuilder.Entity("OrderManagement.Domain.AdvocacyUsersFromBank", b =>
@@ -1738,17 +1729,6 @@ namespace OrderManagement.EfCore.Migrations
                         .IsRequired();
 
                     b.Navigation("CarFamily");
-                });
-
-            modelBuilder.Entity("OrderManagement.Domain.City", b =>
-                {
-                    b.HasOne("OrderManagement.Domain.Province", "Province")
-                        .WithMany("ProvinceCities")
-                        .HasForeignKey("ProvinceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Province");
                 });
 
             modelBuilder.Entity("OrderManagement.Domain.Company", b =>
@@ -1842,6 +1822,33 @@ namespace OrderManagement.EfCore.Migrations
                     b.Navigation("Banks");
                 });
 
+            modelBuilder.Entity("Volo.Abp.AuditLogging.AuditLogAction", b =>
+                {
+                    b.HasOne("Volo.Abp.AuditLogging.AuditLog", null)
+                        .WithMany("Actions")
+                        .HasForeignKey("AuditLogId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Volo.Abp.AuditLogging.EntityChange", b =>
+                {
+                    b.HasOne("Volo.Abp.AuditLogging.AuditLog", null)
+                        .WithMany("EntityChanges")
+                        .HasForeignKey("AuditLogId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Volo.Abp.AuditLogging.EntityPropertyChange", b =>
+                {
+                    b.HasOne("Volo.Abp.AuditLogging.EntityChange", null)
+                        .WithMany("PropertyChanges")
+                        .HasForeignKey("EntityChangeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("OrderManagement.Domain.Bank", b =>
                 {
                     b.Navigation("AdvocacyUsersFromBank");
@@ -1893,11 +1900,6 @@ namespace OrderManagement.EfCore.Migrations
                     b.Navigation("CompanyLogoInPage");
                 });
 
-            modelBuilder.Entity("OrderManagement.Domain.Province", b =>
-                {
-                    b.Navigation("ProvinceCities");
-                });
-
             modelBuilder.Entity("OrderManagement.Domain.SaleDetail", b =>
                 {
                     b.Navigation("CustomerOrders");
@@ -1911,6 +1913,18 @@ namespace OrderManagement.EfCore.Migrations
             modelBuilder.Entity("OrderManagement.Domain.Year", b =>
                 {
                     b.Navigation("SeasonCompanyCarTip");
+                });
+
+            modelBuilder.Entity("Volo.Abp.AuditLogging.AuditLog", b =>
+                {
+                    b.Navigation("Actions");
+
+                    b.Navigation("EntityChanges");
+                });
+
+            modelBuilder.Entity("Volo.Abp.AuditLogging.EntityChange", b =>
+                {
+                    b.Navigation("PropertyChanges");
                 });
 #pragma warning restore 612, 618
         }

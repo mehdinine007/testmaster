@@ -11,11 +11,11 @@ public class EmptyActionResultWrapper : IActionResultWrapper
         switch (context)
         {
             case ResultExecutingContext resultExecutingContext:
-                resultExecutingContext.Result = new ObjectResult(ApiResult.InitilizeFailureApiResult(new Exception()));
+                resultExecutingContext.Result = new ObjectResult(ApiResult.InitilizeSuccessfullApiResult(new string[0]));
                 return;
 
             case PageHandlerExecutedContext pageHandlerExecutedContext:
-                pageHandlerExecutedContext.Result = new ObjectResult(ApiResult.InitilizeFailureApiResult(new Exception()));
+                pageHandlerExecutedContext.Result = new ObjectResult(ApiResult.InitilizeSuccessfullApiResult(new string[0]));
                 return;
         }
     }

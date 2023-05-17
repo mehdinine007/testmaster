@@ -91,6 +91,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderService.Host", "micros
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Authorization", "shared\Authorization\Authorization.csproj", "{B32D6613-0F47-4D81-812E-FD662ECE6312}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Extensions", "shared\Extensions\Extensions.csproj", "{E4F713F3-1F07-4D91-93A4-510DB8B0B5AF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -233,6 +235,10 @@ Global
 		{B32D6613-0F47-4D81-812E-FD662ECE6312}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B32D6613-0F47-4D81-812E-FD662ECE6312}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B32D6613-0F47-4D81-812E-FD662ECE6312}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E4F713F3-1F07-4D91-93A4-510DB8B0B5AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E4F713F3-1F07-4D91-93A4-510DB8B0B5AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E4F713F3-1F07-4D91-93A4-510DB8B0B5AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E4F713F3-1F07-4D91-93A4-510DB8B0B5AF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -277,6 +283,7 @@ Global
 		{AD805237-A5BE-4674-B862-9FB634378654} = {FD0243FA-5C37-474B-9649-71813ECB8AFA}
 		{9C0BFA2C-F12A-48BA-98BC-375EA8E8FB7D} = {3B26D176-390B-4F51-BE52-E9B422C28A88}
 		{B32D6613-0F47-4D81-812E-FD662ECE6312} = {2B3B460C-0293-44A1-BEF4-91A778CE73CE}
+		{E4F713F3-1F07-4D91-93A4-510DB8B0B5AF} = {2B3B460C-0293-44A1-BEF4-91A778CE73CE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {37474F0D-2E52-4D2F-B39B-7FE3FF31B4EC}

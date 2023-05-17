@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Volo.Abp.AuditLogging;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
 using OrderManagement.Domain;
 using OrderManagement.Domain.Bases;
@@ -18,7 +19,7 @@ namespace OrderManagement.EfCore
 
         DbSet<AdvocacyUsersFromBank> AdvocacyUsersFromBanks { get; }
 
-        DbSet<AdvocacyUsers> AdvocacyUsers { get; set; }
+        DbSet<AdvocacyUser> AdvocacyUsers { get; set; }
 
         DbSet<UserRejectionFromBank> UserRejectionFromBank { get; set; }
 
@@ -64,5 +65,6 @@ namespace OrderManagement.EfCore
 
         DbSet<OrderStatusTypeReadOnly> OrderStatusTypeReadOnly { get; set; }
 
+        DbSet<SaleSchema> SaleSchema { get; set; }
     }
 }

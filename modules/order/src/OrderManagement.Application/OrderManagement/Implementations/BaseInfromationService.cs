@@ -26,7 +26,7 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
     private readonly IRepository<Province, int> _provinceRepository;
     private readonly IRepository<City, int> _cityRepository;
     private readonly IRepository<WhiteList, int> _whiteListRepository;
-    private readonly IRepository<AdvocacyUsers, int> _advocacyUsersRepository;
+    private readonly IRepository<AdvocacyUser, int> _advocacyUsersRepository;
     //private readonly IPasswordHasher<User> _passwordHasher;
     private readonly IEsaleGrpcClient _esaleGrpcClient;
 
@@ -55,7 +55,7 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
                                   IRepository<CarMakerBlackList, long> CarMakerBlackListRepository,
                                   IRepository<Province, int> ProvinceRepository,
                                   IRepository<WhiteList, int> WhiteListRepository,
-                                  IRepository<AdvocacyUsers, int> AdvocacyUsersRepository,
+                                  IRepository<AdvocacyUser, int> AdvocacyUsersRepository,
                                   //IPasswordHasher<User> PasswordHasher,
                                   Microsoft.Extensions.Configuration.IConfiguration Configuration,
                                   IRepository<City, int> CityRepository,
@@ -290,9 +290,6 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
 
     }
 
-    public async Task TestMe()
-    {
-        var user = await _esaleGrpcClient.GetUserById(50);
-
-    }
+    public async Task<UserDto> GrpcTest()
+        => await _esaleGrpcClient.GetUserById(_commonAppService.GetUserId());
 }

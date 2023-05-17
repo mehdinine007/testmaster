@@ -65,6 +65,6 @@ public class BaseController : IBaseInformationService
 
     [HttpGet]
     [UserAuthorization]
-    public async Task TestMe()
-        => await _baseInformationService.TestMe();
+    public async Task<UserDto> GrpcTest()
+        => await _baseInformationService.GrpcTest();
 }

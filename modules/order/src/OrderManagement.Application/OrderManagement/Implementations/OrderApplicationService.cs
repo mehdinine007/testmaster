@@ -33,7 +33,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
     private readonly IHttpContextAccessor _contextAccessor;
     private readonly IRepository<SaleDetail, int> _saleDetailRepository;
     private readonly IRepository<UserRejectionAdvocacy, int> _userRejectionAdcocacyRepository;
-    private readonly IRepository<AdvocacyUsers, int> _advocacyUsers;
+    private readonly IRepository<AdvocacyUser, int> _advocacyUsers;
     private readonly IRepository<CustomerOrder, int> _commitOrderRepository;
     private readonly IRepository<Logs, long> _logsRepository;
     private readonly IRepository<OrderStatusTypeReadOnly, int> _orderStatusTypeReadOnlyRepository;
@@ -49,7 +49,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                            IHttpContextAccessor contextAccessor,
                            IRepository<SaleDetail, int> saleDetailRepository,
                            IRepository<UserRejectionAdvocacy, int> userRejectionAdcocacyRepository,
-                           IRepository<AdvocacyUsers, int> advocacyUsers,
+                           IRepository<AdvocacyUser, int> advocacyUsers,
                            IRepository<CustomerOrder, int> commitOrderRepository,
 
                            IRepository<Logs, long> logsRepository,
@@ -171,11 +171,16 @@ public class OrderAppService : ApplicationService, IOrderAppService
         }
         var nationalCode = _commonAppService.GetNationalCode();
         SaleDetailOrderDto SaleDetailDto = null;
-        var cacheResponse = await _distributedCache.GetAsync(string.Format(RedisConstants.SaleDetailPrefix, nationalCode));
-        var SaleDetailFromCache = System.Text.Json.JsonSerializer.Deserialize<SaleDetail>(cacheResponse);
-        if (SaleDetailFromCache != null)
+        var cacheKey = string.Format(RedisConstants.SaleDetailPrefix, nationalCode);
+        var cacheResponse = await _distributedCache.GetStringAsync(cacheKey);
+        var ttl = SaleDetailDto.SalePlanEndDate.Subtract(DateTime.Now);
+        if (!string.IsNullOrWhiteSpace(cacheResponse))
         {
-            SaleDetailDto = ObjectMapper.Map<SaleDetail, SaleDetailOrderDto>(SaleDetailFromCache);
+            var SaleDetailFromCache = System.Text.Json.JsonSerializer.Deserialize<SaleDetail>(cacheResponse);
+            if (SaleDetailFromCache != null)
+            {
+                SaleDetailDto = ObjectMapper.Map<SaleDetail, SaleDetailOrderDto>(SaleDetailFromCache);
+            }
         }
         else
         {
@@ -200,11 +205,10 @@ public class OrderAppService : ApplicationService, IOrderAppService
             {
                 SaleDetailDto = SaleDetailFromDb;
                 //await _cacheManager.GetCache("SaleDetail").SetAsync(commitOrderDto.SaleDetailUId.ToString(), SaleDetailDto);
-
                 await _distributedCache.SetStringAsync(string.Format(RedisConstants.SaleDetailPrefix, nationalCode),
                     JsonConvert.SerializeObject(SaleDetailDto), new DistributedCacheEntryOptions()
                     {
-                        AbsoluteExpiration = RedisConstants.SaleDetailTimeOffset
+                        AbsoluteExpiration = new DateTimeOffset(DateTime.Now.AddSeconds(ttl.TotalSeconds))
                     });
             }
         }
@@ -249,7 +253,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         // await _baseInformationAppService.CheckAdvocacyPrice(SaleDetailDto.MinimumAmountOfProxyDeposit);
         ///////////////////////////////////iran/////////////
-        var ttl = SaleDetailDto.SalePlanEndDate.Subtract(DateTime.Now);
         ///
         if (_configuration.GetSection("IsIranCellActive").Value == "7")
         {

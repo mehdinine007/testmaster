@@ -14,7 +14,7 @@ namespace ProductManagement.EntityFrameworkCore
         {
             context.Services.AddAbpDbContext<ProductManagementDbContext>(options =>
             {
-                options.AddDefaultRepositories();
+                options.AddDefaultRepositories(includeAllEntities:true);
             });
         }
     }

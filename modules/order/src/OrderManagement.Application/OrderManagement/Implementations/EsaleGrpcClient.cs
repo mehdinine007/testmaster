@@ -50,12 +50,18 @@ public class EsaleGrpcClient : ApplicationService, IEsaleGrpcClient
                 CompanyId = user.CompanyId,
             };
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
-            //TODO: add log for radnom exceptions during comunication
+
+
+            //var errorMessage = ex.Message;
+
+
             await _logsRepository.InsertAsync(new Logs
             {
-                
+                //Message = ex.InnerException.InnerException.ne,
+                Method = "GetUserById",
+                Type = 3,
             });
             throw new UserFriendlyException("در حال حاضر امکان ادامه فرآیند نیست");
         }

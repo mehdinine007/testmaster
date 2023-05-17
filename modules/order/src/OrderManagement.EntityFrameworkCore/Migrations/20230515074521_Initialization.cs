@@ -3,14 +3,52 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace OrderManagement.EfCore.Migrations
 {
+    /// <inheritdoc />
     public partial class Initialization : Migration
     {
+        /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "AdvocacyUsers",
+                name: "AbpAuditLogs",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ApplicationName = table.Column<string>(type: "nvarchar(96)", maxLength: 96, nullable: true),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    TenantName = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: true),
+                    ImpersonatorUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    ImpersonatorUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    ImpersonatorTenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    ImpersonatorTenantName = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: true),
+                    ExecutionTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ExecutionDuration = table.Column<int>(type: "int", nullable: false),
+                    ClientIpAddress = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: true),
+                    ClientName = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: true),
+                    ClientId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: true),
+                    CorrelationId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: true),
+                    BrowserInfo = table.Column<string>(type: "nvarchar(512)", maxLength: 512, nullable: true),
+                    HttpMethod = table.Column<string>(type: "nvarchar(16)", maxLength: 16, nullable: true),
+                    Url = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    Exceptions = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Comments = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    HttpStatusCode = table.Column<int>(type: "int", nullable: true),
+                    ExtraProperties = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AbpAuditLogs", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AdvocacyUser",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -27,13 +65,37 @@ namespace OrderManagement.EfCore.Migrations
                     CreatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     LastModifierId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     DeleterId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DeletionTime = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AdvocacyUsers", x => x.Id);
+                    table.PrimaryKey("PK_AdvocacyUser", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CarMakerBlackList",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Nationalcode = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    EsaleTypeId = table.Column<int>(type: "int", nullable: false),
+                    CarMaker = table.Column<int>(type: "int", nullable: true),
+                    SaleId = table.Column<int>(type: "int", nullable: false),
+                    CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    LastModifierId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeleterId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    DeletionTime = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CarMakerBlackList", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -43,13 +105,11 @@ namespace OrderManagement.EfCore.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     SaleTypeName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ExtraProperties = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: true),
                     CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     LastModifierId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     DeleterId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DeletionTime = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
@@ -74,7 +134,7 @@ namespace OrderManagement.EfCore.Migrations
                     CreatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     LastModifierId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     DeleterId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DeletionTime = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
@@ -98,7 +158,7 @@ namespace OrderManagement.EfCore.Migrations
                     CreatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     LastModifierId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     DeleterId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DeletionTime = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
@@ -118,7 +178,7 @@ namespace OrderManagement.EfCore.Migrations
                     CreatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     LastModifierId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     DeleterId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DeletionTime = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
@@ -128,49 +188,127 @@ namespace OrderManagement.EfCore.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Logs",
-                columns: table => new
-                {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Method = table.Column<string>(type: "VARCHAR(100)", nullable: true),
-                    StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    EndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Message = table.Column<string>(type: "VARCHAR(max)", nullable: true),
-                    Type = table.Column<short>(type: "smallint", nullable: false),
-                    Servername = table.Column<string>(type: "VARCHAR(50)", nullable: true),
-                    Ip = table.Column<string>(type: "VARCHAR(50)", nullable: true),
-                    LocationId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Logs", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Seasons",
+                name: "OrderRejectionTypeReadOnly",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ExtraProperties = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: true),
+                    OrderRejectionCode = table.Column<int>(type: "int", nullable: false),
+                    OrderRejectionTitleEn = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    OrderRejectionTitle = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OrderRejectionTypeReadOnly", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "OrderStatusTypeReadOnly",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    OrderStatusTitle = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    OrderStatusCode = table.Column<int>(type: "int", nullable: false),
+                    OrderStatusTitleEn = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OrderStatusTypeReadOnly", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PreSale",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Brand = table.Column<string>(type: "string(150)", nullable: false),
+                    Name = table.Column<string>(type: "string(150)", nullable: false),
+                    Count = table.Column<int>(type: "int", nullable: false),
                     CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     LastModifierId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     DeleterId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DeletionTime = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Seasons", x => x.Id);
+                    table.PrimaryKey("PK_PreSale", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "WhiteLists",
+                name: "SaleSchema",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SaleStatus = table.Column<int>(type: "int", nullable: false),
+                    CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    LastModifierId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeleterId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    DeletionTime = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SaleSchema", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Season",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    LastModifierId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeleterId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    DeletionTime = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Season", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserRejectionAdvocacy",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    NationalCode = table.Column<string>(type: "VARCHAR(10)", nullable: false),
+                    Archived = table.Column<bool>(type: "bit", nullable: false),
+                    SaleId = table.Column<int>(type: "int", nullable: false),
+                    datetime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ShabaNumber = table.Column<string>(type: "VARCHAR(26)", nullable: false),
+                    accountNumber = table.Column<string>(type: "NVARCHAR(50)", nullable: false),
+                    BatchId = table.Column<int>(type: "int", nullable: false),
+                    CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    LastModifierId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeleterId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    DeletionTime = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserRejectionAdvocacy", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "WhiteList",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -181,13 +319,13 @@ namespace OrderManagement.EfCore.Migrations
                     CreatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     LastModifierId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     DeleterId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DeletionTime = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_WhiteLists", x => x.Id);
+                    table.PrimaryKey("PK_WhiteList", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -197,19 +335,67 @@ namespace OrderManagement.EfCore.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ExtraProperties = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: true),
                     CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     LastModifierId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     DeleterId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DeletionTime = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Year", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AbpAuditLogActions",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    AuditLogId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ServiceName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    MethodName = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: true),
+                    Parameters = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: true),
+                    ExecutionTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ExecutionDuration = table.Column<int>(type: "int", nullable: false),
+                    ExtraProperties = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AbpAuditLogActions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AbpAuditLogActions_AbpAuditLogs_AuditLogId",
+                        column: x => x.AuditLogId,
+                        principalTable: "AbpAuditLogs",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AbpEntityChanges",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    AuditLogId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    ChangeTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ChangeType = table.Column<byte>(type: "tinyint", nullable: false),
+                    EntityTenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    EntityId = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
+                    EntityTypeFullName = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
+                    ExtraProperties = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AbpEntityChanges", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AbpEntityChanges_AbpAuditLogs_AuditLogId",
+                        column: x => x.AuditLogId,
+                        principalTable: "AbpAuditLogs",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -246,7 +432,7 @@ namespace OrderManagement.EfCore.Migrations
                     CreatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     LastModifierId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     DeleterId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DeletionTime = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
@@ -271,6 +457,29 @@ namespace OrderManagement.EfCore.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "AbpEntityPropertyChanges",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    EntityChangeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    NewValue = table.Column<string>(type: "nvarchar(512)", maxLength: 512, nullable: true),
+                    OriginalValue = table.Column<string>(type: "nvarchar(512)", maxLength: 512, nullable: true),
+                    PropertyName = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
+                    PropertyTypeFullName = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AbpEntityPropertyChanges", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AbpEntityPropertyChanges_AbpEntityChanges_EntityChangeId",
+                        column: x => x.EntityChangeId,
+                        principalTable: "AbpEntityChanges",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "UserRejectionFromBank",
                 columns: table => new
                 {
@@ -278,7 +487,7 @@ namespace OrderManagement.EfCore.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     nationalcode = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
                     bankName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    price = table.Column<decimal>(type: "decimal(15)", nullable: false),
+                    price = table.Column<decimal>(type: "decimal(15,0)", nullable: false),
                     dateTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     accountNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     shabaNumber = table.Column<string>(type: "nvarchar(26)", maxLength: 26, nullable: true),
@@ -289,7 +498,7 @@ namespace OrderManagement.EfCore.Migrations
                     CreatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     LastModifierId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     DeleterId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DeletionTime = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
@@ -311,7 +520,7 @@ namespace OrderManagement.EfCore.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     nationalcode = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: true),
                     bankName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    price = table.Column<decimal>(type: "decimal(15)", nullable: false),
+                    price = table.Column<decimal>(type: "decimal(15,0)", nullable: false),
                     dateTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     accountNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     shabaNumber = table.Column<string>(type: "nvarchar(26)", maxLength: 26, nullable: true),
@@ -322,7 +531,7 @@ namespace OrderManagement.EfCore.Migrations
                     CreatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     LastModifierId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     DeleterId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DeletionTime = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
@@ -353,7 +562,7 @@ namespace OrderManagement.EfCore.Migrations
                     CreatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     LastModifierId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     DeleterId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DeletionTime = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
@@ -376,13 +585,11 @@ namespace OrderManagement.EfCore.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CarFamilyId = table.Column<int>(type: "int", nullable: false),
-                    ExtraProperties = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: true),
                     CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     LastModifierId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     DeleterId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DeletionTime = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
@@ -409,7 +616,7 @@ namespace OrderManagement.EfCore.Migrations
                     CreatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     LastModifierId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     DeleterId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DeletionTime = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
@@ -432,13 +639,11 @@ namespace OrderManagement.EfCore.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     GalleryId = table.Column<int>(type: "int", nullable: false),
                     CarTipId = table.Column<int>(type: "int", nullable: false),
-                    ExtraProperties = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: true),
                     CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     LastModifierId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     DeleterId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DeletionTime = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
@@ -485,7 +690,7 @@ namespace OrderManagement.EfCore.Migrations
                     CreatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     LastModifierId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     DeleterId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DeletionTime = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
@@ -518,13 +723,11 @@ namespace OrderManagement.EfCore.Migrations
                     Count = table.Column<int>(type: "int", nullable: false),
                     EsaleTypeId = table.Column<int>(type: "int", nullable: true),
                     YearId = table.Column<int>(type: "int", nullable: true),
-                    ExtraProperties = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: true),
                     CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     LastModifierId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     DeleterId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DeletionTime = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
@@ -543,9 +746,9 @@ namespace OrderManagement.EfCore.Migrations
                         principalTable: "ESaleType",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Season_Company_CarTip_Seasons_SeasonId",
+                        name: "FK_Season_Company_CarTip_Season_SeasonId",
                         column: x => x.SeasonId,
-                        principalTable: "Seasons",
+                        principalTable: "Season",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -589,6 +792,74 @@ namespace OrderManagement.EfCore.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.InsertData(
+                table: "OrderRejectionTypeReadOnly",
+                columns: new[] { "Id", "OrderRejectionCode", "OrderRejectionTitle", "OrderRejectionTitleEn" },
+                values: new object[,]
+                {
+                    { 1, 1, "عدم تطابق کدملی و شماره موبایل", "PhoneNumberAndNationalCodeConflict" },
+                    { 2, 2, "نداشتن گواهی نامه معتبر", "DoesntHadQualifiedDrivingLicense" },
+                    { 3, 3, "دارای پلاک فعال", "ActivePlaqueDetected" },
+                    { 4, 4, "ثبت سفارش در سامانه خودروهای وارداتی", "OrderRegisteredInInternalVehicleSite" },
+                    { 5, 5, "لیست خرید خودروساز (سایپا)", "SaipaVehicleManufactureList" },
+                    { 6, 6, "لیست خرید خودروساز (ایران خودرو)", "IkcoVehicleManufactureList" },
+                    { 7, 7, "لیست خرید خودروساز (کرمان موتور)", "KermanMotorVehicleManufactureList" },
+                    { 8, 8, "لیست خرید خودروساز (صنایع خودرو سازی ایلیا)", "IliaAutoVehicleManufactureList" },
+                    { 9, 9, "لیست خرید خودروساز (فردا موتورز)", "FardaMotorsVehicleManufactureList" },
+                    { 10, 10, "لیست خرید خودروساز (آرین پارس)", "ArianParsVehicleManufactureList" },
+                    { 11, 11, "لیست خرید خودروساز (مکث موتور)", "MaxMotorVehicleManufactureList" },
+                    { 12, 12, "لیست خرید خودروساز (بهمن موتور)", "BahmanMotorVehicleManufactureList" },
+                    { 13, 13, "لیست خرید خودروساز (مدیران خودرو)", "MvmVehicleManufactureList" },
+                    { 14, 14, "عدم احراز در طرح جوانی توسط ثبت احول", "YoungPlan" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "OrderStatusTypeReadOnly",
+                columns: new[] { "Id", "OrderStatusCode", "OrderStatusTitle", "OrderStatusTitleEn" },
+                values: new object[,]
+                {
+                    { 1, 10, "ثبت سفارش اولیه با موفقیت انجام شد", "RecentlyAdded" },
+                    { 2, 20, "انصراف داده شده", "Canceled" },
+                    { 3, 30, "انتخاب نشده اید", "loser" },
+                    { 4, 40, "برنده شده اید", "Winner" },
+                    { 5, 50, "انصراف کلی از اولیت بندی", "FullCancel" }
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AbpAuditLogActions_AuditLogId",
+                table: "AbpAuditLogActions",
+                column: "AuditLogId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AbpAuditLogActions_TenantId_ServiceName_MethodName_ExecutionTime",
+                table: "AbpAuditLogActions",
+                columns: new[] { "TenantId", "ServiceName", "MethodName", "ExecutionTime" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AbpAuditLogs_TenantId_ExecutionTime",
+                table: "AbpAuditLogs",
+                columns: new[] { "TenantId", "ExecutionTime" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AbpAuditLogs_TenantId_UserId_ExecutionTime",
+                table: "AbpAuditLogs",
+                columns: new[] { "TenantId", "UserId", "ExecutionTime" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AbpEntityChanges_AuditLogId",
+                table: "AbpEntityChanges",
+                column: "AuditLogId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AbpEntityChanges_TenantId_EntityTypeFullName_EntityId",
+                table: "AbpEntityChanges",
+                columns: new[] { "TenantId", "EntityTypeFullName", "EntityId" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AbpEntityPropertyChanges_EntityChangeId",
+                table: "AbpEntityPropertyChanges",
+                column: "EntityChangeId");
+
             migrationBuilder.CreateIndex(
                 name: "IX_AdvocacyUsersFromBank_BanksId",
                 table: "AdvocacyUsersFromBank",
@@ -615,6 +886,11 @@ namespace OrderManagement.EfCore.Migrations
                 name: "IX_CarFamily_CompanyId",
                 table: "CarFamily",
                 column: "CompanyId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CarMakerBlackList_Nationalcode_EsaleTypeId",
+                table: "CarMakerBlackList",
+                columns: new[] { "Nationalcode", "EsaleTypeId" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_CarTip_CarTypeId",
@@ -732,25 +1008,35 @@ namespace OrderManagement.EfCore.Migrations
                 filter: "IsDeleted = 0");
 
             migrationBuilder.CreateIndex(
-                name: "IX_WhiteLists_NationalCode",
-                table: "WhiteLists",
+                name: "IX_WhiteList_NationalCode",
+                table: "WhiteList",
                 column: "NationalCode",
                 filter: "IsDeleted = 0");
 
             migrationBuilder.CreateIndex(
-                name: "IX_WhiteLists_NationalCode_WhiteListType",
-                table: "WhiteLists",
+                name: "IX_WhiteList_NationalCode_WhiteListType",
+                table: "WhiteList",
                 columns: new[] { "NationalCode", "WhiteListType" },
                 filter: "IsDeleted = 0");
         }
 
+        /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "AdvocacyUsers");
+                name: "AbpAuditLogActions");
+
+            migrationBuilder.DropTable(
+                name: "AbpEntityPropertyChanges");
+
+            migrationBuilder.DropTable(
+                name: "AdvocacyUser");
 
             migrationBuilder.DropTable(
                 name: "AdvocacyUsersFromBank");
+
+            migrationBuilder.DropTable(
+                name: "CarMakerBlackList");
 
             migrationBuilder.DropTable(
                 name: "CarTip_Gallery_Mapping");
@@ -765,28 +1051,46 @@ namespace OrderManagement.EfCore.Migrations
                 name: "ExternalApiResponsLog");
 
             migrationBuilder.DropTable(
-                name: "Logs");
+                name: "OrderRejectionTypeReadOnly");
+
+            migrationBuilder.DropTable(
+                name: "OrderStatusTypeReadOnly");
+
+            migrationBuilder.DropTable(
+                name: "PreSale");
+
+            migrationBuilder.DropTable(
+                name: "SaleSchema");
 
             migrationBuilder.DropTable(
                 name: "Season_Company_CarTip");
 
             migrationBuilder.DropTable(
+                name: "UserRejectionAdvocacy");
+
+            migrationBuilder.DropTable(
                 name: "UserRejectionFromBank");
 
             migrationBuilder.DropTable(
-                name: "WhiteLists");
+                name: "WhiteList");
+
+            migrationBuilder.DropTable(
+                name: "AbpEntityChanges");
 
             migrationBuilder.DropTable(
                 name: "SaleDetail");
 
             migrationBuilder.DropTable(
-                name: "Seasons");
+                name: "Season");
 
             migrationBuilder.DropTable(
                 name: "Year");
 
             migrationBuilder.DropTable(
                 name: "Bank");
+
+            migrationBuilder.DropTable(
+                name: "AbpAuditLogs");
 
             migrationBuilder.DropTable(
                 name: "CarTip");

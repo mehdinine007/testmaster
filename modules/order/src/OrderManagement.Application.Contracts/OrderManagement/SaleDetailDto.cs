@@ -5,6 +5,8 @@ namespace OrderManagement.Application.Contracts
 {
     public class SaleDetailDto
     {
+        public Guid UID { get; set; }
+
         public int CircularSaleCode { get; set; } // شماره بخشنامه فروش
 
         public int SalePlanCode { get; set; }
