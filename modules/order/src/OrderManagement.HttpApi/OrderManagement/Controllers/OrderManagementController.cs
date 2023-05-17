@@ -23,6 +23,9 @@ public class OrderManagementController : IOrderAppService
         => await _orderAppService.CancelOrder(orderId);
 
     [HttpPost]
+    public  async Task Test()
+        =>  await _orderAppService.Test();
+    [HttpPost]
     public async Task CommitOrder(CommitOrderDto commitOrderDto)
         => await _orderAppService.CommitOrder(commitOrderDto);
 
