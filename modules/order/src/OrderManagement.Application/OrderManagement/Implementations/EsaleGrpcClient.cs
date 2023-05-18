@@ -27,6 +27,7 @@ public class EsaleGrpcClient : ApplicationService, IEsaleGrpcClient
 
     public async Task<UserDto> GetUserById(long userId)
     {
+        AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2Support", true);
         AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
         var channel = GrpcChannel.ForAddress(_configuration.GetValue<string>("Esale:GrpcAddress"));
         var client = new UserServiceGrpc.UserServiceGrpcClient(channel);
