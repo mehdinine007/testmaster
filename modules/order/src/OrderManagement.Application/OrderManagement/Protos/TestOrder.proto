@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+option csharp_namespace = "OrderManagement.Application.TestService";
+
+
+package TestService;
+
+service TestService{
+	rpc SampleService(ServiceRequest) returns (ServiceResponse);
+}
+
+message ServiceResponse{
+	string responseMessage = 1 ;
+}
+
+message ServiceRequest{
+}
