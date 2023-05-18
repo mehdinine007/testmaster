@@ -51,13 +51,13 @@ namespace OrderService.Host
             //    options.IsEnabled = MsDemoConsts.IsMultiTenancyEnabled;
             //});
 
-            context.Services.AddAuthentication("Bearer")
-                .AddIdentityServerAuthentication(options =>
-                {
-                    options.Authority = configuration["AuthServer:Authority"];
-                    options.ApiName = configuration["AuthServer:ApiName"];
-                    options.RequireHttpsMetadata = Convert.ToBoolean(configuration["AuthServer:RequireHttpsMetadata"]);
-                });
+            //context.Services.AddAuthentication("Bearer")
+            //    .AddIdentityServerAuthentication(options =>
+            //    {
+            //        options.Authority = configuration["AuthServer:Authority"];
+            //        options.ApiName = configuration["AuthServer:ApiName"];
+            //        options.RequireHttpsMetadata = Convert.ToBoolean(configuration["AuthServer:RequireHttpsMetadata"]);
+            //    });
 
             context.Services.AddSwaggerGen(options =>
             {

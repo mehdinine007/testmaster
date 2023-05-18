@@ -8,7 +8,7 @@ using Esale.Share.Authorize;
 using Microsoft.AspNetCore.Authorization;
 
 namespace OrderManagement.HttpApi;
-    
+
 [RemoteService]
 [Route("api/services/app/OrderService/[action]")]
 public class OrderManagementController : IOrderAppService
@@ -22,8 +22,10 @@ public class OrderManagementController : IOrderAppService
     public async Task<CustomerOrderDto> CancelOrder(int orderId)
         => await _orderAppService.CancelOrder(orderId);
     [HttpPost]
-    public  async Task Test()
-        =>  await _orderAppService.Test();
+    public async Task<bool> Test()
+    {
+        return await _orderAppService.Test();
+    }
     [HttpPost]
     [UserAuthorization]
     public async Task CommitOrder(CommitOrderDto commitOrderDto)
