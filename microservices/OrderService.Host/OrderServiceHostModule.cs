@@ -25,6 +25,7 @@ using OrderManagement.Application.OrderManagement.Implementations;
 using Volo.Abp.Uow;
 using Microsoft.IdentityModel.Logging;
 using Volo.Abp.Uow;
+using Volo.Abp.AspNetCore.ExceptionHandling;
 
 namespace OrderService.Host
 {
