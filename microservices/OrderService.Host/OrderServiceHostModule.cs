@@ -21,8 +21,7 @@ using OrderManagement.Application;
 using OrderManagement.HttpApi;
 using OrderManagement.EfCore;
 using OrderService.Host.Infrastructures;
-using Volo.Abp.Uow;
-using Microsoft.IdentityModel.Logging;
+using OrderManagement.Application.OrderManagement.Implementations;
 
 namespace OrderService.Host
 {
@@ -104,6 +103,7 @@ namespace OrderService.Host
             });
             IdentityModelEventSource.ShowPII = true;
 
+            context.Services.AddGrpc();
             //var redis = ConnectionMultiplexer.Connect(configuration["Redis:Configuration"]);
             //context.Services.AddDataProtection()
             //    .PersistKeysToStackExchangeRedis(redis, "MsDemo-DataProtection-Keys");
@@ -122,7 +122,10 @@ namespace OrderService.Host
             //{
             //    app.UseMultiTenancy();
             //}
-
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapGrpcService<GrpcTestService>();
+            });
             app.UseAbpRequestLocalization(); //TODO: localization?
             app.UseSwagger();
             app.UseSwaggerUI(options =>
