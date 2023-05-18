@@ -85,38 +85,22 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
 
 
-    private AdvocacyUserFromBankDto CheckAdvocacy(string NationalCode)
+    private async Task<AdvocacyUserFromBankDto> CheckAdvocacy(string NationalCode)
     {
+        var advocacyUser = await _esaleGrpcClient.GetUserAdvocacyByNationalCode(NationalCode);
 
-
-        var advocacyuser = _advocacyUsers.WithDetails()
-            .Select(x => new
-            {
-                x.shabaNumber,
-                x.accountNumber,
-                x.Id,
-                x.nationalcode,
-                x.BanksId
-            })
-            .OrderByDescending(x => x.Id).FirstOrDefault(x => x.nationalcode == NationalCode);
-        if (advocacyuser == null)
-        {
+        if (advocacyUser == null)
             throw new UserFriendlyException("اطلاعات حساب وکالتی یافت نشد");
-        }
-        AdvocacyUserFromBankDto advocacyUserFromBankDto = new AdvocacyUserFromBankDto();
-        advocacyUserFromBankDto.AccountNumber = advocacyuser.accountNumber;
-        advocacyUserFromBankDto.ShebaNumber = advocacyuser.shabaNumber;
-        advocacyUserFromBankDto.BankId = (int)advocacyuser.BanksId;
-
-        return advocacyUserFromBankDto;
-
-
-
-
+        return new AdvocacyUserFromBankDto
+        {
+            ShebaNumber = advocacyUser.ShebaNumber,
+            BankId = advocacyUser.BankId,
+            AccountNumber = advocacyUser.AccountNumber
+        };
     }
     public async Task<bool> Test()
     {
-      
+
         var orderrep = await _advocacyUsers.GetQueryableAsync();
         AdvocacyUser users = new AdvocacyUser();
         Random rnd = new Random();
@@ -129,7 +113,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         users.dateTime = DateTime.Now;
         users.shabaNumber = "123";
         await _advocacyUsers.InsertAsync(users);
-         await CurrentUnitOfWork.SaveChangesAsync();
+        await CurrentUnitOfWork.SaveChangesAsync();
 
         users = orderrep.FirstOrDefault(x => x.nationalcode == nc);
         await _advocacyUsers.DeleteAsync(users);
@@ -139,7 +123,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
 
     }
-  
+
 
     [Audited]
     [UnitOfWork(isTransactional: false)]
@@ -240,7 +224,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         CheckSaleDetailValidation(SaleDetailDto);
         await _commonAppService.IsUserRejected(); //if user reject from advocacy
                                                   //_baseInformationAppService.CheckBlackList(SaleDetailDto.EsaleTypeId); //if user not exsist in blacklist
-        CheckAdvocacy(nationalCode); //if hesab vekalati darad
+        await CheckAdvocacy(nationalCode); //if hesab vekalati darad
         _baseInformationAppService.CheckWhiteList(WhiteListEnumType.WhiteListOrder);
         var orderQuery = await _commitOrderRepository.GetQueryableAsync();
         var userId = _commonAppService.GetUserId();

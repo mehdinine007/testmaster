@@ -22,6 +22,8 @@ using OrderManagement.HttpApi;
 using OrderManagement.EfCore;
 using OrderService.Host.Infrastructures;
 using OrderManagement.Application.OrderManagement.Implementations;
+using Volo.Abp.Uow;
+using Microsoft.IdentityModel.Logging;
 
 namespace OrderService.Host
 {
