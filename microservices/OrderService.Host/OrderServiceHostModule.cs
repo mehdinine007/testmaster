@@ -22,6 +22,7 @@ using OrderManagement.HttpApi;
 using OrderManagement.EfCore;
 using OrderService.Host.Infrastructures;
 using OrderManagement.Application.OrderManagement.Implementations;
+using Volo.Abp.Uow;
 
 namespace OrderService.Host
 {
@@ -101,7 +102,7 @@ namespace OrderService.Host
             {
                 x.Filters.Add(new EsaleResultFilter(service));
             });
-            IdentityModelEventSource.ShowPII = true;
+            //IdentityModelEventSource.ShowPII = true;
 
             context.Services.AddGrpc();
             //var redis = ConnectionMultiplexer.Connect(configuration["Redis:Configuration"]);
