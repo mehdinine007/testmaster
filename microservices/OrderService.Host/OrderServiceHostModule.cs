@@ -29,16 +29,16 @@ namespace OrderService.Host
     [DependsOn(
         typeof(AbpAutofacModule),
         typeof(AbpAspNetCoreMvcModule),
-        typeof(AbpEventBusRabbitMqModule),
+        //typeof(AbpEventBusRabbitMqModule),
         typeof(AbpEntityFrameworkCoreSqlServerModule),
         typeof(AbpAuditLoggingEntityFrameworkCoreModule),
         //typeof(AbpPermissionManagementEntityFrameworkCoreModule),
         //typeof(AbpSettingManagementEntityFrameworkCoreModule),
         typeof(OrderManagementApplicationModule),
         typeof(OrderManagementHttpApiModule),
-        typeof(OrderManagementEntityFrameworkCoreModule),
+        typeof(OrderManagementEntityFrameworkCoreModule)
         //typeof(AbpAspNetCoreMultiTenancyModule),
-        typeof(AbpTenantManagementEntityFrameworkCoreModule)
+        //typeof(AbpTenantManagementEntityFrameworkCoreModule)
         )]
     public class OrderServiceHostModule : AbpModule
     {
