@@ -19,6 +19,6 @@ namespace OrderManagement.Application.Contracts.Services
         Task CommitOrder(CommitOrderDto commitOrderDto);
 
         Task<bool> UserRejectionStatus();
-        Task Test();
+        Task<bool> Test();
     }
 }
