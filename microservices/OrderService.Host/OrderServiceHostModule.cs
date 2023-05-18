@@ -50,13 +50,13 @@ namespace OrderService.Host
             //    options.IsEnabled = MsDemoConsts.IsMultiTenancyEnabled;
             //});
 
-            context.Services.AddAuthentication("Bearer")
-                .AddIdentityServerAuthentication(options =>
-                {
-                    options.Authority = configuration["AuthServer:Authority"];
-                    options.ApiName = configuration["AuthServer:ApiName"];
-                    options.RequireHttpsMetadata = Convert.ToBoolean(configuration["AuthServer:RequireHttpsMetadata"]);
-                });
+            //context.Services.AddAuthentication("Bearer")
+            //    .AddIdentityServerAuthentication(options =>
+            //    {
+            //        options.Authority = configuration["AuthServer:Authority"];
+            //        options.ApiName = configuration["AuthServer:ApiName"];
+            //        options.RequireHttpsMetadata = Convert.ToBoolean(configuration["AuthServer:RequireHttpsMetadata"]);
+            //    });
 
             context.Services.AddSwaggerGen(options =>
             {
@@ -74,7 +74,10 @@ namespace OrderService.Host
             {
                 options.UseSqlServer();
             });
-
+            Configure<AbpUnitOfWorkDefaultOptions>(options =>
+            {
+                options.TransactionBehavior = UnitOfWorkTransactionBehavior.Disabled;
+            });
             context.Services.AddStackExchangeRedisCache(options =>
             {
                 options.Configuration = configuration["Redis:Configuration"];
@@ -98,6 +101,7 @@ namespace OrderService.Host
             {
                 x.Filters.Add(new EsaleResultFilter(service));
             });
+            IdentityModelEventSource.ShowPII = true;
 
             context.Services.AddGrpc();
             //var redis = ConnectionMultiplexer.Connect(configuration["Redis:Configuration"]);

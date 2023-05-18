@@ -1,14 +1,14 @@
 ﻿using Elasticsearch.Net;
-using Esale.Web.Host.Middelwares;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MsDemo.Shared.ExtensionsImplementions;
 using MsDemo.Shared.ExtensionsInterfaces;
 using Nest;
+using OrderService.Host.Infrastructures.Middlewares;
 using System;
 using Volo.Abp.Auditing;
 
-namespace Elk.Host.Extensions
+namespace OrderService.Host.Infrastructures.Extensions
 {
     public static class ElkExtension
     {

@@ -451,7 +451,7 @@ public class CommonAppService : ApplicationService, ICommonAppService
 
     public long GetUserId()
     {
-        var userIdStr = _httpContextAccessor.HttpContext.User.Claims.SingleOrDefault(x => x.Type.Equals(ClaimTypes.NameIdentifier))?.Value ?? string.Empty;
+        var userIdStr = _httpContextAccessor.HttpContext.User.Claims.SingleOrDefault(x => x.Type.Equals("UserIdLong"))?.Value ?? string.Empty;
         if (string.IsNullOrWhiteSpace(userIdStr))
             throw new UserFriendlyException("لطفا لاگین کنید");
 

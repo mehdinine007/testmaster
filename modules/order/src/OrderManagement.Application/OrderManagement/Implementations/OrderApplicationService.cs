@@ -17,12 +17,12 @@ using Volo.Abp.Auditing;
 using Volo.Abp.Application.Services;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
-using UnitOfWorkAttribute = Volo.Abp.Uow.UnitOfWorkAttribute;
 using System.Data;
 using OrderManagement.Domain.Shared;
 using OrderManagement.Application.OrderManagement.Constants;
 using Newtonsoft.Json;
 using System.Diagnostics;
+using Microsoft.AspNetCore.Authorization;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -114,8 +114,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
 
     }
-   public async Task Test()
+    public async Task<bool> Test()
     {
+      
         var orderrep = await _advocacyUsers.GetQueryableAsync();
         AdvocacyUser users = new AdvocacyUser();
         Random rnd = new Random();
@@ -128,15 +129,17 @@ public class OrderAppService : ApplicationService, IOrderAppService
         users.dateTime = DateTime.Now;
         users.shabaNumber = "123";
         await _advocacyUsers.InsertAsync(users);
-        await _unitOfWorkManager.Current.SaveChangesAsync();
+         await CurrentUnitOfWork.SaveChangesAsync();
+
         users = orderrep.FirstOrDefault(x => x.nationalcode == nc);
         await _advocacyUsers.DeleteAsync(users);
-        await _unitOfWorkManager.Current.SaveChangesAsync();
+        await CurrentUnitOfWork.SaveChangesAsync();
+        return true;
 
 
 
     }
-
+  
 
     [Audited]
     [UnitOfWork(isTransactional: false)]

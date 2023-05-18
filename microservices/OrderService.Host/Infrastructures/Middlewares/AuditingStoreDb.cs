@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using MsDemo.Shared.ExtensionsInterfaces;
 using Nest;
 using Newtonsoft.Json;
+using OrderService.Host;
 using System;
 using System.Threading.Tasks;
 using Volo.Abp.Auditing;
@@ -12,7 +13,7 @@ using Volo.Abp.DependencyInjection;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Uow;
 
-namespace Esale.Web.Host.Middelwares
+namespace OrderService.Host.Infrastructures.Middlewares
 {
     public class AuditingStoreDb : IAuditingStore, ITransientDependency
     {
@@ -25,7 +26,7 @@ namespace Esale.Web.Host.Middelwares
         /// <summary>
         /// Creates  a new <see cref="AuditingStore"/>.
         /// </summary>
-        public AuditingStoreDb(IRepository<AuditLog, Guid> auditLogRepository, IAuditLogInfoToAuditLogConverter converter)
+        public AuditingStoreDb(IRepository<AuditLog, Guid> auditLogRepository, AuditLogConverter converter)
         {
 
             _auditLogRepository = auditLogRepository;
@@ -35,7 +36,6 @@ namespace Esale.Web.Host.Middelwares
         public virtual async Task SaveAsync(AuditLogInfo auditInfo)
         {
 
-            //await _auditLogRepository.InsertAsync(auditInfo);
             await _auditLogRepository.InsertAsync(await Converter.ConvertAsync(auditInfo));
         }
 

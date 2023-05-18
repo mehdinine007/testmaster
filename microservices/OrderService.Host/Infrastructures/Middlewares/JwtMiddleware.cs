@@ -55,7 +55,9 @@ public class JwtMiddleware
             string uid, userName, roleName;
 
             //var roleList = jwtToken.Claims.Where(x => x.Type.Equals(ClaimTypes.Role)).ToList();
-            uid = jwtToken.Claims.SingleOrDefault(x => x.Type.Equals(ClaimTypes.NameIdentifier)).Value;
+            uid = jwtToken.Claims.SingleOrDefault(x => x.Type.Equals("UBP")).Value;
+            string uidLong = jwtToken.Claims.SingleOrDefault(x => x.Type.Equals(ClaimTypes.NameIdentifier)).Value;
+
             roleName = jwtToken.Claims.SingleOrDefault(x => x.Type.Equals(ClaimTypes.Role)).Value;
             userName = jwtToken.Claims.Single(x => x.Type.Equals(ClaimTypes.Name)).Value;
 
@@ -64,12 +66,15 @@ public class JwtMiddleware
                 new Claim(ClaimTypes.Name, userName),
                 new Claim(ClaimTypes.NameIdentifier, uid),
                 new Claim(ClaimTypes.Surname , userName),
-                new Claim(ClaimTypes.Role,roleName)
+                new Claim(ClaimTypes.Role,roleName),
+                new Claim("UserIdLong", uidLong)
             };
             //roleList.ForEach(x => claims.Add(new Claim(ClaimTypes.Role, x.Value)));
             var appIdentity = new ClaimsIdentity(claims);
             httpContext.User.AddIdentity(appIdentity);
             httpContext.Items["UserId"] = uid;
+            httpContext.Items["UserIdLong"] = uidLong;
+
             httpContext.Items["exp"] = DateTime.Now.AddDays(1).Ticks;
         }
         catch (Exception ex)

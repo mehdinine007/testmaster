@@ -11,7 +11,7 @@ using Volo.Abp.AuditLogging;
 using Volo.Abp.DependencyInjection;
 using Volo.Abp.Domain.Repositories;
 
-namespace Esale.Web.Host.Middelwares
+namespace OrderService.Host.Infrastructures.Middlewares
 {
     public class AuditingStoreElk : IAuditingStore, ITransientDependency
     {
