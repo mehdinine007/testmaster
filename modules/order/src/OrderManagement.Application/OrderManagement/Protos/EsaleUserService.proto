@@ -8,6 +8,7 @@ package UserService;
 
 service UserServiceGrpc{
 	rpc GetUserById(GetUserModel) returns (UserModel);
+	rpc GetUserAdvocacy(UserAdvocacyRequest) returns (UserAdvocacy);
 }
 
 message GetUserModel{
@@ -38,4 +39,14 @@ message UserModel{
 	string MobileNumber = 11;
 
 	google.protobuf.Int32Value CompanyId = 12;
+}
+
+message UserAdvocacy{
+	string ShebaNumber = 1;
+	string AccountNumber  = 2;
+	sfixed32 BankId =3;
+}
+
+message UserAdvocacyRequest{
+	string NationalCode = 1;
 }

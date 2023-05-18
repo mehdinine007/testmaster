@@ -23,7 +23,8 @@ using OrderManagement.EfCore;
 using OrderService.Host.Infrastructures;
 using OrderManagement.Application.OrderManagement.Implementations;
 using Volo.Abp.Uow;
-using Volo.Abp.AspNetCore.ExceptionHandling;
+using Microsoft.IdentityModel.Logging;
+using Volo.Abp.Uow;
 
 namespace OrderService.Host
 {

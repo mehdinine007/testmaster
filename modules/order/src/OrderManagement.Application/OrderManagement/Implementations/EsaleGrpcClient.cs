@@ -50,4 +50,24 @@ public class EsaleGrpcClient : ApplicationService, IEsaleGrpcClient
             CompanyId = user.CompanyId,
         };
     }
+
+    public async Task<AdvocacyUserDto> GetUserAdvocacyByNationalCode(string nationlCode)
+    {
+        var channel = GrpcChannel.ForAddress(_configuration.GetValue<string>("Esale:GrpcAddress"));
+        var client = new UserServiceGrpc.UserServiceGrpcClient(channel);
+
+        var userAdvocacy = await client.GetUserAdvocacyAsync(new UserAdvocacyRequest()
+        {
+            NationalCode = nationlCode
+        });
+        if(userAdvocacy.BankId == 0)
+            throw new UserFriendlyException("اطلاعات حساب وکالتی یافت نشد");
+
+        return new AdvocacyUserDto
+        {
+            AccountNumber = userAdvocacy.AccountNumber,
+            BankId = userAdvocacy.BankId,
+            ShebaNumber = userAdvocacy.ShebaNumber
+        };
+    }
 }
