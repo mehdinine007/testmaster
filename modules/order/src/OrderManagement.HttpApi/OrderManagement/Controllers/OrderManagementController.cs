@@ -26,9 +26,7 @@ public class OrderManagementController : IOrderAppService
     {
         return await _orderAppService.Test();
     }
-    [HttpPost]
-    public  async Task Test()
-        =>  await _orderAppService.Test();
+   
     [HttpPost]
     public async Task CommitOrder(CommitOrderDto commitOrderDto)
         => await _orderAppService.CommitOrder(commitOrderDto);

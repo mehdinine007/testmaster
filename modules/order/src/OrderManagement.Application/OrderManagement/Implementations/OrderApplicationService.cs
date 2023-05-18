@@ -139,30 +139,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
 
     }
-   public async Task Test()
-    {
-        var orderrep = await _advocacyUsers.GetQueryableAsync();
-        AdvocacyUser users = new AdvocacyUser();
-        Random rnd = new Random();
-        int month = rnd.Next(1, 1000000);  // creates a number between 1 and 12
-        string nc = month.ToString();
-        users.nationalcode = month.ToString();
-        users.price = 100;
-        users.bankName = "vbn";
-        users.BanksId = 3;
-        users.dateTime = DateTime.Now;
-        users.shabaNumber = "123";
-        await _advocacyUsers.InsertAsync(users);
-        await _unitOfWorkManager.Current.SaveChangesAsync();
-        users = orderrep.FirstOrDefault(x => x.nationalcode == nc);
-        await _advocacyUsers.DeleteAsync(users);
-        await _unitOfWorkManager.Current.SaveChangesAsync();
-
-
-
-    }
-
-
+  
 
     [Audited]
     [UnitOfWork(isTransactional: false)]
