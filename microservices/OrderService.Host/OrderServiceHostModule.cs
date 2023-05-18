@@ -24,22 +24,23 @@ using OrderService.Host.Infrastructures;
 using OrderManagement.Application.OrderManagement.Implementations;
 using Volo.Abp.Uow;
 using Microsoft.IdentityModel.Logging;
+using Volo.Abp.Uow;
 
 namespace OrderService.Host
 {
     [DependsOn(
         typeof(AbpAutofacModule),
         typeof(AbpAspNetCoreMvcModule),
-        typeof(AbpEventBusRabbitMqModule),
+        //typeof(AbpEventBusRabbitMqModule),
         typeof(AbpEntityFrameworkCoreSqlServerModule),
         typeof(AbpAuditLoggingEntityFrameworkCoreModule),
         //typeof(AbpPermissionManagementEntityFrameworkCoreModule),
         //typeof(AbpSettingManagementEntityFrameworkCoreModule),
         typeof(OrderManagementApplicationModule),
         typeof(OrderManagementHttpApiModule),
-        typeof(OrderManagementEntityFrameworkCoreModule),
+        typeof(OrderManagementEntityFrameworkCoreModule)
         //typeof(AbpAspNetCoreMultiTenancyModule),
-        typeof(AbpTenantManagementEntityFrameworkCoreModule)
+        //typeof(AbpTenantManagementEntityFrameworkCoreModule)
         )]
     public class OrderServiceHostModule : AbpModule
     {
@@ -103,7 +104,7 @@ namespace OrderService.Host
             {
                 x.Filters.Add(new EsaleResultFilter(service));
             });
-            IdentityModelEventSource.ShowPII = true;
+            //IdentityModelEventSource.ShowPII = true;
 
             context.Services.AddGrpc();
             //var redis = ConnectionMultiplexer.Connect(configuration["Redis:Configuration"]);
