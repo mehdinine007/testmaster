@@ -28,8 +28,8 @@ public class EsaleGrpcClient : ApplicationService, IEsaleGrpcClient
     {
         var channel = GrpcChannel.ForAddress(_configuration.GetValue<string>("Esale:GrpcAddress"));
         var client = new UserServiceGrpc.UserServiceGrpcClient(channel);
-        try
-        {
+        //try
+        //{
 
             var user = client.GetUserById(new GetUserModel() { UserId = userId });
             if (user == null)
@@ -49,21 +49,21 @@ public class EsaleGrpcClient : ApplicationService, IEsaleGrpcClient
                 MobileNumber = user.MobileNumber,
                 CompanyId = user.CompanyId,
             };
-        }
-        catch (Exception ex)
-        {
+        //}
+        //catch (Exception ex)
+        //{
 
 
-            //var errorMessage = ex.Message;
+        //    //var errorMessage = ex.Message;
 
 
-            await _logsRepository.InsertAsync(new Logs
-            {
-                //Message = ex.InnerException.InnerException.ne,
-                Method = "GetUserById",
-                Type = 3,
-            });
-            throw new UserFriendlyException("در حال حاضر امکان ادامه فرآیند نیست");
-        }
+        //    await _logsRepository.InsertAsync(new Logs
+        //    {
+        //        //Message = ex.InnerException.InnerException.ne,
+        //        Method = "GetUserById",
+        //        Type = 3,
+        //    });
+        //    throw new UserFriendlyException("در حال حاضر امکان ادامه فرآیند نیست");
+        //}
     }
 }
