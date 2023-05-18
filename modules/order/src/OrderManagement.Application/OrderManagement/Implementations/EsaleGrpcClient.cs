@@ -27,12 +27,13 @@ public class EsaleGrpcClient : ApplicationService, IEsaleGrpcClient
 
     public async Task<UserDto> GetUserById(long userId)
     {
+        AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
         var channel = GrpcChannel.ForAddress(_configuration.GetValue<string>("Esale:GrpcAddress"));
         var client = new UserServiceGrpc.UserServiceGrpcClient(channel);
 
         var user = client.GetUserById(new GetUserModel() { UserId = userId });
-        if (user == null)
-            throw new EntityNotFoundException(typeof(UserDto), userId);
+        if (user.BankId == 0)
+            return null;
         return new UserDto
         {
             AccountNumber = user.AccountNumber,

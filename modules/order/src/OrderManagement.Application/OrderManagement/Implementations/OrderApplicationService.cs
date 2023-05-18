@@ -146,6 +146,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
     public async Task CommitOrder(CommitOrderDto commitOrderDto)
     {
         Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
+        TimeSpan ttl = DateTime.Now.Subtract(DateTime.Now);
 
         if (!_commonAppService.IsInRole("Customer"))
             throw new UserFriendlyException("دسترسی شما کافی نمی باشد");
@@ -174,16 +175,18 @@ public class OrderAppService : ApplicationService, IOrderAppService
         }
         var nationalCode = _commonAppService.GetNationalCode();
         SaleDetailOrderDto SaleDetailDto = null;
-        var cacheKey = string.Format(RedisConstants.SaleDetailPrefix, nationalCode);
+        var cacheKey = string.Format(RedisConstants.SaleDetailPrefix, commitOrderDto.SaleDetailUId);
         var cacheResponse = await _distributedCache.GetStringAsync(cacheKey);
-        var ttl = SaleDetailDto.SalePlanEndDate.Subtract(DateTime.Now);
         if (!string.IsNullOrWhiteSpace(cacheResponse))
         {
             var SaleDetailFromCache = System.Text.Json.JsonSerializer.Deserialize<SaleDetail>(cacheResponse);
             if (SaleDetailFromCache != null)
             {
                 SaleDetailDto = ObjectMapper.Map<SaleDetail, SaleDetailOrderDto>(SaleDetailFromCache);
+                ttl = SaleDetailDto.SalePlanEndDate.Subtract(DateTime.Now);
+
             }
+
         }
         else
         {
@@ -207,14 +210,16 @@ public class OrderAppService : ApplicationService, IOrderAppService
             else
             {
                 SaleDetailDto = SaleDetailFromDb;
+                ttl = SaleDetailDto.SalePlanEndDate.Subtract(DateTime.Now);
                 //await _cacheManager.GetCache("SaleDetail").SetAsync(commitOrderDto.SaleDetailUId.ToString(), SaleDetailDto);
-                await _distributedCache.SetStringAsync(string.Format(RedisConstants.SaleDetailPrefix, nationalCode),
+                await _distributedCache.SetStringAsync(string.Format(RedisConstants.SaleDetailPrefix, commitOrderDto.SaleDetailUId.ToString()),
                     JsonConvert.SerializeObject(SaleDetailDto), new DistributedCacheEntryOptions()
                     {
                         AbsoluteExpiration = new DateTimeOffset(DateTime.Now.AddSeconds(ttl.TotalSeconds))
                     });
             }
         }
+
         //if(SaleDetailDto.EsaleTypeId == (Int16)EsaleTypeEnum.Youth)
         //{
         //    Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
@@ -265,7 +270,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             //    userId.ToString() + "_" +
             //    SaleDetailDto.SaleId.ToString()
             //    , out objectCommitOrderIran);
-            objectCommitOrderIran = _distributedCache.GetStringAsync(userId.ToString() + "_" + SaleDetailDto.SaleId.ToString());
+            objectCommitOrderIran = await _distributedCache.GetStringAsync(userId.ToString() + "_" + SaleDetailDto.SaleId.ToString());
             if (objectCommitOrderIran != null)
             {
                 throw new UserFriendlyException("درخواست شما برای خودروی دیگری در حال بررسی می باشد. جهت سفارش جدید از درخواست قبلی خود انصراف دهید");
@@ -435,7 +440,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         customerOrder.PriorityId = (PriorityEnum)commitOrderDto.PriorityId;
         customerOrder.OrderStatus = OrderStatusType.RecentlyAdded;
         customerOrder.SaleId = SaleDetailDto.SaleId;
-        await _commitOrderRepository.InsertAsync(customerOrder, autoSave: true);
+        await _commitOrderRepository.InsertAsync(customerOrder);
         await CurrentUnitOfWork.SaveChangesAsync();
         //unitOfWork.Complete();
         //}

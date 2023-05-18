@@ -6,7 +6,7 @@ namespace OrderManagement.Domain
 {
     public class SaleDetail : FullAuditedEntity<int>
     {
-        private ICollection<CustomerOrder> _customerOrders;
+        private  ICollection<CustomerOrder> _customerOrders;
 
         public Guid UID { get; set; }
 
@@ -42,7 +42,7 @@ namespace OrderManagement.Domain
 
         public bool Visible { get; set; }
 
-        public CarTip CarTip { get; set; }
+        public virtual CarTip CarTip { get; set; }
         public virtual ESaleType ESaleType { get; set; }
 
         public virtual ICollection<CustomerOrder> CustomerOrders

@@ -23,6 +23,7 @@ using OrderManagement.EfCore;
 using OrderService.Host.Infrastructures;
 using OrderManagement.Application.OrderManagement.Implementations;
 using Volo.Abp.Uow;
+using Volo.Abp.AspNetCore.ExceptionHandling;
 
 namespace OrderService.Host
 {
@@ -89,6 +90,12 @@ namespace OrderService.Host
                 options.IsEnabledForGetRequests = true;
                 options.ApplicationName = "OrderService";
             });
+            Configure<AbpExceptionHandlingOptions>(options =>
+            {
+                options.SendExceptionsDetailsToClients = true;
+                options.SendStackTraceToClients = true;
+            });
+
             context.Services.AddStackExchangeRedisCache(options =>
             {
                 options.Configuration = configuration["RedisCache:ConnectionString"];
