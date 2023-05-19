@@ -8,11 +8,14 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace OrderManagement.EfCore.Migrations
 {
     /// <inheritdoc />
-    public partial class Initialization : Migration
+    public partial class UpdateCustomerOrderOldSalePlan : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.EnsureSchema(
+                name: "aucbase");
+
             migrationBuilder.CreateTable(
                 name: "AbpAuditLogs",
                 columns: table => new
@@ -65,7 +68,7 @@ namespace OrderManagement.EfCore.Migrations
                     CreatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     LastModifierId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     DeleterId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DeletionTime = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
@@ -89,7 +92,7 @@ namespace OrderManagement.EfCore.Migrations
                     CreatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     LastModifierId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     DeleterId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DeletionTime = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
@@ -109,7 +112,7 @@ namespace OrderManagement.EfCore.Migrations
                     CreatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     LastModifierId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     DeleterId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DeletionTime = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
@@ -134,7 +137,7 @@ namespace OrderManagement.EfCore.Migrations
                     CreatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     LastModifierId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     DeleterId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DeletionTime = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
@@ -158,7 +161,7 @@ namespace OrderManagement.EfCore.Migrations
                     CreatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     LastModifierId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     DeleterId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DeletionTime = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
@@ -178,13 +181,33 @@ namespace OrderManagement.EfCore.Migrations
                     CreatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     LastModifierId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     DeleterId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DeletionTime = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Gallery", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Logs",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Method = table.Column<string>(type: "VARCHAR(100)", nullable: true),
+                    StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    EndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Message = table.Column<string>(type: "VARCHAR(max)", nullable: true),
+                    Type = table.Column<short>(type: "smallint", nullable: false),
+                    Servername = table.Column<string>(type: "VARCHAR(50)", nullable: true),
+                    Ip = table.Column<string>(type: "VARCHAR(50)", nullable: true),
+                    LocationId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Logs", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -223,20 +246,34 @@ namespace OrderManagement.EfCore.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Brand = table.Column<string>(type: "string(150)", nullable: false),
-                    Name = table.Column<string>(type: "string(150)", nullable: false),
+                    Brand = table.Column<string>(type: "nvarchar(150)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(150)", nullable: false),
                     Count = table.Column<int>(type: "int", nullable: false),
                     CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     LastModifierId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     DeleterId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DeletionTime = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_PreSale", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Province",
+                schema: "aucbase",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "NVARCHAR(100)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Province", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -252,7 +289,7 @@ namespace OrderManagement.EfCore.Migrations
                     CreatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     LastModifierId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     DeleterId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DeletionTime = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
@@ -272,7 +309,7 @@ namespace OrderManagement.EfCore.Migrations
                     CreatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     LastModifierId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     DeleterId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DeletionTime = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
@@ -298,7 +335,7 @@ namespace OrderManagement.EfCore.Migrations
                     CreatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     LastModifierId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     DeleterId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DeletionTime = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
@@ -319,7 +356,7 @@ namespace OrderManagement.EfCore.Migrations
                     CreatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     LastModifierId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     DeleterId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DeletionTime = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
@@ -339,7 +376,7 @@ namespace OrderManagement.EfCore.Migrations
                     CreatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     LastModifierId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     DeleterId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DeletionTime = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
@@ -432,7 +469,7 @@ namespace OrderManagement.EfCore.Migrations
                     CreatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     LastModifierId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     DeleterId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DeletionTime = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
@@ -454,6 +491,28 @@ namespace OrderManagement.EfCore.Migrations
                         column: x => x.LogoInPageId,
                         principalTable: "Gallery",
                         principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "City",
+                schema: "aucbase",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "NVARCHAR(100)", nullable: true),
+                    ProvinceId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_City", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_City_Province_ProvinceId",
+                        column: x => x.ProvinceId,
+                        principalSchema: "aucbase",
+                        principalTable: "Province",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -498,7 +557,7 @@ namespace OrderManagement.EfCore.Migrations
                     CreatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     LastModifierId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     DeleterId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DeletionTime = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
@@ -531,7 +590,7 @@ namespace OrderManagement.EfCore.Migrations
                     CreatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     LastModifierId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     DeleterId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DeletionTime = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
@@ -562,7 +621,7 @@ namespace OrderManagement.EfCore.Migrations
                     CreatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     LastModifierId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     DeleterId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DeletionTime = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
@@ -589,7 +648,7 @@ namespace OrderManagement.EfCore.Migrations
                     CreatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     LastModifierId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     DeleterId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DeletionTime = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
@@ -616,7 +675,7 @@ namespace OrderManagement.EfCore.Migrations
                     CreatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     LastModifierId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     DeleterId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DeletionTime = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
@@ -643,7 +702,7 @@ namespace OrderManagement.EfCore.Migrations
                     CreatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     LastModifierId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     DeleterId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DeletionTime = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
@@ -690,7 +749,7 @@ namespace OrderManagement.EfCore.Migrations
                     CreatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     LastModifierId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     DeleterId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DeletionTime = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
@@ -727,7 +786,7 @@ namespace OrderManagement.EfCore.Migrations
                     CreatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     LastModifierId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     DeleterId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DeletionTime = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
@@ -773,6 +832,10 @@ namespace OrderManagement.EfCore.Migrations
                     OrderRejectionStatus = table.Column<int>(type: "int", nullable: true),
                     DeliveryDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     PriorityUser = table.Column<int>(type: "int", nullable: true),
+                    Vin = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    EngineNo = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
+                    ChassiNo = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
+                    Vehicle = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -913,6 +976,12 @@ namespace OrderManagement.EfCore.Migrations
                 column: "CarFamilyId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_City_ProvinceId",
+                schema: "aucbase",
+                table: "City",
+                column: "ProvinceId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Company_BannerId",
                 table: "Company",
                 column: "BannerId",
@@ -1042,6 +1111,10 @@ namespace OrderManagement.EfCore.Migrations
                 name: "CarTip_Gallery_Mapping");
 
             migrationBuilder.DropTable(
+                name: "City",
+                schema: "aucbase");
+
+            migrationBuilder.DropTable(
                 name: "CustomerOrder");
 
             migrationBuilder.DropTable(
@@ -1049,6 +1122,9 @@ namespace OrderManagement.EfCore.Migrations
 
             migrationBuilder.DropTable(
                 name: "ExternalApiResponsLog");
+
+            migrationBuilder.DropTable(
+                name: "Logs");
 
             migrationBuilder.DropTable(
                 name: "OrderRejectionTypeReadOnly");
@@ -1076,6 +1152,10 @@ namespace OrderManagement.EfCore.Migrations
 
             migrationBuilder.DropTable(
                 name: "AbpEntityChanges");
+
+            migrationBuilder.DropTable(
+                name: "Province",
+                schema: "aucbase");
 
             migrationBuilder.DropTable(
                 name: "SaleDetail");

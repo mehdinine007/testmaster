@@ -62,6 +62,14 @@ public static class OrderManagementDbContextModelCreatingExtensions
             //    .WithMany(x => x.CustomerOrders)
             //    .HasForeignKey(x => x.SaleDetailId)
             //    .OnDelete(DeleteBehavior.NoAction)
+            entity.Property(x => x.EngineNo)
+                .HasMaxLength(20);
+            entity.Property(x => x.ChassiNo)
+                .HasMaxLength(20);
+            entity.Property(x => x.Vin)
+                .HasMaxLength(50);
+            entity.Property(x => x.Vehicle)
+                .HasMaxLength(50);
         });
 
         builder.Entity<SaleDetail>(entity =>
