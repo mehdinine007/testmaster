@@ -144,13 +144,13 @@ public class OrderAppService : ApplicationService, IOrderAppService
         {
             //var vinRegex = new Regex("[.A-Z a-z 0-9]");
             const string pattern = ".[A-Z a-z 0-9]";
-            if (string.IsNullOrWhiteSpace(commitOrder.Vin) && !Regex.IsMatch(commitOrder.Vin, pattern, RegexOptions.Compiled))
+            if (!string.IsNullOrWhiteSpace(commitOrder.Vin) && !Regex.IsMatch(commitOrder.Vin, pattern, RegexOptions.Compiled))
                 throw new UserFriendlyException("فرمت شماره VIN صحیح نیست");
-            if (string.IsNullOrWhiteSpace(commitOrder.EngineNo) && commitOrder.EngineNo.Length < 20)
+            if (!string.IsNullOrWhiteSpace(commitOrder.EngineNo) && commitOrder.EngineNo.Length < 20)
                 throw new UserFriendlyException("فرمت شماره موتور صحیح نیست");
-            if (string.IsNullOrWhiteSpace(commitOrder.ChassiNo) && commitOrder.ChassiNo.Length < 20)
+            if (!string.IsNullOrWhiteSpace(commitOrder.ChassiNo) && commitOrder.ChassiNo.Length < 20)
                 throw new UserFriendlyException("فرمت شماره شاسی صحیح نیست");
-            if (string.IsNullOrWhiteSpace(commitOrder.Vehicle))
+            if (!string.IsNullOrWhiteSpace(commitOrder.Vehicle))
                 throw new UserFriendlyException("فرمت اطلاعات خودرو صحیح نیست");
             commitOrder.Vin = commitOrder.Vin.ToUpper();
             return;
