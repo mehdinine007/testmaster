@@ -12,7 +12,6 @@ namespace OrderManagement.Application.Contracts
         public string EngineNo { get; set; }
         public string ChassiNo { get; set; }
         public string Vehicle { get; set; }
-        public string behname2 { get; set; }
 
     }
 }
