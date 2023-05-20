@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Text.RegularExpressions;
+using System.Text;
 using OrderManagement.Domain.Bases;
 using OrderManagement.Domain;
 using Volo.Abp.Domain.Repositories;
@@ -23,6 +24,7 @@ using OrderManagement.Application.OrderManagement.Constants;
 using Newtonsoft.Json;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Authorization;
+using Volo.Abp.Domain.Entities;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -43,6 +45,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
     private readonly IDistributedCache _distributedCache;
     private readonly IRepository<Company, int> _companyRepository;
     private readonly IUnitOfWorkManager _unitOfWorkManager;
+    private readonly IRepository<ESaleType, int> _esaleTypeRepository;
 
     public OrderAppService(ICommonAppService commonAppService,
                            IBaseInformationService baseInformationAppService,
@@ -60,7 +63,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
                            IConfiguration configuration,
                            IDistributedCache distributedCache,
                            IRepository<Company, int> companyRepository,
-                           IUnitOfWorkManager UnitOfWorkManager
+                           IUnitOfWorkManager UnitOfWorkManager,
+                           IRepository<ESaleType, int> esaleTypeRepository
         )
     {
         _commonAppService = commonAppService;
@@ -80,7 +84,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         _configuration = configuration;
         _companyRepository = companyRepository;
         _unitOfWorkManager = UnitOfWorkManager;
-
+        _esaleTypeRepository = esaleTypeRepository;
     }
 
 
@@ -122,6 +126,39 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
 
 
+    }
+
+    private async Task RustySalePlanValidation(CommitOrderDto commitOrder, int esaleTypeId)
+    {
+        //TODO: make sure esale type name is quite right
+        const string targetEsaleTypeName = "طرح فروش فرسوده";
+        var esaleTypeQuery = await _esaleTypeRepository.GetQueryableAsync();
+        var esaleType = esaleTypeQuery.Select(x => new
+        {
+            x.SaleTypeName,
+            x.Id
+        }).FirstOrDefault(x => x.Id == esaleTypeId);
+        if (esaleType == null)
+            throw new EntityNotFoundException(typeof(ESaleType), esaleTypeId);
+        if (esaleType.SaleTypeName.Equals(targetEsaleTypeName, StringComparison.InvariantCultureIgnoreCase))
+        {
+            //var vinRegex = new Regex("[.A-Z a-z 0-9]");
+            const string pattern = ".[A-Z a-z 0-9]";
+            if (string.IsNullOrWhiteSpace(commitOrder.Vin) && !Regex.IsMatch(commitOrder.Vin, pattern, RegexOptions.Compiled))
+                throw new UserFriendlyException("فرمت شماره VIN صحیح نیست");
+            commitOrder.Vin = commitOrder.Vin.ToUpper();
+            if (string.IsNullOrWhiteSpace(commitOrder.EngineNo) && commitOrder.EngineNo.Length < 20)
+                throw new UserFriendlyException("فرمت شماره شماره موتور صحیح نیست");
+            if (string.IsNullOrWhiteSpace(commitOrder.ChassiNo) && commitOrder.ChassiNo.Length < 20)
+                throw new UserFriendlyException("فرمت شماره شماره موتور صحیح نیست");
+            if (string.IsNullOrWhiteSpace(commitOrder.ChassiNo))
+                throw new UserFriendlyException("فرمت شماره شماره موتور صحیح نیست");
+            return;
+        }
+        commitOrder.EngineNo = "";
+        commitOrder.ChassiNo = "";
+        commitOrder.Vin = "";
+        commitOrder.Vehicle = "";
     }
 
 
@@ -166,7 +203,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
             var SaleDetailFromCache = System.Text.Json.JsonSerializer.Deserialize<SaleDetailOrderDto>(cacheResponse);
             if (SaleDetailFromCache != null)
             {
-                SaleDetailDto = SaleDetailFromCache;
+                await RustySalePlanValidation(commitOrderDto, SaleDetailDto.EsaleTypeId);
+                SaleDetailDto = ObjectMapper.Map<SaleDetail, SaleDetailOrderDto>(SaleDetailFromCache);
                 ttl = SaleDetailDto.SalePlanEndDate.Subtract(DateTime.Now);
 
             }
@@ -195,6 +233,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             }
             else
             {
+                await RustySalePlanValidation(commitOrderDto, SaleDetailFromDb.EsaleTypeId);
                 SaleDetailDto = SaleDetailFromDb;
                 ttl = SaleDetailDto.SalePlanEndDate.Subtract(DateTime.Now);
                 //await _cacheManager.GetCache("SaleDetail").SetAsync(commitOrderDto.SaleDetailUId.ToString(), SaleDetailDto);
@@ -453,6 +492,10 @@ public class OrderAppService : ApplicationService, IOrderAppService
         customerOrder.SaleDetailId = (int)SaleDetailDto.Id;
         customerOrder.UserId = (int)userId;
         customerOrder.PriorityId = (PriorityEnum)commitOrderDto.PriorityId;
+        customerOrder.Vin = commitOrderDto.Vin;
+        customerOrder.ChassiNo = commitOrderDto.ChassiNo;
+        customerOrder.EngineNo = commitOrderDto.EngineNo;
+        customerOrder.Vehicle = commitOrderDto.Vehicle;
         customerOrder.OrderStatus = OrderStatusType.RecentlyAdded;
         customerOrder.SaleId = SaleDetailDto.SaleId;
         await _commitOrderRepository.InsertAsync(customerOrder);

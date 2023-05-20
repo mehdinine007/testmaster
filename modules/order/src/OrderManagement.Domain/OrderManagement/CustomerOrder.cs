@@ -16,5 +16,9 @@ namespace OrderManagement.Domain
         public DateTime? DeliveryDate { get; set; }
         public virtual SaleDetail SaleDetail { get; set; }
         public int? PriorityUser { get; set; }
+        public string Vin { get; set; }
+        public string EngineNo { get; set; }
+        public string ChassiNo { get; set; }
+        public string Vehicle { get; set; }
     }
 }

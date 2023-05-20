@@ -14,5 +14,10 @@ namespace OrderManagement.Application.Contracts
         public int SaleId { get; set; }
         public string OrderStatusDescription { get; set; }
         public DateTime? DeliveryDate { get; set; }
+        public string Vin { get; set; }
+        public string EngineNo { get; set; }
+        public string ChassiNo { get; set; }
+        public string Vehicle { get; set; }
+
     }
 }
