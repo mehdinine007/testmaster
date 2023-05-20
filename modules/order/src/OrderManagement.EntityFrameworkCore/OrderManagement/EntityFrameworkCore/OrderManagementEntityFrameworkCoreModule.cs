@@ -15,7 +15,8 @@ namespace OrderManagement.EfCore
         {
             context.Services.AddAbpDbContext<OrderManagementDbContext>(options =>
             {
-                options.AddDefaultRepositories();
+                //options.AddDefaultRepositories();
+                options.AddDefaultRepositories(includeAllEntities: true);
             });
         }
     }

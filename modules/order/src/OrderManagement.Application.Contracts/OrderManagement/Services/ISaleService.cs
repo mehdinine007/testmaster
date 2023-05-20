@@ -18,6 +18,5 @@ namespace OrderManagement.Application.Contracts.Services
 
         Task UserValidationByBirthDate(int saleId);
         Task UserValidationByMobile(int saleId);
-
     }
 }

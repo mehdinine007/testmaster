@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using System.Linq;
 using Volo.Abp.Domain.Entities;
 using OrderManagement.Application.OrderManagement.Utitlities;
+using System.Runtime.CompilerServices;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -27,6 +28,16 @@ public class SaleService : ApplicationService , ISaleService
     private readonly IRepository<CustomerOrder, int> _customerOrderRepository;
     //private readonly IRepository<User, long> _userRepository;
     private IConfiguration _configuration { get; set; }
+    //public SaleService(IRepository<ESaleType, int> esaleTypeRepository,
+    //                   IRepository<SaleDetail, int> saleDetailRepository,
+    //                   IRepository<PreSale> preSaleRepository
+    //    )
+    //{
+    //    _esaleTypeRepository = esaleTypeRepository;
+    //    _saleDetailRepository = saleDetailRepository;
+    //    _preSaleRepository = preSaleRepository;
+    //}
+
     public SaleService(IRepository<PreSale> PreSaleRepository,
                        IRepository<SaleDetail, int> saleDetailRepository,
                        IRepository<Gallery, int> galleryRepository,

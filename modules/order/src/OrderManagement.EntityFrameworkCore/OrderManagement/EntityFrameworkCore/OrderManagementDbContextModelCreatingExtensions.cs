@@ -2,6 +2,11 @@
 using Microsoft.EntityFrameworkCore;
 using Volo.Abp;
 using OrderManagement.Domain;
+using OrderManagement.Domain.Bases;
+using System.Collections.Generic;
+using System.Linq;
+using OrderManagement.EfCore.Helpers;
+using Volo.Abp.EntityFrameworkCore.Modeling;
 
 namespace OrderManagement.EfCore;
 
@@ -17,8 +22,17 @@ public static class OrderManagementDbContextModelCreatingExtensions
 
         optionsAction?.Invoke(options);
 
+        builder.Entity<PreSale>(entity => entity.ToTable(nameof(PreSale)));
+
+        builder.Entity<SaleSchema>(entity => entity.ToTable(nameof(SaleSchema)));
+
+        builder.Entity<Season>(entity => entity.ToTable(nameof(Season)));
+
         builder.Entity<CustomerOrder>(entity =>
         {
+
+            entity.ConfigureFullAudited();
+            entity.ConfigureSoftDelete();
             entity.ToTable(nameof(CustomerOrder));
 
             entity.HasIndex(co => new { co.SaleDetailId, co.UserId })
@@ -48,6 +62,14 @@ public static class OrderManagementDbContextModelCreatingExtensions
             //    .WithMany(x => x.CustomerOrders)
             //    .HasForeignKey(x => x.SaleDetailId)
             //    .OnDelete(DeleteBehavior.NoAction)
+            entity.Property(x => x.EngineNo)
+                .HasMaxLength(20);
+            entity.Property(x => x.ChassiNo)
+                .HasMaxLength(20);
+            entity.Property(x => x.Vin)
+                .HasMaxLength(50);
+            entity.Property(x => x.Vehicle)
+                .HasMaxLength(50);
         });
 
         builder.Entity<SaleDetail>(entity =>
@@ -73,6 +95,11 @@ public static class OrderManagementDbContextModelCreatingExtensions
                .HasMaxLength(26);
             entity.HasIndex(u => u.nationalcode)
               .HasFilter($"{nameof(UserRejectionFromBank.IsDeleted)} = 0");
+        });
+
+        builder.Entity<AdvocacyUser>(entity =>
+        {
+            entity.ToTable(nameof(AdvocacyUser));
         });
 
         builder.Entity<AdvocacyUsersFromBank>(entity =>
@@ -203,6 +230,62 @@ public static class OrderManagementDbContextModelCreatingExtensions
         {
             entity.ToTable(nameof(CarMakerBlackList));
             entity.HasIndex(co => new { co.Nationalcode, co.EsaleTypeId });
+        });
+
+        builder.Entity<OrderRejectionTypeReadOnly>(entity =>
+        {
+            entity.ToTable(nameof(OrderRejectionTypeReadOnly));
+
+            var records = Enum.GetValues(typeof(OrderRejectionType))
+                .Cast<OrderRejectionType>()
+                .OrderBy(x => (int)x)
+                .Select(x => new Tuple<int, string, string>((int)x, x.ToString(), x.GetDisplayName()))
+                .ToList();
+            var dataToWrite = new List<OrderRejectionTypeReadOnly>(records.Count);
+            for (var i = 0; i < records.Count; i++)
+            {
+                var current = records[i];
+                dataToWrite.Add(new OrderRejectionTypeReadOnly(
+                    id : i + 1,
+                    orderRejectionCode : current.Item1,
+                    orderRejectionTitleEn : current.Item2,
+                    orderRejectionTitle : current.Item3
+                ));
+            }
+            entity.HasData(dataToWrite);
+        });
+
+        builder.Entity<OrderStatusTypeReadOnly>(entity =>
+        {
+            entity.ToTable(nameof(OrderStatusTypeReadOnly));
+
+            var statuses = Enum.GetValues(typeof(OrderStatusType))
+                .Cast<OrderStatusType>()
+                .OrderBy(x => (int)x)
+                .Select(x => new Tuple<int, string, string>((int)x, x.ToString(), x.GetDisplayName()))
+                .ToList();
+            var dataToWrite = new List<OrderStatusTypeReadOnly>(statuses.Count);
+            for (var i = 0; i < statuses.Count; i++)
+            {
+                var status = statuses[i];
+                dataToWrite.Add(new OrderStatusTypeReadOnly(
+                    id : i + 1,
+                    orderStatusCode :status.Item1,
+                    orderStatusTitleEn : status.Item2,
+                    orderStatusTitle : status.Item3
+                ));
+            }
+            entity.HasData(dataToWrite);
+        });
+
+        builder.Entity<UserRejectionAdvocacy>(entity =>
+        {
+            entity.ToTable(nameof(UserRejectionAdvocacy));
+        });
+
+        builder.Entity<WhiteList>(entity =>
+        {
+            entity.ToTable(nameof(WhiteList));
         });
     }
 }

@@ -1,9 +1,14 @@
-﻿using Abp.Domain.Uow;
+﻿using System;
+using Microsoft.Extensions.Caching.Distributed;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Domain;
 using Volo.Abp;
 using Volo.Abp.AutoMapper;
 using Volo.Abp.Modularity;
+using AutoMapper.Internal;
+using Microsoft.Extensions.DependencyInjection;
+using OrderManagement.Application.Contracts.Services;
+using OrderManagement.Application.OrderManagement.Implementations;
 
 namespace OrderManagement.Application;
 [DependsOn(
@@ -17,53 +22,22 @@ public class OrderManagementApplicationModule : AbpModule
     {
         Configure<AbpAutoMapperOptions>(options =>
         {
-            options.AddProfile<OrderManagementApplicationAutoMapperProfile>(validate: true);
+            options.AddMaps<OrderManagementApplicationAutoMapperProfile>();
         });
-    }
 
-    public override void OnPreApplicationInitialization(ApplicationInitializationContext context)
-    {
-        base.OnPreApplicationInitialization(context);
+        //context.Services.AddScoped<IBaseInformationService, BaseInformationService>();
 
-
-        //TODO: configure redis cache
-
-        //ServiceConfigurationContext.Caching.UseRedis(options =>
+        //Configure<AbpDistributedCacheOptions>(options =>
         //{
-        //    options.ConnectionString = _appConfiguration["RedisCache:ConnectionString"];
-        //    options.DatabaseId = _appConfiguration.GetValue<int>("RedisCache:DatabaseId");
+        //    options.GlobalCacheEntryOptions = new DistributedCacheEntryOptions()
+        //    {
+        //        AbsoluteExpiration = new DateTimeOffset(DateTime.Now.AddMinutes(20)) //20 mins default
+        //    };
+        //    options.KeyPrefix = "MyApp1";
+        //    //options.CacheConfigurators.Add(x =>
+        //    //{
+        //    //    x.
+        //    //});
         //});
-        //Configuration.Caching.Configure("AuthenticateTejarat", cache =>
-        //{
-        //    cache.DefaultSlidingExpireTime = TimeSpan.FromMinutes(30);
-        //});
-        //Configuration.Caching.Configure("AdvocacyConfirm", cache =>
-        //{
-        //    cache.DefaultSlidingExpireTime = TimeSpan.FromHours(24);
-        //});
-        //Configuration.Caching.Configure("UserProf", cache =>
-        //{
-        //    cache.DefaultSlidingExpireTime = TimeSpan.FromMinutes(30);
-        //});
-        //Configuration.Caching.Configure("SMS", cache =>
-        //{
-        //    cache.DefaultSlidingExpireTime = TimeSpan.FromMinutes(4);
-        //});
-        //Configuration.Caching.Configure("UserRejection", cache =>
-        //{
-        //    cache.DefaultSlidingExpireTime = TimeSpan.FromMinutes(20);
-        //});
-        //Configuration.Caching.Configure("SaleDetail", cache =>
-        //{
-        //    cache.DefaultSlidingExpireTime = TimeSpan.FromMinutes(20);
-        //});
-        //Configuration.Caching.Configure("UserLogin", cache =>
-        //{
-        //    cache.DefaultSlidingExpireTime = TimeSpan.FromDays(1);
-        //});
-        //Configuration.UnitOfWork.OverrideFilter(AbpDataFilters.MayHaveTenant, false);
-        //Configuration.UnitOfWork.OverrideFilter(AbpDataFilters.MustHaveTenant, false);
-
-
     }
 }

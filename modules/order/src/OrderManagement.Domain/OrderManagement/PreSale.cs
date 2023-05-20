@@ -8,10 +8,10 @@ namespace OrderManagement.Domain
     public class PreSale : FullAuditedEntity<int>
     {
         [Required]
-        [Column(TypeName = "NVARCHAR(150)")]
+        [Column(TypeName = "nvarchar(150)")]
         public string Brand { get; set; }
         [Required]
-        [Column(TypeName = "NVARCHAR(150)")]
+        [Column(TypeName = "nvarchar(150)")]
         public string Name { get; set; }
         public int Count { get; set; }
     }

@@ -1,7 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using OrderManagement.Domain;
+using OrderManagement.Domain.Bases;
+using System.ComponentModel.DataAnnotations;
+using System;
+using Volo.Abp.AuditLogging;
+using Volo.Abp.AuditLogging.EntityFrameworkCore;
 using Volo.Abp.Data;
 using Volo.Abp.EntityFrameworkCore;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace OrderManagement.EfCore
 {
@@ -20,7 +26,7 @@ namespace OrderManagement.EfCore
 
         public DbSet<AdvocacyUsersFromBank> AdvocacyUsersFromBanks { get; set; }
 
-        public DbSet<AdvocacyUsers> AdvocacyUsers { get; set; }
+        public DbSet<AdvocacyUser> AdvocacyUsers { get; set; }
 
         public DbSet<UserRejectionFromBank> UserRejectionFromBank { get; set; }
 
@@ -35,6 +41,8 @@ namespace OrderManagement.EfCore
         public DbSet<CarTip_Gallery_Mapping> CarTip_Gallery_Mappings { get; set; }
 
         public DbSet<Season_Company_CarTip> Season_Company_CarTip { get; set; }
+
+        public DbSet<UserRejectionAdvocacy> UserRejectionAdvocacies { get; set; }
 
         public DbSet<ESaleType> ESaleTypes { get; set; }
 
@@ -53,10 +61,17 @@ namespace OrderManagement.EfCore
         public DbSet<CarMakerBlackList> CarMakerBlackLists { get; set; }
 
         public DbSet<City> Cities { get; set; }
+        public DbSet<Gallery> Gallery { get; set; }
 
         public DbSet<Province> Provinces { get; set; }
 
         public DbSet<PreSale> PreSales { get; set; }
+
+        public DbSet<OrderRejectionTypeReadOnly> OrderRejectionTypeReadOnly { get; set; }
+
+        public DbSet<OrderStatusTypeReadOnly> OrderStatusTypeReadOnly { get; set; }
+
+        public DbSet<SaleSchema> SaleSchema { get; set; }
 
         public OrderManagementDbContext(DbContextOptions<OrderManagementDbContext> options)
             : base(options)
@@ -69,6 +84,7 @@ namespace OrderManagement.EfCore
             //System.Diagnostics.Debugger.Launch();
             base.OnModelCreating(builder);
 
+            builder.ConfigureAuditLogging();
             builder.ConfigureOrderManagement(options =>
             {
                 //options.TablePrefix = TablePrefix;

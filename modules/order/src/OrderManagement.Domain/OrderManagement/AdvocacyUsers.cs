@@ -6,7 +6,7 @@ using Volo.Abp.Domain.Entities.Auditing;
 
 namespace OrderManagement.Domain
 {
-    public class AdvocacyUsers : FullAuditedEntity<int>
+    public class AdvocacyUser : FullAuditedEntity<int>
     {
         [Required]
         [Column(TypeName = "NCHAR(10)")]

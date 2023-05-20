@@ -1,5 +1,4 @@
-﻿using Abp.Domain.Uow;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.Services;
 using OrderManagement.Domain;
@@ -15,8 +14,9 @@ using Volo.Abp.Domain.Repositories;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
-public class BaseInfromationService : ApplicationService, IBaseInformationService
+public class BaseInformationService : ApplicationService, IBaseInformationService
 {
+
     private readonly IRepository<Company, int> _companyRepository;
     //private readonly IRepository<User, long> _userRepository;
     private readonly IRepository<CarTip, int> _carTipRepository;
@@ -26,15 +26,28 @@ public class BaseInfromationService : ApplicationService, IBaseInformationServic
     private readonly IRepository<Province, int> _provinceRepository;
     private readonly IRepository<City, int> _cityRepository;
     private readonly IRepository<WhiteList, int> _whiteListRepository;
-    private readonly IRepository<AdvocacyUsers, int> _advocacyUsersRepository;
+    private readonly IRepository<AdvocacyUser, int> _advocacyUsersRepository;
     //private readonly IPasswordHasher<User> _passwordHasher;
+    private readonly IEsaleGrpcClient _esaleGrpcClient;
 
     private Microsoft.Extensions.Configuration.IConfiguration _configuration { get; set; }
     private IHttpContextAccessor _httpContextAccessor;
 
     private readonly ICommonAppService _commonAppService;
 
-    public BaseInfromationService(IRepository<Company, int> companyRepository,
+    //    public BaseInformationService(IEsaleGrpcClient esaleGrpcClient,
+    //                                  IRepository<Company, int> companyRepository
+    //                                  , IRepository<CarTip, int> carTipRepository
+    //,
+    //IRepository<Gallery, int> galleryRepository = null)
+    //    {
+    //        _esaleGrpcClient = esaleGrpcClient;
+    //        _companyRepository = companyRepository;
+    //        _carTipRepository = carTipRepository;
+    //        _galleryRepository = galleryRepository;
+    //    }
+
+    public BaseInformationService(IRepository<Company, int> companyRepository,
                                   IRepository<CarTip, int> carTipRepsoitory,
                                   IRepository<Gallery, int> galleryRepository,
                                   ICommonAppService CommonAppService,
@@ -42,13 +55,15 @@ public class BaseInfromationService : ApplicationService, IBaseInformationServic
                                   IRepository<CarMakerBlackList, long> CarMakerBlackListRepository,
                                   IRepository<Province, int> ProvinceRepository,
                                   IRepository<WhiteList, int> WhiteListRepository,
-                                  IRepository<AdvocacyUsers, int> AdvocacyUsersRepository,
+                                  IRepository<AdvocacyUser, int> AdvocacyUsersRepository,
                                   //IPasswordHasher<User> PasswordHasher,
                                   Microsoft.Extensions.Configuration.IConfiguration Configuration,
                                   IRepository<City, int> CityRepository,
-                                  IRepository<AdvocacyUsersFromBank, int> AdvocacyUsersFromBankRepository
+                                  IRepository<AdvocacyUsersFromBank, int> AdvocacyUsersFromBankRepository,
+                                  IEsaleGrpcClient esaleGrpcClient
         )
     {
+        _esaleGrpcClient = esaleGrpcClient;
         _companyRepository = companyRepository;
         _carTipRepository = carTipRepsoitory;
         _galleryRepository = galleryRepository;
@@ -63,6 +78,7 @@ public class BaseInfromationService : ApplicationService, IBaseInformationServic
         _advocacyUsersRepository = AdvocacyUsersRepository;
         //_passwordHasher = PasswordHasher;
     }
+
     [RemoteService(false)]
     public async Task CheckAdvocacyPrice(decimal MinimumAmountOfProxyDeposit)
     {
@@ -75,10 +91,10 @@ public class BaseInfromationService : ApplicationService, IBaseInformationServic
             throw new UserFriendlyException("کد ملی صحیح نمی باشد");
         }
 
-        UnitOfWorkOptions unitOfWorkOptions = new UnitOfWorkOptions();
-        unitOfWorkOptions.IsTransactional = false;
-        unitOfWorkOptions.IsolationLevel = System.Transactions.IsolationLevel.Snapshot;
-        unitOfWorkOptions.Scope = System.Transactions.TransactionScopeOption.RequiresNew;
+        //UnitOfWorkOptions unitOfWorkOptions = new UnitOfWorkOptions();
+        //unitOfWorkOptions.IsTransactional = false;
+        //unitOfWorkOptions.IsolationLevel = System.Transactions.IsolationLevel.Snapshot;
+        //unitOfWorkOptions.Scope = System.Transactions.TransactionScopeOption.RequiresNew;
         //using (var unitOfWork = _unitOfWorkManager.Begin(unitOfWorkOptions))
         //{
 
@@ -146,7 +162,7 @@ public class BaseInfromationService : ApplicationService, IBaseInformationServic
 
     }
 
-    [UnitOfWork(System.Transactions.IsolationLevel.Unspecified)]
+    //[UnitOfWork(System.Transactions.IsolationLevel.Unspecified)]
     public void CheckBlackList(int esaleTypeId)
     {
         var identity = (ClaimsPrincipal)Thread.CurrentPrincipal;
@@ -272,5 +288,11 @@ public class BaseInfromationService : ApplicationService, IBaseInformationServic
     {
         return ObjectMapper.Map<List<City>, List<PublicDto>>(_cityRepository.WithDetails().Where(y => y.ProvinceId == ProvienceId).ToList());
 
+    }
+
+    public async Task<UserDto> GrpcTest()
+    {
+       // var dd = await _esaleGrpcClient.GetUserAdvocacyByNationalCode(_commonAppService.GetNationalCode());
+        return await _esaleGrpcClient.GetUserById(_commonAppService.GetUserId());
     }
 }

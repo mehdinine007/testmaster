@@ -21,5 +21,9 @@
         public int? IssuingProvinceId { get; set; }
 
         public int? HabitationProvinceId { get; set; }
+
+        public string MobileNumber { get; set; }
+
+        public int? CompanyId { get; set; }
     }
 }

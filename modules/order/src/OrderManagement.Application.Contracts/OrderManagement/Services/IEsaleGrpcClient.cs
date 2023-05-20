@@ -1,9 +1,12 @@
-﻿using Volo.Abp.Application.Services;
+﻿using System.Threading.Tasks;
+using Volo.Abp.Application.Services;
 
 namespace OrderManagement.Application.Contracts.Services
 {
     public interface IEsaleGrpcClient : IApplicationService
     {
-        UserDto GetUserById(long userId);
+        Task<UserDto> GetUserById(long userId);
+
+        Task<AdvocacyUserDto> GetUserAdvocacyByNationalCode(string nationlCode);
     }
 }

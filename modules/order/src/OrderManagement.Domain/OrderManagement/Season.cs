@@ -4,7 +4,7 @@ using Volo.Abp.Domain.Entities.Auditing;
 
 namespace OrderManagement.Domain
 {
-    public class Season : FullAuditedAggregateRoot<int>
+    public class Season : FullAuditedEntity<int>
     {
         public String Name { get; set; }
 
