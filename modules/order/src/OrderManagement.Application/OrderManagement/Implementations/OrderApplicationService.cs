@@ -128,7 +128,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
     }
 
-    private async Task RustySalePlanValidation(CommitOrderDto commitOrder, int esaleTypeId)
+    private void RustySalePlanValidation(CommitOrderDto commitOrder, int esaleTypeId)
     {
         //TODO: make sure esale type name is quite right
         //const string targetEsaleTypeName = "طرح فروش فرسوده";
@@ -266,7 +266,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         ////////////////conntrol repeated order in saledetails// iran&&varedat
 
         CheckSaleDetailValidation(SaleDetailDto);
-        await RustySalePlanValidation(commitOrderDto, SaleDetailDto.EsaleTypeId);
+        RustySalePlanValidation(commitOrderDto, SaleDetailDto.EsaleTypeId);
         await _commonAppService.IsUserRejected(); //if user reject from advocacy
                                                   //_baseInformationAppService.CheckBlackList(SaleDetailDto.EsaleTypeId); //if user not exsist in blacklist
         await CheckAdvocacy(nationalCode); //if hesab vekalati darad
