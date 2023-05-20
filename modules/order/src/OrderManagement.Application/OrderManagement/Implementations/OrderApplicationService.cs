@@ -128,7 +128,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
     }
 
-    private async Task RustySalePlanValidation(CommitOrderDto commitOrder, int esaleTypeId)
+    private void RustySalePlanValidation(CommitOrderDto commitOrder, int esaleTypeId)
     {
         //TODO: make sure esale type name is quite right
         //const string targetEsaleTypeName = "طرح فروش فرسوده";
@@ -146,13 +146,13 @@ public class OrderAppService : ApplicationService, IOrderAppService
             const string pattern = ".[A-Z a-z 0-9]";
             if (string.IsNullOrWhiteSpace(commitOrder.Vin) && !Regex.IsMatch(commitOrder.Vin, pattern, RegexOptions.Compiled))
                 throw new UserFriendlyException("فرمت شماره VIN صحیح نیست");
-            commitOrder.Vin = commitOrder.Vin.ToUpper();
             if (string.IsNullOrWhiteSpace(commitOrder.EngineNo) && commitOrder.EngineNo.Length < 20)
-                throw new UserFriendlyException("فرمت شماره شماره موتور صحیح نیست");
+                throw new UserFriendlyException("فرمت شماره موتور صحیح نیست");
             if (string.IsNullOrWhiteSpace(commitOrder.ChassiNo) && commitOrder.ChassiNo.Length < 20)
-                throw new UserFriendlyException("فرمت شماره شماره موتور صحیح نیست");
-            if (string.IsNullOrWhiteSpace(commitOrder.ChassiNo))
-                throw new UserFriendlyException("فرمت شماره شماره موتور صحیح نیست");
+                throw new UserFriendlyException("فرمت شماره شاسی صحیح نیست");
+            if (string.IsNullOrWhiteSpace(commitOrder.Vehicle))
+                throw new UserFriendlyException("فرمت اطلاعات خودرو صحیح نیست");
+            commitOrder.Vin = commitOrder.Vin.ToUpper();
             return;
         }
         commitOrder.EngineNo = "";
@@ -223,7 +223,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     SalePlanStartDate = x.SalePlanStartDate,
                     UID = x.UID,
                     ESaleTypeId = x.ESaleTypeId
-                    
+
                 })
                 .FirstOrDefault(x => x.UID == commitOrderDto.SaleDetailUId);
             if (SaleDetailFromDb == null)
@@ -266,7 +266,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         ////////////////conntrol repeated order in saledetails// iran&&varedat
 
         CheckSaleDetailValidation(SaleDetailDto);
-        await RustySalePlanValidation(commitOrderDto, SaleDetailDto.EsaleTypeId);
+        RustySalePlanValidation(commitOrderDto, SaleDetailDto.EsaleTypeId);
         await _commonAppService.IsUserRejected(); //if user reject from advocacy
                                                   //_baseInformationAppService.CheckBlackList(SaleDetailDto.EsaleTypeId); //if user not exsist in blacklist
         await CheckAdvocacy(nationalCode); //if hesab vekalati darad
@@ -285,8 +285,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
         //    throw new UserFriendlyException("جهت ثبت سفارش جدید لطفا ابتدا از جزئیات سفارش، سفارش قبلی خود که موعد تحویل آن در سال 1403 می باشد را لغو نمایید .");
         ///////////////////////////////check entekhab yek no tarh////////////
         string EsaleTypeId = await _distributedCache.GetStringAsync(userId.ToString());
-        if(!string.IsNullOrEmpty(EsaleTypeId)) { 
-            if(EsaleTypeId != SaleDetailDto.EsaleTypeId.ToString())
+        if (!string.IsNullOrEmpty(EsaleTypeId))
+        {
+            if (EsaleTypeId != SaleDetailDto.EsaleTypeId.ToString())
             {
                 throw new UserFriendlyException("امکان انتخاب فقط یک نوع طرح فروش وجود دارد");
             }
@@ -300,7 +301,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     y => y.UserId == userId &&
                  y.OrderStatus == OrderStatusType.RecentlyAdded
              );
-            if(activeSuccessfulOrderExists != null)
+            if (activeSuccessfulOrderExists != null)
             {
                 if (SaleDetailDto.ESaleTypeId != activeSuccessfulOrderExists.ESaleTypeId)
                 {
@@ -309,7 +310,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     throw new UserFriendlyException("امکان انتخاب فقط یک نوع طرح فروش وجود دارد");
                 }
             }
-          
+
         }
 
 
@@ -689,7 +690,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         if (customerOrder == null)
             throw new UserFriendlyException("شماره سفارش صحیح نمی باشد");
 
-        if (!( customerOrder.OrderStatus == OrderStatusType.RecentlyAdded))
+        if (!(customerOrder.OrderStatus == OrderStatusType.RecentlyAdded))
             throw new UserFriendlyException("امکان انصراف وجود ندارد");
 
         if (customerOrder.UserId != userId)
@@ -760,11 +761,11 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         customerOrder.OrderStatus = OrderStatusType.Canceled;
         await CurrentUnitOfWork.SaveChangesAsync();
-         customerOrder = _commitOrderRepository.WithDetails().
-            FirstOrDefault(x => x.UserId == userId
-            && x.SaleDetailId == saleDetailOrderDto.Id
-            && x.OrderStatus == OrderStatusType.RecentlyAdded);
-        if(customerOrder == null)
+        customerOrder = _commitOrderRepository.WithDetails().
+           FirstOrDefault(x => x.UserId == userId
+           && x.SaleDetailId == saleDetailOrderDto.Id
+           && x.OrderStatus == OrderStatusType.RecentlyAdded);
+        if (customerOrder == null)
         {
             await _distributedCache.RemoveAsync(userId.ToString());
         }
