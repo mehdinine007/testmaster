@@ -163,10 +163,10 @@ public class OrderAppService : ApplicationService, IOrderAppService
         var cacheResponse = await _distributedCache.GetStringAsync(cacheKey);
         if (!string.IsNullOrWhiteSpace(cacheResponse))
         {
-            var SaleDetailFromCache = System.Text.Json.JsonSerializer.Deserialize<SaleDetail>(cacheResponse);
+            var SaleDetailFromCache = System.Text.Json.JsonSerializer.Deserialize<SaleDetailOrderDto>(cacheResponse);
             if (SaleDetailFromCache != null)
             {
-                SaleDetailDto = ObjectMapper.Map<SaleDetail, SaleDetailOrderDto>(SaleDetailFromCache);
+                SaleDetailDto = SaleDetailFromCache;
                 ttl = SaleDetailDto.SalePlanEndDate.Subtract(DateTime.Now);
 
             }
@@ -184,7 +184,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     SaleId = x.SaleId,
                     SalePlanEndDate = x.SalePlanEndDate,
                     SalePlanStartDate = x.SalePlanStartDate,
-                    UID = x.UID
+                    UID = x.UID,
+                    ESaleTypeId = x.ESaleTypeId
+                    
                 })
                 .FirstOrDefault(x => x.UID == commitOrderDto.SaleDetailUId);
             if (SaleDetailFromDb == null)
@@ -233,19 +235,48 @@ public class OrderAppService : ApplicationService, IOrderAppService
         _baseInformationAppService.CheckWhiteList(WhiteListEnumType.WhiteListOrder);
         var orderQuery = await _commitOrderRepository.GetQueryableAsync();
         var userId = _commonAppService.GetUserId();
-        var activeSuccessfulOrderExists = orderQuery
-            .AsNoTracking()
-            .Select(x => new { x.UserId, x.OrderStatus })
-            .FirstOrDefault(
-                y => y.UserId == userId &&
-             y.OrderStatus == OrderStatusType.Winner
-         );
-        if (activeSuccessfulOrderExists != null)
-            throw new UserFriendlyException("جهت ثبت سفارش جدید لطفا ابتدا از جزئیات سفارش، سفارش قبلی خود که موعد تحویل آن در سال 1403 می باشد را لغو نمایید .");
+        ///////////////////////////////agar order 1403 barandeh dasht natone sefaresh bezaneh
+        //var activeSuccessfulOrderExists = orderQuery
+        //    .AsNoTracking()
+        //    .Select(x => new { x.UserId, x.OrderStatus })
+        //    .FirstOrDefault(
+        //        y => y.UserId == userId &&
+        //     y.OrderStatus == OrderStatusType.Winner
+        // );
+        //if (activeSuccessfulOrderExists != null)
+        //    throw new UserFriendlyException("جهت ثبت سفارش جدید لطفا ابتدا از جزئیات سفارش، سفارش قبلی خود که موعد تحویل آن در سال 1403 می باشد را لغو نمایید .");
+        ///////////////////////////////check entekhab yek no tarh////////////
+        string EsaleTypeId = await _distributedCache.GetStringAsync(userId.ToString());
+        if(!string.IsNullOrEmpty(EsaleTypeId)) { 
+            if(EsaleTypeId != SaleDetailDto.EsaleTypeId.ToString())
+            {
+                throw new UserFriendlyException("امکان انتخاب فقط یک نوع طرح فروش وجود دارد");
+            }
+        }
+        else
+        {
+            var activeSuccessfulOrderExists = orderQuery
+                .AsNoTracking()
+                .Select(x => new { x.UserId, x.OrderStatus, x.SaleDetail.ESaleTypeId })
+                .FirstOrDefault(
+                    y => y.UserId == userId &&
+                 y.OrderStatus == OrderStatusType.RecentlyAdded
+             );
+            if(activeSuccessfulOrderExists != null)
+            {
+                if (SaleDetailDto.ESaleTypeId != activeSuccessfulOrderExists.ESaleTypeId)
+                {
+                    await _distributedCache.SetStringAsync(userId.ToString(), activeSuccessfulOrderExists.ESaleTypeId.ToString());
 
-        // await _baseInformationAppService.CheckAdvocacyPrice(SaleDetailDto.MinimumAmountOfProxyDeposit);
+                    throw new UserFriendlyException("امکان انتخاب فقط یک نوع طرح فروش وجود دارد");
+                }
+            }
+          
+        }
+
+
+
         ///////////////////////////////////iran/////////////
-        ///
         if (_configuration.GetSection("IsIranCellActive").Value == "7")
         {
             object objectCommitOrderIran = null;
@@ -442,6 +473,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
             {
                 AbsoluteExpiration = new DateTimeOffset(DateTime.Now.AddSeconds(ttl.TotalSeconds))
             });
+
+        await _distributedCache.SetStringAsync(userId.ToString(), SaleDetailDto.ESaleTypeId.ToString());
         //if iran
         if (_configuration.GetSection("IsIranCellActive").Value == "7")
         {
@@ -485,6 +518,13 @@ public class OrderAppService : ApplicationService, IOrderAppService
                      {
                          AbsoluteExpiration = new DateTimeOffset(DateTime.Now.AddSeconds(ttl.TotalSeconds))
                      });
+
+            await _distributedCache.SetStringAsync(userId.ToString()
+                   , SaleDetailDto.ESaleTypeId.ToString(),
+                   new DistributedCacheEntryOptions
+                   {
+                       AbsoluteExpiration = new DateTimeOffset(DateTime.Now.AddSeconds(ttl.TotalSeconds))
+                   });
             //await _cacheManager.GetCache("CommitOrderimport").
             //     SetAsync(
             //         userId.ToString() + "_" +
@@ -607,14 +647,14 @@ public class OrderAppService : ApplicationService, IOrderAppService
         if (customerOrder == null)
             throw new UserFriendlyException("شماره سفارش صحیح نمی باشد");
 
-        if (!(customerOrder.OrderStatus == OrderStatusType.Winner || customerOrder.OrderStatus == OrderStatusType.RecentlyAdded))
+        if (!( customerOrder.OrderStatus == OrderStatusType.RecentlyAdded))
             throw new UserFriendlyException("امکان انصراف وجود ندارد");
 
         if (customerOrder.UserId != userId)
             throw new UserFriendlyException("شماره سفارش صحیح نمی باشد");
 
         SaleDetailOrderDto saleDetailOrderDto;
-        var saleDetailCahce = await _distributedCache.GetStringAsync(string.Format(RedisConstants.SaleDetailPrefix, _commonAppService.GetNationalCode()));
+        var saleDetailCahce = await _distributedCache.GetStringAsync(string.Format(RedisConstants.SaleDetailPrefix, customerOrder.SaleDetailId.ToString()));
         if (!string.IsNullOrWhiteSpace(saleDetailCahce))
         {
 
@@ -629,11 +669,11 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 ?? throw new UserFriendlyException("جزئیات برنامه فروش یافت نشد");
             saleDetailOrderDto = ObjectMapper.Map<SaleDetail, SaleDetailOrderDto>(saleDetail);
             //await _cacheManager.GetCache("SaleDetail").SetAsync(saleDetailOrderDto.Id.ToString(), saleDetailOrderDto);
-            await _distributedCache.SetStringAsync(string.Format(RedisConstants.SaleDetailPrefix, _commonAppService.GetNationalCode()),
+            await _distributedCache.SetStringAsync(string.Format(RedisConstants.SaleDetailPrefix, customerOrder.SaleDetailId.ToString()),
                 JsonConvert.SerializeObject(saleDetailOrderDto),
                 new DistributedCacheEntryOptions
                 {
-                    AbsoluteExpiration = new DateTimeOffset(DateTime.Now.AddDays(10))
+                    AbsoluteExpiration = new DateTimeOffset(DateTime.Now.AddSeconds(saleDetail.SalePlanEndDate.Subtract(DateTime.Now).TotalSeconds))
                 });
 
         }
@@ -678,6 +718,15 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         customerOrder.OrderStatus = OrderStatusType.Canceled;
         await CurrentUnitOfWork.SaveChangesAsync();
+         customerOrder = _commitOrderRepository.WithDetails().
+            FirstOrDefault(x => x.UserId == userId
+            && x.SaleDetailId == saleDetailOrderDto.Id
+            && x.OrderStatus == OrderStatusType.RecentlyAdded);
+        if(customerOrder == null)
+        {
+            await _distributedCache.RemoveAsync(userId.ToString());
+        }
+
         return ObjectMapper.Map<CustomerOrder, CustomerOrderDto>(customerOrder, new CustomerOrderDto());
     }
 
@@ -699,24 +748,24 @@ public class OrderAppService : ApplicationService, IOrderAppService
         var (userMobile, userShaba, userAccountNumber) = (user.MobileNumber, user.Shaba, user.AccountNumber);
 
         await _commonAppService.ValidateSMS(userMobile, userNationalCode, userSmsCode, SMSType.UserRejectionAdvocacy);
-        var saleDetail = await _saleDetailRepository.WithDetails()
-            .Select(x => new { x.SalePlanStartDate, x.SalePlanEndDate, x.SaleId })
-            .FirstOrDefaultAsync(x => x.SalePlanStartDate <= DateTime.Now && x.SalePlanEndDate >= DateTime.Now);
-        if (saleDetail == null)
-            throw new UserFriendlyException("هیچ برنامه فروش فعالی وجود ندارد");
-        var saleId = 1;
-        var order = await _commitOrderRepository
-            .WithDetails()
-                .Select(x => new
-                {
-                    x.OrderStatus,
-                    x.UserId
-                })
-            .FirstOrDefaultAsync(x => x.UserId == userId && x.OrderStatus == OrderStatusType.RecentlyAdded);
-        if (order != null)
-        {
-            throw new UserFriendlyException("سفارش در حال بررسی دارید. جهت درخواست حذف از درخواست قبلی خود انصراف دهید");
-        }
+        //var saleDetail = await _saleDetailRepository.WithDetails()
+        //    .Select(x => new { x.SalePlanStartDate, x.SalePlanEndDate, x.SaleId })
+        //    .FirstOrDefaultAsync(x => x.SalePlanStartDate <= DateTime.Now && x.SalePlanEndDate >= DateTime.Now);
+        //if (saleDetail == null)
+        //    throw new UserFriendlyException("هیچ برنامه فروش فعالی وجود ندارد");
+        var saleId = 2;
+        //var order = await _commitOrderRepository
+        //    .WithDetails()
+        //        .Select(x => new
+        //        {
+        //            x.OrderStatus,
+        //            x.UserId
+        //        })
+        //    .FirstOrDefaultAsync(x => x.UserId == userId && x.OrderStatus == OrderStatusType.RecentlyAdded);
+        //if (order != null)
+        //{
+        //    throw new UserFriendlyException("سفارش در حال بررسی دارید. جهت درخواست حذف از درخواست قبلی خود انصراف دهید");
+        //}
 
         var userRejectionAdvocacyDisable = _configuration.GetValue<bool?>("UserRejectionAdvocacyIsDisable") ?? false;
         if (userRejectionAdvocacyDisable)

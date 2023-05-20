@@ -182,7 +182,7 @@ public class CommonAppService : ApplicationService, ICommonAppService
             //await _cacheManager.GetCache("UserRejection").SetAsync(Nationalcode, "0");
             await _distributedCache.SetStringAsync(string.Format(RedisConstants.UserRejectionPrefix, Nationalcode), "0", new DistributedCacheEntryOptions
             {
-                AbsoluteExpiration = RedisConstants.UserRejectionTimeOffset
+                AbsoluteExpiration = DateTime.Now.AddMinutes(20)
             });
         }
     }
