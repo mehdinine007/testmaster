@@ -131,16 +131,16 @@ public class OrderAppService : ApplicationService, IOrderAppService
     private async Task RustySalePlanValidation(CommitOrderDto commitOrder, int esaleTypeId)
     {
         //TODO: make sure esale type name is quite right
-        const string targetEsaleTypeName = "طرح فروش فرسوده";
-        var esaleTypeQuery = await _esaleTypeRepository.GetQueryableAsync();
-        var esaleType = esaleTypeQuery.Select(x => new
-        {
-            x.SaleTypeName,
-            x.Id
-        }).FirstOrDefault(x => x.Id == esaleTypeId);
-        if (esaleType == null)
-            throw new EntityNotFoundException(typeof(ESaleType), esaleTypeId);
-        if (esaleType.SaleTypeName.Equals(targetEsaleTypeName, StringComparison.InvariantCultureIgnoreCase))
+        //const string targetEsaleTypeName = "طرح فروش فرسوده";
+        //var esaleTypeQuery = await _esaleTypeRepository.GetQueryableAsync();
+        //var esaleType = esaleTypeQuery.Select(x => new
+        //{
+        //    x.SaleTypeName,
+        //    x.Id
+        //}).FirstOrDefault(x => x.Id == esaleTypeId);
+        //if (esaleType == null)
+        //    throw new EntityNotFoundException(typeof(ESaleType), esaleTypeId);
+        if (esaleTypeId == 3)
         {
             //var vinRegex = new Regex("[.A-Z a-z 0-9]");
             const string pattern = ".[A-Z a-z 0-9]";
@@ -203,8 +203,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             var SaleDetailFromCache = System.Text.Json.JsonSerializer.Deserialize<SaleDetailOrderDto>(cacheResponse);
             if (SaleDetailFromCache != null)
             {
-                await RustySalePlanValidation(commitOrderDto, SaleDetailDto.EsaleTypeId);
-                SaleDetailDto = ObjectMapper.Map<SaleDetail, SaleDetailOrderDto>(SaleDetailFromCache);
+                SaleDetailDto = SaleDetailFromCache;
                 ttl = SaleDetailDto.SalePlanEndDate.Subtract(DateTime.Now);
 
             }
@@ -233,7 +232,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
             }
             else
             {
-                await RustySalePlanValidation(commitOrderDto, SaleDetailFromDb.EsaleTypeId);
                 SaleDetailDto = SaleDetailFromDb;
                 ttl = SaleDetailDto.SalePlanEndDate.Subtract(DateTime.Now);
                 //await _cacheManager.GetCache("SaleDetail").SetAsync(commitOrderDto.SaleDetailUId.ToString(), SaleDetailDto);
@@ -268,6 +266,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         ////////////////conntrol repeated order in saledetails// iran&&varedat
 
         CheckSaleDetailValidation(SaleDetailDto);
+        await RustySalePlanValidation(commitOrderDto, SaleDetailDto.EsaleTypeId);
         await _commonAppService.IsUserRejected(); //if user reject from advocacy
                                                   //_baseInformationAppService.CheckBlackList(SaleDetailDto.EsaleTypeId); //if user not exsist in blacklist
         await CheckAdvocacy(nationalCode); //if hesab vekalati darad
