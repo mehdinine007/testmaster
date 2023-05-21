@@ -250,7 +250,8 @@ public class CommonAppService : ApplicationService, ICommonAppService
         Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
         object ObjectSMSCode = null;
         //_cacheManager.GetCache("SMS").TryGetValue(sMSType.ToString() + Mobile + NationalCode, out ObjectSMSCode);
-        ObjectSMSCode = await _distributedCache.GetStringAsync(string.Format(RedisConstants.ValidateSmsPrefix, NationalCode));
+        //ObjectSMSCode = await _distributedCache.GetStringAsync(string.Format(RedisConstants.ValidateSmsPrefix, NationalCode));
+        ObjectSMSCode = await _distributedCache.GetStringAsync(sMSType.ToString() + Mobile + NationalCode);
         RegistrationSMSDto smsCodeDto = ObjectSMSCode as RegistrationSMSDto;
         if (smsCodeDto == null)
         {
