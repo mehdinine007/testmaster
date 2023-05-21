@@ -11,7 +11,7 @@ namespace OrderManagement.HttpApi;
 
 [RemoteService]
 [Route("api/services/app/OrderService/[action]")]
-public class OrderManagementController : IOrderAppService
+public class OrderManagementController 
 {
     private readonly IOrderAppService _orderAppService;
 
@@ -19,17 +19,24 @@ public class OrderManagementController : IOrderAppService
         => _orderAppService = orderAppService;
     [UserAuthorization]
     [HttpPost]
-    public async Task<CustomerOrderDto> CancelOrder(int orderId)
-        => await _orderAppService.CancelOrder(orderId);
+    public async Task<bool> CancelOrder(int orderId)
+    {
+        await _orderAppService.CancelOrder(orderId);
+        return true;
+    }
     [HttpPost]
     public async Task<bool> Test()
     {
-        return await _orderAppService.Test();
+         await _orderAppService.Test();
+        return true;
     }
-   
+
     [HttpPost]
-    public async Task CommitOrder(CommitOrderDto commitOrderDto)
-        => await _orderAppService.CommitOrder(commitOrderDto);
+    public async Task<bool> CommitOrder(CommitOrderDto commitOrderDto)
+    {
+        await _orderAppService.CommitOrder(commitOrderDto);
+        return true;
+    }
 
     [HttpGet]
     [UserAuthorization]
@@ -48,8 +55,11 @@ public class OrderManagementController : IOrderAppService
 
     [HttpPost]
     [UserAuthorization]
-    public async Task InsertUserRejectionAdvocacyPlan(string userSmsCode)
-        => await _orderAppService.InsertUserRejectionAdvocacyPlan(userSmsCode);
+    public async Task<bool> InsertUserRejectionAdvocacyPlan(string userSmsCode)
+    {
+        await _orderAppService.InsertUserRejectionAdvocacyPlan(userSmsCode);
+        return true;
+    }
 
     [HttpPost]
     [UserAuthorization]
@@ -60,4 +70,6 @@ public class OrderManagementController : IOrderAppService
     {
         return true;
     }
+
+    
 }

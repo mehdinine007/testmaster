@@ -58,9 +58,10 @@ namespace OrderService.Host
             var remoteServiceErrorInfos = auditLogInfo.Exceptions?.Select(exception => ExceptionToErrorInfoConverter.Convert(exception, options =>
             {
                 options.SendExceptionsDetailsToClients = true;
-                options.SendStackTraceToClients = ExceptionHandlingOptions.SendStackTraceToClients;
+                options.SendStackTraceToClients = true;
             }))
                                           ?? new List<RemoteServiceErrorInfo>();
+           
 
             var exceptions = remoteServiceErrorInfos.Any()
                 ? JsonSerializer.Serialize(remoteServiceErrorInfos, indented: true)

@@ -20,23 +20,29 @@ namespace OrderService.Host.Infrastructures.Middlewares
 
         private readonly IRepository<AuditLog, Guid> _auditLogRepository;
         protected IAuditLogInfoToAuditLogConverter Converter { get; }
+        private readonly IUnitOfWorkManager _unitOfWorkManager;
 
         private IElkRepository<AuditLog, AuditLog> _elkRepository { get; set; }
         ElasticClient client;
         /// <summary>
         /// Creates  a new <see cref="AuditingStore"/>.
         /// </summary>
-        public AuditingStoreDb(IRepository<AuditLog, Guid> auditLogRepository, AuditLogConverter converter)
+        public AuditingStoreDb(IRepository<AuditLog, Guid> auditLogRepository, AuditLogConverter converter, IUnitOfWorkManager unitOfWorkManager)
         {
 
             _auditLogRepository = auditLogRepository;
             Converter = converter;
-        }
+            _unitOfWorkManager = unitOfWorkManager;
 
+        }
+       
         public virtual async Task SaveAsync(AuditLogInfo auditInfo)
         {
 
             await _auditLogRepository.InsertAsync(await Converter.ConvertAsync(auditInfo));
+            await _unitOfWorkManager.Current.SaveChangesAsync();
+
+
         }
 
         //public virtual void Save(AuditLogInfo auditInfo)
