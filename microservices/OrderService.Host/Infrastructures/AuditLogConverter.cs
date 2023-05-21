@@ -55,16 +55,35 @@ namespace OrderService.Host
                               .ToList()
                           ?? new List<AuditLogAction>();
 
-            var remoteServiceErrorInfos = auditLogInfo.Exceptions?.Select(exception => ExceptionToErrorInfoConverter.Convert(exception, options =>
+            //var remoteServiceErrorInfos = auditLogInfo.Exceptions?.Select(exception => ExceptionToErrorInfoConverter.Convert(exception, options =>
+            //{
+            //    options.SendExceptionsDetailsToClients = true;
+            //    options.SendStackTraceToClients = true;
+            //}))
+            //                              ?? new List<RemoteServiceErrorInfo>();
+            var  remoteServiceErrorInfos = new List<RemoteServiceErrorInfo>();
+            string message = "";
+            if (auditLogInfo.Exceptions != null)
             {
-                options.SendExceptionsDetailsToClients = true;
-                options.SendStackTraceToClients = true;
-            }))
-                                          ?? new List<RemoteServiceErrorInfo>();
-           
+                var exception = auditLogInfo.Exceptions.FirstOrDefault();
+                
+                if(exception != null)
+                {
+                    message = exception.Message ?? "";
+                    if (exception.InnerException != null)
+                    {
+                        message += "||" + exception.InnerException.Message;
+                    }
+                    if(exception.StackTrace != null)
+                    {
+                        message += "||" + exception.StackTrace;
+                    }
+                }
+            }
+          
 
-            var exceptions = remoteServiceErrorInfos.Any()
-                ? JsonSerializer.Serialize(remoteServiceErrorInfos, indented: true)
+             var exceptions = message != ""
+                ? JsonSerializer.Serialize(message, indented: true)
                 : null;
 
             var comments = auditLogInfo

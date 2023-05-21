@@ -38,9 +38,16 @@ namespace OrderService.Host.Infrastructures.Middlewares
        
         public virtual async Task SaveAsync(AuditLogInfo auditInfo)
         {
+            try
+            {
+                await _auditLogRepository.InsertAsync(await Converter.ConvertAsync(auditInfo), autoSave: true) ;
+              //  await _unitOfWorkManager.Current.SaveChangesAsync();
+            }
+            catch(Exception ex)
+            {
 
-            await _auditLogRepository.InsertAsync(await Converter.ConvertAsync(auditInfo));
-            await _unitOfWorkManager.Current.SaveChangesAsync();
+            }
+         
 
 
         }
