@@ -33,6 +33,7 @@ public class OrderManagementController
     }
 
     [HttpPost]
+    [UserAuthorization]
     public async Task<bool> CommitOrder(CommitOrderDto commitOrderDto)
     {
         await _orderAppService.CommitOrder(commitOrderDto);
