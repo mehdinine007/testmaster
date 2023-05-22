@@ -268,7 +268,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         RustySalePlanValidation(commitOrderDto, SaleDetailDto.EsaleTypeId);
         await _commonAppService.IsUserRejected(); //if user reject from advocacy
                                                   //_baseInformationAppService.CheckBlackList(SaleDetailDto.EsaleTypeId); //if user not exsist in blacklist
-                                                  //await CheckAdvocacy(nationalCode); //if hesab vekalati darad
+        await CheckAdvocacy(nationalCode); //if hesab vekalati darad
         Console.WriteLine("beforewhitelist");
         _baseInformationAppService.CheckWhiteList(WhiteListEnumType.WhiteListOrder);
         Console.WriteLine("afterwhitelist");
@@ -400,7 +400,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 Console.WriteLine("beforeorder");
 
                 CustomerOrder customerOrderIranFromDb =
-                _commitOrderRepository.ToListAsync().Result
+                orderQuery
                 .Select(x => new CustomerOrder
                 {
                     OrderStatus = x.OrderStatus,
@@ -459,9 +459,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
             {
                 Console.WriteLine("beforeorder2");
 
-                var commitOrderQuery = _commitOrderRepository.WithDetails();
+                
 
-                var CustomerOrderFromDb = commitOrderQuery
+                var CustomerOrderFromDb = orderQuery
                      .AsNoTracking()
                     .Select(x => new CustomerOrder
                     {
