@@ -33,7 +33,7 @@ namespace OrderManagement.Application.OrderManagement.Utitlities
             {
                 if (carTipGalleryImageRelations.TryGetValue(x.CarTipId, out List<int> relatedImageIds))
                 {
-                    x.CarTipImageUrls = allReltaedGAlleryImages.Where(y => relatedImageIds.Any(z => z == y.Id)).Select(y => carTipImageBaseUrls + y.ImageUrl).ToList();
+                    x.CarTipImageUrls = allReltaedGAlleryImages.Where(y => relatedImageIds.Any(z => z == y.Id)).Select(y =>y.ImageUrl).ToList();
                 }
             });
             return saleDetailDtos;
