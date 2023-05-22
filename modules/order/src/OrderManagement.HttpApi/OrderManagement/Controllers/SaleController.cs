@@ -39,7 +39,6 @@ public class SaleController : ISaleService
         => await _saleService.GetSalePlans(companyId);
 
     [HttpGet]
-    [UserAuthorization]
     public async Task<List<ESaleTypeDto>> GetSaleTypes()
         => await _saleService.GetSaleTypes();
 

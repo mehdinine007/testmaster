@@ -10,6 +10,7 @@ using System;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Domain.Entities;
+using OrderManagement.Application.TestService;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -26,44 +27,49 @@ public class EsaleGrpcClient : ApplicationService, IEsaleGrpcClient
 
     public async Task<UserDto> GetUserById(long userId)
     {
+        AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2Support", true);
+        AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
         var channel = GrpcChannel.ForAddress(_configuration.GetValue<string>("Esale:GrpcAddress"));
         var client = new UserServiceGrpc.UserServiceGrpcClient(channel);
-        try
+
+        var user = client.GetUserById(new GetUserModel() { UserId = userId });
+        if (user.BankId == 0)
+            return null;
+        return new UserDto
         {
+            AccountNumber = user.AccountNumber,
+            BankId = user.BankId,
+            BirthCityId = user.BirthCityId,
+            BirthProvinceId = user.BirthProvinceId,
+            HabitationCityId = user.HabitationCityId,
+            HabitationProvinceId = user.HabitationProvinceId,
+            IssuingCityId = user.IssuingCityId,
+            IssuingProvinceId = user.IssuingProvinceId,
+            NationalCode = user.NationalCode,
+            Shaba = user.Shaba,
+            MobileNumber = user.MobileNumber,
+            CompanyId = user.CompanyId,
+        };
+    }
 
-            var user = client.GetUserById(new GetUserModel() { UserId = userId });
-            if (user == null)
-                throw new EntityNotFoundException(typeof(UserDto), userId);
-            return new UserDto
-            {
-                AccountNumber = user.AccountNumber,
-                BankId = user.BankId,
-                BirthCityId = user.BirthCityId,
-                BirthProvinceId = user.BirthProvinceId,
-                HabitationCityId = user.HabitationCityId,
-                HabitationProvinceId = user.HabitationProvinceId,
-                IssuingCityId = user.IssuingCityId,
-                IssuingProvinceId = user.IssuingProvinceId,
-                NationalCode = user.NationalCode,
-                Shaba = user.Shaba,
-                MobileNumber = user.MobileNumber,
-                CompanyId = user.CompanyId,
-            };
-        }
-        catch (Exception ex)
-        {
+    public async Task<AdvocacyUserDto> GetUserAdvocacyByNationalCode(string nationlCode)
+    {
+        //var channel = GrpcChannel.ForAddress(_configuration.GetValue<string>("Esale:GrpcAddress"));
+        //var client = new UserServiceGrpc.UserServiceGrpcClient(channel);
 
+        //var userAdvocacy = await client.GetUserAdvocacyAsync(new UserAdvocacyRequest()
+        //{
+        //    NationalCode = nationlCode
+        //});
+        //if(userAdvocacy.BankId == 0)
+        //    throw new UserFriendlyException("اطلاعات حساب وکالتی یافت نشد");
 
-            //var errorMessage = ex.Message;
-
-
-            await _logsRepository.InsertAsync(new Logs
-            {
-                //Message = ex.InnerException.InnerException.ne,
-                Method = "GetUserById",
-                Type = 3,
-            });
-            throw new UserFriendlyException("در حال حاضر امکان ادامه فرآیند نیست");
-        }
+        //return new AdvocacyUserDto
+        //{
+        //    AccountNumber = userAdvocacy.AccountNumber,
+        //    BankId = userAdvocacy.BankId,
+        //    ShebaNumber = userAdvocacy.ShebaNumber
+        //};
+        return null;
     }
 }

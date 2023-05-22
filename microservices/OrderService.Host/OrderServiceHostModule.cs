@@ -21,12 +21,14 @@ using OrderManagement.Application;
 using OrderManagement.HttpApi;
 using OrderManagement.EfCore;
 using OrderService.Host.Infrastructures;
+using OrderManagement.Application.OrderManagement.Implementations;
 using Volo.Abp.Uow;
 using Microsoft.IdentityModel.Logging;
 using Volo.Abp.BackgroundJobs.Hangfire;
 using Hangfire;
 using Microsoft.Extensions.Configuration;
 using Volo.Abp.Hangfire;
+using Volo.Abp.AspNetCore.ExceptionHandling;
 
 namespace OrderService.Host
 {
@@ -94,6 +96,12 @@ namespace OrderService.Host
                 options.IsEnabledForGetRequests = true;
                 options.ApplicationName = "OrderService";
             });
+            Configure<AbpExceptionHandlingOptions>(options =>
+            {
+                options.SendExceptionsDetailsToClients = true;
+                options.SendStackTraceToClients = true;
+            });
+
             context.Services.AddStackExchangeRedisCache(options =>
             {
                 options.Configuration = configuration["RedisCache:ConnectionString"];
@@ -110,6 +118,7 @@ namespace OrderService.Host
             IdentityModelEventSource.ShowPII = true;
             ConfigureHangfire(context, configuration);
 
+            context.Services.AddGrpc();
             //var redis = ConnectionMultiplexer.Connect(configuration["Redis:Configuration"]);
             //context.Services.AddDataProtection()
             //    .PersistKeysToStackExchangeRedis(redis, "MsDemo-DataProtection-Keys");
@@ -135,7 +144,10 @@ namespace OrderService.Host
             //{
             //    app.UseMultiTenancy();
             //}
-
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapGrpcService<GrpcTestService>();
+            });
             app.UseAbpRequestLocalization(); //TODO: localization?
             app.UseSwagger();
             app.UseSwaggerUI(options =>

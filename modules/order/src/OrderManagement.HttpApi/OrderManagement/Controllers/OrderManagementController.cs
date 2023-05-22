@@ -26,8 +26,8 @@ public class OrderManagementController : IOrderAppService
     {
         return await _orderAppService.Test();
     }
+   
     [HttpPost]
-    [UserAuthorization]
     public async Task CommitOrder(CommitOrderDto commitOrderDto)
         => await _orderAppService.CommitOrder(commitOrderDto);
 
@@ -55,4 +55,9 @@ public class OrderManagementController : IOrderAppService
     [UserAuthorization]
     public async Task<bool> UserRejectionStatus()
         => await _orderAppService.UserRejectionStatus();
+    [HttpPost]
+    public bool TestNohi()
+    {
+        return true;
+    }
 }
