@@ -10,6 +10,6 @@ namespace PaymentManagement.Application.Contracts
         public string CallBackUrl { get; set; }
         public string NationalCode { get; set; }
         public string Mobile { get; set; }
-        public string FilterParam { get; set; }
+        public int FilterParam { get; set; }
     }
 }

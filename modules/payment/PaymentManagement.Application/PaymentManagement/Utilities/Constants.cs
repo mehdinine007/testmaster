@@ -17,6 +17,7 @@
         public const string VerifyFailed = "پرداخت ناموفق می باشد";
         public const string ErrorInVerify = "خطا در ارسال درخواست تایید پرداخت";
         public const string InquirySuccess = "استعلام پرداخت با موفقیت انجام شد";
+        public const string InquiryFailed = "استعلام پرداخت ناموفق می باشد";
         public const string ErrorInInquiry = "خطا در ارسال درخواست استعلام پرداخت";
 
         #region PaymentLog
@@ -37,6 +38,10 @@
         public const string InquiryStart = "InquiryStart";
         public const string InquiryException = "InquiryException";
         public const string InquiryResult = "InquiryResult";
+        #endregion
+        #region PspUrl
+        public const string IranKishHandShakeUrl = "https://ikc.shaparak.ir/api/v3/tokenization/make";
+        public const string IranKishRedirectUrl = "https://ikc.shaparak.ir/iuiv3/IPG/Index?tokenIdentity=";
         #endregion
     }
 }

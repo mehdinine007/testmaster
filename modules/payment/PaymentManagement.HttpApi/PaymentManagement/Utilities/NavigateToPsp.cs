@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Rewrite;
 using System.Collections.Specialized;
 
 namespace PaymentManagement.HttpApi.Utilities
@@ -10,19 +11,19 @@ namespace PaymentManagement.HttpApi.Utilities
         private string m_Method = "post"; //or Get
         private string m_FormName = "form1";
 
-        public void Post()
+        public void Post(HttpContext context)
         {
-            //HttpContext.Current.Response.Clear();
-            //HttpContext.Current.Response.Write("<html><head>");
-            //HttpContext.Current.Response.Write(string.Format("</head><body onload=\"document.{0}.submit()\">", m_FormName));
-            //HttpContext.Current.Response.Write(string.Format("<form name=\"{0}\" method=\"{1}\" action=\"{2}\" >", m_FormName, m_Method, Url));
-            //for (int i = 0; i < Inputs.Keys.Count; i++)
-            //{
-            //    HttpContext.Current.Response.Write(string.Format("<input name=\"{0}\" type=\"hidden\" value=\"{1}\">", Inputs.Keys[i], Inputs[Inputs.Keys[i]]));
-            //}
-            //HttpContext.Current.Response.Write("</form>");
-            //HttpContext.Current.Response.Write("</body></html>");
-            //HttpContext.Current.Response.End();
+            context.Response.Clear();
+            context.Response.WriteAsync("<html><head>");
+            context.Response.WriteAsync(string.Format("</head><body onload=\"document.{0}.submit()\">", m_FormName));
+            context.Response.WriteAsync(string.Format("<form name=\"{0}\" method=\"{1}\" action=\"{2}\" >", m_FormName, m_Method, Url));
+            for (int i = 0; i < Inputs.Keys.Count; i++)
+            {
+                context.Response.WriteAsync(string.Format("<input name=\"{0}\" type=\"hidden\" value=\"{1}\">", Inputs.Keys[i], Inputs[Inputs.Keys[i]]));
+            }
+            context.Response.WriteAsync("</form>");
+            context.Response.WriteAsync("</body></html>");
+            //context.HttpContext.Response.End();
         }
 
         public void AddKey(string name, string value)

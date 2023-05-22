@@ -5,7 +5,7 @@ namespace PaymentManagement.Application.Utilities
     public static class DateUtil
     {
         private static readonly PersianCalendar pc = new PersianCalendar();
-        public static string Now { get { return string.Format("{0}{1}{2}", pc.GetYear(DateTime.Now), pc.GetMonth(DateTime.Now).ToString().PadLeft(2, '0'), pc.GetDayOfMonth(DateTime.Now).ToString().PadLeft(2, '0')); } }
+        public static string Now { get { return string.Format("{0}/{1}/{2}", pc.GetYear(DateTime.Now), pc.GetMonth(DateTime.Now).ToString().PadLeft(2, '0'), pc.GetDayOfMonth(DateTime.Now).ToString().PadLeft(2, '0')); } }
         public static bool IsValidDate(string date)
         {
             try

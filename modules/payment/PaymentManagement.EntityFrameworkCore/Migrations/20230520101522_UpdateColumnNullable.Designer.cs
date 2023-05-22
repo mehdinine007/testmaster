@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PaymentManagement.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore;
@@ -12,9 +13,11 @@ using Volo.Abp.EntityFrameworkCore;
 namespace PaymentManagement.EntityFrameworkCore.Migrations
 {
     [DbContext(typeof(PaymentManagementDbContext))]
-    partial class PaymentManagementDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230520101522_UpdateColumnNullable")]
+    partial class UpdateColumnNullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -37,9 +40,11 @@ namespace PaymentManagement.EntityFrameworkCore.Migrations
                         .HasColumnType("NVARCHAR(100)");
 
                     b.Property<string>("AccountNumber")
+                        .IsRequired()
                         .HasColumnType("NVARCHAR(100)");
 
                     b.Property<string>("Branch")
+                        .IsRequired()
                         .HasColumnType("NVARCHAR(100)");
 
                     b.Property<DateTime>("CreationTime")
@@ -62,6 +67,7 @@ namespace PaymentManagement.EntityFrameworkCore.Migrations
                         .HasColumnName("DeletionTime");
 
                     b.Property<string>("IBAN")
+                        .IsRequired()
                         .HasColumnType("NVARCHAR(100)");
 
                     b.Property<bool>("IsActive")
@@ -150,8 +156,7 @@ namespace PaymentManagement.EntityFrameworkCore.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<decimal>("Amount")
-                        .HasPrecision(10)
-                        .HasColumnType("decimal(10,0)");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("CallBackUrl")
                         .IsRequired()
@@ -191,9 +196,11 @@ namespace PaymentManagement.EntityFrameworkCore.Migrations
                         .HasColumnName("LastModifierId");
 
                     b.Property<string>("Mobile")
+                        .IsRequired()
                         .HasColumnType("VARCHAR(20)");
 
                     b.Property<string>("NationalCode")
+                        .IsRequired()
                         .HasColumnType("VARCHAR(10)");
 
                     b.Property<int>("PaymentStatusId")
@@ -202,16 +209,12 @@ namespace PaymentManagement.EntityFrameworkCore.Migrations
                     b.Property<int>("PspAccountId")
                         .HasColumnType("int");
 
-                    b.Property<int>("RetryCount")
-                        .HasColumnType("int");
-
                     b.Property<string>("Token")
+                        .IsRequired()
                         .HasColumnType("VARCHAR(100)");
 
-                    b.Property<string>("TraceNo")
-                        .HasColumnType("VARCHAR(50)");
-
                     b.Property<string>("TransactionCode")
+                        .IsRequired()
                         .HasColumnType("VARCHAR(100)");
 
                     b.Property<DateTime>("TransactionDate")
@@ -273,6 +276,7 @@ namespace PaymentManagement.EntityFrameworkCore.Migrations
                         .HasColumnType("NVARCHAR(100)");
 
                     b.Property<string>("Parameter")
+                        .IsRequired()
                         .HasColumnType("NVARCHAR(MAX)");
 
                     b.Property<int>("PaymentId")
@@ -329,7 +333,7 @@ namespace PaymentManagement.EntityFrameworkCore.Migrations
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("NVARCHAR(100)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -413,6 +417,26 @@ namespace PaymentManagement.EntityFrameworkCore.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("DeletionTime");
 
+                    b.Property<string>("IkcoPassword")
+                        .IsRequired()
+                        .HasColumnType("VARCHAR(50)");
+
+                    b.Property<string>("IkcoUserName")
+                        .IsRequired()
+                        .HasColumnType("VARCHAR(50)");
+
+                    b.Property<string>("IranKishAcceptorId")
+                        .IsRequired()
+                        .HasColumnType("VARCHAR(50)");
+
+                    b.Property<string>("IranKishPassPhrase")
+                        .IsRequired()
+                        .HasColumnType("VARCHAR(50)");
+
+                    b.Property<string>("IranKishTerminalId")
+                        .IsRequired()
+                        .HasColumnType("VARCHAR(50)");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -421,10 +445,6 @@ namespace PaymentManagement.EntityFrameworkCore.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(false)
                         .HasColumnName("IsDeleted");
-
-                    b.Property<string>("JsonProps")
-                        .IsRequired()
-                        .HasColumnType("VARCHAR(500)");
 
                     b.Property<DateTime?>("LastModificationTime")
                         .HasColumnType("datetime2")
@@ -435,10 +455,43 @@ namespace PaymentManagement.EntityFrameworkCore.Migrations
                         .HasColumnName("LastModifierId");
 
                     b.Property<string>("Logo")
-                        .HasColumnType("VARCHAR(200)");
+                        .IsRequired()
+                        .HasColumnType("VARCHAR(50)");
+
+                    b.Property<string>("MellatTerminalId")
+                        .IsRequired()
+                        .HasColumnType("VARCHAR(50)");
+
+                    b.Property<string>("MellatUserName")
+                        .IsRequired()
+                        .HasColumnType("VARCHAR(50)");
+
+                    b.Property<string>("MellatUserPassword")
+                        .IsRequired()
+                        .HasColumnType("VARCHAR(50)");
+
+                    b.Property<string>("ParsianPin")
+                        .IsRequired()
+                        .HasColumnType("VARCHAR(50)");
 
                     b.Property<int>("PspId")
                         .HasColumnType("int");
+
+                    b.Property<string>("SadadMerchantId")
+                        .IsRequired()
+                        .HasColumnType("VARCHAR(50)");
+
+                    b.Property<string>("SadadTerminalId")
+                        .IsRequired()
+                        .HasColumnType("VARCHAR(50)");
+
+                    b.Property<string>("SadadTerminalKey")
+                        .IsRequired()
+                        .HasColumnType("VARCHAR(50)");
+
+                    b.Property<string>("SamanMID")
+                        .IsRequired()
+                        .HasColumnType("VARCHAR(50)");
 
                     b.HasKey("Id");
 
