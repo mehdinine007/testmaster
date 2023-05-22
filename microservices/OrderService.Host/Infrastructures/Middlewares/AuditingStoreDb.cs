@@ -40,10 +40,8 @@ namespace OrderService.Host.Infrastructures.Middlewares
         {
             try
             {
-                Console.WriteLine("beforelog");
 
                 await _auditLogRepository.InsertAsync(await Converter.ConvertAsync(auditInfo), autoSave: true) ;
-                Console.WriteLine("afterlog");
 
                 //  await _unitOfWorkManager.Current.SaveChangesAsync();
             }

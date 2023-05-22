@@ -296,7 +296,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
         }
         else
         {
-            Console.WriteLine("beforeorder");
 
             var activeSuccessfulOrderExists = orderQuery
                 .AsNoTracking()
@@ -305,8 +304,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     y => y.UserId == userId &&
                  y.OrderStatus == OrderStatusType.RecentlyAdded
              );
-            Console.WriteLine("afterorder");
-
+          
             if (activeSuccessfulOrderExists != null)
             {
                 if (SaleDetailDto.ESaleTypeId != activeSuccessfulOrderExists.ESaleTypeId)
@@ -385,8 +383,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             //    commitOrderDto.PriorityId.ToString() + "_" +
             //    SaleDetailDto.SaleId.ToString()
             //    , out objectCommitOrderIran);
-            Console.WriteLine("beforeredis");
-
+          
             objectCommitOrderIran = await _distributedCache.GetStringAsync(userId.ToString() + "_" +
                 commitOrderDto.PriorityId.ToString() + "_" +
                 SaleDetailDto.SaleId.ToString());
@@ -397,8 +394,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             }
             else
             {
-                Console.WriteLine("beforeorder");
-
+              
                 CustomerOrder customerOrderIranFromDb =
                 orderQuery
                 .Select(x => new CustomerOrder
@@ -414,7 +410,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                    y.OrderStatus == OrderStatusType.RecentlyAdded
                    && y.SaleId == SaleDetailDto.SaleId
                    && y.PriorityId == (PriorityEnum)commitOrderDto.PriorityId);
-                Console.WriteLine("afterorder1");
+             
 
                 if (customerOrderIranFromDb != null)
                 {
@@ -445,7 +441,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
             //        SaleDetailDto.Id.ToString(),
             //    out objectCustomerOrderFromCache
             //    );
-            Console.WriteLine("beforeredis");
 
             objectCustomerOrderFromCache = await _distributedCache.GetStringAsync(
                 userId.ToString() + "_" +
@@ -457,7 +452,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
             }
             if (objectCustomerOrderFromCache == null)
             {
-                Console.WriteLine("beforeorder2");
 
                 
 
@@ -474,7 +468,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 x.UserId == userId
                 && x.SaleDetailId == (int)SaleDetailDto.Id
                 && x.OrderStatus == OrderStatusType.RecentlyAdded);
-                Console.WriteLine("afterorder");
 
                 if (CustomerOrderFromDb != null)
                 {
