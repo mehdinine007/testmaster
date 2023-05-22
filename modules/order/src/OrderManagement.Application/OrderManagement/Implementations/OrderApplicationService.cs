@@ -233,6 +233,10 @@ public class OrderAppService : ApplicationService, IOrderAppService
             {
                 SaleDetailDto = SaleDetailFromDb;
                 ttl = SaleDetailDto.SalePlanEndDate.Subtract(DateTime.Now);
+                if(ttl.Seconds <= 0)
+                {
+                    ttl = DateTime.Now.AddMinutes(20).Subtract(DateTime.Now);
+                }
                 //await _cacheManager.GetCache("SaleDetail").SetAsync(commitOrderDto.SaleDetailUId.ToString(), SaleDetailDto);
                 await _distributedCache.SetStringAsync(string.Format(RedisConstants.SaleDetailPrefix, commitOrderDto.SaleDetailUId.ToString()),
                     JsonConvert.SerializeObject(SaleDetailDto), new DistributedCacheEntryOptions()
@@ -397,6 +401,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
               
                 CustomerOrder customerOrderIranFromDb =
                 orderQuery
+                .AsNoTracking()
                 .Select(x => new CustomerOrder
                 {
                     OrderStatus = x.OrderStatus,
