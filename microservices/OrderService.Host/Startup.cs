@@ -10,6 +10,7 @@ using Volo.Abp.Auditing;
 using Volo.Abp.AuditLogging;
 using OrderService.Host.Infrastructures.Middlewares;
 using OrderService.Host.Infrastructures.Extensions;
+using OrderService.Host.Infrastructures.Hangfire;
 
 namespace OrderService.Host
 {
@@ -31,6 +32,7 @@ namespace OrderService.Host
             {
                 services.AddScoped<IAuditingStore, AuditingStoreDb>();
             }
+            services.AddSingleton<IHangfireService, HangfireService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)

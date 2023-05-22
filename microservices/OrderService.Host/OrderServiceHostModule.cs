@@ -23,6 +23,10 @@ using OrderManagement.EfCore;
 using OrderService.Host.Infrastructures;
 using Volo.Abp.Uow;
 using Microsoft.IdentityModel.Logging;
+using Volo.Abp.BackgroundJobs.Hangfire;
+using Hangfire;
+using Microsoft.Extensions.Configuration;
+using Volo.Abp.Hangfire;
 
 namespace OrderService.Host
 {
@@ -38,7 +42,8 @@ namespace OrderService.Host
         typeof(OrderManagementHttpApiModule),
         typeof(OrderManagementEntityFrameworkCoreModule),
         //typeof(AbpAspNetCoreMultiTenancyModule),
-        typeof(AbpTenantManagementEntityFrameworkCoreModule)
+        typeof(AbpTenantManagementEntityFrameworkCoreModule),
+        typeof(AbpBackgroundJobsHangfireModule)
         )]
     public class OrderServiceHostModule : AbpModule
     {
@@ -103,10 +108,18 @@ namespace OrderService.Host
                 x.Filters.Add(new EsaleResultFilter(service));
             });
             IdentityModelEventSource.ShowPII = true;
+            ConfigureHangfire(context, configuration);
 
             //var redis = ConnectionMultiplexer.Connect(configuration["Redis:Configuration"]);
             //context.Services.AddDataProtection()
             //    .PersistKeysToStackExchangeRedis(redis, "MsDemo-DataProtection-Keys");
+        }
+        private void ConfigureHangfire(ServiceConfigurationContext context, IConfiguration configuration)
+        {
+            context.Services.AddHangfire(config =>
+            {
+                config.UseSqlServerStorage(configuration.GetConnectionString("OrderHangfire"));
+            });
         }
 
         public override void OnApplicationInitialization(ApplicationInitializationContext context)
@@ -131,6 +144,11 @@ namespace OrderService.Host
             });
 
             app.UseAuditing();
+            app.UseHangfireDashboard();
+            app.UseHangfireDashboard("/hangfire", new DashboardOptions
+            {
+                AsyncAuthorization = new[] { new AbpHangfireAuthorizationFilter() }
+            });
             app.UseConfiguredEndpoints();
             //TODO: Problem on a clustered environment
             AsyncHelper.RunSync(async () =>
