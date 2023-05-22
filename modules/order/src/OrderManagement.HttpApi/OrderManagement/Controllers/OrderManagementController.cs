@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Volo.Abp;
 using Esale.Share.Authorize;
 using Microsoft.AspNetCore.Authorization;
+using Volo.Abp.Auditing;
 
 namespace OrderManagement.HttpApi;
 
@@ -37,17 +38,17 @@ public class OrderManagementController
         await _orderAppService.CommitOrder(commitOrderDto);
         return true;
     }
-
+    [DisableAuditing]
     [HttpGet]
     [UserAuthorization]
     public async Task<List<CustomerOrderReportDto>> GetCompaniesCustomerOrders()
         => await _orderAppService.GetCompaniesCustomerOrders();
-
+    [DisableAuditing]
     [HttpGet]
     [UserAuthorization]
     public async Task<List<CustomerOrderPriorityUserDto>> GetCustomerInfoPriorityUser()
         => await _orderAppService.GetCustomerInfoPriorityUser();
-
+    [DisableAuditing]
     [HttpGet]
     [UserAuthorization]
     public List<CustomerOrder_OrderDetailDto> GetCustomerOrderList()
@@ -60,7 +61,7 @@ public class OrderManagementController
         await _orderAppService.InsertUserRejectionAdvocacyPlan(userSmsCode);
         return true;
     }
-
+    [DisableAuditing]
     [HttpPost]
     [UserAuthorization]
     public async Task<bool> UserRejectionStatus()

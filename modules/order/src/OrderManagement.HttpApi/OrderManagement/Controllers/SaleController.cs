@@ -6,9 +6,10 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp;
+using Volo.Abp.Auditing;
 
 namespace OrderManagement.HttpApi;
-
+[DisableAuditing]
 [RemoteService]
 [Route("api/services/app/SaleService/[action]")]
 public class SaleController : ISaleService

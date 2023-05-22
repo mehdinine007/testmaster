@@ -90,13 +90,17 @@ namespace OrderService.Host
             Configure<AbpAuditingOptions>(options =>
             {
                 options.IsEnabledForGetRequests = true;
-                options.ApplicationName = "OrderService";
             });
             Configure<AbpExceptionHandlingOptions>(options =>
             {
                 options.SendExceptionsDetailsToClients = true;
                 options.SendStackTraceToClients = true;
             });
+            //Configure<AbpAuditingOptions>(options =>
+            //{
+            //    options.IsEnabled = false; //Disables the auditing system
+            //});
+
 
             context.Services.AddStackExchangeRedisCache(options =>
             {
