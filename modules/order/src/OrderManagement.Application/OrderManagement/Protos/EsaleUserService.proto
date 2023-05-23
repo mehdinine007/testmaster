@@ -45,6 +45,7 @@ message UserAdvocacy{
 	string ShebaNumber = 1;
 	string AccountNumber  = 2;
 	sfixed32 BankId =3;
+	sfixed32 GenderCode = 4;
 }
 
 message UserAdvocacyRequest{
