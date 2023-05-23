@@ -11,7 +11,6 @@ namespace PaymentManagement.Domain.Models
         [Required]
         [Column(TypeName = "NVARCHAR(300)")]
         public string Title { get; set; }
-        //todo: be unique
         public int Code { get; set; }
         public bool IsActive { get; set; }
         private ICollection<Account> _accounts;

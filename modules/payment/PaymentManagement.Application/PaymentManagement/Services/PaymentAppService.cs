@@ -10,9 +10,7 @@ using PaymentManagement.Domain.Models;
 using System.Xml;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
-using Volo.Abp.ObjectMapping;
 using Volo.Abp.Uow;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace PaymentManagement.Application.Servicess
 {
@@ -46,7 +44,6 @@ namespace PaymentManagement.Application.Servicess
 
         public async Task<List<PspAccountDto>> GetPsps()
         {
-            //todo: آیا این روش درست است
             return await (await _pspAccountRepository.GetQueryableAsync()).AsNoTracking()
                 .Include(o => o.Psp)
                 .Include(o => o.Account)
@@ -62,7 +59,7 @@ namespace PaymentManagement.Application.Servicess
                  .Select(o => o.Id).ToListAsync();
 
             return await (await _paymentRepository.GetQueryableAsync()).AsNoTracking()
-                 .Where(o => pspAcccountIds.Contains(o.Id) && o.FilterParam == filterParam)
+                 .Where(o => pspAcccountIds.Contains(o.PspAccountId) && o.FilterParam == filterParam)
                  .GroupBy(o => o.PaymentStatusId).Select(o => new InquiryWithFilterParamDto
                  {
                      Status = o.Key,
@@ -167,7 +164,7 @@ namespace PaymentManagement.Application.Servicess
             var payment = await _paymentRepository.InsertAsync(new Payment
             {
                 PspAccountId = input.PspAccountId,
-                PaymentStatusId = (int)PaymentStatusEnum.Inprogress,
+                PaymentStatusId = (int)PaymentStatusEnum.InProgress,
                 Amount = input.Amount,
                 CallBackUrl = input.CallBackUrl,
                 NationalCode = input.NationalCode,
@@ -193,8 +190,8 @@ namespace PaymentManagement.Application.Servicess
             {
                 var pspAccount = await _pspAccountRepository.GetAsync(payment.PspAccountId);
                 var pspAccountProps = JsonConvert.DeserializeObject<PspAccountProps>(pspAccount.JsonProps);
-                //todo:باید با ادرس خودمون درخواست به درگاه بدیم
-                string callBackUrl = _config.GetValue<string>("App:PaymentCallBackUrl");
+                //باید با ادرس ماژول پرداخت، درخواست به درگاه بدیم
+                string callBackUrl = _config.GetValue<string>("App:IranKishCallBackUrl");
 
                 WebHelper webHelper = new WebHelper();
                 XmlDocument doc = new XmlDocument();
@@ -225,7 +222,6 @@ namespace PaymentManagement.Application.Servicess
                 iPGData.BillInfo = null;
                 iPGData.RsaPublicKey = pspAccountProps.RsaPublicKey;
 
-
                 request = CreateJsonRequest.CreateJasonRequest(iPGData);
                 Uri url = new Uri(string.Format(@"https://ikc.shaparak.ir/api/v3/tokenization/make"));
                 string jresponse = webHelper.Post(url, request);
@@ -254,7 +250,6 @@ namespace PaymentManagement.Application.Servicess
 
                 if (!string.IsNullOrEmpty(result.Token))
                 {
-                    //todo:آیا روش بروزرسانی صحیح است
                     payment.Token = result.Token;
                     await _paymentRepository.UpdateAsync(payment);
                 }
@@ -329,6 +324,8 @@ namespace PaymentManagement.Application.Servicess
 
                     result.StatusCode = (int)StatusCodeEnum.PaymentSuccess;
                     result.Message = Constants.PaymentSuccessDontSendVerify;
+                    await CurrentUnitOfWork.CompleteAsync();
+                    return result;
                 }
                 //در صورتي كه وضعيت پرداخت ناموفق است نبايد مجددن تاييديه ارسال شود            
                 if (payment.PaymentStatusId == (int)PaymentStatusEnum.Failed)
@@ -343,9 +340,10 @@ namespace PaymentManagement.Application.Servicess
 
                     result.StatusCode = (int)StatusCodeEnum.PaymentFailed;
                     result.Message = Constants.PaymentFailedDontSendVerify;
+                    await CurrentUnitOfWork.CompleteAsync();
                     return result;
                 }
-                if (string.IsNullOrEmpty(pspResult.OriginUrl) || pspResult.OriginUrl != "ikc.shaparak.ir")
+                if (string.IsNullOrEmpty(pspResult.OriginUrl) || pspResult.OriginUrl != "https://ikc.shaparak.ir")
                 {
                     await _paymentLogRepository.InsertAsync(new PaymentLog
                     {
@@ -360,6 +358,7 @@ namespace PaymentManagement.Application.Servicess
 
                     result.StatusCode = (int)StatusCodeEnum.Failed;
                     result.Message = Constants.ErrorInBackFromPspUrl;
+                    await CurrentUnitOfWork.CompleteAsync();
                     return result;
                 }
 
@@ -371,13 +370,13 @@ namespace PaymentManagement.Application.Servicess
 
                     result.StatusCode = (int)StatusCodeEnum.Failed;
                     result.Message = Constants.ErrorInBackFromPspResponseCode;
+                    await CurrentUnitOfWork.CompleteAsync();
                     return result;
                 }
 
                 result.StatusCode = (int)StatusCodeEnum.Success;
                 result.Message = Constants.BackFromPspSuccess;
-                await CurrentUnitOfWork.SaveChangesAsync();
-
+                await CurrentUnitOfWork.CompleteAsync();
                 return result;
             }
             catch (Exception ex)
@@ -389,7 +388,7 @@ namespace PaymentManagement.Application.Servicess
                     Message = Constants.BackFromPspException,
                     Parameter = ex.Message
                 });
-                await CurrentUnitOfWork.SaveChangesAsync();
+                await CurrentUnitOfWork.CompleteAsync();
 
                 result.StatusCode = (int)StatusCodeEnum.Failed;
                 result.Message = Constants.ErrorInBackFromPsp;
@@ -409,9 +408,10 @@ namespace PaymentManagement.Application.Servicess
                 PaymentId = paymentId
             };
 
-            var payment = (await _paymentRepository.GetQueryableAsync()).AsNoTracking().Include(o => o.PspAccount).First(o => o.Id == paymentId);
+            var payment = await _paymentRepository.GetAsync(paymentId);
+            var pspAccount = await _pspAccountRepository.GetAsync(payment.PspAccountId);
 
-            switch ((PspEnum)payment.PspAccount.PspId)
+            switch ((PspEnum)pspAccount.PspId)
             {
                 case PspEnum.BehPardakht:
                     break;
@@ -513,9 +513,9 @@ namespace PaymentManagement.Application.Servicess
                 PaymentId = paymentId
             };
 
-            var payment = (await _paymentRepository.GetQueryableAsync()).AsNoTracking().Include(o => o.PspAccount).AsNoTracking().First(o => o.Id == paymentId);
-
-            switch ((PspEnum)payment.PspAccount.PspId)
+            var payment = await _paymentRepository.GetAsync(paymentId);
+            var pspAccount = await _pspAccountRepository.GetAsync(payment.PspAccountId);
+            switch ((PspEnum)pspAccount.PspId)
             {
                 case PspEnum.BehPardakht:
                     break;
@@ -579,13 +579,20 @@ namespace PaymentManagement.Application.Servicess
                         payment.TraceNo = jResult.result.systemTraceAuditNumber;
                         payment.PaymentStatusId = jResult.result.isReversed ? (int)PaymentStatusEnum.Failed : (jResult.result.isVerified ? (int)PaymentStatusEnum.Success : payment.PaymentStatusId);
                         await _paymentRepository.UpdateAsync(payment);
-
-                        result.PaymentStatus = payment.PaymentStatusId;
-                        result.PaymentStatusDescription = EnumExtension.GetEnumDescription((PaymentStatusEnum)payment.PaymentStatusId);
-                        result.StatusCode = (int)StatusCodeEnum.Success;
-                        result.Message = Constants.InquirySuccess;
-                        return result;
                     }
+                    else if (!jResult.status && jResult.responseCode == "30")
+                    {
+                        payment.PaymentStatusId = (int)PaymentStatusEnum.Failed;
+                        await _paymentRepository.UpdateAsync(payment);
+                    }
+
+                    //todo:باید سایر حالات خروجی استعلام بررسی شود و این قسمت تکمیل شود
+
+                    result.PaymentStatus = payment.PaymentStatusId;
+                    result.PaymentStatusDescription = EnumExtension.GetEnumDescription((PaymentStatusEnum)payment.PaymentStatusId);
+                    result.StatusCode = (int)StatusCodeEnum.Success;
+                    result.Message = Constants.InquirySuccess;
+                    return result;
                 }
 
                 result.Message = Constants.InquiryFailed;
@@ -596,6 +603,7 @@ namespace PaymentManagement.Application.Servicess
                 await _paymentLogRepository.InsertAsync(new PaymentLog
                 {
                     PaymentId = payment.Id,
+                    Psp = PspEnum.IranKish.ToString(),
                     Message = Constants.InquiryException,
                     Parameter = ex.Message
                 });
@@ -610,14 +618,13 @@ namespace PaymentManagement.Application.Servicess
         [UnitOfWork(isTransactional: false)]
         public async Task RetryForVerify()
         {
-            //todo:schadule in hangfire
             //todo:شرط زمان با اضافه کردن درگاه ها باید تکمیل شود
-            //todo:فقط فیلدهای مورد نیاز سلکت شود که باید به مرور تکمیل شود
             var retryCount = _config.GetValue<int>("App:RetryCount");
             var payments = await (await _paymentRepository.GetQueryableAsync()).AsNoTracking()
                 .Include(o => o.PspAccount)
-                .Where(o => o.PaymentStatusId == (int)PaymentStatusEnum.Inprogress && (DateTime.Now - o.TransactionDate).TotalMinutes > 12 && o.RetryCount < retryCount)
+                .Where(o => o.PaymentStatusId == (int)PaymentStatusEnum.InProgress && o.RetryCount < retryCount)
                 .Take(100).ToListAsync();
+            //todo: .Where(o => o.PaymentStatusId == (int)PaymentStatusEnum.Inprogress && (DateTime.Now - o.TransactionDate).TotalMinutes > 12 && o.RetryCount < retryCount)
 
             foreach (var payment in payments)
             {
@@ -637,6 +644,7 @@ namespace PaymentManagement.Application.Servicess
             {
                 await InquiryToIranKishAsync(payment);
                 //todo:اگر بعد از استعلام پرداخت در وضعیت در انتظار ارسال تاییدیه بود و کد تراکنش هم از استعلام دریافت شده بود باید وریفای دوباره ارسال شود
+                //اما بهتر از وریفای ندهیم دوباره کاندید شود
             }
             else
             {

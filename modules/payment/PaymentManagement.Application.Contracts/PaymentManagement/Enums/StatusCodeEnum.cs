@@ -1,22 +1,16 @@
-﻿namespace PaymentManagement.Application.Contracts.Enums
+﻿using System.ComponentModel;
+
+namespace PaymentManagement.Application.Contracts.Enums
 {
     public enum StatusCodeEnum : int
     {
-        /// <summary>
-        /// موفق
-        /// </summary>
+        [Description("موفق")]
         Success = 0,
-        /// <summary>
-        /// ناموفق
-        /// </summary>
+        [Description("ناموفق")]
         Failed = 1,
-        /// <summary>
-        /// پرداخت موفق
-        /// </summary>
+        [Description("پرداخت موفق")]
         PaymentSuccess = 2,
-        /// <summary>
-        /// پرداخت ناموفق
-        /// </summary>
+        [Description("پرداخت ناموفق")]
         PaymentFailed = 3,
     }
 }

@@ -1,19 +1,14 @@
-﻿namespace PaymentManagement.Application.Contracts.Enums
+﻿using System.ComponentModel;
+
+namespace PaymentManagement.Application.Contracts.Enums
 {
     public enum PaymentStatusEnum : int
     {
-        //todo:لیست اوکی هست؟
-        /// <summary>
-        /// در حال پرداخت
-        /// </summary>
-        Inprogress = 1,
-        /// <summary>
-        /// پرداخت موفق
-        /// </summary>
+        [Description("درحال پرداخت")]        
+        InProgress = 1,
+        [Description("پرداخت موفق")]
         Success,
-        /// <summary>
-        /// پرداخت ناموفق
-        /// </summary>
+        [Description("پرداخت ناموفق")]       
         Failed,
     }
 }
