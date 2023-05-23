@@ -99,11 +99,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         if (advocacyUser == null)
             throw new UserFriendlyException("اطلاعات حساب وکالتی یافت نشد");
-
-        //TODO : if some day we refactored this method were gonna move this validation to somewhere else :)
-        if (esaleTypeId == 2 && advocacyUser.GenderCode != 2)
-            throw new UserFriendlyException("این طرح مخصوص مادران میباشد");
-
         return new AdvocacyUserFromBankDto
         {
             ShebaNumber = advocacyUser.ShebaNumber,
