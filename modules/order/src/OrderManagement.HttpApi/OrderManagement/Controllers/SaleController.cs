@@ -1,4 +1,5 @@
 ﻿using Esale.Share.Authorize;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.Services;
@@ -12,7 +13,7 @@ namespace OrderManagement.HttpApi;
 [DisableAuditing]
 [RemoteService]
 [Route("api/services/app/SaleService/[action]")]
-public class SaleController : ISaleService
+public class SaleController : Controller,ISaleService
 {
     private readonly ISaleService _saleService;
 
@@ -54,4 +55,10 @@ public class SaleController : ISaleService
     [UserAuthorization]
     public async Task UserValidationByMobile(int saleId)
         => await _saleService.UserValidationByMobile(saleId);
+
+    [HttpPost]
+    public ActionResult TestMazaher()
+    {
+        return Ok(true);
+    }
 }

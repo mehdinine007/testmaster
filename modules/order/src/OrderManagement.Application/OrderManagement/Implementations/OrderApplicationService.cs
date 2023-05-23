@@ -93,12 +93,17 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
 
 
-    private async Task<AdvocacyUserFromBankDto> CheckAdvocacy(string NationalCode)
+    private async Task<AdvocacyUserFromBankDto> CheckAdvocacy(string NationalCode, int esaleTypeId)
     {
         var advocacyUser = await _esaleGrpcClient.GetUserAdvocacyByNationalCode(NationalCode);
 
         if (advocacyUser == null)
             throw new UserFriendlyException("اطلاعات حساب وکالتی یافت نشد");
+
+        //TODO : if some day we refactored this method were gonna move this validation to somewhere else :)
+        if (esaleTypeId == 2 && advocacyUser.GenderCode != 2)
+            throw new UserFriendlyException("این طرح مخصوص مادران میباشد");
+
         return new AdvocacyUserFromBankDto
         {
             ShebaNumber = advocacyUser.ShebaNumber,
@@ -215,7 +220,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     SalePlanStartDate = x.SalePlanStartDate,
                     UID = x.UID,
                     ESaleTypeId = x.ESaleTypeId
-
                 })
                 .FirstOrDefault(x => x.UID == commitOrderDto.SaleDetailUId);
             if (SaleDetailFromDb == null)
@@ -267,7 +271,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         RustySalePlanValidation(commitOrderDto, SaleDetailDto.EsaleTypeId);
         await _commonAppService.IsUserRejected(); //if user reject from advocacy
                                                   //_baseInformationAppService.CheckBlackList(SaleDetailDto.EsaleTypeId); //if user not exsist in blacklist
-        await CheckAdvocacy(nationalCode); //if hesab vekalati darad
+        await CheckAdvocacy(nationalCode,SaleDetailDto.ESaleTypeId); //if hesab vekalati darad
         Console.WriteLine("beforewhitelist");
         _baseInformationAppService.CheckWhiteList(WhiteListEnumType.WhiteListOrder);
         Console.WriteLine("afterwhitelist");

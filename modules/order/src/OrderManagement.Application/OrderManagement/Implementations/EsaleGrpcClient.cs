@@ -68,8 +68,8 @@ public class EsaleGrpcClient : ApplicationService, IEsaleGrpcClient
         {
             AccountNumber = userAdvocacy.AccountNumber,
             BankId = userAdvocacy.BankId,
-            ShebaNumber = userAdvocacy.ShebaNumber
+            ShebaNumber = userAdvocacy.ShebaNumber,
+            GenderCode = userAdvocacy.GenderCode
         };
-        return null;
     }
 }
