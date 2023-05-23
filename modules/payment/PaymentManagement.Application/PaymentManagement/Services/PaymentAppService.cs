@@ -223,7 +223,7 @@ namespace PaymentManagement.Application.Servicess
                 iPGData.RsaPublicKey = pspAccountProps.RsaPublicKey;
 
                 request = CreateJsonRequest.CreateJasonRequest(iPGData);
-                Uri url = new Uri(string.Format(@"https://ikc.shaparak.ir/api/v3/tokenization/make"));
+                Uri url = new(Constants.IranKishGetTokenUrl);
                 string jresponse = webHelper.Post(url, request);
 
                 if (jresponse != null)
@@ -343,7 +343,7 @@ namespace PaymentManagement.Application.Servicess
                     await CurrentUnitOfWork.CompleteAsync();
                     return result;
                 }
-                if (string.IsNullOrEmpty(pspResult.OriginUrl) || pspResult.OriginUrl != "https://ikc.shaparak.ir")
+                if (string.IsNullOrEmpty(pspResult.OriginUrl) || pspResult.OriginUrl != Constants.IranKishOriginUrl)
                 {
                     await _paymentLogRepository.InsertAsync(new PaymentLog
                     {
@@ -453,7 +453,7 @@ namespace PaymentManagement.Application.Servicess
                     Parameter = requestVerifyJson,
                 });
 
-                Uri url = new(string.Format(@"https://ikc.shaparak.ir/api/v3/confirmation/purchase"));
+                Uri url = new(Constants.IranKishVerifyUrl);
                 string jresponse = webHelper.Post(url, requestVerifyJson);
 
                 result.PspJsonResult = jresponse;
@@ -556,7 +556,7 @@ namespace PaymentManagement.Application.Servicess
 
                 WebHelper webHelper = new WebHelper();
 
-                Uri url = new Uri(string.Format(@"https://ikc.shaparak.ir/api/v3/inquiry/single"));
+                Uri url = new(Constants.IranKishInquiryUrl);
                 string jresponse = webHelper.Post(url, requestirankish);
 
                 result.PspJsonResult = jresponse;

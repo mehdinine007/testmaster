@@ -41,7 +41,11 @@
         #endregion
         #region PspUrl
         public const string IranKishHandShakeUrl = "https://ikc.shaparak.ir/api/v3/tokenization/make";
+        public const string IranKishGetTokenUrl = "https://ikc.shaparak.ir/api/v3/tokenization/make";
         public const string IranKishRedirectUrl = "https://ikc.shaparak.ir/iuiv3/IPG/Index?tokenIdentity=";
+        public const string IranKishOriginUrl = "https://ikc.shaparak.ir";
+        public const string IranKishVerifyUrl = "https://ikc.shaparak.ir/api/v3/confirmation/purchase";
+        public const string IranKishInquiryUrl =  "https://ikc.shaparak.ir/api/v3/inquiry/single";
         #endregion
     }
 }
