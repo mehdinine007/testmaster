@@ -11,7 +11,7 @@ namespace OrderManagement.Application.OrderManagement.Utitlities
 {
     public static class QueryHelper
     {
-        public static async Task<List<SaleDetailDto>> MapSaleDetailsToDto(this List<SaleDetail> saleDetails, IRepository<Gallery, int> galleryRepository, IObjectMapper objectMapper, string carTipImageBaseUrls)
+        public static async Task<List<SaleDetailDto>> MapSaleDetailsToDto(this List<SaleDetail> saleDetails, IRepository<Gallery, int> galleryRepository, IObjectMapper objectMapper)
         {
             if (galleryRepository == null)
                 throw new ArgumentNullException(nameof(galleryRepository));
