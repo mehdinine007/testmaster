@@ -113,7 +113,7 @@ namespace OrderService.Host
                 auditLogInfo.ImpersonatorTenantName,
                 extraProperties,
                 entityChanges,
-                null,
+                actions,
                 exceptions,
                 comments
             );

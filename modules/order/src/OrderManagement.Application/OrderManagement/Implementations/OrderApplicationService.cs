@@ -233,6 +233,10 @@ public class OrderAppService : ApplicationService, IOrderAppService
             {
                 SaleDetailDto = SaleDetailFromDb;
                 ttl = SaleDetailDto.SalePlanEndDate.Subtract(DateTime.Now);
+                if(ttl.Seconds <= 0)
+                {
+                    ttl = DateTime.Now.AddMinutes(20).Subtract(DateTime.Now);
+                }
                 //await _cacheManager.GetCache("SaleDetail").SetAsync(commitOrderDto.SaleDetailUId.ToString(), SaleDetailDto);
                 await _distributedCache.SetStringAsync(string.Format(RedisConstants.SaleDetailPrefix, commitOrderDto.SaleDetailUId.ToString()),
                     JsonConvert.SerializeObject(SaleDetailDto), new DistributedCacheEntryOptions()
@@ -269,7 +273,10 @@ public class OrderAppService : ApplicationService, IOrderAppService
         await _commonAppService.IsUserRejected(); //if user reject from advocacy
                                                   //_baseInformationAppService.CheckBlackList(SaleDetailDto.EsaleTypeId); //if user not exsist in blacklist
         await CheckAdvocacy(nationalCode); //if hesab vekalati darad
+        Console.WriteLine("beforewhitelist");
         _baseInformationAppService.CheckWhiteList(WhiteListEnumType.WhiteListOrder);
+        Console.WriteLine("afterwhitelist");
+
         var orderQuery = await _commitOrderRepository.GetQueryableAsync();
         var userId = _commonAppService.GetUserId();
         ///////////////////////////////agar order 1403 barandeh dasht natone sefaresh bezaneh
@@ -293,6 +300,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         }
         else
         {
+
             var activeSuccessfulOrderExists = orderQuery
                 .AsNoTracking()
                 .Select(x => new { x.UserId, x.OrderStatus, x.SaleDetail.ESaleTypeId })
@@ -300,6 +308,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     y => y.UserId == userId &&
                  y.OrderStatus == OrderStatusType.RecentlyAdded
              );
+          
             if (activeSuccessfulOrderExists != null)
             {
                 if (SaleDetailDto.ESaleTypeId != activeSuccessfulOrderExists.ESaleTypeId)
@@ -311,6 +320,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             }
 
         }
+        Console.WriteLine("aftercachecchek");
 
 
 
@@ -377,7 +387,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             //    commitOrderDto.PriorityId.ToString() + "_" +
             //    SaleDetailDto.SaleId.ToString()
             //    , out objectCommitOrderIran);
-
+          
             objectCommitOrderIran = await _distributedCache.GetStringAsync(userId.ToString() + "_" +
                 commitOrderDto.PriorityId.ToString() + "_" +
                 SaleDetailDto.SaleId.ToString());
@@ -388,8 +398,10 @@ public class OrderAppService : ApplicationService, IOrderAppService
             }
             else
             {
+              
                 CustomerOrder customerOrderIranFromDb =
-                _commitOrderRepository.ToListAsync().Result
+                orderQuery
+                .AsNoTracking()
                 .Select(x => new CustomerOrder
                 {
                     OrderStatus = x.OrderStatus,
@@ -403,6 +415,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
                    y.OrderStatus == OrderStatusType.RecentlyAdded
                    && y.SaleId == SaleDetailDto.SaleId
                    && y.PriorityId == (PriorityEnum)commitOrderDto.PriorityId);
+             
+
                 if (customerOrderIranFromDb != null)
                 {
                     //await _cacheManager.GetCache("CommitOrderimport").
@@ -432,6 +446,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             //        SaleDetailDto.Id.ToString(),
             //    out objectCustomerOrderFromCache
             //    );
+
             objectCustomerOrderFromCache = await _distributedCache.GetStringAsync(
                 userId.ToString() + "_" +
                     SaleDetailDto.Id.ToString());
@@ -442,9 +457,10 @@ public class OrderAppService : ApplicationService, IOrderAppService
             }
             if (objectCustomerOrderFromCache == null)
             {
-                var commitOrderQuery = _commitOrderRepository.WithDetails();
 
-                var CustomerOrderFromDb = commitOrderQuery
+                
+
+                var CustomerOrderFromDb = orderQuery
                      .AsNoTracking()
                     .Select(x => new CustomerOrder
                     {
@@ -457,6 +473,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 x.UserId == userId
                 && x.SaleDetailId == (int)SaleDetailDto.Id
                 && x.OrderStatus == OrderStatusType.RecentlyAdded);
+
                 if (CustomerOrderFromDb != null)
                 {
                     // await _cacheManager.GetCache("CommitOrderimport").
@@ -485,6 +502,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
 
 
+        Console.WriteLine("beforeasli");
 
 
         CustomerOrder customerOrder = new CustomerOrder();
@@ -499,6 +517,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
         customerOrder.SaleId = SaleDetailDto.SaleId;
         await _commitOrderRepository.InsertAsync(customerOrder);
         await CurrentUnitOfWork.SaveChangesAsync();
+        Console.WriteLine("afterasli");
+
         //unitOfWork.Complete();
         //}
         //await _cacheManager.GetCache("CommitOrder").

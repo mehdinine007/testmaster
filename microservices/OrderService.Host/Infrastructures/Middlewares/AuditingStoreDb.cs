@@ -40,10 +40,12 @@ namespace OrderService.Host.Infrastructures.Middlewares
         {
             try
             {
+
                 await _auditLogRepository.InsertAsync(await Converter.ConvertAsync(auditInfo), autoSave: true) ;
-              //  await _unitOfWorkManager.Current.SaveChangesAsync();
+
+                //  await _unitOfWorkManager.Current.SaveChangesAsync();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
 
             }
