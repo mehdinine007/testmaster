@@ -10,10 +10,13 @@
 
     <ItemGroup>
         <PackageReference Include="Volo.Abp.AspNetCore.Mvc" Version="7.2.1" />
-    </ItemGroup>
+		<PackageReference Include="Grpc.Net.Client" Version="2.49.0-pre1" />
+		<PackageReference Include="protobuf-net.Grpc" Version="1.0.177" />
+	</ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\..\..\..\shared\Authorization\Authorization.csproj" />
+      <ProjectReference Include="..\..\..\payment\PaymentManagement.Application.Contracts\PaymentManagement.Application.Contracts.csproj" />
       <ProjectReference Include="..\OrderManagement.Application.Contracts\OrderManagement.Application.Contracts.csproj" />
     </ItemGroup>
 
