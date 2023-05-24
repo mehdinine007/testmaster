@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.DataProtection.KeyManagement;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using PaymentManagement.Application.Contracts;
@@ -13,7 +12,6 @@ namespace PaymentManagement
     [RemoteService]
     [Area("paymentManagement")]
     [Route("api/services/app/PaymentService/[action]")]
-
     public class PaymentsController : AbpController
     {
         private readonly IPaymentAppService _paymentAppService;
@@ -72,6 +70,12 @@ namespace PaymentManagement
         public async Task<InquiryOutputDto> InquiryAsync(int paymentId)
         {
             return await _paymentAppService.InquiryAsync(paymentId);
+        }
+
+        [HttpPost]
+        public async Task<ReverseOutputDto> ReverseAsync(int paymentId)
+        {
+            return await _paymentAppService.ReverseAsync(paymentId);
         }
 
         [HttpGet]

@@ -1,5 +1,4 @@
-﻿using PaymentManagement.Application.Contracts;
-using Volo.Abp.Application.Services;
+﻿using Volo.Abp.Application.Services;
 
 namespace PaymentManagement.Application.Contracts.IServices
 {
@@ -10,8 +9,10 @@ namespace PaymentManagement.Application.Contracts.IServices
         Task<BackFromPspOutputDto> BackFromIranKishAsync(string pspJsonResult);
         Task<string> GetCallBackUrlAsync(int paymentId);
         Task<VerifyOutputDto> VerifyAsync(int paymentId);
+        Task<InquiryOutputDto> InquiryAsync(int paymentId);
+        Task<ReverseOutputDto> ReverseAsync(int paymentId);
+        //todo: Task<SettleOutputDto> SettleAsync(int paymentId);
         Task<List<InquiryWithFilterParamDto>> InquiryWithFilterParamAsync(int filterParam);
         Task RetryForVerify();
-        Task<InquiryOutputDto> InquiryAsync(int paymentId);
     }
 }
