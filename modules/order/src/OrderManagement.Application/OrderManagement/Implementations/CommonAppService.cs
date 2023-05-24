@@ -248,7 +248,6 @@ public class CommonAppService : ApplicationService, ICommonAppService
     public async Task<bool> ValidateSMS(string Mobile, string NationalCode, string UserSMSCode, SMSType sMSType)
     {
         Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
-        object ObjectSMSCode = null;
         var stringCache = await RedisHelper.Connection.GetDatabase().StringGetAsync(sMSType.ToString() + Mobile + NationalCode);
         if (string.IsNullOrEmpty(stringCache))
         {
@@ -259,24 +258,15 @@ public class CommonAppService : ApplicationService, ICommonAppService
         {
             throw new UserFriendlyException("کد پیامک ارسالی صحیح نمی باشد");
         }
-        if (string.IsNullOrEmpty(smsCodeDto.Payload))
+        if(smsCodeDto.SMSCode != UserSMSCode)
         {
             throw new UserFriendlyException("کد پیامک ارسالی صحیح نمی باشد");
+
         }
-        SMSPayloadDto smsPayLoad = JsonConvert.DeserializeObject<SMSPayloadDto>(smsCodeDto.Payload);
 
 
-        if (string.IsNullOrEmpty(smsPayLoad.SMSCode))
-        {
-            throw new UserFriendlyException("کد پیامک ارسالی صحیح نمی باشد");
-        }
-        else
-        {
-            if (UserSMSCode != smsPayLoad.SMSCode)
-            {
-                throw new UserFriendlyException("کد پیامک ارسالی صحیح نمی باشد");
-            }
-        }
+
+
         return true;
     }
     public async Task ValidateVisualizeCaptcha(VisualCaptchaInput input)
