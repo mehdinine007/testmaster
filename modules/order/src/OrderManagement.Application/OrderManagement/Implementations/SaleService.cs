@@ -10,7 +10,7 @@ using Microsoft.Extensions.Configuration;
 using System.Linq;
 using Volo.Abp.Domain.Entities;
 using OrderManagement.Application.OrderManagement.Utitlities;
-using System.Runtime.CompilerServices;
+using Esale.Core.Utility.Results;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -198,4 +198,6 @@ public class SaleService : ApplicationService , ISaleService
        //}).ToListAsync());
 
     }
+
+
 }
