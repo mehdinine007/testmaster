@@ -8,7 +8,7 @@ namespace OrderManagement.Application.OrderManagement
 {
     public interface ICapacityControlAppService
     {
-        Task<IResult> SaleDetails();
+        Task<IResult> SaleDetail();
         Task<IResult> Payment();
         Task GrpcPaymentTest();
     }

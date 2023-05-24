@@ -1,6 +1,7 @@
 ﻿using Hangfire;
 using Microsoft.AspNetCore.Mvc;
 using OrderService.Host.Infrastructures.Hangfire;
+using OrderService.Host.Infrastructures.Hangfire.Abstract;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,18 +13,25 @@ namespace NoyanHangFire.Controllers
     [ApiController]
     public class HangfireController : Controller
     {
-        private readonly IHangfireService _jobSaleService;
-        public HangfireController(IHangfireService jobSaleService)
+        private readonly ICapacityControlJob _capacityControlJob;
+        public HangfireController(ICapacityControlJob capacityControlJob)
         {
-            _jobSaleService = jobSaleService;
+            _capacityControlJob = capacityControlJob;
         }
 
-        //[HttpPost("addHangfireTest")]
-        //public async Task<IActionResult> AddHangfireTest()
-        //{
-        //    BackgroundJob.Schedule(() => _jobSaleService.HangfireTest(), TimeSpan.FromSeconds(10));
-        //    return Ok($"BackgroundJob Job Scheduled Inserted");
-        //}
+        [HttpPost("addSalDetailCapacity")]
+        public async Task<IActionResult> AddSalDetailCapacity()
+        {
+            _capacityControlJob.SaleDetail();
+            return Ok($"BackgroundJob Job Scheduled Inserted");
+        }
+
+        [HttpPost("addPaymentCapacity")]
+        public async Task<IActionResult> AddPaymentCapacity()
+        {
+            _capacityControlJob.Payment();
+            return Ok($"BackgroundJob Job Scheduled Inserted");
+        }
 
     }
 }

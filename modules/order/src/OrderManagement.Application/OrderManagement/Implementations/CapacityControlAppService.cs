@@ -40,7 +40,7 @@ namespace OrderManagement.Application.OrderManagement
                 .Where(x => x.SalePlanStartDate <= currentTime && currentTime <= x.SalePlanEndDate && x.Visible)
                 .ToList();
         }
-        public async Task<IResult> SaleDetails()
+        public async Task<IResult> SaleDetail()
         {
             var saledetail = GetSaleDetails();
             if (saledetail != null && saledetail.Count > 0)

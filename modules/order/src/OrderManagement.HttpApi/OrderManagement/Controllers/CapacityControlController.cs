@@ -25,7 +25,7 @@ public class CapacityControlController
 
     [HttpPost]
     public async Task<IResult> SaleDetails()
-          =>  await _capacityControlAppService.SaleDetails();
+          =>  await _capacityControlAppService.SaleDetail();
 
 
     [HttpPost]
