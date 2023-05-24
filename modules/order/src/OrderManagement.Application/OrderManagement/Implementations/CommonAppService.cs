@@ -249,7 +249,7 @@ public class CommonAppService : ApplicationService, ICommonAppService
     {
         Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
         object ObjectSMSCode = null;
-        var stringCache = await RedisHelper.Connection.GetDatabase().StringGetAsync(string.Format(RedisConstants.ValidateSmsPrefix, sMSType.ToString() + Mobile + NationalCode));
+        var stringCache = await RedisHelper.Connection.GetDatabase().StringGetAsync(sMSType.ToString() + Mobile + NationalCode);
         if (string.IsNullOrEmpty(stringCache))
         {
             throw new UserFriendlyException("کد پیامک ارسالی صحیح نمی باشد");
