@@ -14,7 +14,7 @@ public static class RedisConstants
 
     public static DateTimeOffset UserRejectionTimeOffset = new DateTimeOffset(DateTime.Now.AddMinutes(20));
 
-    public const string ValidateSmsPrefix = "n:ValidateSms ,c:{0}";
+    public const string ValidateSmsPrefix = "n:SMS,c:{0}";
 
     public const string CommitOrderIran = "n:CommitOrderIran";
 

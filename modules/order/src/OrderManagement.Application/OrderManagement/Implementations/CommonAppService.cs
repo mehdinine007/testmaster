@@ -249,20 +249,30 @@ public class CommonAppService : ApplicationService, ICommonAppService
     {
         Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
         object ObjectSMSCode = null;
-        //_cacheManager.GetCache("SMS").TryGetValue(sMSType.ToString() + Mobile + NationalCode, out ObjectSMSCode);
-        ObjectSMSCode = await _distributedCache.GetStringAsync(string.Format(RedisConstants.ValidateSmsPrefix, NationalCode));
-        RegistrationSMSDto smsCodeDto = ObjectSMSCode as RegistrationSMSDto;
+        var stringCache = await RedisHelper.Connection.GetDatabase().StringGetAsync(string.Format(RedisConstants.ValidateSmsPrefix, sMSType.ToString() + Mobile + NationalCode));
+        if (string.IsNullOrEmpty(stringCache))
+        {
+            throw new UserFriendlyException("کد پیامک ارسالی صحیح نمی باشد");
+        }
+        SMSDto smsCodeDto = JsonConvert.DeserializeObject<SMSDto>(stringCache);
         if (smsCodeDto == null)
         {
             throw new UserFriendlyException("کد پیامک ارسالی صحیح نمی باشد");
         }
-        if (string.IsNullOrEmpty(smsCodeDto.SMSCode))
+        if (string.IsNullOrEmpty(smsCodeDto.Payload))
+        {
+            throw new UserFriendlyException("کد پیامک ارسالی صحیح نمی باشد");
+        }
+        SMSPayloadDto smsPayLoad = JsonConvert.DeserializeObject<SMSPayloadDto>(smsCodeDto.Payload);
+
+
+        if (string.IsNullOrEmpty(smsPayLoad.SMSCode))
         {
             throw new UserFriendlyException("کد پیامک ارسالی صحیح نمی باشد");
         }
         else
         {
-            if (UserSMSCode != smsCodeDto.SMSCode)
+            if (UserSMSCode != smsPayLoad.SMSCode)
             {
                 throw new UserFriendlyException("کد پیامک ارسالی صحیح نمی باشد");
             }

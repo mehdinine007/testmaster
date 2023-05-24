@@ -6,12 +6,13 @@ using Microsoft.AspNetCore.Mvc;
 using Volo.Abp;
 using Esale.Share.Authorize;
 using Microsoft.AspNetCore.Authorization;
+using Volo.Abp.Auditing;
 
 namespace OrderManagement.HttpApi;
 
 [RemoteService]
 [Route("api/services/app/OrderService/[action]")]
-public class OrderManagementController : IOrderAppService
+public class OrderManagementController 
 {
     private readonly IOrderAppService _orderAppService;
 
@@ -19,28 +20,36 @@ public class OrderManagementController : IOrderAppService
         => _orderAppService = orderAppService;
     [UserAuthorization]
     [HttpPost]
-    public async Task<CustomerOrderDto> CancelOrder(int orderId)
-        => await _orderAppService.CancelOrder(orderId);
+    public async Task<bool> CancelOrder(int orderId)
+    {
+        await _orderAppService.CancelOrder(orderId);
+        return true;
+    }
     [HttpPost]
     public async Task<bool> Test()
     {
-        return await _orderAppService.Test();
+         await _orderAppService.Test();
+        return true;
     }
-   
-    [HttpPost]
-    public async Task CommitOrder(CommitOrderDto commitOrderDto)
-        => await _orderAppService.CommitOrder(commitOrderDto);
 
+    [HttpPost]
+    [UserAuthorization]
+    public async Task<bool> CommitOrder(CommitOrderDto commitOrderDto)
+    {
+        await _orderAppService.CommitOrder(commitOrderDto);
+        return true;
+    }
+    [DisableAuditing]
     [HttpGet]
     [UserAuthorization]
     public async Task<List<CustomerOrderReportDto>> GetCompaniesCustomerOrders()
         => await _orderAppService.GetCompaniesCustomerOrders();
-
+    [DisableAuditing]
     [HttpGet]
     [UserAuthorization]
     public async Task<List<CustomerOrderPriorityUserDto>> GetCustomerInfoPriorityUser()
         => await _orderAppService.GetCustomerInfoPriorityUser();
-
+    [DisableAuditing]
     [HttpGet]
     [UserAuthorization]
     public List<CustomerOrder_OrderDetailDto> GetCustomerOrderList()
@@ -48,9 +57,12 @@ public class OrderManagementController : IOrderAppService
 
     [HttpPost]
     [UserAuthorization]
-    public async Task InsertUserRejectionAdvocacyPlan(string userSmsCode)
-        => await _orderAppService.InsertUserRejectionAdvocacyPlan(userSmsCode);
-
+    public async Task<bool> InsertUserRejectionAdvocacyPlan(string userSmsCode)
+    {
+        await _orderAppService.InsertUserRejectionAdvocacyPlan(userSmsCode);
+        return true;
+    }
+    [DisableAuditing]
     [HttpPost]
     [UserAuthorization]
     public async Task<bool> UserRejectionStatus()
@@ -60,4 +72,6 @@ public class OrderManagementController : IOrderAppService
     {
         return true;
     }
+
+    
 }

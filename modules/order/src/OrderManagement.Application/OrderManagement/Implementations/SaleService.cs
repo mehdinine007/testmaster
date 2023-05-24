@@ -120,9 +120,7 @@ public class SaleService : ApplicationService , ISaleService
         var queryResult = saleDetailQuery.ToList();
         if (!queryResult.Any())
             return new List<SaleDetailDto>();
-        var carTipImageBaseUrls = _configuration.GetSection("CarTipImageBaseUrls").Value;
-
-        var saleDetailDtos = await queryResult.MapSaleDetailsToDto(_galleriesRepository, ObjectMapper, carTipImageBaseUrls);
+        var saleDetailDtos = await queryResult.MapSaleDetailsToDto(_galleriesRepository, ObjectMapper);
         return saleDetailDtos.OrderBy(x => x.SalePlanDescription).ToList();
     }
 

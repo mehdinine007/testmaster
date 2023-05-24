@@ -25,6 +25,7 @@ using Newtonsoft.Json;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Authorization;
 using Volo.Abp.Domain.Entities;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -46,6 +47,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
     private readonly IRepository<Company, int> _companyRepository;
     private readonly IUnitOfWorkManager _unitOfWorkManager;
     private readonly IRepository<ESaleType, int> _esaleTypeRepository;
+    private readonly IMemoryCache _memoryCache;
 
     public OrderAppService(ICommonAppService commonAppService,
                            IBaseInformationService baseInformationAppService,
@@ -64,7 +66,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
                            IDistributedCache distributedCache,
                            IRepository<Company, int> companyRepository,
                            IUnitOfWorkManager UnitOfWorkManager,
-                           IRepository<ESaleType, int> esaleTypeRepository
+                           IRepository<ESaleType, int> esaleTypeRepository,
+                           IMemoryCache memoryCache
         )
     {
         _commonAppService = commonAppService;
@@ -85,11 +88,12 @@ public class OrderAppService : ApplicationService, IOrderAppService
         _companyRepository = companyRepository;
         _unitOfWorkManager = UnitOfWorkManager;
         _esaleTypeRepository = esaleTypeRepository;
+        _memoryCache = memoryCache;
     }
 
 
 
-    private async Task<AdvocacyUserFromBankDto> CheckAdvocacy(string NationalCode)
+    private async Task<AdvocacyUserFromBankDto> CheckAdvocacy(string NationalCode, int esaleTypeId)
     {
         var advocacyUser = await _esaleGrpcClient.GetUserAdvocacyByNationalCode(NationalCode);
 
@@ -128,7 +132,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
     }
 
-    private async Task RustySalePlanValidation(CommitOrderDto commitOrder, int esaleTypeId)
+    private void RustySalePlanValidation(CommitOrderDto commitOrder, int esaleTypeId)
     {
         //TODO: make sure esale type name is quite right
         //const string targetEsaleTypeName = "طرح فروش فرسوده";
@@ -142,17 +146,16 @@ public class OrderAppService : ApplicationService, IOrderAppService
         //    throw new EntityNotFoundException(typeof(ESaleType), esaleTypeId);
         if (esaleTypeId == 3)
         {
-            //var vinRegex = new Regex("[.A-Z a-z 0-9]");
             const string pattern = ".[A-Z a-z 0-9]";
-            if (string.IsNullOrWhiteSpace(commitOrder.Vin) && !Regex.IsMatch(commitOrder.Vin, pattern, RegexOptions.Compiled))
+            if (string.IsNullOrWhiteSpace(commitOrder.Vin) || !Regex.IsMatch(commitOrder.Vin, pattern, RegexOptions.Compiled))
                 throw new UserFriendlyException("فرمت شماره VIN صحیح نیست");
+            if (string.IsNullOrWhiteSpace(commitOrder.EngineNo) || commitOrder.EngineNo.Length > 20)
+                throw new UserFriendlyException("فرمت شماره موتور صحیح نیست");
+            if (string.IsNullOrWhiteSpace(commitOrder.ChassiNo) || commitOrder.ChassiNo.Length > 20)
+                throw new UserFriendlyException("فرمت شماره شاسی صحیح نیست");
+            if (string.IsNullOrWhiteSpace(commitOrder.Vehicle))
+                throw new UserFriendlyException("نام خودرو به درستی وارد نشده است");
             commitOrder.Vin = commitOrder.Vin.ToUpper();
-            if (string.IsNullOrWhiteSpace(commitOrder.EngineNo) && commitOrder.EngineNo.Length < 20)
-                throw new UserFriendlyException("فرمت شماره شماره موتور صحیح نیست");
-            if (string.IsNullOrWhiteSpace(commitOrder.ChassiNo) && commitOrder.ChassiNo.Length < 20)
-                throw new UserFriendlyException("فرمت شماره شماره موتور صحیح نیست");
-            if (string.IsNullOrWhiteSpace(commitOrder.ChassiNo))
-                throw new UserFriendlyException("فرمت شماره شماره موتور صحیح نیست");
             return;
         }
         commitOrder.EngineNo = "";
@@ -197,19 +200,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
         var nationalCode = _commonAppService.GetNationalCode();
         SaleDetailOrderDto SaleDetailDto = null;
         var cacheKey = string.Format(RedisConstants.SaleDetailPrefix, commitOrderDto.SaleDetailUId);
-        var cacheResponse = await _distributedCache.GetStringAsync(cacheKey);
-        if (!string.IsNullOrWhiteSpace(cacheResponse))
-        {
-            var SaleDetailFromCache = System.Text.Json.JsonSerializer.Deserialize<SaleDetailOrderDto>(cacheResponse);
-            if (SaleDetailFromCache != null)
-            {
-                SaleDetailDto = SaleDetailFromCache;
-                ttl = SaleDetailDto.SalePlanEndDate.Subtract(DateTime.Now);
-
-            }
-
-        }
-        else
+        _memoryCache.TryGetValue(cacheKey, out SaleDetailDto);
+        if (SaleDetailDto == null)
         {
             var saleDetailQuery = await _saleDetailRepository.GetQueryableAsync();
             var SaleDetailFromDb = saleDetailQuery
@@ -223,7 +215,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     SalePlanStartDate = x.SalePlanStartDate,
                     UID = x.UID,
                     ESaleTypeId = x.ESaleTypeId
-                    
                 })
                 .FirstOrDefault(x => x.UID == commitOrderDto.SaleDetailUId);
             if (SaleDetailFromDb == null)
@@ -234,15 +225,21 @@ public class OrderAppService : ApplicationService, IOrderAppService
             {
                 SaleDetailDto = SaleDetailFromDb;
                 ttl = SaleDetailDto.SalePlanEndDate.Subtract(DateTime.Now);
-                //await _cacheManager.GetCache("SaleDetail").SetAsync(commitOrderDto.SaleDetailUId.ToString(), SaleDetailDto);
-                await _distributedCache.SetStringAsync(string.Format(RedisConstants.SaleDetailPrefix, commitOrderDto.SaleDetailUId.ToString()),
-                    JsonConvert.SerializeObject(SaleDetailDto), new DistributedCacheEntryOptions()
-                    {
-                        AbsoluteExpiration = new DateTimeOffset(DateTime.Now.AddSeconds(ttl.TotalSeconds))
-                    });
+                _memoryCache.Set(string.Format(RedisConstants.SaleDetailPrefix, commitOrderDto.SaleDetailUId.ToString()), SaleDetailDto, DateTime.Now.AddMinutes(4));
+
+                ////await _cacheManager.GetCache("SaleDetail").SetAsync(commitOrderDto.SaleDetailUId.ToString(), SaleDetailDto);
+                //await _distributedCache.SetStringAsync(string.Format(RedisConstants.SaleDetailPrefix, commitOrderDto.SaleDetailUId.ToString()),
+                //    JsonConvert.SerializeObject(SaleDetailDto), new DistributedCacheEntryOptions()
+                //    {
+                //        AbsoluteExpiration = new DateTimeOffset(DateTime.Now.AddSeconds(ttl.TotalSeconds))
+                //    });
             }
         }
+        else
+        {
+            ttl = SaleDetailDto.SalePlanEndDate.Subtract(DateTime.Now);
 
+        }
         //if(SaleDetailDto.EsaleTypeId == (Int16)EsaleTypeEnum.Youth)
         //{
         //    Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
@@ -266,11 +263,14 @@ public class OrderAppService : ApplicationService, IOrderAppService
         ////////////////conntrol repeated order in saledetails// iran&&varedat
 
         CheckSaleDetailValidation(SaleDetailDto);
-        await RustySalePlanValidation(commitOrderDto, SaleDetailDto.EsaleTypeId);
+        RustySalePlanValidation(commitOrderDto, SaleDetailDto.EsaleTypeId);
         await _commonAppService.IsUserRejected(); //if user reject from advocacy
                                                   //_baseInformationAppService.CheckBlackList(SaleDetailDto.EsaleTypeId); //if user not exsist in blacklist
-        await CheckAdvocacy(nationalCode); //if hesab vekalati darad
+        await CheckAdvocacy(nationalCode,SaleDetailDto.ESaleTypeId); //if hesab vekalati darad
+        Console.WriteLine("beforewhitelist");
         _baseInformationAppService.CheckWhiteList(WhiteListEnumType.WhiteListOrder);
+        Console.WriteLine("afterwhitelist");
+
         var orderQuery = await _commitOrderRepository.GetQueryableAsync();
         var userId = _commonAppService.GetUserId();
         ///////////////////////////////agar order 1403 barandeh dasht natone sefaresh bezaneh
@@ -285,14 +285,16 @@ public class OrderAppService : ApplicationService, IOrderAppService
         //    throw new UserFriendlyException("جهت ثبت سفارش جدید لطفا ابتدا از جزئیات سفارش، سفارش قبلی خود که موعد تحویل آن در سال 1403 می باشد را لغو نمایید .");
         ///////////////////////////////check entekhab yek no tarh////////////
         string EsaleTypeId = await _distributedCache.GetStringAsync(userId.ToString());
-        if(!string.IsNullOrEmpty(EsaleTypeId)) { 
-            if(EsaleTypeId != SaleDetailDto.EsaleTypeId.ToString())
+        if (!string.IsNullOrEmpty(EsaleTypeId))
+        {
+            if (EsaleTypeId != SaleDetailDto.EsaleTypeId.ToString())
             {
                 throw new UserFriendlyException("امکان انتخاب فقط یک نوع طرح فروش وجود دارد");
             }
         }
         else
         {
+
             var activeSuccessfulOrderExists = orderQuery
                 .AsNoTracking()
                 .Select(x => new { x.UserId, x.OrderStatus, x.SaleDetail.ESaleTypeId })
@@ -300,7 +302,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     y => y.UserId == userId &&
                  y.OrderStatus == OrderStatusType.RecentlyAdded
              );
-            if(activeSuccessfulOrderExists != null)
+          
+            if (activeSuccessfulOrderExists != null)
             {
                 if (SaleDetailDto.ESaleTypeId != activeSuccessfulOrderExists.ESaleTypeId)
                 {
@@ -309,8 +312,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     throw new UserFriendlyException("امکان انتخاب فقط یک نوع طرح فروش وجود دارد");
                 }
             }
-          
+
         }
+        Console.WriteLine("aftercachecchek");
 
 
 
@@ -377,7 +381,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             //    commitOrderDto.PriorityId.ToString() + "_" +
             //    SaleDetailDto.SaleId.ToString()
             //    , out objectCommitOrderIran);
-
+          
             objectCommitOrderIran = await _distributedCache.GetStringAsync(userId.ToString() + "_" +
                 commitOrderDto.PriorityId.ToString() + "_" +
                 SaleDetailDto.SaleId.ToString());
@@ -388,8 +392,10 @@ public class OrderAppService : ApplicationService, IOrderAppService
             }
             else
             {
+              
                 CustomerOrder customerOrderIranFromDb =
-                _commitOrderRepository.ToListAsync().Result
+                orderQuery
+                .AsNoTracking()
                 .Select(x => new CustomerOrder
                 {
                     OrderStatus = x.OrderStatus,
@@ -403,6 +409,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
                    y.OrderStatus == OrderStatusType.RecentlyAdded
                    && y.SaleId == SaleDetailDto.SaleId
                    && y.PriorityId == (PriorityEnum)commitOrderDto.PriorityId);
+             
+
                 if (customerOrderIranFromDb != null)
                 {
                     //await _cacheManager.GetCache("CommitOrderimport").
@@ -432,6 +440,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             //        SaleDetailDto.Id.ToString(),
             //    out objectCustomerOrderFromCache
             //    );
+
             objectCustomerOrderFromCache = await _distributedCache.GetStringAsync(
                 userId.ToString() + "_" +
                     SaleDetailDto.Id.ToString());
@@ -442,9 +451,10 @@ public class OrderAppService : ApplicationService, IOrderAppService
             }
             if (objectCustomerOrderFromCache == null)
             {
-                var commitOrderQuery = _commitOrderRepository.WithDetails();
 
-                var CustomerOrderFromDb = commitOrderQuery
+                
+
+                var CustomerOrderFromDb = orderQuery
                      .AsNoTracking()
                     .Select(x => new CustomerOrder
                     {
@@ -457,6 +467,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 x.UserId == userId
                 && x.SaleDetailId == (int)SaleDetailDto.Id
                 && x.OrderStatus == OrderStatusType.RecentlyAdded);
+
                 if (CustomerOrderFromDb != null)
                 {
                     // await _cacheManager.GetCache("CommitOrderimport").
@@ -485,6 +496,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
 
 
+        Console.WriteLine("beforeasli");
 
 
         CustomerOrder customerOrder = new CustomerOrder();
@@ -499,6 +511,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
         customerOrder.SaleId = SaleDetailDto.SaleId;
         await _commitOrderRepository.InsertAsync(customerOrder);
         await CurrentUnitOfWork.SaveChangesAsync();
+        Console.WriteLine("afterasli");
+
         //unitOfWork.Complete();
         //}
         //await _cacheManager.GetCache("CommitOrder").
@@ -689,7 +703,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         if (customerOrder == null)
             throw new UserFriendlyException("شماره سفارش صحیح نمی باشد");
 
-        if (!( customerOrder.OrderStatus == OrderStatusType.RecentlyAdded))
+        if (!(customerOrder.OrderStatus == OrderStatusType.RecentlyAdded))
             throw new UserFriendlyException("امکان انصراف وجود ندارد");
 
         if (customerOrder.UserId != userId)
@@ -760,11 +774,11 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         customerOrder.OrderStatus = OrderStatusType.Canceled;
         await CurrentUnitOfWork.SaveChangesAsync();
-         customerOrder = _commitOrderRepository.WithDetails().
-            FirstOrDefault(x => x.UserId == userId
-            && x.SaleDetailId == saleDetailOrderDto.Id
-            && x.OrderStatus == OrderStatusType.RecentlyAdded);
-        if(customerOrder == null)
+        customerOrder = _commitOrderRepository.WithDetails().
+           FirstOrDefault(x => x.UserId == userId
+           && x.SaleDetailId == saleDetailOrderDto.Id
+           && x.OrderStatus == OrderStatusType.RecentlyAdded);
+        if (customerOrder == null)
         {
             await _distributedCache.RemoveAsync(userId.ToString());
         }

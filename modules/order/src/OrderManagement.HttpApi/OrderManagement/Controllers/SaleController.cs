@@ -1,4 +1,5 @@
 ﻿using Esale.Share.Authorize;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Grpc.Net.Client;
 using Microsoft.AspNetCore.Mvc;
 using OrderManagement.Application.Contracts;
@@ -9,12 +10,13 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp;
+using Volo.Abp.Auditing;
 
 namespace OrderManagement.HttpApi;
-
+[DisableAuditing]
 [RemoteService]
 [Route("api/services/app/SaleService/[action]")]
-public class SaleController : ISaleService
+public class SaleController : Controller,ISaleService
 {
     private readonly ISaleService _saleService;
 

@@ -29,6 +29,7 @@ using Hangfire;
 using Microsoft.Extensions.Configuration;
 using Volo.Abp.Hangfire;
 using Volo.Abp.AspNetCore.ExceptionHandling;
+using Microsoft.Extensions.Configuration;
 
 namespace OrderService.Host
 {
@@ -65,13 +66,15 @@ namespace OrderService.Host
             //        options.ApiName = configuration["AuthServer:ApiName"];
             //        options.RequireHttpsMetadata = Convert.ToBoolean(configuration["AuthServer:RequireHttpsMetadata"]);
             //    });
-
-            context.Services.AddSwaggerGen(options =>
+            if (configuration.GetValue<bool?>("SwaggerIsEnable") ?? false)
             {
-                options.SwaggerDoc("v1", new OpenApiInfo { Title = "Order Service API", Version = "v1" });
-                options.DocInclusionPredicate((docName, description) => true);
-                options.CustomSchemaIds(type => type.FullName);
-            });
+                context.Services.AddSwaggerGen(options =>
+                {
+                    options.SwaggerDoc("v1", new OpenApiInfo { Title = "Order Service API", Version = "v1" });
+                    options.DocInclusionPredicate((docName, description) => true);
+                    options.CustomSchemaIds(type => type.FullName);
+                });
+            }
 
             Configure<AbpLocalizationOptions>(options =>
             {
@@ -94,13 +97,17 @@ namespace OrderService.Host
             Configure<AbpAuditingOptions>(options =>
             {
                 options.IsEnabledForGetRequests = true;
-                options.ApplicationName = "OrderService";
             });
-            Configure<AbpExceptionHandlingOptions>(options =>
-            {
-                options.SendExceptionsDetailsToClients = true;
-                options.SendStackTraceToClients = true;
-            });
+            //Configure<AbpExceptionHandlingOptions>(options =>
+            //{
+            //    options.SendExceptionsDetailsToClients = true;
+            //    options.SendStackTraceToClients = true;
+            //});
+            //Configure<AbpAuditingOptions>(options =>
+            //{
+            //    options.IsEnabled = false; //Disables the auditing system
+            //});
+
 
             context.Services.AddStackExchangeRedisCache(options =>
             {

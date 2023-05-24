@@ -6,9 +6,11 @@ using OrderManagement.Domain.Shared;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp;
+using Volo.Abp.Auditing;
 
 namespace OrderManagement.HttpApi;
 
+[DisableAuditing]
 [RemoteService]
 [Route("api/services/app/BaseInformationService/[action]")]
 public class BaseController : IBaseInformationService

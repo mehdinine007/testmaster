@@ -9,6 +9,7 @@ using AutoMapper.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using OrderManagement.Application.Contracts.Services;
 using OrderManagement.Application.OrderManagement.Implementations;
+using Microsoft.Extensions.Configuration;
 
 namespace OrderManagement.Application;
 [DependsOn(
@@ -18,13 +19,15 @@ namespace OrderManagement.Application;
     )]
 public class OrderManagementApplicationModule : AbpModule
 {
+    public static IConfiguration StaticConfig { get; private set; }
+
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
         Configure<AbpAutoMapperOptions>(options =>
         {
             options.AddMaps<OrderManagementApplicationAutoMapperProfile>();
         });
-
+        StaticConfig = context.Services.GetConfiguration();
         //context.Services.AddScoped<IBaseInformationService, BaseInformationService>();
 
         //Configure<AbpDistributedCacheOptions>(options =>

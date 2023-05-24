@@ -8,6 +8,11 @@
 
   <ItemGroup>
     <PackageReference Include="NEST" Version="7.17.5" />
+    <PackageReference Include="StackExchange.Redis" Version="2.6.90" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Helpers\" />
   </ItemGroup>
 
 </Project>

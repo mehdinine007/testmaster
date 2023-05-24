@@ -11,7 +11,7 @@ namespace OrderManagement.Application.OrderManagement.Utitlities
 {
     public static class QueryHelper
     {
-        public static async Task<List<SaleDetailDto>> MapSaleDetailsToDto(this List<SaleDetail> saleDetails, IRepository<Gallery, int> galleryRepository, IObjectMapper objectMapper, string carTipImageBaseUrls)
+        public static async Task<List<SaleDetailDto>> MapSaleDetailsToDto(this List<SaleDetail> saleDetails, IRepository<Gallery, int> galleryRepository, IObjectMapper objectMapper)
         {
             if (galleryRepository == null)
                 throw new ArgumentNullException(nameof(galleryRepository));
@@ -33,7 +33,7 @@ namespace OrderManagement.Application.OrderManagement.Utitlities
             {
                 if (carTipGalleryImageRelations.TryGetValue(x.CarTipId, out List<int> relatedImageIds))
                 {
-                    x.CarTipImageUrls = allReltaedGAlleryImages.Where(y => relatedImageIds.Any(z => z == y.Id)).Select(y => carTipImageBaseUrls + y.ImageUrl).ToList();
+                    x.CarTipImageUrls = allReltaedGAlleryImages.Where(y => relatedImageIds.Any(z => z == y.Id)).Select(y =>y.ImageUrl).ToList();
                 }
             });
             return saleDetailDtos;
