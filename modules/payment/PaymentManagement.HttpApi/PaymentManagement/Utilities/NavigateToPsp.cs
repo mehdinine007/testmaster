@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Rewrite;
 using System.Collections.Specialized;
 
 namespace PaymentManagement.HttpApi.Utilities
@@ -19,7 +18,7 @@ namespace PaymentManagement.HttpApi.Utilities
             context.Response.WriteAsync(string.Format("<form name=\"{0}\" method=\"{1}\" action=\"{2}\" >", m_FormName, m_Method, Url));
             for (int i = 0; i < Inputs.Keys.Count; i++)
             {
-                context.Response.WriteAsync(string.Format("<input name=\"{0}\" type=\"hidden\" value=\"{1}\">", Inputs.Keys[i], Inputs[Inputs.Keys[i]]));
+                context.Response.WriteAsync(string.Format("<input name=\"{0}\" type=\"hidden\" value=\'{1}\'>", Inputs.Keys[i], Inputs[Inputs.Keys[i]]));
             }
             context.Response.WriteAsync("</form>");
             context.Response.WriteAsync("</body></html>");

@@ -19,6 +19,9 @@
         public const string InquirySuccess = "استعلام پرداخت با موفقیت انجام شد";
         public const string InquiryFailed = "استعلام پرداخت ناموفق می باشد";
         public const string ErrorInInquiry = "خطا در ارسال درخواست استعلام پرداخت";
+        public const string ReverseSuccess = "برگشت وجه با موفقیت انجام شد";
+        public const string ReverseFailed = "برگشت وجه ناموفق می باشد";
+        public const string ErrorInReverse = "خطا در ارسال درخواست برگشت وجه";
 
         #region PaymentLog
         public const string HandShakeStart = "HandShakeStart";
@@ -38,10 +41,18 @@
         public const string InquiryStart = "InquiryStart";
         public const string InquiryException = "InquiryException";
         public const string InquiryResult = "InquiryResult";
+        public const string ReverseStart = "ReverseStart";
+        public const string ReverseException = "ReverseException";
+        public const string ReverseResult = "ReverseResult";
         #endregion
         #region PspUrl
         public const string IranKishHandShakeUrl = "https://ikc.shaparak.ir/api/v3/tokenization/make";
+        public const string IranKishGetTokenUrl = "https://ikc.shaparak.ir/api/v3/tokenization/make";
         public const string IranKishRedirectUrl = "https://ikc.shaparak.ir/iuiv3/IPG/Index?tokenIdentity=";
+        public const string IranKishOriginUrl = "https://ikc.shaparak.ir";
+        public const string IranKishVerifyUrl = "https://ikc.shaparak.ir/api/v3/confirmation/purchase";
+        public const string IranKishInquiryUrl =  "https://ikc.shaparak.ir/api/v3/inquiry/single";
+        public const string IranKishReverseUrl = "https://ikc.shaparak.ir/api/v3/confirmation/reversePurchase";
         #endregion
     }
 }
