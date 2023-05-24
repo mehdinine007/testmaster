@@ -5,15 +5,13 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PaymentManagement.Payments
+namespace PaymentManagement.Application.Contracts.PaymentManagement.Dtos
 {
     [DataContract]
-    public class PaymentDto
+    public class PaymentStatusDto
     {
         [DataMember(Order = 1)]
-        public Guid Id { get; set; }
+        public int RelationId { get; set; }
 
-        [DataMember(Order = 2)]
-        public string Name { get; set; }
     }
 }

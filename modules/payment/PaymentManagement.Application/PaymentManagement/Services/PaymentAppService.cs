@@ -62,7 +62,7 @@ namespace PaymentManagement.Application.Servicess
                  .Select(o => o.Id).ToListAsync();
 
             return await (await _paymentRepository.GetQueryableAsync()).AsNoTracking()
-                 .Where(o => pspAcccountIds.Contains(o.Id) && o.FilterParam == filterParam)
+                 .Where(o => pspAcccountIds.Contains(o.PspAccountId) && o.FilterParam == filterParam)
                  .GroupBy(o => o.PaymentStatusId).Select(o => new InquiryWithFilterParamDto
                  {
                      Status = o.Key,

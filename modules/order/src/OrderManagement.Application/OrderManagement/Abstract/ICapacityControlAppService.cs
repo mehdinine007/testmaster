@@ -10,5 +10,6 @@ namespace OrderManagement.Application.OrderManagement
     {
         Task<IResult> SaleDetails();
         Task<IResult> Payment();
+        Task GrpcPaymentTest();
     }
 }

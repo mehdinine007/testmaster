@@ -4,13 +4,13 @@ using Grpc.Net.Client;
 using Microsoft.AspNetCore.Mvc;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.Services;
-using PaymentManagement.Payments;
 using ProtoBuf.Grpc.Client;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Auditing;
+using PaymentManagement.Application.Contracts.PaymentManagement.IServices;
 
 namespace OrderManagement.HttpApi;
 [DisableAuditing]
@@ -59,20 +59,5 @@ public class SaleController : Controller,ISaleService
     public async Task UserValidationByMobile(int saleId)
         => await _saleService.UserValidationByMobile(saleId);
 
-    [HttpGet]
-    public async Task GrpcTest()
-    {
-        using (var channel = GrpcChannel.ForAddress("https://localhost:10042"))
-        {
-            var productAppService = channel.CreateGrpcService<IGrpcPaymentAppService>();
-            var productDtos = await productAppService.GetListAsync();
-
-            foreach (var productDto in productDtos)
-            {
-                Console.WriteLine($"[Product] Id = {productDto.Id}, Name = {productDto.Name}");
-            }
-        }
-
-    }
 
 }

@@ -1,4 +1,5 @@
 ﻿using PaymentManagement.Application.Contracts;
+using System.ServiceModel;
 using Volo.Abp.Application.Services;
 
 namespace PaymentManagement.Application.Contracts.IServices

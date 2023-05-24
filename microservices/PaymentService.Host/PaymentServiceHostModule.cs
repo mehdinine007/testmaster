@@ -26,7 +26,8 @@ using PaymentManagement.Application;
 using PaymentManagement.HttpApi;
 using PaymentManagement.EntityFrameworkCore;
 using ProtoBuf.Grpc.Server;
-using PaymentManagement.Payments;
+using PaymentManagement.Application.Contracts.IServices;
+using PaymentManagement.Application.Contracts.PaymentManagement.IServices;
 
 namespace PaymentService.Host
 {
