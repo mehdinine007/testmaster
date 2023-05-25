@@ -10,3 +10,4 @@ aspnet-core/src/Esale.Migrator/Logs/Logs.txt
 microservices/OrderService.Host/pub/
 microservices/OrderService.Host/pub/*
 logs.txt
+pub
