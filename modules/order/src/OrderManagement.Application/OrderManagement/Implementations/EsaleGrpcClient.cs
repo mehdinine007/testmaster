@@ -54,7 +54,13 @@ public class EsaleGrpcClient : ApplicationService, IEsaleGrpcClient
 
     public async Task<AdvocacyUserDto> GetUserAdvocacyByNationalCode(string nationlCode)
     {
-        var channel = GrpcChannel.ForAddress(_configuration.GetValue<string>("Esale:GrpcAddress"));
+        string host = _configuration.GetValue<string>("Esale:GrpcAddress");
+        int Random = int.Parse(_configuration.GetValue<string>("GrpcRandomPorts"));
+        Random rnd = new Random();
+        
+        int port = int.Parse(_configuration.GetValue<string>("Esale:GrpcPort")) + rnd.Next(Random);
+        host = host + ":" + port + "/";
+        var channel = GrpcChannel.ForAddress(host);
         var client = new UserServiceGrpc.UserServiceGrpcClient(channel);
 
         var userAdvocacy = await client.GetUserAdvocacyAsync(new UserAdvocacyRequest()
