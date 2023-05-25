@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RestSharp;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace OrderManagement.Application.OrderManagement.Utitlities

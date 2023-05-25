@@ -56,9 +56,9 @@ public class SaleController : Controller,ISaleService
     public async Task UserValidationByMobile(int saleId)
         => await _saleService.UserValidationByMobile(saleId);
 
-    [HttpPost]
-    public ActionResult TestMazaher()
+    [HttpGet]
+    public async Task<object> TestIPG()
     {
-        return Ok(true);
+        return await _saleService.TestIPG();
     }
 }

@@ -67,11 +67,4 @@ public class OrderManagementController
     [UserAuthorization]
     public async Task<bool> UserRejectionStatus()
         => await _orderAppService.UserRejectionStatus();
-    [HttpPost]
-    public bool TestNohi()
-    {
-        return true;
-    }
-
-    
 }
