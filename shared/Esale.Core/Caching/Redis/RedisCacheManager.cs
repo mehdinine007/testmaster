@@ -17,7 +17,7 @@ namespace Esale.Core.CrossCuttingConcerns.Caching.Redis
         {
             _cacheClient = new MultiplexerProvider(redisConfig);
         }
-        public async Task<bool> AddAsync<T>(string key, T value, int duration = 0)
+        public async Task<bool> StringSetAsync(string key, string value, int duration = 0)
         {
             if (duration > 0)
             {

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.Services;
 using OrderManagement.Application.OrderManagement;
+using OrderManagement.Domain;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -35,5 +36,15 @@ public class CapacityControlController
     [HttpPost]
     public async Task GrpcPaymentTest()
           => await _capacityControlAppService.GrpcPaymentTest();
+
+    [HttpPost]
+    public async Task ValidationTest(Guid saleDetailId, int? agancyId)
+    {
+        var check = await _capacityControlAppService.SaleDetailValidation(saleDetailId,agancyId);
+        if (!check.Succsess)
+        {
+            string a = check.Message;
+        }
+    }
 
 }

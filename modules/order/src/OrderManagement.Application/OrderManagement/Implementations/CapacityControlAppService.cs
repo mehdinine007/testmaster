@@ -5,6 +5,7 @@ using Grpc.Net.Client;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
+using Nest;
 using Newtonsoft.Json;
 using OrderManagement.Domain;
 using PaymentManagement.Application.Contracts.IServices;
@@ -25,13 +26,15 @@ namespace OrderManagement.Application.OrderManagement
     public class CapacityControlAppService : ApplicationService, ICapacityControlAppService
     {
         private readonly IRepository<SaleDetail, int> _saleDetailRepository;
+        private readonly IRepository<Agency_SaleDetail_Map, int> _agencySaleDetail;
         private IConfiguration _configuration { get; set; }
-        private readonly RedisCacheManager _redisCacheManager;  
-        public CapacityControlAppService(IRepository<SaleDetail, int> saleDetailRepository, IConfiguration configuration)
+        private readonly RedisCacheManager _redisCacheManager;
+        public CapacityControlAppService(IRepository<SaleDetail, int> saleDetailRepository, IConfiguration configuration, IRepository<Agency_SaleDetail_Map, int> agencySaleDetail)
         {
             _saleDetailRepository = saleDetailRepository;
             _configuration = configuration;
             _redisCacheManager = new RedisCacheManager("RedisCache:ConnectionString");
+            _agencySaleDetail = agencySaleDetail;
         }
         private List<SaleDetail> GetSaleDetails()
         {
@@ -41,17 +44,33 @@ namespace OrderManagement.Application.OrderManagement
                 .Where(x => x.SalePlanStartDate <= currentTime && currentTime <= x.SalePlanEndDate && x.Visible)
                 .ToList();
         }
+        private List<Agency_SaleDetail_Map> GetAgancySaleDetails(int saleDetailId)
+        {
+            return _agencySaleDetail
+                .WithDetails()
+                .Where(x => x.SaleDetailId == saleDetailId && !x.IsDeleted)
+                .ToList();
+        }
         public async Task<IResult> SaleDetail()
         {
-            var saledetail = GetSaleDetails();
-            if (saledetail != null && saledetail.Count > 0)
+            var saledetails = GetSaleDetails();
+            if (saledetails != null && saledetails.Count > 0)
             {
-                foreach (var row in saledetail)
+                foreach (var saledetail in saledetails)
                 {
-                    string _key = string.Format(CapacityControlConstants.SaleDetailPrefix, row.UID.ToString());
+                    string _key = string.Format(CapacityControlConstants.SaleDetailPrefix, saledetail.UID.ToString());
                     try
                     {
-                        await _redisCacheManager.AddAsync<string>(string.Format(CapacityControlConstants.CapacityControlPrefix, _key), row.SaleTypeCapacity.ToString());
+                        await _redisCacheManager.StringSetAsync(string.Format(CapacityControlConstants.CapacityControlPrefix, _key), saledetail.SaleTypeCapacity.ToString());
+                        var agences = GetAgancySaleDetails(saledetail.Id);
+                        if (agences != null && agences.Count > 0)
+                        {
+                            foreach (var agency in agences)
+                            {
+                                _key = string.Format(CapacityControlConstants.AgancySaleDetailPrefix, saledetail.UID.ToString(), agency.AgencyId.ToString());
+                                await _redisCacheManager.StringSetAsync(string.Format(CapacityControlConstants.CapacityControlPrefix, _key), agency.DistributionCapacity.ToString());
+                            }
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -64,26 +83,35 @@ namespace OrderManagement.Application.OrderManagement
 
         public async Task<IResult> Payment()
         {
-            var saledetail = GetSaleDetails();
-            if (saledetail != null && saledetail.Count > 0)
+            var saledetails = GetSaleDetails();
+            if (saledetails != null && saledetails.Count > 0)
             {
-                foreach (var row in saledetail)
+                foreach (var saledetail in saledetails)
                 {
-                    string _key = string.Format(CapacityControlConstants.PaymentCountPrefix, row.UID.ToString());
+                    string _key = string.Format(CapacityControlConstants.PaymentCountPrefix, saledetail.UID.ToString());
                     int _value = 0;
                     using (var channel = GrpcChannel.ForAddress(_configuration.GetSection("gRPC:PaymentUrl").Value))
                     {
                         var productAppService = channel.CreateGrpcService<IGrpcPaymentAppService>();
                         var productDtos = await productAppService.GetPaymentStatusList(new PaymentStatusDto()
                         {
-                            RelationId = row.Id
+                            RelationId = saledetail.Id
                         });
                         if (productDtos != null && productDtos.Any(x => x.Status == 0))
                         {
                             _value = productDtos.FirstOrDefault(x => x.Status == 0).Count;
                         }
                     }
-                    await _redisCacheManager.AddAsync<string>(string.Format(CapacityControlConstants.CapacityControlPrefix, _key), _value.ToString());
+                    await _redisCacheManager.StringSetAsync(string.Format(CapacityControlConstants.CapacityControlPrefix, _key), _value.ToString());
+                    var agences = GetAgancySaleDetails(saledetail.Id);
+                    if (agences != null && agences.Count > 0)
+                    {
+                        foreach (var agency in agences)
+                        {
+                            _key = string.Format(CapacityControlConstants.AgancyPaymentPrefix, saledetail.UID.ToString(), agency.AgencyId.ToString());
+                            await _redisCacheManager.StringSetAsync(string.Format(CapacityControlConstants.CapacityControlPrefix, _key), "0");
+                        }
+                    }
                 }
             }
             return new SuccsessResult();
@@ -98,7 +126,39 @@ namespace OrderManagement.Application.OrderManagement
                 var productDtos = await productAppService.GetPaymentStatusList(new PaymentStatusDto() { RelationId = 0 });
             }
 
+
         }
 
+        public async Task<IResult> SaleDetailValidation(Guid saleDetailId, int? agancyId)
+        {
+            long _capacity = 0;
+            string _key = string.Format(CapacityControlConstants.SaleDetailPrefix, saleDetailId.ToString());
+            long.TryParse(await _redisCacheManager.GetStringAsync(string.Format(CapacityControlConstants.CapacityControlPrefix, _key)), out _capacity);
+
+            _key = string.Format(CapacityControlConstants.PaymentCountPrefix, saleDetailId.ToString());
+            long _request = await _redisCacheManager.StringIncrementAsync(string.Format(CapacityControlConstants.CapacityControlPrefix, _key));
+
+            //_key = string.Format(CapacityControlConstants.PaymentRequestPrefix, saleDetailId.ToString());
+            //await _redisCacheManager.StringIncrementAsync(string.Format(CapacityControlConstants.CapacityControlPrefix));
+            if (_request > _capacity && _capacity > 0)
+            {
+                return new ErrorResult(CapacityControlConstants.NoCapacityCreateTicket, CapacityControlConstants.NoCapacityCreateTicketId);
+            }
+            //agancy
+            if (agancyId != null && agancyId != 0)
+            {
+                long _agancyCapacity = 0;
+                _key = string.Format(CapacityControlConstants.AgancySaleDetailPrefix, saleDetailId.ToString(), agancyId.ToString());
+                long.TryParse(await _redisCacheManager.GetStringAsync(string.Format(CapacityControlConstants.CapacityControlPrefix, _key)), out _agancyCapacity);
+
+                _key = string.Format(CapacityControlConstants.AgancyPaymentPrefix, saleDetailId.ToString(), agancyId.ToString());
+                long _agancyRequest = await _redisCacheManager.StringIncrementAsync(string.Format(CapacityControlConstants.CapacityControlPrefix, _key));
+                if (_agancyRequest > _agancyCapacity && _agancyCapacity > 0)
+                {
+                    return new ErrorResult(CapacityControlConstants.AgancyNoCapacityCreateTicket, CapacityControlConstants.AgancyNoCapacityCreateTicketId);
+                }
+            }
+            return new SuccsessResult();
+        }
     }
 }
