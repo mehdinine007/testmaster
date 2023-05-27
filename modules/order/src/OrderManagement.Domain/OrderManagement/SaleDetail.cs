@@ -8,7 +8,7 @@ namespace OrderManagement.Domain
     {
         private  ICollection<CustomerOrder> _customerOrders;
 
-        private ICollection<Agency_SaleDetail_Map> _agencySaleDetailMaps;
+        private ICollection<AgencySaleDetail> _agencySaleDetails;
 
         public Guid UID { get; set; }
 
@@ -53,10 +53,10 @@ namespace OrderManagement.Domain
             protected set => _customerOrders = value;
         }
 
-        public virtual ICollection<Agency_SaleDetail_Map> AgencySaleDetailMaps
+        public virtual ICollection<AgencySaleDetail> AgencySaleDetails
         {
-            get => _agencySaleDetailMaps ?? (_agencySaleDetailMaps = new List<Agency_SaleDetail_Map>()) ;
-            protected set => _agencySaleDetailMaps = value;
+            get => _agencySaleDetails ?? (_agencySaleDetails = new List<AgencySaleDetail>()) ;
+            protected set => _agencySaleDetails = value;
         }
     }
 }

@@ -75,7 +75,7 @@ namespace OrderManagement.EfCore
 
         public DbSet<Agency> Agency { get; set; }
 
-        public DbSet<Agency_SaleDetail_Map> AgencySaleDetailMap { get; set; }
+        public DbSet<AgencySaleDetail> AgencySaleDetailMap { get; set; }
 
         public OrderManagementDbContext(DbContextOptions<OrderManagementDbContext> options)
             : base(options)

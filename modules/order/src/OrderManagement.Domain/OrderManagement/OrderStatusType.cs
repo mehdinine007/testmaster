@@ -17,6 +17,8 @@ namespace OrderManagement.Domain
         [Display(Name = "برنده شده اید")]
         Winner = 40,
         [Display(Name = "انصراف کلی از اولیت بندی")]
-        FullCancel = 50
+        FullCancel = 50,
+        [Display(Name = "پرداخت با موفقیت انجام شد")]
+        PaymentSucceeded = 60
     }
 }
