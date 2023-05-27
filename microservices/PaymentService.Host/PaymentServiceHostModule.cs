@@ -25,6 +25,9 @@ using Volo.Abp.Threading;
 using PaymentManagement.Application;
 using PaymentManagement.HttpApi;
 using PaymentManagement.EntityFrameworkCore;
+using ProtoBuf.Grpc.Server;
+using PaymentManagement.Application.Contracts.IServices;
+using PaymentManagement.Application.Contracts.PaymentManagement.IServices;
 
 namespace PaymentService.Host
 {
@@ -77,7 +80,7 @@ namespace PaymentService.Host
             {
                 options.UseSqlServer();
             });
-
+            context.Services.AddCodeFirstGrpc();
             //context.Services.AddStackExchangeRedisCache(options =>
             //{
             //    options.Configuration = configuration["Redis:Configuration"];
@@ -108,6 +111,10 @@ namespace PaymentService.Host
             //{
             //    app.UseMultiTenancy();
             //}
+            app.UseConfiguredEndpoints(endpoints =>
+            {
+                endpoints.MapGrpcService<IGrpcPaymentAppService>();
+            });
 
             app.UseAbpRequestLocalization(); //TODO: localization?
             app.UseSwagger();

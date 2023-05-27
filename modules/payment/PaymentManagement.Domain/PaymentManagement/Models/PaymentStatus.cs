@@ -6,6 +6,7 @@ namespace PaymentManagement.Domain.Models
     [Table("PaymentStatus", Schema = "dbo")]
     public class PaymentStatus : FullAuditedEntity<int>
     {
+        [Column(TypeName = "NVARCHAR(100)")]
         public string Title { get; set; }
         private ICollection<Payment> _payments;
         public virtual ICollection<Payment> Payments

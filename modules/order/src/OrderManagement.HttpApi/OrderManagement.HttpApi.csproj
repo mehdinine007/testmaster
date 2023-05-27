@@ -10,11 +10,12 @@
 
     <ItemGroup>
         <PackageReference Include="Volo.Abp.AspNetCore.Mvc" Version="7.2.1" />
-    </ItemGroup>
+	</ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\..\..\..\shared\Authorization\Authorization.csproj" />
       <ProjectReference Include="..\OrderManagement.Application.Contracts\OrderManagement.Application.Contracts.csproj" />
+      <ProjectReference Include="..\OrderManagement.Application\OrderManagement.Application.csproj" />
     </ItemGroup>
 
 </Project>

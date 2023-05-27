@@ -19,6 +19,7 @@
 		<PackageReference Include="StackExchange.Redis.Extensions.Newtonsoft" Version="9.1.0" />
 		<PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="7.0.1" />
 		<PackageReference Include="grpc.aspnetcore" Version="2.53.0" />
+		<PackageReference Include="protobuf-net.Grpc" Version="1.0.177" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -27,13 +28,11 @@
 	</ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\..\..\shared\Esale.Core\Esale.Core.csproj" />
       <ProjectReference Include="..\..\..\..\shared\Extensions\Extensions.csproj" />
+      <ProjectReference Include="..\..\..\payment\PaymentManagement.Application.Contracts\PaymentManagement.Application.Contracts.csproj" />
       <ProjectReference Include="..\OrderManagement.Application.Contracts\OrderManagement.Application.Contracts.csproj" />
       <ProjectReference Include="..\OrderManagement.Domain\OrderManagement.Domain.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="OrderManagement\Constants\" />
     </ItemGroup>
 
 </Project>

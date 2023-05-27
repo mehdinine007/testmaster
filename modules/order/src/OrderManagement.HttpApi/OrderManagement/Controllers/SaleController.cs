@@ -1,13 +1,16 @@
 ﻿using Esale.Share.Authorize;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Grpc.Net.Client;
 using Microsoft.AspNetCore.Mvc;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.Services;
+using ProtoBuf.Grpc.Client;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Auditing;
+using PaymentManagement.Application.Contracts.PaymentManagement.IServices;
 
 namespace OrderManagement.HttpApi;
 [DisableAuditing]
@@ -56,9 +59,5 @@ public class SaleController : Controller,ISaleService
     public async Task UserValidationByMobile(int saleId)
         => await _saleService.UserValidationByMobile(saleId);
 
-    [HttpGet]
-    public async Task<object> TestIPG()
-    {
-        return await _saleService.TestIPG();
-    }
+
 }

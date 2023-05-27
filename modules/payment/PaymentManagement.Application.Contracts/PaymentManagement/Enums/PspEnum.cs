@@ -1,14 +1,12 @@
-﻿namespace PaymentManagement.Application.Contracts.Enums
+﻿using System.ComponentModel;
+
+namespace PaymentManagement.Application.Contracts.Enums
 {
     public enum PspEnum : int
     {
-        /// <summary>
-        /// به پرداخت ملت
-        /// </summary>
+        [Description("به پرداخت ملت")]        
         BehPardakht = 1,
-        /// <summary>
-        /// ایران کیش
-        /// </summary>
+        [Description("ایران کیش")]
         IranKish = 2
     }
 }

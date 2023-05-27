@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using Volo.Abp.Domain.Entities.Auditing;
+using System.Diagnostics.CodeAnalysis;
 
 namespace PaymentManagement.Domain.Models
 {
@@ -13,11 +14,11 @@ namespace PaymentManagement.Domain.Models
         [Column(TypeName = "NVARCHAR(100)")]
         public string AccountName { get; set; }
         [Column(TypeName = "NVARCHAR(100)")]
-        public string Branch { get; set; }
+        public string? Branch { get; set; }
         [Column(TypeName = "NVARCHAR(100)")]
-        public string AccountNumber { get; set; }
+        public string? AccountNumber { get; set; }
         [Column(TypeName = "NVARCHAR(100)")]
-        public string IBAN { get; set; }
+        public string? IBAN { get; set; }
         public bool IsActive { get; set; }
         public virtual Customer Customer { get; set; }
         private ICollection<PspAccount> _pspAccounts;

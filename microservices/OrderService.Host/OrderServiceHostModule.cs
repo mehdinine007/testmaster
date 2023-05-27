@@ -24,7 +24,10 @@ using OrderService.Host.Infrastructures;
 using OrderManagement.Application.OrderManagement.Implementations;
 using Volo.Abp.Uow;
 using Microsoft.IdentityModel.Logging;
-using Volo.Abp.Uow;
+using Volo.Abp.BackgroundJobs.Hangfire;
+using Hangfire;
+using Microsoft.Extensions.Configuration;
+using Volo.Abp.Hangfire;
 using Volo.Abp.AspNetCore.ExceptionHandling;
 using Microsoft.Extensions.Configuration;
 
@@ -33,16 +36,17 @@ namespace OrderService.Host
     [DependsOn(
         typeof(AbpAutofacModule),
         typeof(AbpAspNetCoreMvcModule),
-        //typeof(AbpEventBusRabbitMqModule),
+        typeof(AbpEventBusRabbitMqModule),
         typeof(AbpEntityFrameworkCoreSqlServerModule),
         typeof(AbpAuditLoggingEntityFrameworkCoreModule),
         //typeof(AbpPermissionManagementEntityFrameworkCoreModule),
         //typeof(AbpSettingManagementEntityFrameworkCoreModule),
         typeof(OrderManagementApplicationModule),
         typeof(OrderManagementHttpApiModule),
-        typeof(OrderManagementEntityFrameworkCoreModule)
+        typeof(OrderManagementEntityFrameworkCoreModule),
         //typeof(AbpAspNetCoreMultiTenancyModule),
-        //typeof(AbpTenantManagementEntityFrameworkCoreModule)
+        typeof(AbpTenantManagementEntityFrameworkCoreModule),
+        typeof(AbpBackgroundJobsHangfireModule)
         )]
     public class OrderServiceHostModule : AbpModule
     {
@@ -94,11 +98,11 @@ namespace OrderService.Host
             {
                 options.IsEnabledForGetRequests = true;
             });
-            Configure<AbpExceptionHandlingOptions>(options =>
-            {
-                options.SendExceptionsDetailsToClients = true;
-                options.SendStackTraceToClients = true;
-            });
+            //Configure<AbpExceptionHandlingOptions>(options =>
+            //{
+            //    options.SendExceptionsDetailsToClients = true;
+            //    options.SendStackTraceToClients = true;
+            //});
             //Configure<AbpAuditingOptions>(options =>
             //{
             //    options.IsEnabled = false; //Disables the auditing system
@@ -118,12 +122,20 @@ namespace OrderService.Host
             {
                 x.Filters.Add(new EsaleResultFilter(service));
             });
-            //IdentityModelEventSource.ShowPII = true;
+            IdentityModelEventSource.ShowPII = true;
+            ConfigureHangfire(context, configuration);
 
             context.Services.AddGrpc();
             //var redis = ConnectionMultiplexer.Connect(configuration["Redis:Configuration"]);
             //context.Services.AddDataProtection()
             //    .PersistKeysToStackExchangeRedis(redis, "MsDemo-DataProtection-Keys");
+        }
+        private void ConfigureHangfire(ServiceConfigurationContext context, IConfiguration configuration)
+        {
+            context.Services.AddHangfire(config =>
+            {
+                config.UseSqlServerStorage(configuration.GetConnectionString("OrderHangfire"));
+            });
         }
 
         public override void OnApplicationInitialization(ApplicationInitializationContext context)
@@ -151,6 +163,11 @@ namespace OrderService.Host
             });
 
             app.UseAuditing();
+            app.UseHangfireDashboard();
+            app.UseHangfireDashboard("/hangfire", new DashboardOptions
+            {
+                AsyncAuthorization = new[] { new AbpHangfireAuthorizationFilter() }
+            });
             app.UseConfiguredEndpoints();
             //TODO: Problem on a clustered environment
             AsyncHelper.RunSync(async () =>

@@ -19,10 +19,10 @@ namespace PaymentManagement.EntityFrameworkCore.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("_Abp_DatabaseProvider", EfCoreDatabaseProvider.SqlServer)
-                .HasAnnotation("ProductVersion", "6.0.5")
+                .HasAnnotation("ProductVersion", "7.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
             modelBuilder.Entity("PaymentManagement.Domain.Models.Account", b =>
                 {
@@ -30,18 +30,16 @@ namespace PaymentManagement.EntityFrameworkCore.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("AccountName")
                         .IsRequired()
                         .HasColumnType("NVARCHAR(100)");
 
                     b.Property<string>("AccountNumber")
-                        .IsRequired()
                         .HasColumnType("NVARCHAR(100)");
 
                     b.Property<string>("Branch")
-                        .IsRequired()
                         .HasColumnType("NVARCHAR(100)");
 
                     b.Property<DateTime>("CreationTime")
@@ -64,7 +62,6 @@ namespace PaymentManagement.EntityFrameworkCore.Migrations
                         .HasColumnName("DeletionTime");
 
                     b.Property<string>("IBAN")
-                        .IsRequired()
                         .HasColumnType("NVARCHAR(100)");
 
                     b.Property<bool>("IsActive")
@@ -88,7 +85,7 @@ namespace PaymentManagement.EntityFrameworkCore.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("Account");
+                    b.ToTable("Account", "dbo");
                 });
 
             modelBuilder.Entity("PaymentManagement.Domain.Models.Customer", b =>
@@ -97,7 +94,7 @@ namespace PaymentManagement.EntityFrameworkCore.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("Code")
                         .HasColumnType("int");
@@ -141,7 +138,7 @@ namespace PaymentManagement.EntityFrameworkCore.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Customer");
+                    b.ToTable("Customer", "dbo");
                 });
 
             modelBuilder.Entity("PaymentManagement.Domain.Models.Payment", b =>
@@ -150,10 +147,11 @@ namespace PaymentManagement.EntityFrameworkCore.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(10)
+                        .HasColumnType("decimal(10,0)");
 
                     b.Property<string>("CallBackUrl")
                         .IsRequired()
@@ -175,9 +173,8 @@ namespace PaymentManagement.EntityFrameworkCore.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("DeletionTime");
 
-                    b.Property<string>("FilterParam")
-                        .IsRequired()
-                        .HasColumnType("VARCHAR(50)");
+                    b.Property<int>("FilterParam")
+                        .HasColumnType("int");
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
@@ -194,11 +191,9 @@ namespace PaymentManagement.EntityFrameworkCore.Migrations
                         .HasColumnName("LastModifierId");
 
                     b.Property<string>("Mobile")
-                        .IsRequired()
                         .HasColumnType("VARCHAR(20)");
 
                     b.Property<string>("NationalCode")
-                        .IsRequired()
                         .HasColumnType("VARCHAR(10)");
 
                     b.Property<int>("PaymentStatusId")
@@ -207,12 +202,16 @@ namespace PaymentManagement.EntityFrameworkCore.Migrations
                     b.Property<int>("PspAccountId")
                         .HasColumnType("int");
 
+                    b.Property<int>("RetryCount")
+                        .HasColumnType("int");
+
                     b.Property<string>("Token")
-                        .IsRequired()
                         .HasColumnType("VARCHAR(100)");
 
+                    b.Property<string>("TraceNo")
+                        .HasColumnType("VARCHAR(50)");
+
                     b.Property<string>("TransactionCode")
-                        .IsRequired()
                         .HasColumnType("VARCHAR(100)");
 
                     b.Property<DateTime>("TransactionDate")
@@ -228,7 +227,7 @@ namespace PaymentManagement.EntityFrameworkCore.Migrations
 
                     b.HasIndex("PspAccountId");
 
-                    b.ToTable("Payment");
+                    b.ToTable("Payment", "dbo");
                 });
 
             modelBuilder.Entity("PaymentManagement.Domain.Models.PaymentLog", b =>
@@ -237,7 +236,7 @@ namespace PaymentManagement.EntityFrameworkCore.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2")
@@ -274,7 +273,6 @@ namespace PaymentManagement.EntityFrameworkCore.Migrations
                         .HasColumnType("NVARCHAR(100)");
 
                     b.Property<string>("Parameter")
-                        .IsRequired()
                         .HasColumnType("NVARCHAR(MAX)");
 
                     b.Property<int>("PaymentId")
@@ -288,7 +286,7 @@ namespace PaymentManagement.EntityFrameworkCore.Migrations
 
                     b.HasIndex("PaymentId");
 
-                    b.ToTable("PaymentLog");
+                    b.ToTable("PaymentLog", "dbo");
                 });
 
             modelBuilder.Entity("PaymentManagement.Domain.Models.PaymentStatus", b =>
@@ -297,7 +295,7 @@ namespace PaymentManagement.EntityFrameworkCore.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2")
@@ -331,11 +329,11 @@ namespace PaymentManagement.EntityFrameworkCore.Migrations
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR(100)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("PaymentStatus");
+                    b.ToTable("PaymentStatus", "dbo");
                 });
 
             modelBuilder.Entity("PaymentManagement.Domain.Models.Psp", b =>
@@ -344,7 +342,7 @@ namespace PaymentManagement.EntityFrameworkCore.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2")
@@ -385,7 +383,7 @@ namespace PaymentManagement.EntityFrameworkCore.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Psp");
+                    b.ToTable("Psp", "dbo");
                 });
 
             modelBuilder.Entity("PaymentManagement.Domain.Models.PspAccount", b =>
@@ -394,7 +392,7 @@ namespace PaymentManagement.EntityFrameworkCore.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("AccountId")
                         .HasColumnType("int");
@@ -415,26 +413,6 @@ namespace PaymentManagement.EntityFrameworkCore.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("DeletionTime");
 
-                    b.Property<string>("IkcoPassword")
-                        .IsRequired()
-                        .HasColumnType("VARCHAR(50)");
-
-                    b.Property<string>("IkcoUserName")
-                        .IsRequired()
-                        .HasColumnType("VARCHAR(50)");
-
-                    b.Property<string>("IranKishAcceptorId")
-                        .IsRequired()
-                        .HasColumnType("VARCHAR(50)");
-
-                    b.Property<string>("IranKishPassPhrase")
-                        .IsRequired()
-                        .HasColumnType("VARCHAR(50)");
-
-                    b.Property<string>("IranKishTerminalId")
-                        .IsRequired()
-                        .HasColumnType("VARCHAR(50)");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -443,6 +421,10 @@ namespace PaymentManagement.EntityFrameworkCore.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(false)
                         .HasColumnName("IsDeleted");
+
+                    b.Property<string>("JsonProps")
+                        .IsRequired()
+                        .HasColumnType("VARCHAR(500)");
 
                     b.Property<DateTime?>("LastModificationTime")
                         .HasColumnType("datetime2")
@@ -453,43 +435,10 @@ namespace PaymentManagement.EntityFrameworkCore.Migrations
                         .HasColumnName("LastModifierId");
 
                     b.Property<string>("Logo")
-                        .IsRequired()
-                        .HasColumnType("VARCHAR(50)");
-
-                    b.Property<string>("MellatTerminalId")
-                        .IsRequired()
-                        .HasColumnType("VARCHAR(50)");
-
-                    b.Property<string>("MellatUserName")
-                        .IsRequired()
-                        .HasColumnType("VARCHAR(50)");
-
-                    b.Property<string>("MellatUserPassword")
-                        .IsRequired()
-                        .HasColumnType("VARCHAR(50)");
-
-                    b.Property<string>("ParsianPin")
-                        .IsRequired()
-                        .HasColumnType("VARCHAR(50)");
+                        .HasColumnType("VARCHAR(200)");
 
                     b.Property<int>("PspId")
                         .HasColumnType("int");
-
-                    b.Property<string>("SadadMerchantId")
-                        .IsRequired()
-                        .HasColumnType("VARCHAR(50)");
-
-                    b.Property<string>("SadadTerminalId")
-                        .IsRequired()
-                        .HasColumnType("VARCHAR(50)");
-
-                    b.Property<string>("SadadTerminalKey")
-                        .IsRequired()
-                        .HasColumnType("VARCHAR(50)");
-
-                    b.Property<string>("SamanMID")
-                        .IsRequired()
-                        .HasColumnType("VARCHAR(50)");
 
                     b.HasKey("Id");
 
@@ -497,7 +446,7 @@ namespace PaymentManagement.EntityFrameworkCore.Migrations
 
                     b.HasIndex("PspId");
 
-                    b.ToTable("PspAccount");
+                    b.ToTable("PspAccount", "dbo");
                 });
 
             modelBuilder.Entity("PaymentManagement.Domain.Models.Account", b =>

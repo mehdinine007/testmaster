@@ -16,7 +16,7 @@ namespace PaymentManagement.Domain.Models
         [Column(TypeName = "NVARCHAR(100)")]
         public string Message { get; set; }
         [Column(TypeName = "NVARCHAR(MAX)")]
-        public string Parameter { get; set; }
+        public string? Parameter { get; set; }
         public virtual Payment Payment { get; set; }
     }
 }
