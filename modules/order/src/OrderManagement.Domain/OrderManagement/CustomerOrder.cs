@@ -1,6 +1,5 @@
 ﻿using OrderManagement.Domain.Shared;
 using System;
-using System.Collections;
 using Volo.Abp.Domain.Entities.Auditing;
 
 namespace OrderManagement.Domain
@@ -21,5 +20,7 @@ namespace OrderManagement.Domain
         public string EngineNo { get; set; }
         public string ChassiNo { get; set; }
         public string Vehicle { get; set; }
+        public int? PspId { get; set; }
+        public int? AgencyId { get; set; }
     }
 }

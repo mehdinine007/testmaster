@@ -69,4 +69,9 @@ public class BaseController : IBaseInformationService
     [UserAuthorization]
     public async Task<UserDto> GrpcTest()
         => await _baseInformationService.GrpcTest();
+
+    [HttpGet]
+    [UserAuthorization]
+    public async Task<List<AgencyDto>> GetAgenciesByCityId(int cityId)
+        => await _baseInformationService.GetAgenciesByCityId(cityId);
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.Services;
 using OrderManagement.Domain;
@@ -29,7 +30,7 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
     private readonly IRepository<AdvocacyUser, int> _advocacyUsersRepository;
     //private readonly IPasswordHasher<User> _passwordHasher;
     private readonly IEsaleGrpcClient _esaleGrpcClient;
-
+    private readonly IRepository<Agency, int> _agencyRepository;
     private Microsoft.Extensions.Configuration.IConfiguration _configuration { get; set; }
     private IHttpContextAccessor _httpContextAccessor;
 
@@ -60,7 +61,8 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
                                   Microsoft.Extensions.Configuration.IConfiguration Configuration,
                                   IRepository<City, int> CityRepository,
                                   IRepository<AdvocacyUsersFromBank, int> AdvocacyUsersFromBankRepository,
-                                  IEsaleGrpcClient esaleGrpcClient
+                                  IEsaleGrpcClient esaleGrpcClient,
+                                  IRepository<Agency,int> agencyRepository
         )
     {
         _esaleGrpcClient = esaleGrpcClient;
@@ -294,5 +296,12 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
     {
        // var dd = await _esaleGrpcClient.GetUserAdvocacyByNationalCode(_commonAppService.GetNationalCode());
         return await _esaleGrpcClient.GetUserById(_commonAppService.GetUserId());
+    }
+
+    public async Task<List<AgencyDto>> GetAgenciesByCityId(int cityId)
+    {
+        var agencyQuery = await _agencyRepository.GetQueryableAsync();
+        var agencies = agencyQuery.Where(x => x.CityId == cityId).ToList();
+        return ObjectMapper.Map<List<Agency>, List<AgencyDto>>(agencies);
     }
 }

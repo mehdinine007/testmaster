@@ -19,5 +19,7 @@ namespace OrderManagement.Application.Contracts.Services
         void CheckWhiteList(WhiteListEnumType whiteListEnumType, string Nationalcode = "");
 
         Task<UserDto> GrpcTest();
+
+        Task<List<AgencyDto>> GetAgenciesByCityId(int cityId);
     }
 }
