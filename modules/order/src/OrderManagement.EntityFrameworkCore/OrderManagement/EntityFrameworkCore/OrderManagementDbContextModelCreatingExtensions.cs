@@ -297,16 +297,16 @@ public static class OrderManagementDbContextModelCreatingExtensions
                 .HasForeignKey(x => x.CityId);
         });
 
-        builder.Entity<Agency_SaleDetail_Map>(entity =>
+        builder.Entity<AgencySaleDetail>(entity =>
         {
-            entity.ToTable(nameof(Agency_SaleDetail_Map));
+            entity.ToTable(nameof(AgencySaleDetail));
 
             entity.HasOne<Agency>(x => x.Agency)
-                .WithMany(x => x.Agency_SaleDetail_Maps)
+                .WithMany(x => x.AgencySaleDetails)
                 .HasForeignKey(x => x.AgencyId);
 
             entity.HasOne<SaleDetail>(x => x.SaleDetail)
-                .WithMany(x => x.AgencySaleDetailMaps)
+                .WithMany(x => x.AgencySaleDetails)
                 .HasForeignKey(x => x.SaleDetailId);
         });
     }

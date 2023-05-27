@@ -69,6 +69,6 @@ namespace OrderManagement.EfCore
 
         DbSet<Agency> Agency { get; set; }
 
-        DbSet<Agency_SaleDetail_Map> AgencySaleDetailMap { get; set; }
+        DbSet<AgencySaleDetail> AgencySaleDetailMap { get; set; }
     }
 }

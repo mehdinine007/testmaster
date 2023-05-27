@@ -2,7 +2,7 @@
 
 namespace OrderManagement.Domain
 {
-    public class Agency_SaleDetail_Map : FullAuditedEntity<int>
+    public class AgencySaleDetail : FullAuditedEntity<int>
     {
         public int DistributionCapacity { get; set; }
 
