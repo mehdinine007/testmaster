@@ -1,4 +1,5 @@
-﻿using Esale.Core.Utility.Results;
+﻿using Esale.Core.CrossCuttingConcerns.Caching.Redis;
+using Esale.Core.Utility.Results;
 using Google.Protobuf;
 using Grpc.Net.Client;
 using Microsoft.AspNetCore.Mvc;
@@ -10,6 +11,7 @@ using PaymentManagement.Application.Contracts.IServices;
 using PaymentManagement.Application.Contracts.PaymentManagement.Dtos;
 using PaymentManagement.Application.Contracts.PaymentManagement.IServices;
 using ProtoBuf.Grpc.Client;
+using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,14 +25,13 @@ namespace OrderManagement.Application.OrderManagement
     public class CapacityControlAppService : ApplicationService, ICapacityControlAppService
     {
         private readonly IRepository<SaleDetail, int> _saleDetailRepository;
-        private readonly IDistributedCache _distributedCache;
         private IConfiguration _configuration { get; set; }
-
-        public CapacityControlAppService(IRepository<SaleDetail, int> saleDetailRepository, IConfiguration configuration, IDistributedCache distributedCache)
+        private readonly RedisCacheManager _redisCacheManager;  
+        public CapacityControlAppService(IRepository<SaleDetail, int> saleDetailRepository, IConfiguration configuration)
         {
             _saleDetailRepository = saleDetailRepository;
             _configuration = configuration;
-            _distributedCache = distributedCache;
+            _redisCacheManager = new RedisCacheManager("RedisCache:ConnectionString");
         }
         private List<SaleDetail> GetSaleDetails()
         {
@@ -50,7 +51,7 @@ namespace OrderManagement.Application.OrderManagement
                     string _key = string.Format(CapacityControlConstants.SaleDetailPrefix, row.UID.ToString());
                     try
                     {
-                        await _distributedCache.SetStringAsync(string.Format(CapacityControlConstants.CapacityControlPrefix, _key), row.SaleTypeCapacity.ToString());
+                        await _redisCacheManager.AddAsync<string>(string.Format(CapacityControlConstants.CapacityControlPrefix, _key), row.SaleTypeCapacity.ToString());
                     }
                     catch (Exception ex)
                     {
@@ -82,7 +83,7 @@ namespace OrderManagement.Application.OrderManagement
                             _value = productDtos.FirstOrDefault(x => x.Status == 0).Count;
                         }
                     }
-                    await _distributedCache.SetStringAsync(string.Format(CapacityControlConstants.CapacityControlPrefix, _key), _value.ToString());
+                    await _redisCacheManager.AddAsync<string>(string.Format(CapacityControlConstants.CapacityControlPrefix, _key), _value.ToString());
                 }
             }
             return new SuccsessResult();

@@ -13,6 +13,7 @@ using OrderService.Host.Infrastructures.Extensions;
 using OrderService.Host.Infrastructures.Hangfire;
 using OrderService.Host.Infrastructures.Hangfire.Abstract;
 using OrderService.Host.Infrastructures.Hangfire.Concrete;
+using Esale.Core.IOC;
 
 namespace OrderService.Host
 {
@@ -35,6 +36,7 @@ namespace OrderService.Host
                 services.AddScoped<IAuditingStore, AuditingStoreDb>();
             }
             services.AddSingleton<ICapacityControlJob, CapacityControlJob>();
+            ServiceTool.Create(services);
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
