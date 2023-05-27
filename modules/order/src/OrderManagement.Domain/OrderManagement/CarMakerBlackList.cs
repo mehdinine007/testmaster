@@ -26,10 +26,18 @@ namespace OrderManagement.Domain
     [Table("City", Schema = "aucbase")]
     public class City : Entity<int>
     {
+        public ICollection<Agency> _agencies;
+
         [Column(TypeName = "NVARCHAR(100)")]
         public string Name { get; set; }
 
         public int ProvinceId { get; set; }
         public virtual Province Province { get; set; }
+
+        public virtual ICollection<Agency> Agencies
+        {
+            get => _agencies ?? (_agencies = new List<Agency>());
+            protected set => _agencies = value;
+        }
     }
 }
