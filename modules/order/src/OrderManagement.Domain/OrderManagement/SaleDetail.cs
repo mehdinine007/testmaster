@@ -8,6 +8,8 @@ namespace OrderManagement.Domain
     {
         private  ICollection<CustomerOrder> _customerOrders;
 
+        private ICollection<Agency_SaleDetail_Map> _agencySaleDetailMaps;
+
         public Guid UID { get; set; }
 
         public int CircularSaleCode { get; set; } // شماره بخشنامه فروش
@@ -49,6 +51,12 @@ namespace OrderManagement.Domain
         {
             get => _customerOrders ?? (_customerOrders = new List<CustomerOrder>());
             protected set => _customerOrders = value;
+        }
+
+        public virtual ICollection<Agency_SaleDetail_Map> AgencySaleDetailMaps
+        {
+            get => _agencySaleDetailMaps ?? (_agencySaleDetailMaps = new List<Agency_SaleDetail_Map>()) ;
+            protected set => _agencySaleDetailMaps = value;
         }
     }
 }

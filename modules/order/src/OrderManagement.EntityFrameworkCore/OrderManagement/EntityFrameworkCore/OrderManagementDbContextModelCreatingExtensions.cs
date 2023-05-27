@@ -287,5 +287,27 @@ public static class OrderManagementDbContextModelCreatingExtensions
         {
             entity.ToTable(nameof(WhiteList));
         });
+
+        builder.Entity<Agency>(entity =>
+        {
+            entity.ToTable(nameof(Agency));
+
+            entity.HasOne<City>(x => x.City)
+                .WithMany(x => x.Agencies)
+                .HasForeignKey(x => x.CityId);
+        });
+
+        builder.Entity<Agency_SaleDetail_Map>(entity =>
+        {
+            entity.ToTable(nameof(Agency_SaleDetail_Map));
+
+            entity.HasOne<Agency>(x => x.Agency)
+                .WithMany(x => x.Agency_SaleDetail_Maps)
+                .HasForeignKey(x => x.AgencyId);
+
+            entity.HasOne<SaleDetail>(x => x.SaleDetail)
+                .WithMany(x => x.AgencySaleDetailMaps)
+                .HasForeignKey(x => x.SaleDetailId);
+        });
     }
 }

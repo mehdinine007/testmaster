@@ -66,5 +66,9 @@ namespace OrderManagement.EfCore
         DbSet<OrderStatusTypeReadOnly> OrderStatusTypeReadOnly { get; set; }
 
         DbSet<SaleSchema> SaleSchema { get; set; }
+
+        DbSet<Agency> Agency { get; set; }
+
+        DbSet<Agency_SaleDetail_Map> AgencySaleDetailMap { get; set; }
     }
 }
