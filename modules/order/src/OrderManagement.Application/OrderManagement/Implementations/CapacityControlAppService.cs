@@ -26,10 +26,10 @@ namespace OrderManagement.Application.OrderManagement
     public class CapacityControlAppService : ApplicationService, ICapacityControlAppService
     {
         private readonly IRepository<SaleDetail, int> _saleDetailRepository;
-        private readonly IRepository<Agency_SaleDetail_Map, int> _agencySaleDetail;
+        private readonly IRepository<AgencySaleDetail, int> _agencySaleDetail;
         private IConfiguration _configuration { get; set; }
         private readonly RedisCacheManager _redisCacheManager;
-        public CapacityControlAppService(IRepository<SaleDetail, int> saleDetailRepository, IConfiguration configuration, IRepository<Agency_SaleDetail_Map, int> agencySaleDetail)
+        public CapacityControlAppService(IRepository<SaleDetail, int> saleDetailRepository, IConfiguration configuration, IRepository<AgencySaleDetail, int> agencySaleDetail)
         {
             _saleDetailRepository = saleDetailRepository;
             _configuration = configuration;
@@ -44,7 +44,7 @@ namespace OrderManagement.Application.OrderManagement
                 .Where(x => x.SalePlanStartDate <= currentTime && currentTime <= x.SalePlanEndDate && x.Visible)
                 .ToList();
         }
-        private List<Agency_SaleDetail_Map> GetAgancySaleDetails(int saleDetailId)
+        private List<AgencySaleDetail> GetAgancySaleDetails(int saleDetailId)
         {
             return _agencySaleDetail
                 .WithDetails()
