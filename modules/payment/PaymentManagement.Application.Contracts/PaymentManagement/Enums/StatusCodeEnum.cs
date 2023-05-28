@@ -8,9 +8,11 @@ namespace PaymentManagement.Application.Contracts.Enums
         Success = 0,
         [Description("ناموفق")]
         Failed = 1,
-        [Description("پرداخت موفق")]
-        PaymentSuccess = 2,
-        [Description("پرداخت ناموفق")]
-        PaymentFailed = 3,
+        [Description("نامشخص")]
+        Unknown = 2
+
+        //todo:نیاز به ارسال این وضعیت مجددا چک شود
+        //[Description("پرداخت موفق")]
+        //PaymentSuccess = 2,
     }
 }

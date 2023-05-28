@@ -22,9 +22,9 @@ namespace PaymentManagement
         }
 
         [HttpGet]
-        public async Task<List<PspAccountDto>> GetPsps()
+        public List<PspAccountDto> GetPsps()
         {
-            return await _paymentAppService.GetPsps();
+            return _paymentAppService.GetPsps();
         }
 
         [HttpPost]
@@ -46,12 +46,39 @@ namespace PaymentManagement
 
             var pspJsonResult = JsonConvert.SerializeObject(keyValueList);
 
-            var result = await _paymentAppService.BackFromIranKishAsync(pspJsonResult);            
+            var result = await _paymentAppService.BackFromIranKishAsync(pspJsonResult);
             NavigateToPsp dp = new()
             {
                 FormName = "form1",
                 Method = "post",
-                Url = await _paymentAppService.GetCallBackUrlAsync(result.PaymentId)
+                Url = _paymentAppService.GetCallBackUrl(result.PaymentId)
+            };
+
+            dp.AddKey("data", JsonConvert.SerializeObject(result));
+            dp.Post(HttpContext);
+
+            return null;
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> BackFromMellatAsync()
+        {
+            var keyValueList = new Dictionary<string, string>();
+
+            foreach (string key in HttpContext.Request.Form.Keys)
+            {
+                keyValueList.Add(key, HttpContext.Request.Form[key]);
+            }
+            keyValueList.Add("OriginUrl", HttpContext.Request.Headers.Origin);
+
+            var pspJsonResult = JsonConvert.SerializeObject(keyValueList);
+
+            var result = await _paymentAppService.BackFromMellatAsync(pspJsonResult);
+            NavigateToPsp dp = new()
+            {
+                FormName = "form1",
+                Method = "post",
+                Url = _paymentAppService.GetCallBackUrl(result.PaymentId)
             };
 
             dp.AddKey("data", JsonConvert.SerializeObject(result));
@@ -79,9 +106,9 @@ namespace PaymentManagement
         }
 
         [HttpGet]
-        public async Task<List<InquiryWithFilterParamDto>> InquiryWithFilterParamAsync(int filterParam)
+        public List<InquiryWithFilterParamDto> InquiryWithFilterParam(int? filterParam1, int? filterParam2, int? filterParam3, int? filterParam4)
         {
-            return await _paymentAppService.InquiryWithFilterParamAsync(filterParam);
+            return _paymentAppService.InquiryWithFilterParam(filterParam1, filterParam2, filterParam3, filterParam4);
         }
 
         [HttpPost]
@@ -99,7 +126,7 @@ namespace PaymentManagement
         }
 
         [HttpPost]
-        public async Task<ActionResult> RedirctToPsp(string token)
+        public async Task<ActionResult> RedirctToIranKish(string token)
         {
             NavigateToPsp dp = new()
             {
@@ -108,6 +135,26 @@ namespace PaymentManagement
             };
             dp.Url = "https://ikc.shaparak.ir/iuiv3/IPG/Index";
             dp.AddKey("tokenIdentity", token);
+            dp.Post(HttpContext);
+
+            return null;
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> RedirctToMellat(string refId, string nationalCode, string mobile)
+        {
+            NavigateToPsp dp = new()
+            {
+                FormName = "form1",
+                Method = "post"
+            };
+            dp.Url = "https://bpm.shaparak.ir/pgwchannel/startpay.mellat";
+            dp.AddKey("RefId", refId);
+            if (!string.IsNullOrEmpty(nationalCode))
+                dp.AddKey("Enc", nationalCode);
+            if (!string.IsNullOrEmpty(mobile))
+                dp.AddKey("MobileNo", mobile);
+
             dp.Post(HttpContext);
 
             return null;
