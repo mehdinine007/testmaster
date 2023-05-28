@@ -19,9 +19,9 @@ namespace PaymentManagement.Application.PaymentManagement.Services
             _paymentAppService = paymentAppService;
         }
 
-        public async Task<List<InquiryWithFilterParamDto>> GetPaymentStatusList(PaymentStatusDto paymentStatusDto)
+        public List<InquiryWithFilterParamDto> GetPaymentStatusList(PaymentStatusDto paymentStatusDto)
         {
-            return await _paymentAppService.InquiryWithFilterParamAsync(paymentStatusDto.RelationId);
+            return _paymentAppService.InquiryWithFilterParam(paymentStatusDto.RelationId, paymentStatusDto.RelationIdB, paymentStatusDto.RelationIdC, paymentStatusDto.RelationIdD);
         }
     }
 }

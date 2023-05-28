@@ -59,7 +59,7 @@ public class IpgServiceProvider : ApplicationService, IIpgServiceProvider
         RestRequest request = new(VerifyPath,Method.Post);
         request.AddQueryParameter("paymentId", paymentId.ToString());
         var serviceResponse = await client.ExecuteAsync<PspInteractionResult>(request);
-        if (serviceResponse.IsSuccessful && serviceResponse.IsSuccessStatusCode && serviceResponse.Data.StatusCode == 0)
+        if (serviceResponse.IsSuccessful && serviceResponse.IsSuccessStatusCode && serviceResponse.Data.StatusCode == "0")
             return serviceResponse.Data;
 
         //TODO: Add log for failure reason

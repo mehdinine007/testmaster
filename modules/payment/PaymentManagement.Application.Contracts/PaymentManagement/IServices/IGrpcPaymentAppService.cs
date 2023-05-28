@@ -11,7 +11,7 @@ namespace PaymentManagement.Application.Contracts.PaymentManagement.IServices
     [ServiceContract]
     public interface IGrpcPaymentAppService
     {
-        Task<List<InquiryWithFilterParamDto>> GetPaymentStatusList(PaymentStatusDto paymentStatusDto);
+        List<InquiryWithFilterParamDto> GetPaymentStatusList(PaymentStatusDto paymentStatusDto);
 
     }
 }
