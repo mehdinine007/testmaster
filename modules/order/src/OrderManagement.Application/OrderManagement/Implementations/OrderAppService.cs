@@ -26,6 +26,7 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Authorization;
 using Volo.Abp.Domain.Entities;
 using Microsoft.Extensions.Caching.Memory;
+using System.Security.Cryptography;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -48,6 +49,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
     private readonly IUnitOfWorkManager _unitOfWorkManager;
     private readonly IRepository<ESaleType, int> _esaleTypeRepository;
     private readonly IMemoryCache _memoryCache;
+    private readonly IIpgServiceProvider _ipgServiceProvider;
 
     public OrderAppService(ICommonAppService commonAppService,
                            IBaseInformationService baseInformationAppService,
@@ -56,11 +58,10 @@ public class OrderAppService : ApplicationService, IOrderAppService
                            IRepository<UserRejectionAdvocacy, int> userRejectionAdcocacyRepository,
                            IRepository<AdvocacyUser, int> advocacyUsers,
                            IRepository<CustomerOrder, int> commitOrderRepository,
-
+                           IIpgServiceProvider ipgServiceProvider,
                            IRepository<Logs, long> logsRepository,
                            IRepository<OrderStatusTypeReadOnly, int> orderStatusTypeReadOnlyRepository,
-                           IRepository<OrderRejectionTypeReadOnly, int> orderRejectionTypeReadOnlyRepository
-        ,
+                           IRepository<OrderRejectionTypeReadOnly, int> orderRejectionTypeReadOnlyRepository,
                            IEsaleGrpcClient esaleGrpcClient,
                            IConfiguration configuration,
                            IDistributedCache distributedCache,
@@ -77,11 +78,10 @@ public class OrderAppService : ApplicationService, IOrderAppService
         _userRejectionAdcocacyRepository = userRejectionAdcocacyRepository;
         _advocacyUsers = advocacyUsers;
         _commitOrderRepository = commitOrderRepository;
-
+        _ipgServiceProvider = ipgServiceProvider;
         _logsRepository = logsRepository;
         _orderStatusTypeReadOnlyRepository = orderStatusTypeReadOnlyRepository;
         _orderRejectionTypeReadOnlyRepository = orderRejectionTypeReadOnlyRepository;
-
         _esaleGrpcClient = esaleGrpcClient;
         _distributedCache = distributedCache;
         _configuration = configuration;
@@ -266,7 +266,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         RustySalePlanValidation(commitOrderDto, SaleDetailDto.EsaleTypeId);
         await _commonAppService.IsUserRejected(); //if user reject from advocacy
                                                   //_baseInformationAppService.CheckBlackList(SaleDetailDto.EsaleTypeId); //if user not exsist in blacklist
-        await CheckAdvocacy(nationalCode,SaleDetailDto.ESaleTypeId); //if hesab vekalati darad
+        await CheckAdvocacy(nationalCode, SaleDetailDto.ESaleTypeId); //if hesab vekalati darad
         Console.WriteLine("beforewhitelist");
         _baseInformationAppService.CheckWhiteList(WhiteListEnumType.WhiteListOrder);
         Console.WriteLine("afterwhitelist");
@@ -302,7 +302,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     y => y.UserId == userId &&
                  y.OrderStatus == OrderStatusType.RecentlyAdded
              );
-          
+
             if (activeSuccessfulOrderExists != null)
             {
                 if (SaleDetailDto.ESaleTypeId != activeSuccessfulOrderExists.ESaleTypeId)
@@ -381,7 +381,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             //    commitOrderDto.PriorityId.ToString() + "_" +
             //    SaleDetailDto.SaleId.ToString()
             //    , out objectCommitOrderIran);
-          
+
             objectCommitOrderIran = await _distributedCache.GetStringAsync(userId.ToString() + "_" +
                 commitOrderDto.PriorityId.ToString() + "_" +
                 SaleDetailDto.SaleId.ToString());
@@ -392,7 +392,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             }
             else
             {
-              
+
                 CustomerOrder customerOrderIranFromDb =
                 orderQuery
                 .AsNoTracking()
@@ -409,7 +409,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                    y.OrderStatus == OrderStatusType.RecentlyAdded
                    && y.SaleId == SaleDetailDto.SaleId
                    && y.PriorityId == (PriorityEnum)commitOrderDto.PriorityId);
-             
+
 
                 if (customerOrderIranFromDb != null)
                 {
@@ -452,7 +452,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             if (objectCustomerOrderFromCache == null)
             {
 
-                
+
 
                 var CustomerOrderFromDb = orderQuery
                      .AsNoTracking()
@@ -936,5 +936,47 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         //    }).ToListAsync();
         //return result;
+    }
+
+    public async Task<HandShakeResultDto> PrepareOrderForPayment(int customerOrderId, int pspAccountId)
+    {
+        //TODO: add condition to check online payment is available or not
+        var nationalCode = _commonAppService.GetNationalCode();
+        var userId = _commonAppService.GetUserId();
+        var customerOrderQuery = await _commitOrderRepository.GetQueryableAsync();
+        var customerOrder = customerOrderQuery.Include(x => x.SaleDetail)
+            .Select(x => new
+            {
+                x.UserId,
+                x.Id,
+                SaleDetailId = x.SaleDetail.Id,
+                //TODO: make sure the amount of car is right
+                Amount = x.SaleDetail.CarFee
+            }).FirstOrDefault(x => x.Id == customerOrderId)
+        ?? throw new EntityNotFoundException(typeof(CustomerOrder));
+
+        var customer = await _esaleGrpcClient.GetUserById(customerOrder.UserId);
+        if (!customer.NationalCode.Equals(nationalCode))
+            throw new UserFriendlyException("شما نمیتوانید سفارش شخص دیگری را پرداخت کنید");
+
+
+
+        var handShakeResponse = await _ipgServiceProvider.HandShakeWithPsp(new PspHandShakeRequest()
+        {
+            CallBackUrl = "", //TODO: implement call back url and add it here
+            Amount = (long)customerOrder.Amount,
+            Mobile = customer.MobileNumber,
+            NationalCode = nationalCode,
+            PspAccountId = pspAccountId,
+            FilterParam = customerOrder.Id
+        });
+        var cacheKey = string.Format(RedisConstants.UserTransactionKey, nationalCode, customerOrder.Id);
+        var userTransactionToken = await _distributedCache.GetStringAsync(cacheKey);
+        if(userTransactionToken != null)
+        {
+            await _distributedCache.RemoveAsync(cacheKey);
+        }
+        await _distributedCache.SetStringAsync(cacheKey, handShakeResponse.Token);
+        return ObjectMapper.Map<HandShakeResponseDto,HandShakeResultDto>(handShakeResponse);
     }
 }

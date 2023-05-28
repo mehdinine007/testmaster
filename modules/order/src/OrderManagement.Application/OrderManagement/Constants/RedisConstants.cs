@@ -18,4 +18,5 @@ public static class RedisConstants
 
     public const string CommitOrderIran = "n:CommitOrderIran";
 
+    public const string UserTransactionKey = "traansaction,n:{0},co:{1}";
 }

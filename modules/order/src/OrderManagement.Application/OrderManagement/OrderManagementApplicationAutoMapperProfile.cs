@@ -58,6 +58,7 @@ namespace OrderManagement
                 .IgnoreFullAuditedObjectProperties();
             CreateMap<SaleDetail, SaleDetailOrderDto>();
             CreateMap<Agency,AgencyDto>();
+            CreateMap<HandShakeResponseDto, HandShakeResultDto>();
         }
     }
 }

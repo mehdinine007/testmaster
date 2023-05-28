@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Volo.Abp;
 using Esale.Share.Authorize;
-using Microsoft.AspNetCore.Authorization;
 using Volo.Abp.Auditing;
 
 namespace OrderManagement.HttpApi;
@@ -34,7 +33,7 @@ public class OrderManagementController
 
     [HttpPost]
     [UserAuthorization]
-    public async Task<bool> CommitOrder(CommitOrderDto commitOrderDto)
+    public async Task<bool> CommitOrder([FromBody]CommitOrderDto commitOrderDto)
     {
         await _orderAppService.CommitOrder(commitOrderDto);
         return true;
@@ -67,4 +66,8 @@ public class OrderManagementController
     [UserAuthorization]
     public async Task<bool> UserRejectionStatus()
         => await _orderAppService.UserRejectionStatus();
+    [HttpPost]
+    [UserAuthorization]
+    public async Task<HandShakeResultDto> PrepareOrderForPayment(int customerOrder, int pspAccountId)
+        => await _orderAppService.PrepareOrderForPayment(customerOrder, pspAccountId);
 }
