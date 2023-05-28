@@ -30,7 +30,10 @@ namespace PaymentManagement.Domain.Models
         [Required]
         [Column(TypeName = "VARCHAR(200)")]
         public string CallBackUrl { get; set; }
-        public int FilterParam { get; set; }
+        public int? FilterParam1 { get; set; }
+        public int? FilterParam2 { get; set; }
+        public int? FilterParam3 { get; set; }
+        public int? FilterParam4 { get; set; }
         public int RetryCount { get; set; }
         public virtual PspAccount PspAccount { get; set; }       
         public virtual PaymentStatus PaymentStatus { get; set; }

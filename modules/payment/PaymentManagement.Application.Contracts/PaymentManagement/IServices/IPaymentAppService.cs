@@ -6,15 +6,16 @@ namespace PaymentManagement.Application.Contracts.IServices
 {
     public interface IPaymentAppService : IApplicationService
     {
-        Task<List<PspAccountDto>> GetPsps();
+        List<PspAccountDto> GetPsps();
         Task<HandShakeOutputDto> HandShakeAsync(HandShakeInputDto input);
         Task<BackFromPspOutputDto> BackFromIranKishAsync(string pspJsonResult);
-        Task<string> GetCallBackUrlAsync(int paymentId);
+        Task<BackFromPspOutputDto> BackFromMellatAsync(string pspJsonResult);
+        string GetCallBackUrl(int paymentId);
         Task<VerifyOutputDto> VerifyAsync(int paymentId);
         Task<InquiryOutputDto> InquiryAsync(int paymentId);
         Task<ReverseOutputDto> ReverseAsync(int paymentId);
         //todo: Task<SettleOutputDto> SettleAsync(int paymentId);
-        Task<List<InquiryWithFilterParamDto>> InquiryWithFilterParamAsync(int filterParam);
+        List<InquiryWithFilterParamDto> InquiryWithFilterParam(int? filterParam1, int? filterParam2, int? filterParam3, int? filterParam4);
         Task RetryForVerify();
     }
 }

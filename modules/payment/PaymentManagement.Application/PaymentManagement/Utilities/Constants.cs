@@ -9,9 +9,7 @@
         public const string HandShakeSuccess = "هند شیک با موفقیت انجام شد";
         public const string ErrorInBackFromPsp = "خطا در برگشت از درگاه";
         public const string ErrorInBackFromPspUrl = "خطا در آدرس درگاه در زمان برگشت از درگاه";
-        public const string PaymentSuccessDontSendVerify = "وضعیت پرداخت موفق می باشد، لطفا درخواست تایید پرداخت ارسال نشود";
-        public const string PaymentFailedDontSendVerify = "وضعیت پرداخت ناموفق می باشد، لطفا درخواست تایید پرداخت ارسال نشود";
-        public const string ErrorInBackFromPspResponseCode = "ارسال کد خطا توسط درگاه";
+        public const string ErrorInBackFromPspResponseCode = "دریافت کد خطا در برگشت از درگاه";
         public const string BackFromPspSuccess = "برگشت از درگاه با موفقیت انجام شد، لطفا در صورت تمایل درخواست تایید پرداخت را ارسال کنید";
         public const string VerifySuccess = "پرداخت با موفقیت انجام شد";
         public const string VerifyFailed = "پرداخت ناموفق می باشد";
@@ -24,7 +22,8 @@
         public const string ErrorInReverse = "خطا در ارسال درخواست برگشت وجه";
 
         #region PaymentLog
-        public const string HandShakeStart = "HandShakeStart";
+        public const string HandShakeWithPaymentStart = "HandShakeWithPaymentStart";
+        public const string HandShakeWithPspStart = "HandShakeWithPspStart";
         public const string HandShakeResult = "HandShakeResult";
         public const string HandShakeException = "HandShakeException";
         public const string RedirectToPsp = "RedirectToPsp";
@@ -45,14 +44,17 @@
         public const string ReverseException = "ReverseException";
         public const string ReverseResult = "ReverseResult";
         #endregion
+
         #region PspUrl
-        public const string IranKishHandShakeUrl = "https://ikc.shaparak.ir/api/v3/tokenization/make";
         public const string IranKishGetTokenUrl = "https://ikc.shaparak.ir/api/v3/tokenization/make";
         public const string IranKishRedirectUrl = "https://ikc.shaparak.ir/iuiv3/IPG/Index?tokenIdentity=";
         public const string IranKishOriginUrl = "https://ikc.shaparak.ir";
         public const string IranKishVerifyUrl = "https://ikc.shaparak.ir/api/v3/confirmation/purchase";
-        public const string IranKishInquiryUrl =  "https://ikc.shaparak.ir/api/v3/inquiry/single";
+        public const string IranKishInquiryUrl = "https://ikc.shaparak.ir/api/v3/inquiry/single";
         public const string IranKishReverseUrl = "https://ikc.shaparak.ir/api/v3/confirmation/reversePurchase";
+
+        public const string MellatRedirectUrl = "https://bpm.shaparak.ir/pgwchannel/startpay.mellat?RefId=";
+        public const string MellatOriginUrl = "https://bpm.shaparak.ir";
         #endregion
     }
 }

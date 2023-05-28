@@ -173,7 +173,16 @@ namespace PaymentManagement.EntityFrameworkCore.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("DeletionTime");
 
-                    b.Property<int>("FilterParam")
+                    b.Property<int?>("FilterParam1")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("FilterParam2")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("FilterParam3")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("FilterParam4")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsDeleted")
