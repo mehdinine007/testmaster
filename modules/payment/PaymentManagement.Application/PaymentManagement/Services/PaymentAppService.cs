@@ -50,23 +50,16 @@ namespace PaymentManagement.Application.Servicess
         public List<PspAccountDto> GetPsps()
         {
             return _pspAccountRepository.WithDetails().AsNoTracking()
-                .Include(o => o.Psp)
-                .Include(o => o.Account)
-                .Where(o => o.IsActive && o.Account.IsActive)
+                .Include(o => o.Psp).Include(o => o.Account)
+                .Where(o => o.IsActive && o.Account.IsActive && o.Psp.IsActive)
                 .Select(o => new PspAccountDto { Id = o.Id, AccountName = o.Account.AccountName, Psp = o.Psp.Title, Logo = o.Logo })
                 .ToList();
         }
         public List<InquiryWithFilterParamDto> InquiryWithFilterParam(int? filterParam1, int? filterParam2, int? filterParam3, int? filterParam4)
         {
-            List<int> pspAcccountIds = _pspAccountRepository.WithDetails().AsNoTracking()
-                .Include(o => o.Account)
-                .Where(o => o.IsActive && o.Account.IsActive)
-                .Select(o => o.Id).ToList();
-
             return _paymentRepository.WithDetails().AsNoTracking()
-                .Where(o => pspAcccountIds.Contains(o.PspAccountId) &&
-                 (filterParam1 == null || o.FilterParam1 == filterParam1) && (filterParam2 == null || o.FilterParam2 == filterParam2) &&
-                 (filterParam3 == null || o.FilterParam3 == filterParam3) && (filterParam4 == null || o.FilterParam4 == filterParam4))
+                .Where(o => (filterParam1 == null || o.FilterParam1 == filterParam1) && (filterParam2 == null || o.FilterParam2 == filterParam2) &&
+                            (filterParam3 == null || o.FilterParam3 == filterParam3) && (filterParam4 == null || o.FilterParam4 == filterParam4))
                 .GroupBy(o => o.PaymentStatusId).Select(o => new InquiryWithFilterParamDto
                 {
                     Status = o.Key,
@@ -1167,9 +1160,7 @@ namespace PaymentManagement.Application.Servicess
             var retryCount = _config.GetValue<int>("App:RetryCount");
             var payments = await (await _paymentRepository.GetQueryableAsync()).AsNoTracking()
                 .Include(o => o.PspAccount)
-                //.Where(o => o.PaymentStatusId == (int)PaymentStatusEnum.InProgress && o.TransactionDate < deadLine && o.RetryCount < retryCount)
-                .Where(o => o.PaymentStatusId == (int)PaymentStatusEnum.InProgress && o.RetryCount < retryCount)
-
+                .Where(o => o.PaymentStatusId == (int)PaymentStatusEnum.InProgress && o.TransactionDate < deadLine && o.RetryCount < retryCount)
                 .Take(100).ToListAsync();
 
             foreach (var payment in payments)

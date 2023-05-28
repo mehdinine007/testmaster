@@ -2,10 +2,12 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using Volo.Abp.Domain.Entities.Auditing;
+using Microsoft.EntityFrameworkCore;
 
 namespace PaymentManagement.Domain.Models
 {
     [Table("Psp", Schema = "dbo")]
+    [Index(nameof(IsActive))]
     public class Psp : FullAuditedEntity<int>
     {
         [Required]
