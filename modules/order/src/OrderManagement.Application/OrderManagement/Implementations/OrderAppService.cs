@@ -1,5 +1,4 @@
 ﻿using System.Text.RegularExpressions;
-using System.Text;
 using OrderManagement.Domain.Bases;
 using OrderManagement.Domain;
 using Volo.Abp.Domain.Repositories;
@@ -22,11 +21,8 @@ using System.Data;
 using OrderManagement.Domain.Shared;
 using OrderManagement.Application.OrderManagement.Constants;
 using Newtonsoft.Json;
-using System.Diagnostics;
-using Microsoft.AspNetCore.Authorization;
 using Volo.Abp.Domain.Entities;
 using Microsoft.Extensions.Caching.Memory;
-using System.Security.Cryptography;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -451,9 +447,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
             }
             if (objectCustomerOrderFromCache == null)
             {
-
-
-
                 var CustomerOrderFromDb = orderQuery
                      .AsNoTracking()
                     .Select(x => new CustomerOrder
@@ -500,17 +493,31 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
 
         CustomerOrder customerOrder = new CustomerOrder();
-        customerOrder.SaleDetailId = (int)SaleDetailDto.Id;
-        customerOrder.UserId = (int)userId;
-        customerOrder.PriorityId = (PriorityEnum)commitOrderDto.PriorityId;
-        customerOrder.Vin = commitOrderDto.Vin;
-        customerOrder.ChassiNo = commitOrderDto.ChassiNo;
-        customerOrder.EngineNo = commitOrderDto.EngineNo;
-        customerOrder.Vehicle = commitOrderDto.Vehicle;
-        customerOrder.OrderStatus = OrderStatusType.RecentlyAdded;
-        customerOrder.SaleId = SaleDetailDto.SaleId;
-        await _commitOrderRepository.InsertAsync(customerOrder);
-        await CurrentUnitOfWork.SaveChangesAsync();
+        var paymentMethodGranted = _configuration.GetValue<bool?>("PaymentMethodGranted") ?? false;
+        var customerOrderQuery = await _commitOrderRepository.GetQueryableAsync();
+        var similarOrder = customerOrderQuery.AsNoTracking()
+            .FirstOrDefault(x => x.OrderStatus == OrderStatusType.PaymentNotVerified
+            && x.UserId == userId
+            && x.SaleDetailId == SaleDetailDto.Id);
+        if (paymentMethodGranted && similarOrder != null)
+        {
+            customerOrder = similarOrder;
+        }
+        else
+        {
+            customerOrder.SaleDetailId = SaleDetailDto.Id;
+            customerOrder.UserId = (int)userId;
+            customerOrder.PriorityId = (PriorityEnum)commitOrderDto.PriorityId;
+            customerOrder.Vin = commitOrderDto.Vin;
+            customerOrder.ChassiNo = commitOrderDto.ChassiNo;
+            customerOrder.EngineNo = commitOrderDto.EngineNo;
+            customerOrder.Vehicle = commitOrderDto.Vehicle;
+            customerOrder.OrderStatus = OrderStatusType.RecentlyAdded;
+            customerOrder.SaleId = SaleDetailDto.SaleId;
+            customerOrder.AgencyId = commitOrderDto.AgencyId;
+            await _commitOrderRepository.InsertAsync(customerOrder);
+            await CurrentUnitOfWork.SaveChangesAsync();
+        }
         Console.WriteLine("afterasli");
 
         //unitOfWork.Complete();
@@ -940,7 +947,10 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
     public async Task<HandShakeResultDto> PrepareOrderForPayment(int customerOrderId, int pspAccountId)
     {
-        //TODO: add condition to check online payment is available or not
+        var paymentMethodGranted = _configuration.GetValue<bool?>("PaymentMethodGranted") ?? false;
+        if (!paymentMethodGranted)
+            throw new UserFriendlyException("پرداخت مستقیم پشتیبانی نمیشود");
+
         var nationalCode = _commonAppService.GetNationalCode();
         var userId = _commonAppService.GetUserId();
         var customerOrderQuery = await _commitOrderRepository.GetQueryableAsync();
@@ -959,8 +969,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
         if (!customer.NationalCode.Equals(nationalCode))
             throw new UserFriendlyException("شما نمیتوانید سفارش شخص دیگری را پرداخت کنید");
 
-
-
         var handShakeResponse = await _ipgServiceProvider.HandShakeWithPsp(new PspHandShakeRequest()
         {
             CallBackUrl = "", //TODO: implement call back url and add it here
@@ -972,11 +980,11 @@ public class OrderAppService : ApplicationService, IOrderAppService
         });
         var cacheKey = string.Format(RedisConstants.UserTransactionKey, nationalCode, customerOrder.Id);
         var userTransactionToken = await _distributedCache.GetStringAsync(cacheKey);
-        if(userTransactionToken != null)
+        if (userTransactionToken != null)
         {
             await _distributedCache.RemoveAsync(cacheKey);
         }
         await _distributedCache.SetStringAsync(cacheKey, handShakeResponse.Token);
-        return ObjectMapper.Map<HandShakeResponseDto,HandShakeResultDto>(handShakeResponse);
+        return ObjectMapper.Map<HandShakeResponseDto, HandShakeResultDto>(handShakeResponse);
     }
 }

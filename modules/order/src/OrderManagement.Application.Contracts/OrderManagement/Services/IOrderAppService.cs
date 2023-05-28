@@ -21,5 +21,7 @@ namespace OrderManagement.Application.Contracts.Services
         Task<bool> UserRejectionStatus();
         Task<bool> Test();
         Task<HandShakeResultDto> PrepareOrderForPayment(int customerOrderId, int pspAccountId);
+
+        //Task Checkout();
     }
 }

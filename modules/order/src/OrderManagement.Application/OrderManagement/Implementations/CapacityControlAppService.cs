@@ -117,7 +117,6 @@ namespace OrderManagement.Application.OrderManagement
             return new SuccsessResult();
         }
 
-
         public async Task GrpcPaymentTest()
         {
             using (var channel = GrpcChannel.ForAddress(_configuration.GetSection("gRPC:PaymentUrl").Value))
