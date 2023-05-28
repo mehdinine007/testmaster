@@ -43,8 +43,9 @@ public class IpgServiceProvider : ApplicationService, IIpgServiceProvider
         RestClient client = SetDefaultClient();
         const string HandShakePath = "PaymentService/HandShake";
         RestRequest request = new(HandShakePath,Method.Post);
+        request.AddJsonBody<PspHandShakeRequest>(handShakeRequest);
         var handshakeResult = await client.ExecuteAsync<HandShakeResponseDto>(request);
-        if(handshakeResult.IsSuccessful && handshakeResult.IsSuccessStatusCode)
+        if(handshakeResult.IsSuccessful && handshakeResult.IsSuccessStatusCode && handshakeResult.Data.StatusCode == 0)
             return handshakeResult.Data;
 
         //TODO: Add log for failure reason
@@ -56,8 +57,9 @@ public class IpgServiceProvider : ApplicationService, IIpgServiceProvider
         var client = SetDefaultClient();
         const string VerifyPath = "PaymentService/Verify";
         RestRequest request = new(VerifyPath,Method.Post);
+        request.AddQueryParameter("paymentId", paymentId.ToString());
         var serviceResponse = await client.ExecuteAsync<PspInteractionResult>(request);
-        if (serviceResponse.IsSuccessful && serviceResponse.IsSuccessStatusCode)
+        if (serviceResponse.IsSuccessful && serviceResponse.IsSuccessStatusCode && serviceResponse.Data.StatusCode == 0)
             return serviceResponse.Data;
 
         //TODO: Add log for failure reason
