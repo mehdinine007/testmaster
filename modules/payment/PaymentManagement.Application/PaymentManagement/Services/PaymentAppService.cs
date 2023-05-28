@@ -187,7 +187,8 @@ namespace PaymentManagement.Application.Servicess
                 TransactionPersianDate = DateUtil.Now,
                 FilterParam1 = input.FilterParam1,
                 FilterParam2 = input.FilterParam2,
-                FilterParam3 = input.FilterParam3
+                FilterParam3 = input.FilterParam3,
+                FilterParam4 = input.FilterParam4
             });
 
             await uow.CompleteAsync();
