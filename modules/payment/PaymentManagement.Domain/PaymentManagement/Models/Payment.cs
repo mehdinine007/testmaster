@@ -7,6 +7,8 @@ using Volo.Abp.Domain.Entities.Auditing;
 namespace PaymentManagement.Domain.Models
 {
     [Table("Payment", Schema = "dbo")]
+    [Index(nameof(PaymentStatusId), nameof(TransactionDate), nameof(RetryCount))]
+    [Index(nameof(FilterParam1), nameof(FilterParam2), nameof(FilterParam3), nameof(FilterParam4))]
     public class Payment : FullAuditedEntity<int>
     {
         public int PspAccountId { get; set; }
@@ -35,7 +37,7 @@ namespace PaymentManagement.Domain.Models
         public int? FilterParam3 { get; set; }
         public int? FilterParam4 { get; set; }
         public int RetryCount { get; set; }
-        public virtual PspAccount PspAccount { get; set; }       
+        public virtual PspAccount PspAccount { get; set; }
         public virtual PaymentStatus PaymentStatus { get; set; }
         private ICollection<PaymentLog> _paymentLogs;
         public virtual ICollection<PaymentLog> PaymentLogs

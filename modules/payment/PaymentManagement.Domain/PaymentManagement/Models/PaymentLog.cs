@@ -2,10 +2,12 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using Volo.Abp.Domain.Entities.Auditing;
+using Microsoft.EntityFrameworkCore;
 
 namespace PaymentManagement.Domain.Models
 {
     [Table("PaymentLog", Schema = "dbo")]
+    [Index(nameof(PaymentId), nameof(Message))]
     public class PaymentLog : FullAuditedEntity<int>
     {
         public int PaymentId { get; set; }

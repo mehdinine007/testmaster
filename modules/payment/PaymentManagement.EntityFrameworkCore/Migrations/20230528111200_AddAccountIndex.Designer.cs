@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PaymentManagement.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore;
@@ -12,9 +13,11 @@ using Volo.Abp.EntityFrameworkCore;
 namespace PaymentManagement.EntityFrameworkCore.Migrations
 {
     [DbContext(typeof(PaymentManagementDbContext))]
-    partial class PaymentManagementDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230528111200_AddAccountIndex")]
+    partial class AddAccountIndex
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -234,11 +237,9 @@ namespace PaymentManagement.EntityFrameworkCore.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("PaymentStatusId");
+
                     b.HasIndex("PspAccountId");
-
-                    b.HasIndex("PaymentStatusId", "TransactionDate", "RetryCount");
-
-                    b.HasIndex("FilterParam1", "FilterParam2", "FilterParam3", "FilterParam4");
 
                     b.ToTable("Payment", "dbo");
                 });
@@ -297,7 +298,7 @@ namespace PaymentManagement.EntityFrameworkCore.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PaymentId", "Message");
+                    b.HasIndex("PaymentId");
 
                     b.ToTable("PaymentLog", "dbo");
                 });
@@ -396,8 +397,6 @@ namespace PaymentManagement.EntityFrameworkCore.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("IsActive");
-
                     b.ToTable("Psp", "dbo");
                 });
 
@@ -458,8 +457,6 @@ namespace PaymentManagement.EntityFrameworkCore.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AccountId");
-
-                    b.HasIndex("IsActive");
 
                     b.HasIndex("PspId");
 

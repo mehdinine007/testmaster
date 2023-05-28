@@ -2,11 +2,12 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using Volo.Abp.Domain.Entities.Auditing;
-using System.Diagnostics.CodeAnalysis;
+using Microsoft.EntityFrameworkCore;
 
 namespace PaymentManagement.Domain.Models
 {
     [Table("Account", Schema = "dbo")]
+    [Index(nameof(IsActive))]
     public class Account : FullAuditedEntity<int>
     {
         public int CustomerId { get; set; }

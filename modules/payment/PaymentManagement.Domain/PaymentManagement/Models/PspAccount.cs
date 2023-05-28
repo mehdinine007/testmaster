@@ -1,17 +1,17 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Volo.Abp.Domain.Entities.Auditing;
+using Microsoft.EntityFrameworkCore;
 
 namespace PaymentManagement.Domain.Models
 {
     [Table("PspAccount", Schema = "dbo")]
+    [Index(nameof(IsActive))]
     public class PspAccount : FullAuditedEntity<int>
     {
         public int PspId { get; set; }
         public int AccountId { get; set; }
         public bool IsActive { get; set; }
-
         [Column(TypeName = "VARCHAR(500)")]
         public string JsonProps { get; set; }
         [Column(TypeName = "VARCHAR(200)")]
