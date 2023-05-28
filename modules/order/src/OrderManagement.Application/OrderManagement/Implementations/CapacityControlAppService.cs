@@ -93,7 +93,7 @@ namespace OrderManagement.Application.OrderManagement
                     using (var channel = GrpcChannel.ForAddress(_configuration.GetSection("gRPC:PaymentUrl").Value))
                     {
                         var productAppService = channel.CreateGrpcService<IGrpcPaymentAppService>();
-                        var productDtos = await productAppService.GetPaymentStatusList(new PaymentStatusDto()
+                        var productDtos = productAppService.GetPaymentStatusList(new PaymentStatusDto()
                         {
                             RelationId = saledetail.Id
                         });
@@ -123,7 +123,7 @@ namespace OrderManagement.Application.OrderManagement
             using (var channel = GrpcChannel.ForAddress(_configuration.GetSection("gRPC:PaymentUrl").Value))
             {
                 var productAppService = channel.CreateGrpcService<IGrpcPaymentAppService>();
-                var productDtos = await productAppService.GetPaymentStatusList(new PaymentStatusDto() { RelationId = 0 });
+                var productDtos = productAppService.GetPaymentStatusList(new PaymentStatusDto() { RelationId = 0 });
             }
 
 
