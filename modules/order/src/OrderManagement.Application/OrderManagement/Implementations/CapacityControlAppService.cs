@@ -128,13 +128,13 @@ namespace OrderManagement.Application.OrderManagement
 
         }
 
-        public async Task<IResult> SaleDetailValidation(Guid saleDetailId, int? agancyId)
+        public async Task<IResult> SaleDetailValidation(Guid saleDetailUId, int? agancyId)
         {
             long _capacity = 0;
-            string _key = string.Format(CapacityControlConstants.SaleDetailPrefix, saleDetailId.ToString());
+            string _key = string.Format(CapacityControlConstants.SaleDetailPrefix, saleDetailUId.ToString());
             long.TryParse(await _redisCacheManager.GetStringAsync(string.Format(CapacityControlConstants.CapacityControlPrefix, _key)), out _capacity);
 
-            _key = string.Format(CapacityControlConstants.PaymentCountPrefix, saleDetailId.ToString());
+            _key = string.Format(CapacityControlConstants.PaymentCountPrefix, saleDetailUId.ToString());
             long _request = await _redisCacheManager.StringIncrementAsync(string.Format(CapacityControlConstants.CapacityControlPrefix, _key));
 
             //_key = string.Format(CapacityControlConstants.PaymentRequestPrefix, saleDetailId.ToString());
@@ -147,10 +147,10 @@ namespace OrderManagement.Application.OrderManagement
             if (agancyId != null && agancyId != 0)
             {
                 long _agancyCapacity = 0;
-                _key = string.Format(CapacityControlConstants.AgancySaleDetailPrefix, saleDetailId.ToString(), agancyId.ToString());
+                _key = string.Format(CapacityControlConstants.AgancySaleDetailPrefix, saleDetailUId.ToString(), agancyId.ToString());
                 long.TryParse(await _redisCacheManager.GetStringAsync(string.Format(CapacityControlConstants.CapacityControlPrefix, _key)), out _agancyCapacity);
 
-                _key = string.Format(CapacityControlConstants.AgancyPaymentPrefix, saleDetailId.ToString(), agancyId.ToString());
+                _key = string.Format(CapacityControlConstants.AgancyPaymentPrefix, saleDetailUId.ToString(), agancyId.ToString());
                 long _agancyRequest = await _redisCacheManager.StringIncrementAsync(string.Format(CapacityControlConstants.CapacityControlPrefix, _key));
                 if (_agancyRequest > _agancyCapacity && _agancyCapacity > 0)
                 {
