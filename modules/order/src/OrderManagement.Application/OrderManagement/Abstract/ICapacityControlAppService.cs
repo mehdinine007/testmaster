@@ -10,7 +10,8 @@ namespace OrderManagement.Application.OrderManagement
     {
         Task<IResult> SaleDetail();
         Task<IResult> Payment();
-        Task<IResult> SaleDetailValidation(Guid saleDetailUId, int? agancyId);
+        Task<IResult> Validation(int saleDetaild,int? agencyId);
+        Task<bool> ValidationBySaleDetailUId(Guid saleDetailUId);
         Task GrpcPaymentTest();
     }
 }
