@@ -20,6 +20,6 @@ namespace OrderManagement.Application.Contracts.Services
 
         Task<UserDto> GrpcTest();
 
-        Task<List<AgencyDto>> GetAgenciesByCityId(int cityId);
+        Task<List<AgencyDto>> GetAgenciesByCityId();
     }
 }

@@ -1,4 +1,3 @@
-using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
@@ -28,8 +27,6 @@ using Volo.Abp.BackgroundJobs.Hangfire;
 using Hangfire;
 using Microsoft.Extensions.Configuration;
 using Volo.Abp.Hangfire;
-using Volo.Abp.AspNetCore.ExceptionHandling;
-using Microsoft.Extensions.Configuration;
 
 namespace OrderService.Host
 {

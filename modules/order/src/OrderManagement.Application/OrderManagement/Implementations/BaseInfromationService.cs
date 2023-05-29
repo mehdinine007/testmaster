@@ -299,10 +299,12 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
         return await _esaleGrpcClient.GetUserById(_commonAppService.GetUserId());
     }
 
-    public async Task<List<AgencyDto>> GetAgenciesByCityId(int cityId)
+    public async Task<List<AgencyDto>> GetAgenciesByCityId()
     {
+        var user = await _esaleGrpcClient.GetUserById(_commonAppService.GetUserId());
         var agencyQuery = await _agencyRepository.GetQueryableAsync();
-        var agencies = agencyQuery.Where(x => x.CityId == cityId).ToList();
+
+        var agencies = agencyQuery.Where(x => x.CityId == (user.HabitationCityId ?? 0)).ToList();
         return ObjectMapper.Map<List<Agency>, List<AgencyDto>>(agencies);
     }
 }
