@@ -26,12 +26,15 @@ namespace PaymentManagement.Application.Servicess
         private readonly IRepository<Payment, int> _paymentRepository;
         private readonly IRepository<PaymentLog, int> _paymentLogRepository;
         private readonly IConfiguration _config;
+        private readonly IUnitOfWorkManager _unitOfWorkManager;
+
         public PaymentAppService(
             IRepository<Psp, int> pspRepository,
             IRepository<Account, int> accountRepository,
             IRepository<PspAccount, int> pspAccountRepository,
             IRepository<Payment, int> paymentRepository,
             IRepository<PaymentLog, int> paymentLogRepository,
+            IUnitOfWorkManager unitOfWorkManager,
             IConfiguration config
             )
         {
@@ -40,6 +43,7 @@ namespace PaymentManagement.Application.Servicess
             _pspAccountRepository = pspAccountRepository;
             _paymentRepository = paymentRepository;
             _paymentLogRepository = paymentLogRepository;
+            _unitOfWorkManager = unitOfWorkManager;
             _config = config;
         }
 
@@ -183,6 +187,24 @@ namespace PaymentManagement.Application.Servicess
         {
             try
             {
+                //var payment = await _paymentRepository.InsertAsync(new Payment
+                //{
+                //    PspAccountId = input.PspAccountId,
+                //    PaymentStatusId = (int)PaymentStatusEnum.InProgress,
+                //    Amount = input.Amount,
+                //    CallBackUrl = input.CallBackUrl,
+                //    NationalCode = input.NationalCode,
+                //    Mobile = input.Mobile,
+                //    TransactionDate = DateTime.Now,
+                //    TransactionPersianDate = DateUtil.Now,
+                //    FilterParam1 = input.FilterParam1,
+                //    FilterParam2 = input.FilterParam2,
+                //    FilterParam3 = input.FilterParam3,
+                //    FilterParam4 = input.FilterParam4
+                //});
+                //await CurrentUnitOfWork.SaveChangesAsync();
+
+                using var uow = _unitOfWorkManager.Begin(requiresNew: true, isTransactional: false);
                 var payment = await _paymentRepository.InsertAsync(new Payment
                 {
                     PspAccountId = input.PspAccountId,
@@ -198,21 +220,35 @@ namespace PaymentManagement.Application.Servicess
                     FilterParam3 = input.FilterParam3,
                     FilterParam4 = input.FilterParam4
                 });
-                await CurrentUnitOfWork.SaveChangesAsync();
 
-                var paymentDto = _paymentRepository.WithDetails().AsNoTracking()
-                    .Select(o => new PaymentDto
-                    {
-                        Id = o.Id,
-                        PaymentStatusId = o.PaymentStatusId,
-                        TraceNo = o.TraceNo,
-                        TransactionCode = o.TransactionCode,
-                        Token = o.Token,
-                        PspAccountId = o.PspAccountId,
-                        Amount = o.Amount,
-                        Mobile = o.Mobile,
-                        NationalCode = o.NationalCode
-                    }).First(o => o.Id == payment.Id);
+                await uow.CompleteAsync();
+
+                //var paymentDto = _paymentRepository.WithDetails().AsNoTracking()
+                //    .Select(o => new PaymentDto
+                //    {
+                //        Id = o.Id,
+                //        PaymentStatusId = o.PaymentStatusId,
+                //        TraceNo = o.TraceNo,
+                //        TransactionCode = o.TransactionCode,
+                //        Token = o.Token,
+                //        PspAccountId = o.PspAccountId,
+                //        Amount = o.Amount,
+                //        Mobile = o.Mobile,
+                //        NationalCode = o.NationalCode
+                //    }).First(o => o.Id == payment.Id);
+
+                var paymentDto = new PaymentDto
+                {
+                    Id = payment.Id,
+                    PaymentStatusId = payment.PaymentStatusId,
+                    TraceNo = payment.TraceNo,
+                    TransactionCode = payment.TransactionCode,
+                    Token = payment.Token,
+                    PspAccountId = payment.PspAccountId,
+                    Amount = payment.Amount,
+                    Mobile = payment.Mobile,
+                    NationalCode = payment.NationalCode
+                };
 
                 return paymentDto;
             }
