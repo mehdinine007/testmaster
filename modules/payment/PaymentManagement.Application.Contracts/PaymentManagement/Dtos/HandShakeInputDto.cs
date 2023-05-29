@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace PaymentManagement.Application.Contracts
+namespace PaymentManagement.Application.Contracts.Dtos
 {
     public class HandShakeInputDto
     {

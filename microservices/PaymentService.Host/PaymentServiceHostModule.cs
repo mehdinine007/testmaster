@@ -27,7 +27,7 @@ using PaymentManagement.HttpApi;
 using PaymentManagement.EntityFrameworkCore;
 using ProtoBuf.Grpc.Server;
 using PaymentManagement.Application.Contracts.IServices;
-using PaymentManagement.Application.Contracts.PaymentManagement.IServices;
+using PaymentService.Host.Infrastructures;
 
 namespace PaymentService.Host
 {
@@ -80,7 +80,16 @@ namespace PaymentService.Host
             {
                 options.UseSqlServer();
             });
+
+            using var scope = context.Services.BuildServiceProvider();
+            var service = scope.GetRequiredService<IActionResultWrapperFactory>();
+            context.Services.AddControllers(x =>
+            {
+                x.Filters.Add(new EsaleResultFilter(service));
+            });
+
             context.Services.AddCodeFirstGrpc();
+
             //context.Services.AddStackExchangeRedisCache(options =>
             //{
             //    options.Configuration = configuration["Redis:Configuration"];

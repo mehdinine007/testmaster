@@ -1,12 +1,5 @@
-﻿using PaymentManagement.Application.Contracts;
-using PaymentManagement.Application.Contracts.IServices;
-using PaymentManagement.Application.Contracts.PaymentManagement.Dtos;
-using PaymentManagement.Application.Contracts.PaymentManagement.IServices;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using PaymentManagement.Application.Contracts.IServices;
+using PaymentManagement.Application.Contracts.Dtos;
 using Volo.Abp.Application.Services;
 
 namespace PaymentManagement.Application.PaymentManagement.Services

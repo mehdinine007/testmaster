@@ -1,4 +1,4 @@
-﻿namespace PaymentManagement.Application.Contracts
+﻿namespace PaymentManagement.Application.Contracts.Dtos
 {
     public class HandShakeOutputDto
     {
