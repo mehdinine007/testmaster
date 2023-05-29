@@ -8,7 +8,7 @@ namespace PaymentManagement.Domain.Models
 {
     [Table("Payment", Schema = "dbo")]
     [Index(nameof(PaymentStatusId), nameof(TransactionDate), nameof(RetryCount))]
-    [Index(nameof(FilterParam1), nameof(FilterParam2), nameof(FilterParam3), nameof(FilterParam4))]
+    [Index(nameof(PaymentStatusId), nameof(FilterParam1), nameof(FilterParam2), nameof(FilterParam3), nameof(FilterParam4))]
     public class Payment : FullAuditedEntity<int>
     {
         public int PspAccountId { get; set; }

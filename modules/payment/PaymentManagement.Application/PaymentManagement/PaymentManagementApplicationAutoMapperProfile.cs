@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
-using PaymentManagement.Application.Contracts;
+using PaymentManagement.Application.Contracts.Dtos;
 using PaymentManagement.Domain.Models;
+using Volo.Abp.AutoMapper;
 
 namespace PaymentManagement.Application
 {
@@ -8,6 +9,7 @@ namespace PaymentManagement.Application
     {
         public PaymentManagementApplicationAutoMapperProfile()
         {
+            CreateMap<Payment, PaymentDto>().ReverseMap().IgnoreFullAuditedObjectProperties();
         }
     }
 }

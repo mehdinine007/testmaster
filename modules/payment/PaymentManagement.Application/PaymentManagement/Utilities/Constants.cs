@@ -4,7 +4,10 @@
     {
         public const string UnknownError = "خطای نامشخص";
         public const string ErrorInConnectToPsp = "خطا در برقراری ارتباط با درگاه";
-        public const string ErrorInHandShakeInput = "خطا در اطلاعات ورودی متد هند شیک";
+        public const string ErrorInHandShakeInput_NationalCode = "کدملی نامعتبر است";
+        public const string ErrorInHandShakeInput_Mobile = "موبایل نامعتبر است";
+        public const string ErrorInHandShakeInput_InactiveAccount = "حساب یا درگاه نامعتبر است";
+        public const string ErrorInHandShakeInput_Amount = "مبلغ نامعتبر است";
         public const string ErrorInHandShakeResult = "خطای هند شیک با درگاه";
         public const string HandShakeSuccess = "هند شیک با موفقیت انجام شد";
         public const string ErrorInBackFromPsp = "خطا در برگشت از درگاه";

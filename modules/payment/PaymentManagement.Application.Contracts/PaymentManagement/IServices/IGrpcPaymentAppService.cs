@@ -1,12 +1,7 @@
-﻿using PaymentManagement.Application.Contracts.PaymentManagement.Dtos;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using PaymentManagement.Application.Contracts.Dtos;
 using System.ServiceModel;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace PaymentManagement.Application.Contracts.PaymentManagement.IServices
+namespace PaymentManagement.Application.Contracts.IServices
 {
     [ServiceContract]
     public interface IGrpcPaymentAppService
