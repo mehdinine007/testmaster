@@ -518,7 +518,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             await _commitOrderRepository.InsertAsync(customerOrder);
             await CurrentUnitOfWork.SaveChangesAsync();
         }
-        var agencyCapacityControl = await _capacityControlAppService.SaleDetailValidation(SaleDetailDto.UID,commitOrderDto.AgencyId);
+        var agencyCapacityControl = await _capacityControlAppService.Validation(SaleDetailDto.Id,commitOrderDto.AgencyId);
         if (!agencyCapacityControl.Succsess)
             throw new UserFriendlyException(agencyCapacityControl.Message);
         //Console.WriteLine("afterasli");
