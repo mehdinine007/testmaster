@@ -46,6 +46,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
     private readonly IRepository<ESaleType, int> _esaleTypeRepository;
     private readonly IMemoryCache _memoryCache;
     private readonly IIpgServiceProvider _ipgServiceProvider;
+    private readonly ICapacityControlAppService _capacityControlAppService;
 
     public OrderAppService(ICommonAppService commonAppService,
                            IBaseInformationService baseInformationAppService,
@@ -64,7 +65,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
                            IRepository<Company, int> companyRepository,
                            IUnitOfWorkManager UnitOfWorkManager,
                            IRepository<ESaleType, int> esaleTypeRepository,
-                           IMemoryCache memoryCache
+                           IMemoryCache memoryCache,
+                           ICapacityControlAppService capacityControlAppService
         )
     {
         _commonAppService = commonAppService;
@@ -85,6 +87,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         _unitOfWorkManager = UnitOfWorkManager;
         _esaleTypeRepository = esaleTypeRepository;
         _memoryCache = memoryCache;
+        _capacityControlAppService = capacityControlAppService;
     }
 
 
@@ -485,13 +488,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         }
         ////////////////////////
-
-
-
-
-        Console.WriteLine("beforeasli");
-
-
+        //Console.WriteLine("beforeasli");
         CustomerOrder customerOrder = new CustomerOrder();
         var paymentMethodGranted = _configuration.GetValue<bool?>("PaymentMethodGranted") ?? false;
         var customerOrderQuery = await _commitOrderRepository.GetQueryableAsync();
@@ -518,7 +515,10 @@ public class OrderAppService : ApplicationService, IOrderAppService
             await _commitOrderRepository.InsertAsync(customerOrder);
             await CurrentUnitOfWork.SaveChangesAsync();
         }
-        Console.WriteLine("afterasli");
+        var agencyCapacityControl = await _capacityControlAppService.SaleDetailValidation(SaleDetailDto.UID,commitOrderDto.AgencyId);
+        if (!agencyCapacityControl.Succsess)
+            throw new UserFriendlyException(agencyCapacityControl.Message);
+        //Console.WriteLine("afterasli");
 
         //unitOfWork.Complete();
         //}
