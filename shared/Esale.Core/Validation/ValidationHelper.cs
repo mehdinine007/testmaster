@@ -59,7 +59,7 @@ namespace Esale.Core.Validation
             }
             return false;
         }
-        public static bool IsNationalCode(string nationalCode)
+        public static bool IsValidNationalCode(string nationalCode)
         {
             try
             {
@@ -93,6 +93,12 @@ namespace Esale.Core.Validation
             catch { return false; }
         }
 
+        public static bool IsValidMobileNumber(string mobileNumber)
+        {
+            if (!Regex.IsMatch(mobileNumber, @"^09[0-9]{9}$") && !Regex.IsMatch(mobileNumber, @"^989[0-9]{9}$"))
+                return false;
 
+            return true;
+        }
     }
 }

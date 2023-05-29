@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Serialization;
 
-namespace PaymentManagement.Application.Contracts
+namespace PaymentManagement.Application.Contracts.Dtos
 {
     [DataContract]
     public class InquiryWithFilterParamDto

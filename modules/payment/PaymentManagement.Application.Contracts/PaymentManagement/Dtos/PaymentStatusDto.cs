@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Runtime.Serialization;
 
-namespace PaymentManagement.Application.Contracts.PaymentManagement.Dtos
+namespace PaymentManagement.Application.Contracts.Dtos
 {
     [DataContract]
     public class PaymentStatusDto

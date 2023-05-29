@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using PaymentManagement.Application.Contracts;
+using PaymentManagement.Application.Contracts.Dtos;
 using PaymentManagement.Application.Contracts.IServices;
 using PaymentManagement.HttpApi.Utilities;
 using Volo.Abp;

@@ -1,8 +1,4 @@
-﻿using PaymentManagement.Domain.Models;
-using System.Linq.Expressions;
-using System.Runtime.Serialization;
-
-namespace PaymentManagement.Application.IranKish
+﻿namespace PaymentManagement.Application.IranKish
 {
     public class BackFromPspResult
     {
