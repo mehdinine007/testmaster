@@ -961,7 +961,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 x.Id,
                 SaleDetailId = x.SaleDetail.Id,
                 //TODO: make sure the amount of car is right
-                Amount = x.SaleDetail.CarFee
+                Amount = x.SaleDetail.CarFee,
+                x.AgencyId
             }).FirstOrDefault(x => x.Id == customerOrderId)
         ?? throw new EntityNotFoundException(typeof(CustomerOrder));
 
@@ -976,7 +977,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
             Mobile = customer.MobileNumber,
             NationalCode = nationalCode,
             PspAccountId = pspAccountId,
-            FilterParam = customerOrder.Id
+            FilterParam1 = customerOrder.SaleDetailId,
+            FilterParam2 = customerOrder.AgencyId,
+            FilterParam3 = customerOrder.Id
         });
         var cacheKey = string.Format(RedisConstants.UserTransactionKey, nationalCode, customerOrder.Id);
         var userTransactionToken = await _distributedCache.GetStringAsync(cacheKey);
