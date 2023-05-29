@@ -60,7 +60,7 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
                                   //IPasswordHasher<User> PasswordHasher,
                                   Microsoft.Extensions.Configuration.IConfiguration Configuration,
                                   IRepository<City, int> CityRepository,
-                                  IRepository<AdvocacyUsersFromBank, int> AdvocacyUsersFromBankRepository,
+                                  IRepository<AdvocacyUsersFromBank, int> advocacyUsersFromBankRepository,
                                   IEsaleGrpcClient esaleGrpcClient,
                                   IRepository<Agency,int> agencyRepository
         )
@@ -69,7 +69,7 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
         _companyRepository = companyRepository;
         _carTipRepository = carTipRepsoitory;
         _galleryRepository = galleryRepository;
-        _advocacyUsersFromBankRepository = AdvocacyUsersFromBankRepository;
+        _advocacyUsersFromBankRepository = advocacyUsersFromBankRepository;
         _carMakerBlackListRepository = CarMakerBlackListRepository;
         _commonAppService = CommonAppService;
         _provinceRepository = ProvinceRepository;
@@ -79,6 +79,7 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
         _configuration = Configuration;
         _advocacyUsersRepository = AdvocacyUsersRepository;
         //_passwordHasher = PasswordHasher;
+        _agencyRepository = agencyRepository;
     }
 
     [RemoteService(false)]
