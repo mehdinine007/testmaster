@@ -14,7 +14,7 @@ using Volo.Abp.Auditing;
 namespace OrderManagement.HttpApi;
 [DisableAuditing]
 [RemoteService]
-[Route("api/services/app/SaleService/[action]")]
+[Route("api/services/app/CapacityControl/[action]")]
 public class CapacityControlController :Controller
 {
     private readonly ICapacityControlAppService _capacityControlAppService;
