@@ -11,3 +11,5 @@ microservices/OrderService.Host/pub/
 microservices/OrderService.Host/pub/*
 logs.txt
 pub
+microservices/OrderService.Hot/pub.ps
+*~
