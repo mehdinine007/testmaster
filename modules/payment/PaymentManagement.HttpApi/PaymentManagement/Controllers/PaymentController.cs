@@ -114,8 +114,7 @@ namespace PaymentManagement
         [HttpPost]
         public async Task<List<RetryForVerifyDetail>> RetryForVerify()
         {
-            throw new Exception();
-           //return await _paymentAppService.RetryForVerify();
+            return await _paymentAppService.RetryForVerify();
         }
 
         [HttpPost]

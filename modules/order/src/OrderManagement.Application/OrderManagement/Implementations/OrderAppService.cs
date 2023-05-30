@@ -1141,7 +1141,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 foreach (var payment in payments)
                 {
                     int orderId = payment.FilterParam3 ?? 0;
-                    UpdateStatus(orderId, payment.StatusId == 0 ? (int)OrderStatusType.PaymentSucceeded : (int)OrderStatusType.PaymentNotVerified);
+                    UpdateStatus(orderId, payment.PaymentStatus == 0 ? (int)OrderStatusType.PaymentSucceeded : (int)OrderStatusType.PaymentNotVerified);
                 }
             }
         }
