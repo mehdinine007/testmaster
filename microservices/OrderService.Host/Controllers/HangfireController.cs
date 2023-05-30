@@ -14,9 +14,11 @@ namespace NoyanHangFire.Controllers
     public class HangfireController : Controller
     {
         private readonly ICapacityControlJob _capacityControlJob;
-        public HangfireController(ICapacityControlJob capacityControlJob)
+        private readonly IIpgJob _pgJob;
+        public HangfireController(ICapacityControlJob capacityControlJob, IIpgJob pgJob)
         {
             _capacityControlJob = capacityControlJob;
+            _pgJob = pgJob;
         }
 
         [HttpPost("addSalDetailCapacity")]
@@ -33,5 +35,11 @@ namespace NoyanHangFire.Controllers
             return Ok($"BackgroundJob Job Scheduled Inserted");
         }
 
+        [HttpPost("addIpgRetryForVerify")]
+        public async Task<IActionResult> AddIpgRetryForVerify()
+        {
+            _pgJob.RetryForVerify();
+            return Ok($"BackgroundJob Job Scheduled Inserted");
+        }
     }
 }

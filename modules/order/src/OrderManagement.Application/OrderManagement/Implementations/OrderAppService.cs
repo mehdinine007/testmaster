@@ -477,6 +477,18 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         }
         ////////////////////////
+        var customer = await _esaleGrpcClient.GetUserById(_commonAppService.GetUserId());
+        if (!customer.NationalCode.Equals(nationalCode))
+        {
+
+            throw new UserFriendlyException("شما نمیتوانید سفارش شخص دیگری را پرداخت کنید");
+        }
+
+        //if (paymentMethodGranted && !commitOrderDto.PspAccountId.HasValue)
+        //{
+
+        //    throw new UserFriendlyException("درگاه انتخاب نشده است");
+        //}
         //Console.WriteLine("beforeasli");
         CustomerOrder customerOrder = new CustomerOrder();
         var paymentMethodGranted = _configuration.GetValue<bool?>("PaymentMethodGranted") ?? false;
@@ -520,14 +532,48 @@ public class OrderAppService : ApplicationService, IOrderAppService
         //       commitOrderDto.SaleDetailUId.ToString()
         //       , customerOrder.Id,
         //       TimeSpan.FromSeconds(ttl.TotalSeconds));
+     
+     
+        //var customerOrderQuery = await _commitOrderRepository.GetQueryableAsync();
+        //var customerOrder = customerOrderQuery.Include(x => x.SaleDetail)
+        //    .Select(x => new
+        //    {
+        //        x.UserId,
+        //        x.Id,
+        //        SaleDetailId = x.SaleDetail.Id,
+        //        //TODO: make sure the amount of car is right
+        //        Amount = x.SaleDetail.CarFee,
+        //        x.AgencyId,
+        //        x.OrderStatus
+        //    }).FirstOrDefault(x => x.Id == customerOrderId && x.OrderStatus == OrderStatusType.RecentlyAdded)
+        //?? throw new EntityNotFoundException(typeof(CustomerOrder));
+
+       
+
+        //TODO: check if we can change existed sale detail and add amount here instead if qurying it here
+        var saleDetailPrice = (await _saleDetailRepository.GetQueryableAsync())
+            .Select(x => new { x.CarFee, x.Id }).FirstOrDefault(x => x.Id == SaleDetailDto.Id)
+            ?? throw new EntityNotFoundException(typeof(SaleDetail), SaleDetailDto.Id);
+
+        var handShakeResponse = await _ipgServiceProvider.HandShakeWithPsp(new PspHandShakeRequest()
+        {
+            CallBackUrl = "http://sample.fillmelater.com", //TODO: implement call back url and add it here
+            Amount = (long)saleDetailPrice.CarFee,
+            Mobile = customer.MobileNumber,
+            NationalCode = nationalCode,
+            PspAccountId = commitOrderDto.PspAccountId.Value,
+            FilterParam1 = customerOrder.SaleDetailId,
+            FilterParam2 = customerOrder.AgencyId,
+            FilterParam3 = customerOrder.Id
+        });
         await _distributedCache.SetStringAsync(
-            userId.ToString() + "_" +
-               commitOrderDto.SaleDetailUId.ToString()
-               , customerOrder.Id.ToString(),
-            new DistributedCacheEntryOptions()
-            {
-                AbsoluteExpiration = new DateTimeOffset(DateTime.Now.AddSeconds(ttl.TotalSeconds))
-            });
+         userId.ToString() + "_" +
+            commitOrderDto.SaleDetailUId.ToString()
+            , customerOrder.Id.ToString(),
+         new DistributedCacheEntryOptions()
+         {
+             AbsoluteExpiration = new DateTimeOffset(DateTime.Now.AddSeconds(ttl.TotalSeconds))
+         });
 
         await _distributedCache.SetStringAsync(userId.ToString(), SaleDetailDto.ESaleTypeId.ToString());
         //if iran
@@ -548,6 +594,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     AbsoluteExpiration = new DateTimeOffset(DateTime.Now.AddSeconds(ttl.TotalSeconds))
                 });
         }//vardat
+
         if (_configuration.GetSection("IsIranCellActive").Value == "1")
         {
             //await _cacheManager.GetCache("CommitOrderimport").
@@ -588,43 +635,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
             //         , TimeSpan.FromSeconds(ttl.TotalSeconds));
         }
 
-        //var customerOrderQuery = await _commitOrderRepository.GetQueryableAsync();
-        //var customerOrder = customerOrderQuery.Include(x => x.SaleDetail)
-        //    .Select(x => new
-        //    {
-        //        x.UserId,
-        //        x.Id,
-        //        SaleDetailId = x.SaleDetail.Id,
-        //        //TODO: make sure the amount of car is right
-        //        Amount = x.SaleDetail.CarFee,
-        //        x.AgencyId,
-        //        x.OrderStatus
-        //    }).FirstOrDefault(x => x.Id == customerOrderId && x.OrderStatus == OrderStatusType.RecentlyAdded)
-        //?? throw new EntityNotFoundException(typeof(CustomerOrder));
-
-        var customer = await _esaleGrpcClient.GetUserById(customerOrder.UserId);
-        if (!customer.NationalCode.Equals(nationalCode))
-            throw new UserFriendlyException("شما نمیتوانید سفارش شخص دیگری را پرداخت کنید");
-
-        if (paymentMethodGranted && !commitOrderDto.PspAccountId.HasValue)
-            throw new UserFriendlyException("درگاه انتخاب نشده است");
-
-        //TODO: check if we can change existed sale detail and add amount here instead if qurying it here
-        var saleDetailPrice = (await _saleDetailRepository.GetQueryableAsync())
-            .Select(x => new { x.CarFee, x.Id }).FirstOrDefault(x => x.Id == SaleDetailDto.Id)
-            ?? throw new EntityNotFoundException(typeof(SaleDetail), SaleDetailDto.Id);
-
-        var handShakeResponse = await _ipgServiceProvider.HandShakeWithPsp(new PspHandShakeRequest()
-        {
-            CallBackUrl = "http://sample.fillmelater.com", //TODO: implement call back url and add it here
-            Amount = (long)saleDetailPrice.CarFee,
-            Mobile = customer.MobileNumber,
-            NationalCode = nationalCode,
-            PspAccountId = commitOrderDto.PspAccountId.Value,
-            FilterParam1 = customerOrder.SaleDetailId,
-            FilterParam2 = customerOrder.AgencyId,
-            FilterParam3 = customerOrder.Id
-        });
         //var pspCacheKey = string.Format(RedisConstants.UserTransactionKey, nationalCode, customerOrder.Id);
         //var userTransactionToken = await _distributedCache.GetStringAsync(cacheKey);
         //if (userTransactionToken != null)
@@ -1101,5 +1111,19 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 Status = 2,
             };
         }
+    }
+
+    public async Task UpdateStatus(int orderId, int orderStatus)
+    {
+        var customerOrder = _commitOrderRepository
+            .WithDetails()
+            .FirstOrDefault(x => x.Id == orderId);
+        if (customerOrder == null)
+        {
+            return;
+        }
+        customerOrder.OrderStatus = (OrderStatusType)orderStatus;
+        await _commitOrderRepository.UpdateAsync(customerOrder, autoSave: true);
+        await CurrentUnitOfWork.SaveChangesAsync();
     }
 }
