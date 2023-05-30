@@ -88,7 +88,7 @@ public class SaleService : ApplicationService , ISaleService
 
         var company = await _galleriesRepository.GetAsync(saleDetail.CarTip.CarType.CarFamily.Company.Id);
         var galleryIds = saleDetail.CarTip.CarTip_Gallery_Mappings.Select(x => x.GalleryId).ToList();
-        var carGalleries = _galleriesRepository.WithDetails(x => galleryIds.Any(y => y == x.Id));
+        var carGalleries = (await _galleriesRepository.GetQueryableAsync()).Where(x => galleryIds.Any(y => y == x.Id)).ToList();
         var saleDetailDto = ObjectMapper.Map<SaleDetail, SaleDetailDto>(saleDetail, new SaleDetailDto());
         saleDetailDto.CarTipImageUrls = carGalleries.Select(x => x.ImageUrl).ToList();
         saleDetailDto.CompanyImageUrl = company.ImageUrl;
