@@ -1,6 +1,7 @@
-﻿using RestSharp;
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Text;
 
 namespace OrderManagement.Application.Helpers
 {
@@ -17,6 +18,13 @@ namespace OrderManagement.Application.Helpers
             if (attr == null)
                 return enumVal.ToString();
             return attr.Name;
+        }
+
+        public static string ConcatErrorMessages(this List<Exception> exceptions)
+        {
+            var msg = new StringBuilder();
+            exceptions.ForEach(x => msg.AppendLine(x.Message));
+            return msg.ToString();
         }
     }
 }

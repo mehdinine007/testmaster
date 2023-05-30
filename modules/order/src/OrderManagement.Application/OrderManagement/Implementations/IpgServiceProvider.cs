@@ -34,7 +34,7 @@ public class IpgServiceProvider : ApplicationService, IIpgServiceProvider
         return availablePsps;
     }
 
-    public async Task<HandShakeResponseDto> HandShakeWithPsp(PspHandShakeRequest handShakeRequest)
+    public async Task<ApiResult<IpgApiResult>> HandShakeWithPsp(PspHandShakeRequest handShakeRequest)
     {
         //if (handShakeRequest.Amount <= 10000)
         //    throw new HandShakeInvalidRequestException(HandShakeInvalidRequestException.InvalidAmount, "مبالغ کم تر از ده هزار ریال قابل تراکنش نمیباشند");
@@ -48,7 +48,7 @@ public class IpgServiceProvider : ApplicationService, IIpgServiceProvider
         const string HandShakePath = "PaymentService/HandShake";
         RestRequest request = new(HandShakePath,Method.Post);
         request.AddJsonBody<PspHandShakeRequest>(handShakeRequest);
-        var handshakeResult = await client.ExecuteAsync<HandShakeResponseDto>(request);
+        var handshakeResult = await client.ExecuteAsync<ApiResult<IpgApiResult>>(request);
         if(handshakeResult.IsSuccessful && handshakeResult.IsSuccessStatusCode && handshakeResult.Data.Result.StatusCode == 0)
             return handshakeResult.Data;
 
@@ -57,13 +57,19 @@ public class IpgServiceProvider : ApplicationService, IIpgServiceProvider
     }
 
     public async Task<PspInteractionResult> VerifyTransaction(int paymentId)
+    public Task ReverseTransaction(int paymentId)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public async Task<ApiResult<PspInteractionResult>> VerifyTransaction(int paymentId)
     {
         var client = SetDefaultClient();
         const string VerifyPath = "PaymentService/Verify";
         RestRequest request = new(VerifyPath,Method.Post);
         request.AddQueryParameter("paymentId", paymentId.ToString());
-        var serviceResponse = await client.ExecuteAsync<PspInteractionResult>(request);
-        if (serviceResponse.IsSuccessful && serviceResponse.IsSuccessStatusCode && serviceResponse.Data.StatusCode == 0)
+        var serviceResponse = await client.ExecuteAsync<ApiResult<PspInteractionResult>>(request);
+        if (serviceResponse.IsSuccessful && serviceResponse.IsSuccessStatusCode && serviceResponse.Data.Result.StatusCode == 0)
             return serviceResponse.Data;
 
         //TODO: Add log for failure reason

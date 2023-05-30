@@ -167,6 +167,10 @@ namespace OrderManagement.Application.OrderManagement
         public async Task<IResult> Validation(int saleDetaild, int? agencyId)
         {
             var saledetail = GetSaleDetailById(saleDetaild);
+            if (saledetail == null)
+            {
+                throw new UserFriendlyException("خطا در بازیابی برنامه های فروش");
+            }
             long _capacity = saledetail.SaleTypeCapacity;
             long _paymentCount = 0;
             using (var channel = GrpcChannel.ForAddress(_configuration.GetSection("gRPC:PaymentUrl").Value))
@@ -188,6 +192,10 @@ namespace OrderManagement.Application.OrderManagement
             if (agencyId != null && agencyId != 0)
             {
                 var agencySaledetail = GetAgancySaleDetail(saleDetaild, agencyId??0);
+                if(agencySaledetail == null)
+                {
+                    throw new UserFriendlyException("خطا در بازیابی نمایندگی ها");
+                }
                 _capacity = agencySaledetail.DistributionCapacity;
                 _paymentCount = 0;
                 using (var channel = GrpcChannel.ForAddress(_configuration.GetSection("gRPC:PaymentUrl").Value))

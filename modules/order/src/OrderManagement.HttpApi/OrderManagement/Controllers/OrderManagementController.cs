@@ -67,4 +67,9 @@ public class OrderManagementController
     //[UserAuthorization]
     //public async Task<HandShakeResultDto> PrepareOrderForPayment(int customerOrder, int pspAccountId)
     //    => await _orderAppService.PrepareOrderForPayment(customerOrder, pspAccountId);
+
+    [HttpPost]
+    [UserAuthorization]
+    public async Task CheckoutPayment(int status, int paymentId)
+        => await _orderAppService.CheckoutPayment(status, paymentId);
 }

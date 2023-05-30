@@ -22,6 +22,8 @@ using OrderManagement.Application.OrderManagement.Constants;
 using Newtonsoft.Json;
 using Volo.Abp.Domain.Entities;
 using Microsoft.Extensions.Caching.Memory;
+using Esale.Core.Utility.Results;
+using OrderManagement.Application.Helpers;
 using Grpc.Net.Client;
 using PaymentManagement.Application.Contracts.IServices;
 using ProtoBuf.Grpc.Client;
@@ -478,6 +480,18 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         }
         ////////////////////////
+        var customer = await _esaleGrpcClient.GetUserById(_commonAppService.GetUserId());
+        if (!customer.NationalCode.Equals(nationalCode))
+        {
+
+            throw new UserFriendlyException("شما نمیتوانید سفارش شخص دیگری را پرداخت کنید");
+        }
+
+        //if (paymentMethodGranted && !commitOrderDto.PspAccountId.HasValue)
+        //{
+
+        //    throw new UserFriendlyException("درگاه انتخاب نشده است");
+        //}
         //Console.WriteLine("beforeasli");
         CustomerOrder customerOrder = new CustomerOrder();
         var paymentMethodGranted = _configuration.GetValue<bool?>("PaymentMethodGranted") ?? false;
@@ -508,7 +522,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             await _commitOrderRepository.InsertAsync(customerOrder);
             await CurrentUnitOfWork.SaveChangesAsync();
         }
-        var agencyCapacityControl = await _capacityControlAppService.Validation(SaleDetailDto.Id,commitOrderDto.AgencyId);
+        var agencyCapacityControl = await _capacityControlAppService.Validation(SaleDetailDto.Id, commitOrderDto.AgencyId);
         if (!agencyCapacityControl.Succsess)
             throw new UserFriendlyException(agencyCapacityControl.Message);
         //Console.WriteLine("afterasli");
@@ -521,14 +535,48 @@ public class OrderAppService : ApplicationService, IOrderAppService
         //       commitOrderDto.SaleDetailUId.ToString()
         //       , customerOrder.Id,
         //       TimeSpan.FromSeconds(ttl.TotalSeconds));
+     
+     
+        //var customerOrderQuery = await _commitOrderRepository.GetQueryableAsync();
+        //var customerOrder = customerOrderQuery.Include(x => x.SaleDetail)
+        //    .Select(x => new
+        //    {
+        //        x.UserId,
+        //        x.Id,
+        //        SaleDetailId = x.SaleDetail.Id,
+        //        //TODO: make sure the amount of car is right
+        //        Amount = x.SaleDetail.CarFee,
+        //        x.AgencyId,
+        //        x.OrderStatus
+        //    }).FirstOrDefault(x => x.Id == customerOrderId && x.OrderStatus == OrderStatusType.RecentlyAdded)
+        //?? throw new EntityNotFoundException(typeof(CustomerOrder));
+
+       
+
+        //TODO: check if we can change existed sale detail and add amount here instead if qurying it here
+        var saleDetailPrice = (await _saleDetailRepository.GetQueryableAsync())
+            .Select(x => new { x.CarFee, x.Id }).FirstOrDefault(x => x.Id == SaleDetailDto.Id)
+            ?? throw new EntityNotFoundException(typeof(SaleDetail), SaleDetailDto.Id);
+
+        var handShakeResponse = await _ipgServiceProvider.HandShakeWithPsp(new PspHandShakeRequest()
+        {
+            CallBackUrl = "http://sample.fillmelater.com", //TODO: implement call back url and add it here
+            Amount = (long)saleDetailPrice.CarFee,
+            Mobile = customer.MobileNumber,
+            NationalCode = nationalCode,
+            PspAccountId = commitOrderDto.PspAccountId.Value,
+            FilterParam1 = customerOrder.SaleDetailId,
+            FilterParam2 = customerOrder.AgencyId,
+            FilterParam3 = customerOrder.Id
+        });
         await _distributedCache.SetStringAsync(
-            userId.ToString() + "_" +
-               commitOrderDto.SaleDetailUId.ToString()
-               , customerOrder.Id.ToString(),
-            new DistributedCacheEntryOptions()
-            {
-                AbsoluteExpiration = new DateTimeOffset(DateTime.Now.AddSeconds(ttl.TotalSeconds))
-            });
+         userId.ToString() + "_" +
+            commitOrderDto.SaleDetailUId.ToString()
+            , customerOrder.Id.ToString(),
+         new DistributedCacheEntryOptions()
+         {
+             AbsoluteExpiration = new DateTimeOffset(DateTime.Now.AddSeconds(ttl.TotalSeconds))
+         });
 
         await _distributedCache.SetStringAsync(userId.ToString(), SaleDetailDto.ESaleTypeId.ToString());
         //if iran
@@ -549,6 +597,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     AbsoluteExpiration = new DateTimeOffset(DateTime.Now.AddSeconds(ttl.TotalSeconds))
                 });
         }//vardat
+
         if (_configuration.GetSection("IsIranCellActive").Value == "1")
         {
             //await _cacheManager.GetCache("CommitOrderimport").
@@ -589,43 +638,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
             //         , TimeSpan.FromSeconds(ttl.TotalSeconds));
         }
 
-        //var customerOrderQuery = await _commitOrderRepository.GetQueryableAsync();
-        //var customerOrder = customerOrderQuery.Include(x => x.SaleDetail)
-        //    .Select(x => new
-        //    {
-        //        x.UserId,
-        //        x.Id,
-        //        SaleDetailId = x.SaleDetail.Id,
-        //        //TODO: make sure the amount of car is right
-        //        Amount = x.SaleDetail.CarFee,
-        //        x.AgencyId,
-        //        x.OrderStatus
-        //    }).FirstOrDefault(x => x.Id == customerOrderId && x.OrderStatus == OrderStatusType.RecentlyAdded)
-        //?? throw new EntityNotFoundException(typeof(CustomerOrder));
-
-        var customer = await _esaleGrpcClient.GetUserById(customerOrder.UserId);
-        if (!customer.NationalCode.Equals(nationalCode))
-            throw new UserFriendlyException("شما نمیتوانید سفارش شخص دیگری را پرداخت کنید");
-
-        if (paymentMethodGranted && !commitOrderDto.PspAccountId.HasValue)
-            throw new UserFriendlyException("درگاه انتخاب نشده است");
-
-        //TODO: check if we can change existed sale detail and add amount here instead if qurying it here
-        var saleDetailPrice = (await _saleDetailRepository.GetQueryableAsync())
-            .Select(x => new { x.CarFee, x.Id }).FirstOrDefault(x => x.Id == SaleDetailDto.Id)
-            ?? throw new EntityNotFoundException(typeof(SaleDetail), SaleDetailDto.Id);
-
-        var handShakeResponse = await _ipgServiceProvider.HandShakeWithPsp(new PspHandShakeRequest()
-        {
-            CallBackUrl = "http://sample.fillmelater.com", //TODO: implement call back url and add it here
-            Amount = (long)saleDetailPrice.CarFee,
-            Mobile = customer.MobileNumber,
-            NationalCode = nationalCode,
-            PspAccountId = commitOrderDto.PspAccountId.Value,
-            FilterParam1 = customerOrder.SaleDetailId,
-            FilterParam2 = customerOrder.AgencyId,
-            FilterParam3 = customerOrder.Id
-        });
         //var pspCacheKey = string.Format(RedisConstants.UserTransactionKey, nationalCode, customerOrder.Id);
         //var userTransactionToken = await _distributedCache.GetStringAsync(cacheKey);
         //if (userTransactionToken != null)
@@ -639,7 +651,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         {
             PaymentGranted = paymentMethodGranted,
             UId = commitOrderDto.SaleDetailUId,
-            PaymentMethodConigurations =  paymentMethodGranted ? new()
+            PaymentMethodConigurations = paymentMethodGranted ? new()
             {
                 Message = handShakeResponse.Result.Message,
                 StatusCode = handShakeResponse.Result.StatusCode,
@@ -1036,7 +1048,72 @@ public class OrderAppService : ApplicationService, IOrderAppService
             await _distributedCache.RemoveAsync(cacheKey);
         }
         await _distributedCache.SetStringAsync(cacheKey, handShakeResponse.Result.Token);
-        return ObjectMapper.Map<HandShakeResponseDto, HandShakeResultDto>(handShakeResponse);
+        return new HandShakeResultDto()
+        {
+            Message = handShakeResponse.Result.Message,
+            PaymentId = handShakeResponse.Result.PaymentId,
+            StatusCode = handShakeResponse.Result.StatusCode,
+            Token = handShakeResponse.Result.Token,
+            Url = handShakeResponse.Result.Url
+        };
+    }
+
+    public async Task<IPaymentResult> CheckoutPayment(int status, int paymentId)
+    {
+        List<Exception> exceptionCollection = new();
+        try
+        {
+            //TODO: We need to get order id from payment module
+            var orderId = 0;
+            var order = (await _commitOrderRepository.GetQueryableAsync())
+                .FirstOrDefault(x => x.Id == orderId);
+
+            order.OrderStatus = status == 0
+                ? OrderStatusType.PaymentSucceeded
+                : OrderStatusType.PaymentNotVerified;
+            if(status != 0)
+            {
+                exceptionCollection.Add(new UserFriendlyException("عملیات پرداخت ناموفق بود"));
+                await _commitOrderRepository.UpdateAsync(order);
+                return new PaymentResult
+                {
+                    Message = exceptionCollection.ConcatErrorMessages(),
+                    Status = status,
+                };
+            }
+            var capacityControl = await _capacityControlAppService.Validation(order.SaleDetailId, order.AgencyId);
+            if (!capacityControl.Succsess)
+            {
+                await _ipgServiceProvider.ReverseTransaction(paymentId);
+                exceptionCollection.Add(new UserFriendlyException(capacityControl.Message));
+                return new PaymentResult()
+                {
+                    Message = exceptionCollection.ConcatErrorMessages(),
+                    Status = 1,
+                    PaymentId = 0,
+                    OrderId = orderId
+                };
+            }
+            var verificationResponse = await _ipgServiceProvider.VerifyTransaction(paymentId);
+            await _commitOrderRepository.UpdateAsync(order);
+            return new PaymentResult()
+            {
+                PaymentId = paymentId,
+                Message = verificationResponse.Result.Message,
+                OrderId = orderId,
+                Status = status
+            };
+        }
+        catch (Exception e)
+        {
+            exceptionCollection.Add(e);
+            return new PaymentResult()
+            {
+                Message = exceptionCollection.ConcatErrorMessages(),
+                PaymentId = paymentId,
+                Status = 2,
+            };
+        }
     }
 
     public async Task UpdateStatus(int orderId, int orderStatus)

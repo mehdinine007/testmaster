@@ -16,7 +16,9 @@ namespace PaymentService.Host
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
-           app.InitializeApplication();
+            app.UseCors(options => options.SetIsOriginAllowed(x => _ = true).AllowAnyMethod().AllowAnyHeader().AllowCredentials());
+
+            app.InitializeApplication();
         }
     }
 }

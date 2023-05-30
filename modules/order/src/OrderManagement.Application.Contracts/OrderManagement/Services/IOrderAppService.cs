@@ -19,9 +19,9 @@ namespace OrderManagement.Application.Contracts.Services
         Task<CommitOrderResultDto> CommitOrder(CommitOrderDto commitOrderDto);
         Task RetryPaymentForVerify();
         Task<bool> UserRejectionStatus();
-        Task<bool> Test();
-        //Task<HandShakeResultDto> PrepareOrderForPayment(int customerOrderId, int pspAccountId);
 
-        //Task Checkout();
+        Task<bool> Test();
+
+        Task<IPaymentResult> CheckoutPayment(int status, int paymentId);
     }
 }
