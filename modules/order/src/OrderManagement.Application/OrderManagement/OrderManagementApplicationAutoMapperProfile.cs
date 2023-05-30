@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using OrderManagement.Application.Contracts;
+using OrderManagement.Application.Helpers;
 using OrderManagement.Application.OrderManagement.Implementations;
-using OrderManagement.Application.OrderManagement.Utitlities;
 using OrderManagement.Domain;
 using Volo.Abp.AutoMapper;
 

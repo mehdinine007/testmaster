@@ -72,6 +72,6 @@ public class BaseController : IBaseInformationService
 
     [HttpGet]
     [UserAuthorization]
-    public async Task<List<AgencyDto>> GetAgenciesByCityId(int cityId)
-        => await _baseInformationService.GetAgenciesByCityId(cityId);
+    public async Task<List<AgencyDto>> GetAgencies()
+        => await _baseInformationService.GetAgencies();
 }

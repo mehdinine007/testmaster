@@ -19,8 +19,8 @@ namespace OrderManagement.Domain
         [Display(Name = "انصراف کلی از اولیت بندی")]
         FullCancel = 50,
         [Display(Name = "پرداخت با موفقیت انجام شد")]
-        PaymentSucceeded = 60,
+        PaymentSucceeded = 70,
         [Display(Name = "پرداخت ناموفق")]
-        PaymentNotVerified = 70
+        PaymentNotVerified = 80
     }
 }

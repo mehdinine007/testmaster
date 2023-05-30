@@ -10,7 +10,6 @@ using Microsoft.Extensions.Configuration;
 using System.Linq;
 using Volo.Abp.Domain.Entities;
 using OrderManagement.Application.OrderManagement.Utitlities;
-using Esale.Core.Utility.Results;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -19,48 +18,19 @@ public class SaleService : ApplicationService , ISaleService
     private readonly IRepository<PreSale> _preSaleRepository;
     private readonly IRepository<SaleDetail, int> _saleDetailRepository;
     private readonly IRepository<Gallery, int> _galleriesRepository;
-    private readonly IRepository<Company, int> _companyRepository;
-    private readonly IRepository<CarTip, int> _carTipRepository;
-    private readonly IRepository<CarType, int> _carTypeRepository;
-    private readonly IRepository<CarFamily, int> _carFamilyRepository;
-    private readonly IRepository<CarTip_Gallery_Mapping, int> _carTip_GalleryMappingRepository;
     private readonly IRepository<ESaleType, int> _esaleTypeRepository;
-    private readonly IRepository<CustomerOrder, int> _customerOrderRepository;
-    //private readonly IRepository<User, long> _userRepository;
     private IConfiguration _configuration { get; set; }
-    //public SaleService(IRepository<ESaleType, int> esaleTypeRepository,
-    //                   IRepository<SaleDetail, int> saleDetailRepository,
-    //                   IRepository<PreSale> preSaleRepository
-    //    )
-    //{
-    //    _esaleTypeRepository = esaleTypeRepository;
-    //    _saleDetailRepository = saleDetailRepository;
-    //    _preSaleRepository = preSaleRepository;
-    //}
-
     public SaleService(IRepository<PreSale> PreSaleRepository,
                        IRepository<SaleDetail, int> saleDetailRepository,
                        IRepository<Gallery, int> galleryRepository,
-                       IRepository<Company, int> companyRepository,
-                       IRepository<CarTip, int> carTipRepository,
-                       IRepository<CarType, int> carTypeRepository,
-                       IRepository<CarFamily, int> carFamilyRepository,
-                       IRepository<CarTip_Gallery_Mapping, int> carTip_GalleryMappingRepository,
                        IRepository<ESaleType, int> esaleTypeRepository,
-                       IRepository<CustomerOrder, int> CustomerOrderRepository,
                        IConfiguration configuration
         )
     {
         _preSaleRepository = PreSaleRepository;
         _saleDetailRepository = saleDetailRepository;
         _galleriesRepository = galleryRepository;
-        _companyRepository = companyRepository;
-        _carFamilyRepository = carFamilyRepository;
-        _carTipRepository = carTipRepository;
-        _carTypeRepository = carTypeRepository;
-        _carTip_GalleryMappingRepository = carTip_GalleryMappingRepository;
         _esaleTypeRepository = esaleTypeRepository;
-        _customerOrderRepository = CustomerOrderRepository;
         _configuration = configuration;
     }
 
@@ -88,7 +58,7 @@ public class SaleService : ApplicationService , ISaleService
 
         var company = await _galleriesRepository.GetAsync(saleDetail.CarTip.CarType.CarFamily.Company.Id);
         var galleryIds = saleDetail.CarTip.CarTip_Gallery_Mappings.Select(x => x.GalleryId).ToList();
-        var carGalleries = _galleriesRepository.WithDetails(x => galleryIds.Any(y => y == x.Id));
+        var carGalleries = (await _galleriesRepository.GetQueryableAsync()).Where(x => galleryIds.Any(y => y == x.Id)).ToList();
         var saleDetailDto = ObjectMapper.Map<SaleDetail, SaleDetailDto>(saleDetail, new SaleDetailDto());
         saleDetailDto.CarTipImageUrls = carGalleries.Select(x => x.ImageUrl).ToList();
         saleDetailDto.CompanyImageUrl = company.ImageUrl;

@@ -3,7 +3,6 @@ using OrderManagement.Domain.Bases;
 using OrderManagement.Domain;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Uow;
-using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
 using OrderManagement.Application.Contracts;
 using System.Threading;
@@ -30,7 +29,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
 {
     private readonly ICommonAppService _commonAppService;
     private readonly IBaseInformationService _baseInformationAppService;
-    private readonly IHttpContextAccessor _contextAccessor;
     private readonly IRepository<SaleDetail, int> _saleDetailRepository;
     private readonly IRepository<UserRejectionAdvocacy, int> _userRejectionAdcocacyRepository;
     private readonly IRepository<AdvocacyUser, int> _advocacyUsers;
@@ -41,16 +39,12 @@ public class OrderAppService : ApplicationService, IOrderAppService
     private readonly IEsaleGrpcClient _esaleGrpcClient;
     private IConfiguration _configuration { get; set; }
     private readonly IDistributedCache _distributedCache;
-    private readonly IRepository<Company, int> _companyRepository;
-    private readonly IUnitOfWorkManager _unitOfWorkManager;
-    private readonly IRepository<ESaleType, int> _esaleTypeRepository;
     private readonly IMemoryCache _memoryCache;
     private readonly IIpgServiceProvider _ipgServiceProvider;
     private readonly ICapacityControlAppService _capacityControlAppService;
 
     public OrderAppService(ICommonAppService commonAppService,
                            IBaseInformationService baseInformationAppService,
-                           IHttpContextAccessor contextAccessor,
                            IRepository<SaleDetail, int> saleDetailRepository,
                            IRepository<UserRejectionAdvocacy, int> userRejectionAdcocacyRepository,
                            IRepository<AdvocacyUser, int> advocacyUsers,
@@ -62,16 +56,12 @@ public class OrderAppService : ApplicationService, IOrderAppService
                            IEsaleGrpcClient esaleGrpcClient,
                            IConfiguration configuration,
                            IDistributedCache distributedCache,
-                           IRepository<Company, int> companyRepository,
-                           IUnitOfWorkManager UnitOfWorkManager,
-                           IRepository<ESaleType, int> esaleTypeRepository,
                            IMemoryCache memoryCache,
                            ICapacityControlAppService capacityControlAppService
         )
     {
         _commonAppService = commonAppService;
         _baseInformationAppService = baseInformationAppService;
-        _contextAccessor = contextAccessor;
         _saleDetailRepository = saleDetailRepository;
         _userRejectionAdcocacyRepository = userRejectionAdcocacyRepository;
         _advocacyUsers = advocacyUsers;
@@ -83,9 +73,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
         _esaleGrpcClient = esaleGrpcClient;
         _distributedCache = distributedCache;
         _configuration = configuration;
-        _companyRepository = companyRepository;
-        _unitOfWorkManager = UnitOfWorkManager;
-        _esaleTypeRepository = esaleTypeRepository;
         _memoryCache = memoryCache;
         _capacityControlAppService = capacityControlAppService;
     }
@@ -166,7 +153,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
     [Audited]
     [UnitOfWork(isTransactional: false)]
-    public async Task CommitOrder(CommitOrderDto commitOrderDto)
+    public async Task<CommitOrderResultDto> CommitOrder(CommitOrderDto commitOrderDto)
     {
         Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
         TimeSpan ttl = DateTime.Now.Subtract(DateTime.Now);
@@ -492,13 +479,16 @@ public class OrderAppService : ApplicationService, IOrderAppService
         CustomerOrder customerOrder = new CustomerOrder();
         var paymentMethodGranted = _configuration.GetValue<bool?>("PaymentMethodGranted") ?? false;
         var customerOrderQuery = await _commitOrderRepository.GetQueryableAsync();
-        var similarOrder = customerOrderQuery.AsNoTracking()
-            .FirstOrDefault(x => x.OrderStatus == OrderStatusType.PaymentNotVerified
+        var similarOrder = customerOrderQuery.FirstOrDefault(x => x.OrderStatus == OrderStatusType.PaymentNotVerified
             && x.UserId == userId
             && x.SaleDetailId == SaleDetailDto.Id);
         if (paymentMethodGranted && similarOrder != null)
         {
             customerOrder = similarOrder;
+            customerOrder.OrderStatus = OrderStatusType.RecentlyAdded;
+            customerOrder.AgencyId = commitOrderDto.AgencyId;
+            await _commitOrderRepository.UpdateAsync(customerOrder, autoSave: true);
+            await CurrentUnitOfWork.SaveChangesAsync();
         }
         else
         {
@@ -596,10 +586,64 @@ public class OrderAppService : ApplicationService, IOrderAppService
             //         , TimeSpan.FromSeconds(ttl.TotalSeconds));
         }
 
+        //var customerOrderQuery = await _commitOrderRepository.GetQueryableAsync();
+        //var customerOrder = customerOrderQuery.Include(x => x.SaleDetail)
+        //    .Select(x => new
+        //    {
+        //        x.UserId,
+        //        x.Id,
+        //        SaleDetailId = x.SaleDetail.Id,
+        //        //TODO: make sure the amount of car is right
+        //        Amount = x.SaleDetail.CarFee,
+        //        x.AgencyId,
+        //        x.OrderStatus
+        //    }).FirstOrDefault(x => x.Id == customerOrderId && x.OrderStatus == OrderStatusType.RecentlyAdded)
+        //?? throw new EntityNotFoundException(typeof(CustomerOrder));
 
+        var customer = await _esaleGrpcClient.GetUserById(customerOrder.UserId);
+        if (!customer.NationalCode.Equals(nationalCode))
+            throw new UserFriendlyException("شما نمیتوانید سفارش شخص دیگری را پرداخت کنید");
 
+        if (paymentMethodGranted && !commitOrderDto.PspAccountId.HasValue)
+            throw new UserFriendlyException("درگاه انتخاب نشده است");
 
+        //TODO: check if we can change existed sale detail and add amount here instead if qurying it here
+        var saleDetailPrice = (await _saleDetailRepository.GetQueryableAsync())
+            .Select(x => new { x.CarFee, x.Id }).FirstOrDefault(x => x.Id == SaleDetailDto.Id)
+            ?? throw new EntityNotFoundException(typeof(SaleDetail), SaleDetailDto.Id);
 
+        var handShakeResponse = await _ipgServiceProvider.HandShakeWithPsp(new PspHandShakeRequest()
+        {
+            CallBackUrl = "http://sample.fillmelater.com", //TODO: implement call back url and add it here
+            Amount = (long)saleDetailPrice.CarFee,
+            Mobile = customer.MobileNumber,
+            NationalCode = nationalCode,
+            PspAccountId = commitOrderDto.PspAccountId.Value,
+            FilterParam1 = customerOrder.SaleDetailId,
+            FilterParam2 = customerOrder.AgencyId,
+            FilterParam3 = customerOrder.Id
+        });
+        //var pspCacheKey = string.Format(RedisConstants.UserTransactionKey, nationalCode, customerOrder.Id);
+        //var userTransactionToken = await _distributedCache.GetStringAsync(cacheKey);
+        //if (userTransactionToken != null)
+        //{
+        //    await _distributedCache.RemoveAsync(cacheKey);
+        //}
+        //await _distributedCache.SetStringAsync(cacheKey, handShakeResponse.Token);
+        //var  ObjectMapper.Map<HandShakeResponseDto, HandShakeResultDto>(handShakeResponse);
+
+        return new CommitOrderResultDto()
+        {
+            PaymentGranted = paymentMethodGranted,
+            UId = commitOrderDto.SaleDetailUId,
+            PaymentMethodConigurations =  paymentMethodGranted ? new()
+            {
+                Message = handShakeResponse.Result.Message,
+                StatusCode = handShakeResponse.Result.StatusCode,
+                Token = handShakeResponse.Result.Token,
+                Url = handShakeResponse.Result.Url
+            } : new()
+        };
     }
 
 
@@ -962,8 +1006,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 SaleDetailId = x.SaleDetail.Id,
                 //TODO: make sure the amount of car is right
                 Amount = x.SaleDetail.CarFee,
-                x.AgencyId
-            }).FirstOrDefault(x => x.Id == customerOrderId)
+                x.AgencyId,
+                x.OrderStatus
+            }).FirstOrDefault(x => x.Id == customerOrderId && x.OrderStatus == OrderStatusType.RecentlyAdded)
         ?? throw new EntityNotFoundException(typeof(CustomerOrder));
 
         var customer = await _esaleGrpcClient.GetUserById(customerOrder.UserId);
@@ -987,7 +1032,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         {
             await _distributedCache.RemoveAsync(cacheKey);
         }
-        await _distributedCache.SetStringAsync(cacheKey, handShakeResponse.Token);
+        await _distributedCache.SetStringAsync(cacheKey, handShakeResponse.Result.Token);
         return ObjectMapper.Map<HandShakeResponseDto, HandShakeResultDto>(handShakeResponse);
     }
 }

@@ -9,9 +9,9 @@ namespace OrderManagement.Domain
 
         public string Name { get; set; }
 
-        public int CityId { get; set; }
+        public int ProvinceId { get; set; }
 
-        public virtual City City { get; set; }
+        public virtual Province Province { get; set; }
 
         public virtual ICollection<AgencySaleDetail> AgencySaleDetails
         {

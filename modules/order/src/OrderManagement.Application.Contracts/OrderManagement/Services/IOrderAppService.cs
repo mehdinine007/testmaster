@@ -16,11 +16,11 @@ namespace OrderManagement.Application.Contracts.Services
 
         Task<List<CustomerOrderPriorityUserDto>> GetCustomerInfoPriorityUser();
 
-        Task CommitOrder(CommitOrderDto commitOrderDto);
+        Task<CommitOrderResultDto> CommitOrder(CommitOrderDto commitOrderDto);
 
         Task<bool> UserRejectionStatus();
         Task<bool> Test();
-        Task<HandShakeResultDto> PrepareOrderForPayment(int customerOrderId, int pspAccountId);
+        //Task<HandShakeResultDto> PrepareOrderForPayment(int customerOrderId, int pspAccountId);
 
         //Task Checkout();
     }

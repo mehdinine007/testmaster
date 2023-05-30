@@ -292,9 +292,9 @@ public static class OrderManagementDbContextModelCreatingExtensions
         {
             entity.ToTable(nameof(Agency));
 
-            entity.HasOne<City>(x => x.City)
+            entity.HasOne<Province>(x => x.Province)
                 .WithMany(x => x.Agencies)
-                .HasForeignKey(x => x.CityId);
+                .HasForeignKey(x => x.ProvinceId);
         });
 
         builder.Entity<AgencySaleDetail>(entity =>

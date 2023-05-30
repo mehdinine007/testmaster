@@ -50,4 +50,8 @@
         <None Remove="Logs\**" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Infrastructures\Filters\" />
+    </ItemGroup>
+
 </Project>
