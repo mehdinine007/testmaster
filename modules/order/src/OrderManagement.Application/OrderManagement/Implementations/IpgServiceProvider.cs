@@ -9,11 +9,6 @@ using OrderManagement.Application.Contracts.OrderManagement.Exceptions;
 using System.Text.RegularExpressions;
 using OrderManagement.Application.OrderManagement.Utitlities;
 using Volo.Abp;
-using Grpc.Net.Client;
-using OrderManagement.Domain;
-using PaymentManagement.Application.Contracts.Dtos;
-using PaymentManagement.Application.Contracts.IServices;
-using ProtoBuf.Grpc.Client;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -56,23 +51,6 @@ public class IpgServiceProvider : ApplicationService, IIpgServiceProvider
 
         //TODO: Add log for failure reason
         throw new UserFriendlyException("در حال حاضر پرداخت وجه از طریق این درگاه ممکن نیست لطفا درگاه دیگری را انتخاب کنید");
-    }
-
-    public async Task RetryForVerify()
-    {
-        using (var channel = GrpcChannel.ForAddress(_configuration.GetSection("gRPC:PaymentUrl").Value))
-        {
-            var paymentAppService = channel.CreateGrpcService<IGrpcPaymentAppService>();
-            var payments = await paymentAppService.RetryForVerify();
-            if (payments != null && payments.Count > 0)
-            {
-                foreach (var payment in payments)
-                {
-                    int orderId = payment.FilterParam3 ?? 0;
-                    _orderAppService.UpdateStatus(orderId,payment.StatusId == 0 ? (int)OrderStatusType.PaymentSucceeded: (int)OrderStatusType.PaymentNotVerified);
-                }
-            }
-        }
     }
 
     public Task ReverseTransaction(int paymentId)
