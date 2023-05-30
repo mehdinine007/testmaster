@@ -7,6 +7,7 @@ namespace PaymentManagement.Application.Contracts.IServices
     public interface IGrpcPaymentAppService
     {
         List<InquiryWithFilterParamDto> GetPaymentStatusList(PaymentStatusDto paymentStatusDto);
+        Task<List<RetryForVerifyDetail>> RetryForVerify();
 
     }
 }

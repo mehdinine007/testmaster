@@ -364,7 +364,7 @@ namespace PaymentManagement.Application.Servicess
 
                 var handShakeRequest = new
                 {
-                    TerminalId = long.Parse(pspAccountProps.TerminalId),
+                    TerminalId = pspAccountProps.TerminalId,
                     UserName = pspAccountProps.UserName,
                     UserPassword = pspAccountProps.UserPassword,
                     OrderId = payment.Id,
@@ -882,7 +882,7 @@ namespace PaymentManagement.Application.Servicess
 
                 var verifyRequest = new
                 {
-                    TerminalId = long.Parse(pspAccountProps.TerminalId),
+                    TerminalId = pspAccountProps.TerminalId,
                     UserName = pspAccountProps.UserName,
                     UserPassword = pspAccountProps.UserPassword,
                     SequentialOrderId = payment.Id,
@@ -1206,7 +1206,7 @@ namespace PaymentManagement.Application.Servicess
 
                 var reverseRequest = new
                 {
-                    TerminalId = long.Parse(pspAccountProps.TerminalId),
+                    TerminalId = pspAccountProps.TerminalId,
                     UserName = pspAccountProps.UserName,
                     UserPassword = pspAccountProps.UserPassword,
                     SequentialOrderId = payment.Id,
@@ -1273,7 +1273,7 @@ namespace PaymentManagement.Application.Servicess
 
         #region RetryForVerify
         [UnitOfWork(isTransactional: false)]
-        public async Task RetryForVerify()
+        public async Task<List<RetryForVerifyDetail>> RetryForVerify()
         {
             //todo:شرط زمان با اضافه کردن درگاه ها باید تکمیل شود
             var deadLine = DateTime.Now.AddMinutes(-12);
@@ -1307,8 +1307,10 @@ namespace PaymentManagement.Application.Servicess
                         break;
                 }
             }
+
+            return new List<RetryForVerifyDetail> { };
         }
-        private async Task RetryForVerifyToIranKishAsync(PaymentDto payment, string pspAccountJsonProps)
+        private async Task<List<RetryForVerifyOutput>> RetryForVerifyToIranKishAsync(PaymentDto payment, string pspAccountJsonProps)
         {
             if (string.IsNullOrEmpty(payment.TransactionCode) || string.IsNullOrEmpty(payment.TraceNo))
             {
@@ -1329,8 +1331,9 @@ namespace PaymentManagement.Application.Servicess
             using var uow = _unitOfWorkManager.Begin(requiresNew: true, isTransactional: false);
             await _paymentRepository.AttachAsync(paymentEntity, o => o.RetryCount);
             await uow.CompleteAsync();
+            return new List<RetryForVerifyOutput> { };
         }
-        private async Task RetryForVerifyToMellatAsync(PaymentDto payment, string pspAccountJsonProps)
+        private async Task<List<RetryForVerifyOutput>> RetryForVerifyToMellatAsync(PaymentDto payment, string pspAccountJsonProps)
         {
             if (!string.IsNullOrEmpty(payment.TransactionCode))
             {
@@ -1342,6 +1345,8 @@ namespace PaymentManagement.Application.Servicess
                 await _paymentRepository.AttachAsync(paymentEntity, o => o.RetryCount);
                 await uow.CompleteAsync();
             }
+
+            return new List<RetryForVerifyOutput> { };
         }
         #endregion
     }

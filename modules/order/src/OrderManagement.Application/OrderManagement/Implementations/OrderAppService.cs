@@ -3,7 +3,6 @@ using OrderManagement.Domain.Bases;
 using OrderManagement.Domain;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Uow;
-using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
 using OrderManagement.Application.Contracts;
 using System.Threading;
@@ -1045,5 +1044,19 @@ public class OrderAppService : ApplicationService, IOrderAppService
         }
         await _distributedCache.SetStringAsync(cacheKey, handShakeResponse.Result.Token);
         return ObjectMapper.Map<HandShakeResponseDto, HandShakeResultDto>(handShakeResponse);
+    }
+
+    public async Task UpdateStatus(int orderId, int orderStatus)
+    {
+        var customerOrder = _commitOrderRepository
+            .WithDetails()
+            .FirstOrDefault(x => x.Id == orderId);
+        if (customerOrder == null)
+        {
+            return;
+        }
+        customerOrder.OrderStatus = (OrderStatusType)orderStatus;
+        await _commitOrderRepository.UpdateAsync(customerOrder, autoSave: true);
+        await CurrentUnitOfWork.SaveChangesAsync();
     }
 }
