@@ -1035,4 +1035,18 @@ public class OrderAppService : ApplicationService, IOrderAppService
         await _distributedCache.SetStringAsync(cacheKey, handShakeResponse.Result.Token);
         return ObjectMapper.Map<HandShakeResponseDto, HandShakeResultDto>(handShakeResponse);
     }
+
+    public async Task UpdateStatus(int orderId, int orderStatus)
+    {
+        var customerOrder = _commitOrderRepository
+            .WithDetails()
+            .FirstOrDefault(x => x.Id == orderId);
+        if (customerOrder == null)
+        {
+            return;
+        }
+        customerOrder.OrderStatus = (OrderStatusType)orderStatus;
+        await _commitOrderRepository.UpdateAsync(customerOrder, autoSave: true);
+        await CurrentUnitOfWork.SaveChangesAsync();
+    }
 }
