@@ -13,6 +13,6 @@ namespace OrderManagement.Application.Contracts.Services
         Task<ApiResult<PspInteractionResult>> VerifyTransaction(int paymentId);
 
         Task ReverseTransaction(int paymentId);
-        Task<PspInteractionResult> VerifyTransaction(int paymentId);
+        Task RetryForVerify();
     }
 }
