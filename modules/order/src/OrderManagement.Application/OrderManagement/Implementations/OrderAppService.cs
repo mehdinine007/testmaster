@@ -3,7 +3,6 @@ using OrderManagement.Domain.Bases;
 using OrderManagement.Domain;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Uow;
-using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
 using OrderManagement.Application.Contracts;
 using System.Threading;
