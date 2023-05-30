@@ -1273,7 +1273,7 @@ namespace PaymentManagement.Application.Servicess
 
         #region RetryForVerify
         [UnitOfWork(isTransactional: false)]
-        public async Task<List<RetryForVerifyOutput>> RetryForVerify()
+        public async Task<List<RetryForVerifyDetail>> RetryForVerify()
         {
             //todo:شرط زمان با اضافه کردن درگاه ها باید تکمیل شود
             var deadLine = DateTime.Now.AddMinutes(-12);
@@ -1308,7 +1308,7 @@ namespace PaymentManagement.Application.Servicess
                 }
             }
 
-            return new List<RetryForVerifyOutput> { };
+            return new List<RetryForVerifyDetail> { };
         }
         private async Task<List<RetryForVerifyOutput>> RetryForVerifyToIranKishAsync(PaymentDto payment, string pspAccountJsonProps)
         {

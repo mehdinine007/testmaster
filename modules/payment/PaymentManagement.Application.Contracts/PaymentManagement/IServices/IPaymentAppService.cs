@@ -15,6 +15,6 @@ namespace PaymentManagement.Application.Contracts.IServices
         Task<ReverseOutputDto> ReverseAsync(int paymentId);
         //todo: Task<SettleOutputDto> SettleAsync(int paymentId);
         List<InquiryWithFilterParamDto> InquiryWithFilterParam(int? filterParam1, int? filterParam2, int? filterParam3, int? filterParam4);
-        Task<List<RetryForVerifyOutput>> RetryForVerify();
+        Task<List<RetryForVerifyDetail>> RetryForVerify();
     }
 }
