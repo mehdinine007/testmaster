@@ -299,7 +299,7 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
         return await _esaleGrpcClient.GetUserById(_commonAppService.GetUserId());
     }
 
-    public async Task<List<AgencyDto>> GetAgenciesByCityId()
+    public async Task<List<AgencyDto>> GetAgencies()
     {
         var user = await _esaleGrpcClient.GetUserById(_commonAppService.GetUserId());
         var agencyQuery = await _agencyRepository.GetQueryableAsync();
