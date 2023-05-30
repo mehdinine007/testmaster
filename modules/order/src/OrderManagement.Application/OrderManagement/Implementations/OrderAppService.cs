@@ -23,7 +23,6 @@ using OrderManagement.Application.OrderManagement.Constants;
 using Newtonsoft.Json;
 using Volo.Abp.Domain.Entities;
 using Microsoft.Extensions.Caching.Memory;
-using System.Runtime.ExceptionServices;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -31,7 +30,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
 {
     private readonly ICommonAppService _commonAppService;
     private readonly IBaseInformationService _baseInformationAppService;
-    private readonly IHttpContextAccessor _contextAccessor;
     private readonly IRepository<SaleDetail, int> _saleDetailRepository;
     private readonly IRepository<UserRejectionAdvocacy, int> _userRejectionAdcocacyRepository;
     private readonly IRepository<AdvocacyUser, int> _advocacyUsers;
@@ -42,16 +40,12 @@ public class OrderAppService : ApplicationService, IOrderAppService
     private readonly IEsaleGrpcClient _esaleGrpcClient;
     private IConfiguration _configuration { get; set; }
     private readonly IDistributedCache _distributedCache;
-    private readonly IRepository<Company, int> _companyRepository;
-    private readonly IUnitOfWorkManager _unitOfWorkManager;
-    private readonly IRepository<ESaleType, int> _esaleTypeRepository;
     private readonly IMemoryCache _memoryCache;
     private readonly IIpgServiceProvider _ipgServiceProvider;
     private readonly ICapacityControlAppService _capacityControlAppService;
 
     public OrderAppService(ICommonAppService commonAppService,
                            IBaseInformationService baseInformationAppService,
-                           IHttpContextAccessor contextAccessor,
                            IRepository<SaleDetail, int> saleDetailRepository,
                            IRepository<UserRejectionAdvocacy, int> userRejectionAdcocacyRepository,
                            IRepository<AdvocacyUser, int> advocacyUsers,
@@ -63,16 +57,12 @@ public class OrderAppService : ApplicationService, IOrderAppService
                            IEsaleGrpcClient esaleGrpcClient,
                            IConfiguration configuration,
                            IDistributedCache distributedCache,
-                           IRepository<Company, int> companyRepository,
-                           IUnitOfWorkManager UnitOfWorkManager,
-                           IRepository<ESaleType, int> esaleTypeRepository,
                            IMemoryCache memoryCache,
                            ICapacityControlAppService capacityControlAppService
         )
     {
         _commonAppService = commonAppService;
         _baseInformationAppService = baseInformationAppService;
-        _contextAccessor = contextAccessor;
         _saleDetailRepository = saleDetailRepository;
         _userRejectionAdcocacyRepository = userRejectionAdcocacyRepository;
         _advocacyUsers = advocacyUsers;
@@ -84,9 +74,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
         _esaleGrpcClient = esaleGrpcClient;
         _distributedCache = distributedCache;
         _configuration = configuration;
-        _companyRepository = companyRepository;
-        _unitOfWorkManager = UnitOfWorkManager;
-        _esaleTypeRepository = esaleTypeRepository;
         _memoryCache = memoryCache;
         _capacityControlAppService = capacityControlAppService;
     }
