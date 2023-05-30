@@ -188,7 +188,7 @@ namespace OrderManagement.Application.OrderManagement
             if (agencyId != null && agencyId != 0)
             {
                 var agencySaledetail = GetAgancySaleDetail(saleDetaild, agencyId??0);
-                _capacity = saledetail.SaleTypeCapacity;
+                _capacity = agencySaledetail.DistributionCapacity;
                 _paymentCount = 0;
                 using (var channel = GrpcChannel.ForAddress(_configuration.GetSection("gRPC:PaymentUrl").Value))
                 {
