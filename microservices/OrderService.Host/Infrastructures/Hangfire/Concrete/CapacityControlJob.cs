@@ -16,13 +16,13 @@ namespace OrderService.Host.Infrastructures.Hangfire.Concrete
         public void Payment()
         {
             _capacityControlAppService.Payment();
-            BackgroundJob.Schedule(() => Payment(), TimeSpan.FromSeconds(10));
+            BackgroundJob.Schedule(() => Payment(), TimeSpan.FromSeconds(120));
         }
 
         public void SaleDetail()
         {
             _capacityControlAppService.SaleDetail();
-            BackgroundJob.Schedule(() => SaleDetail(), TimeSpan.FromSeconds(10));
+            BackgroundJob.Schedule(() => SaleDetail(), TimeSpan.FromSeconds(120));
         }
     }
 }
