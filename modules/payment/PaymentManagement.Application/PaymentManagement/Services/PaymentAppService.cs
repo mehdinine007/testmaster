@@ -92,11 +92,11 @@ namespace PaymentManagement.Application.Servicess
 
                 List<string> messages = new();
 
-                if (!ValidationHelper.IsValidNationalCode(input.NationalCode))
+                if (!string.IsNullOrEmpty(input.NationalCode) && !ValidationHelper.IsValidNationalCode(input.NationalCode))
                 {
                     messages.Add(Constants.ErrorInHandShakeInput_NationalCode);
                 }
-                if (!ValidationHelper.IsValidMobileNumber(input.Mobile))
+                if (!string.IsNullOrEmpty(input.Mobile) && !ValidationHelper.IsValidMobileNumber(input.Mobile))
                 {
                     messages.Add(Constants.ErrorInHandShakeInput_Mobile);
                 }

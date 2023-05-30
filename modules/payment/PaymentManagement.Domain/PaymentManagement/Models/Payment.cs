@@ -13,7 +13,7 @@ namespace PaymentManagement.Domain.Models
     {
         public int PspAccountId { get; set; }
         public int PaymentStatusId { get; set; }
-        [Precision(10, 0)]
+        [Precision(18, 0)]
         public decimal Amount { get; set; }
         [Column(TypeName = "VARCHAR(100)")]
         public string? Token { get; set; }
