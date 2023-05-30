@@ -32,8 +32,8 @@ public class IpgServiceProvider : ApplicationService, IIpgServiceProvider
 
     public async Task<HandShakeResponseDto> HandShakeWithPsp(PspHandShakeRequest handShakeRequest)
     {
-        if (handShakeRequest.Amount <= 10000)
-            throw new HandShakeInvalidRequestException(HandShakeInvalidRequestException.InvalidAmount, "مبالغ کم تر از ده هزار ریال قابل تراکنش نمیباشند");
+        //if (handShakeRequest.Amount <= 10000)
+        //    throw new HandShakeInvalidRequestException(HandShakeInvalidRequestException.InvalidAmount, "مبالغ کم تر از ده هزار ریال قابل تراکنش نمیباشند");
         if (string.IsNullOrWhiteSpace(handShakeRequest.NationalCode))
             throw new HandShakeInvalidRequestException(HandShakeInvalidRequestException.EmptyNationlCode, "شماره ملی اجباری است");
         if (string.IsNullOrWhiteSpace(handShakeRequest.CallBackUrl) || !Regex.IsMatch(handShakeRequest.CallBackUrl, RegexConstatnts.Url))
@@ -45,7 +45,7 @@ public class IpgServiceProvider : ApplicationService, IIpgServiceProvider
         RestRequest request = new(HandShakePath,Method.Post);
         request.AddJsonBody<PspHandShakeRequest>(handShakeRequest);
         var handshakeResult = await client.ExecuteAsync<HandShakeResponseDto>(request);
-        if(handshakeResult.IsSuccessful && handshakeResult.IsSuccessStatusCode && handshakeResult.Data.StatusCode == 0)
+        if(handshakeResult.IsSuccessful && handshakeResult.IsSuccessStatusCode && handshakeResult.Data.Result.StatusCode == 0)
             return handshakeResult.Data;
 
         //TODO: Add log for failure reason

@@ -500,6 +500,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         {
             customerOrder = similarOrder;
             customerOrder.OrderStatus = OrderStatusType.RecentlyAdded;
+            customerOrder.AgencyId = commitOrderDto.AgencyId;
             await _commitOrderRepository.UpdateAsync(customerOrder, autoSave: true);
             await CurrentUnitOfWork.SaveChangesAsync();
         }
@@ -627,7 +628,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         var handShakeResponse = await _ipgServiceProvider.HandShakeWithPsp(new PspHandShakeRequest()
         {
-            CallBackUrl = "", //TODO: implement call back url and add it here
+            CallBackUrl = "http://sample.fillmelater.com", //TODO: implement call back url and add it here
             Amount = (long)saleDetailPrice.CarFee,
             Mobile = customer.MobileNumber,
             NationalCode = nationalCode,
@@ -636,13 +637,13 @@ public class OrderAppService : ApplicationService, IOrderAppService
             FilterParam2 = customerOrder.AgencyId,
             FilterParam3 = customerOrder.Id
         });
-        var pspCacheKey = string.Format(RedisConstants.UserTransactionKey, nationalCode, customerOrder.Id);
-        var userTransactionToken = await _distributedCache.GetStringAsync(cacheKey);
-        if (userTransactionToken != null)
-        {
-            await _distributedCache.RemoveAsync(cacheKey);
-        }
-        await _distributedCache.SetStringAsync(cacheKey, handShakeResponse.Token);
+        //var pspCacheKey = string.Format(RedisConstants.UserTransactionKey, nationalCode, customerOrder.Id);
+        //var userTransactionToken = await _distributedCache.GetStringAsync(cacheKey);
+        //if (userTransactionToken != null)
+        //{
+        //    await _distributedCache.RemoveAsync(cacheKey);
+        //}
+        //await _distributedCache.SetStringAsync(cacheKey, handShakeResponse.Token);
         //var  ObjectMapper.Map<HandShakeResponseDto, HandShakeResultDto>(handShakeResponse);
 
         return new CommitOrderResultDto()
@@ -651,10 +652,10 @@ public class OrderAppService : ApplicationService, IOrderAppService
             UId = commitOrderDto.SaleDetailUId,
             PaymentMethodConigurations =  paymentMethodGranted ? new()
             {
-                Message = handShakeResponse.Message,
-                StatusCode = handShakeResponse.StatusCode,
-                Token = handShakeResponse.Token,
-                Url = handShakeResponse.Url
+                Message = handShakeResponse.Result.Message,
+                StatusCode = handShakeResponse.Result.StatusCode,
+                Token = handShakeResponse.Result.Token,
+                Url = handShakeResponse.Result.Url
             } : new()
         };
     }
@@ -1045,7 +1046,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         {
             await _distributedCache.RemoveAsync(cacheKey);
         }
-        await _distributedCache.SetStringAsync(cacheKey, handShakeResponse.Token);
+        await _distributedCache.SetStringAsync(cacheKey, handShakeResponse.Result.Token);
         return ObjectMapper.Map<HandShakeResponseDto, HandShakeResultDto>(handShakeResponse);
     }
 }
