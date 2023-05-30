@@ -15,11 +15,9 @@ namespace OrderManagement.Application.OrderManagement.Implementations;
 public class IpgServiceProvider : ApplicationService, IIpgServiceProvider
 {
     private readonly IConfiguration _configuration;
-    private readonly IOrderAppService _orderAppService;
-    public IpgServiceProvider(IConfiguration configuration, IOrderAppService orderAppService)
+    public IpgServiceProvider(IConfiguration configuration)
     {
         _configuration = configuration;
-        _orderAppService = orderAppService;
     }
 
     public async Task<List<PspDto>> GetPsps()
