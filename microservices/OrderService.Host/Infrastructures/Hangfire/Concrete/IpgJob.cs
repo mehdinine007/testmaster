@@ -8,15 +8,15 @@ namespace OrderService.Host.Infrastructures.Hangfire.Concrete
 {
     public class IpgJob : IIpgJob
     {
-        private readonly IIpgServiceProvider _ipgServiceProvider;
-        public IpgJob(IIpgServiceProvider ipgServiceProvider)
+        private readonly IOrderAppService _orderAppService;
+        public IpgJob(IOrderAppService orderAppService)
         {
-            _ipgServiceProvider = ipgServiceProvider;
+            _orderAppService = orderAppService;
         }
 
         public void RetryForVerify()
         {
-            _ipgServiceProvider.RetryForVerify();
+            _orderAppService.RetryPaymentForVerify();
             BackgroundJob.Schedule(() => RetryForVerify(), TimeSpan.FromMinutes(15));
         }
 

@@ -17,7 +17,7 @@ namespace OrderManagement.Application.Contracts.Services
         Task<List<CustomerOrderPriorityUserDto>> GetCustomerInfoPriorityUser();
 
         Task<CommitOrderResultDto> CommitOrder(CommitOrderDto commitOrderDto);
-
+        Task RetryPaymentForVerify();
         Task<bool> UserRejectionStatus();
         Task<bool> Test();
         //Task<HandShakeResultDto> PrepareOrderForPayment(int customerOrderId, int pspAccountId);

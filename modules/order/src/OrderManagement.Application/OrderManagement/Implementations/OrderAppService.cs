@@ -22,6 +22,9 @@ using OrderManagement.Application.OrderManagement.Constants;
 using Newtonsoft.Json;
 using Volo.Abp.Domain.Entities;
 using Microsoft.Extensions.Caching.Memory;
+using Grpc.Net.Client;
+using PaymentManagement.Application.Contracts.IServices;
+using ProtoBuf.Grpc.Client;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -1049,4 +1052,22 @@ public class OrderAppService : ApplicationService, IOrderAppService
         await _commitOrderRepository.UpdateAsync(customerOrder, autoSave: true);
         await CurrentUnitOfWork.SaveChangesAsync();
     }
+
+    public async Task RetryPaymentForVerify()
+    {
+        using (var channel = GrpcChannel.ForAddress(_configuration.GetSection("gRPC:PaymentUrl").Value))
+        {
+            var paymentAppService = channel.CreateGrpcService<IGrpcPaymentAppService>();
+            var payments = await paymentAppService.RetryForVerify();
+            if (payments != null && payments.Count > 0)
+            {
+                foreach (var payment in payments)
+                {
+                    int orderId = payment.FilterParam3 ?? 0;
+                    UpdateStatus(orderId, payment.StatusId == 0 ? (int)OrderStatusType.PaymentSucceeded : (int)OrderStatusType.PaymentNotVerified);
+                }
+            }
+        }
+    }
+
 }

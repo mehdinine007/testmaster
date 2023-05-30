@@ -11,6 +11,5 @@ namespace OrderManagement.Application.Contracts.Services
         Task<HandShakeResponseDto> HandShakeWithPsp(PspHandShakeRequest handShakeRequest);
 
         Task<PspInteractionResult> VerifyTransaction(int paymentId);
-        Task RetryForVerify();
     }
 }
