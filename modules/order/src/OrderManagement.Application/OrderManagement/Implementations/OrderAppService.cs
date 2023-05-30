@@ -22,6 +22,8 @@ using OrderManagement.Application.OrderManagement.Constants;
 using Newtonsoft.Json;
 using Volo.Abp.Domain.Entities;
 using Microsoft.Extensions.Caching.Memory;
+using Esale.Core.Utility.Results;
+using OrderManagement.Application.Helpers;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -505,7 +507,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             await _commitOrderRepository.InsertAsync(customerOrder);
             await CurrentUnitOfWork.SaveChangesAsync();
         }
-        var agencyCapacityControl = await _capacityControlAppService.Validation(SaleDetailDto.Id,commitOrderDto.AgencyId);
+        var agencyCapacityControl = await _capacityControlAppService.Validation(SaleDetailDto.Id, commitOrderDto.AgencyId);
         if (!agencyCapacityControl.Succsess)
             throw new UserFriendlyException(agencyCapacityControl.Message);
         //Console.WriteLine("afterasli");
@@ -636,7 +638,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         {
             PaymentGranted = paymentMethodGranted,
             UId = commitOrderDto.SaleDetailUId,
-            PaymentMethodConigurations =  paymentMethodGranted ? new()
+            PaymentMethodConigurations = paymentMethodGranted ? new()
             {
                 Message = handShakeResponse.Result.Message,
                 StatusCode = handShakeResponse.Result.StatusCode,
@@ -1033,6 +1035,71 @@ public class OrderAppService : ApplicationService, IOrderAppService
             await _distributedCache.RemoveAsync(cacheKey);
         }
         await _distributedCache.SetStringAsync(cacheKey, handShakeResponse.Result.Token);
-        return ObjectMapper.Map<HandShakeResponseDto, HandShakeResultDto>(handShakeResponse);
+        return new HandShakeResultDto()
+        {
+            Message = handShakeResponse.Result.Message,
+            PaymentId = handShakeResponse.Result.PaymentId,
+            StatusCode = handShakeResponse.Result.StatusCode,
+            Token = handShakeResponse.Result.Token,
+            Url = handShakeResponse.Result.Url
+        };
+    }
+
+    public async Task<IPaymentResult> CheckoutPayment(int status, int paymentId)
+    {
+        List<Exception> exceptionCollection = new();
+        try
+        {
+            //TODO: We need to get order id from payment module
+            var orderId = 0;
+            var order = (await _commitOrderRepository.GetQueryableAsync())
+                .FirstOrDefault(x => x.Id == orderId);
+
+            order.OrderStatus = status == 0
+                ? OrderStatusType.PaymentSucceeded
+                : OrderStatusType.PaymentNotVerified;
+            if(status != 0)
+            {
+                exceptionCollection.Add(new UserFriendlyException("عملیات پرداخت ناموفق بود"));
+                await _commitOrderRepository.UpdateAsync(order);
+                return new PaymentResult
+                {
+                    Message = exceptionCollection.ConcatErrorMessages(),
+                    Status = status,
+                };
+            }
+            var capacityControl = await _capacityControlAppService.Validation(order.SaleDetailId, order.AgencyId);
+            if (!capacityControl.Succsess)
+            {
+                await _ipgServiceProvider.ReverseTransaction(paymentId);
+                exceptionCollection.Add(new UserFriendlyException(capacityControl.Message));
+                return new PaymentResult()
+                {
+                    Message = exceptionCollection.ConcatErrorMessages(),
+                    Status = 1,
+                    PaymentId = 0,
+                    OrderId = orderId
+                };
+            }
+            var verificationResponse = await _ipgServiceProvider.VerifyTransaction(paymentId);
+            await _commitOrderRepository.UpdateAsync(order);
+            return new PaymentResult()
+            {
+                PaymentId = paymentId,
+                Message = verificationResponse.Result.Message,
+                OrderId = orderId,
+                Status = status
+            };
+        }
+        catch (Exception e)
+        {
+            exceptionCollection.Add(e);
+            return new PaymentResult()
+            {
+                Message = exceptionCollection.ConcatErrorMessages(),
+                PaymentId = paymentId,
+                Status = 2,
+            };
+        }
     }
 }
