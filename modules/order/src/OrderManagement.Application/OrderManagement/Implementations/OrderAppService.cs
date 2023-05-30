@@ -522,9 +522,21 @@ public class OrderAppService : ApplicationService, IOrderAppService
             await _commitOrderRepository.InsertAsync(customerOrder);
             await CurrentUnitOfWork.SaveChangesAsync();
         }
-        var agencyCapacityControl = await _capacityControlAppService.Validation(SaleDetailDto.Id, commitOrderDto.AgencyId);
-        if (!agencyCapacityControl.Succsess)
-            throw new UserFriendlyException(agencyCapacityControl.Message);
+        IResult agencyCapacityControl = null;
+        try {
+             agencyCapacityControl = await _capacityControlAppService.Validation(SaleDetailDto.Id, commitOrderDto.AgencyId);
+            if (!agencyCapacityControl.Succsess)
+                throw new UserFriendlyException(agencyCapacityControl.Message);
+        }
+        catch(Exception ex)
+        {
+            customerOrder.OrderStatus = OrderStatusType.PaymentNotVerified;
+            await _commitOrderRepository.UpdateAsync(customerOrder);
+            await CurrentUnitOfWork.SaveChangesAsync();
+
+            throw ex;
+        }
+     
         //Console.WriteLine("afterasli");
 
         //unitOfWork.Complete();
@@ -569,6 +581,13 @@ public class OrderAppService : ApplicationService, IOrderAppService
             FilterParam2 = customerOrder.AgencyId,
             FilterParam3 = customerOrder.Id
         });
+        if(handShakeResponse == null)
+        {
+            customerOrder.OrderStatus = OrderStatusType.PaymentNotVerified;
+            await _commitOrderRepository.UpdateAsync(customerOrder);
+            await CurrentUnitOfWork.SaveChangesAsync();
+            throw new UserFriendlyException("در حال حاظر پرداخت از طریق این درگاه امکان پذیر نمی باشد");
+        }
         await _distributedCache.SetStringAsync(
          userId.ToString() + "_" +
             commitOrderDto.SaleDetailUId.ToString()

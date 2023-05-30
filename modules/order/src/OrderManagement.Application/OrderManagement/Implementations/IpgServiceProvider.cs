@@ -33,10 +33,10 @@ public class IpgServiceProvider : ApplicationService, IIpgServiceProvider
     {
         //if (handShakeRequest.Amount <= 10000)
         //    throw new HandShakeInvalidRequestException(HandShakeInvalidRequestException.InvalidAmount, "مبالغ کم تر از ده هزار ریال قابل تراکنش نمیباشند");
-        if (string.IsNullOrWhiteSpace(handShakeRequest.NationalCode))
-            throw new HandShakeInvalidRequestException(HandShakeInvalidRequestException.EmptyNationlCode, "شماره ملی اجباری است");
-        if (string.IsNullOrWhiteSpace(handShakeRequest.CallBackUrl) || !Regex.IsMatch(handShakeRequest.CallBackUrl, RegexConstatnts.Url))
-            throw new HandShakeInvalidRequestException(HandShakeInvalidRequestException.CallBackUrlIsInvalid, "فیلد آدرس برگشتی اشتباه است و یا فرمت آن صحیح نیست");
+        //if (string.IsNullOrWhiteSpace(handShakeRequest.NationalCode))
+        //    throw new HandShakeInvalidRequestException(HandShakeInvalidRequestException.EmptyNationlCode, "شماره ملی اجباری است");
+        //if (string.IsNullOrWhiteSpace(handShakeRequest.CallBackUrl) || !Regex.IsMatch(handShakeRequest.CallBackUrl, RegexConstatnts.Url))
+        //    throw new HandShakeInvalidRequestException(HandShakeInvalidRequestException.CallBackUrlIsInvalid, "فیلد آدرس برگشتی اشتباه است و یا فرمت آن صحیح نیست");
 
 
         RestClient client = SetDefaultClient();
@@ -48,7 +48,7 @@ public class IpgServiceProvider : ApplicationService, IIpgServiceProvider
             return handshakeResult.Data;
 
         //TODO: Add log for failure reason
-        throw new UserFriendlyException("در حال حاضر پرداخت وجه از طریق این درگاه ممکن نیست لطفا درگاه دیگری را انتخاب کنید");
+        return null;
     }
 
     public Task ReverseTransaction(int paymentId)
