@@ -572,7 +572,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         var handShakeResponse = await _ipgServiceProvider.HandShakeWithPsp(new PspHandShakeRequest()
         {
-            CallBackUrl = "http://sample.fillmelater.com", //TODO: implement call back url and add it here
+            CallBackUrl = _configuration.GetValue<string>("CallBackUrl"), //TODO: implement call back url and add it here
             Amount = (long)saleDetailPrice.CarFee,
             Mobile = customer.MobileNumber,
             NationalCode = nationalCode,
@@ -1077,8 +1077,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
         };
     }
 
-    public async Task<IPaymentResult> CheckoutPayment(int status, int paymentId)
+    public async Task<IPaymentResult> CheckoutPayment(IPgCallBackRequest callBackRequest)
     {
+        var (status, paymentId) = (callBackRequest.StatusCode, callBackRequest.PaymentId);
         List<Exception> exceptionCollection = new();
         try
         {
