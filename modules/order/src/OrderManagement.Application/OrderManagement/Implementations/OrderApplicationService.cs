@@ -25,6 +25,7 @@ using Newtonsoft.Json;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Authorization;
 using Volo.Abp.Domain.Entities;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -46,6 +47,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
     private readonly IRepository<Company, int> _companyRepository;
     private readonly IUnitOfWorkManager _unitOfWorkManager;
     private readonly IRepository<ESaleType, int> _esaleTypeRepository;
+    private readonly IMemoryCache _memoryCache;
 
     public OrderAppService(ICommonAppService commonAppService,
                            IBaseInformationService baseInformationAppService,
@@ -64,7 +66,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
                            IDistributedCache distributedCache,
                            IRepository<Company, int> companyRepository,
                            IUnitOfWorkManager UnitOfWorkManager,
-                           IRepository<ESaleType, int> esaleTypeRepository
+                           IRepository<ESaleType, int> esaleTypeRepository,
+                           IMemoryCache memoryCache
         )
     {
         _commonAppService = commonAppService;
@@ -85,6 +88,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         _companyRepository = companyRepository;
         _unitOfWorkManager = UnitOfWorkManager;
         _esaleTypeRepository = esaleTypeRepository;
+        _memoryCache = memoryCache;
     }
 
 
@@ -95,11 +99,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         if (advocacyUser == null)
             throw new UserFriendlyException("اطلاعات حساب وکالتی یافت نشد");
-
-        //TODO : if some day we refactored this method were gonna move this validation to somewhere else :)
-        if (esaleTypeId == 2 && advocacyUser.GenderCode != 2)
-            throw new UserFriendlyException("این طرح مخصوص مادران میباشد");
-
         return new AdvocacyUserFromBankDto
         {
             ShebaNumber = advocacyUser.ShebaNumber,
@@ -201,19 +200,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
         var nationalCode = _commonAppService.GetNationalCode();
         SaleDetailOrderDto SaleDetailDto = null;
         var cacheKey = string.Format(RedisConstants.SaleDetailPrefix, commitOrderDto.SaleDetailUId);
-        var cacheResponse = await _distributedCache.GetStringAsync(cacheKey);
-        if (!string.IsNullOrWhiteSpace(cacheResponse))
-        {
-            var SaleDetailFromCache = System.Text.Json.JsonSerializer.Deserialize<SaleDetailOrderDto>(cacheResponse);
-            if (SaleDetailFromCache != null)
-            {
-                SaleDetailDto = SaleDetailFromCache;
-                ttl = SaleDetailDto.SalePlanEndDate.Subtract(DateTime.Now);
-
-            }
-
-        }
-        else
+        _memoryCache.TryGetValue(cacheKey, out SaleDetailDto);
+        if (SaleDetailDto == null)
         {
             var saleDetailQuery = await _saleDetailRepository.GetQueryableAsync();
             var SaleDetailFromDb = saleDetailQuery
@@ -237,19 +225,21 @@ public class OrderAppService : ApplicationService, IOrderAppService
             {
                 SaleDetailDto = SaleDetailFromDb;
                 ttl = SaleDetailDto.SalePlanEndDate.Subtract(DateTime.Now);
-                if(ttl.Seconds <= 0)
-                {
-                    ttl = DateTime.Now.AddMinutes(20).Subtract(DateTime.Now);
-                }
-                //await _cacheManager.GetCache("SaleDetail").SetAsync(commitOrderDto.SaleDetailUId.ToString(), SaleDetailDto);
-                await _distributedCache.SetStringAsync(string.Format(RedisConstants.SaleDetailPrefix, commitOrderDto.SaleDetailUId.ToString()),
-                    JsonConvert.SerializeObject(SaleDetailDto), new DistributedCacheEntryOptions()
-                    {
-                        AbsoluteExpiration = new DateTimeOffset(DateTime.Now.AddSeconds(ttl.TotalSeconds))
-                    });
+                _memoryCache.Set(string.Format(RedisConstants.SaleDetailPrefix, commitOrderDto.SaleDetailUId.ToString()), SaleDetailDto, DateTime.Now.AddMinutes(4));
+
+                ////await _cacheManager.GetCache("SaleDetail").SetAsync(commitOrderDto.SaleDetailUId.ToString(), SaleDetailDto);
+                //await _distributedCache.SetStringAsync(string.Format(RedisConstants.SaleDetailPrefix, commitOrderDto.SaleDetailUId.ToString()),
+                //    JsonConvert.SerializeObject(SaleDetailDto), new DistributedCacheEntryOptions()
+                //    {
+                //        AbsoluteExpiration = new DateTimeOffset(DateTime.Now.AddSeconds(ttl.TotalSeconds))
+                //    });
             }
         }
+        else
+        {
+            ttl = SaleDetailDto.SalePlanEndDate.Subtract(DateTime.Now);
 
+        }
         //if(SaleDetailDto.EsaleTypeId == (Int16)EsaleTypeEnum.Youth)
         //{
         //    Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");

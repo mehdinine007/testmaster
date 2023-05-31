@@ -94,11 +94,11 @@ namespace OrderService.Host
             {
                 options.IsEnabledForGetRequests = true;
             });
-            Configure<AbpExceptionHandlingOptions>(options =>
-            {
-                options.SendExceptionsDetailsToClients = true;
-                options.SendStackTraceToClients = true;
-            });
+            //Configure<AbpExceptionHandlingOptions>(options =>
+            //{
+            //    options.SendExceptionsDetailsToClients = true;
+            //    options.SendStackTraceToClients = true;
+            //});
             //Configure<AbpAuditingOptions>(options =>
             //{
             //    options.IsEnabled = false; //Disables the auditing system
