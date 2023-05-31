@@ -10,6 +10,7 @@ namespace PaymentManagement.Application.Contracts.Dtos
         public string CallBackUrl { get; set; }
         public string NationalCode { get; set; }
         public string Mobile { get; set; }
+        public string CustomerAuthorizationToken { get; set; }
         public int? FilterParam1 { get; set; }
         public int? FilterParam2 { get; set; }
         public int? FilterParam3 { get; set; }
