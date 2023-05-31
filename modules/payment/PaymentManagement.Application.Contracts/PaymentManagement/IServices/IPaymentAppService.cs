@@ -9,7 +9,7 @@ namespace PaymentManagement.Application.Contracts.IServices
         Task<HandShakeOutputDto> HandShakeAsync(HandShakeInputDto input);
         Task<BackFromPspOutputDto> BackFromIranKishAsync(string pspJsonResult);
         Task<BackFromPspOutputDto> BackFromMellatAsync(string pspJsonResult);
-        string GetCallBackUrl(int paymentId);
+        CallBackOutputDto GetCallBackInfo(int paymentId);
         Task<VerifyOutputDto> VerifyAsync(int paymentId);
         Task<InquiryOutputDto> InquiryAsync(int paymentId);
         Task<ReverseOutputDto> ReverseAsync(int paymentId);

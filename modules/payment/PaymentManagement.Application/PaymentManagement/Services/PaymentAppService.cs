@@ -10,6 +10,8 @@ using PaymentManagement.Application.Contracts.IServices;
 using PaymentManagement.Application.IranKish;
 using PaymentManagement.Application.Utilities;
 using PaymentManagement.Domain.Models;
+using System.Linq.Dynamic.Core.Tokenizer;
+using System.Runtime.Intrinsics.Arm;
 using System.Xml;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
@@ -67,10 +69,10 @@ namespace PaymentManagement.Application.Servicess
                     Count = o.Count()
                 }).ToList();
         }
-        public string GetCallBackUrl(int paymentId)
+        public CallBackOutputDto GetCallBackInfo(int paymentId)
         {
-            var result = _paymentRepository.WithDetails().AsNoTracking().Select(o => new { o.Id, o.CallBackUrl }).FirstOrDefault(o => o.Id == paymentId);
-            return result == null ? string.Empty : result.CallBackUrl;
+            var result = _paymentRepository.WithDetails().AsNoTracking().Select(o => new { o.Id, o.CallBackUrl, o.CustomerAuthorizationToken }).FirstOrDefault(o => o.Id == paymentId);
+            return result == null ? new CallBackOutputDto() : new CallBackOutputDto { CallBackUrl = result.CallBackUrl, CustomerAuthorizationToken = result.CustomerAuthorizationToken };
         }
 
         #region HandShake
@@ -213,6 +215,7 @@ namespace PaymentManagement.Application.Servicess
                     CallBackUrl = input.CallBackUrl,
                     NationalCode = input.NationalCode,
                     Mobile = input.Mobile,
+                    CustomerAuthorizationToken = input.CustomerAuthorizationToken,
                     TransactionDate = DateTime.Now,
                     TransactionPersianDate = DateUtil.Now,
                     FilterParam1 = input.FilterParam1,
@@ -311,7 +314,11 @@ namespace PaymentManagement.Application.Servicess
 
                         result.StatusCode = (int)StatusCodeEnum.Success;
                         result.Token = jResult.result.token;
-                        result.Url = Constants.IranKishRedirectUrl + jResult.result.token;
+                        var inputParams = new System.Collections.Specialized.NameValueCollection
+                        {
+                            { "tokenIdentity", jResult.result.token }
+                        };
+                        result.HtmlContent = StringUtil.GenerateForm(Constants.IranKishRedirectUrl, "post", inputParams);
                         result.Message = Constants.HandShakeSuccess;
                         return result;
                     }
@@ -428,9 +435,22 @@ namespace PaymentManagement.Application.Servicess
                         result.StatusCode = (int)StatusCodeEnum.Success;
                         result.Token = res[1];
                         result.Message = Constants.HandShakeSuccess;
-                        result.Url = Constants.MellatRedirectUrl + res[1] +
-                              (string.IsNullOrEmpty(encryptedNationalCode) ? string.Empty : "&ENC=" + encryptedNationalCode) +
-                              (string.IsNullOrEmpty(handShakeRequest.MobileNo) ? string.Empty : "&MobileNo=" + handShakeRequest.MobileNo);
+
+                        var inputParams = new System.Collections.Specialized.NameValueCollection
+                        {
+                            { "RefId", res[1] }
+                        };
+                        if (!string.IsNullOrEmpty(encryptedNationalCode))
+                        {
+                            inputParams.Add("ENC", encryptedNationalCode);
+                        }
+                        if (!string.IsNullOrEmpty(handShakeRequest.MobileNo))
+                        {
+                            inputParams.Add("MobileNo", handShakeRequest.MobileNo);
+                        }
+
+                        result.HtmlContent = StringUtil.GenerateForm(Constants.MellatRedirectUrl, "post", inputParams);
+
                         return result;
                     }
                 }
