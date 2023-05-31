@@ -112,7 +112,7 @@ namespace PaymentManagement
         }
 
         [HttpPost]
-        public async Task<List<RetryForVerifyDetail>> RetryForVerify()
+        public async Task<List<RetryForVerifyOutputDto>> RetryForVerify()
         {
             return await _paymentAppService.RetryForVerify();
         }

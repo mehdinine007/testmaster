@@ -8,11 +8,6 @@ namespace PaymentManagement.Application.Contracts.Dtos
         public int PaymentId { get; set; }
         [DataMember(Order = 2)]
         public int PaymentStatus { get; set; }
-    }
-
-    [DataContract]
-    public class RetryForVerifyDetail : RetryForVerifyOutputDto
-    {
         [DataMember(Order = 3)]
         public int? FilterParam1 { get; set; }
         [DataMember(Order = 4)]
@@ -22,5 +17,4 @@ namespace PaymentManagement.Application.Contracts.Dtos
         [DataMember(Order = 6)]
         public int? FilterParam4 { get; set; }
     }
-
 }
