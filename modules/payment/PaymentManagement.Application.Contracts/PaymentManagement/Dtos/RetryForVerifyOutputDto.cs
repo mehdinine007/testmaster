@@ -2,16 +2,16 @@
 
 namespace PaymentManagement.Application.Contracts.Dtos
 {
-    public class RetryForVerifyOutput
+    public class RetryForVerifyOutputDto
     {
         [DataMember(Order = 1)]
         public int PaymentId { get; set; }
         [DataMember(Order = 2)]
-        public int StatusId { get; set; }
+        public int PaymentStatus { get; set; }
     }
 
     [DataContract]
-    public class RetryForVerifyDetail : RetryForVerifyOutput
+    public class RetryForVerifyDetail : RetryForVerifyOutputDto
     {
         [DataMember(Order = 3)]
         public int? FilterParam1 { get; set; }

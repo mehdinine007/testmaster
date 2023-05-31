@@ -1279,6 +1279,8 @@ namespace PaymentManagement.Application.Servicess
             var deadLine = DateTime.Now.AddMinutes(-12);
 
             var retryCount = _config.GetValue<int>("App:RetryCount");
+            var condidateCount = _config.GetValue<int>("App:CondidateCount");
+
             var payments = _paymentRepository.WithDetails().AsNoTracking()
                 .Include(o => o.PspAccount)
                 .Where(o => o.PaymentStatusId == (int)PaymentStatusEnum.InProgress && o.TransactionDate < deadLine && o.RetryCount < retryCount)
@@ -1289,9 +1291,16 @@ namespace PaymentManagement.Application.Servicess
                     TransactionCode = o.TransactionCode,
                     Token = o.Token,
                     PspAccountId = o.PspAccountId,
-                    RetryCount = o.RetryCount
+                    RetryCount = o.RetryCount,
+                    PaymentStatusId = o.PaymentStatusId,
+                    FilterParam1 = o.FilterParam1,
+                    FilterParam2 = o.FilterParam2,
+                    FilterParam3 = o.FilterParam3,
+                    FilterParam4 = o.FilterParam4
                 })
-                .Take(100).ToList();
+                .Take(condidateCount).ToList();
+
+            var result = new List<RetryForVerifyDetail>();
 
             foreach (var payment in payments)
             {
@@ -1306,17 +1315,28 @@ namespace PaymentManagement.Application.Servicess
                         await RetryForVerifyToIranKishAsync(payment, pspAccount.JsonProps);
                         break;
                 }
-            }
 
-            return new List<RetryForVerifyDetail> { };
+                result.Add(new RetryForVerifyDetail
+                {
+                    PaymentId = payment.Id,
+                    PaymentStatus = payment.PaymentStatusId,
+                    FilterParam1 = payment.FilterParam1,
+                    FilterParam2 = payment.FilterParam2,
+                    FilterParam3 = payment.FilterParam3,
+                    FilterParam4 = payment.FilterParam4
+                });
+            }
+            return result;
         }
-        private async Task<List<RetryForVerifyOutput>> RetryForVerifyToIranKishAsync(PaymentDto payment, string pspAccountJsonProps)
+        private async Task RetryForVerifyToIranKishAsync(PaymentDto payment, string pspAccountJsonProps)
         {
             if (string.IsNullOrEmpty(payment.TransactionCode) || string.IsNullOrEmpty(payment.TraceNo))
             {
-                await InquiryToIranKishAsync(payment, pspAccountJsonProps);
+                var res = await InquiryToIranKishAsync(payment, pspAccountJsonProps);
 
-                if (!string.IsNullOrEmpty(payment.TransactionCode) && !string.IsNullOrEmpty(payment.TraceNo))
+                if (!string.IsNullOrEmpty(payment.TransactionCode) &&
+                    !string.IsNullOrEmpty(payment.TraceNo) &&
+                    payment.PaymentStatusId == (int)PaymentStatusEnum.InProgress)
                 {
                     await VerifyToIranKishAsync(payment, pspAccountJsonProps, true);
                 }
@@ -1331,9 +1351,8 @@ namespace PaymentManagement.Application.Servicess
             using var uow = _unitOfWorkManager.Begin(requiresNew: true, isTransactional: false);
             await _paymentRepository.AttachAsync(paymentEntity, o => o.RetryCount);
             await uow.CompleteAsync();
-            return new List<RetryForVerifyOutput> { };
         }
-        private async Task<List<RetryForVerifyOutput>> RetryForVerifyToMellatAsync(PaymentDto payment, string pspAccountJsonProps)
+        private async Task RetryForVerifyToMellatAsync(PaymentDto payment, string pspAccountJsonProps)
         {
             if (!string.IsNullOrEmpty(payment.TransactionCode))
             {
@@ -1345,8 +1364,6 @@ namespace PaymentManagement.Application.Servicess
                 await _paymentRepository.AttachAsync(paymentEntity, o => o.RetryCount);
                 await uow.CompleteAsync();
             }
-
-            return new List<RetryForVerifyOutput> { };
         }
         #endregion
     }
