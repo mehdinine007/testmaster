@@ -41,26 +41,30 @@ public class IpgServiceProvider : ApplicationService, IIpgServiceProvider
 
         RestClient client = SetDefaultClient();
         const string HandShakePath = "PaymentService/HandShake";
-        RestRequest request = new(HandShakePath,Method.Post);
+        RestRequest request = new(HandShakePath, Method.Post);
         request.AddJsonBody<PspHandShakeRequest>(handShakeRequest);
         var handshakeResult = await client.ExecuteAsync<ApiResult<IpgApiResult>>(request);
-        if(handshakeResult.IsSuccessful && handshakeResult.IsSuccessStatusCode && handshakeResult.Data.Result.StatusCode == 0)
+        if (handshakeResult.IsSuccessful && handshakeResult.IsSuccessStatusCode && handshakeResult.Data.Result.StatusCode == 0)
             return handshakeResult.Data;
 
         //TODO: Add log for failure reason
         throw new UserFriendlyException("در حال حاضر پرداخت وجه از طریق این درگاه ممکن نیست لطفا درگاه دیگری را انتخاب کنید");
     }
 
-    public Task ReverseTransaction(int paymentId)
+    public async Task ReverseTransaction(int paymentId)
     {
-        throw new System.NotImplementedException();
+        var client = SetDefaultClient();
+        const string ReverseTransactionPath = "PaymentService/Reverse";
+        RestRequest request = new(ReverseTransactionPath, Method.Post);
+        request.AddQueryParameter("paymentId", paymentId);
+        var serviceResponse = await client.ExecuteAsync<ApiResult<PspInteractionResult>>(request);
     }
 
     public async Task<ApiResult<PspInteractionResult>> VerifyTransaction(int paymentId)
     {
         var client = SetDefaultClient();
         const string VerifyPath = "PaymentService/Verify";
-        RestRequest request = new(VerifyPath,Method.Post);
+        RestRequest request = new(VerifyPath, Method.Post);
         request.AddQueryParameter("paymentId", paymentId.ToString());
         var serviceResponse = await client.ExecuteAsync<ApiResult<PspInteractionResult>>(request);
         if (serviceResponse.IsSuccessful && serviceResponse.IsSuccessStatusCode && serviceResponse.Data.Result.StatusCode == 0)
