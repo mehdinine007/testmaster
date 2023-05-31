@@ -255,12 +255,12 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         CheckSaleDetailValidation(SaleDetailDto);
         RustySalePlanValidation(commitOrderDto, SaleDetailDto.EsaleTypeId);
-        await _commonAppService.IsUserRejected(); //if user reject from advocacy
-                                                  //_baseInformationAppService.CheckBlackList(SaleDetailDto.EsaleTypeId); //if user not exsist in blacklist
-        await CheckAdvocacy(nationalCode, SaleDetailDto.ESaleTypeId); //if hesab vekalati darad
-        Console.WriteLine("beforewhitelist");
-        _baseInformationAppService.CheckWhiteList(WhiteListEnumType.WhiteListOrder);
-        Console.WriteLine("afterwhitelist");
+        //await _commonAppService.IsUserRejected(); //if user reject from advocacy
+        //                                          //_baseInformationAppService.CheckBlackList(SaleDetailDto.EsaleTypeId); //if user not exsist in blacklist
+        //await CheckAdvocacy(nationalCode, SaleDetailDto.ESaleTypeId); //if hesab vekalati darad
+        //Console.WriteLine("beforewhitelist");
+        //_baseInformationAppService.CheckWhiteList(WhiteListEnumType.WhiteListOrder);
+        //Console.WriteLine("afterwhitelist");
 
         var orderQuery = await _commitOrderRepository.GetQueryableAsync();
         var userId = _commonAppService.GetUserId();
