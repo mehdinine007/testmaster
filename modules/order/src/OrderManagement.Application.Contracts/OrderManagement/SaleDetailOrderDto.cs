@@ -17,5 +17,7 @@ namespace OrderManagement.Application.Contracts
         [Column(TypeName = "decimal(15)")]
         public decimal MinimumAmountOfProxyDeposit { get; set; }
 
+        public decimal CarFee { get; set; }
+
     }
 }
