@@ -205,7 +205,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     SalePlanEndDate = x.SalePlanEndDate,
                     SalePlanStartDate = x.SalePlanStartDate,
                     UID = x.UID,
-                    ESaleTypeId = x.ESaleTypeId
+                    ESaleTypeId = x.ESaleTypeId,
+                    CarFee = x.CarFee
                 })
                 .FirstOrDefault(x => x.UID == commitOrderDto.SaleDetailUId);
             if (SaleDetailFromDb == null)
@@ -563,17 +564,10 @@ public class OrderAppService : ApplicationService, IOrderAppService
         //    }).FirstOrDefault(x => x.Id == customerOrderId && x.OrderStatus == OrderStatusType.RecentlyAdded)
         //?? throw new EntityNotFoundException(typeof(CustomerOrder));
 
-       
-
-        //TODO: check if we can change existed sale detail and add amount here instead if qurying it here
-        var saleDetailPrice = (await _saleDetailRepository.GetQueryableAsync())
-            .Select(x => new { x.CarFee, x.Id }).FirstOrDefault(x => x.Id == SaleDetailDto.Id)
-            ?? throw new EntityNotFoundException(typeof(SaleDetail), SaleDetailDto.Id);
-
         var handShakeResponse = await _ipgServiceProvider.HandShakeWithPsp(new PspHandShakeRequest()
         {
-            CallBackUrl = "http://sample.fillmelater.com", //TODO: implement call back url and add it here
-            Amount = (long)saleDetailPrice.CarFee,
+            CallBackUrl = _configuration.GetValue<string>("CallBackUrl"), //TODO: implement call back url and add it here
+            Amount = (long)SaleDetailDto.CarFee,
             Mobile = customer.MobileNumber,
             NationalCode = nationalCode,
             PspAccountId = commitOrderDto.PspAccountId.Value,
@@ -1077,8 +1071,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
         };
     }
 
-    public async Task<IPaymentResult> CheckoutPayment(int status, int paymentId)
+    public async Task<IPaymentResult> CheckoutPayment(IPgCallBackRequest callBackRequest)
     {
+        var (status, paymentId) = (callBackRequest.StatusCode, callBackRequest.PaymentId);
         List<Exception> exceptionCollection = new();
         try
         {
@@ -1160,7 +1155,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 foreach (var payment in payments)
                 {
                     int orderId = payment.FilterParam3 ?? 0;
-                    UpdateStatus(orderId, payment.StatusId == 0 ? (int)OrderStatusType.PaymentSucceeded : (int)OrderStatusType.PaymentNotVerified);
+                    UpdateStatus(orderId, payment.PaymentStatus == 0 ? (int)OrderStatusType.PaymentSucceeded : (int)OrderStatusType.PaymentNotVerified);
                 }
             }
         }

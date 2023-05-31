@@ -11,7 +11,7 @@ namespace OrderManagement.HttpApi;
 
 [RemoteService]
 [Route("api/services/app/OrderService/[action]")]
-public class OrderManagementController 
+public class OrderManagementController
 {
     private readonly IOrderAppService _orderAppService;
 
@@ -27,13 +27,13 @@ public class OrderManagementController
     [HttpPost]
     public async Task<bool> Test()
     {
-         await _orderAppService.Test();
+        await _orderAppService.Test();
         return true;
     }
 
     [HttpPost]
     [UserAuthorization]
-    public async Task<CommitOrderResultDto> CommitOrder([FromBody]CommitOrderDto commitOrderDto)
+    public async Task<CommitOrderResultDto> CommitOrder([FromBody] CommitOrderDto commitOrderDto)
          => await _orderAppService.CommitOrder(commitOrderDto);
     [DisableAuditing]
     [HttpGet]
@@ -70,6 +70,6 @@ public class OrderManagementController
 
     [HttpPost]
     [UserAuthorization]
-    public async Task CheckoutPayment(int status, int paymentId)
-        => await _orderAppService.CheckoutPayment(status, paymentId);
+    public async Task CheckoutPayment(IPgCallBackRequest callBackRequest)
+        => await _orderAppService.CheckoutPayment(callBackRequest);
 }
