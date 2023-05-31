@@ -828,6 +828,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             throw new UserFriendlyException("تا اطلاع ثانوی انصراف از طرح های فروش ممکن نیست");
         //await _cacheManager.GetCache("UserRejection").RemoveAsync(userNationalCode);
         //TODO: check removing the right key
+        _baseInformationAppService.CheckWhiteList(WhiteListEnumType.WhiteListOrder, userNationalCode);
         await _distributedCache.RemoveAsync(string.Format(RedisConstants.UserRejectionPrefix, userNationalCode));
         await _distributedCache.RemoveAsync(userNationalCode);
 
