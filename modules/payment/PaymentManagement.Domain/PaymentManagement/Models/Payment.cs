@@ -29,6 +29,8 @@ namespace PaymentManagement.Domain.Models
         public string? NationalCode { get; set; }
         [Column(TypeName = "VARCHAR(20)")]
         public string? Mobile { get; set; }
+        [Column(TypeName = "VARCHAR(1000)")]
+        public string? CustomerAuthorizationToken { get; set; }
         [Required]
         [Column(TypeName = "VARCHAR(200)")]
         public string CallBackUrl { get; set; }
