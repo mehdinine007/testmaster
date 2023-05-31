@@ -1273,7 +1273,7 @@ namespace PaymentManagement.Application.Servicess
 
         #region RetryForVerify
         [UnitOfWork(isTransactional: false)]
-        public async Task<List<RetryForVerifyDetail>> RetryForVerify()
+        public async Task<List<RetryForVerifyOutputDto>> RetryForVerify()
         {
             //todo:شرط زمان با اضافه کردن درگاه ها باید تکمیل شود
             var deadLine = DateTime.Now.AddMinutes(-12);
@@ -1300,7 +1300,7 @@ namespace PaymentManagement.Application.Servicess
                 })
                 .Take(condidateCount).ToList();
 
-            var result = new List<RetryForVerifyDetail>();
+            var result = new List<RetryForVerifyOutputDto>();
 
             foreach (var payment in payments)
             {
@@ -1316,7 +1316,7 @@ namespace PaymentManagement.Application.Servicess
                         break;
                 }
 
-                result.Add(new RetryForVerifyDetail
+                result.Add(new RetryForVerifyOutputDto
                 {
                     PaymentId = payment.Id,
                     PaymentStatus = payment.PaymentStatusId,
