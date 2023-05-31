@@ -205,7 +205,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     SalePlanEndDate = x.SalePlanEndDate,
                     SalePlanStartDate = x.SalePlanStartDate,
                     UID = x.UID,
-                    ESaleTypeId = x.ESaleTypeId
+                    ESaleTypeId = x.ESaleTypeId,
+                    CarFee = x.CarFee
                 })
                 .FirstOrDefault(x => x.UID == commitOrderDto.SaleDetailUId);
             if (SaleDetailFromDb == null)
@@ -255,12 +256,12 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         CheckSaleDetailValidation(SaleDetailDto);
         RustySalePlanValidation(commitOrderDto, SaleDetailDto.EsaleTypeId);
-        await _commonAppService.IsUserRejected(); //if user reject from advocacy
-                                                  //_baseInformationAppService.CheckBlackList(SaleDetailDto.EsaleTypeId); //if user not exsist in blacklist
-        await CheckAdvocacy(nationalCode, SaleDetailDto.ESaleTypeId); //if hesab vekalati darad
-        Console.WriteLine("beforewhitelist");
-        _baseInformationAppService.CheckWhiteList(WhiteListEnumType.WhiteListOrder);
-        Console.WriteLine("afterwhitelist");
+        //await _commonAppService.IsUserRejected(); //if user reject from advocacy
+        //                                          //_baseInformationAppService.CheckBlackList(SaleDetailDto.EsaleTypeId); //if user not exsist in blacklist
+        //await CheckAdvocacy(nationalCode, SaleDetailDto.ESaleTypeId); //if hesab vekalati darad
+        //Console.WriteLine("beforewhitelist");
+        //_baseInformationAppService.CheckWhiteList(WhiteListEnumType.WhiteListOrder);
+        //Console.WriteLine("afterwhitelist");
 
         var orderQuery = await _commitOrderRepository.GetQueryableAsync();
         var userId = _commonAppService.GetUserId();
@@ -563,17 +564,10 @@ public class OrderAppService : ApplicationService, IOrderAppService
         //    }).FirstOrDefault(x => x.Id == customerOrderId && x.OrderStatus == OrderStatusType.RecentlyAdded)
         //?? throw new EntityNotFoundException(typeof(CustomerOrder));
 
-       
-
-        //TODO: check if we can change existed sale detail and add amount here instead if qurying it here
-        var saleDetailPrice = (await _saleDetailRepository.GetQueryableAsync())
-            .Select(x => new { x.CarFee, x.Id }).FirstOrDefault(x => x.Id == SaleDetailDto.Id)
-            ?? throw new EntityNotFoundException(typeof(SaleDetail), SaleDetailDto.Id);
-
         var handShakeResponse = await _ipgServiceProvider.HandShakeWithPsp(new PspHandShakeRequest()
         {
             CallBackUrl = _configuration.GetValue<string>("CallBackUrl"), //TODO: implement call back url and add it here
-            Amount = (long)saleDetailPrice.CarFee,
+            Amount = (long)SaleDetailDto.CarFee,
             Mobile = customer.MobileNumber,
             NationalCode = nationalCode,
             PspAccountId = commitOrderDto.PspAccountId.Value,
