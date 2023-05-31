@@ -2,6 +2,7 @@
 
 namespace PaymentManagement.Application.Contracts.Dtos
 {
+    [DataContract]
     public class RetryForVerifyOutputDto
     {
         [DataMember(Order = 1)]
