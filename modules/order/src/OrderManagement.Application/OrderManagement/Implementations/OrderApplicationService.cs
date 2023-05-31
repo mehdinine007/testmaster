@@ -699,7 +699,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             throw new UserFriendlyException("دسترسی شما کافی نمی باشد");
         }
         _baseInformationAppService.CheckWhiteList(WhiteListEnumType.WhiteListOrder);
-        var customerOrder = _commitOrderRepository.WithDetails().FirstOrDefault(x => x.Id == orderId);
+        var customerOrder = _commitOrderRepository.WithDetails(x => x.SaleDetail).FirstOrDefault(x => x.Id == orderId);
         if (customerOrder == null)
             throw new UserFriendlyException("شماره سفارش صحیح نمی باشد");
 
@@ -708,6 +708,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         if (customerOrder.UserId != userId)
             throw new UserFriendlyException("شماره سفارش صحیح نمی باشد");
+
+        if (customerOrder.SaleDetail.SalePlanEndDate <= DateTime.Now)
+            throw new UserFriendlyException("لغو سفارش هایی که تاریخ پایان طرح فروش آن ها به اتمام رسیده است ممکن نیست");
 
         SaleDetailOrderDto saleDetailOrderDto;
         var saleDetailCahce = await _distributedCache.GetStringAsync(string.Format(RedisConstants.SaleDetailPrefix, customerOrder.SaleDetailId.ToString()));
