@@ -22,7 +22,7 @@ namespace OrderService.Host
                 .AddEnvironmentVariables()
                 .Build();
             Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Error()
+                .MinimumLevel.Debug()
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
                 .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Warning)
                 .Enrich.WithProperty("Application", "OrderService")

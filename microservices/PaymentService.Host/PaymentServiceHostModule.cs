@@ -123,6 +123,7 @@ namespace PaymentService.Host
             app.UseConfiguredEndpoints(endpoints =>
             {
                 endpoints.MapGrpcService<IGrpcPaymentAppService>();
+                endpoints.MapGet("/grpc", () => "grpc");
             });
 
             app.UseAbpRequestLocalization(); //TODO: localization?
