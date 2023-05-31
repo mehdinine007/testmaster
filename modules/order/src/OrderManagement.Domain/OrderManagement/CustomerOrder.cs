@@ -22,5 +22,6 @@ namespace OrderManagement.Domain
         public string Vehicle { get; set; }
         public int? PspId { get; set; }
         public int AgencyId { get; set; }
+        public int? PaymentId { get; set; }
     }
 }

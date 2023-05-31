@@ -524,12 +524,13 @@ public class OrderAppService : ApplicationService, IOrderAppService
             await CurrentUnitOfWork.SaveChangesAsync();
         }
         IResult agencyCapacityControl = null;
-        try {
-             agencyCapacityControl = await _capacityControlAppService.Validation(SaleDetailDto.Id, commitOrderDto.AgencyId);
+        try
+        {
+            agencyCapacityControl = await _capacityControlAppService.Validation(SaleDetailDto.Id, commitOrderDto.AgencyId);
             if (!agencyCapacityControl.Succsess)
                 throw new UserFriendlyException(agencyCapacityControl.Message);
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             customerOrder.OrderStatus = OrderStatusType.PaymentNotVerified;
             await _commitOrderRepository.UpdateAsync(customerOrder);
@@ -537,7 +538,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
             throw ex;
         }
-     
+
         //Console.WriteLine("afterasli");
 
         //unitOfWork.Complete();
@@ -548,8 +549,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
         //       commitOrderDto.SaleDetailUId.ToString()
         //       , customerOrder.Id,
         //       TimeSpan.FromSeconds(ttl.TotalSeconds));
-     
-     
+
+
         //var customerOrderQuery = await _commitOrderRepository.GetQueryableAsync();
         //var customerOrder = customerOrderQuery.Include(x => x.SaleDetail)
         //    .Select(x => new
@@ -575,13 +576,16 @@ public class OrderAppService : ApplicationService, IOrderAppService
             FilterParam2 = customerOrder.AgencyId,
             FilterParam3 = customerOrder.Id
         });
-        if(handShakeResponse == null)
+        if (handShakeResponse == null)
         {
             customerOrder.OrderStatus = OrderStatusType.PaymentNotVerified;
             await _commitOrderRepository.UpdateAsync(customerOrder);
             await CurrentUnitOfWork.SaveChangesAsync();
             throw new UserFriendlyException("در حال حاظر پرداخت از طریق این درگاه امکان پذیر نمی باشد");
         }
+        customerOrder.PaymentId = handShakeResponse.Result.PaymentId;
+        await _commitOrderRepository.UpdateAsync(customerOrder, autoSave: true);
+        await CurrentUnitOfWork.SaveChangesAsync();
         await _distributedCache.SetStringAsync(
          userId.ToString() + "_" +
             commitOrderDto.SaleDetailUId.ToString()
@@ -1085,7 +1089,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             order.OrderStatus = status == 0
                 ? OrderStatusType.PaymentSucceeded
                 : OrderStatusType.PaymentNotVerified;
-            if(status != 0)
+            if (status != 0)
             {
                 exceptionCollection.Add(new UserFriendlyException("عملیات پرداخت ناموفق بود"));
                 await _commitOrderRepository.UpdateAsync(order);
