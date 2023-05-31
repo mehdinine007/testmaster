@@ -20,5 +20,7 @@ namespace OrderManagement.Application.Contracts.Services
         string GetNationalCode();
         //Task<string> GetRole();
         long GetUserId();
+
+        string GetIncomigToken();
     }
 }

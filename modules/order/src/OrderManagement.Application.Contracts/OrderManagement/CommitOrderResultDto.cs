@@ -13,7 +13,7 @@ namespace OrderManagement.Application.Contracts
     {
         public string Token { get; set; }
         public int StatusCode { get; set; }
-        public string Url { get; set; }
+        public string HtmlContent { get; set; }
         public string Message { get; set; }
     }
 }

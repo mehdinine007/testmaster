@@ -570,6 +570,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             CallBackUrl = _configuration.GetValue<string>("CallBackUrl"), //TODO: implement call back url and add it here
             Amount = (long)SaleDetailDto.CarFee,
             Mobile = customer.MobileNumber,
+            CustomerAuthorizationToken = _commonAppService.GetIncomigToken(),
             NationalCode = nationalCode,
             PspAccountId = commitOrderDto.PspAccountId.Value,
             FilterParam1 = customerOrder.SaleDetailId,
@@ -673,7 +674,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 Message = handShakeResponse.Result.Message,
                 StatusCode = handShakeResponse.Result.StatusCode,
                 Token = handShakeResponse.Result.Token,
-                Url = handShakeResponse.Result.Url
+                HtmlContent = handShakeResponse.Result.Url
             } : new()
         };
     }
@@ -1019,60 +1020,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         //    }).ToListAsync();
         //return result;
-    }
-
-    public async Task<HandShakeResultDto> PrepareOrderForPayment(int customerOrderId, int pspAccountId)
-    {
-        var paymentMethodGranted = _configuration.GetValue<bool?>("PaymentMethodGranted") ?? false;
-        if (!paymentMethodGranted)
-            throw new UserFriendlyException("پرداخت مستقیم پشتیبانی نمیشود");
-
-        var nationalCode = _commonAppService.GetNationalCode();
-        var userId = _commonAppService.GetUserId();
-        var customerOrderQuery = await _commitOrderRepository.GetQueryableAsync();
-        var customerOrder = customerOrderQuery.Include(x => x.SaleDetail)
-            .Select(x => new
-            {
-                x.UserId,
-                x.Id,
-                SaleDetailId = x.SaleDetail.Id,
-                //TODO: make sure the amount of car is right
-                Amount = x.SaleDetail.CarFee,
-                x.AgencyId,
-                x.OrderStatus
-            }).FirstOrDefault(x => x.Id == customerOrderId && x.OrderStatus == OrderStatusType.RecentlyAdded)
-        ?? throw new EntityNotFoundException(typeof(CustomerOrder));
-
-        var customer = await _esaleGrpcClient.GetUserById(customerOrder.UserId);
-        if (!customer.NationalCode.Equals(nationalCode))
-            throw new UserFriendlyException("شما نمیتوانید سفارش شخص دیگری را پرداخت کنید");
-
-        var handShakeResponse = await _ipgServiceProvider.HandShakeWithPsp(new PspHandShakeRequest()
-        {
-            CallBackUrl = "", //TODO: implement call back url and add it here
-            Amount = (long)customerOrder.Amount,
-            Mobile = customer.MobileNumber,
-            NationalCode = nationalCode,
-            PspAccountId = pspAccountId,
-            FilterParam1 = customerOrder.SaleDetailId,
-            FilterParam2 = customerOrder.AgencyId,
-            FilterParam3 = customerOrder.Id
-        });
-        var cacheKey = string.Format(RedisConstants.UserTransactionKey, nationalCode, customerOrder.Id);
-        var userTransactionToken = await _distributedCache.GetStringAsync(cacheKey);
-        if (userTransactionToken != null)
-        {
-            await _distributedCache.RemoveAsync(cacheKey);
-        }
-        await _distributedCache.SetStringAsync(cacheKey, handShakeResponse.Result.Token);
-        return new HandShakeResultDto()
-        {
-            Message = handShakeResponse.Result.Message,
-            PaymentId = handShakeResponse.Result.PaymentId,
-            StatusCode = handShakeResponse.Result.StatusCode,
-            Token = handShakeResponse.Result.Token,
-            Url = handShakeResponse.Result.Url
-        };
     }
 
     public async Task<IPaymentResult> CheckoutPayment(IPgCallBackRequest callBackRequest)
