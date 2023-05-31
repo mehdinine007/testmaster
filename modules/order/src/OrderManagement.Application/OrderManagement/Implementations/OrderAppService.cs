@@ -1081,10 +1081,11 @@ public class OrderAppService : ApplicationService, IOrderAppService
         List<Exception> exceptionCollection = new();
         try
         {
-            //TODO: We need to get order id from payment module
-            var orderId = 0;
+            var orderId = (await _commitOrderRepository.GetQueryableAsync())
+                .Select(x => new {x.PaymentId , x.Id})
+                .FirstOrDefault(x => x.PaymentId == paymentId);
             var order = (await _commitOrderRepository.GetQueryableAsync())
-                .FirstOrDefault(x => x.Id == orderId);
+                .FirstOrDefault(x => x.Id == orderId.Id);
 
             order.OrderStatus = status == 0
                 ? OrderStatusType.PaymentSucceeded
@@ -1109,7 +1110,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     Message = exceptionCollection.ConcatErrorMessages(),
                     Status = 1,
                     PaymentId = 0,
-                    OrderId = orderId
+                    OrderId = orderId.Id
                 };
             }
             var verificationResponse = await _ipgServiceProvider.VerifyTransaction(paymentId);
@@ -1118,7 +1119,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             {
                 PaymentId = paymentId,
                 Message = verificationResponse.Result.Message,
-                OrderId = orderId,
+                OrderId = orderId.Id,
                 Status = status
             };
         }
