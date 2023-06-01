@@ -7,17 +7,12 @@ namespace PaymentManagement.HttpApi.Utilities
     {
         private NameValueCollection Inputs = new NameValueCollection();
         private string m_Url = "";
-        private string m_AuthorizationTag = "";
         private string m_Method = "post"; //or Get
         private string m_FormName = "form1";
 
         public void Post(HttpContext context)
         {
             context.Response.Clear();
-            if (!string.IsNullOrEmpty(m_AuthorizationTag))
-            {
-                context.Response.Headers.Add("Authorization", "Bearer " + m_AuthorizationTag);
-            }
             context.Response.WriteAsync("<html><head>");
             context.Response.WriteAsync(string.Format("</head><body onload=\"document.{0}.submit()\">", m_FormName));
             context.Response.WriteAsync(string.Format("<form name=\"{0}\" method=\"{1}\" action=\"{2}\" >", m_FormName, m_Method, Url));
@@ -27,7 +22,7 @@ namespace PaymentManagement.HttpApi.Utilities
             }
             context.Response.WriteAsync("</form>");
             context.Response.WriteAsync("</body></html>");
-            //context.HttpContext.Response.End();
+            context.Response.CompleteAsync();
         }
 
         public void AddKey(string name, string value)
@@ -68,18 +63,6 @@ namespace PaymentManagement.HttpApi.Utilities
             set
             {
                 m_Url = value;
-            }
-        }
-
-        public string AuthorizationTag
-        {
-            get
-            {
-                return m_AuthorizationTag;
-            }
-            set
-            {
-                m_AuthorizationTag = value;
             }
         }
     }

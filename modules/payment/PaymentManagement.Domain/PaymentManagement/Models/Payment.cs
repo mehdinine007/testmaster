@@ -30,7 +30,7 @@ namespace PaymentManagement.Domain.Models
         [Column(TypeName = "VARCHAR(20)")]
         public string? Mobile { get; set; }
         [Column(TypeName = "VARCHAR(1000)")]
-        public string? CustomerAuthorizationToken { get; set; }
+        public string? AdditionalData { get; set; }
         [Required]
         [Column(TypeName = "VARCHAR(200)")]
         public string CallBackUrl { get; set; }
