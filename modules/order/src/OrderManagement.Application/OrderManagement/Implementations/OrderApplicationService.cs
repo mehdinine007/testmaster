@@ -729,7 +729,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 JsonConvert.SerializeObject(saleDetailOrderDto),
                 new DistributedCacheEntryOptions
                 {
-                    AbsoluteExpiration = new DateTimeOffset(DateTime.Now.AddSeconds(saleDetail.SalePlanEndDate.Subtract(DateTime.Now).TotalSeconds))
+                    AbsoluteExpiration = new DateTimeOffset(DateTime.Now.Hour(1))
                 });
 
         }
