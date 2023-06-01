@@ -1086,8 +1086,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
     public async Task UpdateStatus(CustomerOrderDto customerOrderDto)
     {
-        var payment = ObjectMapper.Map<CustomerOrderDto, CustomerOrder>(customerOrderDto);
-        await _commitOrderRepository.AttachAsync(payment, o => o.OrderStatus);
+        var order = ObjectMapper.Map<CustomerOrderDto, CustomerOrder>(customerOrderDto);
+        await _commitOrderRepository.AttachAsync(order, o => o.OrderStatus);
         await CurrentUnitOfWork.SaveChangesAsync();
     }
 
