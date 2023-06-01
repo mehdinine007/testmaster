@@ -722,6 +722,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         }
         else
         {
+            Console.WriteLine("nohi:" + DateTime.Now);
             var saleDetail = _saleDetailRepository.WithDetails().FirstOrDefault(x => x.Id == customerOrder.SaleDetailId)
                 ?? throw new UserFriendlyException("جزئیات برنامه فروش یافت نشد");
             saleDetailOrderDto = ObjectMapper.Map<SaleDetail, SaleDetailOrderDto>(saleDetail);

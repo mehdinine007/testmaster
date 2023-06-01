@@ -37,10 +37,10 @@ namespace OrderService.Host
             {
                 services.AddScoped<IAuditingStore, AuditingStoreDb>();
             }
-            //services.Configure<AbpClockOptions>(options =>
-            //{
-            //    options.Kind = DateTimeKind.Local;
-            //});
+            services.Configure<AbpClockOptions>(options =>
+            {
+                options.Kind = DateTimeKind.Local;
+            });
 
         }
 
