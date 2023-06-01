@@ -27,6 +27,8 @@ using OrderManagement.Application.Helpers;
 using Grpc.Net.Client;
 using PaymentManagement.Application.Contracts.IServices;
 using ProtoBuf.Grpc.Client;
+using PaymentManagement.Application.Contracts.Dtos;
+using Esale.Core.DataAccess;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -570,6 +572,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             CallBackUrl = _configuration.GetValue<string>("CallBackUrl"), //TODO: implement call back url and add it here
             Amount = (long)SaleDetailDto.CarFee,
             Mobile = customer.MobileNumber,
+            CustomerAuthorizationToken = _commonAppService.GetIncomigToken(),
             NationalCode = nationalCode,
             PspAccountId = commitOrderDto.PspAccountId.Value,
             FilterParam1 = customerOrder.SaleDetailId,
@@ -673,7 +676,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 Message = handShakeResponse.Result.Message,
                 StatusCode = handShakeResponse.Result.StatusCode,
                 Token = handShakeResponse.Result.Token,
-                Url = handShakeResponse.Result.Url
+                HtmlContent = handShakeResponse.Result.Url
             } : new()
         };
     }
@@ -1021,60 +1024,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
         //return result;
     }
 
-    public async Task<HandShakeResultDto> PrepareOrderForPayment(int customerOrderId, int pspAccountId)
-    {
-        var paymentMethodGranted = _configuration.GetValue<bool?>("PaymentMethodGranted") ?? false;
-        if (!paymentMethodGranted)
-            throw new UserFriendlyException("پرداخت مستقیم پشتیبانی نمیشود");
-
-        var nationalCode = _commonAppService.GetNationalCode();
-        var userId = _commonAppService.GetUserId();
-        var customerOrderQuery = await _commitOrderRepository.GetQueryableAsync();
-        var customerOrder = customerOrderQuery.Include(x => x.SaleDetail)
-            .Select(x => new
-            {
-                x.UserId,
-                x.Id,
-                SaleDetailId = x.SaleDetail.Id,
-                //TODO: make sure the amount of car is right
-                Amount = x.SaleDetail.CarFee,
-                x.AgencyId,
-                x.OrderStatus
-            }).FirstOrDefault(x => x.Id == customerOrderId && x.OrderStatus == OrderStatusType.RecentlyAdded)
-        ?? throw new EntityNotFoundException(typeof(CustomerOrder));
-
-        var customer = await _esaleGrpcClient.GetUserById(customerOrder.UserId);
-        if (!customer.NationalCode.Equals(nationalCode))
-            throw new UserFriendlyException("شما نمیتوانید سفارش شخص دیگری را پرداخت کنید");
-
-        var handShakeResponse = await _ipgServiceProvider.HandShakeWithPsp(new PspHandShakeRequest()
-        {
-            CallBackUrl = "", //TODO: implement call back url and add it here
-            Amount = (long)customerOrder.Amount,
-            Mobile = customer.MobileNumber,
-            NationalCode = nationalCode,
-            PspAccountId = pspAccountId,
-            FilterParam1 = customerOrder.SaleDetailId,
-            FilterParam2 = customerOrder.AgencyId,
-            FilterParam3 = customerOrder.Id
-        });
-        var cacheKey = string.Format(RedisConstants.UserTransactionKey, nationalCode, customerOrder.Id);
-        var userTransactionToken = await _distributedCache.GetStringAsync(cacheKey);
-        if (userTransactionToken != null)
-        {
-            await _distributedCache.RemoveAsync(cacheKey);
-        }
-        await _distributedCache.SetStringAsync(cacheKey, handShakeResponse.Result.Token);
-        return new HandShakeResultDto()
-        {
-            Message = handShakeResponse.Result.Message,
-            PaymentId = handShakeResponse.Result.PaymentId,
-            StatusCode = handShakeResponse.Result.StatusCode,
-            Token = handShakeResponse.Result.Token,
-            Url = handShakeResponse.Result.Url
-        };
-    }
-
     public async Task<IPaymentResult> CheckoutPayment(IPgCallBackRequest callBackRequest)
     {
         var (status, paymentId) = (callBackRequest.StatusCode, callBackRequest.PaymentId);
@@ -1082,7 +1031,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         try
         {
             var orderId = (await _commitOrderRepository.GetQueryableAsync())
-                .Select(x => new {x.PaymentId , x.Id})
+                .Select(x => new { x.PaymentId, x.Id })
                 .FirstOrDefault(x => x.PaymentId == paymentId);
             var order = (await _commitOrderRepository.GetQueryableAsync())
                 .FirstOrDefault(x => x.Id == orderId.Id);
@@ -1135,17 +1084,10 @@ public class OrderAppService : ApplicationService, IOrderAppService
         }
     }
 
-    public async Task UpdateStatus(int orderId, int orderStatus)
+    public async Task UpdateStatus(CustomerOrderDto customerOrderDto)
     {
-        var customerOrder = _commitOrderRepository
-            .WithDetails()
-            .FirstOrDefault(x => x.Id == orderId);
-        if (customerOrder == null)
-        {
-            return;
-        }
-        customerOrder.OrderStatus = (OrderStatusType)orderStatus;
-        await _commitOrderRepository.UpdateAsync(customerOrder, autoSave: true);
+        var payment = ObjectMapper.Map<CustomerOrderDto, CustomerOrder>(customerOrderDto);
+        await _commitOrderRepository.AttachAsync(payment, o => o.OrderStatus);
         await CurrentUnitOfWork.SaveChangesAsync();
     }
 
@@ -1157,10 +1099,20 @@ public class OrderAppService : ApplicationService, IOrderAppService
             var payments = await paymentAppService.RetryForVerify();
             if (payments != null && payments.Count > 0)
             {
+                payments = payments
+                    .Where(x => x.FilterParam3 != null && x.FilterParam3 != 0)
+                    .ToList();
                 foreach (var payment in payments)
                 {
                     int orderId = payment.FilterParam3 ?? 0;
-                    UpdateStatus(orderId, payment.PaymentStatus == 0 ? (int)OrderStatusType.PaymentSucceeded : (int)OrderStatusType.PaymentNotVerified);
+                    if (orderId != 0)
+                    {
+                        UpdateStatus(new CustomerOrderDto()
+                        {
+                            Id = orderId,
+                            OrderStatusCode = payment.PaymentStatus == 0 ? (int)OrderStatusType.PaymentSucceeded : (int)OrderStatusType.PaymentNotVerified
+                        });
+                    }
                 }
             }
         }

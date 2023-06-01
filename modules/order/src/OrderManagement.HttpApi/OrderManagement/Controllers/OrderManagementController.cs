@@ -72,4 +72,9 @@ public class OrderManagementController
     [UserAuthorization]
     public async Task CheckoutPayment(IPgCallBackRequest callBackRequest)
         => await _orderAppService.CheckoutPayment(callBackRequest);
+
+    [HttpPost]
+    public async Task RetryPaymentForVerify()
+        => await _orderAppService.RetryPaymentForVerify();
+
 }

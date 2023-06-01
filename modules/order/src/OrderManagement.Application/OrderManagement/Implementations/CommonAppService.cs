@@ -468,4 +468,9 @@ public class CommonAppService : ApplicationService, ICommonAppService
         long.TryParse(userIdStr, out var userId);
         return userId;
     }
+
+    public string GetIncomigToken()
+        => _contextAccessor.HttpContext.Request.Headers.TryGetValue("Authorization", out var token)
+        ? token
+        : throw new UserFriendlyException("لطفا مجددا لاگین کنید");
 }
