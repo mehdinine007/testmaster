@@ -10,11 +10,17 @@ using Volo.Abp.Auditing;
 using Volo.Abp.AuditLogging;
 using OrderService.Host.Infrastructures.Middlewares;
 using OrderService.Host.Infrastructures.Extensions;
+using Volo.Abp.Timing;
 
 namespace OrderService.Host
 {
     public class Startup
     {
+        public Startup()
+        {
+          
+
+        }
         public void ConfigureServices(IServiceCollection services)
         {
             var configurations = services.GetConfiguration();
@@ -31,6 +37,11 @@ namespace OrderService.Host
             {
                 services.AddScoped<IAuditingStore, AuditingStoreDb>();
             }
+            //services.Configure<AbpClockOptions>(options =>
+            //{
+            //    options.Kind = DateTimeKind.Local;
+            //});
+
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
