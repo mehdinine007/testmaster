@@ -709,8 +709,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
         if (customerOrder.UserId != userId)
             throw new UserFriendlyException("شماره سفارش صحیح نمی باشد");
 
-        if (customerOrder.SaleDetail.SalePlanEndDate <= DateTime.Now)
-            throw new UserFriendlyException("لغو سفارش هایی که تاریخ پایان طرح فروش آن ها به اتمام رسیده است ممکن نیست");
 
         SaleDetailOrderDto saleDetailOrderDto;
         var saleDetailCahce = await _distributedCache.GetStringAsync(string.Format(RedisConstants.SaleDetailPrefix, customerOrder.SaleDetailId.ToString()));
@@ -732,11 +730,11 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 JsonConvert.SerializeObject(saleDetailOrderDto),
                 new DistributedCacheEntryOptions
                 {
-                    AbsoluteExpiration = new DateTimeOffset(DateTime.Now.Hour(1))
+                    AbsoluteExpiration = new DateTimeOffset(DateTime.Now.AddHours(1))
                 });
 
         }
-        // CheckSaleDetailValidation(saleDetailOrderDto);
+         CheckSaleDetailValidation(saleDetailOrderDto);
         //var currentTime = DateTime.Now;
         //if (currentTime > saleDetailOrderDto.SalePlanEndDate)
         //    throw new UserFriendlyException("امکان انصراف برای سفارشاتی که برنامه فروش مرتبط ،منقضی شده باشد ممکن نیست");
