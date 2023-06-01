@@ -69,10 +69,10 @@ namespace PaymentManagement.Application.Servicess
                     Count = o.Count()
                 }).ToList();
         }
-        public CallBackOutputDto GetCallBackInfo(int paymentId)
+        public string GetCallBackUrl(int paymentId)
         {
-            var result = _paymentRepository.WithDetails().AsNoTracking().Select(o => new { o.Id, o.CallBackUrl, o.CustomerAuthorizationToken }).FirstOrDefault(o => o.Id == paymentId);
-            return result == null ? new CallBackOutputDto() : new CallBackOutputDto { CallBackUrl = result.CallBackUrl, CustomerAuthorizationToken = result.CustomerAuthorizationToken };
+            var result = _paymentRepository.WithDetails().AsNoTracking().Select(o => new { o.Id, o.CallBackUrl }).FirstOrDefault(o => o.Id == paymentId);
+            return result == null ? string.Empty : result.CallBackUrl;
         }
 
         #region HandShake
@@ -215,7 +215,7 @@ namespace PaymentManagement.Application.Servicess
                     CallBackUrl = input.CallBackUrl,
                     NationalCode = input.NationalCode,
                     Mobile = input.Mobile,
-                    CustomerAuthorizationToken = input.CustomerAuthorizationToken,
+                    AdditionalData = input.AdditionalData,
                     TransactionDate = DateTime.Now,
                     TransactionPersianDate = DateUtil.Now,
                     FilterParam1 = input.FilterParam1,
@@ -428,7 +428,7 @@ namespace PaymentManagement.Application.Servicess
 
                     if (res[0] == "0")
                     {
-                        payment.Token = result.Token;
+                        payment.Token = res[1];
                         var paymentEntity1 = ObjectMapper.Map<PaymentDto, Payment>(payment);
                         await _paymentRepository.AttachAsync(paymentEntity1, o => o.Token);
 
@@ -494,7 +494,8 @@ namespace PaymentManagement.Application.Servicess
                     TraceNo = o.TraceNo,
                     TransactionCode = o.TransactionCode,
                     Token = o.Token,
-                    PspAccountId = o.PspAccountId
+                    PspAccountId = o.PspAccountId,
+                    AdditionalData = o.AdditionalData
                 })
                 .First(o => o.Id == int.Parse(pspResult.requestId));
 
@@ -502,7 +503,8 @@ namespace PaymentManagement.Application.Servicess
             {
                 StatusCode = (int)StatusCodeEnum.Unknown,
                 Message = Constants.UnknownError,
-                PaymentId = payment.Id
+                PaymentId = payment.Id,
+                AdditionalData = payment.AdditionalData
             };
 
             try
@@ -639,14 +641,16 @@ namespace PaymentManagement.Application.Servicess
                     TraceNo = o.TraceNo,
                     TransactionCode = o.TransactionCode,
                     Token = o.Token,
-                    PspAccountId = o.PspAccountId
+                    PspAccountId = o.PspAccountId,
+                    AdditionalData = o.AdditionalData
                 })
                 .First(o => o.Id == int.Parse(pspResult.SaleOrderId));
             var result = new BackFromPspOutputDto()
             {
                 StatusCode = (int)StatusCodeEnum.Unknown,
                 Message = Constants.UnknownError,
-                PaymentId = payment.Id
+                PaymentId = payment.Id,
+                AdditionalData = payment.AdditionalData
             };
 
             try

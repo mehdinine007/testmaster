@@ -4,7 +4,6 @@ using Newtonsoft.Json;
 using PaymentManagement.Application.Contracts.Dtos;
 using PaymentManagement.Application.Contracts.IServices;
 using PaymentManagement.HttpApi.Utilities;
-using System.Net;
 using Volo.Abp;
 using Volo.Abp.AspNetCore.Mvc;
 
@@ -48,19 +47,16 @@ namespace PaymentManagement
             var pspJsonResult = JsonConvert.SerializeObject(keyValueList);
 
             var result = await _paymentAppService.BackFromIranKishAsync(pspJsonResult);
-            var info = _paymentAppService.GetCallBackInfo(result.PaymentId);
 
             NavigateToPsp dp = new()
             {
                 FormName = "form1",
                 Method = "post",
-                Url = info.CallBackUrl,
-                AuthorizationTag = info.CustomerAuthorizationToken
+                Url = _paymentAppService.GetCallBackUrl(result.PaymentId)
             };
 
             dp.AddKey("data", JsonConvert.SerializeObject(result));
             dp.Post(HttpContext);
-
             return null;
         }
 
@@ -78,14 +74,12 @@ namespace PaymentManagement
             var pspJsonResult = JsonConvert.SerializeObject(keyValueList);
 
             var result = await _paymentAppService.BackFromMellatAsync(pspJsonResult);
-            var info = _paymentAppService.GetCallBackInfo(result.PaymentId);
 
             NavigateToPsp dp = new()
             {
                 FormName = "form1",
                 Method = "post",
-                Url = info.CallBackUrl,
-                AuthorizationTag = info.CustomerAuthorizationToken
+                Url = _paymentAppService.GetCallBackUrl(result.PaymentId),
             };
 
             dp.AddKey("data", JsonConvert.SerializeObject(result));
