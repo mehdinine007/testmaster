@@ -189,23 +189,6 @@ namespace PaymentManagement.Application.Servicess
         {
             try
             {
-                //var payment = await _paymentRepository.InsertAsync(new Payment
-                //{
-                //    PspAccountId = input.PspAccountId,
-                //    PaymentStatusId = (int)PaymentStatusEnum.InProgress,
-                //    Amount = input.Amount,
-                //    CallBackUrl = input.CallBackUrl,
-                //    NationalCode = input.NationalCode,
-                //    Mobile = input.Mobile,
-                //    TransactionDate = DateTime.Now,
-                //    TransactionPersianDate = DateUtil.Now,
-                //    FilterParam1 = input.FilterParam1,
-                //    FilterParam2 = input.FilterParam2,
-                //    FilterParam3 = input.FilterParam3,
-                //    FilterParam4 = input.FilterParam4
-                //});
-                //await CurrentUnitOfWork.SaveChangesAsync();
-
                 using var uow = _unitOfWorkManager.Begin(requiresNew: true, isTransactional: false);
                 var payment = await _paymentRepository.InsertAsync(new Payment
                 {
@@ -224,6 +207,7 @@ namespace PaymentManagement.Application.Servicess
                     FilterParam4 = input.FilterParam4
                 });
                 await uow.CompleteAsync();
+                //await CurrentUnitOfWork.SaveChangesAsync();
 
                 var paymentDto = new PaymentDto
                 {
@@ -411,7 +395,6 @@ namespace PaymentManagement.Application.Servicess
                     "",//CartItem,
                     handShakeRequest.Enc);
 
-                //todo: test null serialize
                 result.PspJsonResult = JsonConvert.SerializeObject(handShakeResult);
 
                 await _paymentLogRepository.InsertAsync(new PaymentLog
@@ -540,7 +523,6 @@ namespace PaymentManagement.Application.Servicess
 
                 result.PspJsonResult = pspJsonResult;
                 result.TransactionCode = pspResult.retrievalReferenceNumber;
-
 
                 //در صورتي كه وضعيت پرداخت موفق است نبايد مجددن تاييديه ارسال شود
                 if (payment.PaymentStatusId == (int)PaymentStatusEnum.Success)
@@ -1343,7 +1325,7 @@ namespace PaymentManagement.Application.Servicess
                 result.Add(new RetryForVerifyOutputDto
                 {
                     PaymentId = payment.Id,
-                    PaymentStatus = payment.PaymentStatusId,
+                    PaymentStatus = (PaymentStatusEnum)payment.PaymentStatusId,
                     FilterParam1 = payment.FilterParam1,
                     FilterParam2 = payment.FilterParam2,
                     FilterParam3 = payment.FilterParam3,

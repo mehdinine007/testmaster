@@ -1,4 +1,5 @@
-﻿using System.Runtime.Serialization;
+﻿using PaymentManagement.Application.Contracts.Enums;
+using System.Runtime.Serialization;
 
 namespace PaymentManagement.Application.Contracts.Dtos
 {
@@ -8,7 +9,7 @@ namespace PaymentManagement.Application.Contracts.Dtos
         [DataMember(Order = 1)]
         public int PaymentId { get; set; }
         [DataMember(Order = 2)]
-        public int PaymentStatus { get; set; }
+        public PaymentStatusEnum PaymentStatus { get; set; }
         [DataMember(Order = 3)]
         public int? FilterParam1 { get; set; }
         [DataMember(Order = 4)]
