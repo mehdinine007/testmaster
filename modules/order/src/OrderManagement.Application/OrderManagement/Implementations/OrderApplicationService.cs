@@ -649,7 +649,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 x.DeliveryDate,
                 x.DeliveryDateDescription,
                 x.OrderRejectionStatus,
-                y.ESaleTypeId
+                y.ESaleTypeId,
+                y.SalePlanEndDate
+              
             }).Where(x => x.UserId == userId)
             .Select(x => new CustomerOrder_OrderDetailDto
             {
@@ -668,6 +670,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 DeliveryDate = x.DeliveryDate,
                 OrderRejectionCode = x.OrderRejectionStatus.HasValue ? (int)x.OrderRejectionStatus : null,
                 ESaleTypeId = x.ESaleTypeId,
+                SalePlanEndDate = x.SalePlanEndDate
             }).ToList();
         var cancleableDate = _configuration.GetValue<string>("CancelableDate");
         customerOrders.ForEach(x =>
@@ -682,11 +685,14 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     x.DeliveryDate = null;
             }
 
-            if (x.OrderStatusCode == 10) // OrderStatusType.RecentlyAdded
+            if (x.OrderStatusCode == 10 && (x.SalePlanEndDate <= DateTime.Now)) // OrderStatusType.RecentlyAdded
                 x.Cancelable = true;
-            else if (x.OrderStatusCode == 40 && x.DeliveryDateDescription.Contains(cancleableDate, StringComparison.InvariantCultureIgnoreCase)) // OrderStatusType.Winner
-                x.Cancelable = true;
-            x.Cancelable = false;
+            else
+                x.Cancelable = false;
+            x.SalePlanEndDate = null;
+            //else if (x.OrderStatusCode == 40 && x.DeliveryDateDescription.Contains(cancleableDate, StringComparison.InvariantCultureIgnoreCase)) // OrderStatusType.Winner
+            //    x.Cancelable = true;
+            //x.Cancelable = false;
         });
         return customerOrders.OrderByDescending(x => x.OrderId).ToList();
     }
