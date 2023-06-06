@@ -23,5 +23,6 @@ namespace OrderManagement.Domain
         public int? PspId { get; set; }
         public int AgencyId { get; set; }
         public int? PaymentId { get; set; }
+        public int PaymentSecret { get; set; }
     }
 }

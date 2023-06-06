@@ -49,7 +49,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
     private readonly IMemoryCache _memoryCache;
     private readonly IIpgServiceProvider _ipgServiceProvider;
     private readonly ICapacityControlAppService _capacityControlAppService;
-
+    private readonly IRandomGenerator _randomGenerator;
     public OrderAppService(ICommonAppService commonAppService,
                            IBaseInformationService baseInformationAppService,
                            IRepository<SaleDetail, int> saleDetailRepository,
@@ -64,7 +64,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
                            IConfiguration configuration,
                            IDistributedCache distributedCache,
                            IMemoryCache memoryCache,
-                           ICapacityControlAppService capacityControlAppService
+                           ICapacityControlAppService capacityControlAppService,
+                           IRandomGenerator randomGenerator
         )
     {
         _commonAppService = commonAppService;
@@ -82,6 +83,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         _configuration = configuration;
         _memoryCache = memoryCache;
         _capacityControlAppService = capacityControlAppService;
+        _randomGenerator = randomGenerator;
     }
 
 
@@ -522,6 +524,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             customerOrder.OrderStatus = OrderStatusType.RecentlyAdded;
             customerOrder.SaleId = SaleDetailDto.SaleId;
             customerOrder.AgencyId = commitOrderDto.AgencyId;
+            customerOrder.PaymentSecret = _randomGenerator.GetUniqueInt();
             await _commitOrderRepository.InsertAsync(customerOrder);
             await CurrentUnitOfWork.SaveChangesAsync();
         }
@@ -572,7 +575,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             CallBackUrl = _configuration.GetValue<string>("CallBackUrl"), //TODO: implement call back url and add it here
             Amount = (long)SaleDetailDto.CarFee,
             Mobile = customer.MobileNumber,
-            CustomerAuthorizationToken = _commonAppService.GetIncomigToken(),
+            AdditionalData = customerOrder.PaymentSecret.ToString() ,
             NationalCode = nationalCode,
             PspAccountId = commitOrderDto.PspAccountId.Value,
             FilterParam1 = customerOrder.SaleDetailId,
