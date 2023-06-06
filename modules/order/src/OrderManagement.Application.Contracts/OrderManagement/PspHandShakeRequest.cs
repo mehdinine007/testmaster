@@ -11,6 +11,6 @@
         public int FilterParam2 { get; set; }
         public int FilterParam3 { get; set; }
         public int FilterParam4 { get; set; }
-        public string CustomerAuthorizationToken { get; set; }
+        public string AdditionalData { get; set; }
     }
 }

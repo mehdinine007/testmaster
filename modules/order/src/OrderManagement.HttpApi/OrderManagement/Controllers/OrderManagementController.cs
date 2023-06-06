@@ -69,8 +69,7 @@ public class OrderManagementController
     //    => await _orderAppService.PrepareOrderForPayment(customerOrder, pspAccountId);
 
     [HttpPost]
-    [UserAuthorization]
-    public async Task CheckoutPayment(IPgCallBackRequest callBackRequest)
+    public async Task CheckoutPayment(ApiResult<IPgCallBackRequest> callBackRequest)
         => await _orderAppService.CheckoutPayment(callBackRequest);
 
     [HttpPost]
