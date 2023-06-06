@@ -706,7 +706,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
         {
             throw new UserFriendlyException("دسترسی شما کافی نمی باشد");
         }
-        _baseInformationAppService.CheckWhiteList(WhiteListEnumType.WhiteListOrder);
         var customerOrder = _commitOrderRepository.WithDetails(x => x.SaleDetail).FirstOrDefault(x => x.Id == orderId);
         if (customerOrder == null)
             throw new UserFriendlyException("شماره سفارش صحیح نمی باشد");
@@ -744,6 +743,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         }
          CheckSaleDetailValidation(saleDetailOrderDto);
+        _baseInformationAppService.CheckWhiteList(WhiteListEnumType.WhilteListEnseraf);
+
         //var currentTime = DateTime.Now;
         //if (currentTime > saleDetailOrderDto.SalePlanEndDate)
         //    throw new UserFriendlyException("امکان انصراف برای سفارشاتی که برنامه فروش مرتبط ،منقضی شده باشد ممکن نیست");
