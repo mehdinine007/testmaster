@@ -685,7 +685,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     x.DeliveryDate = null;
             }
 
-            if (x.OrderStatusCode == 10 && (x.SalePlanEndDate <= DateTime.Now)) // OrderStatusType.RecentlyAdded
+            if (x.OrderStatusCode == 10 && (x.SalePlanEndDate >= DateTime.Now)) // OrderStatusType.RecentlyAdded
                 x.Cancelable = true;
             else
                 x.Cancelable = false;
