@@ -674,7 +674,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 Message = handShakeResponse.Result.Message,
                 StatusCode = handShakeResponse.Result.StatusCode,
                 Token = handShakeResponse.Result.Token,
-                HtmlContent = handShakeResponse.Result.Url
+                HtmlContent = handShakeResponse.Result.HtmlContent
             } : new()
         };
     }
