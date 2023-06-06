@@ -22,6 +22,6 @@ namespace OrderManagement.Application.Contracts.Services
 
         Task<bool> Test();
 
-        Task<IPaymentResult> CheckoutPayment(IPgCallBackRequest callBackRequest);
+        Task<IPaymentResult> CheckoutPayment(ApiResult<IPgCallBackRequest> callBackRequest);
     }
 }

@@ -575,7 +575,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             CallBackUrl = _configuration.GetValue<string>("CallBackUrl"), //TODO: implement call back url and add it here
             Amount = (long)SaleDetailDto.CarFee,
             Mobile = customer.MobileNumber,
-            AdditionalData = customerOrder.PaymentSecret.ToString() ,
+            AdditionalData = customerOrder.PaymentSecret.ToString(),
             NationalCode = nationalCode,
             PspAccountId = commitOrderDto.PspAccountId.Value,
             FilterParam1 = customerOrder.SaleDetailId,
@@ -1027,9 +1027,10 @@ public class OrderAppService : ApplicationService, IOrderAppService
         //return result;
     }
 
-    public async Task<IPaymentResult> CheckoutPayment(IPgCallBackRequest callBackRequest)
+    public async Task<IPaymentResult> CheckoutPayment(ApiResult<IPgCallBackRequest> callBackRequest)
     {
-        var (status, paymentId) = (callBackRequest.StatusCode, callBackRequest.PaymentId);
+        var (status, paymentId, paymentSecret) =
+            (callBackRequest.Result.StatusCode, callBackRequest.Result.PaymentId, callBackRequest.Result.AdditionalData);
         List<Exception> exceptionCollection = new();
         try
         {
@@ -1039,18 +1040,26 @@ public class OrderAppService : ApplicationService, IOrderAppService
             var order = (await _commitOrderRepository.GetQueryableAsync())
                 .FirstOrDefault(x => x.Id == orderId.Id);
 
-            order.OrderStatus = status == 0
+            if (!int.TryParse(paymentSecret, out var numericPaymentSecret) || order.PaymentSecret != numericPaymentSecret)
+                exceptionCollection.Add(new UserFriendlyException("درخواست معتبر نیست"));
+
+            order.OrderStatus = status == 0 && paymentId > 0
                 ? OrderStatusType.PaymentSucceeded
                 : OrderStatusType.PaymentNotVerified;
             if (status != 0)
             {
                 exceptionCollection.Add(new UserFriendlyException("عملیات پرداخت ناموفق بود"));
-                await _commitOrderRepository.UpdateAsync(order);
-                return new PaymentResult
-                {
-                    Message = exceptionCollection.ConcatErrorMessages(),
-                    Status = status,
-                };
+                exceptionCollection.Add(new UserFriendlyException(callBackRequest.Result.Message));
+            }
+
+            if (exceptionCollection.Any())
+            {
+                order.OrderStatus = OrderStatusType.PaymentNotVerified;
+                await _commitOrderRepository.UpdateAsync(order, autoSave: true);
+                await CurrentUnitOfWork.SaveChangesAsync();
+                if (callBackRequest.Result.StatusCode == 0 && callBackRequest.Result.PaymentId > 0)
+                    await _ipgServiceProvider.ReverseTransaction(paymentId);
+                throw new UserFriendlyException("درخواست با خطا مواجه شد");
             }
             var capacityControl = await _capacityControlAppService.Validation(order.SaleDetailId, order.AgencyId);
             if (!capacityControl.Succsess)
