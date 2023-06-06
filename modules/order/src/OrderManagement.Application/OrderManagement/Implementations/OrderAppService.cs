@@ -27,6 +27,8 @@ using OrderManagement.Application.Helpers;
 using Grpc.Net.Client;
 using PaymentManagement.Application.Contracts.IServices;
 using ProtoBuf.Grpc.Client;
+using PaymentManagement.Application.Contracts.Dtos;
+using Esale.Core.DataAccess;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -1029,7 +1031,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         try
         {
             var orderId = (await _commitOrderRepository.GetQueryableAsync())
-                .Select(x => new {x.PaymentId , x.Id})
+                .Select(x => new { x.PaymentId, x.Id })
                 .FirstOrDefault(x => x.PaymentId == paymentId);
             var order = (await _commitOrderRepository.GetQueryableAsync())
                 .FirstOrDefault(x => x.Id == orderId.Id);
@@ -1082,17 +1084,10 @@ public class OrderAppService : ApplicationService, IOrderAppService
         }
     }
 
-    public async Task UpdateStatus(int orderId, int orderStatus)
+    public async Task UpdateStatus(CustomerOrderDto customerOrderDto)
     {
-        var customerOrder = _commitOrderRepository
-            .WithDetails()
-            .FirstOrDefault(x => x.Id == orderId);
-        if (customerOrder == null)
-        {
-            return;
-        }
-        customerOrder.OrderStatus = (OrderStatusType)orderStatus;
-        await _commitOrderRepository.UpdateAsync(customerOrder, autoSave: true);
+        var order = ObjectMapper.Map<CustomerOrderDto, CustomerOrder>(customerOrderDto);
+        await _commitOrderRepository.AttachAsync(order, o => o.OrderStatus);
         await CurrentUnitOfWork.SaveChangesAsync();
     }
 
@@ -1104,10 +1099,20 @@ public class OrderAppService : ApplicationService, IOrderAppService
             var payments = await paymentAppService.RetryForVerify();
             if (payments != null && payments.Count > 0)
             {
+                payments = payments
+                    .Where(x => x.FilterParam3 != null && x.FilterParam3 != 0)
+                    .ToList();
                 foreach (var payment in payments)
                 {
                     int orderId = payment.FilterParam3 ?? 0;
-                    UpdateStatus(orderId, payment.PaymentStatus == 0 ? (int)OrderStatusType.PaymentSucceeded : (int)OrderStatusType.PaymentNotVerified);
+                    if (orderId != 0)
+                    {
+                        UpdateStatus(new CustomerOrderDto()
+                        {
+                            Id = orderId,
+                            OrderStatusCode = payment.PaymentStatus == 0 ? (int)OrderStatusType.PaymentSucceeded : (int)OrderStatusType.PaymentNotVerified
+                        });
+                    }
                 }
             }
         }

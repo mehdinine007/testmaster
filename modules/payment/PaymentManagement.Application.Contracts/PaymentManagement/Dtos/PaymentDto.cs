@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-
-namespace PaymentManagement.Application.Contracts.Dtos
+﻿namespace PaymentManagement.Application.Contracts.Dtos
 {
     public class PaymentDto
     {
@@ -14,6 +12,7 @@ namespace PaymentManagement.Application.Contracts.Dtos
         public string NationalCode { get; set; }
         public string Mobile { get; set; }
         public decimal Amount { get; set; }
+        public string AdditionalData { get; set; }
         public int? FilterParam1 { get; set; }
         public int? FilterParam2 { get; set; }
         public int? FilterParam3 { get; set; }

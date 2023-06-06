@@ -69,10 +69,10 @@ namespace PaymentManagement.Application.Servicess
                     Count = o.Count()
                 }).ToList();
         }
-        public CallBackOutputDto GetCallBackInfo(int paymentId)
+        public string GetCallBackUrl(int paymentId)
         {
-            var result = _paymentRepository.WithDetails().AsNoTracking().Select(o => new { o.Id, o.CallBackUrl, o.CustomerAuthorizationToken }).FirstOrDefault(o => o.Id == paymentId);
-            return result == null ? new CallBackOutputDto() : new CallBackOutputDto { CallBackUrl = result.CallBackUrl, CustomerAuthorizationToken = result.CustomerAuthorizationToken };
+            var result = _paymentRepository.WithDetails().AsNoTracking().Select(o => new { o.Id, o.CallBackUrl }).FirstOrDefault(o => o.Id == paymentId);
+            return result == null ? string.Empty : result.CallBackUrl;
         }
 
         #region HandShake
@@ -189,23 +189,6 @@ namespace PaymentManagement.Application.Servicess
         {
             try
             {
-                //var payment = await _paymentRepository.InsertAsync(new Payment
-                //{
-                //    PspAccountId = input.PspAccountId,
-                //    PaymentStatusId = (int)PaymentStatusEnum.InProgress,
-                //    Amount = input.Amount,
-                //    CallBackUrl = input.CallBackUrl,
-                //    NationalCode = input.NationalCode,
-                //    Mobile = input.Mobile,
-                //    TransactionDate = DateTime.Now,
-                //    TransactionPersianDate = DateUtil.Now,
-                //    FilterParam1 = input.FilterParam1,
-                //    FilterParam2 = input.FilterParam2,
-                //    FilterParam3 = input.FilterParam3,
-                //    FilterParam4 = input.FilterParam4
-                //});
-                //await CurrentUnitOfWork.SaveChangesAsync();
-
                 using var uow = _unitOfWorkManager.Begin(requiresNew: true, isTransactional: false);
                 var payment = await _paymentRepository.InsertAsync(new Payment
                 {
@@ -215,7 +198,7 @@ namespace PaymentManagement.Application.Servicess
                     CallBackUrl = input.CallBackUrl,
                     NationalCode = input.NationalCode,
                     Mobile = input.Mobile,
-                    CustomerAuthorizationToken = input.CustomerAuthorizationToken,
+                    AdditionalData = input.AdditionalData,
                     TransactionDate = DateTime.Now,
                     TransactionPersianDate = DateUtil.Now,
                     FilterParam1 = input.FilterParam1,
@@ -224,6 +207,7 @@ namespace PaymentManagement.Application.Servicess
                     FilterParam4 = input.FilterParam4
                 });
                 await uow.CompleteAsync();
+                //await CurrentUnitOfWork.SaveChangesAsync();
 
                 var paymentDto = new PaymentDto
                 {
@@ -411,7 +395,6 @@ namespace PaymentManagement.Application.Servicess
                     "",//CartItem,
                     handShakeRequest.Enc);
 
-                //todo: test null serialize
                 result.PspJsonResult = JsonConvert.SerializeObject(handShakeResult);
 
                 await _paymentLogRepository.InsertAsync(new PaymentLog
@@ -428,7 +411,7 @@ namespace PaymentManagement.Application.Servicess
 
                     if (res[0] == "0")
                     {
-                        payment.Token = result.Token;
+                        payment.Token = res[1];
                         var paymentEntity1 = ObjectMapper.Map<PaymentDto, Payment>(payment);
                         await _paymentRepository.AttachAsync(paymentEntity1, o => o.Token);
 
@@ -494,7 +477,8 @@ namespace PaymentManagement.Application.Servicess
                     TraceNo = o.TraceNo,
                     TransactionCode = o.TransactionCode,
                     Token = o.Token,
-                    PspAccountId = o.PspAccountId
+                    PspAccountId = o.PspAccountId,
+                    AdditionalData = o.AdditionalData
                 })
                 .First(o => o.Id == int.Parse(pspResult.requestId));
 
@@ -502,7 +486,8 @@ namespace PaymentManagement.Application.Servicess
             {
                 StatusCode = (int)StatusCodeEnum.Unknown,
                 Message = Constants.UnknownError,
-                PaymentId = payment.Id
+                PaymentId = payment.Id,
+                AdditionalData = payment.AdditionalData
             };
 
             try
@@ -538,7 +523,6 @@ namespace PaymentManagement.Application.Servicess
 
                 result.PspJsonResult = pspJsonResult;
                 result.TransactionCode = pspResult.retrievalReferenceNumber;
-
 
                 //در صورتي كه وضعيت پرداخت موفق است نبايد مجددن تاييديه ارسال شود
                 if (payment.PaymentStatusId == (int)PaymentStatusEnum.Success)
@@ -639,14 +623,16 @@ namespace PaymentManagement.Application.Servicess
                     TraceNo = o.TraceNo,
                     TransactionCode = o.TransactionCode,
                     Token = o.Token,
-                    PspAccountId = o.PspAccountId
+                    PspAccountId = o.PspAccountId,
+                    AdditionalData = o.AdditionalData
                 })
                 .First(o => o.Id == int.Parse(pspResult.SaleOrderId));
             var result = new BackFromPspOutputDto()
             {
                 StatusCode = (int)StatusCodeEnum.Unknown,
                 Message = Constants.UnknownError,
-                PaymentId = payment.Id
+                PaymentId = payment.Id,
+                AdditionalData = payment.AdditionalData
             };
 
             try
@@ -1339,7 +1325,7 @@ namespace PaymentManagement.Application.Servicess
                 result.Add(new RetryForVerifyOutputDto
                 {
                     PaymentId = payment.Id,
-                    PaymentStatus = payment.PaymentStatusId,
+                    PaymentStatus = (PaymentStatusEnum)payment.PaymentStatusId,
                     FilterParam1 = payment.FilterParam1,
                     FilterParam2 = payment.FilterParam2,
                     FilterParam3 = payment.FilterParam3,

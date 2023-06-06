@@ -36,6 +36,7 @@ namespace OrderService.Host
                 services.AddScoped<IAuditingStore, AuditingStoreDb>();
             }
             services.AddSingleton<ICapacityControlJob, CapacityControlJob>();
+            services.AddSingleton<IIpgJob, IpgJob>();
             ServiceTool.Create(services);
         }
 
