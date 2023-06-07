@@ -3,7 +3,6 @@ using System.Xml.Linq;
 
 namespace OrderManagement.Domain
 {
-    //TODO: Create tables for these tables dynamically
     public enum OrderRejectionType
     {
 

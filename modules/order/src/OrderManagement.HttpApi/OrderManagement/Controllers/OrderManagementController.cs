@@ -69,6 +69,7 @@ public class OrderManagementController
     //    => await _orderAppService.PrepareOrderForPayment(customerOrder, pspAccountId);
 
     [HttpPost]
+    [RemoteService(IsEnabled = false)]
     public async Task CheckoutPayment(ApiResult<IPgCallBackRequest> callBackRequest)
         => await _orderAppService.CheckoutPayment(callBackRequest);
 
