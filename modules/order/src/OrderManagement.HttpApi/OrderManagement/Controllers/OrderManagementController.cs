@@ -70,7 +70,7 @@ public class OrderManagementController
 
     [HttpPost]
     [RemoteService(IsEnabled = false)]
-    public async Task CheckoutPayment(ApiResult<IPgCallBackRequest> callBackRequest)
+    public async Task CheckoutPayment(IPgCallBackRequest callBackRequest)
         => await _orderAppService.CheckoutPayment(callBackRequest);
 
     [HttpPost]

@@ -20,14 +20,12 @@ using System.Data;
 using OrderManagement.Domain.Shared;
 using OrderManagement.Application.OrderManagement.Constants;
 using Newtonsoft.Json;
-using Volo.Abp.Domain.Entities;
 using Microsoft.Extensions.Caching.Memory;
 using Esale.Core.Utility.Results;
 using OrderManagement.Application.Helpers;
 using Grpc.Net.Client;
 using PaymentManagement.Application.Contracts.IServices;
 using ProtoBuf.Grpc.Client;
-using PaymentManagement.Application.Contracts.Dtos;
 using Esale.Core.DataAccess;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
@@ -1027,10 +1025,10 @@ public class OrderAppService : ApplicationService, IOrderAppService
         //return result;
     }
 
-    public async Task<IPaymentResult> CheckoutPayment(ApiResult<IPgCallBackRequest> callBackRequest)
+    public async Task<IPaymentResult> CheckoutPayment(IPgCallBackRequest callBackRequest)
     {
         var (status, paymentId, paymentSecret) =
-            (callBackRequest.Result.StatusCode, callBackRequest.Result.PaymentId, callBackRequest.Result.AdditionalData);
+            (callBackRequest.StatusCode, callBackRequest.PaymentId, callBackRequest.AdditionalData);
         List<Exception> exceptionCollection = new();
         try
         {
@@ -1046,7 +1044,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             if (status != 0)
             {
                 exceptionCollection.Add(new UserFriendlyException("عملیات پرداخت ناموفق بود"));
-                exceptionCollection.Add(new UserFriendlyException(callBackRequest.Result.Message));
+                exceptionCollection.Add(new UserFriendlyException(callBackRequest.Message));
             }
 
             var capacityControl = await _capacityControlAppService.Validation(order.SaleDetailId, order.AgencyId);
@@ -1069,7 +1067,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     Id = order.Id,
                     OrderStatusCode = (int)OrderStatusType.PaymentNotVerified
                 });
-                if (callBackRequest.Result.StatusCode == 0 && callBackRequest.Result.PaymentId > 0)
+                if (callBackRequest.StatusCode == 0 && callBackRequest.PaymentId > 0)
                     await _ipgServiceProvider.ReverseTransaction(paymentId);
                 throw new UserFriendlyException("درخواست با خطا مواجه شد");
             }

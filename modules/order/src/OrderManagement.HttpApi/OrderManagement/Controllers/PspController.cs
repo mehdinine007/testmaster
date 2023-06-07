@@ -23,7 +23,7 @@ public class PspController : AbpController
     [HttpPost]
     public async Task<IActionResult> CallBack(string data)
     {
-        var callBackRequest = JsonConvert.DeserializeObject<ApiResult<IPgCallBackRequest>>(data);
+        var callBackRequest = JsonConvert.DeserializeObject<IPgCallBackRequest>(data);
         var paymentResult = await _orderAppService.CheckoutPayment(callBackRequest);
         //TODO: complete front end call back url
         return Redirect(string.Format(_configuration.GetValue<string>("ClientSideCallbackUrl"),paymentResult.Status,paymentResult.OrderId));
