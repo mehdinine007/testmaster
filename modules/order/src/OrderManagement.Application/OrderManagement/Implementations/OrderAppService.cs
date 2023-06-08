@@ -124,16 +124,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
     private void RustySalePlanValidation(CommitOrderDto commitOrder, int esaleTypeId)
     {
-        //TODO: make sure esale type name is quite right
-        //const string targetEsaleTypeName = "طرح فروش فرسوده";
-        //var esaleTypeQuery = await _esaleTypeRepository.GetQueryableAsync();
-        //var esaleType = esaleTypeQuery.Select(x => new
-        //{
-        //    x.SaleTypeName,
-        //    x.Id
-        //}).FirstOrDefault(x => x.Id == esaleTypeId);
-        //if (esaleType == null)
-        //    throw new EntityNotFoundException(typeof(ESaleType), esaleTypeId);
         if (esaleTypeId == 3)
         {
             const string pattern = ".[A-Z a-z 0-9]";
@@ -558,7 +548,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
         //        x.UserId,
         //        x.Id,
         //        SaleDetailId = x.SaleDetail.Id,
-        //        //TODO: make sure the amount of car is right
         //        Amount = x.SaleDetail.CarFee,
         //        x.AgencyId,
         //        x.OrderStatus
@@ -567,7 +556,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         var handShakeResponse = await _ipgServiceProvider.HandShakeWithPsp(new PspHandShakeRequest()
         {
-            CallBackUrl = _configuration.GetValue<string>("CallBackUrl"), //TODO: implement call back url and add it here
+            CallBackUrl = _configuration.GetValue<string>("CallBackUrl"),
             Amount = (long)SaleDetailDto.CarFee,
             Mobile = customer.MobileNumber,
             AdditionalData = customerOrder.PaymentSecret.ToString(),
@@ -911,7 +900,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
         if (userRejectionAdvocacyDisable)
             throw new UserFriendlyException("تا اطلاع ثانوی انصراف از طرح های فروش ممکن نیست");
         //await _cacheManager.GetCache("UserRejection").RemoveAsync(userNationalCode);
-        //TODO: check removing the right key
         await _distributedCache.RemoveAsync(string.Format(RedisConstants.UserRejectionPrefix, userNationalCode));
         await _distributedCache.RemoveAsync(userNationalCode);
 
