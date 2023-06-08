@@ -38,7 +38,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
     private readonly IRepository<UserRejectionAdvocacy, int> _userRejectionAdcocacyRepository;
     private readonly IRepository<AdvocacyUser, int> _advocacyUsers;
     private readonly IRepository<CustomerOrder, int> _commitOrderRepository;
-    private readonly IRepository<Logs, long> _logsRepository;
     private readonly IRepository<OrderStatusTypeReadOnly, int> _orderStatusTypeReadOnlyRepository;
     private readonly IRepository<OrderRejectionTypeReadOnly, int> _orderRejectionTypeReadOnlyRepository;
     private readonly IEsaleGrpcClient _esaleGrpcClient;
@@ -55,7 +54,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
                            IRepository<AdvocacyUser, int> advocacyUsers,
                            IRepository<CustomerOrder, int> commitOrderRepository,
                            IIpgServiceProvider ipgServiceProvider,
-                           IRepository<Logs, long> logsRepository,
                            IRepository<OrderStatusTypeReadOnly, int> orderStatusTypeReadOnlyRepository,
                            IRepository<OrderRejectionTypeReadOnly, int> orderRejectionTypeReadOnlyRepository,
                            IEsaleGrpcClient esaleGrpcClient,
@@ -73,7 +71,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
         _advocacyUsers = advocacyUsers;
         _commitOrderRepository = commitOrderRepository;
         _ipgServiceProvider = ipgServiceProvider;
-        _logsRepository = logsRepository;
         _orderStatusTypeReadOnlyRepository = orderStatusTypeReadOnlyRepository;
         _orderRejectionTypeReadOnlyRepository = orderRejectionTypeReadOnlyRepository;
         _esaleGrpcClient = esaleGrpcClient;
@@ -1062,21 +1059,27 @@ public class OrderAppService : ApplicationService, IOrderAppService
             }
             if (exceptionCollection.Any())
             {
-                await UpdateStatus(new()
-                {
-                    Id = order.Id,
-                    OrderStatusCode = (int)OrderStatusType.PaymentNotVerified
-                });
+                order.OrderStatus = OrderStatusType.PaymentNotVerified;
+                await _commitOrderRepository.UpdateAsync(order, autoSave: true);
+                await CurrentUnitOfWork.SaveChangesAsync();
+                //await UpdateStatus(new()
+                //{
+                //    Id = order.Id,
+                //    OrderStatusCode = (int)OrderStatusType.PaymentNotVerified
+                //});
                 if (callBackRequest.StatusCode == 0 && callBackRequest.PaymentId > 0)
                     await _ipgServiceProvider.ReverseTransaction(paymentId);
                 throw new UserFriendlyException("درخواست با خطا مواجه شد");
             }
             var verificationResponse = await _ipgServiceProvider.VerifyTransaction(paymentId);
-            await UpdateStatus(new ()
-            {
-                Id = order.Id,
-                OrderStatusCode = (int)OrderStatusType.PaymentSucceeded
-            });
+            order.OrderStatus = OrderStatusType.PaymentSucceeded;
+            await _commitOrderRepository.UpdateAsync(order, autoSave: true);
+            await CurrentUnitOfWork.SaveChangesAsync();
+            //await UpdateStatus(new ()
+            //{
+            //    Id = order.Id,
+            //    OrderStatusCode = (int)OrderStatusType.PaymentSucceeded
+            //});
             return new PaymentResult()
             {
                 PaymentId = paymentId,
