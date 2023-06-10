@@ -1017,13 +1017,18 @@ public class OrderAppService : ApplicationService, IOrderAppService
         List<Exception> exceptionCollection = new();
         try
         {
-            var orderId = (await _commitOrderRepository.GetQueryableAsync())
-                .Select(x => new { x.PaymentId, x.Id })
-                .FirstOrDefault(x => x.PaymentId == paymentId);
+            //var orderId = (await _commitOrderRepository.GetQueryableAsync())
+            //    .AsNoTracking()
+            //    .Select(x => new { x.PaymentId, x.Id })
+            //    .FirstOrDefault(x => x.PaymentId == paymentId);
+            //var order = (await _commitOrderRepository.GetQueryableAsync())
+            //    .AsNoTracking()
+            //    .FirstOrDefault(x => x.Id == orderId.Id);
+            
             var order = (await _commitOrderRepository.GetQueryableAsync())
-                .FirstOrDefault(x => x.Id == orderId.Id);
-
-            if (!int.TryParse(paymentSecret, out var numericPaymentSecret) || order.PaymentSecret != numericPaymentSecret)
+                .AsNoTracking()
+                .FirstOrDefault(x => x.PaymentId == paymentId && x.OrderStatus == OrderStatusType.RecentlyAdded);
+            if (order is null || (!int.TryParse(paymentSecret, out var numericPaymentSecret) || order.PaymentSecret != numericPaymentSecret))
                 exceptionCollection.Add(new UserFriendlyException("درخواست معتبر نیست"));
 
             if (status != 0)
@@ -1042,37 +1047,37 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     Message = exceptionCollection.ConcatErrorMessages(),
                     Status = 1,
                     PaymentId = 0,
-                    OrderId = orderId.Id
+                    OrderId = order.Id
                 };
             }
             if (exceptionCollection.Any())
             {
-                order.OrderStatus = OrderStatusType.PaymentNotVerified;
-                await _commitOrderRepository.UpdateAsync(order, autoSave: true);
-                await CurrentUnitOfWork.SaveChangesAsync();
-                //await UpdateStatus(new()
-                //{
-                //    Id = order.Id,
-                //    OrderStatusCode = (int)OrderStatusType.PaymentNotVerified
-                //});
+                //order.OrderStatus = OrderStatusType.PaymentNotVerified;
+                //await _commitOrderRepository.UpdateAsync(order, autoSave: true);
+                //await CurrentUnitOfWork.SaveChangesAsync();
+                await UpdateStatus(new()
+                {
+                    Id = order.Id,
+                    OrderStatusCode = (int)OrderStatusType.PaymentNotVerified
+                });
                 if (callBackRequest.StatusCode == 0 && callBackRequest.PaymentId > 0)
                     await _ipgServiceProvider.ReverseTransaction(paymentId);
                 throw new UserFriendlyException("درخواست با خطا مواجه شد");
             }
             var verificationResponse = await _ipgServiceProvider.VerifyTransaction(paymentId);
-            order.OrderStatus = OrderStatusType.PaymentSucceeded;
-            await _commitOrderRepository.UpdateAsync(order, autoSave: true);
-            await CurrentUnitOfWork.SaveChangesAsync();
-            //await UpdateStatus(new ()
-            //{
-            //    Id = order.Id,
-            //    OrderStatusCode = (int)OrderStatusType.PaymentSucceeded
-            //});
+            //order.OrderStatus = OrderStatusType.PaymentSucceeded;
+            //await _commitOrderRepository.UpdateAsync(order, autoSave: true);
+            //await CurrentUnitOfWork.SaveChangesAsync();
+            await UpdateStatus(new()
+            {
+                Id = order.Id,
+                OrderStatusCode = (int)OrderStatusType.PaymentSucceeded
+            });
             return new PaymentResult()
             {
                 PaymentId = paymentId,
                 Message = verificationResponse.Result.Message,
-                OrderId = orderId.Id,
+                OrderId = order.Id,
                 Status = status
             };
         }
