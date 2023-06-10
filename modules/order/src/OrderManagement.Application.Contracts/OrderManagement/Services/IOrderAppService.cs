@@ -7,6 +7,7 @@ namespace OrderManagement.Application.Contracts.Services
     public interface IOrderAppService : IApplicationService
     {
         List<CustomerOrder_OrderDetailDto> GetCustomerOrderList();
+        CustomerOrder_OrderDetailDto GetOrderDetailById(int id);
 
         Task<CustomerOrderDto> CancelOrder(int orderId);
 

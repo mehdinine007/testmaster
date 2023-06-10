@@ -79,7 +79,14 @@ public class IpgServiceProvider : ApplicationService, IIpgServiceProvider
     #region Utility
 
     private RestClient SetDefaultClient()
-        => new RestClient(new RestClientOptions(_configuration.GetValue<string>("IPG:Url")));
+    {
+
+        var options = new RestClientOptions(_configuration.GetValue<string>("IPG:Url"))
+        {
+            RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true
+        };        
+        return new RestClient(options);
+    }
 
     #endregion
 }

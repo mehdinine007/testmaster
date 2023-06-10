@@ -51,6 +51,12 @@ public class OrderManagementController
     public List<CustomerOrder_OrderDetailDto> GetCustomerOrderList()
         => _orderAppService.GetCustomerOrderList();
 
+    [DisableAuditing]
+    [HttpGet]
+    [UserAuthorization]
+    public CustomerOrder_OrderDetailDto GetOrderDetailById(int id)
+        => _orderAppService.GetOrderDetailById(id);
+
     [HttpPost]
     [UserAuthorization]
     public async Task<bool> InsertUserRejectionAdvocacyPlan(string userSmsCode)

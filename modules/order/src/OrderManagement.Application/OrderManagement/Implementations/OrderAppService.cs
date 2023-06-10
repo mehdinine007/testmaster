@@ -1127,4 +1127,37 @@ public class OrderAppService : ApplicationService, IOrderAppService
         }
     }
 
+    public CustomerOrder_OrderDetailDto GetOrderDetailById(int id)
+    {
+        if (!_commonAppService.IsInRole("Customer"))
+        {
+            throw new UserFriendlyException("دسترسی شما کافی نمی باشد");
+        }
+        var userId = _commonAppService.GetUserId();
+        var orderStatusTypes = _orderStatusTypeReadOnlyRepository.WithDetails().ToList();
+        var customerOrders = _commitOrderRepository.WithDetails()
+            .AsNoTracking()
+            .Join(_saleDetailRepository.WithDetails(x => x.CarTip.CarType.CarFamily.Company),
+            x => x.SaleDetailId,
+            y => y.Id,
+            (x, y) => new CustomerOrder_OrderDetailDto()
+            {
+                CarDeliverDate = y.CarDeliverDate,
+                CarFamilyTitle = y.CarTip.CarType.CarFamily.Title,
+                CarTipTitle = y.CarTip.Title,
+                CarTypeTitle = y.CarTip.CarType.Title,
+                CompanyName = y.CarTip.CarType.CarFamily.Company.Name,
+                CreationTime = x.CreationTime,
+                OrderId = x.Id,
+                SaleDescription = y.SalePlanDescription,
+                UserId = x.UserId,
+                OrderStatusCode = (int)x.OrderStatus,
+                PriorityId = x.PriorityId.HasValue ? (int)x.PriorityId : null,
+                DeliveryDateDescription = x.DeliveryDateDescription,
+                DeliveryDate = x.DeliveryDate,
+                OrderRejectionCode = x.OrderRejectionStatus.HasValue ? (int)x.OrderRejectionStatus : null,
+                ESaleTypeId = y.ESaleTypeId,
+            }).FirstOrDefault(x => x.UserId == userId && x.OrderId == id);
+        return customerOrders;
+    }
 }
