@@ -1016,6 +1016,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
         var (status, paymentId, paymentSecret) =
             (callBackRequest.StatusCode, callBackRequest.PaymentId, callBackRequest.AdditionalData);
         List<Exception> exceptionCollection = new();
+        var order = (await _commitOrderRepository.GetQueryableAsync())
+            .AsNoTracking()
+            .FirstOrDefault(x => x.PaymentId == paymentId && x.OrderStatus == OrderStatusType.RecentlyAdded);
         try
         {
             //var orderId = (await _commitOrderRepository.GetQueryableAsync())
@@ -1025,10 +1028,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             //var order = (await _commitOrderRepository.GetQueryableAsync())
             //    .AsNoTracking()
             //    .FirstOrDefault(x => x.Id == orderId.Id);
-            
-            var order = (await _commitOrderRepository.GetQueryableAsync())
-                .AsNoTracking()
-                .FirstOrDefault(x => x.PaymentId == paymentId && x.OrderStatus == OrderStatusType.RecentlyAdded);
+
             if (order is null || (!int.TryParse(paymentSecret, out var numericPaymentSecret) || order.PaymentSecret != numericPaymentSecret))
                 exceptionCollection.Add(new UserFriendlyException("درخواست معتبر نیست"));
 
@@ -1090,6 +1090,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 Message = exceptionCollection.ConcatErrorMessages(),
                 PaymentId = paymentId,
                 Status = 2,
+                OrderId = order.Id
             };
         }
     }
