@@ -991,8 +991,7 @@ namespace PaymentManagement.Application.Servicess
             switch ((PspEnum)pspAccount.PspId)
             {
                 case PspEnum.Mellat:
-                    //return await InquiryToMellatAsync(payment, pspAccount);
-                    break;
+                    return await InquiryToMellatAsync(payment, pspAccount.JsonProps);
                 case PspEnum.IranKish:
                     return await InquiryToIranKishAsync(payment, pspAccount.JsonProps);
             }
@@ -1087,6 +1086,12 @@ namespace PaymentManagement.Application.Servicess
                 result.Message = Constants.ErrorInInquiry;
                 return result;
             }
+        }
+        private async Task<InquiryOutputDto> InquiryToMellatAsync(PaymentDto payment, string pspAccountJsonProps)
+        {
+            WcfServiceLibrary.Service1 s = new();
+            var ss = s.GetData(3);
+            return new InquiryOutputDto() { Message = ss};
         }
         #endregion
 

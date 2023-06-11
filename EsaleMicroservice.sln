@@ -111,7 +111,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PaymentManagement.HttpApi",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PaymentService.Host", "microservices\PaymentService.Host\PaymentService.Host.csproj", "{4D07A8F1-9E7B-499C-A1C4-B9387D57FCAD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Esale.Core", "shared\Esale.Core\Esale.Core.csproj", "{B3FDBD00-C529-4B5C-A75B-235936F266D3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Esale.Core", "shared\Esale.Core\Esale.Core.csproj", "{B3FDBD00-C529-4B5C-A75B-235936F266D3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WcfServiceLibrary", "modules\payment\WcfServiceLibrary\WcfServiceLibrary.csproj", "{6CECB870-595A-4F10-A917-1FFB280B0397}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -291,6 +293,10 @@ Global
 		{B3FDBD00-C529-4B5C-A75B-235936F266D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B3FDBD00-C529-4B5C-A75B-235936F266D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B3FDBD00-C529-4B5C-A75B-235936F266D3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6CECB870-595A-4F10-A917-1FFB280B0397}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6CECB870-595A-4F10-A917-1FFB280B0397}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6CECB870-595A-4F10-A917-1FFB280B0397}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6CECB870-595A-4F10-A917-1FFB280B0397}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -346,6 +352,7 @@ Global
 		{F615AD6C-62F8-4A70-A8B1-A9C16D8D8883} = {77D8745D-A1C9-4553-AC10-B39F5567293D}
 		{4D07A8F1-9E7B-499C-A1C4-B9387D57FCAD} = {3B26D176-390B-4F51-BE52-E9B422C28A88}
 		{B3FDBD00-C529-4B5C-A75B-235936F266D3} = {2B3B460C-0293-44A1-BEF4-91A778CE73CE}
+		{6CECB870-595A-4F10-A917-1FFB280B0397} = {77D8745D-A1C9-4553-AC10-B39F5567293D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {37474F0D-2E52-4D2F-B39B-7FE3FF31B4EC}

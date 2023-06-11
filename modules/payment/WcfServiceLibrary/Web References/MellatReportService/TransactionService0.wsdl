@@ -1,0 +1,721 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns1="http://bpmellat.co/" xmlns:ns2="http://schemas.xmlsoap.org/soap/http" xmlns:tns="http://www.springframework.org/schema/beans" name="TransactionService" targetNamespace="http://www.springframework.org/schema/beans" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:import namespace="http://bpmellat.co/" location="http://bos.bpm.bankmellat.ir/backoffice2/Services/bpm/TransactionService.asmx?wsdl=TransactionService.wsdl" />
+  <wsdl:types />
+  <wsdl:binding name="TransactionServiceSoapBinding" type="ns1:TransactionService">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="getTransactionByTerminalGroupType">
+      <soap12:operation soapAction="http://bpmellat.co/getTransactionByTerminalGroupType" style="document" />
+      <wsdl:input name="getTransactionByTerminalGroupType">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getTransactionByTerminalGroupTypeResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ServiceException">
+        <soap12:fault use="literal" name="ServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getRefundTransactionByOrderIdComplete">
+      <soap12:operation soapAction="http://bpmellat.co/getRefundTransactionByOrderIdComplete" style="document" />
+      <wsdl:input name="getRefundTransactionByOrderIdComplete">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getRefundTransactionByOrderIdCompleteResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ServiceException">
+        <soap12:fault use="literal" name="ServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getBillPaymentByDate">
+      <soap12:operation soapAction="http://bpmellat.co/getBillPaymentByDate" style="document" />
+      <wsdl:input name="getBillPaymentByDate">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getBillPaymentByDateResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ServiceException">
+        <soap12:fault use="literal" name="ServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getRefundTransactionByRefrenceId">
+      <soap12:operation soapAction="http://bpmellat.co/getRefundTransactionByRefrenceId" style="document" />
+      <wsdl:input name="getRefundTransactionByRefrenceId">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getRefundTransactionByRefrenceIdResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ServiceException">
+        <soap12:fault use="literal" name="ServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getBillPaymentBank">
+      <soap12:operation soapAction="http://bpmellat.co/getBillPaymentBank" style="document" />
+      <wsdl:input name="getBillPaymentBank">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getBillPaymentBankResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ServiceException">
+        <soap12:fault use="literal" name="ServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getShetabInfoById">
+      <soap12:operation soapAction="http://bpmellat.co/getShetabInfoById" style="document" />
+      <wsdl:input name="getShetabInfoById">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getShetabInfoByIdResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ServiceException">
+        <soap12:fault use="literal" name="ServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getTransactionByCustomerBranchId">
+      <soap12:operation soapAction="http://bpmellat.co/getTransactionByCustomerBranchId" style="document" />
+      <wsdl:input name="getTransactionByCustomerBranchId">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getTransactionByCustomerBranchIdResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ServiceException">
+        <soap12:fault use="literal" name="ServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getRefundTransactionWithCommissionByDateNew">
+      <soap12:operation soapAction="http://bpmellat.co/getRefundTransactionWithCommissionByDateNew" style="document" />
+      <wsdl:input name="getRefundTransactionWithCommissionByDateNew">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getRefundTransactionWithCommissionByDateNewResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ServiceException">
+        <soap12:fault use="literal" name="ServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getTransactionStatusByTerminalIdAndOrderId">
+      <soap12:operation soapAction="http://bpmellat.co/getTransactionStatusByTerminalIdAndOrderId" style="document" />
+      <wsdl:input name="getTransactionStatusByTerminalIdAndOrderId">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getTransactionStatusByTerminalIdAndOrderIdResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ServiceException">
+        <soap12:fault use="literal" name="ServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getRefundTransactionWithCommissionByIdNew">
+      <soap12:operation soapAction="http://bpmellat.co/getRefundTransactionWithCommissionByIdNew" style="document" />
+      <wsdl:input name="getRefundTransactionWithCommissionByIdNew">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getRefundTransactionWithCommissionByIdNewResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ServiceException">
+        <soap12:fault use="literal" name="ServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getDiscountTransactionByDate">
+      <soap12:operation soapAction="http://bpmellat.co/getDiscountTransactionByDate" style="document" />
+      <wsdl:input name="getDiscountTransactionByDate">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getDiscountTransactionByDateResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ServiceException">
+        <soap12:fault use="literal" name="ServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getTransactionByCustomerId">
+      <soap12:operation soapAction="http://bpmellat.co/getTransactionByCustomerId" style="document" />
+      <wsdl:input name="getTransactionByCustomerId">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getTransactionByCustomerIdResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ServiceException">
+        <soap12:fault use="literal" name="ServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getTransactionByDiscountInquiryId">
+      <soap12:operation soapAction="http://bpmellat.co/getTransactionByDiscountInquiryId" style="document" />
+      <wsdl:input name="getTransactionByDiscountInquiryId">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getTransactionByDiscountInquiryIdResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ServiceException">
+        <soap12:fault use="literal" name="ServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getCardsInfo">
+      <soap12:operation soapAction="http://bpmellat.co/getCardsInfo" style="document" />
+      <wsdl:input name="getCardsInfo">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getCardsInfoResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ServiceException">
+        <soap12:fault use="literal" name="ServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getTransactionByIdFromArchive">
+      <soap12:operation soapAction="http://bpmellat.co/getTransactionByIdFromArchive" style="document" />
+      <wsdl:input name="getTransactionByIdFromArchive">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getTransactionByIdFromArchiveResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ServiceException">
+        <soap12:fault use="literal" name="ServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getTransactionByBillIdAndPayId">
+      <soap12:operation soapAction="http://bpmellat.co/getTransactionByBillIdAndPayId" style="document" />
+      <wsdl:input name="getTransactionByBillIdAndPayId">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getTransactionByBillIdAndPayIdResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ServiceException">
+        <soap12:fault use="literal" name="ServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getTransactionById">
+      <soap12:operation soapAction="http://bpmellat.co/getTransactionById" style="document" />
+      <wsdl:input name="getTransactionById">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getTransactionByIdResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ServiceException">
+        <soap12:fault use="literal" name="ServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getTransactionByPayerId">
+      <soap12:operation soapAction="http://bpmellat.co/getTransactionByPayerId" style="document" />
+      <wsdl:input name="getTransactionByPayerId">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getTransactionByPayerIdResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ServiceException">
+        <soap12:fault use="literal" name="ServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getRefundTransactionByRefrenceIdNew">
+      <soap12:operation soapAction="http://bpmellat.co/getRefundTransactionByRefrenceIdNew" style="document" />
+      <wsdl:input name="getRefundTransactionByRefrenceIdNew">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getRefundTransactionByRefrenceIdNewResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ServiceException">
+        <soap12:fault use="literal" name="ServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getRefundTransactionWithCommissionByDate">
+      <soap12:operation soapAction="http://bpmellat.co/getRefundTransactionWithCommissionByDate" style="document" />
+      <wsdl:input name="getRefundTransactionWithCommissionByDate">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getRefundTransactionWithCommissionByDateResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ServiceException">
+        <soap12:fault use="literal" name="ServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getRefundTransactionByRefrenceIdCompleteFromArchive">
+      <soap12:operation soapAction="http://bpmellat.co/getRefundTransactionByRefrenceIdCompleteFromArchive" style="document" />
+      <wsdl:input name="getRefundTransactionByRefrenceIdCompleteFromArchive">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getRefundTransactionByRefrenceIdCompleteFromArchiveResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ServiceException">
+        <soap12:fault use="literal" name="ServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getInstituteTransactionByDate">
+      <soap12:operation soapAction="http://bpmellat.co/getInstituteTransactionByDate" style="document" />
+      <wsdl:input name="getInstituteTransactionByDate">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getInstituteTransactionByDateResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ServiceException">
+        <soap12:fault use="literal" name="ServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getRefundTransactionByDateCompleteFromArchive">
+      <soap12:operation soapAction="http://bpmellat.co/getRefundTransactionByDateCompleteFromArchive" style="document" />
+      <wsdl:input name="getRefundTransactionByDateCompleteFromArchive">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getRefundTransactionByDateCompleteFromArchiveResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ServiceException">
+        <soap12:fault use="literal" name="ServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getTransactionByTerminalGroupTypeNew">
+      <soap12:operation soapAction="http://bpmellat.co/getTransactionByTerminalGroupTypeNew" style="document" />
+      <wsdl:input name="getTransactionByTerminalGroupTypeNew">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getTransactionByTerminalGroupTypeNewResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ServiceException">
+        <soap12:fault use="literal" name="ServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getBillPaymentHamrahAvalBANK">
+      <soap12:operation soapAction="http://bpmellat.co/getBillPaymentHamrahAvalBANK" style="document" />
+      <wsdl:input name="getBillPaymentHamrahAvalBANK">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getBillPaymentHamrahAvalBANKResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ServiceException">
+        <soap12:fault use="literal" name="ServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getPostDepositDraftByIban">
+      <soap12:operation soapAction="http://bpmellat.co/getBillShaparkForPostByIbanAndDate" style="document" />
+      <wsdl:input name="getPostDepositDraftByIban">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getPostDepositDraftByIbanResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ServiceException">
+        <soap12:fault use="literal" name="ServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="changeRequest">
+      <soap12:operation soapAction="http://bpmellat.co/changeRequest" style="document" />
+      <wsdl:input name="changeRequest">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="changeRequestResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ServiceException">
+        <soap12:fault use="literal" name="ServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getTerminalsInfo">
+      <soap12:operation soapAction="http://bpmellat.co/getTerminalsInfo" style="document" />
+      <wsdl:input name="getTerminalsInfo">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getTerminalsInfoResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ServiceException">
+        <soap12:fault use="literal" name="ServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getRefundTransactionByDateComplete">
+      <soap12:operation soapAction="http://bpmellat.co/getRefundTransactionByDateComplete" style="document" />
+      <wsdl:input name="getRefundTransactionByDateComplete">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getRefundTransactionByDateCompleteResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ServiceException">
+        <soap12:fault use="literal" name="ServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getRefundTransactionByOrderIdNew">
+      <soap12:operation soapAction="http://bpmellat.co/getRefundTransactionByOrderIdNew" style="document" />
+      <wsdl:input name="getRefundTransactionByOrderIdNew">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getRefundTransactionByOrderIdNewResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ServiceException">
+        <soap12:fault use="literal" name="ServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getBillPaymentPSP">
+      <soap12:operation soapAction="http://bpmellat.co/getBillPaymentPSP" style="document" />
+      <wsdl:input name="getBillPaymentPSP">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getBillPaymentPSPResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ServiceException">
+        <soap12:fault use="literal" name="ServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getTransactionStatusByIdFromArchive">
+      <soap12:operation soapAction="http://bpmellat.co/getTransactionStatusByIdFromArchive" style="document" />
+      <wsdl:input name="getTransactionStatusByIdFromArchive">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getTransactionStatusByIdFromArchiveResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ServiceException">
+        <soap12:fault use="literal" name="ServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getTransactionByDiscountInquiryIdFromArchive">
+      <soap12:operation soapAction="http://bpmellat.co/getTransactionByDiscountInquiryIdFromArchive" style="document" />
+      <wsdl:input name="getTransactionByDiscountInquiryIdFromArchive">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getTransactionByDiscountInquiryIdFromArchiveResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ServiceException">
+        <soap12:fault use="literal" name="ServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getTransactionByTerminalIdAndOrderId">
+      <soap12:operation soapAction="http://bpmellat.co/getTransactionByTerminalIdAndOrderId" style="document" />
+      <wsdl:input name="getTransactionByTerminalIdAndOrderId">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getTransactionByTerminalIdAndOrderIdResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ServiceException">
+        <soap12:fault use="literal" name="ServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getRefundTransactionByOrderIdCompleteFromArchive">
+      <soap12:operation soapAction="http://bpmellat.co/getRefundTransactionByOrderIdCompleteFromArchive" style="document" />
+      <wsdl:input name="getRefundTransactionByOrderIdCompleteFromArchive">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getRefundTransactionByOrderIdCompleteFromArchiveResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ServiceException">
+        <soap12:fault use="literal" name="ServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getPosTerminalRequest">
+      <soap12:operation soapAction="http://bpmellat.co/getPosTerminalRequest" style="document" />
+      <wsdl:input name="getPosTerminalRequest">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getPosTerminalRequestResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ServiceException">
+        <soap12:fault use="literal" name="ServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getBillPaymentHamrahAvalPSP">
+      <soap12:operation soapAction="http://bpmellat.co/getBillPaymentHamrahAvalPSP" style="document" />
+      <wsdl:input name="getBillPaymentHamrahAvalPSP">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getBillPaymentHamrahAvalPSPResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ServiceException">
+        <soap12:fault use="literal" name="ServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getRefundBalance">
+      <soap12:operation soapAction="http://bpmellat.co/getRefundBalance" style="document" />
+      <wsdl:input name="getRefundBalance">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getRefundBalanceResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ServiceException">
+        <soap12:fault use="literal" name="ServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getTransactionByRRNAndTerminalId">
+      <soap12:operation soapAction="http://bpmellat.co/getTransactionByRRNAndTerminalId" style="document" />
+      <wsdl:input name="getTransactionByRRNAndTerminalId">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getTransactionByRRNAndTerminalIdResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ServiceException">
+        <soap12:fault use="literal" name="ServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getRefundTransactionByDate">
+      <soap12:operation soapAction="http://bpmellat.co/getRefundTransactionByDate" style="document" />
+      <wsdl:input name="getRefundTransactionByDate">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getRefundTransactionByDateResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ServiceException">
+        <soap12:fault use="literal" name="ServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getUnsuccessfulTransactionsByDate">
+      <soap12:operation soapAction="http://bpmellat.co/getUnsuccessfulTransactionsByDate" style="document" />
+      <wsdl:input name="getUnsuccessfulTransactionsByDate">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getUnsuccessfulTransactionsByDateResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ServiceException">
+        <soap12:fault use="literal" name="ServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getGeneralBillInfo">
+      <soap12:operation soapAction="http://bpmellat.co/getTransactionGeneralByBillIdAndPayId" style="document" />
+      <wsdl:input name="getGeneralBillInfo">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getGeneralBillInfoResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ServiceException">
+        <soap12:fault use="literal" name="ServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getRequestStatus">
+      <soap12:operation soapAction="http://bpmellat.co/getRequestStatus" style="document" />
+      <wsdl:input name="getRequestStatus">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getRequestStatusResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ServiceException">
+        <soap12:fault use="literal" name="ServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getOfferTransactionByDate">
+      <soap12:operation soapAction="http://bpmellat.co/getOfferTransactionByDate" style="document" />
+      <wsdl:input name="getOfferTransactionByDate">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getOfferTransactionByDateResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ServiceException">
+        <soap12:fault use="literal" name="ServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getOnlineTransactionByDate">
+      <soap12:operation soapAction="http://bpmellat.co/getOnlineTransactionByDate" style="document" />
+      <wsdl:input name="getOnlineTransactionByDate">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getOnlineTransactionByDateResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ServiceException">
+        <soap12:fault use="literal" name="ServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getTransactionByDate">
+      <soap12:operation soapAction="http://bpmellat.co/getTransactionByDate" style="document" />
+      <wsdl:input name="getTransactionByDate">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getTransactionByDateResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ServiceException">
+        <soap12:fault use="literal" name="ServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getRefundTransactionByRefrenceIdComplete">
+      <soap12:operation soapAction="http://bpmellat.co/getRefundTransactionByRefrenceIdComplete" style="document" />
+      <wsdl:input name="getRefundTransactionByRefrenceIdComplete">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getRefundTransactionByRefrenceIdCompleteResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ServiceException">
+        <soap12:fault use="literal" name="ServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getTransactionByCustomerIdNew">
+      <soap12:operation soapAction="http://bpmellat.co/getTransactionByCustomerIdNew" style="document" />
+      <wsdl:input name="getTransactionByCustomerIdNew">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getTransactionByCustomerIdNewResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ServiceException">
+        <soap12:fault use="literal" name="ServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getTransactionStatusById">
+      <soap12:operation soapAction="http://bpmellat.co/getTransactionStatusById" style="document" />
+      <wsdl:input name="getTransactionStatusById">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getTransactionStatusByIdResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ServiceException">
+        <soap12:fault use="literal" name="ServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getRefundTransactionByOrderId">
+      <soap12:operation soapAction="http://bpmellat.co/getRefundTransactionByOrderId" style="document" />
+      <wsdl:input name="getRefundTransactionByOrderId">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getRefundTransactionByOrderIdResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ServiceException">
+        <soap12:fault use="literal" name="ServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getRefundTransactionByDateNew">
+      <soap12:operation soapAction="http://bpmellat.co/getRefundTransactionByDateNew" style="document" />
+      <wsdl:input name="getRefundTransactionByDateNew">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getRefundTransactionByDateNewResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ServiceException">
+        <soap12:fault use="literal" name="ServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getTransactionByBillIdAndPayIdFromArchive">
+      <soap12:operation soapAction="http://bpmellat.co/getTransactionByBillIdAndPayIdFromArchive" style="document" />
+      <wsdl:input name="getTransactionByBillIdAndPayIdFromArchive">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getTransactionByBillIdAndPayIdFromArchiveResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ServiceException">
+        <soap12:fault use="literal" name="ServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getTransactionByIdWithCardType">
+      <soap12:operation soapAction="http://bpmellat.co/getTransactionByIdWithCardType" style="document" />
+      <wsdl:input name="getTransactionByIdWithCardType">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getTransactionByIdWithCardTypeResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ServiceException">
+        <soap12:fault use="literal" name="ServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getDepositDraftByIban">
+      <soap12:operation soapAction="http://bpmellat.co/getDepositDraftByIban" style="document" />
+      <wsdl:input name="getDepositDraftByIban">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getDepositDraftByIbanResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ServiceException">
+        <soap12:fault use="literal" name="ServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getMobileTransactions">
+      <soap12:operation soapAction="http://bpmellat.co/getMobileTransactions" style="document" />
+      <wsdl:input name="getMobileTransactions">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getMobileTransactionsResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ServiceException">
+        <soap12:fault use="literal" name="ServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getRefundTransactionWithCommissionById">
+      <soap12:operation soapAction="http://bpmellat.co/getRefundTransactionWithCommissionById" style="document" />
+      <wsdl:input name="getRefundTransactionWithCommissionById">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getRefundTransactionWithCommissionByIdResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ServiceException">
+        <soap12:fault use="literal" name="ServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getTransactionByIdForRefund">
+      <soap12:operation soapAction="http://bpmellat.co/getTransactionByIdForRefund" style="document" />
+      <wsdl:input name="getTransactionByIdForRefund">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getTransactionByIdForRefundResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ServiceException">
+        <soap12:fault use="literal" name="ServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getTransactionInquiryByCustomer">
+      <soap12:operation soapAction="http://bpmellat.co/getTransactionInquiryByCustomer" style="document" />
+      <wsdl:input name="getTransactionInquiryByCustomer">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getTransactionInquiryByCustomerResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ServiceException">
+        <soap12:fault use="literal" name="ServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getChangeAccountInquiryRequestStatus">
+      <soap12:operation soapAction="http://bpmellat.co/getChangeAccountInquiryRequestStatus" style="document" />
+      <wsdl:input name="getChangeAccountInquiryRequestStatus">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="getChangeAccountInquiryRequestStatusResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ServiceException">
+        <soap12:fault use="literal" name="ServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="TransactionService">
+    <wsdl:port name="TransactionServiceImplPort" binding="tns:TransactionServiceSoapBinding">
+      <soap12:address location="http://bos.bpm.bankmellat.ir/backoffice2/Services/bpm/TransactionService.asmx" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>
