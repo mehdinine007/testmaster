@@ -5,19 +5,19 @@ using Volo.Abp.Application.Services;
 using RestSharp;
 using OrderManagement.Application.Contracts;
 using System.Collections.Generic;
-using OrderManagement.Application.Contracts.OrderManagement.Exceptions;
-using System.Text.RegularExpressions;
-using OrderManagement.Application.OrderManagement.Utitlities;
 using Volo.Abp;
+using Volo.Abp.Auditing;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
 public class IpgServiceProvider : ApplicationService, IIpgServiceProvider
 {
     private readonly IConfiguration _configuration;
-    public IpgServiceProvider(IConfiguration configuration)
+    private readonly IAuditingManager _auditingManager;
+    public IpgServiceProvider(IConfiguration configuration,IAuditingManager auditingManager)
     {
         _configuration = configuration;
+        _auditingManager = auditingManager;
     }
 
     public async Task<List<PspDto>> GetPsps()
@@ -47,7 +47,8 @@ public class IpgServiceProvider : ApplicationService, IIpgServiceProvider
         if (handshakeResult.IsSuccessful && handshakeResult.IsSuccessStatusCode && handshakeResult.Data.Result.StatusCode == 0)
             return handshakeResult.Data;
 
-        //TODO: Add log for failure reason
+        _auditingManager.Current.Log.Exceptions.Add(
+            new UserFriendlyException(handshakeResult.Data?.Result?.Message ?? "Handshake proccess with psp has been failed"));
         return null;
     }
 
@@ -70,15 +71,22 @@ public class IpgServiceProvider : ApplicationService, IIpgServiceProvider
         if (serviceResponse.IsSuccessful && serviceResponse.IsSuccessStatusCode && serviceResponse.Data.Result.StatusCode == 0)
             return serviceResponse.Data;
 
-        //TODO: Add log for failure reason
-
+        _auditingManager.Current.Log.Exceptions.Add(
+            new UserFriendlyException(serviceResponse.Data?.Result?.Message ?? "Transaction verification has been failed"));
         throw new UserFriendlyException("متاسفانه تایید تراکنش با خطا مواجه شد");
     }
 
     #region Utility
 
     private RestClient SetDefaultClient()
-        => new RestClient(new RestClientOptions(_configuration.GetValue<string>("IPG:Url")));
+    {
+
+        var options = new RestClientOptions(_configuration.GetValue<string>("IPG:Url"))
+        {
+            RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true
+        };        
+        return new RestClient(options);
+    }
 
     #endregion
 }

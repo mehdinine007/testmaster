@@ -7,6 +7,7 @@ namespace OrderManagement.Application.Contracts.Services
     public interface IOrderAppService : IApplicationService
     {
         List<CustomerOrder_OrderDetailDto> GetCustomerOrderList();
+        Task<CustomerOrder_OrderDetailDto> GetOrderDetailById(int id);
 
         Task<CustomerOrderDto> CancelOrder(int orderId);
 
@@ -22,6 +23,6 @@ namespace OrderManagement.Application.Contracts.Services
 
         Task<bool> Test();
 
-        Task<IPaymentResult> CheckoutPayment(ApiResult<IPgCallBackRequest> callBackRequest);
+        Task<IPaymentResult> CheckoutPayment(IPgCallBackRequest callBackRequest);
     }
 }

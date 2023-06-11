@@ -51,6 +51,12 @@ public class OrderManagementController
     public List<CustomerOrder_OrderDetailDto> GetCustomerOrderList()
         => _orderAppService.GetCustomerOrderList();
 
+    [DisableAuditing]
+    [HttpGet]
+    [UserAuthorization]
+    public Task<CustomerOrder_OrderDetailDto> GetOrderDetailById(int id)
+        => _orderAppService.GetOrderDetailById(id);
+
     [HttpPost]
     [UserAuthorization]
     public async Task<bool> InsertUserRejectionAdvocacyPlan(string userSmsCode)
@@ -69,7 +75,8 @@ public class OrderManagementController
     //    => await _orderAppService.PrepareOrderForPayment(customerOrder, pspAccountId);
 
     [HttpPost]
-    public async Task CheckoutPayment(ApiResult<IPgCallBackRequest> callBackRequest)
+    [RemoteService(IsEnabled = false)]
+    public async Task CheckoutPayment(IPgCallBackRequest callBackRequest)
         => await _orderAppService.CheckoutPayment(callBackRequest);
 
     [HttpPost]

@@ -20,15 +20,14 @@ using System.Data;
 using OrderManagement.Domain.Shared;
 using OrderManagement.Application.OrderManagement.Constants;
 using Newtonsoft.Json;
-using Volo.Abp.Domain.Entities;
 using Microsoft.Extensions.Caching.Memory;
 using Esale.Core.Utility.Results;
 using OrderManagement.Application.Helpers;
 using Grpc.Net.Client;
 using PaymentManagement.Application.Contracts.IServices;
 using ProtoBuf.Grpc.Client;
-using PaymentManagement.Application.Contracts.Dtos;
 using Esale.Core.DataAccess;
+using Volo.Abp.Threading;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -40,7 +39,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
     private readonly IRepository<UserRejectionAdvocacy, int> _userRejectionAdcocacyRepository;
     private readonly IRepository<AdvocacyUser, int> _advocacyUsers;
     private readonly IRepository<CustomerOrder, int> _commitOrderRepository;
-    private readonly IRepository<Logs, long> _logsRepository;
     private readonly IRepository<OrderStatusTypeReadOnly, int> _orderStatusTypeReadOnlyRepository;
     private readonly IRepository<OrderRejectionTypeReadOnly, int> _orderRejectionTypeReadOnlyRepository;
     private readonly IEsaleGrpcClient _esaleGrpcClient;
@@ -57,7 +55,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
                            IRepository<AdvocacyUser, int> advocacyUsers,
                            IRepository<CustomerOrder, int> commitOrderRepository,
                            IIpgServiceProvider ipgServiceProvider,
-                           IRepository<Logs, long> logsRepository,
                            IRepository<OrderStatusTypeReadOnly, int> orderStatusTypeReadOnlyRepository,
                            IRepository<OrderRejectionTypeReadOnly, int> orderRejectionTypeReadOnlyRepository,
                            IEsaleGrpcClient esaleGrpcClient,
@@ -75,7 +72,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
         _advocacyUsers = advocacyUsers;
         _commitOrderRepository = commitOrderRepository;
         _ipgServiceProvider = ipgServiceProvider;
-        _logsRepository = logsRepository;
         _orderStatusTypeReadOnlyRepository = orderStatusTypeReadOnlyRepository;
         _orderRejectionTypeReadOnlyRepository = orderRejectionTypeReadOnlyRepository;
         _esaleGrpcClient = esaleGrpcClient;
@@ -129,16 +125,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
     private void RustySalePlanValidation(CommitOrderDto commitOrder, int esaleTypeId)
     {
-        //TODO: make sure esale type name is quite right
-        //const string targetEsaleTypeName = "طرح فروش فرسوده";
-        //var esaleTypeQuery = await _esaleTypeRepository.GetQueryableAsync();
-        //var esaleType = esaleTypeQuery.Select(x => new
-        //{
-        //    x.SaleTypeName,
-        //    x.Id
-        //}).FirstOrDefault(x => x.Id == esaleTypeId);
-        //if (esaleType == null)
-        //    throw new EntityNotFoundException(typeof(ESaleType), esaleTypeId);
         if (esaleTypeId == 3)
         {
             const string pattern = ".[A-Z a-z 0-9]";
@@ -563,7 +549,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
         //        x.UserId,
         //        x.Id,
         //        SaleDetailId = x.SaleDetail.Id,
-        //        //TODO: make sure the amount of car is right
         //        Amount = x.SaleDetail.CarFee,
         //        x.AgencyId,
         //        x.OrderStatus
@@ -572,7 +557,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         var handShakeResponse = await _ipgServiceProvider.HandShakeWithPsp(new PspHandShakeRequest()
         {
-            CallBackUrl = _configuration.GetValue<string>("CallBackUrl"), //TODO: implement call back url and add it here
+            CallBackUrl = _configuration.GetValue<string>("CallBackUrl"),
             Amount = (long)SaleDetailDto.CarFee,
             Mobile = customer.MobileNumber,
             AdditionalData = customerOrder.PaymentSecret.ToString(),
@@ -916,7 +901,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
         if (userRejectionAdvocacyDisable)
             throw new UserFriendlyException("تا اطلاع ثانوی انصراف از طرح های فروش ممکن نیست");
         //await _cacheManager.GetCache("UserRejection").RemoveAsync(userNationalCode);
-        //TODO: check removing the right key
         await _distributedCache.RemoveAsync(string.Format(RedisConstants.UserRejectionPrefix, userNationalCode));
         await _distributedCache.RemoveAsync(userNationalCode);
 
@@ -1027,40 +1011,33 @@ public class OrderAppService : ApplicationService, IOrderAppService
         //return result;
     }
 
-    public async Task<IPaymentResult> CheckoutPayment(ApiResult<IPgCallBackRequest> callBackRequest)
+    public async Task<IPaymentResult> CheckoutPayment(IPgCallBackRequest callBackRequest)
     {
         var (status, paymentId, paymentSecret) =
-            (callBackRequest.Result.StatusCode, callBackRequest.Result.PaymentId, callBackRequest.Result.AdditionalData);
+            (callBackRequest.StatusCode, callBackRequest.PaymentId, callBackRequest.AdditionalData);
         List<Exception> exceptionCollection = new();
+        var order = (await _commitOrderRepository.GetQueryableAsync())
+            .AsNoTracking()
+            .FirstOrDefault(x => x.PaymentId == paymentId && x.OrderStatus == OrderStatusType.RecentlyAdded);
         try
         {
-            var orderId = (await _commitOrderRepository.GetQueryableAsync())
-                .Select(x => new { x.PaymentId, x.Id })
-                .FirstOrDefault(x => x.PaymentId == paymentId);
-            var order = (await _commitOrderRepository.GetQueryableAsync())
-                .FirstOrDefault(x => x.Id == orderId.Id);
+            //var orderId = (await _commitOrderRepository.GetQueryableAsync())
+            //    .AsNoTracking()
+            //    .Select(x => new { x.PaymentId, x.Id })
+            //    .FirstOrDefault(x => x.PaymentId == paymentId);
+            //var order = (await _commitOrderRepository.GetQueryableAsync())
+            //    .AsNoTracking()
+            //    .FirstOrDefault(x => x.Id == orderId.Id);
 
-            if (!int.TryParse(paymentSecret, out var numericPaymentSecret) || order.PaymentSecret != numericPaymentSecret)
+            if (order is null || (!int.TryParse(paymentSecret, out var numericPaymentSecret) || order.PaymentSecret != numericPaymentSecret))
                 exceptionCollection.Add(new UserFriendlyException("درخواست معتبر نیست"));
 
-            order.OrderStatus = status == 0 && paymentId > 0
-                ? OrderStatusType.PaymentSucceeded
-                : OrderStatusType.PaymentNotVerified;
             if (status != 0)
             {
                 exceptionCollection.Add(new UserFriendlyException("عملیات پرداخت ناموفق بود"));
-                exceptionCollection.Add(new UserFriendlyException(callBackRequest.Result.Message));
+                exceptionCollection.Add(new UserFriendlyException(callBackRequest.Message));
             }
 
-            if (exceptionCollection.Any())
-            {
-                order.OrderStatus = OrderStatusType.PaymentNotVerified;
-                await _commitOrderRepository.UpdateAsync(order, autoSave: true);
-                await CurrentUnitOfWork.SaveChangesAsync();
-                if (callBackRequest.Result.StatusCode == 0 && callBackRequest.Result.PaymentId > 0)
-                    await _ipgServiceProvider.ReverseTransaction(paymentId);
-                throw new UserFriendlyException("درخواست با خطا مواجه شد");
-            }
             var capacityControl = await _capacityControlAppService.Validation(order.SaleDetailId, order.AgencyId);
             if (!capacityControl.Succsess)
             {
@@ -1071,16 +1048,37 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     Message = exceptionCollection.ConcatErrorMessages(),
                     Status = 1,
                     PaymentId = 0,
-                    OrderId = orderId.Id
+                    OrderId = order.Id
                 };
             }
+            if (exceptionCollection.Any())
+            {
+                //order.OrderStatus = OrderStatusType.PaymentNotVerified;
+                //await _commitOrderRepository.UpdateAsync(order, autoSave: true);
+                //await CurrentUnitOfWork.SaveChangesAsync();
+                await UpdateStatus(new()
+                {
+                    Id = order.Id,
+                    OrderStatusCode = (int)OrderStatusType.PaymentNotVerified
+                });
+                if (callBackRequest.StatusCode == 0 && callBackRequest.PaymentId > 0)
+                    await _ipgServiceProvider.ReverseTransaction(paymentId);
+                throw new UserFriendlyException("درخواست با خطا مواجه شد");
+            }
             var verificationResponse = await _ipgServiceProvider.VerifyTransaction(paymentId);
-            await _commitOrderRepository.UpdateAsync(order);
+            //order.OrderStatus = OrderStatusType.PaymentSucceeded;
+            //await _commitOrderRepository.UpdateAsync(order, autoSave: true);
+            //await CurrentUnitOfWork.SaveChangesAsync();
+            await UpdateStatus(new()
+            {
+                Id = order.Id,
+                OrderStatusCode = (int)OrderStatusType.PaymentSucceeded
+            });
             return new PaymentResult()
             {
                 PaymentId = paymentId,
                 Message = verificationResponse.Result.Message,
-                OrderId = orderId.Id,
+                OrderId = order.Id,
                 Status = status
             };
         }
@@ -1092,6 +1090,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 Message = exceptionCollection.ConcatErrorMessages(),
                 PaymentId = paymentId,
                 Status = 2,
+                OrderId = order.Id
             };
         }
     }
@@ -1130,4 +1129,42 @@ public class OrderAppService : ApplicationService, IOrderAppService
         }
     }
 
+    public async Task<CustomerOrder_OrderDetailDto> GetOrderDetailById(int id)
+    {
+        if (!_commonAppService.IsInRole("Customer"))
+        {
+            throw new UserFriendlyException("دسترسی شما کافی نمی باشد");
+        }
+        var userId = _commonAppService.GetUserId();
+        var orderStatusTypes = _orderStatusTypeReadOnlyRepository.WithDetails().ToList();
+        var customerOrderQuery = await _commitOrderRepository.GetQueryableAsync();
+        var customerOrder = customerOrderQuery
+            .AsNoTracking()
+            .Join(_saleDetailRepository.WithDetails(x => x.CarTip.CarType.CarFamily.Company),
+            x => x.SaleDetailId,
+            y => y.Id,
+            (x, y) => new CustomerOrder_OrderDetailDto()
+            {
+                CarDeliverDate = y.CarDeliverDate,
+                CarFamilyTitle = y.CarTip.CarType.CarFamily.Title,
+                CarTipTitle = y.CarTip.Title,
+                CarTypeTitle = y.CarTip.CarType.Title,
+                CompanyName = y.CarTip.CarType.CarFamily.Company.Name,
+                CreationTime = x.CreationTime,
+                OrderId = x.Id,
+                SaleDescription = y.SalePlanDescription,
+                UserId = x.UserId,
+                OrderStatusCode = (int)x.OrderStatus,
+                PriorityId = x.PriorityId.HasValue ? (int)x.PriorityId : null,
+                DeliveryDateDescription = x.DeliveryDateDescription,
+                DeliveryDate = x.DeliveryDate,
+                OrderRejectionCode = x.OrderRejectionStatus.HasValue ? (int)x.OrderRejectionStatus : null,
+                ESaleTypeId = y.ESaleTypeId,
+            }).FirstOrDefault(x => x.UserId == userId && x.OrderId == id);
+        var user = await _esaleGrpcClient.GetUserById(customerOrder.UserId);
+        customerOrder.SurName = user.SurName;
+        customerOrder.Name = user.Name;
+        customerOrder.NationalCode = user.NationalCode;
+        return customerOrder;
+    }
 }

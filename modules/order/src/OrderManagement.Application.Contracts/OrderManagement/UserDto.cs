@@ -25,5 +25,9 @@
         public string MobileNumber { get; set; }
 
         public int? CompanyId { get; set; }
+
+        public string SurName { get; set; }
+
+        public string Name { get; set; }
     }
 }

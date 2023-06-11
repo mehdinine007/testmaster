@@ -49,6 +49,8 @@ public class EsaleGrpcClient : ApplicationService, IEsaleGrpcClient
             Shaba = user.Shaba,
             MobileNumber = user.MobileNumber,
             CompanyId = user.CompanyId,
+            Name = user.Name,
+            SurName = user.SurName
         };
     }
 
