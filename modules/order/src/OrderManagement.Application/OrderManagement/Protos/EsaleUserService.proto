@@ -39,6 +39,10 @@ message UserModel{
 	string MobileNumber = 11;
 
 	google.protobuf.Int32Value CompanyId = 12;
+
+	string Name = 14;
+
+	string SurName = 15;
 }
 
 message UserAdvocacy{

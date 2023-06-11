@@ -38,5 +38,11 @@ namespace OrderManagement.Application.Contracts
 
         public bool Cancelable { get; set; }
         public int ESaleTypeId { get; set; }
+
+        public string NationalCode { get; set; }
+
+        public string Name { get; set; }
+
+        public string SurName { get; set; }
     }
 }

@@ -54,7 +54,7 @@ public class OrderManagementController
     [DisableAuditing]
     [HttpGet]
     [UserAuthorization]
-    public CustomerOrder_OrderDetailDto GetOrderDetailById(int id)
+    public Task<CustomerOrder_OrderDetailDto> GetOrderDetailById(int id)
         => _orderAppService.GetOrderDetailById(id);
 
     [HttpPost]

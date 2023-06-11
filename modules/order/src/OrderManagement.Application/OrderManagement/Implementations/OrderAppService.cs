@@ -27,6 +27,7 @@ using Grpc.Net.Client;
 using PaymentManagement.Application.Contracts.IServices;
 using ProtoBuf.Grpc.Client;
 using Esale.Core.DataAccess;
+using Volo.Abp.Threading;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -1127,7 +1128,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         }
     }
 
-    public CustomerOrder_OrderDetailDto GetOrderDetailById(int id)
+    public async Task<CustomerOrder_OrderDetailDto> GetOrderDetailById(int id)
     {
         if (!_commonAppService.IsInRole("Customer"))
         {
@@ -1135,7 +1136,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
         }
         var userId = _commonAppService.GetUserId();
         var orderStatusTypes = _orderStatusTypeReadOnlyRepository.WithDetails().ToList();
-        var customerOrders = _commitOrderRepository.WithDetails()
+        var customerOrderQuery = await _commitOrderRepository.GetQueryableAsync();
+        var customerOrder = customerOrderQuery
             .AsNoTracking()
             .Join(_saleDetailRepository.WithDetails(x => x.CarTip.CarType.CarFamily.Company),
             x => x.SaleDetailId,
@@ -1158,6 +1160,10 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 OrderRejectionCode = x.OrderRejectionStatus.HasValue ? (int)x.OrderRejectionStatus : null,
                 ESaleTypeId = y.ESaleTypeId,
             }).FirstOrDefault(x => x.UserId == userId && x.OrderId == id);
-        return customerOrders;
+        var user = await _esaleGrpcClient.GetUserById(customerOrder.UserId);
+        customerOrder.SurName = user.SurName;
+        customerOrder.Name = user.Name;
+        customerOrder.NationalCode = user.NationalCode;
+        return customerOrder;
     }
 }
