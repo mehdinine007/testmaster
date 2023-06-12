@@ -491,15 +491,17 @@ namespace PaymentManagement.Application.Servicess
                     Token = o.Token,
                     PspAccountId = o.PspAccountId,
                     AdditionalData = o.AdditionalData
-                }).First(o => o.Id == int.Parse(pspResult.requestId));
+                }).FirstOrDefault(o => o.Id == int.Parse(pspResult.requestId));
 
             var result = new BackFromPspOutputDto()
             {
                 StatusCode = (int)StatusCodeEnum.Unknown,
                 Message = Constants.UnknownError,
-                PaymentId = payment.Id,
-                AdditionalData = payment.AdditionalData
+                PaymentId = payment != null ? payment.Id : 0,
+                AdditionalData = payment != null ? payment.AdditionalData : string.Empty
             };
+
+            if (payment == null) { return result; }
 
             try
             {
@@ -637,14 +639,17 @@ namespace PaymentManagement.Application.Servicess
                     PspAccountId = o.PspAccountId,
                     AdditionalData = o.AdditionalData
                 })
-                .First(o => o.Id == int.Parse(pspResult.SaleOrderId));
+                .FirstOrDefault(o => o.Id == int.Parse(pspResult.SaleOrderId));
+
             var result = new BackFromPspOutputDto()
             {
                 StatusCode = (int)StatusCodeEnum.Unknown,
                 Message = Constants.UnknownError,
-                PaymentId = payment.Id,
-                AdditionalData = payment.AdditionalData
+                PaymentId = payment != null ? payment.Id : 0,
+                AdditionalData = payment != null ? payment.AdditionalData : string.Empty
             };
+
+            if (payment == null) { return result; }
 
             try
             {
@@ -788,7 +793,10 @@ namespace PaymentManagement.Application.Servicess
                     TransactionCode = o.TransactionCode,
                     Token = o.Token,
                     PspAccountId = o.PspAccountId
-                }).First(o => o.Id == paymentId);
+                }).FirstOrDefault(o => o.Id == paymentId);
+
+            if (payment == null) { return result; }
+
             var pspAccount = _pspAccountRepository.WithDetails().AsNoTracking().Select(o => new { o.Id, o.PspId, o.JsonProps }).First(o => o.Id == payment.PspAccountId);
 
             switch ((PspEnum)pspAccount.PspId)
@@ -996,7 +1004,10 @@ namespace PaymentManagement.Application.Servicess
                     TransactionCode = o.TransactionCode,
                     Token = o.Token,
                     PspAccountId = o.PspAccountId
-                }).First(o => o.Id == paymentId);
+                }).FirstOrDefault(o => o.Id == paymentId);
+
+            if (payment == null) { return result; }
+
             var pspAccount = _pspAccountRepository.WithDetails().AsNoTracking().Select(o => new { o.Id, o.PspId, o.JsonProps }).First(o => o.Id == payment.PspAccountId);
 
             switch ((PspEnum)pspAccount.PspId)
@@ -1125,7 +1136,10 @@ namespace PaymentManagement.Application.Servicess
                     TransactionCode = o.TransactionCode,
                     Token = o.Token,
                     PspAccountId = o.PspAccountId
-                }).First(o => o.Id == paymentId);
+                }).FirstOrDefault(o => o.Id == paymentId);
+
+            if (payment == null) { return result; }
+
             var pspAccount = _pspAccountRepository.WithDetails().AsNoTracking().Select(o => new { o.Id, o.PspId, o.JsonProps }).First(o => o.Id == payment.PspAccountId);
 
             switch ((PspEnum)pspAccount.PspId)
