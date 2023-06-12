@@ -61,9 +61,9 @@ public class OrderManagementController
         => await _orderAppService.GetSaleDetailByUid(saleDetailUid);
 
     [DisableAuditing]
-    [HttpGet]
+    [HttpPost]
     [UserAuthorization]
-    public async Task<CustomerOrder_OrderDetailDto> GetDetail(SaleDetail_Order_InquiryDto inquiryDto)
+    public async Task<CustomerOrder_OrderDetailDto> GetDetail([FromBody]SaleDetail_Order_InquiryDto inquiryDto)
         => await _orderAppService.GetDetail(inquiryDto);
 
     [HttpPost]

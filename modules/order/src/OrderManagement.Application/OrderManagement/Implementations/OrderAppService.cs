@@ -1163,38 +1163,24 @@ public class OrderAppService : ApplicationService, IOrderAppService
         }
         var userId = _commonAppService.GetUserId();
         var orderStatusTypes = _orderStatusTypeReadOnlyRepository.WithDetails().ToList();
-        var customerOrderQuery = await _commitOrderRepository.GetQueryableAsync();
-        var customerOrder = customerOrderQuery
-            .AsNoTracking()
-            .Join(_saleDetailRepository.WithDetails(x => x.CarTip.CarType.CarFamily.Company),
-            x => x.SaleDetailId,
-            y => y.Id,
-            (x, y) => new CustomerOrder_OrderDetailDto()
+        var saleDetailQuery = await _saleDetailRepository.GetQueryableAsync();
+        var saleDetail = saleDetailQuery.AsNoTracking()
+            .Select(y => new CustomerOrder_OrderDetailDto
             {
                 CarDeliverDate = y.CarDeliverDate,
                 CarFamilyTitle = y.CarTip.CarType.CarFamily.Title,
                 CarTipTitle = y.CarTip.Title,
                 CarTypeTitle = y.CarTip.CarType.Title,
                 CompanyName = y.CarTip.CarType.CarFamily.Company.Name,
-                CreationTime = x.CreationTime,
-                OrderId = x.Id,
-                SaleDescription = y.SalePlanDescription,
-                UserId = x.UserId,
-                OrderStatusCode = (int)x.OrderStatus,
-                PriorityId = x.PriorityId.HasValue ? (int)x.PriorityId : null,
-                DeliveryDateDescription = x.DeliveryDateDescription,
-                DeliveryDate = x.DeliveryDate,
-                OrderRejectionCode = x.OrderRejectionStatus.HasValue ? (int)x.OrderRejectionStatus : null,
                 ESaleTypeId = y.ESaleTypeId,
                 SaleDetailUid = y.UID,
-                TransactionCommitDate = DateTime.Now,
-                TransactionId = "545646"
-            }).FirstOrDefault(x => x.UserId == userId && x.SaleDetailUid == saleDetailUid);
-        var user = await _esaleGrpcClient.GetUserById(customerOrder.UserId);
-        customerOrder.SurName = user.SurName;
-        customerOrder.Name = user.Name;
-        customerOrder.NationalCode = user.NationalCode;
-        return customerOrder;
+            })
+            .FirstOrDefault(x => x.SaleDetailUid == saleDetailUid);
+        var user = await _esaleGrpcClient.GetUserById(_commonAppService.GetUserId());
+        saleDetail.SurName = user.SurName;
+        saleDetail.Name = user.Name;
+        saleDetail.NationalCode = user.NationalCode;
+        return saleDetail;
     }
 
     public async Task<CustomerOrder_OrderDetailDto> GetOrderDetailById(int id)
