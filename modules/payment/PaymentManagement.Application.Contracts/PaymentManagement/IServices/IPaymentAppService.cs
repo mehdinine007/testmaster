@@ -6,6 +6,7 @@ namespace PaymentManagement.Application.Contracts.IServices
     public interface IPaymentAppService : IApplicationService
     {
         List<PspAccountDto> GetPsps();
+        PaymentInfoDto GetPaymentInfo(int paymentId);
         Task<HandShakeOutputDto> HandShakeAsync(HandShakeInputDto input);
         Task<BackFromPspOutputDto> BackFromIranKishAsync(string pspJsonResult);
         Task<BackFromPspOutputDto> BackFromMellatAsync(string pspJsonResult);

@@ -11,6 +11,7 @@ using PaymentManagement.Application.IranKish;
 using PaymentManagement.Application.Utilities;
 using PaymentManagement.Domain.Models;
 using System.Linq.Dynamic.Core.Tokenizer;
+using System.Linq.Expressions;
 using System.Runtime.Intrinsics.Arm;
 using System.Xml;
 using Volo.Abp.Application.Services;
@@ -73,6 +74,17 @@ namespace PaymentManagement.Application.Servicess
         {
             var result = _paymentRepository.WithDetails().AsNoTracking().Select(o => new { o.Id, o.CallBackUrl }).FirstOrDefault(o => o.Id == paymentId);
             return result == null ? string.Empty : result.CallBackUrl;
+        }
+        public PaymentInfoDto GetPaymentInfo(int paymentId)
+        {
+            return _paymentRepository.WithDetails().AsNoTracking()
+              .Select(o => new PaymentInfoDto
+              {
+                  PaymentId = o.Id,
+                  TransactionCode = o.TransactionCode,
+                  TransactionDate = o.TransactionDate,
+                  TransactionPersianDate = o.TransactionPersianDate
+              }).FirstOrDefault(o => o.PaymentId == paymentId);
         }
 
         #region HandShake
@@ -479,8 +491,7 @@ namespace PaymentManagement.Application.Servicess
                     Token = o.Token,
                     PspAccountId = o.PspAccountId,
                     AdditionalData = o.AdditionalData
-                })
-                .First(o => o.Id == int.Parse(pspResult.requestId));
+                }).First(o => o.Id == int.Parse(pspResult.requestId));
 
             var result = new BackFromPspOutputDto()
             {
@@ -1091,7 +1102,7 @@ namespace PaymentManagement.Application.Servicess
         {
             WcfServiceLibrary.Service1 s = new();
             var ss = s.GetData(3);
-            return new InquiryOutputDto() { Message = ss};
+            return new InquiryOutputDto() { Message = ss };
         }
         #endregion
 

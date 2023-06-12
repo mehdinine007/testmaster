@@ -27,6 +27,12 @@ namespace PaymentManagement
             return _paymentAppService.GetPsps();
         }
 
+        [HttpGet]
+        public PaymentInfoDto GetPaymentInfo(int paymentId)
+        {
+            return _paymentAppService.GetPaymentInfo(paymentId);
+        }
+
         [HttpPost]
         public async Task<HandShakeOutputDto> HandShakeAsync(HandShakeInputDto input)
         {
