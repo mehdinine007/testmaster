@@ -28,6 +28,8 @@ using PaymentManagement.Application.Contracts.IServices;
 using ProtoBuf.Grpc.Client;
 using Esale.Core.DataAccess;
 using Volo.Abp.Threading;
+using System.Reflection.Metadata;
+using Nest;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -1129,6 +1131,72 @@ public class OrderAppService : ApplicationService, IOrderAppService
         }
     }
 
+    public async Task<CustomerOrder_OrderDetailDto> GetDetail(SaleDetail_Order_InquiryDto inquiryDto)
+    {
+        CustomerOrder_OrderDetailDto inquiryResult = new();
+
+        var exception = new UserFriendlyException("درخواست معتبر نیست");
+
+        if (!inquiryDto.SaleDetailUid.HasValue && !inquiryDto.OrderId.HasValue)
+            throw exception;
+
+        switch (inquiryDto)
+        {
+            case SaleDetail_Order_InquiryDto dto when dto.OrderId.HasValue:
+                inquiryResult = await GetOrderDetailById(dto.OrderId.Value);
+                break;
+            case SaleDetail_Order_InquiryDto dto when dto.SaleDetailUid.HasValue:
+                inquiryResult = await GetSaleDetailByUid(dto.SaleDetailUid.Value);
+                break;
+            default:
+                throw exception;
+        }
+
+        return inquiryResult;
+    }
+
+    public async Task<CustomerOrder_OrderDetailDto> GetSaleDetailByUid(Guid saleDetailUid)
+    {
+        if (!_commonAppService.IsInRole("Customer"))
+        {
+            throw new UserFriendlyException("دسترسی شما کافی نمی باشد");
+        }
+        var userId = _commonAppService.GetUserId();
+        var orderStatusTypes = _orderStatusTypeReadOnlyRepository.WithDetails().ToList();
+        var customerOrderQuery = await _commitOrderRepository.GetQueryableAsync();
+        var customerOrder = customerOrderQuery
+            .AsNoTracking()
+            .Join(_saleDetailRepository.WithDetails(x => x.CarTip.CarType.CarFamily.Company),
+            x => x.SaleDetailId,
+            y => y.Id,
+            (x, y) => new CustomerOrder_OrderDetailDto()
+            {
+                CarDeliverDate = y.CarDeliverDate,
+                CarFamilyTitle = y.CarTip.CarType.CarFamily.Title,
+                CarTipTitle = y.CarTip.Title,
+                CarTypeTitle = y.CarTip.CarType.Title,
+                CompanyName = y.CarTip.CarType.CarFamily.Company.Name,
+                CreationTime = x.CreationTime,
+                OrderId = x.Id,
+                SaleDescription = y.SalePlanDescription,
+                UserId = x.UserId,
+                OrderStatusCode = (int)x.OrderStatus,
+                PriorityId = x.PriorityId.HasValue ? (int)x.PriorityId : null,
+                DeliveryDateDescription = x.DeliveryDateDescription,
+                DeliveryDate = x.DeliveryDate,
+                OrderRejectionCode = x.OrderRejectionStatus.HasValue ? (int)x.OrderRejectionStatus : null,
+                ESaleTypeId = y.ESaleTypeId,
+                SaleDetailUid = y.UID,
+                TransactionCommitDate = DateTime.Now,
+                TransactionId = "545646"
+            }).FirstOrDefault(x => x.UserId == userId && x.SaleDetailUid == saleDetailUid);
+        var user = await _esaleGrpcClient.GetUserById(customerOrder.UserId);
+        customerOrder.SurName = user.SurName;
+        customerOrder.Name = user.Name;
+        customerOrder.NationalCode = user.NationalCode;
+        return customerOrder;
+    }
+
     public async Task<CustomerOrder_OrderDetailDto> GetOrderDetailById(int id)
     {
         if (!_commonAppService.IsInRole("Customer"))
@@ -1160,7 +1228,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 DeliveryDate = x.DeliveryDate,
                 OrderRejectionCode = x.OrderRejectionStatus.HasValue ? (int)x.OrderRejectionStatus : null,
                 ESaleTypeId = y.ESaleTypeId,
-            }).FirstOrDefault(x => x.UserId == userId && x.OrderId == id);
+                TransactionCommitDate = DateTime.Now,
+                TransactionId = "545646"
+            }).FirstOrDefault(x => x.UserId == userId && x.OrderId == id);  
         var user = await _esaleGrpcClient.GetUserById(customerOrder.UserId);
         customerOrder.SurName = user.SurName;
         customerOrder.Name = user.Name;

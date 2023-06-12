@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Volo.Abp;
 using Esale.Share.Authorize;
 using Volo.Abp.Auditing;
+using System;
 
 namespace OrderManagement.HttpApi;
 
@@ -51,11 +52,19 @@ public class OrderManagementController
     public List<CustomerOrder_OrderDetailDto> GetCustomerOrderList()
         => _orderAppService.GetCustomerOrderList();
 
+    [RemoteService(IsEnabled = false)]
+    public async Task<CustomerOrder_OrderDetailDto> GetOrderDetailById(int id)
+        => await _orderAppService.GetOrderDetailById(id);
+
+    [RemoteService(IsEnabled =false)]
+    public async Task<CustomerOrder_OrderDetailDto> GetSaleDetailByUid(Guid saleDetailUid)
+        => await _orderAppService.GetSaleDetailByUid(saleDetailUid);
+
     [DisableAuditing]
     [HttpGet]
     [UserAuthorization]
-    public Task<CustomerOrder_OrderDetailDto> GetOrderDetailById(int id)
-        => _orderAppService.GetOrderDetailById(id);
+    public async Task<CustomerOrder_OrderDetailDto> GetDetail(SaleDetail_Order_InquiryDto inquiryDto)
+        => await _orderAppService.GetDetail(inquiryDto);
 
     [HttpPost]
     [UserAuthorization]
