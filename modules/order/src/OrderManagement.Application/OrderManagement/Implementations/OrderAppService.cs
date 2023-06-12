@@ -27,9 +27,6 @@ using Grpc.Net.Client;
 using PaymentManagement.Application.Contracts.IServices;
 using ProtoBuf.Grpc.Client;
 using Esale.Core.DataAccess;
-using Volo.Abp.Threading;
-using System.Reflection.Metadata;
-using Nest;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -50,6 +47,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
     private readonly IIpgServiceProvider _ipgServiceProvider;
     private readonly ICapacityControlAppService _capacityControlAppService;
     private readonly IRandomGenerator _randomGenerator;
+    private readonly IRepository<CarTip_Gallery_Mapping> _carTipGalleryMappingRepository;
     public OrderAppService(ICommonAppService commonAppService,
                            IBaseInformationService baseInformationAppService,
                            IRepository<SaleDetail, int> saleDetailRepository,
@@ -64,7 +62,11 @@ public class OrderAppService : ApplicationService, IOrderAppService
                            IDistributedCache distributedCache,
                            IMemoryCache memoryCache,
                            ICapacityControlAppService capacityControlAppService,
-                           IRandomGenerator randomGenerator
+                           IRandomGenerator randomGenerator,
+                           IRepository<Gallery, int> galleryRepository,
+                           IRepository<CarTip_Gallery_Mapping,int> carTipGalleryRepsoitory,
+                           IRepository<CarTip,int> carTipRepository,
+                           IRepository<CarTip_Gallery_Mapping> carTipGalleryMappingRepository
         )
     {
         _commonAppService = commonAppService;
@@ -82,6 +84,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         _memoryCache = memoryCache;
         _capacityControlAppService = capacityControlAppService;
         _randomGenerator = randomGenerator;
+        _carTipGalleryMappingRepository = carTipGalleryMappingRepository;
     }
 
 
@@ -1162,7 +1165,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
             throw new UserFriendlyException("دسترسی شما کافی نمی باشد");
         }
         var userId = _commonAppService.GetUserId();
-        var orderStatusTypes = _orderStatusTypeReadOnlyRepository.WithDetails().ToList();
         var saleDetailQuery = await _saleDetailRepository.GetQueryableAsync();
         var saleDetail = saleDetailQuery.AsNoTracking()
             .Select(y => new CustomerOrder_OrderDetailDto
@@ -1174,8 +1176,16 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 CompanyName = y.CarTip.CarType.CarFamily.Company.Name,
                 ESaleTypeId = y.ESaleTypeId,
                 SaleDetailUid = y.UID,
+                MinimumAmountOfProxyDeposit = y.MinimumAmountOfProxyDeposit,
+                ManufactureDate = y.ManufactureDate,
+                DeliveryDate = y.CarDeliverDate,
+                CarTipId = y.CarTipId,
             })
             .FirstOrDefault(x => x.SaleDetailUid == saleDetailUid);
+        var realtedGalleryRecords = (await _carTipGalleryMappingRepository.GetQueryableAsync())
+            .Include(x => x.Gallery)
+            .Where(x => x.CarTipId == saleDetail.CarTipId);
+        saleDetail.CarTipImageUrls = realtedGalleryRecords.Select(x => x.Gallery.ImageUrl).ToList();
         var user = await _esaleGrpcClient.GetUserById(_commonAppService.GetUserId());
         saleDetail.SurName = user.SurName;
         saleDetail.Name = user.Name;
@@ -1216,8 +1226,12 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 ESaleTypeId = y.ESaleTypeId,
                 TransactionCommitDate = DateTime.Now,
                 TransactionId = "545646"
-            }).FirstOrDefault(x => x.UserId == userId && x.OrderId == id);  
+            }).FirstOrDefault(x => x.UserId == userId && x.OrderId == id);
         var user = await _esaleGrpcClient.GetUserById(customerOrder.UserId);
+        var realtedGalleryRecords = (await _carTipGalleryMappingRepository.GetQueryableAsync())
+            .Include(x => x.Gallery)
+            .Where(x => x.CarTipId == customerOrder.CarTipId);
+        customerOrder.CarTipImageUrls = realtedGalleryRecords.Select(x => x.Gallery.ImageUrl).ToList();
         customerOrder.SurName = user.SurName;
         customerOrder.Name = user.Name;
         customerOrder.NationalCode = user.NationalCode;
