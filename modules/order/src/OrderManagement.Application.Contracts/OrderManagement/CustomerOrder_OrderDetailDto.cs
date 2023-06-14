@@ -59,5 +59,7 @@ namespace OrderManagement.Application.Contracts
         public decimal MinimumAmountOfProxyDeposit { get; set; }
 
         public int CarTipId { get; set; }
+
+        public int? PaymentId { get; set; }
     }
 }

@@ -48,6 +48,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
     private readonly ICapacityControlAppService _capacityControlAppService;
     private readonly IRandomGenerator _randomGenerator;
     private readonly IRepository<CarTip_Gallery_Mapping> _carTipGalleryMappingRepository;
+    private readonly IAuditingManager _auditingManager;
     public OrderAppService(ICommonAppService commonAppService,
                            IBaseInformationService baseInformationAppService,
                            IRepository<SaleDetail, int> saleDetailRepository,
@@ -66,7 +67,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
                            IRepository<Gallery, int> galleryRepository,
                            IRepository<CarTip_Gallery_Mapping, int> carTipGalleryRepsoitory,
                            IRepository<CarTip, int> carTipRepository,
-                           IRepository<CarTip_Gallery_Mapping> carTipGalleryMappingRepository
+                           IRepository<CarTip_Gallery_Mapping> carTipGalleryMappingRepository,
+                           IAuditingManager auditingManager
         )
     {
         _commonAppService = commonAppService;
@@ -85,6 +87,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         _capacityControlAppService = capacityControlAppService;
         _randomGenerator = randomGenerator;
         _carTipGalleryMappingRepository = carTipGalleryMappingRepository;
+        _auditingManager = auditingManager;
     }
 
 
@@ -1203,14 +1206,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
         var orderStatusTypes = _orderStatusTypeReadOnlyRepository.WithDetails().ToList();
         var customerOrderQuery = await _commitOrderRepository.GetQueryableAsync();
         PaymentInformationResponseDto paymentInformation = new();
-        try
-        {
-            paymentInformation = await _esaleGrpcClient.GetPaymentInformation(id);
-        }
-        catch (Exception ex)
-        {
-            //TODO: Add log
-        }
         var customerOrder = customerOrderQuery
             .AsNoTracking()
             .Join(_saleDetailRepository.WithDetails(x => x.CarTip.CarType.CarFamily.Company),
@@ -1234,13 +1229,27 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 OrderRejectionCode = x.OrderRejectionStatus.HasValue ? (int)x.OrderRejectionStatus : null,
                 ESaleTypeId = y.ESaleTypeId,
                 ManufactureDate = y.ManufactureDate,
-                TransactionCommitDate = paymentInformation != null
-                    ? paymentInformation.TransactionDate 
-                    : null,
-                TransactionId = paymentInformation != null
-                    ? paymentInformation.TransactionCode
-                    : string.Empty
+                //TransactionCommitDate = paymentInformation != null
+                //    ? paymentInformation.TransactionDate
+                //    : null,
+                //TransactionId = paymentInformation != null
+                //    ? paymentInformation.TransactionCode
+                //    : string.Empty,
+                PaymentId = x.PaymentId
             }).FirstOrDefault(x => x.UserId == userId && x.OrderId == id);
+        if (customerOrder.PaymentId.HasValue)
+        {
+            try
+            {
+                paymentInformation = await _esaleGrpcClient.GetPaymentInformation(customerOrder.PaymentId.Value);
+                customerOrder.TransactionCommitDate = paymentInformation.TransactionDate;
+                customerOrder.TransactionId = paymentInformation.TransactionCode;
+            }
+            catch (Exception ex)
+            {
+                _auditingManager.Current.Log.Exceptions.Add(new NullReferenceException($"Payment grpc service result was null for order id [{id}]"));
+            }
+        }
         var user = await _esaleGrpcClient.GetUserById(customerOrder.UserId);
         var realtedGalleryRecords = (await _carTipGalleryMappingRepository.GetQueryableAsync())
             .Include(x => x.Gallery)
