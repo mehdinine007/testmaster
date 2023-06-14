@@ -13,3 +13,4 @@ logs.txt
 pub
 microservices/OrderService.Hot/pub.ps
 *~
+PublishProfiles
