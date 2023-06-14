@@ -1,0 +1,23 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "OrderManagement.Application.PaymentServiceGrpc";
+
+import "google/protobuf/duration.proto";  
+import "google/protobuf/timestamp.proto";
+
+package PaymentService;
+
+service PaymentServiceGrpc{
+	rpc GetPaymentInformation(PaymentInformationRequest) returns (PaymentInformationResponse);
+}
+
+message PaymentInformationRequest{
+	int32 PaymentId = 1;
+}
+
+message PaymentInformationResponse{
+    int32 PaymentId = 1;
+    string TransactionCode = 2;
+    google.protobuf.Timestamp TransactionDate  = 3;
+    string TransactionPersianDate = 4;
+}

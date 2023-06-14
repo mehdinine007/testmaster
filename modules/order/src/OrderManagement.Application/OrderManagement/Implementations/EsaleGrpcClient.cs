@@ -9,8 +9,8 @@ using Volo.Abp.Domain.Repositories;
 using System;
 using System.Threading.Tasks;
 using Volo.Abp;
-using Volo.Abp.Domain.Entities;
-using OrderManagement.Application.TestService;
+using StackExchange.Redis;
+using Google.Protobuf.WellKnownTypes;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -73,5 +73,24 @@ public class EsaleGrpcClient : ApplicationService, IEsaleGrpcClient
             ShebaNumber = userAdvocacy.ShebaNumber,
             GenderCode = userAdvocacy.GenderCode
         };
+    }
+
+    public async Task<PaymentInformationResponseDto> GetPaymentInformation(int paymentId)
+    {
+        var channel = GrpcChannel.ForAddress(_configuration.GetValue<string>("Payment:GrpcAddress"));
+        var client  = new PaymentServiceGrpc.PaymentServiceGrpc.PaymentServiceGrpcClient(channel);
+
+        var paymentInformation = await client.GetPaymentInformationAsync(new()
+        {
+            PaymentId = paymentId
+        });
+
+        return await Task.FromResult(new PaymentInformationResponseDto
+        {
+            PaymentId = paymentInformation.PaymentId,
+            TransactionCode = paymentInformation.TransactionCode,
+            TransactionDate = paymentInformation.TransactionDate.ToDateTime(),
+            TransactionPersianDate = paymentInformation.TransactionPersianDate
+        });
     }
 }

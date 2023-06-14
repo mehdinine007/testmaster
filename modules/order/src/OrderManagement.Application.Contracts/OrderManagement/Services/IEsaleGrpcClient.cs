@@ -8,5 +8,7 @@ namespace OrderManagement.Application.Contracts.Services
         Task<UserDto> GetUserById(long userId);
 
         Task<AdvocacyUserDto> GetUserAdvocacyByNationalCode(string nationlCode);
+
+        Task<PaymentInformationResponseDto> GetPaymentInformation(int paymentId);
     }
 }

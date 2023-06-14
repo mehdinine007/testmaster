@@ -1202,6 +1202,16 @@ public class OrderAppService : ApplicationService, IOrderAppService
         var userId = _commonAppService.GetUserId();
         var orderStatusTypes = _orderStatusTypeReadOnlyRepository.WithDetails().ToList();
         var customerOrderQuery = await _commitOrderRepository.GetQueryableAsync();
+        PaymentInformationResponseDto paymentInformation= new();
+        try
+        {
+        paymentInformation = await _esaleGrpcClient.GetPaymentInformation(id);
+
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
         var customerOrder = customerOrderQuery
             .AsNoTracking()
             .Join(_saleDetailRepository.WithDetails(x => x.CarTip.CarType.CarFamily.Company),
