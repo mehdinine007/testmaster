@@ -48,7 +48,7 @@ namespace OrderManagement.Application.Contracts
 
         public string SurName { get; set; }
 
-        public DateTime TransactionCommitDate { get; set; }
+        public DateTime? TransactionCommitDate { get; set; }
 
         public string TransactionId { get; set; }
 

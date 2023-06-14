@@ -16,7 +16,7 @@ namespace PaymentManagement.Application.PaymentManagement.Services
 
         public override Task<PaymentInformationResponse> GetPaymentInformation(PaymentInformationRequest request, ServerCallContext context)
         {
-            System.Diagnostics.Debugger.Launch();
+            
             var paymentInformation = _paymentAppService.GetPaymentInfo(request.PaymentId);
             if (paymentInformation == null)
                 throw new InvalidOperationException();

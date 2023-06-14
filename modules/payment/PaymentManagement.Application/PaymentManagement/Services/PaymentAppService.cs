@@ -75,7 +75,7 @@ namespace PaymentManagement.Application.Servicess
             var result = _paymentRepository.WithDetails().AsNoTracking().Select(o => new { o.Id, o.CallBackUrl }).FirstOrDefault(o => o.Id == paymentId);
             return result == null ? string.Empty : result.CallBackUrl;
         }
-        [UnitOfWork(false)]
+        [UnitOfWork( false)]
         public PaymentInfoDto GetPaymentInfo(int paymentId)
         {
             return _paymentRepository.WithDetails().AsNoTracking()

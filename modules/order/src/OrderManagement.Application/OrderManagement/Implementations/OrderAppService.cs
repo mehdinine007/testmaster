@@ -64,8 +64,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
                            ICapacityControlAppService capacityControlAppService,
                            IRandomGenerator randomGenerator,
                            IRepository<Gallery, int> galleryRepository,
-                           IRepository<CarTip_Gallery_Mapping,int> carTipGalleryRepsoitory,
-                           IRepository<CarTip,int> carTipRepository,
+                           IRepository<CarTip_Gallery_Mapping, int> carTipGalleryRepsoitory,
+                           IRepository<CarTip, int> carTipRepository,
                            IRepository<CarTip_Gallery_Mapping> carTipGalleryMappingRepository
         )
     {
@@ -1202,15 +1202,14 @@ public class OrderAppService : ApplicationService, IOrderAppService
         var userId = _commonAppService.GetUserId();
         var orderStatusTypes = _orderStatusTypeReadOnlyRepository.WithDetails().ToList();
         var customerOrderQuery = await _commitOrderRepository.GetQueryableAsync();
-        PaymentInformationResponseDto paymentInformation= new();
+        PaymentInformationResponseDto paymentInformation = new();
         try
         {
-        paymentInformation = await _esaleGrpcClient.GetPaymentInformation(id);
-
+            paymentInformation = await _esaleGrpcClient.GetPaymentInformation(id);
         }
         catch (Exception ex)
         {
-            throw ex;
+            //TODO: Add log
         }
         var customerOrder = customerOrderQuery
             .AsNoTracking()
@@ -1234,8 +1233,13 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 DeliveryDate = x.DeliveryDate,
                 OrderRejectionCode = x.OrderRejectionStatus.HasValue ? (int)x.OrderRejectionStatus : null,
                 ESaleTypeId = y.ESaleTypeId,
-                TransactionCommitDate = DateTime.Now,
-                TransactionId = "545646"
+                ManufactureDate = y.ManufactureDate,
+                TransactionCommitDate = paymentInformation != null
+                    ? paymentInformation.TransactionDate 
+                    : null,
+                TransactionId = paymentInformation != null
+                    ? paymentInformation.TransactionCode
+                    : string.Empty
             }).FirstOrDefault(x => x.UserId == userId && x.OrderId == id);
         var user = await _esaleGrpcClient.GetUserById(customerOrder.UserId);
         var realtedGalleryRecords = (await _carTipGalleryMappingRepository.GetQueryableAsync())

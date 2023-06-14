@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+https://go.microsoft.com/fwlink/?LinkID=208121.
+-->
+<Project>
+  <PropertyGroup>
+    <_PublishTargetUrl>C:\dev\w_esalemicro\esalecarmicroservice-backend\microservices\PaymentService.Host\pub</_PublishTargetUrl>
+    <History>True|2023-06-14T05:12:29.3704031Z;</History>
+    <LastFailureDetails />
+  </PropertyGroup>
+</Project>
