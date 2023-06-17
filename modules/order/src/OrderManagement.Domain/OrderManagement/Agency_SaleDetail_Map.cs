@@ -5,6 +5,7 @@ namespace OrderManagement.Domain
     public class AgencySaleDetail : FullAuditedEntity<int>
     {
         public int DistributionCapacity { get; set; }
+        public int ReserveCount { get; set; }
 
         public int AgencyId { get; set; }
 
