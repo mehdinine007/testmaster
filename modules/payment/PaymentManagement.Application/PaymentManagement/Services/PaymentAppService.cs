@@ -58,6 +58,13 @@ namespace PaymentManagement.Application.Servicess
         }
         public List<InquiryWithFilterParamDto> InquiryWithFilterParam(int? filterParam1, int? filterParam2, int? filterParam3, int? filterParam4)
         {
+
+            //todo:باید این قسمت بعدن برداشته شود
+            filterParam1 = filterParam1 == 0 ? null : filterParam1;
+            filterParam2 = filterParam2 == 0 ? null : filterParam2;
+            filterParam3 = filterParam3 == 0 ? null : filterParam3;
+            filterParam4 = filterParam4 == 0 ? null : filterParam4;
+
             return _paymentRepository.WithDetails().AsNoTracking()
                 .Where(o => (filterParam1 == null || o.FilterParam1 == filterParam1) && (filterParam2 == null || o.FilterParam2 == filterParam2) &&
                             (filterParam3 == null || o.FilterParam3 == filterParam3) && (filterParam4 == null || o.FilterParam4 == filterParam4))
