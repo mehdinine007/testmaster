@@ -22,7 +22,6 @@
     <ProjectReference Include="..\..\..\shared\Esale.Core\Esale.Core.csproj" />
     <ProjectReference Include="..\PaymentManagement.Application.Contracts\PaymentManagement.Application.Contracts.csproj" />
     <ProjectReference Include="..\PaymentManagement.Domain\PaymentManagement.Domain.csproj" />
-    <ProjectReference Include="..\WcfServiceLibrary\WcfServiceLibrary.csproj" />
   </ItemGroup>
 
 </Project>
