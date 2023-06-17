@@ -28,6 +28,7 @@ using PaymentManagement.EntityFrameworkCore;
 using ProtoBuf.Grpc.Server;
 using PaymentManagement.Application.Contracts.IServices;
 using PaymentService.Host.Infrastructures;
+using PaymentManagement.Application.PaymentManagement.Services;
 
 namespace PaymentService.Host
 {
@@ -124,6 +125,7 @@ namespace PaymentService.Host
             {
                 endpoints.MapGrpcService<IGrpcPaymentAppService>();
                 endpoints.MapGet("/grpc", () => "grpc");
+                endpoints.MapGrpcService<PaymentGrpcServiceProvider>();
             });
 
             app.UseAbpRequestLocalization(); //TODO: localization?

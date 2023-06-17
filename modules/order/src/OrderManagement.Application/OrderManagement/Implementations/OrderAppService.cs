@@ -27,9 +27,6 @@ using Grpc.Net.Client;
 using PaymentManagement.Application.Contracts.IServices;
 using ProtoBuf.Grpc.Client;
 using Esale.Core.DataAccess;
-using Volo.Abp.Threading;
-using System.Reflection.Metadata;
-using Nest;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -50,6 +47,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
     private readonly IIpgServiceProvider _ipgServiceProvider;
     private readonly ICapacityControlAppService _capacityControlAppService;
     private readonly IRandomGenerator _randomGenerator;
+    private readonly IRepository<CarTip_Gallery_Mapping> _carTipGalleryMappingRepository;
+    private readonly IAuditingManager _auditingManager;
     public OrderAppService(ICommonAppService commonAppService,
                            IBaseInformationService baseInformationAppService,
                            IRepository<SaleDetail, int> saleDetailRepository,
@@ -64,7 +63,12 @@ public class OrderAppService : ApplicationService, IOrderAppService
                            IDistributedCache distributedCache,
                            IMemoryCache memoryCache,
                            ICapacityControlAppService capacityControlAppService,
-                           IRandomGenerator randomGenerator
+                           IRandomGenerator randomGenerator,
+                           IRepository<Gallery, int> galleryRepository,
+                           IRepository<CarTip_Gallery_Mapping, int> carTipGalleryRepsoitory,
+                           IRepository<CarTip, int> carTipRepository,
+                           IRepository<CarTip_Gallery_Mapping> carTipGalleryMappingRepository,
+                           IAuditingManager auditingManager
         )
     {
         _commonAppService = commonAppService;
@@ -82,6 +86,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
         _memoryCache = memoryCache;
         _capacityControlAppService = capacityControlAppService;
         _randomGenerator = randomGenerator;
+        _carTipGalleryMappingRepository = carTipGalleryMappingRepository;
+        _auditingManager = auditingManager;
     }
 
 
@@ -1162,39 +1168,32 @@ public class OrderAppService : ApplicationService, IOrderAppService
             throw new UserFriendlyException("دسترسی شما کافی نمی باشد");
         }
         var userId = _commonAppService.GetUserId();
-        var orderStatusTypes = _orderStatusTypeReadOnlyRepository.WithDetails().ToList();
-        var customerOrderQuery = await _commitOrderRepository.GetQueryableAsync();
-        var customerOrder = customerOrderQuery
-            .AsNoTracking()
-            .Join(_saleDetailRepository.WithDetails(x => x.CarTip.CarType.CarFamily.Company),
-            x => x.SaleDetailId,
-            y => y.Id,
-            (x, y) => new CustomerOrder_OrderDetailDto()
+        var saleDetailQuery = await _saleDetailRepository.GetQueryableAsync();
+        var saleDetail = saleDetailQuery.AsNoTracking()
+            .Select(y => new CustomerOrder_OrderDetailDto
             {
                 CarDeliverDate = y.CarDeliverDate,
                 CarFamilyTitle = y.CarTip.CarType.CarFamily.Title,
                 CarTipTitle = y.CarTip.Title,
                 CarTypeTitle = y.CarTip.CarType.Title,
                 CompanyName = y.CarTip.CarType.CarFamily.Company.Name,
-                CreationTime = x.CreationTime,
-                OrderId = x.Id,
-                SaleDescription = y.SalePlanDescription,
-                UserId = x.UserId,
-                OrderStatusCode = (int)x.OrderStatus,
-                PriorityId = x.PriorityId.HasValue ? (int)x.PriorityId : null,
-                DeliveryDateDescription = x.DeliveryDateDescription,
-                DeliveryDate = x.DeliveryDate,
-                OrderRejectionCode = x.OrderRejectionStatus.HasValue ? (int)x.OrderRejectionStatus : null,
                 ESaleTypeId = y.ESaleTypeId,
                 SaleDetailUid = y.UID,
-                TransactionCommitDate = DateTime.Now,
-                TransactionId = "545646"
-            }).FirstOrDefault(x => x.UserId == userId && x.SaleDetailUid == saleDetailUid);
-        var user = await _esaleGrpcClient.GetUserById(customerOrder.UserId);
-        customerOrder.SurName = user.SurName;
-        customerOrder.Name = user.Name;
-        customerOrder.NationalCode = user.NationalCode;
-        return customerOrder;
+                MinimumAmountOfProxyDeposit = y.MinimumAmountOfProxyDeposit,
+                ManufactureDate = y.ManufactureDate,
+                DeliveryDate = y.CarDeliverDate,
+                CarTipId = y.CarTipId,
+            })
+            .FirstOrDefault(x => x.SaleDetailUid == saleDetailUid);
+        var realtedGalleryRecords = (await _carTipGalleryMappingRepository.GetQueryableAsync())
+            .Include(x => x.Gallery)
+            .Where(x => x.CarTipId == saleDetail.CarTipId);
+        saleDetail.CarTipImageUrls = realtedGalleryRecords.Select(x => x.Gallery.ImageUrl).ToList();
+        var user = await _esaleGrpcClient.GetUserById(_commonAppService.GetUserId());
+        saleDetail.SurName = user.SurName;
+        saleDetail.Name = user.Name;
+        saleDetail.NationalCode = user.NationalCode;
+        return saleDetail;
     }
 
     public async Task<CustomerOrder_OrderDetailDto> GetOrderDetailById(int id)
@@ -1206,6 +1205,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         var userId = _commonAppService.GetUserId();
         var orderStatusTypes = _orderStatusTypeReadOnlyRepository.WithDetails().ToList();
         var customerOrderQuery = await _commitOrderRepository.GetQueryableAsync();
+        PaymentInformationResponseDto paymentInformation = new();
         var customerOrder = customerOrderQuery
             .AsNoTracking()
             .Join(_saleDetailRepository.WithDetails(x => x.CarTip.CarType.CarFamily.Company),
@@ -1228,10 +1228,33 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 DeliveryDate = x.DeliveryDate,
                 OrderRejectionCode = x.OrderRejectionStatus.HasValue ? (int)x.OrderRejectionStatus : null,
                 ESaleTypeId = y.ESaleTypeId,
-                TransactionCommitDate = DateTime.Now,
-                TransactionId = "545646"
-            }).FirstOrDefault(x => x.UserId == userId && x.OrderId == id);  
+                ManufactureDate = y.ManufactureDate,
+                //TransactionCommitDate = paymentInformation != null
+                //    ? paymentInformation.TransactionDate
+                //    : null,
+                //TransactionId = paymentInformation != null
+                //    ? paymentInformation.TransactionCode
+                //    : string.Empty,
+                PaymentId = x.PaymentId
+            }).FirstOrDefault(x => x.UserId == userId && x.OrderId == id);
+        if (customerOrder.PaymentId.HasValue)
+        {
+            try
+            {
+                paymentInformation = await _esaleGrpcClient.GetPaymentInformation(customerOrder.PaymentId.Value);
+                customerOrder.TransactionCommitDate = paymentInformation.TransactionDate;
+                customerOrder.TransactionId = paymentInformation.TransactionCode;
+            }
+            catch (Exception ex)
+            {
+                _auditingManager.Current.Log.Exceptions.Add(new NullReferenceException($"Payment grpc service result was null for order id [{id}]"));
+            }
+        }
         var user = await _esaleGrpcClient.GetUserById(customerOrder.UserId);
+        var realtedGalleryRecords = (await _carTipGalleryMappingRepository.GetQueryableAsync())
+            .Include(x => x.Gallery)
+            .Where(x => x.CarTipId == customerOrder.CarTipId);
+        customerOrder.CarTipImageUrls = realtedGalleryRecords.Select(x => x.Gallery.ImageUrl).ToList();
         customerOrder.SurName = user.SurName;
         customerOrder.Name = user.Name;
         customerOrder.NationalCode = user.NationalCode;

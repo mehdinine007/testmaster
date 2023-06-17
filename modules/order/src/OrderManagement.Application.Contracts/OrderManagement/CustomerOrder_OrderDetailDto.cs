@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace OrderManagement.Application.Contracts
 {
@@ -47,8 +48,18 @@ namespace OrderManagement.Application.Contracts
 
         public string SurName { get; set; }
 
-        public DateTime TransactionCommitDate { get; set; }
+        public DateTime? TransactionCommitDate { get; set; }
 
         public string TransactionId { get; set; }
+
+        public DateTime ManufactureDate { get; set; }
+
+        public List<string> CarTipImageUrls { get; set; }
+
+        public decimal MinimumAmountOfProxyDeposit { get; set; }
+
+        public int CarTipId { get; set; }
+
+        public int? PaymentId { get; set; }
     }
 }
