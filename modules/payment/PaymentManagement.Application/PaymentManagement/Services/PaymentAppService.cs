@@ -58,7 +58,6 @@ namespace PaymentManagement.Application.Servicess
         }
         public List<InquiryWithFilterParamDto> InquiryWithFilterParam(int? filterParam1, int? filterParam2, int? filterParam3, int? filterParam4)
         {
-
             //todo:باید این قسمت بعدن برداشته شود
             filterParam1 = filterParam1 == 0 ? null : filterParam1;
             filterParam2 = filterParam2 == 0 ? null : filterParam2;
