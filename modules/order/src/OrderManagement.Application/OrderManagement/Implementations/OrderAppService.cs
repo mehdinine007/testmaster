@@ -1111,29 +1111,25 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
     public async Task RetryPaymentForVerify()
     {
-        //using (var channel = GrpcChannel.ForAddress(_configuration.GetSection("gRPC:PaymentUrl").Value))
-        //{
-        //    var paymentAppService = channel.CreateGrpcService<IGrpcPaymentAppService>();
-        //    var payments = await paymentAppService.RetryForVerify();
-        //    if (payments != null && payments.Count > 0)
-        //    {
-        //        payments = payments
-        //            .Where(x => x.FilterParam3 != null && x.FilterParam3 != 0)
-        //            .ToList();
-        //        foreach (var payment in payments)
-        //        {
-        //            int orderId = payment.FilterParam3 ?? 0;
-        //            if (orderId != 0)
-        //            {
-        //                UpdateStatus(new CustomerOrderDto()
-        //                {
-        //                    Id = orderId,
-        //                    OrderStatusCode = payment.PaymentStatus == 0 ? (int)OrderStatusType.PaymentSucceeded : (int)OrderStatusType.PaymentNotVerified
-        //                });
-        //            }
-        //        }
-        //    }
-        //}
+        var payments = await _esaleGrpcClient.RetryForVerify();
+        if (payments != null && payments.Count > 0)
+        {
+            payments = payments
+                .Where(x => x.FilterParam3 != null && x.FilterParam3 != 0)
+                .ToList();
+            foreach (var payment in payments)
+            {
+                int orderId = payment.FilterParam3 ?? 0;
+                if (orderId != 0)
+                {
+                    await UpdateStatus(new CustomerOrderDto()
+                    {
+                        Id = orderId,
+                        OrderStatusCode = payment.PaymentStatus == 0 ? (int)OrderStatusType.PaymentSucceeded : (int)OrderStatusType.PaymentNotVerified
+                    });
+                }
+            }
+        }
     }
 
     public async Task<CustomerOrder_OrderDetailDto> GetDetail(SaleDetail_Order_InquiryDto inquiryDto)

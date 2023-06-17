@@ -141,6 +141,7 @@ namespace OrderManagement.Application.OrderManagement
 
         public async Task GrpcPaymentTest()
         {
+            var payment = await _grpcClient.RetryForVerify();
             var _result = await _grpcClient.GetPaymentStatusList(new PaymentStatusDto()
             {
                 RelationId = 60

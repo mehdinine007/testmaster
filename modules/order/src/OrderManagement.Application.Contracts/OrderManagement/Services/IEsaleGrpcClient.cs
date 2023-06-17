@@ -12,5 +12,6 @@ namespace OrderManagement.Application.Contracts.Services
 
         Task<PaymentInformationResponseDto> GetPaymentInformation(int paymentId);
         Task<List<PaymentStatusModel>> GetPaymentStatusList(PaymentStatusDto paymentStatusDto);
+        Task<List<RetryForVerifyPaymentDto>> RetryForVerify();
     }
 }
