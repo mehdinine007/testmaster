@@ -9,6 +9,7 @@ package PaymentService;
 
 service PaymentServiceGrpc{
 	rpc GetPaymentInformation(PaymentInformationRequest) returns (PaymentInformationResponse);
+	rpc GetPaymentStatusList(PaymentGetStatusDto) returns (PaymentStatusViewModel);
 }
 
 message PaymentInformationRequest{
@@ -21,3 +22,21 @@ message PaymentInformationResponse{
     google.protobuf.Timestamp TransactionDate  = 3;
     string TransactionPersianDate = 4;
 }
+
+message PaymentStatusViewModel {
+    repeated PaymentStatusData PaymentStatusData = 1;
+}
+
+message PaymentStatusData {
+    int32 Status = 1;
+    string Message = 2;
+    int64 Count = 3;
+}
+
+message PaymentGetStatusDto {
+    int32 RelationId = 1;
+    int32 RelationIdB = 2;
+    int32 RelationIdC = 3;
+    int32 RelationIdD = 4;
+}
+

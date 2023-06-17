@@ -37,7 +37,6 @@
     <ItemGroup>
       <ProjectReference Include="..\..\..\..\shared\Esale.Core\Esale.Core.csproj" />
       <ProjectReference Include="..\..\..\..\shared\Extensions\Extensions.csproj" />
-      <ProjectReference Include="..\..\..\payment\PaymentManagement.Application.Contracts\PaymentManagement.Application.Contracts.csproj" />
       <ProjectReference Include="..\OrderManagement.Application.Contracts\OrderManagement.Application.Contracts.csproj" />
       <ProjectReference Include="..\OrderManagement.Domain\OrderManagement.Domain.csproj" />
     </ItemGroup>

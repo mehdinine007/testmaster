@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Volo.Abp.Application.Services;
 
 namespace OrderManagement.Application.Contracts.Services
@@ -10,5 +11,6 @@ namespace OrderManagement.Application.Contracts.Services
         Task<AdvocacyUserDto> GetUserAdvocacyByNationalCode(string nationlCode);
 
         Task<PaymentInformationResponseDto> GetPaymentInformation(int paymentId);
+        Task<List<PaymentStatusModel>> GetPaymentStatusList(PaymentStatusDto paymentStatusDto);
     }
 }
