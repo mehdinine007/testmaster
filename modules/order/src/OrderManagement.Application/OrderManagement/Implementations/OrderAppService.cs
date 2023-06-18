@@ -26,6 +26,7 @@ using OrderManagement.Application.Helpers;
 using Grpc.Net.Client;
 using ProtoBuf.Grpc.Client;
 using Esale.Core.DataAccess;
+using Volo.Abp.Validation.StringValues;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -323,6 +324,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             }
             else
             {
+                var allowedOrderStatuses = new List<int>() { (int)OrderStatusType.RecentlyAdded, (int)OrderStatusType.PaymentNotVerified };
                 CustomerOrder customerOrderIranFromDb =
                 _commitOrderRepository
                 .ToListAsync()
@@ -336,7 +338,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 .FirstOrDefault(x =>
                    x.UserId == userId &&
                    x.SaleId == SaleDetailDto.SaleId &&
-                   x.OrderStatus == OrderStatusType.RecentlyAdded
+                   //x.OrderStatus == OrderStatusType.RecentlyAdded
+                   allowedOrderStatuses.Any(y => (int)x.OrderStatus == y)
                    );
                 if (customerOrderIranFromDb != null)
                 {
@@ -381,7 +384,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             }
             else
             {
-
+                var alloweStatusTypes = new List<int>() { (int)OrderStatusType.RecentlyAdded, (int)OrderStatusType.PaymentNotVerified };
                 CustomerOrder customerOrderIranFromDb =
                 orderQuery
                 .AsNoTracking()
@@ -394,10 +397,11 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 })
 
                 .FirstOrDefault(y =>
-                   y.UserId == userId &&
-                   y.OrderStatus == OrderStatusType.RecentlyAdded
+                   y.UserId == userId
+                   //y.OrderStatus == OrderStatusType.RecentlyAdded
                    && y.SaleId == SaleDetailDto.SaleId
-                   && y.PriorityId == (PriorityEnum)commitOrderDto.PriorityId);
+                   && y.PriorityId == (PriorityEnum)commitOrderDto.PriorityId
+                   && alloweStatusTypes.Any(d => (int)y.OrderStatus == d));
 
 
                 if (customerOrderIranFromDb != null)
@@ -1063,6 +1067,12 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 //order.OrderStatus = OrderStatusType.PaymentNotVerified;
                 //await _commitOrderRepository.UpdateAsync(order, autoSave: true);
                 //await CurrentUnitOfWork.SaveChangesAsync();
+                var saleDetail = (await _saleDetailRepository.GetQueryableAsync()).FirstOrDefault(x => x.Id == order.SaleDetailId);
+                await _distributedCache.RemoveAsync(_commonAppService.GetUserId().ToString() + "_" + order.SaleId);
+                await _distributedCache.RemoveAsync(_commonAppService.GetUserId().ToString() + "_" + saleDetail.UID.ToString());
+                await _distributedCache.RemoveAsync(_commonAppService.GetUserId().ToString());
+                await _distributedCache.RemoveAsync(_commonAppService.GetUserId().ToString() + "_" + order.PriorityId.ToString() + "_" + order.SaleId.ToString());
+                await _distributedCache.RemoveAsync(_commonAppService.GetUserId().ToString() + "_" + saleDetail.Id.ToString());
                 await UpdateStatus(new()
                 {
                     Id = order.Id,
