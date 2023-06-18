@@ -8,15 +8,13 @@ using PaymentManagement.Application.Contracts.Dtos;
 using PaymentManagement.Application.Contracts.Enums;
 using PaymentManagement.Application.Contracts.IServices;
 using PaymentManagement.Application.IranKish;
+using PaymentManagement.Application.Mellat;
 using PaymentManagement.Application.Utilities;
 using PaymentManagement.Domain.Models;
-using System.Linq.Dynamic.Core.Tokenizer;
-using System.Linq.Expressions;
-using System.Runtime.Intrinsics.Arm;
 using System.Xml;
+using System.Xml.Serialization;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
-using Volo.Abp.ObjectMapping;
 using Volo.Abp.Uow;
 
 namespace PaymentManagement.Application.Servicess
@@ -60,6 +58,12 @@ namespace PaymentManagement.Application.Servicess
         }
         public List<InquiryWithFilterParamDto> InquiryWithFilterParam(int? filterParam1, int? filterParam2, int? filterParam3, int? filterParam4)
         {
+            //todo:باید این قسمت بعدن برداشته شود
+            filterParam1 = filterParam1 == 0 ? null : filterParam1;
+            filterParam2 = filterParam2 == 0 ? null : filterParam2;
+            filterParam3 = filterParam3 == 0 ? null : filterParam3;
+            filterParam4 = filterParam4 == 0 ? null : filterParam4;
+
             return _paymentRepository.WithDetails().AsNoTracking()
                 .Where(o => (filterParam1 == null || o.FilterParam1 == filterParam1) && (filterParam2 == null || o.FilterParam2 == filterParam2) &&
                             (filterParam3 == null || o.FilterParam3 == filterParam3) && (filterParam4 == null || o.FilterParam4 == filterParam4))
@@ -491,6 +495,7 @@ namespace PaymentManagement.Application.Servicess
                     TransactionCode = o.TransactionCode,
                     Token = o.Token,
                     PspAccountId = o.PspAccountId,
+                    PaymentStatusId = o.PaymentStatusId,
                     AdditionalData = o.AdditionalData
                 }).FirstOrDefault(o => o.Id == int.Parse(pspResult.requestId));
 
@@ -638,6 +643,7 @@ namespace PaymentManagement.Application.Servicess
                     TransactionCode = o.TransactionCode,
                     Token = o.Token,
                     PspAccountId = o.PspAccountId,
+                    PaymentStatusId = o.PaymentStatusId,
                     AdditionalData = o.AdditionalData
                 })
                 .FirstOrDefault(o => o.Id == int.Parse(pspResult.SaleOrderId));
@@ -793,7 +799,8 @@ namespace PaymentManagement.Application.Servicess
                     TraceNo = o.TraceNo,
                     TransactionCode = o.TransactionCode,
                     Token = o.Token,
-                    PspAccountId = o.PspAccountId
+                    PspAccountId = o.PspAccountId,
+                    PaymentStatusId = o.PaymentStatusId
                 }).FirstOrDefault(o => o.Id == paymentId);
 
             if (payment == null) { return result; }
@@ -992,7 +999,7 @@ namespace PaymentManagement.Application.Servicess
         {
             var result = new InquiryOutputDto()
             {
-                StatusCode = (int)StatusCodeEnum.Failed,
+                StatusCode = (int)StatusCodeEnum.Unknown,
                 Message = Constants.UnknownError,
                 PaymentId = paymentId
             };
@@ -1004,7 +1011,8 @@ namespace PaymentManagement.Application.Servicess
                     TraceNo = o.TraceNo,
                     TransactionCode = o.TransactionCode,
                     Token = o.Token,
-                    PspAccountId = o.PspAccountId
+                    PspAccountId = o.PspAccountId,
+                    PaymentStatusId = o.PaymentStatusId
                 }).FirstOrDefault(o => o.Id == paymentId);
 
             if (payment == null) { return result; }
@@ -1025,7 +1033,7 @@ namespace PaymentManagement.Application.Servicess
         {
             var result = new InquiryOutputDto()
             {
-                StatusCode = (int)StatusCodeEnum.Failed,
+                StatusCode = (int)StatusCodeEnum.Unknown,
                 Message = Constants.UnknownError,
                 PaymentId = payment.Id
             };
@@ -1112,9 +1120,100 @@ namespace PaymentManagement.Application.Servicess
         }
         private async Task<InquiryOutputDto> InquiryToMellatAsync(PaymentDto payment, string pspAccountJsonProps)
         {
-            WcfServiceLibrary.Service1 s = new();
-            var ss = s.GetData(3);
-            return new InquiryOutputDto() { Message = ss };
+            //80012408, 12539314
+            //80012408, 12539391
+            //80001994, 12541205
+            var result = new InquiryOutputDto()
+            {
+                StatusCode = (int)StatusCodeEnum.Unknown,
+                Message = Constants.UnknownError,
+                PaymentId = payment.Id
+            };
+
+            try
+            {
+                var pspAccountProps = JsonConvert.DeserializeObject<Mellat.PspAccountProps>(pspAccountJsonProps);
+
+                var mellatInputDto = new WcfServiceLibrary.MellatInputDto
+                {
+                    UserName = pspAccountProps.ReportServiceUserName,
+                    Password = pspAccountProps.ReportServicePassword,
+                    TerminalId = pspAccountProps.TerminalId,
+                    PaymentId = payment.Id
+                };
+
+                await _paymentLogRepository.InsertAsync(new PaymentLog
+                {
+                    PaymentId = payment.Id,
+                    Psp = PspEnum.Mellat.ToString(),
+                    Message = Constants.InquiryStart,
+                    Parameter = JsonConvert.SerializeObject(mellatInputDto),
+                });
+
+                WcfServiceLibrary.Service1Client client = new();
+                var inquiryResponse = await client.MellatGetTransactionStatusByTerminalIdAndOrderIdAsync(mellatInputDto);
+
+                inquiryResponse = inquiryResponse.Replace("\n", "").Replace("\r", "");
+
+                result.PspJsonResult = inquiryResponse;
+
+                await _paymentLogRepository.InsertAsync(new PaymentLog
+                {
+                    PaymentId = payment.Id,
+                    Psp = PspEnum.Mellat.ToString(),
+                    Message = Constants.InquiryResult,
+                    Parameter = inquiryResponse,
+                });
+
+                if (inquiryResponse != null)
+                {
+                    var serializer = new XmlSerializer(typeof(Response));
+
+                    using (TextReader reader = new StringReader(inquiryResponse))
+                    {
+                        Response response = (Response)serializer.Deserialize(reader);
+
+                        //914=>Transaction Not Found
+                        if (response.Record.First().Field.First().Value == "000" || response.Record.First().Field.First().Value == "914")
+                        {
+                            response.Record.RemoveAt(0);
+
+                            if (response.Record.Any())
+                            {
+                                var record = response.Record.First();
+                                payment.TransactionCode = record.Field.First(o => o.Name == "internalRefrenceId" || o.Name == "internalReferenceId").Value;
+                                var transactionStatus = record.Field.First(o => o.Name == "transactionStatus").Value;
+                                //todo:این قسمت با حالت های مختلف باید تست و تکمیل شود
+                                payment.PaymentStatusId = transactionStatus == "Successful" ? (int)PaymentStatusEnum.Success : payment.PaymentStatusId;
+                                var paymentEntity = ObjectMapper.Map<PaymentDto, Payment>(payment);
+                                await _paymentRepository.AttachAsync(paymentEntity, o => o.TransactionCode, o => o.PaymentStatusId);
+                            }
+
+                            result.PaymentStatus = payment.PaymentStatusId;
+                            result.PaymentStatusDescription = EnumExtension.GetEnumDescription((PaymentStatusEnum)payment.PaymentStatusId);
+                            result.StatusCode = (int)StatusCodeEnum.Success;
+                            result.Message = Constants.InquirySuccess;
+                            return result;
+                        }
+                    }
+                }
+
+                result.Message = Constants.InquiryFailed;
+                return result;
+            }
+            catch (Exception ex)
+            {
+                await _paymentLogRepository.InsertAsync(new PaymentLog
+                {
+                    PaymentId = payment.Id,
+                    Psp = PspEnum.IranKish.ToString(),
+                    Message = Constants.InquiryException,
+                    Parameter = ex.Message
+                });
+
+                result.Message = Constants.ErrorInInquiry;
+                return result;
+            }
         }
         #endregion
 
@@ -1124,7 +1223,7 @@ namespace PaymentManagement.Application.Servicess
         {
             var result = new ReverseOutputDto()
             {
-                StatusCode = (int)StatusCodeEnum.Failed,
+                StatusCode = (int)StatusCodeEnum.Unknown,
                 Message = Constants.UnknownError,
                 PaymentId = paymentId
             };
@@ -1136,7 +1235,8 @@ namespace PaymentManagement.Application.Servicess
                     TraceNo = o.TraceNo,
                     TransactionCode = o.TransactionCode,
                     Token = o.Token,
-                    PspAccountId = o.PspAccountId
+                    PspAccountId = o.PspAccountId,
+                    PaymentStatusId = o.PaymentStatusId
                 }).FirstOrDefault(o => o.Id == paymentId);
 
             if (payment == null) { return result; }
@@ -1369,7 +1469,7 @@ namespace PaymentManagement.Application.Servicess
         {
             if (string.IsNullOrEmpty(payment.TransactionCode) || string.IsNullOrEmpty(payment.TraceNo))
             {
-                var res = await InquiryToIranKishAsync(payment, pspAccountJsonProps);
+                await InquiryToIranKishAsync(payment, pspAccountJsonProps);
 
                 if (!string.IsNullOrEmpty(payment.TransactionCode) &&
                     !string.IsNullOrEmpty(payment.TraceNo) &&
@@ -1391,16 +1491,25 @@ namespace PaymentManagement.Application.Servicess
         }
         private async Task RetryForVerifyToMellatAsync(PaymentDto payment, string pspAccountJsonProps)
         {
-            if (!string.IsNullOrEmpty(payment.TransactionCode))
+            if (string.IsNullOrEmpty(payment.TransactionCode))
+            {
+                await InquiryToMellatAsync(payment, pspAccountJsonProps);
+                if (!string.IsNullOrEmpty(payment.TransactionCode) &&
+                    payment.PaymentStatusId == (int)PaymentStatusEnum.InProgress)
+                {
+                    await VerifyToMellatAsync(payment, pspAccountJsonProps, true);
+                }
+            }
+            else
             {
                 await VerifyToMellatAsync(payment, pspAccountJsonProps, true);
-
-                payment.RetryCount += 1;
-                var paymentEntity = ObjectMapper.Map<PaymentDto, Payment>(payment);
-                using var uow = _unitOfWorkManager.Begin(requiresNew: true, isTransactional: false);
-                await _paymentRepository.AttachAsync(paymentEntity, o => o.RetryCount);
-                await uow.CompleteAsync();
             }
+
+            payment.RetryCount += 1;
+            var paymentEntity = ObjectMapper.Map<PaymentDto, Payment>(payment);
+            using var uow = _unitOfWorkManager.Begin(requiresNew: true, isTransactional: false);
+            await _paymentRepository.AttachAsync(paymentEntity, o => o.RetryCount);
+            await uow.CompleteAsync();
         }
         #endregion
     }

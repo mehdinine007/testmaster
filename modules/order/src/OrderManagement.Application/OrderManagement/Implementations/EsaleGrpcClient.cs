@@ -11,6 +11,8 @@ using System.Threading.Tasks;
 using Volo.Abp;
 using StackExchange.Redis;
 using Google.Protobuf.WellKnownTypes;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -92,5 +94,50 @@ public class EsaleGrpcClient : ApplicationService, IEsaleGrpcClient
             TransactionDate = paymentInformation.TransactionDate.ToDateTime(),
             TransactionPersianDate = paymentInformation.TransactionPersianDate
         });
+    }
+
+    public async Task<List<PaymentStatusModel>> GetPaymentStatusList(PaymentStatusDto paymentStatusDto)
+    {
+        var channel = GrpcChannel.ForAddress(_configuration.GetValue<string>("Payment:GrpcAddress"));
+        var client = new PaymentServiceGrpc.PaymentServiceGrpc.PaymentServiceGrpcClient(channel);
+
+        var paymentStatus = await client.GetPaymentStatusListAsync(new()
+        {
+            RelationId = paymentStatusDto.RelationId,
+            RelationIdB = paymentStatusDto.RelationIdB,
+            RelationIdC = paymentStatusDto.RelationIdC,
+            RelationIdD = paymentStatusDto.RelationIdD,
+        });
+        if (paymentStatus == null || paymentStatus.PaymentStatusData == null || paymentStatus.PaymentStatusData.Count == 0)
+        {
+            return new List<PaymentStatusModel>();
+        }
+        return paymentStatus.PaymentStatusData.Select(x => new PaymentStatusModel()
+        {
+            Count = x.Count,
+            Message = x.Message,
+            Status = x.Status
+        }).ToList();
+    }
+
+    public async Task<List<RetryForVerifyPaymentDto>> RetryForVerify()
+    {
+        var channel = GrpcChannel.ForAddress(_configuration.GetValue<string>("Payment:GrpcAddress"));
+        var client = new PaymentServiceGrpc.PaymentServiceGrpc.PaymentServiceGrpcClient(channel);
+
+        var paymentStatus = await client.RetryForVerifyAsync(new PaymentServiceGrpc.RetryForVerifyRequest());
+        if (paymentStatus == null || paymentStatus.RetryForVerifyData == null || paymentStatus.RetryForVerifyData.Count == 0)
+        {
+            return new List<RetryForVerifyPaymentDto>();
+        }
+        return paymentStatus.RetryForVerifyData.Select(x => new RetryForVerifyPaymentDto()
+        {
+            PaymentId = x.PaymentId,
+            PaymentStatus = x.PaymentStatus,
+            FilterParam1 = x.FilterParam1,
+            FilterParam2 = x.FilterParam2,
+            FilterParam3 = x.FilterParam3,
+            FilterParam4 = x.FilterParam4
+        }).ToList();
     }
 }

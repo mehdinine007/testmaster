@@ -4,8 +4,6 @@ using Grpc.Net.Client;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using OrderManagement.Domain;
-using PaymentManagement.Application.Contracts.IServices;
-using PaymentManagement.Application.Contracts.Dtos;
 using ProtoBuf.Grpc.Client;
 using System;
 using System.Collections.Generic;
@@ -14,6 +12,8 @@ using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
+using OrderManagement.Application.Contracts.Services;
+using OrderManagement.Application.Contracts;
 
 namespace OrderManagement.Application.OrderManagement
 {
@@ -21,14 +21,16 @@ namespace OrderManagement.Application.OrderManagement
     {
         private readonly IRepository<SaleDetail, int> _saleDetailRepository;
         private readonly IRepository<AgencySaleDetail, int> _agencySaleDetail;
+        private readonly IEsaleGrpcClient _grpcClient;
         private IConfiguration _configuration { get; set; }
         private readonly RedisCacheManager _redisCacheManager;
-        public CapacityControlAppService(IRepository<SaleDetail, int> saleDetailRepository, IConfiguration configuration, IRepository<AgencySaleDetail, int> agencySaleDetail)
+        public CapacityControlAppService(IRepository<SaleDetail, int> saleDetailRepository, IConfiguration configuration, IRepository<AgencySaleDetail, int> agencySaleDetail, IEsaleGrpcClient grpcClient)
         {
             _saleDetailRepository = saleDetailRepository;
             _configuration = configuration;
             _redisCacheManager = new RedisCacheManager("RedisCache:ConnectionString");
             _agencySaleDetail = agencySaleDetail;
+            _grpcClient = grpcClient;
         }
         private List<SaleDetail> GetSaleDetails()
         {
@@ -54,6 +56,14 @@ namespace OrderManagement.Application.OrderManagement
                 .WithDetails()
                 .AsNoTracking()
                 .FirstOrDefault(x => x.SaleDetailId == saleDetailId && !x.IsDeleted && x.AgencyId == agancyId);
+        }
+        private long GetReservCount(int saleDetailId)
+        {
+            return _agencySaleDetail
+                .WithDetails()
+                .AsNoTracking()
+                .Where(x => x.SaleDetailId == saleDetailId)
+                .Sum(x => x.ReserveCount);
         }
         public async Task<IResult> SaleDetail()
         {
@@ -93,19 +103,27 @@ namespace OrderManagement.Application.OrderManagement
                 foreach (var saledetail in saledetails)
                 {
                     string _key = string.Format(CapacityControlConstants.PaymentCountPrefix, saledetail.UID.ToString());
-                    int _value = 0;
-                    using (var channel = GrpcChannel.ForAddress(_configuration.GetSection("gRPC:PaymentUrl").Value))
+                    long _value = 0;
+                    var paymentDtos = await _grpcClient.GetPaymentStatusList(new PaymentStatusDto()
                     {
-                        var paymentAppService = channel.CreateGrpcService<IGrpcPaymentAppService>();
-                        var paymentDtos = paymentAppService.GetPaymentStatusList(new PaymentStatusDto()
-                        {
-                            RelationId = saledetail.Id
-                        });
-                        if (paymentDtos != null && paymentDtos.Any(x => x.Status == 0))
-                        {
-                            _value = paymentDtos.FirstOrDefault(x => x.Status == 0).Count;
-                        }
+                        RelationId = saledetail.Id
+                    });
+                    if (paymentDtos != null && paymentDtos.Any(x => x.Status == 0))
+                    {
+                        _value = paymentDtos.FirstOrDefault(x => x.Status == 0).Count;
                     }
+                    //using (var channel = GrpcChannel.ForAddress(_configuration.GetSection("gRPC:PaymentUrl").Value))
+                    //{
+                    //    var paymentAppService = channel.CreateGrpcService<IGrpcPaymentAppService>();
+                    //    var paymentDtos = paymentAppService.GetPaymentStatusList(new PaymentStatusDto()
+                    //    {
+                    //        RelationId = saledetail.Id
+                    //    });
+                    //    if (paymentDtos != null && paymentDtos.Any(x => x.Status == 0))
+                    //    {
+                    //        _value = paymentDtos.FirstOrDefault(x => x.Status == 0).Count;
+                    //    }
+                    //}
                     await _redisCacheManager.StringSetAsync(string.Format(CapacityControlConstants.CapacityControlPrefix, _key), _value.ToString());
                     //var agences = GetAgancySaleDetails(saledetail.Id);
                     //if (agences != null && agences.Count > 0)
@@ -123,13 +141,11 @@ namespace OrderManagement.Application.OrderManagement
 
         public async Task GrpcPaymentTest()
         {
-            using (var channel = GrpcChannel.ForAddress(_configuration.GetSection("gRPC:PaymentUrl").Value))
+            var payment = await _grpcClient.RetryForVerify();
+            var _result = await _grpcClient.GetPaymentStatusList(new PaymentStatusDto()
             {
-                var paymentAppService = channel.CreateGrpcService<IGrpcPaymentAppService>();
-                var paymentDtos = paymentAppService.GetPaymentStatusList(new PaymentStatusDto() { RelationId = 0 });
-            }
-
-
+                RelationId = 60
+            });
         }
 
         public async Task<bool> ValidationBySaleDetailUId(Guid saleDetailUId)
@@ -171,21 +187,30 @@ namespace OrderManagement.Application.OrderManagement
             {
                 throw new UserFriendlyException("خطا در بازیابی برنامه های فروش");
             }
-            long _capacity = saledetail.SaleTypeCapacity;
-            long _paymentCount = 0;
-            using (var channel = GrpcChannel.ForAddress(_configuration.GetSection("gRPC:PaymentUrl").Value))
+            long _saledetailCapacity = saledetail.SaleTypeCapacity;
+            long _saleDetailPaymentCount = 0;
+            var paymentDtos = await _grpcClient.GetPaymentStatusList(new PaymentStatusDto()
             {
-                var paymentAppService = channel.CreateGrpcService<IGrpcPaymentAppService>();
-                var paymentDtos = paymentAppService.GetPaymentStatusList(new PaymentStatusDto()
-                {
-                    RelationIdB = saleDetaild
-                });
-                if (paymentDtos != null && paymentDtos.Any(x => x.Status == 0))
-                {
-                    _paymentCount = paymentDtos.FirstOrDefault(x => x.Status == 0).Count;
-                }
+                RelationId = saleDetaild
+            });
+            if (paymentDtos != null && paymentDtos.Any(x => x.Status == 0))
+            {
+                _saleDetailPaymentCount = paymentDtos.FirstOrDefault(x => x.Status == 0).Count;
             }
-            if (_paymentCount > _capacity && _capacity > 0)
+
+            //using (var channel = GrpcChannel.ForAddress(_configuration.GetSection("gRPC:PaymentUrl").Value))
+            //{
+            //    var paymentAppService = channel.CreateGrpcService<IGrpcPaymentAppService>();
+            //    var paymentDtos = paymentAppService.GetPaymentStatusList(new PaymentStatusDto()
+            //    {
+            //        RelationIdB = saleDetaild
+            //    });
+            //    if (paymentDtos != null && paymentDtos.Any(x => x.Status == 0))
+            //    {
+            //        _saleDetailPaymentCount = paymentDtos.FirstOrDefault(x => x.Status == 0).Count;
+            //    }
+            //}
+            if (_saleDetailPaymentCount > _saledetailCapacity && _saledetailCapacity > 0)
             {
                 return new ErrorResult(CapacityControlConstants.NoCapacityCreateTicket, CapacityControlConstants.NoCapacityCreateTicketId);
             }
@@ -196,25 +221,50 @@ namespace OrderManagement.Application.OrderManagement
                 {
                     throw new UserFriendlyException("خطا در بازیابی نمایندگی ها");
                 }
-                _capacity = agencySaledetail.DistributionCapacity;
-                _paymentCount = 0;
-                using (var channel = GrpcChannel.ForAddress(_configuration.GetSection("gRPC:PaymentUrl").Value))
+                long _agancyCapacity = agencySaledetail.DistributionCapacity;
+                long _agancyPaymentCount = 0;
+                paymentDtos = await _grpcClient.GetPaymentStatusList(new PaymentStatusDto()
                 {
-                    var paymentAppService = channel.CreateGrpcService<IGrpcPaymentAppService>();
-                    var paymentDtos = paymentAppService.GetPaymentStatusList(new PaymentStatusDto()
+                    RelationIdB = saleDetaild,
+                    RelationIdC = agencyId??0
+                });
+                if (paymentDtos != null && paymentDtos.Any(x => x.Status == 0))
+                {
+                    _agancyPaymentCount = paymentDtos.FirstOrDefault(x => x.Status == 0).Count;
+                }
+                if (_agancyCapacity > _agancyPaymentCount && _agancyPaymentCount > 0)
+                {
+                    return new ErrorResult(CapacityControlConstants.AgancyNoCapacityCreateTicket, CapacityControlConstants.AgancyNoCapacityCreateTicketId);
+                }
+                //using (var channel = GrpcChannel.ForAddress(_configuration.GetSection("gRPC:PaymentUrl").Value))
+                //{
+                //    var paymentAppService = channel.CreateGrpcService<IGrpcPaymentAppService>();
+                //    var paymentDtos = paymentAppService.GetPaymentStatusList(new PaymentStatusDto()
+                //    {
+                //        RelationIdB = saleDetaild,
+                //        RelationIdC = agencyId
+                //    });
+                //    if (paymentDtos != null && paymentDtos.Any(x => x.Status == 0))
+                //    {
+                //        _agancyPaymentCount = paymentDtos.FirstOrDefault(x => x.Status == 0).Count;
+                //    }
+                //    if (_agancyCapacity > _agancyPaymentCount && _agancyPaymentCount > 0)
+                //    {
+                //        return new ErrorResult(CapacityControlConstants.AgancyNoCapacityCreateTicket, CapacityControlConstants.AgancyNoCapacityCreateTicketId);
+                //    }
+
+                //}
+                if (agencySaledetail.ReserveCount > 0)
+                {
+                    long freeCapacity = (_saledetailCapacity) - GetReservCount(saleDetaild) - (_saleDetailPaymentCount);
+                    if (freeCapacity > 0)
                     {
-                        RelationIdB = saleDetaild,
-                        RelationIdC = agencyId
-                    });
-                    if (paymentDtos != null && paymentDtos.Any(x => x.Status == 0))
-                    {
-                        _paymentCount = paymentDtos.FirstOrDefault(x => x.Status == 0).Count;
+                        return new SuccsessResult();
                     }
-                    if (_capacity > _paymentCount && _paymentCount > 0)
+                    if (agencySaledetail.ReserveCount< _agancyPaymentCount)
                     {
                         return new ErrorResult(CapacityControlConstants.AgancyNoCapacityCreateTicket, CapacityControlConstants.AgancyNoCapacityCreateTicketId);
                     }
-
                 }
             }
             return new SuccsessResult();

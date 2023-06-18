@@ -4,11 +4,14 @@ option csharp_namespace = "OrderManagement.Application.PaymentServiceGrpc";
 
 import "google/protobuf/duration.proto";  
 import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
 
 package PaymentService;
 
 service PaymentServiceGrpc{
 	rpc GetPaymentInformation(PaymentInformationRequest) returns (PaymentInformationResponse);
+	rpc GetPaymentStatusList(PaymentGetStatusDto) returns (PaymentStatusViewModel);
+	rpc RetryForVerify(RetryForVerifyRequest) returns (RetryForVerifyResponse);
 }
 
 message PaymentInformationRequest{
@@ -21,3 +24,37 @@ message PaymentInformationResponse{
     google.protobuf.Timestamp TransactionDate  = 3;
     string TransactionPersianDate = 4;
 }
+
+message PaymentStatusViewModel {
+    repeated PaymentStatusData PaymentStatusData = 1;
+}
+
+message PaymentStatusData {
+    int32 Status = 1;
+    string Message = 2;
+    int64 Count = 3;
+}
+
+message PaymentGetStatusDto {
+    int32 RelationId = 1;
+    int32 RelationIdB = 2;
+    int32 RelationIdC = 3;
+    int32 RelationIdD = 4;
+}
+
+message RetryForVerifyRequest{
+}
+
+message RetryForVerifyResponse {
+    repeated RetryForVerifyData retryForVerifyData = 1;
+}
+
+message RetryForVerifyData {
+    int32 PaymentId = 1;
+    int32 PaymentStatus = 2;
+    int32 FilterParam1 = 3;
+    int32 FilterParam2 = 4;
+    int32 FilterParam3 = 5;
+    int32 FilterParam4 = 6;
+} 
+
