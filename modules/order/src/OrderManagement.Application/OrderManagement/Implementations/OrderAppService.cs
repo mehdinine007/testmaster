@@ -765,8 +765,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
             }
             if (x.OrderStatusCode == 10) // OrderStatusType.RecentlyAdded
                 x.Cancelable = true;
-            else if (x.OrderStatusCode == 40 && x.DeliveryDateDescription.Contains(cancleableDate, StringComparison.InvariantCultureIgnoreCase)) // OrderStatusType.Winner
-                x.Cancelable = true;
+            //else if (x.OrderStatusCode == 40 && x.DeliveryDateDescription.Contains(cancleableDate, StringComparison.InvariantCultureIgnoreCase)) // OrderStatusType.Winner
+            //    x.Cancelable = true;
         });
         return customerOrders.OrderByDescending(x => x.OrderId).ToList();
     }
