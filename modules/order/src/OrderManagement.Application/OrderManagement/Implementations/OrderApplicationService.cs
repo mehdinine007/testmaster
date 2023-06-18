@@ -649,7 +649,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 x.DeliveryDate,
                 x.DeliveryDateDescription,
                 x.OrderRejectionStatus,
-                y.ESaleTypeId
+                y.ESaleTypeId,
+                y.SalePlanEndDate
+              
             }).Where(x => x.UserId == userId)
             .Select(x => new CustomerOrder_OrderDetailDto
             {
@@ -668,6 +670,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 DeliveryDate = x.DeliveryDate,
                 OrderRejectionCode = x.OrderRejectionStatus.HasValue ? (int)x.OrderRejectionStatus : null,
                 ESaleTypeId = x.ESaleTypeId,
+                SalePlanEndDate = x.SalePlanEndDate
             }).ToList();
         var cancleableDate = _configuration.GetValue<string>("CancelableDate");
         customerOrders.ForEach(x =>
@@ -681,10 +684,15 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 if ((OrderRejectionType)x.OrderRejectionCode == OrderRejectionType.PhoneNumberAndNationalCodeConflict)
                     x.DeliveryDate = null;
             }
-            if (x.OrderStatusCode == 10) // OrderStatusType.RecentlyAdded
+
+            if (x.OrderStatusCode == 10 && (x.SalePlanEndDate >= DateTime.Now)) // OrderStatusType.RecentlyAdded
                 x.Cancelable = true;
-            else if (x.OrderStatusCode == 40 && x.DeliveryDateDescription.Contains(cancleableDate, StringComparison.InvariantCultureIgnoreCase)) // OrderStatusType.Winner
-                x.Cancelable = true;
+            else
+                x.Cancelable = false;
+            x.SalePlanEndDate = null;
+            //else if (x.OrderStatusCode == 40 && x.DeliveryDateDescription.Contains(cancleableDate, StringComparison.InvariantCultureIgnoreCase)) // OrderStatusType.Winner
+            //    x.Cancelable = true;
+            //x.Cancelable = false;
         });
         return customerOrders.OrderByDescending(x => x.OrderId).ToList();
     }
@@ -698,7 +706,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
         {
             throw new UserFriendlyException("دسترسی شما کافی نمی باشد");
         }
-        _baseInformationAppService.CheckWhiteList(WhiteListEnumType.WhiteListOrder);
         var customerOrder = _commitOrderRepository.WithDetails(x => x.SaleDetail).FirstOrDefault(x => x.Id == orderId);
         if (customerOrder == null)
             throw new UserFriendlyException("شماره سفارش صحیح نمی باشد");
@@ -736,6 +743,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         }
          CheckSaleDetailValidation(saleDetailOrderDto);
+        _baseInformationAppService.CheckWhiteList(WhiteListEnumType.WhilteListEnseraf);
+
         //var currentTime = DateTime.Now;
         //if (currentTime > saleDetailOrderDto.SalePlanEndDate)
         //    throw new UserFriendlyException("امکان انصراف برای سفارشاتی که برنامه فروش مرتبط ،منقضی شده باشد ممکن نیست");
