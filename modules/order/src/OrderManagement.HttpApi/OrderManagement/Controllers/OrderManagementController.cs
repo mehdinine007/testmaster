@@ -49,7 +49,7 @@ public class OrderManagementController
     [UserAuthorization]
     public async Task<List<CustomerOrderPriorityUserDto>> GetCustomerInfoPriorityUser()
         => await _orderAppService.GetCustomerInfoPriorityUser();
-    [DisableAuditing]
+    
     [HttpGet]
     [UserAuthorization]
     public List<CustomerOrder_OrderDetailDto> GetCustomerOrderList()
