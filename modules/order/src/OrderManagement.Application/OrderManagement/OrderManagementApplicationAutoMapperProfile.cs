@@ -57,7 +57,7 @@ namespace OrderManagement
                 .ReverseMap()
                 .IgnoreFullAuditedObjectProperties();
             CreateMap<SaleDetail, SaleDetailOrderDto>();
-            CreateMap<Agency,AgencyDto>();
+            CreateMap<Agency,AgencyDto>().ReverseMap();
             //CreateMap<ApiResult, HandShakeResultDto>();
         }
     }
