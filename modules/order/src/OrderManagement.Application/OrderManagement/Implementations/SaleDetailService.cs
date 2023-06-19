@@ -48,12 +48,6 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
     [UnitOfWork(isTransactional: false)]
     public async Task<int> Save(CreateSaleDetailDto createSaleDetailDto)
     {
-
-        var random = new Random();
-        long randomSerialDecimal = random.Next(999999999);
-        var now = new DateTimeOffset(DateTime.Now).ToUnixTimeMilliseconds();
-        string.Format("{0:X}", randomSerialDecimal).PadLeft(10, '0');
-
         if (createSaleDetailDto.CarTipId <= 0)
         {
             throw new UserFriendlyException("تیپ ماشین صحیح نمیباشد.");
