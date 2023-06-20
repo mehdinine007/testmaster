@@ -12,14 +12,26 @@ namespace WcfServiceLibrary
     {
         public string MellatGetTransactionStatusByTerminalIdAndOrderId(MellatInputDto input)
         {
-            //"irk13", "25279378", 80000294, 12536620
-
             ServicePointManager.ServerCertificateValidationCallback = ((sender, certificate, chain, sslPolicyErrors) => true);
-            Service serviceProxy = new Service();
             UsernameToken token = new UsernameToken(input.UserName, input.Password, PasswordOption.SendPlainText);
-            serviceProxy.SetClientCredential(token);
-            serviceProxy.SetPolicy("ClientPolicy");
-            return serviceProxy.getTransactionStatusByTerminalIdAndOrderId(input.TerminalId, input.PaymentId);
+
+            if (input.Switch == 1)
+            {
+                Service serviceProxy = new Service();
+                serviceProxy.SetClientCredential(token);
+                serviceProxy.SetPolicy("ClientPolicy");
+                return serviceProxy.getTransactionStatusByTerminalIdAndOrderId(input.TerminalId, input.PaymentId);
+            }
+            else if (input.Switch == 2)//Switch = 2,"irk13", "25279378", 80000294, 12536620
+            {
+                ServicePointManager.ServerCertificateValidationCallback = ((sender, certificate, chain, sslPolicyErrors) => true);
+                Service2 serviceProxy = new Service2();
+                serviceProxy.SetClientCredential(token);
+                serviceProxy.SetPolicy("ClientPolicy");
+                return serviceProxy.getTransactionStatusByTerminalIdAndOrderId(input.TerminalId, input.PaymentId);
+            }
+
+            return string.Empty;
         }
     }
 }

@@ -2,8 +2,11 @@
 <SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="WcfServiceLibrary.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
-    <Setting Name="WcfServiceLibrary_MellatReportService_TransactionService" Type="(Web Service URL)" Scope="Application">
+    <Setting Name="WcfServiceLibrary_MellatReportService2_TransactionService" Type="(Web Service URL)" Scope="Application">
       <Value Profile="(Default)">http://bos.bpm.bankmellat.ir/backoffice2/Services/bpm/TransactionService.asmx</Value>
+    </Setting>
+    <Setting Name="WcfServiceLibrary_MellatReportService_TransactionService" Type="(Web Service URL)" Scope="Application">
+      <Value Profile="(Default)">http://bos.bpm.bankmellat.ir/backoffice/Services/bpm/TransactionService.asmx</Value>
     </Setting>
   </Settings>
 </SettingsFile>
