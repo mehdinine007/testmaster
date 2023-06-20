@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using OrderManagement.Application.Contracts;
+using OrderManagement.Application.Contracts.OrderManagement;
 using OrderManagement.Application.Helpers;
 using OrderManagement.Application.OrderManagement.Implementations;
 using OrderManagement.Domain;
@@ -59,6 +60,7 @@ namespace OrderManagement
             CreateMap<SaleDetail, SaleDetailOrderDto>();
             CreateMap<Agency,AgencyDto>().ReverseMap();
             //CreateMap<ApiResult, HandShakeResultDto>();
+            CreateMap<SaleDetail, CreateSaleDetailDto>().ReverseMap();
         }
     }
 }

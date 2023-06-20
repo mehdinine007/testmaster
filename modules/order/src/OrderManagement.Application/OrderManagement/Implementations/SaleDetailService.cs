@@ -1,12 +1,15 @@
 ﻿using AutoMapper.Internal.Mappers;
 using OrderManagement.Application.Contracts;
+using OrderManagement.Application.Contracts.OrderManagement;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
 using OrderManagement.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
+using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
@@ -43,51 +46,29 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
 
     }
     [UnitOfWork(isTransactional: false)]
-    public async Task<int> Save(SaleDetailDto saleDetailDto)
+    public async Task<int> Save(CreateSaleDetailDto createSaleDetailDto)
     {
-        SaleDetail saleDetail = new SaleDetail()
+        if (createSaleDetailDto.CarTipId <= 0)
         {
+            throw new UserFriendlyException("تیپ ماشین صحیح نمیباشد.");
+        }
 
-            CarTipId = saleDetailDto.CarTipId,
-            ESaleTypeId = saleDetailDto.EsaleTypeId,
-            CarFee = saleDetailDto.CarFee,
-            CircularSaleCode = saleDetailDto.CircularSaleCode,
-            CarDeliverDate = saleDetailDto.CarDeliverDate,
-            SalePlanCode = saleDetailDto.SalePlanCode,
-            SaleTypeCapacity = saleDetailDto.SaleTypeCapacity,
-            SalePlanDescription = saleDetailDto.SalePlanDescription,
-            DeliverDaysCount= saleDetailDto.DeliverDaysCount,
-            CoOperatingProfitPercentage= saleDetailDto.CoOperatingProfitPercentage,
-            MinimumAmountOfProxyDeposit = saleDetailDto.MinimumAmountOfProxyDeposit,
-             
-        };
-
-        //var saleDetail = ObjectMapper.Map<SaleDetailDto, SaleDetail> (saleDetailDto);
+        if (createSaleDetailDto.ESaleTypeId <= 0)
+        {
+            throw new UserFriendlyException("کد نوع فروش صحیح نمیباشد");
+        }
+        var saleDetail = ObjectMapper.Map<CreateSaleDetailDto, SaleDetail>(createSaleDetailDto);
+        var uid = Guid.NewGuid();
+        saleDetail.UID = uid;
         await _saleDetailRepository.InsertAsync(saleDetail);
         await CurrentUnitOfWork.SaveChangesAsync();
         return saleDetail.Id;
     }
 
-    public async Task<int> Update(SaleDetailDto saleDetailDto)
+    public async Task<int> Update(CreateSaleDetailDto CreateSaleDetailDto)
     {
-        //var saleDetail = ObjectMapper.Map<SaleDetailDto, SaleDetail>(saleDetailDto);
-        SaleDetail saleDetail = new SaleDetail()
-        {
-           
-            CarTipId = saleDetailDto.CarTipId,
-            ESaleTypeId = saleDetailDto.EsaleTypeId,
-            CarFee = saleDetailDto.CarFee,
-            CircularSaleCode = saleDetailDto.CircularSaleCode,
-            CarDeliverDate = saleDetailDto.CarDeliverDate,
-            SalePlanCode = saleDetailDto.SalePlanCode,
-            SaleTypeCapacity = saleDetailDto.SaleTypeCapacity,
-            SalePlanDescription = saleDetailDto.SalePlanDescription,
-            DeliverDaysCount = saleDetailDto.DeliverDaysCount,
-            CoOperatingProfitPercentage = saleDetailDto.CoOperatingProfitPercentage,
-            MinimumAmountOfProxyDeposit = saleDetailDto.MinimumAmountOfProxyDeposit,
+        var saleDetail = ObjectMapper.Map<CreateSaleDetailDto, SaleDetail>(CreateSaleDetailDto);
 
-        };
-     
         await _saleDetailRepository.UpdateAsync(saleDetail);
         await CurrentUnitOfWork.SaveChangesAsync();
         return saleDetail.Id;

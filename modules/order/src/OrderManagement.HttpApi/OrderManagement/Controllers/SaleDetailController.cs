@@ -11,6 +11,7 @@ using OrderManagement.Application.Contracts.OrderManagement.Services;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.OrderManagement.Implementations;
 using Nest;
+using OrderManagement.Application.Contracts.OrderManagement;
 
 namespace OrderManagement.HttpApi.OrderManagement.Controllers
 {
@@ -30,10 +31,10 @@ namespace OrderManagement.HttpApi.OrderManagement.Controllers
         public async Task<List<SaleDetailDto>> GetSaleDetails()
           => await _saleDetailService.GetSaleDetails();
         [HttpPost]
-        public async Task<int> Save(SaleDetailDto saleDetail)
-          => await _saleDetailService.Save(saleDetail);
+        public async Task<int> Save(CreateSaleDetailDto createSaleDetailDto)
+          => await _saleDetailService.Save(createSaleDetailDto);
         [HttpPut]
-        public async Task<int> Update(SaleDetailDto saleDetail)
-        => await _saleDetailService.Update(saleDetail);
+        public async Task<int> Update(CreateSaleDetailDto createSaleDetailDto)
+        => await _saleDetailService.Update(createSaleDetailDto);
     }
 }

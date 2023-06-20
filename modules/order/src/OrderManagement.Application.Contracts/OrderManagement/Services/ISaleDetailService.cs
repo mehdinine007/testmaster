@@ -10,8 +10,8 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Services
     public interface ISaleDetailService:IApplicationService
     {
         Task<List<SaleDetailDto>> GetSaleDetails();
-        Task<int> Save(SaleDetailDto saleDetail);
-        Task<int> Update(SaleDetailDto saleDetail);
+        Task<int> Save(CreateSaleDetailDto createSaleDetailDto);
+        Task<int> Update(CreateSaleDetailDto createSaleDetailDto);
         Task<int> Delete(int id);
     }
 }
