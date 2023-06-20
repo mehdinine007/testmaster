@@ -1027,11 +1027,12 @@ public class OrderAppService : ApplicationService, IOrderAppService
         var (status, paymentId, paymentSecret) =
             (callBackRequest.StatusCode, callBackRequest.PaymentId, callBackRequest.AdditionalData);
         List<Exception> exceptionCollection = new();
+        int orderId = default;
+        try
+        {
         var order = (await _commitOrderRepository.GetQueryableAsync())
             .AsNoTracking()
             .FirstOrDefault(x => x.PaymentId == paymentId && x.OrderStatus == OrderStatusType.RecentlyAdded);
-        try
-        {
             //var orderId = (await _commitOrderRepository.GetQueryableAsync())
             //    .AsNoTracking()
             //    .Select(x => new { x.PaymentId, x.Id })
@@ -1042,6 +1043,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
             if (order is null || (!int.TryParse(paymentSecret, out var numericPaymentSecret) || order.PaymentSecret != numericPaymentSecret))
                 exceptionCollection.Add(new UserFriendlyException("درخواست معتبر نیست"));
+
+            if (order != null)
+                orderId = order.Id;
 
             if (status != 0)
             {
@@ -1068,11 +1072,11 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 //await _commitOrderRepository.UpdateAsync(order, autoSave: true);
                 //await CurrentUnitOfWork.SaveChangesAsync();
                 var saleDetail = (await _saleDetailRepository.GetQueryableAsync()).FirstOrDefault(x => x.Id == order.SaleDetailId);
-                await _distributedCache.RemoveAsync(_commonAppService.GetUserId().ToString() + "_" + order.SaleId);
-                await _distributedCache.RemoveAsync(_commonAppService.GetUserId().ToString() + "_" + saleDetail.UID.ToString());
-                await _distributedCache.RemoveAsync(_commonAppService.GetUserId().ToString());
-                await _distributedCache.RemoveAsync(_commonAppService.GetUserId().ToString() + "_" + order.PriorityId.ToString() + "_" + order.SaleId.ToString());
-                await _distributedCache.RemoveAsync(_commonAppService.GetUserId().ToString() + "_" + saleDetail.Id.ToString());
+                await _distributedCache.RemoveAsync(order.UserId.ToString() + "_" + order.SaleId);
+                await _distributedCache.RemoveAsync(order.UserId.ToString() + "_" + saleDetail.UID.ToString());
+                await _distributedCache.RemoveAsync(order.UserId.ToString());
+                await _distributedCache.RemoveAsync(order.UserId.ToString() + "_" + order.PriorityId.ToString() + "_" + order.SaleId.ToString());
+                await _distributedCache.RemoveAsync(order.UserId.ToString() + "_" + saleDetail.Id.ToString());
                 await UpdateStatus(new()
                 {
                     Id = order.Id,
@@ -1107,7 +1111,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 Message = exceptionCollection.ConcatErrorMessages(),
                 PaymentId = paymentId,
                 Status = 2,
-                OrderId = order.Id
+                OrderId = orderId
             };
         }
     }
