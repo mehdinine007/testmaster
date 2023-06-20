@@ -119,4 +119,25 @@ public class EsaleGrpcClient : ApplicationService, IEsaleGrpcClient
             Status = x.Status
         }).ToList();
     }
+
+    public async Task<List<RetryForVerifyPaymentDto>> RetryForVerify()
+    {
+        var channel = GrpcChannel.ForAddress(_configuration.GetValue<string>("Payment:GrpcAddress"));
+        var client = new PaymentServiceGrpc.PaymentServiceGrpc.PaymentServiceGrpcClient(channel);
+
+        var paymentStatus = await client.RetryForVerifyAsync(new PaymentServiceGrpc.RetryForVerifyRequest());
+        if (paymentStatus == null || paymentStatus.RetryForVerifyData == null || paymentStatus.RetryForVerifyData.Count == 0)
+        {
+            return new List<RetryForVerifyPaymentDto>();
+        }
+        return paymentStatus.RetryForVerifyData.Select(x => new RetryForVerifyPaymentDto()
+        {
+            PaymentId = x.PaymentId,
+            PaymentStatus = x.PaymentStatus,
+            FilterParam1 = x.FilterParam1,
+            FilterParam2 = x.FilterParam2,
+            FilterParam3 = x.FilterParam3,
+            FilterParam4 = x.FilterParam4
+        }).ToList();
+    }
 }

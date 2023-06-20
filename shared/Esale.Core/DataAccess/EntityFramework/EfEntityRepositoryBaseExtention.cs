@@ -33,7 +33,11 @@ namespace Esale.Core.DataAccess
             {
                 dbContext.Entry(entity).State = EntityState.Modified;
             }
+            
+            dbContext.SaveChanges();
+            dbContext.Entry(entity).State = EntityState.Detached;
             return entity;
         }
+       
     }
 }

@@ -3,6 +3,7 @@ using PaymentManagement.Application.PaymentServiceGrpc;
 using Grpc.Core;
 using Google.Protobuf.WellKnownTypes;
 using PaymentManagement.Application.Contracts.Dtos;
+using PaymentManagement.Domain.Models;
 
 namespace PaymentManagement.Application.PaymentManagement.Services
 {
@@ -34,7 +35,7 @@ namespace PaymentManagement.Application.PaymentManagement.Services
 
             var paymentStatus = _paymentAppService.InquiryWithFilterParam(paymentStatusDto.RelationId, paymentStatusDto.RelationIdB, paymentStatusDto.RelationIdC, paymentStatusDto.RelationIdD);
             if (paymentStatus == null)
-                throw new InvalidOperationException();
+                return Task.FromResult(new PaymentStatusViewModel());
             var paymentViewModel = new PaymentStatusViewModel();
             paymentViewModel.PaymentStatusData.AddRange(paymentStatus.Select(x => new PaymentStatusData()
             {
@@ -43,6 +44,24 @@ namespace PaymentManagement.Application.PaymentManagement.Services
                 Status = x.Status
             }).ToList());
             return Task.FromResult(paymentViewModel);
+        }
+
+        public override async Task<RetryForVerifyResponse> RetryForVerify(RetryForVerifyRequest retryForVerifyRequest, ServerCallContext context)
+        {
+            var payment = await _paymentAppService.RetryForVerify();
+            if (payment == null)
+                return new RetryForVerifyResponse();
+            var paymentViewModel = new RetryForVerifyResponse();
+            paymentViewModel.RetryForVerifyData.AddRange(payment.Select(x => new RetryForVerifyData()
+            {
+                PaymentId = x.PaymentId,
+                PaymentStatus = (int)x.PaymentStatus,
+                FilterParam1 = x.FilterParam1 ?? 0,
+                FilterParam2 = x.FilterParam2 ?? 0,
+                FilterParam3 = x.FilterParam3 ?? 0,
+                FilterParam4 = x.FilterParam4 ?? 0
+            }).ToList());
+            return paymentViewModel;
         }
     }
 }

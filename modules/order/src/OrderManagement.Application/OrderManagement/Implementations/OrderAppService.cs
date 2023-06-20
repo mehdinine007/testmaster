@@ -26,6 +26,7 @@ using OrderManagement.Application.Helpers;
 using Grpc.Net.Client;
 using ProtoBuf.Grpc.Client;
 using Esale.Core.DataAccess;
+using Volo.Abp.Validation.StringValues;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -323,6 +324,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             }
             else
             {
+                var allowedOrderStatuses = new List<int>() { (int)OrderStatusType.RecentlyAdded, (int)OrderStatusType.PaymentNotVerified };
                 CustomerOrder customerOrderIranFromDb =
                 _commitOrderRepository
                 .ToListAsync()
@@ -336,7 +338,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 .FirstOrDefault(x =>
                    x.UserId == userId &&
                    x.SaleId == SaleDetailDto.SaleId &&
-                   x.OrderStatus == OrderStatusType.RecentlyAdded
+                   //x.OrderStatus == OrderStatusType.RecentlyAdded
+                   allowedOrderStatuses.Any(y => (int)x.OrderStatus == y)
                    );
                 if (customerOrderIranFromDb != null)
                 {
@@ -381,7 +384,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             }
             else
             {
-
+                var alloweStatusTypes = new List<int>() { (int)OrderStatusType.RecentlyAdded, (int)OrderStatusType.PaymentNotVerified };
                 CustomerOrder customerOrderIranFromDb =
                 orderQuery
                 .AsNoTracking()
@@ -394,10 +397,11 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 })
 
                 .FirstOrDefault(y =>
-                   y.UserId == userId &&
-                   y.OrderStatus == OrderStatusType.RecentlyAdded
+                   y.UserId == userId
+                   //y.OrderStatus == OrderStatusType.RecentlyAdded
                    && y.SaleId == SaleDetailDto.SaleId
-                   && y.PriorityId == (PriorityEnum)commitOrderDto.PriorityId);
+                   && y.PriorityId == (PriorityEnum)commitOrderDto.PriorityId
+                   && alloweStatusTypes.Any(d => (int)y.OrderStatus == d));
 
 
                 if (customerOrderIranFromDb != null)
@@ -764,8 +768,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
             }
             if (x.OrderStatusCode == 10) // OrderStatusType.RecentlyAdded
                 x.Cancelable = true;
-            else if (x.OrderStatusCode == 40 && x.DeliveryDateDescription.Contains(cancleableDate, StringComparison.InvariantCultureIgnoreCase)) // OrderStatusType.Winner
-                x.Cancelable = true;
+            //else if (x.OrderStatusCode == 40 && x.DeliveryDateDescription.Contains(cancleableDate, StringComparison.InvariantCultureIgnoreCase)) // OrderStatusType.Winner
+            //    x.Cancelable = true;
         });
         return customerOrders.OrderByDescending(x => x.OrderId).ToList();
     }
@@ -1023,11 +1027,12 @@ public class OrderAppService : ApplicationService, IOrderAppService
         var (status, paymentId, paymentSecret) =
             (callBackRequest.StatusCode, callBackRequest.PaymentId, callBackRequest.AdditionalData);
         List<Exception> exceptionCollection = new();
+        int orderId = default;
+        try
+        {
         var order = (await _commitOrderRepository.GetQueryableAsync())
             .AsNoTracking()
             .FirstOrDefault(x => x.PaymentId == paymentId && x.OrderStatus == OrderStatusType.RecentlyAdded);
-        try
-        {
             //var orderId = (await _commitOrderRepository.GetQueryableAsync())
             //    .AsNoTracking()
             //    .Select(x => new { x.PaymentId, x.Id })
@@ -1038,6 +1043,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
             if (order is null || (!int.TryParse(paymentSecret, out var numericPaymentSecret) || order.PaymentSecret != numericPaymentSecret))
                 exceptionCollection.Add(new UserFriendlyException("درخواست معتبر نیست"));
+
+            if (order != null)
+                orderId = order.Id;
 
             if (status != 0)
             {
@@ -1063,6 +1071,12 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 //order.OrderStatus = OrderStatusType.PaymentNotVerified;
                 //await _commitOrderRepository.UpdateAsync(order, autoSave: true);
                 //await CurrentUnitOfWork.SaveChangesAsync();
+                var saleDetail = (await _saleDetailRepository.GetQueryableAsync()).FirstOrDefault(x => x.Id == order.SaleDetailId);
+                await _distributedCache.RemoveAsync(order.UserId.ToString() + "_" + order.SaleId);
+                await _distributedCache.RemoveAsync(order.UserId.ToString() + "_" + saleDetail.UID.ToString());
+                await _distributedCache.RemoveAsync(order.UserId.ToString());
+                await _distributedCache.RemoveAsync(order.UserId.ToString() + "_" + order.PriorityId.ToString() + "_" + order.SaleId.ToString());
+                await _distributedCache.RemoveAsync(order.UserId.ToString() + "_" + saleDetail.Id.ToString());
                 await UpdateStatus(new()
                 {
                     Id = order.Id,
@@ -1097,7 +1111,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 Message = exceptionCollection.ConcatErrorMessages(),
                 PaymentId = paymentId,
                 Status = 2,
-                OrderId = order.Id
+                OrderId = orderId
             };
         }
     }
@@ -1111,29 +1125,25 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
     public async Task RetryPaymentForVerify()
     {
-        //using (var channel = GrpcChannel.ForAddress(_configuration.GetSection("gRPC:PaymentUrl").Value))
-        //{
-        //    var paymentAppService = channel.CreateGrpcService<IGrpcPaymentAppService>();
-        //    var payments = await paymentAppService.RetryForVerify();
-        //    if (payments != null && payments.Count > 0)
-        //    {
-        //        payments = payments
-        //            .Where(x => x.FilterParam3 != null && x.FilterParam3 != 0)
-        //            .ToList();
-        //        foreach (var payment in payments)
-        //        {
-        //            int orderId = payment.FilterParam3 ?? 0;
-        //            if (orderId != 0)
-        //            {
-        //                UpdateStatus(new CustomerOrderDto()
-        //                {
-        //                    Id = orderId,
-        //                    OrderStatusCode = payment.PaymentStatus == 0 ? (int)OrderStatusType.PaymentSucceeded : (int)OrderStatusType.PaymentNotVerified
-        //                });
-        //            }
-        //        }
-        //    }
-        //}
+        var payments = await _esaleGrpcClient.RetryForVerify();
+        if (payments != null && payments.Count > 0)
+        {
+            payments = payments
+                .Where(x => x.FilterParam3 != null && x.FilterParam3 != 0)
+                .ToList();
+            foreach (var payment in payments)
+            {
+                int orderId = payment.FilterParam3 ?? 0;
+                if (orderId != 0)
+                {
+                    await UpdateStatus(new CustomerOrderDto()
+                    {
+                        Id = orderId,
+                        OrderStatusCode = payment.PaymentStatus == 0 ? (int)OrderStatusType.PaymentSucceeded : (int)OrderStatusType.PaymentNotVerified
+                    });
+                }
+            }
+        }
     }
 
     public async Task<CustomerOrder_OrderDetailDto> GetDetail(SaleDetail_Order_InquiryDto inquiryDto)

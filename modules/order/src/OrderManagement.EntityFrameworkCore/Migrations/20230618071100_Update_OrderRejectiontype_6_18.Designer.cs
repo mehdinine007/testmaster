@@ -13,8 +13,8 @@ using Volo.Abp.EntityFrameworkCore;
 namespace OrderManagement.EfCore.Migrations
 {
     [DbContext(typeof(OrderManagementDbContext))]
-    [Migration("20230614104548_add-reservecount-agancysaledetail")]
-    partial class addreservecountagancysaledetail
+    [Migration("20230618071100_Update_OrderRejectiontype_6_18")]
+    partial class UpdateOrderRejectiontype618
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -425,6 +425,13 @@ namespace OrderManagement.EfCore.Migrations
                             OrderRejectionCode = 14,
                             OrderRejectionTitle = "عدم احراز در طرح جوانی توسط ثبت احول",
                             OrderRejectionTitleEn = "YoungPlan"
+                        },
+                        new
+                        {
+                            Id = 15,
+                            OrderRejectionCode = 15,
+                            OrderRejectionTitle = "عدم احراض خودرو فرسوده",
+                            OrderRejectionTitleEn = "OldPlan"
                         });
                 });
 
