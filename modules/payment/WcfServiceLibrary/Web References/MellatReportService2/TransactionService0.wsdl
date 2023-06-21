@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <wsdl:definitions xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns1="http://bpmellat.co/" xmlns:ns2="http://schemas.xmlsoap.org/soap/http" xmlns:tns="http://www.springframework.org/schema/beans" name="TransactionService" targetNamespace="http://www.springframework.org/schema/beans" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
-  <wsdl:import namespace="http://bpmellat.co/" location="http://bos.bpm.bankmellat.ir/backoffice/Services/bpm/TransactionService.asmx?wsdl=TransactionService.wsdl" />
+  <wsdl:import namespace="http://bpmellat.co/" location="http://bos.bpm.bankmellat.ir/backoffice2/Services/bpm/TransactionService.asmx?wsdl=TransactionService.wsdl" />
   <wsdl:types />
   <wsdl:binding name="TransactionServiceSoapBinding" type="ns1:TransactionService">
     <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
@@ -715,7 +715,7 @@
   </wsdl:binding>
   <wsdl:service name="TransactionService">
     <wsdl:port name="TransactionServiceImplPort" binding="tns:TransactionServiceSoapBinding">
-      <soap12:address location="http://bos.bpm.bankmellat.ir/backoffice/Services/bpm/TransactionService.asmx" />
+      <soap12:address location="http://bos.bpm.bankmellat.ir/backoffice2/Services/bpm/TransactionService.asmx" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

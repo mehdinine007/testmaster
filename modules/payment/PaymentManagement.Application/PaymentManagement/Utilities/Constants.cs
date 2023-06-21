@@ -56,7 +56,8 @@
         public const string IranKishInquiryUrl = "https://ikc.shaparak.ir/api/v3/inquiry/single";
         public const string IranKishReverseUrl = "https://ikc.shaparak.ir/api/v3/confirmation/reversePurchase";
 
-        public const string MellatRedirectUrl = "https://bpm.shaparak.ir/pgwchannel/startpay.mellat";
+        public const string MellatRedirectUrl1 = "https://bpm.shaparak.ir/pgwchannel/startpay.mellat";
+        public const string MellatRedirectUrl2 = "https://bpm.shaparak.ir/pgwchannel2/startpay.mellat";
         public const string MellatOriginUrl = "https://bpm.shaparak.ir";
         #endregion
     }

@@ -22,6 +22,8 @@ namespace WcfServiceLibrary
         
         private long PaymentIdField;
         
+        private int SwitchField;
+        
         private long TerminalIdField;
         
         private string UserNameField;
@@ -49,6 +51,19 @@ namespace WcfServiceLibrary
             set
             {
                 this.PaymentIdField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public int Switch
+        {
+            get
+            {
+                return this.SwitchField;
+            }
+            set
+            {
+                this.SwitchField = value;
             }
         }
         
