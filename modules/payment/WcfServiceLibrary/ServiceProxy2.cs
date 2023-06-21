@@ -25,16 +25,16 @@ using System.Xml.Serialization;
 [System.Diagnostics.DebuggerStepThroughAttribute()]
 [System.ComponentModel.DesignerCategoryAttribute("code")]
 [System.Web.Services.WebServiceBindingAttribute(Name = "ServiceSoap", Namespace = "http://tempuri.org/")]
-public partial class Service : Microsoft.Web.Services3.WebServicesClientProtocol
+public partial class Service2 : Microsoft.Web.Services3.WebServicesClientProtocol
 {
 
 
     /// <remarks/>
-    public Service()
+    public Service2()
     {
 
 
-        this.Url = "http://bos.bpm.bankmellat.ir/backoffice/Services/bpm/TransactionService.asmx";
+        this.Url = "http://bos.bpm.bankmellat.ir/backoffice2/Services/bpm/TransactionService.asmx";
 
     }
 

@@ -378,7 +378,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 commitOrderDto.PriorityId.ToString() + "_" +
                 SaleDetailDto.SaleId.ToString());
 
-            if (objectCommitOrderIran != null)
+            if (objectCommitOrderIran != null && !commitOrderDto.OrderId.HasValue)
             {
                 throw new UserFriendlyException("درخواست شما برای خودروی دیگری در حال بررسی می باشد. جهت سفارش جدید، درخواست قبلی خود را لغو نمایید یا اولویت دیگری را انتخاب نمایید");
             }
@@ -404,7 +404,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                    && alloweStatusTypes.Any(d => (int)y.OrderStatus == d));
 
 
-                if (customerOrderIranFromDb != null)
+                if (customerOrderIranFromDb != null && (!commitOrderDto.OrderId.HasValue || customerOrderIranFromDb.Id != commitOrderDto.OrderId.Value))
                 {
                     //await _cacheManager.GetCache("CommitOrderimport").
                     //   SetAsync(
@@ -1030,9 +1030,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
         int orderId = default;
         try
         {
-        var order = (await _commitOrderRepository.GetQueryableAsync())
-            .AsNoTracking()
-            .FirstOrDefault(x => x.PaymentId == paymentId && x.OrderStatus == OrderStatusType.RecentlyAdded);
+            var order = (await _commitOrderRepository.GetQueryableAsync())
+                .AsNoTracking()
+                .FirstOrDefault(x => x.PaymentId == paymentId && x.OrderStatus == OrderStatusType.RecentlyAdded);
             //var orderId = (await _commitOrderRepository.GetQueryableAsync())
             //    .AsNoTracking()
             //    .Select(x => new { x.PaymentId, x.Id })
@@ -1238,6 +1238,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 OrderRejectionCode = x.OrderRejectionStatus.HasValue ? (int)x.OrderRejectionStatus : null,
                 ESaleTypeId = y.ESaleTypeId,
                 ManufactureDate = y.ManufactureDate,
+                SaleDetailUid = y.UID,
                 //TransactionCommitDate = paymentInformation != null
                 //    ? paymentInformation.TransactionDate
                 //    : null,

@@ -29,6 +29,8 @@ using ProtoBuf.Grpc.Server;
 using PaymentManagement.Application.Contracts.IServices;
 using PaymentService.Host.Infrastructures;
 using PaymentManagement.Application.PaymentManagement.Services;
+using Volo.Abp.Uow;
+using Microsoft.EntityFrameworkCore;
 
 namespace PaymentService.Host
 {
@@ -71,7 +73,10 @@ namespace PaymentService.Host
                 options.DocInclusionPredicate((docName, description) => true);
                 options.CustomSchemaIds(type => type.FullName);
             });
-
+            Configure<AbpUnitOfWorkDefaultOptions>(options =>
+            {
+                options.TransactionBehavior = UnitOfWorkTransactionBehavior.Disabled;
+            });
             Configure<AbpLocalizationOptions>(options =>
             {
                 options.Languages.Add(new LanguageInfo("en", "en", "English"));
@@ -80,6 +85,8 @@ namespace PaymentService.Host
             Configure<AbpDbContextOptions>(options =>
             {
                 options.UseSqlServer();
+               
+
             });
 
             using var scope = context.Services.BuildServiceProvider();

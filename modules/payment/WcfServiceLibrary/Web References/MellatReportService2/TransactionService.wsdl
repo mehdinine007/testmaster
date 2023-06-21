@@ -1,0 +1,1441 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns1="http://bpmellat.co/" name="TransactionService" targetNamespace="http://bpmellat.co/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <xs:schema xmlns:tns="http://bpmellat.co/" attributeFormDefault="unqualified" elementFormDefault="unqualified" targetNamespace="http://bpmellat.co/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+      <xs:element name="changeRequest" type="tns:changeRequest" />
+      <xs:element name="changeRequestResponse" type="tns:changeRequestResponse" />
+      <xs:element name="getBillPaymentBank" type="tns:getBillPaymentBank" />
+      <xs:element name="getBillPaymentBankResponse" type="tns:getBillPaymentBankResponse" />
+      <xs:element name="getBillPaymentByDate" type="tns:getBillPaymentByDate" />
+      <xs:element name="getBillPaymentByDateResponse" type="tns:getBillPaymentByDateResponse" />
+      <xs:element name="getBillPaymentHamrahAvalBANK" type="tns:getBillPaymentHamrahAvalBANK" />
+      <xs:element name="getBillPaymentHamrahAvalBANKResponse" type="tns:getBillPaymentHamrahAvalBANKResponse" />
+      <xs:element name="getBillPaymentHamrahAvalPSP" type="tns:getBillPaymentHamrahAvalPSP" />
+      <xs:element name="getBillPaymentHamrahAvalPSPResponse" type="tns:getBillPaymentHamrahAvalPSPResponse" />
+      <xs:element name="getBillPaymentPSP" type="tns:getBillPaymentPSP" />
+      <xs:element name="getBillPaymentPSPResponse" type="tns:getBillPaymentPSPResponse" />
+      <xs:element name="getCardsInfo" type="tns:getCardsInfo" />
+      <xs:element name="getCardsInfoResponse" type="tns:getCardsInfoResponse" />
+      <xs:element name="getChangeAccountInquiryRequestStatus" type="tns:getChangeAccountInquiryRequestStatus" />
+      <xs:element name="getChangeAccountInquiryRequestStatusResponse" type="tns:getChangeAccountInquiryRequestStatusResponse" />
+      <xs:element name="getDepositDraftByIban" type="tns:getDepositDraftByIban" />
+      <xs:element name="getDepositDraftByIbanResponse" type="tns:getDepositDraftByIbanResponse" />
+      <xs:element name="getDiscountTransactionByDate" type="tns:getDiscountTransactionByDate" />
+      <xs:element name="getDiscountTransactionByDateResponse" type="tns:getDiscountTransactionByDateResponse" />
+      <xs:element name="getGeneralBillInfo" type="tns:getGeneralBillInfo" />
+      <xs:element name="getGeneralBillInfoResponse" type="tns:getGeneralBillInfoResponse" />
+      <xs:element name="getInstituteTransactionByDate" type="tns:getInstituteTransactionByDate" />
+      <xs:element name="getInstituteTransactionByDateResponse" type="tns:getInstituteTransactionByDateResponse" />
+      <xs:element name="getMobileTransactions" type="tns:getMobileTransactions" />
+      <xs:element name="getMobileTransactionsResponse" type="tns:getMobileTransactionsResponse" />
+      <xs:element name="getOfferTransactionByDate" type="tns:getOfferTransactionByDate" />
+      <xs:element name="getOfferTransactionByDateResponse" type="tns:getOfferTransactionByDateResponse" />
+      <xs:element name="getOnlineTransactionByDate" type="tns:getOnlineTransactionByDate" />
+      <xs:element name="getOnlineTransactionByDateResponse" type="tns:getOnlineTransactionByDateResponse" />
+      <xs:element name="getPosTerminalRequest" type="tns:getPosTerminalRequest" />
+      <xs:element name="getPosTerminalRequestResponse" type="tns:getPosTerminalRequestResponse" />
+      <xs:element name="getPostDepositDraftByIban" type="tns:getPostDepositDraftByIban" />
+      <xs:element name="getPostDepositDraftByIbanResponse" type="tns:getPostDepositDraftByIbanResponse" />
+      <xs:element name="getRefundBalance" type="tns:getRefundBalance" />
+      <xs:element name="getRefundBalanceResponse" type="tns:getRefundBalanceResponse" />
+      <xs:element name="getRefundTransactionByDate" type="tns:getRefundTransactionByDate" />
+      <xs:element name="getRefundTransactionByDateComplete" type="tns:getRefundTransactionByDateComplete" />
+      <xs:element name="getRefundTransactionByDateCompleteFromArchive" type="tns:getRefundTransactionByDateCompleteFromArchive" />
+      <xs:element name="getRefundTransactionByDateCompleteFromArchiveResponse" type="tns:getRefundTransactionByDateCompleteFromArchiveResponse" />
+      <xs:element name="getRefundTransactionByDateCompleteResponse" type="tns:getRefundTransactionByDateCompleteResponse" />
+      <xs:element name="getRefundTransactionByDateNew" type="tns:getRefundTransactionByDateNew" />
+      <xs:element name="getRefundTransactionByDateNewResponse" type="tns:getRefundTransactionByDateNewResponse" />
+      <xs:element name="getRefundTransactionByDateResponse" type="tns:getRefundTransactionByDateResponse" />
+      <xs:element name="getRefundTransactionByOrderId" type="tns:getRefundTransactionByOrderId" />
+      <xs:element name="getRefundTransactionByOrderIdComplete" type="tns:getRefundTransactionByOrderIdComplete" />
+      <xs:element name="getRefundTransactionByOrderIdCompleteFromArchive" type="tns:getRefundTransactionByOrderIdCompleteFromArchive" />
+      <xs:element name="getRefundTransactionByOrderIdCompleteFromArchiveResponse" type="tns:getRefundTransactionByOrderIdCompleteFromArchiveResponse" />
+      <xs:element name="getRefundTransactionByOrderIdCompleteResponse" type="tns:getRefundTransactionByOrderIdCompleteResponse" />
+      <xs:element name="getRefundTransactionByOrderIdNew" type="tns:getRefundTransactionByOrderIdNew" />
+      <xs:element name="getRefundTransactionByOrderIdNewResponse" type="tns:getRefundTransactionByOrderIdNewResponse" />
+      <xs:element name="getRefundTransactionByOrderIdResponse" type="tns:getRefundTransactionByOrderIdResponse" />
+      <xs:element name="getRefundTransactionByRefrenceId" type="tns:getRefundTransactionByRefrenceId" />
+      <xs:element name="getRefundTransactionByRefrenceIdComplete" type="tns:getRefundTransactionByRefrenceIdComplete" />
+      <xs:element name="getRefundTransactionByRefrenceIdCompleteFromArchive" type="tns:getRefundTransactionByRefrenceIdCompleteFromArchive" />
+      <xs:element name="getRefundTransactionByRefrenceIdCompleteFromArchiveResponse" type="tns:getRefundTransactionByRefrenceIdCompleteFromArchiveResponse" />
+      <xs:element name="getRefundTransactionByRefrenceIdCompleteResponse" type="tns:getRefundTransactionByRefrenceIdCompleteResponse" />
+      <xs:element name="getRefundTransactionByRefrenceIdNew" type="tns:getRefundTransactionByRefrenceIdNew" />
+      <xs:element name="getRefundTransactionByRefrenceIdNewResponse" type="tns:getRefundTransactionByRefrenceIdNewResponse" />
+      <xs:element name="getRefundTransactionByRefrenceIdResponse" type="tns:getRefundTransactionByRefrenceIdResponse" />
+      <xs:element name="getRefundTransactionWithCommissionByDate" type="tns:getRefundTransactionWithCommissionByDate" />
+      <xs:element name="getRefundTransactionWithCommissionByDateNew" type="tns:getRefundTransactionWithCommissionByDateNew" />
+      <xs:element name="getRefundTransactionWithCommissionByDateNewResponse" type="tns:getRefundTransactionWithCommissionByDateNewResponse" />
+      <xs:element name="getRefundTransactionWithCommissionByDateResponse" type="tns:getRefundTransactionWithCommissionByDateResponse" />
+      <xs:element name="getRefundTransactionWithCommissionById" type="tns:getRefundTransactionWithCommissionById" />
+      <xs:element name="getRefundTransactionWithCommissionByIdNew" type="tns:getRefundTransactionWithCommissionByIdNew" />
+      <xs:element name="getRefundTransactionWithCommissionByIdNewResponse" type="tns:getRefundTransactionWithCommissionByIdNewResponse" />
+      <xs:element name="getRefundTransactionWithCommissionByIdResponse" type="tns:getRefundTransactionWithCommissionByIdResponse" />
+      <xs:element name="getRequestStatus" type="tns:getRequestStatus" />
+      <xs:element name="getRequestStatusResponse" type="tns:getRequestStatusResponse" />
+      <xs:element name="getShetabInfoById" type="tns:getShetabInfoById" />
+      <xs:element name="getShetabInfoByIdResponse" type="tns:getShetabInfoByIdResponse" />
+      <xs:element name="getTerminalsInfo" type="tns:getTerminalsInfo" />
+      <xs:element name="getTerminalsInfoResponse" type="tns:getTerminalsInfoResponse" />
+      <xs:element name="getTransactionByBillIdAndPayId" type="tns:getTransactionByBillIdAndPayId" />
+      <xs:element name="getTransactionByBillIdAndPayIdFromArchive" type="tns:getTransactionByBillIdAndPayIdFromArchive" />
+      <xs:element name="getTransactionByBillIdAndPayIdFromArchiveResponse" type="tns:getTransactionByBillIdAndPayIdFromArchiveResponse" />
+      <xs:element name="getTransactionByBillIdAndPayIdResponse" type="tns:getTransactionByBillIdAndPayIdResponse" />
+      <xs:element name="getTransactionByCustomerBranchId" type="tns:getTransactionByCustomerBranchId" />
+      <xs:element name="getTransactionByCustomerBranchIdResponse" type="tns:getTransactionByCustomerBranchIdResponse" />
+      <xs:element name="getTransactionByCustomerId" type="tns:getTransactionByCustomerId" />
+      <xs:element name="getTransactionByCustomerIdNew" type="tns:getTransactionByCustomerIdNew" />
+      <xs:element name="getTransactionByCustomerIdNewResponse" type="tns:getTransactionByCustomerIdNewResponse" />
+      <xs:element name="getTransactionByCustomerIdResponse" type="tns:getTransactionByCustomerIdResponse" />
+      <xs:element name="getTransactionByDate" type="tns:getTransactionByDate" />
+      <xs:element name="getTransactionByDateResponse" type="tns:getTransactionByDateResponse" />
+      <xs:element name="getTransactionByDiscountInquiryId" type="tns:getTransactionByDiscountInquiryId" />
+      <xs:element name="getTransactionByDiscountInquiryIdFromArchive" type="tns:getTransactionByDiscountInquiryIdFromArchive" />
+      <xs:element name="getTransactionByDiscountInquiryIdFromArchiveResponse" type="tns:getTransactionByDiscountInquiryIdFromArchiveResponse" />
+      <xs:element name="getTransactionByDiscountInquiryIdResponse" type="tns:getTransactionByDiscountInquiryIdResponse" />
+      <xs:element name="getTransactionById" type="tns:getTransactionById" />
+      <xs:element name="getTransactionByIdForRefund" type="tns:getTransactionByIdForRefund" />
+      <xs:element name="getTransactionByIdForRefundResponse" type="tns:getTransactionByIdForRefundResponse" />
+      <xs:element name="getTransactionByIdFromArchive" type="tns:getTransactionByIdFromArchive" />
+      <xs:element name="getTransactionByIdFromArchiveResponse" type="tns:getTransactionByIdFromArchiveResponse" />
+      <xs:element name="getTransactionByIdResponse" type="tns:getTransactionByIdResponse" />
+      <xs:element name="getTransactionByIdWithCardType" type="tns:getTransactionByIdWithCardType" />
+      <xs:element name="getTransactionByIdWithCardTypeResponse" type="tns:getTransactionByIdWithCardTypeResponse" />
+      <xs:element name="getTransactionByPayerId" type="tns:getTransactionByPayerId" />
+      <xs:element name="getTransactionByPayerIdResponse" type="tns:getTransactionByPayerIdResponse" />
+      <xs:element name="getTransactionByRRNAndTerminalId" type="tns:getTransactionByRRNAndTerminalId" />
+      <xs:element name="getTransactionByRRNAndTerminalIdResponse" type="tns:getTransactionByRRNAndTerminalIdResponse" />
+      <xs:element name="getTransactionByTerminalGroupType" type="tns:getTransactionByTerminalGroupType" />
+      <xs:element name="getTransactionByTerminalGroupTypeNew" type="tns:getTransactionByTerminalGroupTypeNew" />
+      <xs:element name="getTransactionByTerminalGroupTypeNewResponse" type="tns:getTransactionByTerminalGroupTypeNewResponse" />
+      <xs:element name="getTransactionByTerminalGroupTypeResponse" type="tns:getTransactionByTerminalGroupTypeResponse" />
+      <xs:element name="getTransactionByTerminalIdAndOrderId" type="tns:getTransactionByTerminalIdAndOrderId" />
+      <xs:element name="getTransactionByTerminalIdAndOrderIdResponse" type="tns:getTransactionByTerminalIdAndOrderIdResponse" />
+      <xs:element name="getTransactionInquiryByCustomer" type="tns:getTransactionInquiryByCustomer" />
+      <xs:element name="getTransactionInquiryByCustomerResponse" type="tns:getTransactionInquiryByCustomerResponse" />
+      <xs:element name="getTransactionStatusById" type="tns:getTransactionStatusById" />
+      <xs:element name="getTransactionStatusByIdFromArchive" type="tns:getTransactionStatusByIdFromArchive" />
+      <xs:element name="getTransactionStatusByIdFromArchiveResponse" type="tns:getTransactionStatusByIdFromArchiveResponse" />
+      <xs:element name="getTransactionStatusByIdResponse" type="tns:getTransactionStatusByIdResponse" />
+      <xs:element name="getTransactionStatusByTerminalIdAndOrderId" type="tns:getTransactionStatusByTerminalIdAndOrderId" />
+      <xs:element name="getTransactionStatusByTerminalIdAndOrderIdResponse" type="tns:getTransactionStatusByTerminalIdAndOrderIdResponse" />
+      <xs:element name="getUnsuccessfulTransactionsByDate" type="tns:getUnsuccessfulTransactionsByDate" />
+      <xs:element name="getUnsuccessfulTransactionsByDateResponse" type="tns:getUnsuccessfulTransactionsByDateResponse" />
+      <xs:complexType name="getRefundTransactionByOrderIdComplete">
+        <xs:sequence>
+          <xs:element form="qualified" name="terminalId" type="xs:long" />
+          <xs:element form="qualified" name="date" type="xs:int" />
+          <xs:element form="qualified" name="orderId" type="xs:long" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getRefundTransactionByOrderIdCompleteResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="getRefundTransactionByOrderIdCompleteResult" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getTransactionByTerminalGroupType">
+        <xs:sequence>
+          <xs:element form="qualified" name="terminalGroupType" type="xs:long" />
+          <xs:element form="qualified" name="fromDate" type="xs:int" />
+          <xs:element form="qualified" name="toDate" type="xs:int" />
+          <xs:element form="qualified" name="fromRecordId" type="xs:long" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getTransactionByTerminalGroupTypeResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="getTransactionByTerminalGroupTypeResult" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getBillPaymentByDate">
+        <xs:sequence>
+          <xs:element form="qualified" name="TerminalId" type="xs:long" />
+          <xs:element form="qualified" name="FromDate" type="xs:int" />
+          <xs:element form="qualified" name="ToDate" type="xs:int" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getBillPaymentByDateResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="getBillPaymentByDateResult" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getRefundTransactionByRefrenceId">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="refundRefrenceId" type="xs:long" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getRefundTransactionByRefrenceIdResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="getRefundTransactionByRefrenceIdResult" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getBillPaymentBank">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="transactionId" type="xs:int" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getBillPaymentBankResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="getBillPaymentBankResult" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getShetabInfoById">
+        <xs:sequence>
+          <xs:element form="qualified" name="referenceId" type="xs:long" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getShetabInfoByIdResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="getShetabInfoByIdResult" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getTransactionByCustomerBranchId">
+        <xs:sequence>
+          <xs:element form="qualified" name="customerBranchId" type="xs:long" />
+          <xs:element form="qualified" name="fromDate" type="xs:int" />
+          <xs:element form="qualified" name="toDate" type="xs:int" />
+          <xs:element form="qualified" name="fromRecordId" type="xs:long" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getTransactionByCustomerBranchIdResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="getTransactionByCustomerBranchId" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getRefundTransactionWithCommissionByDateNew">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="fromDate" type="xs:int" />
+          <xs:element minOccurs="0" form="qualified" name="toDate" type="xs:int" />
+          <xs:element minOccurs="0" form="qualified" name="terminalId" type="xs:int" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getRefundTransactionWithCommissionByDateNewResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="getRefundTransactionWithCommissionByDateNew" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getTransactionStatusByTerminalIdAndOrderId">
+        <xs:sequence>
+          <xs:element form="qualified" name="terminalId" type="xs:long" />
+          <xs:element form="qualified" name="orderId" type="xs:long" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getTransactionStatusByTerminalIdAndOrderIdResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="getTransactionStatusByTerminalIdAndOrderId" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getDiscountTransactionByDate">
+        <xs:sequence>
+          <xs:element form="qualified" name="terminalId" type="xs:long" />
+          <xs:element form="qualified" name="fromDate" type="xs:int" />
+          <xs:element form="qualified" name="toDate" type="xs:int" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getDiscountTransactionByDateResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="getDiscountTransactionByDate" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getRefundTransactionWithCommissionByIdNew">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="saleRefrenceId" type="xs:long" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getRefundTransactionWithCommissionByIdNewResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="getRefundTransactionWithCommissionByIdNew" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getTransactionByCustomerId">
+        <xs:sequence>
+          <xs:element form="qualified" name="customerId" type="xs:long" />
+          <xs:element form="qualified" name="fromDate" type="xs:int" />
+          <xs:element form="qualified" name="toDate" type="xs:int" />
+          <xs:element form="qualified" name="fromRecordId" type="xs:long" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getTransactionByCustomerIdResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="getTransactionByCustomerIdResult" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getTransactionByDiscountInquiryId">
+        <xs:sequence>
+          <xs:element form="qualified" name="discountInquiryId" type="xs:long" />
+          <xs:element form="qualified" name="date" type="xs:int" />
+          <xs:element form="qualified" name="PAN" type="xs:long" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getTransactionByDiscountInquiryIdResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="getTransactionByDiscountInquiryIdResult" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getCardsInfo">
+        <xs:sequence />
+      </xs:complexType>
+      <xs:complexType name="getCardsInfoResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="getCardsInfo" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getTransactionByIdFromArchive">
+        <xs:sequence>
+          <xs:element form="qualified" name="referenceId" type="xs:long" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getTransactionByIdFromArchiveResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="getTransactionByIdFromArchiveResult" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getTransactionByBillIdAndPayId">
+        <xs:sequence>
+          <xs:element form="qualified" name="billId" type="xs:long" />
+          <xs:element form="qualified" name="payId" type="xs:long" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getTransactionByBillIdAndPayIdResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="getTransactionByBillIdAndPayIdResult" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getTransactionById">
+        <xs:sequence>
+          <xs:element form="qualified" name="referenceId" type="xs:long" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getTransactionByIdResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="getTransactionByIdResult" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getTransactionByPayerId">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="payerId" type="xs:integer" />
+          <xs:element form="qualified" name="persianDate" type="xs:int" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getTransactionByPayerIdResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="getTransactionByPayerId" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getRefundTransactionByRefrenceIdNew">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="saleRefrenceId" type="xs:long" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getRefundTransactionByRefrenceIdNewResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="getRefundTransactionByRefrenceIdResultNew" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getRefundTransactionWithCommissionByDate">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="fromDate" type="xs:int" />
+          <xs:element minOccurs="0" form="qualified" name="toDate" type="xs:int" />
+          <xs:element minOccurs="0" form="qualified" name="terminalId" type="xs:int" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getRefundTransactionWithCommissionByDateResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="getRefundTransactionWithCommissionByDate" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getRefundTransactionByRefrenceIdCompleteFromArchive">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="refundRefrenceId" type="xs:long" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getRefundTransactionByRefrenceIdCompleteFromArchiveResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="getRefundTransactionByRefrenceIdCompleteFromArchiveResult" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getInstituteTransactionByDate">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="iban" type="xs:string" />
+          <xs:element form="qualified" name="createDate" type="xs:int" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getInstituteTransactionByDateResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="getInstituteTransactionByDate" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getRefundTransactionByDateCompleteFromArchive">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="createDate" type="xs:int" />
+          <xs:element minOccurs="0" form="qualified" name="terminalId" type="xs:int" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getRefundTransactionByDateCompleteFromArchiveResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="getRefundTransactionByDateCompleteFromArchiveResult" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getTransactionByTerminalGroupTypeNew">
+        <xs:sequence>
+          <xs:element form="qualified" name="terminalGroupType" type="xs:long" />
+          <xs:element form="qualified" name="fromDate" type="xs:int" />
+          <xs:element form="qualified" name="toDate" type="xs:int" />
+          <xs:element form="qualified" name="fromRecordId" type="xs:long" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getTransactionByTerminalGroupTypeNewResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="getTransactionByTerminalGroupTypeResultNew" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getBillPaymentHamrahAvalBANK">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="transactionId" type="xs:long" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getBillPaymentHamrahAvalBANKResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="getBillPaymentHamrahAvalBANKResult" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getPostDepositDraftByIban">
+        <xs:sequence>
+          <xs:element form="qualified" name="draftDate" type="xs:int" />
+          <xs:element minOccurs="0" form="qualified" name="iban" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getPostDepositDraftByIbanResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="getBillShaparkForPostByIbanAndDateResult" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="changeRequest">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="userId" type="xs:long" />
+          <xs:element minOccurs="0" form="qualified" name="terminalId" type="xs:int" />
+          <xs:element minOccurs="0" form="qualified" name="newAccountNo" type="xs:long" />
+          <xs:element minOccurs="0" form="qualified" name="currentAccount" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="newIban" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="changeRequestResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="changeRequest" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getTerminalsInfo">
+        <xs:sequence />
+      </xs:complexType>
+      <xs:complexType name="getTerminalsInfoResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="getTerminalsInfo" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getRefundTransactionByDateComplete">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="createDate" type="xs:int" />
+          <xs:element minOccurs="0" form="qualified" name="terminalId" type="xs:int" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getRefundTransactionByDateCompleteResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="getRefundTransactionByDateCompleteResult" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getRefundTransactionByOrderIdNew">
+        <xs:sequence>
+          <xs:element form="qualified" name="terminalId" type="xs:long" />
+          <xs:element form="qualified" name="date" type="xs:int" />
+          <xs:element form="qualified" name="orderId" type="xs:long" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getRefundTransactionByOrderIdNewResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="getRefundTransactionByOrderIdNewResult" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getBillPaymentPSP">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="transactionId" type="xs:int" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getBillPaymentPSPResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="getBillPaymentPSPResult" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getTransactionStatusByIdFromArchive">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="referenceId" type="xs:long" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getTransactionStatusByIdFromArchiveResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="getTransactionStatusByIdFromArchive" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getTransactionByDiscountInquiryIdFromArchive">
+        <xs:sequence>
+          <xs:element form="qualified" name="discountInquiryId" type="xs:long" />
+          <xs:element form="qualified" name="date" type="xs:int" />
+          <xs:element form="qualified" name="PAN" type="xs:long" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getTransactionByDiscountInquiryIdFromArchiveResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="getTransactionByDiscountInquiryIdFromArchiveResult" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getTransactionByTerminalIdAndOrderId">
+        <xs:sequence>
+          <xs:element form="qualified" name="terminalId" type="xs:long" />
+          <xs:element form="qualified" name="orderId" type="xs:long" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getTransactionByTerminalIdAndOrderIdResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="getTransactionByTerminalIdAndOrderIdResult" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getRefundTransactionByOrderIdCompleteFromArchive">
+        <xs:sequence>
+          <xs:element form="qualified" name="terminalId" type="xs:long" />
+          <xs:element form="qualified" name="date" type="xs:int" />
+          <xs:element form="qualified" name="orderId" type="xs:long" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getRefundTransactionByOrderIdCompleteFromArchiveResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="getRefundTransactionByOrderIdCompleteFromArchiveResult" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getPosTerminalRequest">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="createDate" type="xs:int" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getPosTerminalRequestResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="getPosTerminalRequestResult" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getBillPaymentHamrahAvalPSP">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="transactionId" type="xs:long" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getBillPaymentHamrahAvalPSPResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="getBillPaymentHamrahAvalPSPResult" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getRefundBalance">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="terminalId" type="xs:int" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getRefundBalanceResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="getRefundBalanceResult" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getTransactionByRRNAndTerminalId">
+        <xs:sequence>
+          <xs:element form="qualified" name="terminalId" type="xs:long" />
+          <xs:element form="qualified" name="rrn" type="xs:long" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getTransactionByRRNAndTerminalIdResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="getTransactionByRRNAndTerminalIdResult" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getRefundTransactionByDate">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="createDate" type="xs:int" />
+          <xs:element minOccurs="0" form="qualified" name="terminalId" type="xs:int" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getRefundTransactionByDateResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="getRefundTransactionByDateResult" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getUnsuccessfulTransactionsByDate">
+        <xs:sequence>
+          <xs:element form="qualified" name="terminalId" type="xs:long" />
+          <xs:element form="qualified" name="fromDate" type="xs:int" />
+          <xs:element form="qualified" name="toDate" type="xs:int" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getUnsuccessfulTransactionsByDateResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="getUnsuccessfulTransactionsByDate" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getGeneralBillInfo">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="billId" type="xs:long" />
+          <xs:element minOccurs="0" form="qualified" name="payId" type="xs:long" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getGeneralBillInfoResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="getGeneralBillInfo" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getRequestStatus">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="createDate" type="xs:int" />
+          <xs:element minOccurs="0" form="qualified" name="nationalityCode" type="xs:string" />
+          <xs:element form="qualified" name="terminalType" type="xs:short" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getRequestStatusResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="getRequestStatusResult" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getOfferTransactionByDate">
+        <xs:sequence>
+          <xs:element form="qualified" name="terminalId" type="xs:long" />
+          <xs:element form="qualified" name="fromDate" type="xs:int" />
+          <xs:element form="qualified" name="toDate" type="xs:int" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getOfferTransactionByDateResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="getOfferTransactionByDateResult" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getOnlineTransactionByDate">
+        <xs:sequence>
+          <xs:element form="qualified" name="terminalId" type="xs:long" />
+          <xs:element form="qualified" name="date" type="xs:int" />
+          <xs:element form="qualified" name="afterRowNumber" type="xs:long" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getOnlineTransactionByDateResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="getOnlineTransactionByDate" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getTransactionByDate">
+        <xs:sequence>
+          <xs:element form="qualified" name="TerminalId" type="xs:long" />
+          <xs:element form="qualified" name="FromDate" type="xs:int" />
+          <xs:element form="qualified" name="ToDate" type="xs:int" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getTransactionByDateResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="getTransactionByDateResult" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getRefundTransactionByRefrenceIdComplete">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="refundRefrenceId" type="xs:long" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getRefundTransactionByRefrenceIdCompleteResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="getRefundTransactionByRefrenceIdCompleteResult" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getTransactionByCustomerIdNew">
+        <xs:sequence>
+          <xs:element form="qualified" name="customerId" type="xs:long" />
+          <xs:element form="qualified" name="fromDate" type="xs:int" />
+          <xs:element form="qualified" name="toDate" type="xs:int" />
+          <xs:element form="qualified" name="fromRecordId" type="xs:long" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getTransactionByCustomerIdNewResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="getTransactionByCustomerIdResultNew" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getTransactionStatusById">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="referenceId" type="xs:long" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getTransactionStatusByIdResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="getTransactionStatusById" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getRefundTransactionByOrderId">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="orderId" type="xs:long" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getRefundTransactionByOrderIdResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="getRefundTransactionByOrderId" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getRefundTransactionByDateNew">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="createDate" type="xs:int" />
+          <xs:element minOccurs="0" form="qualified" name="terminalId" type="xs:int" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getRefundTransactionByDateNewResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="getRefundTransactionByDateResultNew" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getTransactionByBillIdAndPayIdFromArchive">
+        <xs:sequence>
+          <xs:element form="qualified" name="billId" type="xs:long" />
+          <xs:element form="qualified" name="payId" type="xs:long" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getTransactionByBillIdAndPayIdFromArchiveResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="getTransactionByBillIdAndPayIdFromArchiveResult" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getTransactionByIdWithCardType">
+        <xs:sequence>
+          <xs:element form="qualified" name="referenceId" type="xs:long" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getTransactionByIdWithCardTypeResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="getTransactionByIdWithCardType" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getDepositDraftByIban">
+        <xs:sequence>
+          <xs:element form="qualified" name="DraftDate" type="xs:int" />
+          <xs:element minOccurs="0" form="qualified" name="Iban" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getDepositDraftByIbanResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="getDepositDraftByIbanResult" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getMobileTransactions">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="terminalId" type="xs:int" />
+          <xs:element minOccurs="0" form="qualified" name="createDate" type="xs:int" />
+          <xs:element form="qualified" name="mobile" type="xs:long" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getMobileTransactionsResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="getMobileTransactions" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getRefundTransactionWithCommissionById">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="refundRefrenceId" type="xs:long" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getRefundTransactionWithCommissionByIdResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="getRefundTransactionWithCommissionById" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getTransactionByIdForRefund">
+        <xs:sequence>
+          <xs:element form="qualified" name="referenceId" type="xs:long" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getTransactionByIdForRefundResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="getTransactionByIdForRefundResult" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getTransactionInquiryByCustomer">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="transactionId" type="xs:long" />
+          <xs:element minOccurs="0" form="qualified" name="transactionDate" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="terminalId" type="xs:int" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getTransactionInquiryByCustomerResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="getTransactionInquiryByCustomer" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getChangeAccountInquiryRequestStatus">
+        <xs:sequence>
+          <xs:element form="qualified" name="terminalId" type="xs:int" />
+          <xs:element minOccurs="0" form="qualified" name="oldValue" type="xs:string" />
+          <xs:element minOccurs="0" form="qualified" name="oldIban" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getChangeAccountInquiryRequestStatusResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" form="qualified" name="getChangeAccountInquiryRequestStatusResult" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="ServiceException" type="tns:ServiceException" />
+      <xs:complexType name="ServiceException">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="messageState" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="params" type="xs:string" />
+          <xs:element minOccurs="0" name="messageCode" type="xs:int" />
+          <xs:element minOccurs="0" name="message" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+    </xs:schema>
+  </wsdl:types>
+  <wsdl:message name="getBillPaymentHamrahAvalBANKResponse">
+    <wsdl:part name="parameters" element="ns1:getBillPaymentHamrahAvalBANKResponse" />
+  </wsdl:message>
+  <wsdl:message name="getTransactionByRRNAndTerminalIdResponse">
+    <wsdl:part name="parameters" element="ns1:getTransactionByRRNAndTerminalIdResponse" />
+  </wsdl:message>
+  <wsdl:message name="getRefundTransactionByRefrenceIdNewResponse">
+    <wsdl:part name="parameters" element="ns1:getRefundTransactionByRefrenceIdNewResponse" />
+  </wsdl:message>
+  <wsdl:message name="getTransactionByCustomerIdResponse">
+    <wsdl:part name="parameters" element="ns1:getTransactionByCustomerIdResponse" />
+  </wsdl:message>
+  <wsdl:message name="getRefundTransactionByOrderIdNewResponse">
+    <wsdl:part name="parameters" element="ns1:getRefundTransactionByOrderIdNewResponse" />
+  </wsdl:message>
+  <wsdl:message name="getTransactionByTerminalIdAndOrderIdResponse">
+    <wsdl:part name="parameters" element="ns1:getTransactionByTerminalIdAndOrderIdResponse" />
+  </wsdl:message>
+  <wsdl:message name="getRefundTransactionByOrderIdComplete">
+    <wsdl:part name="parameters" element="ns1:getRefundTransactionByOrderIdComplete" />
+  </wsdl:message>
+  <wsdl:message name="getShetabInfoById">
+    <wsdl:part name="parameters" element="ns1:getShetabInfoById" />
+  </wsdl:message>
+  <wsdl:message name="getTransactionByCustomerBranchId">
+    <wsdl:part name="parameters" element="ns1:getTransactionByCustomerBranchId" />
+  </wsdl:message>
+  <wsdl:message name="getBillPaymentPSPResponse">
+    <wsdl:part name="parameters" element="ns1:getBillPaymentPSPResponse" />
+  </wsdl:message>
+  <wsdl:message name="getRefundTransactionWithCommissionByDateNew">
+    <wsdl:part name="parameters" element="ns1:getRefundTransactionWithCommissionByDateNew" />
+  </wsdl:message>
+  <wsdl:message name="getTransactionStatusByTerminalIdAndOrderId">
+    <wsdl:part name="parameters" element="ns1:getTransactionStatusByTerminalIdAndOrderId" />
+  </wsdl:message>
+  <wsdl:message name="getTransactionByBillIdAndPayIdFromArchiveResponse">
+    <wsdl:part name="parameters" element="ns1:getTransactionByBillIdAndPayIdFromArchiveResponse" />
+  </wsdl:message>
+  <wsdl:message name="getRefundTransactionWithCommissionByIdNew">
+    <wsdl:part name="parameters" element="ns1:getRefundTransactionWithCommissionByIdNew" />
+  </wsdl:message>
+  <wsdl:message name="getTransactionByCustomerId">
+    <wsdl:part name="parameters" element="ns1:getTransactionByCustomerId" />
+  </wsdl:message>
+  <wsdl:message name="getTransactionByBillIdAndPayIdResponse">
+    <wsdl:part name="parameters" element="ns1:getTransactionByBillIdAndPayIdResponse" />
+  </wsdl:message>
+  <wsdl:message name="getTransactionByDiscountInquiryId">
+    <wsdl:part name="parameters" element="ns1:getTransactionByDiscountInquiryId" />
+  </wsdl:message>
+  <wsdl:message name="getRefundTransactionWithCommissionByIdResponse">
+    <wsdl:part name="parameters" element="ns1:getRefundTransactionWithCommissionByIdResponse" />
+  </wsdl:message>
+  <wsdl:message name="getCardsInfo">
+    <wsdl:part name="parameters" element="ns1:getCardsInfo" />
+  </wsdl:message>
+  <wsdl:message name="getMobileTransactionsResponse">
+    <wsdl:part name="parameters" element="ns1:getMobileTransactionsResponse" />
+  </wsdl:message>
+  <wsdl:message name="getTransactionByIdFromArchive">
+    <wsdl:part name="parameters" element="ns1:getTransactionByIdFromArchive" />
+  </wsdl:message>
+  <wsdl:message name="getTransactionById">
+    <wsdl:part name="parameters" element="ns1:getTransactionById" />
+  </wsdl:message>
+  <wsdl:message name="getTransactionByPayerId">
+    <wsdl:part name="parameters" element="ns1:getTransactionByPayerId" />
+  </wsdl:message>
+  <wsdl:message name="getTransactionByIdForRefundResponse">
+    <wsdl:part name="parameters" element="ns1:getTransactionByIdForRefundResponse" />
+  </wsdl:message>
+  <wsdl:message name="getTransactionStatusByTerminalIdAndOrderIdResponse">
+    <wsdl:part name="parameters" element="ns1:getTransactionStatusByTerminalIdAndOrderIdResponse" />
+  </wsdl:message>
+  <wsdl:message name="getTransactionByPayerIdResponse">
+    <wsdl:part name="parameters" element="ns1:getTransactionByPayerIdResponse" />
+  </wsdl:message>
+  <wsdl:message name="getUnsuccessfulTransactionsByDateResponse">
+    <wsdl:part name="parameters" element="ns1:getUnsuccessfulTransactionsByDateResponse" />
+  </wsdl:message>
+  <wsdl:message name="getOfferTransactionByDateResponse">
+    <wsdl:part name="parameters" element="ns1:getOfferTransactionByDateResponse" />
+  </wsdl:message>
+  <wsdl:message name="ServiceException">
+    <wsdl:part name="ServiceException" element="ns1:ServiceException" />
+  </wsdl:message>
+  <wsdl:message name="getTransactionByTerminalGroupTypeNew">
+    <wsdl:part name="parameters" element="ns1:getTransactionByTerminalGroupTypeNew" />
+  </wsdl:message>
+  <wsdl:message name="getTransactionByIdFromArchiveResponse">
+    <wsdl:part name="parameters" element="ns1:getTransactionByIdFromArchiveResponse" />
+  </wsdl:message>
+  <wsdl:message name="getBillPaymentHamrahAvalBANK">
+    <wsdl:part name="parameters" element="ns1:getBillPaymentHamrahAvalBANK" />
+  </wsdl:message>
+  <wsdl:message name="changeRequest">
+    <wsdl:part name="parameters" element="ns1:changeRequest" />
+  </wsdl:message>
+  <wsdl:message name="getTransactionByIdResponse">
+    <wsdl:part name="parameters" element="ns1:getTransactionByIdResponse" />
+  </wsdl:message>
+  <wsdl:message name="getTransactionByDiscountInquiryIdResponse">
+    <wsdl:part name="parameters" element="ns1:getTransactionByDiscountInquiryIdResponse" />
+  </wsdl:message>
+  <wsdl:message name="getRefundTransactionByDateComplete">
+    <wsdl:part name="parameters" element="ns1:getRefundTransactionByDateComplete" />
+  </wsdl:message>
+  <wsdl:message name="getRefundTransactionByOrderIdNew">
+    <wsdl:part name="parameters" element="ns1:getRefundTransactionByOrderIdNew" />
+  </wsdl:message>
+  <wsdl:message name="getTransactionStatusByIdFromArchive">
+    <wsdl:part name="parameters" element="ns1:getTransactionStatusByIdFromArchive" />
+  </wsdl:message>
+  <wsdl:message name="getTerminalsInfoResponse">
+    <wsdl:part name="parameters" element="ns1:getTerminalsInfoResponse" />
+  </wsdl:message>
+  <wsdl:message name="getTransactionByDiscountInquiryIdFromArchive">
+    <wsdl:part name="parameters" element="ns1:getTransactionByDiscountInquiryIdFromArchive" />
+  </wsdl:message>
+  <wsdl:message name="getRefundTransactionByOrderIdCompleteFromArchive">
+    <wsdl:part name="parameters" element="ns1:getRefundTransactionByOrderIdCompleteFromArchive" />
+  </wsdl:message>
+  <wsdl:message name="getRefundBalance">
+    <wsdl:part name="parameters" element="ns1:getRefundBalance" />
+  </wsdl:message>
+  <wsdl:message name="getChangeAccountInquiryRequestStatusResponse">
+    <wsdl:part name="parameters" element="ns1:getChangeAccountInquiryRequestStatusResponse" />
+  </wsdl:message>
+  <wsdl:message name="getRefundTransactionByDate">
+    <wsdl:part name="parameters" element="ns1:getRefundTransactionByDate" />
+  </wsdl:message>
+  <wsdl:message name="getRefundTransactionByRefrenceIdResponse">
+    <wsdl:part name="parameters" element="ns1:getRefundTransactionByRefrenceIdResponse" />
+  </wsdl:message>
+  <wsdl:message name="getRequestStatus">
+    <wsdl:part name="parameters" element="ns1:getRequestStatus" />
+  </wsdl:message>
+  <wsdl:message name="getOfferTransactionByDate">
+    <wsdl:part name="parameters" element="ns1:getOfferTransactionByDate" />
+  </wsdl:message>
+  <wsdl:message name="getTransactionStatusByIdResponse">
+    <wsdl:part name="parameters" element="ns1:getTransactionStatusByIdResponse" />
+  </wsdl:message>
+  <wsdl:message name="getOnlineTransactionByDate">
+    <wsdl:part name="parameters" element="ns1:getOnlineTransactionByDate" />
+  </wsdl:message>
+  <wsdl:message name="getShetabInfoByIdResponse">
+    <wsdl:part name="parameters" element="ns1:getShetabInfoByIdResponse" />
+  </wsdl:message>
+  <wsdl:message name="getTransactionByCustomerIdNew">
+    <wsdl:part name="parameters" element="ns1:getTransactionByCustomerIdNew" />
+  </wsdl:message>
+  <wsdl:message name="getDepositDraftByIbanResponse">
+    <wsdl:part name="parameters" element="ns1:getDepositDraftByIbanResponse" />
+  </wsdl:message>
+  <wsdl:message name="getTransactionStatusById">
+    <wsdl:part name="parameters" element="ns1:getTransactionStatusById" />
+  </wsdl:message>
+  <wsdl:message name="getRefundTransactionByRefrenceIdCompleteFromArchiveResponse">
+    <wsdl:part name="parameters" element="ns1:getRefundTransactionByRefrenceIdCompleteFromArchiveResponse" />
+  </wsdl:message>
+  <wsdl:message name="getRefundTransactionByOrderId">
+    <wsdl:part name="parameters" element="ns1:getRefundTransactionByOrderId" />
+  </wsdl:message>
+  <wsdl:message name="getRefundTransactionByDateNew">
+    <wsdl:part name="parameters" element="ns1:getRefundTransactionByDateNew" />
+  </wsdl:message>
+  <wsdl:message name="getTransactionByBillIdAndPayIdFromArchive">
+    <wsdl:part name="parameters" element="ns1:getTransactionByBillIdAndPayIdFromArchive" />
+  </wsdl:message>
+  <wsdl:message name="getGeneralBillInfoResponse">
+    <wsdl:part name="parameters" element="ns1:getGeneralBillInfoResponse" />
+  </wsdl:message>
+  <wsdl:message name="getDepositDraftByIban">
+    <wsdl:part name="parameters" element="ns1:getDepositDraftByIban" />
+  </wsdl:message>
+  <wsdl:message name="getPostDepositDraftByIbanResponse">
+    <wsdl:part name="parameters" element="ns1:getPostDepositDraftByIbanResponse" />
+  </wsdl:message>
+  <wsdl:message name="getMobileTransactions">
+    <wsdl:part name="parameters" element="ns1:getMobileTransactions" />
+  </wsdl:message>
+  <wsdl:message name="getTransactionByIdForRefund">
+    <wsdl:part name="parameters" element="ns1:getTransactionByIdForRefund" />
+  </wsdl:message>
+  <wsdl:message name="getTransactionInquiryByCustomer">
+    <wsdl:part name="parameters" element="ns1:getTransactionInquiryByCustomer" />
+  </wsdl:message>
+  <wsdl:message name="getRefundBalanceResponse">
+    <wsdl:part name="parameters" element="ns1:getRefundBalanceResponse" />
+  </wsdl:message>
+  <wsdl:message name="getBillPaymentByDateResponse">
+    <wsdl:part name="parameters" element="ns1:getBillPaymentByDateResponse" />
+  </wsdl:message>
+  <wsdl:message name="getTransactionByTerminalGroupType">
+    <wsdl:part name="parameters" element="ns1:getTransactionByTerminalGroupType" />
+  </wsdl:message>
+  <wsdl:message name="getBillPaymentByDate">
+    <wsdl:part name="parameters" element="ns1:getBillPaymentByDate" />
+  </wsdl:message>
+  <wsdl:message name="getRefundTransactionByRefrenceId">
+    <wsdl:part name="parameters" element="ns1:getRefundTransactionByRefrenceId" />
+  </wsdl:message>
+  <wsdl:message name="getBillPaymentBank">
+    <wsdl:part name="parameters" element="ns1:getBillPaymentBank" />
+  </wsdl:message>
+  <wsdl:message name="changeRequestResponse">
+    <wsdl:part name="parameters" element="ns1:changeRequestResponse" />
+  </wsdl:message>
+  <wsdl:message name="getDiscountTransactionByDateResponse">
+    <wsdl:part name="parameters" element="ns1:getDiscountTransactionByDateResponse" />
+  </wsdl:message>
+  <wsdl:message name="getRequestStatusResponse">
+    <wsdl:part name="parameters" element="ns1:getRequestStatusResponse" />
+  </wsdl:message>
+  <wsdl:message name="getDiscountTransactionByDate">
+    <wsdl:part name="parameters" element="ns1:getDiscountTransactionByDate" />
+  </wsdl:message>
+  <wsdl:message name="getCardsInfoResponse">
+    <wsdl:part name="parameters" element="ns1:getCardsInfoResponse" />
+  </wsdl:message>
+  <wsdl:message name="getRefundTransactionByDateCompleteResponse">
+    <wsdl:part name="parameters" element="ns1:getRefundTransactionByDateCompleteResponse" />
+  </wsdl:message>
+  <wsdl:message name="getInstituteTransactionByDateResponse">
+    <wsdl:part name="parameters" element="ns1:getInstituteTransactionByDateResponse" />
+  </wsdl:message>
+  <wsdl:message name="getRefundTransactionByDateNewResponse">
+    <wsdl:part name="parameters" element="ns1:getRefundTransactionByDateNewResponse" />
+  </wsdl:message>
+  <wsdl:message name="getRefundTransactionByOrderIdResponse">
+    <wsdl:part name="parameters" element="ns1:getRefundTransactionByOrderIdResponse" />
+  </wsdl:message>
+  <wsdl:message name="getTransactionByDateResponse">
+    <wsdl:part name="parameters" element="ns1:getTransactionByDateResponse" />
+  </wsdl:message>
+  <wsdl:message name="getTransactionInquiryByCustomerResponse">
+    <wsdl:part name="parameters" element="ns1:getTransactionInquiryByCustomerResponse" />
+  </wsdl:message>
+  <wsdl:message name="getTransactionByBillIdAndPayId">
+    <wsdl:part name="parameters" element="ns1:getTransactionByBillIdAndPayId" />
+  </wsdl:message>
+  <wsdl:message name="getOnlineTransactionByDateResponse">
+    <wsdl:part name="parameters" element="ns1:getOnlineTransactionByDateResponse" />
+  </wsdl:message>
+  <wsdl:message name="getTransactionByTerminalGroupTypeResponse">
+    <wsdl:part name="parameters" element="ns1:getTransactionByTerminalGroupTypeResponse" />
+  </wsdl:message>
+  <wsdl:message name="getRefundTransactionByRefrenceIdNew">
+    <wsdl:part name="parameters" element="ns1:getRefundTransactionByRefrenceIdNew" />
+  </wsdl:message>
+  <wsdl:message name="getTransactionByCustomerBranchIdResponse">
+    <wsdl:part name="parameters" element="ns1:getTransactionByCustomerBranchIdResponse" />
+  </wsdl:message>
+  <wsdl:message name="getRefundTransactionWithCommissionByDate">
+    <wsdl:part name="parameters" element="ns1:getRefundTransactionWithCommissionByDate" />
+  </wsdl:message>
+  <wsdl:message name="getRefundTransactionByRefrenceIdCompleteFromArchive">
+    <wsdl:part name="parameters" element="ns1:getRefundTransactionByRefrenceIdCompleteFromArchive" />
+  </wsdl:message>
+  <wsdl:message name="getInstituteTransactionByDate">
+    <wsdl:part name="parameters" element="ns1:getInstituteTransactionByDate" />
+  </wsdl:message>
+  <wsdl:message name="getRefundTransactionByDateCompleteFromArchive">
+    <wsdl:part name="parameters" element="ns1:getRefundTransactionByDateCompleteFromArchive" />
+  </wsdl:message>
+  <wsdl:message name="getPostDepositDraftByIban">
+    <wsdl:part name="parameters" element="ns1:getPostDepositDraftByIban" />
+  </wsdl:message>
+  <wsdl:message name="getTerminalsInfo">
+    <wsdl:part name="parameters" element="ns1:getTerminalsInfo" />
+  </wsdl:message>
+  <wsdl:message name="getRefundTransactionByRefrenceIdCompleteResponse">
+    <wsdl:part name="parameters" element="ns1:getRefundTransactionByRefrenceIdCompleteResponse" />
+  </wsdl:message>
+  <wsdl:message name="getRefundTransactionByOrderIdCompleteFromArchiveResponse">
+    <wsdl:part name="parameters" element="ns1:getRefundTransactionByOrderIdCompleteFromArchiveResponse" />
+  </wsdl:message>
+  <wsdl:message name="getRefundTransactionWithCommissionByIdNewResponse">
+    <wsdl:part name="parameters" element="ns1:getRefundTransactionWithCommissionByIdNewResponse" />
+  </wsdl:message>
+  <wsdl:message name="getBillPaymentPSP">
+    <wsdl:part name="parameters" element="ns1:getBillPaymentPSP" />
+  </wsdl:message>
+  <wsdl:message name="getTransactionByTerminalIdAndOrderId">
+    <wsdl:part name="parameters" element="ns1:getTransactionByTerminalIdAndOrderId" />
+  </wsdl:message>
+  <wsdl:message name="getTransactionByTerminalGroupTypeNewResponse">
+    <wsdl:part name="parameters" element="ns1:getTransactionByTerminalGroupTypeNewResponse" />
+  </wsdl:message>
+  <wsdl:message name="getPosTerminalRequestResponse">
+    <wsdl:part name="parameters" element="ns1:getPosTerminalRequestResponse" />
+  </wsdl:message>
+  <wsdl:message name="getPosTerminalRequest">
+    <wsdl:part name="parameters" element="ns1:getPosTerminalRequest" />
+  </wsdl:message>
+  <wsdl:message name="getBillPaymentHamrahAvalPSP">
+    <wsdl:part name="parameters" element="ns1:getBillPaymentHamrahAvalPSP" />
+  </wsdl:message>
+  <wsdl:message name="getTransactionByRRNAndTerminalId">
+    <wsdl:part name="parameters" element="ns1:getTransactionByRRNAndTerminalId" />
+  </wsdl:message>
+  <wsdl:message name="getTransactionByDiscountInquiryIdFromArchiveResponse">
+    <wsdl:part name="parameters" element="ns1:getTransactionByDiscountInquiryIdFromArchiveResponse" />
+  </wsdl:message>
+  <wsdl:message name="getUnsuccessfulTransactionsByDate">
+    <wsdl:part name="parameters" element="ns1:getUnsuccessfulTransactionsByDate" />
+  </wsdl:message>
+  <wsdl:message name="getGeneralBillInfo">
+    <wsdl:part name="parameters" element="ns1:getGeneralBillInfo" />
+  </wsdl:message>
+  <wsdl:message name="getTransactionByIdWithCardTypeResponse">
+    <wsdl:part name="parameters" element="ns1:getTransactionByIdWithCardTypeResponse" />
+  </wsdl:message>
+  <wsdl:message name="getBillPaymentHamrahAvalPSPResponse">
+    <wsdl:part name="parameters" element="ns1:getBillPaymentHamrahAvalPSPResponse" />
+  </wsdl:message>
+  <wsdl:message name="getTransactionByCustomerIdNewResponse">
+    <wsdl:part name="parameters" element="ns1:getTransactionByCustomerIdNewResponse" />
+  </wsdl:message>
+  <wsdl:message name="getRefundTransactionByDateResponse">
+    <wsdl:part name="parameters" element="ns1:getRefundTransactionByDateResponse" />
+  </wsdl:message>
+  <wsdl:message name="getTransactionByDate">
+    <wsdl:part name="parameters" element="ns1:getTransactionByDate" />
+  </wsdl:message>
+  <wsdl:message name="getRefundTransactionByOrderIdCompleteResponse">
+    <wsdl:part name="parameters" element="ns1:getRefundTransactionByOrderIdCompleteResponse" />
+  </wsdl:message>
+  <wsdl:message name="getRefundTransactionWithCommissionByDateResponse">
+    <wsdl:part name="parameters" element="ns1:getRefundTransactionWithCommissionByDateResponse" />
+  </wsdl:message>
+  <wsdl:message name="getRefundTransactionByRefrenceIdComplete">
+    <wsdl:part name="parameters" element="ns1:getRefundTransactionByRefrenceIdComplete" />
+  </wsdl:message>
+  <wsdl:message name="getRefundTransactionByDateCompleteFromArchiveResponse">
+    <wsdl:part name="parameters" element="ns1:getRefundTransactionByDateCompleteFromArchiveResponse" />
+  </wsdl:message>
+  <wsdl:message name="getBillPaymentBankResponse">
+    <wsdl:part name="parameters" element="ns1:getBillPaymentBankResponse" />
+  </wsdl:message>
+  <wsdl:message name="getRefundTransactionWithCommissionByDateNewResponse">
+    <wsdl:part name="parameters" element="ns1:getRefundTransactionWithCommissionByDateNewResponse" />
+  </wsdl:message>
+  <wsdl:message name="getTransactionByIdWithCardType">
+    <wsdl:part name="parameters" element="ns1:getTransactionByIdWithCardType" />
+  </wsdl:message>
+  <wsdl:message name="getTransactionStatusByIdFromArchiveResponse">
+    <wsdl:part name="parameters" element="ns1:getTransactionStatusByIdFromArchiveResponse" />
+  </wsdl:message>
+  <wsdl:message name="getRefundTransactionWithCommissionById">
+    <wsdl:part name="parameters" element="ns1:getRefundTransactionWithCommissionById" />
+  </wsdl:message>
+  <wsdl:message name="getChangeAccountInquiryRequestStatus">
+    <wsdl:part name="parameters" element="ns1:getChangeAccountInquiryRequestStatus" />
+  </wsdl:message>
+  <wsdl:portType name="TransactionService">
+    <wsdl:operation name="getRefundTransactionByOrderIdComplete">
+      <wsdl:input name="getRefundTransactionByOrderIdComplete" message="ns1:getRefundTransactionByOrderIdComplete" />
+      <wsdl:output name="getRefundTransactionByOrderIdCompleteResponse" message="ns1:getRefundTransactionByOrderIdCompleteResponse" />
+      <wsdl:fault name="ServiceException" message="ns1:ServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="getTransactionByTerminalGroupType">
+      <wsdl:input name="getTransactionByTerminalGroupType" message="ns1:getTransactionByTerminalGroupType" />
+      <wsdl:output name="getTransactionByTerminalGroupTypeResponse" message="ns1:getTransactionByTerminalGroupTypeResponse" />
+      <wsdl:fault name="ServiceException" message="ns1:ServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="getBillPaymentByDate">
+      <wsdl:input name="getBillPaymentByDate" message="ns1:getBillPaymentByDate" />
+      <wsdl:output name="getBillPaymentByDateResponse" message="ns1:getBillPaymentByDateResponse" />
+      <wsdl:fault name="ServiceException" message="ns1:ServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="getRefundTransactionByRefrenceId">
+      <wsdl:input name="getRefundTransactionByRefrenceId" message="ns1:getRefundTransactionByRefrenceId" />
+      <wsdl:output name="getRefundTransactionByRefrenceIdResponse" message="ns1:getRefundTransactionByRefrenceIdResponse" />
+      <wsdl:fault name="ServiceException" message="ns1:ServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="getBillPaymentBank">
+      <wsdl:input name="getBillPaymentBank" message="ns1:getBillPaymentBank" />
+      <wsdl:output name="getBillPaymentBankResponse" message="ns1:getBillPaymentBankResponse" />
+      <wsdl:fault name="ServiceException" message="ns1:ServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="getShetabInfoById">
+      <wsdl:input name="getShetabInfoById" message="ns1:getShetabInfoById" />
+      <wsdl:output name="getShetabInfoByIdResponse" message="ns1:getShetabInfoByIdResponse" />
+      <wsdl:fault name="ServiceException" message="ns1:ServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="getTransactionByCustomerBranchId">
+      <wsdl:input name="getTransactionByCustomerBranchId" message="ns1:getTransactionByCustomerBranchId" />
+      <wsdl:output name="getTransactionByCustomerBranchIdResponse" message="ns1:getTransactionByCustomerBranchIdResponse" />
+      <wsdl:fault name="ServiceException" message="ns1:ServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="getRefundTransactionWithCommissionByDateNew">
+      <wsdl:input name="getRefundTransactionWithCommissionByDateNew" message="ns1:getRefundTransactionWithCommissionByDateNew" />
+      <wsdl:output name="getRefundTransactionWithCommissionByDateNewResponse" message="ns1:getRefundTransactionWithCommissionByDateNewResponse" />
+      <wsdl:fault name="ServiceException" message="ns1:ServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="getTransactionStatusByTerminalIdAndOrderId">
+      <wsdl:input name="getTransactionStatusByTerminalIdAndOrderId" message="ns1:getTransactionStatusByTerminalIdAndOrderId" />
+      <wsdl:output name="getTransactionStatusByTerminalIdAndOrderIdResponse" message="ns1:getTransactionStatusByTerminalIdAndOrderIdResponse" />
+      <wsdl:fault name="ServiceException" message="ns1:ServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="getDiscountTransactionByDate">
+      <wsdl:input name="getDiscountTransactionByDate" message="ns1:getDiscountTransactionByDate" />
+      <wsdl:output name="getDiscountTransactionByDateResponse" message="ns1:getDiscountTransactionByDateResponse" />
+      <wsdl:fault name="ServiceException" message="ns1:ServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="getRefundTransactionWithCommissionByIdNew">
+      <wsdl:input name="getRefundTransactionWithCommissionByIdNew" message="ns1:getRefundTransactionWithCommissionByIdNew" />
+      <wsdl:output name="getRefundTransactionWithCommissionByIdNewResponse" message="ns1:getRefundTransactionWithCommissionByIdNewResponse" />
+      <wsdl:fault name="ServiceException" message="ns1:ServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="getTransactionByCustomerId">
+      <wsdl:input name="getTransactionByCustomerId" message="ns1:getTransactionByCustomerId" />
+      <wsdl:output name="getTransactionByCustomerIdResponse" message="ns1:getTransactionByCustomerIdResponse" />
+      <wsdl:fault name="ServiceException" message="ns1:ServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="getTransactionByDiscountInquiryId">
+      <wsdl:input name="getTransactionByDiscountInquiryId" message="ns1:getTransactionByDiscountInquiryId" />
+      <wsdl:output name="getTransactionByDiscountInquiryIdResponse" message="ns1:getTransactionByDiscountInquiryIdResponse" />
+      <wsdl:fault name="ServiceException" message="ns1:ServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="getCardsInfo">
+      <wsdl:input name="getCardsInfo" message="ns1:getCardsInfo" />
+      <wsdl:output name="getCardsInfoResponse" message="ns1:getCardsInfoResponse" />
+      <wsdl:fault name="ServiceException" message="ns1:ServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="getTransactionByIdFromArchive">
+      <wsdl:input name="getTransactionByIdFromArchive" message="ns1:getTransactionByIdFromArchive" />
+      <wsdl:output name="getTransactionByIdFromArchiveResponse" message="ns1:getTransactionByIdFromArchiveResponse" />
+      <wsdl:fault name="ServiceException" message="ns1:ServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="getTransactionByBillIdAndPayId">
+      <wsdl:input name="getTransactionByBillIdAndPayId" message="ns1:getTransactionByBillIdAndPayId" />
+      <wsdl:output name="getTransactionByBillIdAndPayIdResponse" message="ns1:getTransactionByBillIdAndPayIdResponse" />
+      <wsdl:fault name="ServiceException" message="ns1:ServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="getTransactionById">
+      <wsdl:input name="getTransactionById" message="ns1:getTransactionById" />
+      <wsdl:output name="getTransactionByIdResponse" message="ns1:getTransactionByIdResponse" />
+      <wsdl:fault name="ServiceException" message="ns1:ServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="getTransactionByPayerId">
+      <wsdl:input name="getTransactionByPayerId" message="ns1:getTransactionByPayerId" />
+      <wsdl:output name="getTransactionByPayerIdResponse" message="ns1:getTransactionByPayerIdResponse" />
+      <wsdl:fault name="ServiceException" message="ns1:ServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="getRefundTransactionByRefrenceIdNew">
+      <wsdl:input name="getRefundTransactionByRefrenceIdNew" message="ns1:getRefundTransactionByRefrenceIdNew" />
+      <wsdl:output name="getRefundTransactionByRefrenceIdNewResponse" message="ns1:getRefundTransactionByRefrenceIdNewResponse" />
+      <wsdl:fault name="ServiceException" message="ns1:ServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="getRefundTransactionWithCommissionByDate">
+      <wsdl:input name="getRefundTransactionWithCommissionByDate" message="ns1:getRefundTransactionWithCommissionByDate" />
+      <wsdl:output name="getRefundTransactionWithCommissionByDateResponse" message="ns1:getRefundTransactionWithCommissionByDateResponse" />
+      <wsdl:fault name="ServiceException" message="ns1:ServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="getRefundTransactionByRefrenceIdCompleteFromArchive">
+      <wsdl:input name="getRefundTransactionByRefrenceIdCompleteFromArchive" message="ns1:getRefundTransactionByRefrenceIdCompleteFromArchive" />
+      <wsdl:output name="getRefundTransactionByRefrenceIdCompleteFromArchiveResponse" message="ns1:getRefundTransactionByRefrenceIdCompleteFromArchiveResponse" />
+      <wsdl:fault name="ServiceException" message="ns1:ServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="getInstituteTransactionByDate">
+      <wsdl:input name="getInstituteTransactionByDate" message="ns1:getInstituteTransactionByDate" />
+      <wsdl:output name="getInstituteTransactionByDateResponse" message="ns1:getInstituteTransactionByDateResponse" />
+      <wsdl:fault name="ServiceException" message="ns1:ServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="getRefundTransactionByDateCompleteFromArchive">
+      <wsdl:input name="getRefundTransactionByDateCompleteFromArchive" message="ns1:getRefundTransactionByDateCompleteFromArchive" />
+      <wsdl:output name="getRefundTransactionByDateCompleteFromArchiveResponse" message="ns1:getRefundTransactionByDateCompleteFromArchiveResponse" />
+      <wsdl:fault name="ServiceException" message="ns1:ServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="getTransactionByTerminalGroupTypeNew">
+      <wsdl:input name="getTransactionByTerminalGroupTypeNew" message="ns1:getTransactionByTerminalGroupTypeNew" />
+      <wsdl:output name="getTransactionByTerminalGroupTypeNewResponse" message="ns1:getTransactionByTerminalGroupTypeNewResponse" />
+      <wsdl:fault name="ServiceException" message="ns1:ServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="getBillPaymentHamrahAvalBANK">
+      <wsdl:input name="getBillPaymentHamrahAvalBANK" message="ns1:getBillPaymentHamrahAvalBANK" />
+      <wsdl:output name="getBillPaymentHamrahAvalBANKResponse" message="ns1:getBillPaymentHamrahAvalBANKResponse" />
+      <wsdl:fault name="ServiceException" message="ns1:ServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="getPostDepositDraftByIban">
+      <wsdl:input name="getPostDepositDraftByIban" message="ns1:getPostDepositDraftByIban" />
+      <wsdl:output name="getPostDepositDraftByIbanResponse" message="ns1:getPostDepositDraftByIbanResponse" />
+      <wsdl:fault name="ServiceException" message="ns1:ServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="changeRequest">
+      <wsdl:input name="changeRequest" message="ns1:changeRequest" />
+      <wsdl:output name="changeRequestResponse" message="ns1:changeRequestResponse" />
+      <wsdl:fault name="ServiceException" message="ns1:ServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="getTerminalsInfo">
+      <wsdl:input name="getTerminalsInfo" message="ns1:getTerminalsInfo" />
+      <wsdl:output name="getTerminalsInfoResponse" message="ns1:getTerminalsInfoResponse" />
+      <wsdl:fault name="ServiceException" message="ns1:ServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="getRefundTransactionByDateComplete">
+      <wsdl:input name="getRefundTransactionByDateComplete" message="ns1:getRefundTransactionByDateComplete" />
+      <wsdl:output name="getRefundTransactionByDateCompleteResponse" message="ns1:getRefundTransactionByDateCompleteResponse" />
+      <wsdl:fault name="ServiceException" message="ns1:ServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="getRefundTransactionByOrderIdNew">
+      <wsdl:input name="getRefundTransactionByOrderIdNew" message="ns1:getRefundTransactionByOrderIdNew" />
+      <wsdl:output name="getRefundTransactionByOrderIdNewResponse" message="ns1:getRefundTransactionByOrderIdNewResponse" />
+      <wsdl:fault name="ServiceException" message="ns1:ServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="getBillPaymentPSP">
+      <wsdl:input name="getBillPaymentPSP" message="ns1:getBillPaymentPSP" />
+      <wsdl:output name="getBillPaymentPSPResponse" message="ns1:getBillPaymentPSPResponse" />
+      <wsdl:fault name="ServiceException" message="ns1:ServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="getTransactionStatusByIdFromArchive">
+      <wsdl:input name="getTransactionStatusByIdFromArchive" message="ns1:getTransactionStatusByIdFromArchive" />
+      <wsdl:output name="getTransactionStatusByIdFromArchiveResponse" message="ns1:getTransactionStatusByIdFromArchiveResponse" />
+      <wsdl:fault name="ServiceException" message="ns1:ServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="getTransactionByDiscountInquiryIdFromArchive">
+      <wsdl:input name="getTransactionByDiscountInquiryIdFromArchive" message="ns1:getTransactionByDiscountInquiryIdFromArchive" />
+      <wsdl:output name="getTransactionByDiscountInquiryIdFromArchiveResponse" message="ns1:getTransactionByDiscountInquiryIdFromArchiveResponse" />
+      <wsdl:fault name="ServiceException" message="ns1:ServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="getTransactionByTerminalIdAndOrderId">
+      <wsdl:input name="getTransactionByTerminalIdAndOrderId" message="ns1:getTransactionByTerminalIdAndOrderId" />
+      <wsdl:output name="getTransactionByTerminalIdAndOrderIdResponse" message="ns1:getTransactionByTerminalIdAndOrderIdResponse" />
+      <wsdl:fault name="ServiceException" message="ns1:ServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="getRefundTransactionByOrderIdCompleteFromArchive">
+      <wsdl:input name="getRefundTransactionByOrderIdCompleteFromArchive" message="ns1:getRefundTransactionByOrderIdCompleteFromArchive" />
+      <wsdl:output name="getRefundTransactionByOrderIdCompleteFromArchiveResponse" message="ns1:getRefundTransactionByOrderIdCompleteFromArchiveResponse" />
+      <wsdl:fault name="ServiceException" message="ns1:ServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="getPosTerminalRequest">
+      <wsdl:input name="getPosTerminalRequest" message="ns1:getPosTerminalRequest" />
+      <wsdl:output name="getPosTerminalRequestResponse" message="ns1:getPosTerminalRequestResponse" />
+      <wsdl:fault name="ServiceException" message="ns1:ServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="getBillPaymentHamrahAvalPSP">
+      <wsdl:input name="getBillPaymentHamrahAvalPSP" message="ns1:getBillPaymentHamrahAvalPSP" />
+      <wsdl:output name="getBillPaymentHamrahAvalPSPResponse" message="ns1:getBillPaymentHamrahAvalPSPResponse" />
+      <wsdl:fault name="ServiceException" message="ns1:ServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="getRefundBalance">
+      <wsdl:input name="getRefundBalance" message="ns1:getRefundBalance" />
+      <wsdl:output name="getRefundBalanceResponse" message="ns1:getRefundBalanceResponse" />
+      <wsdl:fault name="ServiceException" message="ns1:ServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="getTransactionByRRNAndTerminalId">
+      <wsdl:input name="getTransactionByRRNAndTerminalId" message="ns1:getTransactionByRRNAndTerminalId" />
+      <wsdl:output name="getTransactionByRRNAndTerminalIdResponse" message="ns1:getTransactionByRRNAndTerminalIdResponse" />
+      <wsdl:fault name="ServiceException" message="ns1:ServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="getRefundTransactionByDate">
+      <wsdl:input name="getRefundTransactionByDate" message="ns1:getRefundTransactionByDate" />
+      <wsdl:output name="getRefundTransactionByDateResponse" message="ns1:getRefundTransactionByDateResponse" />
+      <wsdl:fault name="ServiceException" message="ns1:ServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="getUnsuccessfulTransactionsByDate">
+      <wsdl:input name="getUnsuccessfulTransactionsByDate" message="ns1:getUnsuccessfulTransactionsByDate" />
+      <wsdl:output name="getUnsuccessfulTransactionsByDateResponse" message="ns1:getUnsuccessfulTransactionsByDateResponse" />
+      <wsdl:fault name="ServiceException" message="ns1:ServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="getGeneralBillInfo">
+      <wsdl:input name="getGeneralBillInfo" message="ns1:getGeneralBillInfo" />
+      <wsdl:output name="getGeneralBillInfoResponse" message="ns1:getGeneralBillInfoResponse" />
+      <wsdl:fault name="ServiceException" message="ns1:ServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="getRequestStatus">
+      <wsdl:input name="getRequestStatus" message="ns1:getRequestStatus" />
+      <wsdl:output name="getRequestStatusResponse" message="ns1:getRequestStatusResponse" />
+      <wsdl:fault name="ServiceException" message="ns1:ServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="getOfferTransactionByDate">
+      <wsdl:input name="getOfferTransactionByDate" message="ns1:getOfferTransactionByDate" />
+      <wsdl:output name="getOfferTransactionByDateResponse" message="ns1:getOfferTransactionByDateResponse" />
+      <wsdl:fault name="ServiceException" message="ns1:ServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="getOnlineTransactionByDate">
+      <wsdl:input name="getOnlineTransactionByDate" message="ns1:getOnlineTransactionByDate" />
+      <wsdl:output name="getOnlineTransactionByDateResponse" message="ns1:getOnlineTransactionByDateResponse" />
+      <wsdl:fault name="ServiceException" message="ns1:ServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="getTransactionByDate">
+      <wsdl:input name="getTransactionByDate" message="ns1:getTransactionByDate" />
+      <wsdl:output name="getTransactionByDateResponse" message="ns1:getTransactionByDateResponse" />
+      <wsdl:fault name="ServiceException" message="ns1:ServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="getRefundTransactionByRefrenceIdComplete">
+      <wsdl:input name="getRefundTransactionByRefrenceIdComplete" message="ns1:getRefundTransactionByRefrenceIdComplete" />
+      <wsdl:output name="getRefundTransactionByRefrenceIdCompleteResponse" message="ns1:getRefundTransactionByRefrenceIdCompleteResponse" />
+      <wsdl:fault name="ServiceException" message="ns1:ServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="getTransactionByCustomerIdNew">
+      <wsdl:input name="getTransactionByCustomerIdNew" message="ns1:getTransactionByCustomerIdNew" />
+      <wsdl:output name="getTransactionByCustomerIdNewResponse" message="ns1:getTransactionByCustomerIdNewResponse" />
+      <wsdl:fault name="ServiceException" message="ns1:ServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="getTransactionStatusById">
+      <wsdl:input name="getTransactionStatusById" message="ns1:getTransactionStatusById" />
+      <wsdl:output name="getTransactionStatusByIdResponse" message="ns1:getTransactionStatusByIdResponse" />
+      <wsdl:fault name="ServiceException" message="ns1:ServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="getRefundTransactionByOrderId">
+      <wsdl:input name="getRefundTransactionByOrderId" message="ns1:getRefundTransactionByOrderId" />
+      <wsdl:output name="getRefundTransactionByOrderIdResponse" message="ns1:getRefundTransactionByOrderIdResponse" />
+      <wsdl:fault name="ServiceException" message="ns1:ServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="getRefundTransactionByDateNew">
+      <wsdl:input name="getRefundTransactionByDateNew" message="ns1:getRefundTransactionByDateNew" />
+      <wsdl:output name="getRefundTransactionByDateNewResponse" message="ns1:getRefundTransactionByDateNewResponse" />
+      <wsdl:fault name="ServiceException" message="ns1:ServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="getTransactionByBillIdAndPayIdFromArchive">
+      <wsdl:input name="getTransactionByBillIdAndPayIdFromArchive" message="ns1:getTransactionByBillIdAndPayIdFromArchive" />
+      <wsdl:output name="getTransactionByBillIdAndPayIdFromArchiveResponse" message="ns1:getTransactionByBillIdAndPayIdFromArchiveResponse" />
+      <wsdl:fault name="ServiceException" message="ns1:ServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="getTransactionByIdWithCardType">
+      <wsdl:input name="getTransactionByIdWithCardType" message="ns1:getTransactionByIdWithCardType" />
+      <wsdl:output name="getTransactionByIdWithCardTypeResponse" message="ns1:getTransactionByIdWithCardTypeResponse" />
+      <wsdl:fault name="ServiceException" message="ns1:ServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="getDepositDraftByIban">
+      <wsdl:input name="getDepositDraftByIban" message="ns1:getDepositDraftByIban" />
+      <wsdl:output name="getDepositDraftByIbanResponse" message="ns1:getDepositDraftByIbanResponse" />
+      <wsdl:fault name="ServiceException" message="ns1:ServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="getMobileTransactions">
+      <wsdl:input name="getMobileTransactions" message="ns1:getMobileTransactions" />
+      <wsdl:output name="getMobileTransactionsResponse" message="ns1:getMobileTransactionsResponse" />
+      <wsdl:fault name="ServiceException" message="ns1:ServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="getRefundTransactionWithCommissionById">
+      <wsdl:input name="getRefundTransactionWithCommissionById" message="ns1:getRefundTransactionWithCommissionById" />
+      <wsdl:output name="getRefundTransactionWithCommissionByIdResponse" message="ns1:getRefundTransactionWithCommissionByIdResponse" />
+      <wsdl:fault name="ServiceException" message="ns1:ServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="getTransactionByIdForRefund">
+      <wsdl:input name="getTransactionByIdForRefund" message="ns1:getTransactionByIdForRefund" />
+      <wsdl:output name="getTransactionByIdForRefundResponse" message="ns1:getTransactionByIdForRefundResponse" />
+      <wsdl:fault name="ServiceException" message="ns1:ServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="getTransactionInquiryByCustomer">
+      <wsdl:input name="getTransactionInquiryByCustomer" message="ns1:getTransactionInquiryByCustomer" />
+      <wsdl:output name="getTransactionInquiryByCustomerResponse" message="ns1:getTransactionInquiryByCustomerResponse" />
+      <wsdl:fault name="ServiceException" message="ns1:ServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="getChangeAccountInquiryRequestStatus">
+      <wsdl:input name="getChangeAccountInquiryRequestStatus" message="ns1:getChangeAccountInquiryRequestStatus" />
+      <wsdl:output name="getChangeAccountInquiryRequestStatusResponse" message="ns1:getChangeAccountInquiryRequestStatusResponse" />
+      <wsdl:fault name="ServiceException" message="ns1:ServiceException" />
+    </wsdl:operation>
+  </wsdl:portType>
+</wsdl:definitions>

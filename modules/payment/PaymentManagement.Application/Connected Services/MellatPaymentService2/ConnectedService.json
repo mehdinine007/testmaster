@@ -1,0 +1,16 @@
+{
+  "ExtendedData": {
+    "inputs": [
+      "https://bpm.shaparak.ir/pgwchannel2/services/pgw?wsdl"
+    ],
+    "collectionTypes": [
+      "System.Array",
+      "System.Collections.Generic.Dictionary`2"
+    ],
+    "namespaceMappings": [
+      "*, MellatPaymentService2"
+    ],
+    "targetFramework": "net7.0",
+    "typeReuseMode": "All"
+  }
+}
