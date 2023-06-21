@@ -1030,9 +1030,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
         int orderId = default;
         try
         {
-        var order = (await _commitOrderRepository.GetQueryableAsync())
-            .AsNoTracking()
-            .FirstOrDefault(x => x.PaymentId == paymentId && x.OrderStatus == OrderStatusType.RecentlyAdded);
+            var order = (await _commitOrderRepository.GetQueryableAsync())
+                .AsNoTracking()
+                .FirstOrDefault(x => x.PaymentId == paymentId && x.OrderStatus == OrderStatusType.RecentlyAdded);
             //var orderId = (await _commitOrderRepository.GetQueryableAsync())
             //    .AsNoTracking()
             //    .Select(x => new { x.PaymentId, x.Id })
@@ -1238,6 +1238,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 OrderRejectionCode = x.OrderRejectionStatus.HasValue ? (int)x.OrderRejectionStatus : null,
                 ESaleTypeId = y.ESaleTypeId,
                 ManufactureDate = y.ManufactureDate,
+                SaleDetailUid = y.UID,
                 //TransactionCommitDate = paymentInformation != null
                 //    ? paymentInformation.TransactionDate
                 //    : null,
