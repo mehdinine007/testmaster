@@ -441,6 +441,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             var orderStatusType = await _distributedCache.GetStringAsync(string.Format(RedisConstants.OrderStatusCacheKey, objectCustomerOrderFromCache));
             if (string.IsNullOrWhiteSpace(orderStatusType))
             {
+                var allowedOrderStatusTypes = new List<int>() { (int)OrderStatusType.PaymentNotVerified, (int)OrderStatusType.RecentlyAdded };
                 var order = orderQuery
                      .AsNoTracking()
                     .Select(x => new CustomerOrderDto
@@ -454,7 +455,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     .FirstOrDefault(x =>
                         x.UserId == userId
                         && x.SaleDetailId == (int)SaleDetailDto.Id
-                        && x.OrderStatusCode == (int)OrderStatusType.RecentlyAdded);
+                        //&& (x.OrderStatusCode == (int)OrderStatusType.RecentlyAdded ||));
+                        && allowedOrderStatusTypes.Any(y => y == (int)x.OrderStatusCode));
                 orderStatusType = ((int)order.OrderStatusCode).ToString();
                 await _distributedCache.SetStringAsync(string.Format(RedisConstants.OrderStatusCacheKey, order.Id), orderStatusType);
             }
