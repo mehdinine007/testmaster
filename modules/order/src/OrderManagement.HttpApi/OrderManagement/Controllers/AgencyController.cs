@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.OrderManagement.Implementations;
+using Volo.Abp.Application.Dtos;
 
 namespace OrderManagement.HttpApi.OrderManagement.Controllers
 {
@@ -25,11 +26,11 @@ namespace OrderManagement.HttpApi.OrderManagement.Controllers
 
 
         [HttpDelete]
-        public async Task<int> Delete(int id)
+        public async Task Delete(int id)
          => await _agencyServicecs.Delete(id);
         [HttpGet]
-        public async Task<List<AgencyDto>> GetAgencies()
-         => await _agencyServicecs.GetAgencies();
+        public async Task<PagedResultDto<AgencyDto>> GetAgencies(int pageNo, int sizeNo)
+         => await _agencyServicecs.GetAgencies(pageNo, sizeNo);
         [HttpPost]
         public async Task<int> Save(AgencyDto agencyDto)
          => await _agencyServicecs.Save(agencyDto);
