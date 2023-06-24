@@ -14,7 +14,7 @@ using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
 using OrderManagement.Application.Contracts.Services;
 using OrderManagement.Application.Contracts;
-using Esale.Core.CrossCuttingConcerns.Caching.Redis;
+//using Esale.Core.CrossCuttingConcerns.Caching.Redis;
 
 namespace OrderManagement.Application.OrderManagement
 {
