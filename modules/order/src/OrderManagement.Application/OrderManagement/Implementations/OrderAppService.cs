@@ -460,8 +460,11 @@ public class OrderAppService : ApplicationService, IOrderAppService
                         && x.SaleDetailId == (int)SaleDetailDto.Id
                         //&& (x.OrderStatusCode == (int)OrderStatusType.RecentlyAdded ||));
                         && allowedOrderStatusTypes.Any(y => y == (int)x.OrderStatusCode));
-                orderStatusType = ((int)order.OrderStatusCode).ToString();
-                await _distributedCache.SetStringAsync(string.Format(RedisConstants.OrderStatusCacheKey, order.Id), orderStatusType);
+                if (order != null)
+                {
+                    orderStatusType = ((int)order.OrderStatusCode).ToString();
+                    await _distributedCache.SetStringAsync(string.Format(RedisConstants.OrderStatusCacheKey, order.Id), orderStatusType);
+                }
             }
             if (objectCustomerOrderFromCache != null &&
                     (string.IsNullOrWhiteSpace(orderStatusType) ||

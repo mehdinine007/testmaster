@@ -1,5 +1,4 @@
-﻿using Esale.Core.CrossCuttingConcerns.Caching.Redis;
-using Esale.Core.Utility.Results;
+﻿using Esale.Core.Utility.Results;
 using Grpc.Net.Client;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -14,6 +13,7 @@ using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
 using OrderManagement.Application.Contracts.Services;
 using OrderManagement.Application.Contracts;
+using Esale.Core.CrossCuttingConcerns.Caching.Redis;
 
 namespace OrderManagement.Application.OrderManagement
 {
