@@ -422,6 +422,13 @@ namespace OrderManagement.EfCore.Migrations
                             OrderRejectionCode = 14,
                             OrderRejectionTitle = "عدم احراز در طرح جوانی توسط ثبت احول",
                             OrderRejectionTitleEn = "YoungPlan"
+                        },
+                        new
+                        {
+                            Id = 15,
+                            OrderRejectionCode = 15,
+                            OrderRejectionTitle = "عدم احراض خودرو فرسوده",
+                            OrderRejectionTitleEn = "OldPlan"
                         });
                 });
 

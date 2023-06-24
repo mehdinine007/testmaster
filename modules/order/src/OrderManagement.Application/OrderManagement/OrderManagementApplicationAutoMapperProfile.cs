@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using OrderManagement.Application.Contracts;
+using OrderManagement.Application.Contracts.OrderManagement;
 using OrderManagement.Application.Helpers;
 using OrderManagement.Application.OrderManagement.Implementations;
 using OrderManagement.Domain;
@@ -57,8 +58,14 @@ namespace OrderManagement
                 .ReverseMap()
                 .IgnoreFullAuditedObjectProperties();
             CreateMap<SaleDetail, SaleDetailOrderDto>();
-            CreateMap<Agency,AgencyDto>();
+            CreateMap<Agency, AgencyDto>().ReverseMap();
             //CreateMap<ApiResult, HandShakeResultDto>();
+            CreateMap<SaleDetail, CreateSaleDetailDto>().ReverseMap();
+            CreateMap<AgencySaleDetail, AgencySaleDetailDto>().ReverseMap();
+            CreateMap<AgencySaleDetail, AgencySaleDetailListDto>()
+               .ForMember(x => x.AgencyName, opt => opt.MapFrom(y => y.Agency.Name))
+                .ReverseMap();
+
         }
     }
 }

@@ -45,6 +45,8 @@ namespace OrderManagement.Domain
         [Display(Name = "لیست خرید خودروساز (مدیران خودرو)")]
         MvmVehicleManufactureList = 13,
         [Display(Name = "عدم احراز در طرح جوانی توسط ثبت احول")]
-        YoungPlan = 14
+        YoungPlan = 14,
+        [Display(Name = "عدم احراض خودرو فرسوده")]
+        OldPlan = 15
     }
 }
