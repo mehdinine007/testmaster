@@ -14,60 +14,28 @@ using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
 using OrderManagement.Application.Contracts.Services;
 using OrderManagement.Application.Contracts;
+using OrderManagement.Application.Contracts.OrderManagement.Services;
 
 namespace OrderManagement.Application.OrderManagement
 {
     public class CapacityControlAppService : ApplicationService, ICapacityControlAppService
     {
-        private readonly IRepository<SaleDetail, int> _saleDetailRepository;
-        private readonly IRepository<AgencySaleDetail, int> _agencySaleDetail;
+        private readonly ISaleDetailService _saleDetailService;
+        private readonly IAgencySaleDetailService _agencySaleDetailService;
         private readonly IEsaleGrpcClient _grpcClient;
         private IConfiguration _configuration { get; set; }
         private readonly RedisCacheManager _redisCacheManager;
-        public CapacityControlAppService(IRepository<SaleDetail, int> saleDetailRepository, IConfiguration configuration, IRepository<AgencySaleDetail, int> agencySaleDetail, IEsaleGrpcClient grpcClient)
+        public CapacityControlAppService(IConfiguration configuration, IEsaleGrpcClient grpcClient, IAgencySaleDetailService agencySaleDetailService, ISaleDetailService saleDetailService)
         {
-            _saleDetailRepository = saleDetailRepository;
             _configuration = configuration;
             _redisCacheManager = new RedisCacheManager("RedisCache:ConnectionString");
-            _agencySaleDetail = agencySaleDetail;
             _grpcClient = grpcClient;
-        }
-        private List<SaleDetail> GetSaleDetails()
-        {
-            var currentTime = DateTime.Now;
-            return _saleDetailRepository
-                .WithDetails()
-                .AsNoTracking()
-                .Where(x => x.SalePlanStartDate <= currentTime && currentTime <= x.SalePlanEndDate && x.Visible)
-                .ToList();
-        }
-        private SaleDetail GetSaleDetailById(int id)
-        {
-            var currentTime = DateTime.Now;
-            return _saleDetailRepository
-                .WithDetails()
-                .AsNoTracking()
-                .FirstOrDefault(x => x.Id == id);
-        }
-
-        private AgencySaleDetail GetAgancySaleDetail(int saleDetailId, int agancyId)
-        {
-            return _agencySaleDetail
-                .WithDetails()
-                .AsNoTracking()
-                .FirstOrDefault(x => x.SaleDetailId == saleDetailId && !x.IsDeleted && x.AgencyId == agancyId);
-        }
-        private long GetReservCount(int saleDetailId)
-        {
-            return _agencySaleDetail
-                .WithDetails()
-                .AsNoTracking()
-                .Where(x => x.SaleDetailId == saleDetailId)
-                .Sum(x => x.ReserveCount);
+            _agencySaleDetailService = agencySaleDetailService;
+            _saleDetailService = saleDetailService;
         }
         public async Task<IResult> SaleDetail()
         {
-            var saledetails = GetSaleDetails();
+            var saledetails = _saleDetailService.GetActiveList();
             if (saledetails != null && saledetails.Count > 0)
             {
                 foreach (var saledetail in saledetails)
@@ -97,7 +65,7 @@ namespace OrderManagement.Application.OrderManagement
 
         public async Task<IResult> Payment()
         {
-            var saledetails = GetSaleDetails();
+            var saledetails = _saleDetailService.GetActiveList();
             if (saledetails != null && saledetails.Count > 0)
             {
                 foreach (var saledetail in saledetails)
@@ -183,7 +151,7 @@ namespace OrderManagement.Application.OrderManagement
 
         public async Task<IResult> Validation(int saleDetaild, int? agencyId)
         {
-            var saledetail = GetSaleDetailById(saleDetaild);
+            var saledetail = _saleDetailService.GetById(saleDetaild);
             if (saledetail == null)
             {
                 throw new UserFriendlyException("خطا در بازیابی برنامه های فروش");
@@ -217,7 +185,7 @@ namespace OrderManagement.Application.OrderManagement
             }
             if (agencyId != null && agencyId != 0)
             {
-                var agencySaledetail = GetAgancySaleDetail(saleDetaild, agencyId??0);
+                var agencySaledetail = _agencySaleDetailService.GetBySaleDetailId(saleDetaild, agencyId??0);
                 if(agencySaledetail == null)
                 {
                     throw new UserFriendlyException("خطا در بازیابی نمایندگی ها");
@@ -257,7 +225,7 @@ namespace OrderManagement.Application.OrderManagement
                 //}
                 if (agencySaledetail.ReserveCount > 0)
                 {
-                    long freeCapacity = (_saledetailCapacity) - GetReservCount(saleDetaild) - (_saleDetailPaymentCount);
+                    long freeCapacity = (_saledetailCapacity) - (_agencySaleDetailService.GetReservCount(saleDetaild)) - (_saleDetailPaymentCount);
                     if (freeCapacity > 0)
                     {
                         return new SuccsessResult();

@@ -42,6 +42,26 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
 
     }
 
+    public List<SaleDetailDto> GetActiveList()
+    {
+        var currentTime = DateTime.Now;
+        var saledetails = _saleDetailRepository
+            .WithDetails()
+            .AsNoTracking()
+            .Where(x => x.SalePlanStartDate <= currentTime && currentTime <= x.SalePlanEndDate && x.Visible)
+            .ToList();
+        return ObjectMapper.Map<List<SaleDetail>, List<SaleDetailDto>>(saledetails);
+    }
+
+    public SaleDetailDto GetById(int id)
+    {
+        var saleDetail = _saleDetailRepository
+            .WithDetails()
+            .AsNoTracking()
+            .FirstOrDefault(x => x.Id == id);
+        return ObjectMapper.Map<SaleDetail, SaleDetailDto>(saleDetail);
+    }
+
     public async Task<PagedResultDto<SaleDetailDto>> GetSaleDetails(int pageNo, int sizeNo)
     {
         var count = await _saleDetailRepository.CountAsync();
