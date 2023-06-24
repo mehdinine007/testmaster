@@ -115,7 +115,7 @@ namespace OrderManagement.Application.OrderManagement
             //{
             //    RelationId = 60
             //});
-            Validation(6, 6);
+            Validation(165, 1029);
         }
 
         public async Task<bool> ValidationBySaleDetailUId(Guid saleDetailUId)
@@ -180,7 +180,7 @@ namespace OrderManagement.Application.OrderManagement
             //        _saleDetailPaymentCount = paymentDtos.FirstOrDefault(x => x.Status == 0).Count;
             //    }
             //}
-            if (_saleDetailPaymentCount > _saledetailCapacity && _saledetailCapacity > 0)
+            if (_saleDetailPaymentCount >= _saledetailCapacity && _saledetailCapacity > 0)
             {
                 return new ErrorResult(CapacityControlConstants.NoCapacityCreateTicket, CapacityControlConstants.NoCapacityCreateTicketId);
             }
@@ -202,7 +202,7 @@ namespace OrderManagement.Application.OrderManagement
                 {
                     _agancyPaymentCount = paymentDtos.FirstOrDefault(x => x.Status == 2).Count;
                 }
-                if (_agancyCapacity > _agancyPaymentCount && _agancyPaymentCount > 0)
+                if (_agancyCapacity >= _agancyPaymentCount && _agancyPaymentCount > 0)
                 {
                     return new ErrorResult(CapacityControlConstants.AgancyNoCapacityCreateTicket, CapacityControlConstants.AgancyNoCapacityCreateTicketId);
                 }
