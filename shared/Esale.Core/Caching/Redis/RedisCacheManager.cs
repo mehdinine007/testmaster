@@ -59,9 +59,27 @@ namespace Esale.Core.CrossCuttingConcerns.Caching.Redis
             return await _cacheClient.GetDataBase().KeyDeleteAsync(key);
         }
 
-        public IEnumerable<RedisKey> SearchKeys(string pattern)
+        public IEnumerable<string> SearchKeys(string pattern)
         {
-            return _cacheClient.GetServer().Keys(pattern: pattern);
+            var keys= _cacheClient.GetServer().Keys(pattern: pattern);
+            var listKeys = new List<string>();
+            listKeys.AddRange(keys.Select(key => (string)key).ToList());
+            return listKeys;
+        }
+
+        public async Task<bool> RemoveAllAsync(string pattern)
+        {
+            var keys = _cacheClient.GetServer().Keys(pattern: pattern);
+            var listKeys = new List<string>();
+            listKeys.AddRange(keys.Select(key => (string)key).ToList());
+            if (listKeys !=null && listKeys.Count > 0)
+            {
+                foreach (var key in listKeys)
+                {
+                    await RemoveAsync(key);
+                }
+            }
+            return true;
         }
 
         public string CreateCachKey(string prefix, int userId)

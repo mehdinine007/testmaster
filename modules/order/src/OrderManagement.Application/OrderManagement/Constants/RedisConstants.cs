@@ -7,6 +7,7 @@ public static class RedisConstants
     public const string RedisDefaultPrefix = "n:{0} ,c:{1}";
 
     public const string SaleDetailPrefix = "n:SaleDetail ,c:{0}";
+    public const string CommitOrderPrefix = "n:CommitOrder:";
 
     public static DateTimeOffset SaleDetailTimeOffset = new DateTimeOffset(DateTime.Now.AddMinutes(20));
 

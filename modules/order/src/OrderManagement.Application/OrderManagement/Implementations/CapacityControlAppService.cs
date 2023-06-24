@@ -141,6 +141,7 @@ namespace OrderManagement.Application.OrderManagement
 
         public async Task GrpcPaymentTest()
         {
+            var redis = _redisCacheManager.RemoveAllAsync("n:CapacityControl:*");
             var payment = await _grpcClient.RetryForVerify();
             var _result = await _grpcClient.GetPaymentStatusList(new PaymentStatusDto()
             {
