@@ -76,9 +76,9 @@ namespace OrderManagement.Application.OrderManagement
                     {
                         RelationId = saledetail.Id
                     });
-                    if (paymentDtos != null && paymentDtos.Any(x => x.Status == 0))
+                    if (paymentDtos != null && paymentDtos.Any(x => x.Status == 2))
                     {
-                        _value = paymentDtos.FirstOrDefault(x => x.Status == 0).Count;
+                        _value = paymentDtos.FirstOrDefault(x => x.Status == 2).Count;
                     }
                     //using (var channel = GrpcChannel.ForAddress(_configuration.GetSection("gRPC:PaymentUrl").Value))
                     //{
@@ -163,9 +163,9 @@ namespace OrderManagement.Application.OrderManagement
             {
                 RelationId = saleDetaild
             });
-            if (paymentDtos != null && paymentDtos.Any(x => x.Status == 0))
+            if (paymentDtos != null && paymentDtos.Any(x => x.Status == 2))
             {
-                _saleDetailPaymentCount = paymentDtos.FirstOrDefault(x => x.Status == 0).Count;
+                _saleDetailPaymentCount = paymentDtos.FirstOrDefault(x => x.Status == 2).Count;
             }
 
             //using (var channel = GrpcChannel.ForAddress(_configuration.GetSection("gRPC:PaymentUrl").Value))
@@ -198,9 +198,9 @@ namespace OrderManagement.Application.OrderManagement
                     RelationIdB = saleDetaild,
                     RelationIdC = agencyId??0
                 });
-                if (paymentDtos != null && paymentDtos.Any(x => x.Status == 0))
+                if (paymentDtos != null && paymentDtos.Any(x => x.Status == 2))
                 {
-                    _agancyPaymentCount = paymentDtos.FirstOrDefault(x => x.Status == 0).Count;
+                    _agancyPaymentCount = paymentDtos.FirstOrDefault(x => x.Status == 2).Count;
                 }
                 if (_agancyCapacity > _agancyPaymentCount && _agancyPaymentCount > 0)
                 {
