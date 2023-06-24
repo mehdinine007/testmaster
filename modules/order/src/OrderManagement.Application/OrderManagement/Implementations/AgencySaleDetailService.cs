@@ -54,7 +54,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
 
         }
 
-        public AgencySaleDetailListDto GetBySaleDetailId(int saleDetailId, int agancyId)
+        public async Task<AgencySaleDetailListDto> GetBySaleDetailId(int saleDetailId, int agancyId)
         {
             var agancySaleDetail = _agencySaleDetailRepository
                 .WithDetails()

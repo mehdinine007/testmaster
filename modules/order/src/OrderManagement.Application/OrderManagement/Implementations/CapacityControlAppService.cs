@@ -109,12 +109,13 @@ namespace OrderManagement.Application.OrderManagement
 
         public async Task GrpcPaymentTest()
         {
-            var redis = _redisCacheManager.RemoveAllAsync("n:CapacityControl:*");
-            var payment = await _grpcClient.RetryForVerify();
-            var _result = await _grpcClient.GetPaymentStatusList(new PaymentStatusDto()
-            {
-                RelationId = 60
-            });
+            //var redis = _redisCacheManager.RemoveAllAsync("n:CapacityControl:*");
+            //var payment = await _grpcClient.RetryForVerify();
+            //var _result = await _grpcClient.GetPaymentStatusList(new PaymentStatusDto()
+            //{
+            //    RelationId = 60
+            //});
+            Validation(6, 6);
         }
 
         public async Task<bool> ValidationBySaleDetailUId(Guid saleDetailUId)
@@ -185,7 +186,7 @@ namespace OrderManagement.Application.OrderManagement
             }
             if (agencyId != null && agencyId != 0)
             {
-                var agencySaledetail = _agencySaleDetailService.GetBySaleDetailId(saleDetaild, agencyId??0);
+                var agencySaledetail = await _agencySaleDetailService.GetBySaleDetailId(saleDetaild, agencyId??0);
                 if(agencySaledetail == null)
                 {
                     throw new UserFriendlyException("خطا در بازیابی نمایندگی ها");
