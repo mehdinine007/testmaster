@@ -1159,7 +1159,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         if (payments != null && payments.Count > 0)
         {
             payments = payments
-                .Where(x => x.FilterParam3 != null && x.FilterParam3 != 0)
+                .Where(x => x.PaymentStatus != 1 && x.FilterParam3 != null && x.FilterParam3 != 0)
                 .ToList();
             foreach (var payment in payments)
             {
@@ -1171,7 +1171,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                         Id = orderId,
                         OrderStatusCode = payment.PaymentStatus == 2 ? (int)OrderStatusType.PaymentSucceeded : (int)OrderStatusType.PaymentNotVerified
                     });
-                    if (payment.PaymentStatus != 0)
+                    if (payment.PaymentStatus == 3)
                     {
                         var order = _commitOrderRepository.WithDetails()
                             .AsNoTracking()
