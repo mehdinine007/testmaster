@@ -12,6 +12,7 @@ using OrderManagement.Application.Contracts;
 using OrderManagement.Application.OrderManagement.Implementations;
 using Nest;
 using OrderManagement.Application.Contracts.OrderManagement;
+using Volo.Abp.Application.Dtos;
 
 namespace OrderManagement.HttpApi.OrderManagement.Controllers
 {
@@ -25,11 +26,11 @@ namespace OrderManagement.HttpApi.OrderManagement.Controllers
             => _saleDetailService = saleDetailService;
 
         [HttpDelete]
-        public async Task<int> Delete(int id)
+        public async Task Delete(int id)
           => await _saleDetailService.Delete(id);
         [HttpGet]
-        public async Task<List<SaleDetailDto>> GetSaleDetails()
-          => await _saleDetailService.GetSaleDetails();
+        public async Task<PagedResultDto<SaleDetailDto>> GetSaleDetails(int pageNo, int sizeNo)
+          => await _saleDetailService.GetSaleDetails(pageNo,sizeNo);
         [HttpPost]
         public async Task<int> Save(CreateSaleDetailDto createSaleDetailDto)
           => await _saleDetailService.Save(createSaleDetailDto);

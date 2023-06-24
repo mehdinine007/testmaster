@@ -2,15 +2,16 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 
 namespace OrderManagement.Application.Contracts.OrderManagement.Services
 {
     public interface IAgencySaleDetailService: IApplicationService
     {
-        Task<List<AgencySaleDetailListDto>> GetAgencySaleDetail(int saleDetailId);
+        Task<PagedResultDto<AgencySaleDetailListDto>> GetAgencySaleDetail(int saleDetailId, int pageNo, int sizeNo);
         Task<int> Save(AgencySaleDetailDto agencySaleDetailDto);
-        Task<int> Delete(int id);
+        Task Delete(int id);
 
     }
 }

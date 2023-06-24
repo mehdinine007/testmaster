@@ -1,4 +1,5 @@
 ﻿using AutoMapper.Internal.Mappers;
+using Microsoft.EntityFrameworkCore;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.OrderManagement;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
@@ -21,56 +22,89 @@ namespace OrderManagement.Application.OrderManagement.Implementations;
 public class SaleDetailService : ApplicationService, ISaleDetailService
 {
     private readonly IRepository<SaleDetail> _saleDetailRepository;
+    private readonly IRepository<CarTip> _carTipRepository;
+    private readonly IRepository<ESaleType> _eSaleTypeRepository;
 
-    public SaleDetailService(IRepository<SaleDetail> saleDetailRepository)
+    public SaleDetailService(IRepository<SaleDetail> saleDetailRepository, IRepository<CarTip> carTipRepository, IRepository<ESaleType> eSaleTypeRepository)
     {
         _saleDetailRepository = saleDetailRepository;
+        _carTipRepository = carTipRepository;
+        _eSaleTypeRepository = eSaleTypeRepository;
     }
 
 
 
-    public async Task<int> Delete(int id)
+    public async Task Delete(int id)
     {
+       
+     await _saleDetailRepository.DeleteAsync(x => x.Id == id, autoSave: true);
+        throw new UserFriendlyException("حذف با موفقیت انجام شد.");
 
-        await _saleDetailRepository.DeleteAsync(x => x.Id == id);
-        await CurrentUnitOfWork.SaveChangesAsync();
-        return id;
     }
 
-    public async Task<List<SaleDetailDto>> GetSaleDetails()
+    public async Task<PagedResultDto<SaleDetailDto>> GetSaleDetails(int pageNo, int sizeNo)
     {
+        var count = await _saleDetailRepository.CountAsync();
         var saleDetails = await _saleDetailRepository.WithDetailsAsync(x => x.CarTip, x => x.CarTip.CarType);
-        var queryResult = saleDetails.ToList();
-        var saleDetailDtos = ObjectMapper.Map<List<SaleDetail>, List<SaleDetailDto>>(queryResult);
-        return saleDetailDtos;
+        var queryResult = await saleDetails.Skip(pageNo * sizeNo).Take(sizeNo).ToListAsync();
+        return new PagedResultDto<SaleDetailDto>
+        {
+            TotalCount = count,
+            Items = ObjectMapper.Map<List<SaleDetail>, List<SaleDetailDto>>(queryResult)
+        };
+
+
 
     }
     [UnitOfWork(isTransactional: false)]
     public async Task<int> Save(CreateSaleDetailDto createSaleDetailDto)
     {
-        if (createSaleDetailDto.CarTipId <= 0)
+        if (createSaleDetailDto.SalePlanStartDate < createSaleDetailDto.SalePlanEndDate)
         {
-            throw new UserFriendlyException("تیپ ماشین صحیح نمیباشد.");
+            throw new UserFriendlyException("تاریخ شروع نباید کوچکترازتاریخ پایان باشد.");
+        }
+        if (createSaleDetailDto.SalePlanEndDate > createSaleDetailDto.SalePlanStartDate)
+        {
+            throw new UserFriendlyException("تاریخ پایان نباید بزرگترازتاریخ شروع باشد.");
+        }
+        var carTipId = await _carTipRepository.FirstOrDefaultAsync(x => x.Id == createSaleDetailDto.CarTipId);
+        if (carTipId == null || createSaleDetailDto.CarTipId <= 0)
+        {
+            throw new UserFriendlyException("تیپ ماشین وجود ندارد");
+        }
+        var esalTypeId = await _eSaleTypeRepository.FirstOrDefaultAsync(x => x.Id == createSaleDetailDto.ESaleTypeId);
+        if (esalTypeId == null || createSaleDetailDto.ESaleTypeId <= 0)
+        {
+            throw new UserFriendlyException("کد نوع فروش وجود ندارد");
         }
 
-        if (createSaleDetailDto.ESaleTypeId <= 0)
-        {
-            throw new UserFriendlyException("کد نوع فروش صحیح نمیباشد");
-        }
         var saleDetail = ObjectMapper.Map<CreateSaleDetailDto, SaleDetail>(createSaleDetailDto);
         var uid = Guid.NewGuid();
         saleDetail.UID = uid;
-        await _saleDetailRepository.InsertAsync(saleDetail);
-        await CurrentUnitOfWork.SaveChangesAsync();
+        await _saleDetailRepository.InsertAsync(saleDetail, autoSave: true);
         return saleDetail.Id;
     }
 
-    public async Task<int> Update(CreateSaleDetailDto CreateSaleDetailDto)
+    public async Task<int> Update(CreateSaleDetailDto createSaleDetailDto)
     {
-        var saleDetail = ObjectMapper.Map<CreateSaleDetailDto, SaleDetail>(CreateSaleDetailDto);
+        if (createSaleDetailDto.Id <= 0)
+        {
+            throw new UserFriendlyException("رکوردی برای ویرایش وجود ندارد");
+        }
 
-        await _saleDetailRepository.UpdateAsync(saleDetail);
-        await CurrentUnitOfWork.SaveChangesAsync();
+        var carTipId = await _carTipRepository.FirstOrDefaultAsync(x => x.Id == createSaleDetailDto.CarTipId);
+        if (carTipId == null || createSaleDetailDto.CarTipId <= 0)
+        {
+            throw new UserFriendlyException("تیپ ماشین وجود ندارد");
+        }
+        var esalTypeId = await _eSaleTypeRepository.FirstOrDefaultAsync(x => x.Id == createSaleDetailDto.ESaleTypeId);
+        if (esalTypeId == null || createSaleDetailDto.ESaleTypeId <= 0)
+        {
+            throw new UserFriendlyException("کد نوع فروش وجود ندارد");
+        }
+        var saleDetail = ObjectMapper.Map<CreateSaleDetailDto, SaleDetail>(createSaleDetailDto);
+
+        await _saleDetailRepository.UpdateAsync(saleDetail, autoSave: true);
         return saleDetail.Id;
     }
 }
