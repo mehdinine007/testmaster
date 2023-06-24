@@ -1,4 +1,4 @@
-﻿using Esale.Core.CrossCuttingConcerns.Caching.Redis;
+﻿using Esale.Core.Caching.Redis;
 using Esale.Core.Utility.Results;
 using Grpc.Net.Client;
 using Microsoft.EntityFrameworkCore;

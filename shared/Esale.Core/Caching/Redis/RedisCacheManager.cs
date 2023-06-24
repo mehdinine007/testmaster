@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Esale.Core.CrossCuttingConcerns.Caching.Redis
+namespace Esale.Core.Caching.Redis
 {
     public class RedisCacheManager
     {
