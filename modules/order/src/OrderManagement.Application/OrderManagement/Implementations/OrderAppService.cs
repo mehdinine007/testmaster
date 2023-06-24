@@ -1169,7 +1169,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     await UpdateStatus(new CustomerOrderDto()
                     {
                         Id = orderId,
-                        OrderStatusCode = payment.PaymentStatus == 0 ? (int)OrderStatusType.PaymentSucceeded : (int)OrderStatusType.PaymentNotVerified
+                        OrderStatusCode = payment.PaymentStatus == 2 ? (int)OrderStatusType.PaymentSucceeded : (int)OrderStatusType.PaymentNotVerified
                     });
                     if (payment.PaymentStatus != 0)
                     {
