@@ -27,7 +27,7 @@ using Grpc.Net.Client;
 using ProtoBuf.Grpc.Client;
 using Esale.Core.DataAccess;
 using Volo.Abp.Validation.StringValues;
-using Esale.Core.CrossCuttingConcerns.Caching.Redis;
+using Esale.Core.Caching.Redis;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
