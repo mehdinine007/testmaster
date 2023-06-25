@@ -821,7 +821,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         {
             throw new UserFriendlyException("دسترسی شما کافی نمی باشد");
         }
-        _baseInformationAppService.CheckWhiteList(WhiteListEnumType.WhiteListOrder);
+        //_baseInformationAppService.CheckWhiteList(WhiteListEnumType.WhiteListOrder);
         var customerOrder = _commitOrderRepository.WithDetails().FirstOrDefault(x => x.Id == orderId);
         if (customerOrder == null)
             throw new UserFriendlyException("شماره سفارش صحیح نمی باشد");
