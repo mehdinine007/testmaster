@@ -19,7 +19,7 @@ namespace OrderManagement.HttpApi.OrderManagement.Controllers
     [DisableAuditing]
     [RemoteService]
     [Route("api/services/app/SaleDetailService/[action]")]
-    public class SaleDetailController:Controller
+    public class SaleDetailController:Controller, ISaleDetailService
     {
         private readonly ISaleDetailService _saleDetailService;
         public SaleDetailController(ISaleDetailService saleDetailService)
@@ -28,6 +28,13 @@ namespace OrderManagement.HttpApi.OrderManagement.Controllers
         [HttpDelete]
         public async Task<bool> Delete(int id)
           => await _saleDetailService.Delete(id);
+        [HttpGet]
+        public List<SaleDetailDto> GetActiveList()
+        => _saleDetailService.GetActiveList();
+        [HttpGet]
+        public SaleDetailDto GetById(int id)
+        =>_saleDetailService.GetById(id);
+
         [HttpGet]
         public async Task<PagedResultDto<SaleDetailDto>> GetSaleDetails(int pageNo, int sizeNo)
           => await _saleDetailService.GetSaleDetails(pageNo,sizeNo);

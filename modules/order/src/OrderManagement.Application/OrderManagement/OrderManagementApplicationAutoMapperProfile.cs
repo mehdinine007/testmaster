@@ -68,7 +68,8 @@ namespace OrderManagement
                 .ReverseMap();
             CreateMap<Color, ColorDto>()
                 .ReverseMap();
-
+            CreateMap<SaleSchema, SaleSchemaDto>()
+               .ReverseMap();
 
         }
     }

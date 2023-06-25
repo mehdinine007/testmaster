@@ -28,6 +28,7 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
     private readonly IRepository<City, int> _cityRepository;
     private readonly IRepository<WhiteList, int> _whiteListRepository;
     private readonly IRepository<AdvocacyUser, int> _advocacyUsersRepository;
+    private readonly IRepository<ESaleType, int> _esaleTypeRepository;
     //private readonly IPasswordHasher<User> _passwordHasher;
     private readonly IEsaleGrpcClient _esaleGrpcClient;
     private readonly IRepository<Agency, int> _agencyRepository;
@@ -62,7 +63,8 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
                                   IRepository<City, int> CityRepository,
                                   IRepository<AdvocacyUsersFromBank, int> advocacyUsersFromBankRepository,
                                   IEsaleGrpcClient esaleGrpcClient,
-                                  IRepository<Agency,int> agencyRepository
+                                  IRepository<Agency,int> agencyRepository,
+                                  IRepository<ESaleType, int> esaleTypeRepository
         )
     {
         _esaleGrpcClient = esaleGrpcClient;
@@ -80,6 +82,7 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
         _advocacyUsersRepository = AdvocacyUsersRepository;
         //_passwordHasher = PasswordHasher;
         _agencyRepository = agencyRepository;
+        _esaleTypeRepository = esaleTypeRepository;
     }
 
     [RemoteService(false)]
@@ -306,5 +309,10 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
 
         var agencies = agencyQuery.Where(x => x.ProvinceId == (user.HabitationProvinceId ?? 0)).ToList();
         return ObjectMapper.Map<List<Agency>, List<AgencyDto>>(agencies);
+    }
+    public async Task<List<ESaleTypeDto>> GetSaleTypes()
+    {
+        var esaleTypes =await _esaleTypeRepository.GetListAsync();
+        return ObjectMapper.Map<List<ESaleType>, List<ESaleTypeDto>>(esaleTypes);
     }
 }
