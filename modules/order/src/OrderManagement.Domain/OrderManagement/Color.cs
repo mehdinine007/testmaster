@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Domain.Entities;
+using Volo.Abp.Domain.Entities.Auditing;
 
 namespace OrderManagement.Domain.OrderManagement
 {
-    public class Color: Entity<int>
+    public class Color:FullAuditedEntity<int>
     {
         private ICollection<SaleDetailCarColor> _saleDetailCarColor;
         public string ColorName { get; set; }
