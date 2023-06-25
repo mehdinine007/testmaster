@@ -26,7 +26,7 @@ namespace OrderManagement.HttpApi.OrderManagement.Controllers
             => _saleDetailService = saleDetailService;
 
         [HttpDelete]
-        public async Task Delete(int id)
+        public async Task<bool> Delete(int id)
           => await _saleDetailService.Delete(id);
         [HttpGet]
         public async Task<PagedResultDto<SaleDetailDto>> GetSaleDetails(int pageNo, int sizeNo)

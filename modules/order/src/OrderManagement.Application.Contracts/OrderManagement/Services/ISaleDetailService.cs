@@ -12,6 +12,6 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Services
         Task<PagedResultDto<SaleDetailDto>> GetSaleDetails(int pageNo,int sizeNo);
         Task<int> Save(CreateSaleDetailDto createSaleDetailDto);
         Task<int> Update(CreateSaleDetailDto createSaleDetailDto);
-        Task Delete(int id);
+        Task<bool> Delete(int id);
     }
 }

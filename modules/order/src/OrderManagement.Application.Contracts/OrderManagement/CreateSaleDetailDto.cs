@@ -6,6 +6,7 @@ namespace OrderManagement.Application.Contracts.OrderManagement
 {
     public class CreateSaleDetailDto
     {
+        public Guid Uid { get; set; } 
         public int Id { get; set; } 
         public int CircularSaleCode { get; set; } // شماره بخشنامه فروش
        
@@ -39,6 +40,7 @@ namespace OrderManagement.Application.Contracts.OrderManagement
         public int DeliverDaysCount { get; set; }
 
         public bool Visible { get; set; }
+        public int ColorId { get; set; }    
 
     }
 }

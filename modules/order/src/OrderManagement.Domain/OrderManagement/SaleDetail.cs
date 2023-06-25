@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OrderManagement.Domain.OrderManagement;
+using System;
 using System.Collections.Generic;
 using Volo.Abp.Domain.Entities.Auditing;
 
@@ -9,6 +10,8 @@ namespace OrderManagement.Domain
         private  ICollection<CustomerOrder> _customerOrders;
 
         private ICollection<AgencySaleDetail> _agencySaleDetails;
+
+        private ICollection<SaleDetailCarColor> _saleDetailCarColor;
 
         public Guid UID { get; set; }
 
@@ -57,6 +60,13 @@ namespace OrderManagement.Domain
         {
             get => _agencySaleDetails ?? (_agencySaleDetails = new List<AgencySaleDetail>()) ;
             protected set => _agencySaleDetails = value;
+        }
+
+
+        public virtual ICollection<SaleDetailCarColor> SaleDetailCarColor
+        {
+            get => _saleDetailCarColor ?? (_saleDetailCarColor = new List<SaleDetailCarColor>());
+            protected set => _saleDetailCarColor = value;
         }
     }
 }

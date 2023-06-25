@@ -11,7 +11,7 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Services
     {
         Task<PagedResultDto<AgencySaleDetailListDto>> GetAgencySaleDetail(int saleDetailId, int pageNo, int sizeNo);
         Task<int> Save(AgencySaleDetailDto agencySaleDetailDto);
-        Task Delete(int id);
+        Task<bool> Delete(int id);
 
     }
 }

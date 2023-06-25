@@ -12,7 +12,7 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Services
         Task<PagedResultDto<AgencyDto>> GetAgencies(int pageNo, int sizeNo);
         Task<int> Save(AgencyDto agencyDto);
         Task<int> Update(AgencyDto agencyDto);
-        Task Delete(int id);
+        Task<bool> Delete(int id);
 
     }
 }
