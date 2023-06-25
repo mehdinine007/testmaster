@@ -14,7 +14,7 @@ namespace Esale.Core.Caching.Redis.Provider
         public string redisConfig { get; set; }
         public MultiplexerProvider(string redisConfig)
         {
-            var _config = ServiceTool.Resolve<IConfiguration>();
+            _config = ServiceTool.Resolve<IConfiguration>();
             this.redisConfig = redisConfig;
             lazyConnection = new Lazy<ConnectionMultiplexer>(() => ConnectionMultiplexer.Connect(_config.GetSection(redisConfig).Value.ToString()));
         }

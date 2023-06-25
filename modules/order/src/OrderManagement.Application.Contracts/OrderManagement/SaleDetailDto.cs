@@ -5,6 +5,7 @@ namespace OrderManagement.Application.Contracts
 {
     public class SaleDetailDto
     {
+        public int Id { get; set; }
         public Guid UID { get; set; }
         public int  Id { get; set; }
 

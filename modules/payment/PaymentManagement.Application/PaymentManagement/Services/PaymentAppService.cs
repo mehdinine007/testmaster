@@ -205,7 +205,7 @@ namespace PaymentManagement.Application.Servicess
         {
             try
             {
-                using var uow = _unitOfWorkManager.Begin(requiresNew: true, isTransactional: false);
+              //  using var uow = _unitOfWorkManager.Begin(requiresNew: true, isTransactional: false);
                 var payment = await _paymentRepository.InsertAsync(new Payment
                 {
                     PspAccountId = input.PspAccountId,
@@ -222,8 +222,10 @@ namespace PaymentManagement.Application.Servicess
                     FilterParam3 = input.FilterParam3,
                     FilterParam4 = input.FilterParam4
                 });
-                await uow.CompleteAsync();
-                //await CurrentUnitOfWork.SaveChangesAsync();
+
+                //  await uow.CompleteAsync();
+                await CurrentUnitOfWork.SaveChangesAsync();
+                await _paymentRepository.RemoveTracking(payment);
 
                 var paymentDto = new PaymentDto
                 {
@@ -237,7 +239,6 @@ namespace PaymentManagement.Application.Servicess
                     Mobile = payment.Mobile,
                     NationalCode = payment.NationalCode
                 };
-
                 return paymentDto;
             }
             catch (Exception ex)
@@ -432,7 +433,7 @@ namespace PaymentManagement.Application.Servicess
 
                     result.PspJsonResult = JsonConvert.SerializeObject(handShakeResult);
                 }
-
+                await _paymentRepository.GetTracker(new Payment());
                 await _paymentLogRepository.InsertAsync(new PaymentLog
                 {
                     PaymentId = payment.Id,
@@ -440,6 +441,7 @@ namespace PaymentManagement.Application.Servicess
                     Message = Constants.HandShakeResult,
                     Parameter = result.PspJsonResult,
                 });
+                await _paymentRepository.GetTracker(new Payment());
 
                 if (!string.IsNullOrEmpty(result.PspJsonResult))
                 {
@@ -761,7 +763,7 @@ namespace PaymentManagement.Application.Servicess
                 }
 
                 await CurrentUnitOfWork.CompleteAsync();
-
+               
                 result.StatusCode = (int)StatusCodeEnum.Success;
                 result.Message = Constants.BackFromPspSuccess;
                 return result;

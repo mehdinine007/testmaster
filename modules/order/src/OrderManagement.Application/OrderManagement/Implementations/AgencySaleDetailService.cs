@@ -53,6 +53,25 @@ namespace OrderManagement.Application.OrderManagement.Implementations
 
 
         }
+
+        public async Task<AgencySaleDetailListDto> GetBySaleDetailId(int saleDetailId, int agancyId)
+        {
+            var agancySaleDetail = _agencySaleDetailRepository
+                .WithDetails()
+                .AsNoTracking()
+                .FirstOrDefault(x => x.SaleDetailId == saleDetailId && !x.IsDeleted && x.AgencyId == agancyId);
+            return ObjectMapper.Map<AgencySaleDetail,AgencySaleDetailListDto>(agancySaleDetail);
+        }
+
+        public long GetReservCount(int saleDetailId)
+        {
+            return _agencySaleDetailRepository
+                .WithDetails()
+                .AsNoTracking()
+                .Where(x => x.SaleDetailId == saleDetailId)
+                .Sum(x => x.ReserveCount);
+        }
+
         [UnitOfWork]
         public async Task<int> Save(AgencySaleDetailDto agencySaleDetailDto)
         {
