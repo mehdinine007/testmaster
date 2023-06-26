@@ -539,7 +539,7 @@ namespace PaymentManagement.Application.Servicess
                         Psp = PspEnum.IranKish.ToString(),
                         Message = Constants.DuplicateBackFromPsp
                     });
-                    await CurrentUnitOfWork.CompleteAsync();
+                //    await CurrentUnitOfWork.CompleteAsync();
 
                     result.Message = Constants.ErrorInBackFromPsp;
                     return result;
@@ -570,7 +570,7 @@ namespace PaymentManagement.Application.Servicess
                         Message = Constants.DuplicateBackFromPsp,
                         Parameter = PaymentStatusEnum.Success.ToString(),
                     });
-                    await CurrentUnitOfWork.CompleteAsync();
+                //    await CurrentUnitOfWork.CompleteAsync();
 
                     result.StatusCode = (int)StatusCodeEnum.Success;
                     result.Message = Constants.BackFromPspSuccess;
@@ -604,7 +604,7 @@ namespace PaymentManagement.Application.Servicess
 
                     payment.PaymentStatusId = (int)PaymentStatusEnum.Failed;
                     await _paymentRepository.AttachAsync(ObjectMapper.Map<PaymentDto, Payment>(payment), o => o.PaymentStatusId);
-                    await CurrentUnitOfWork.CompleteAsync();
+                //    await CurrentUnitOfWork.CompleteAsync();
 
                     result.StatusCode = (int)StatusCodeEnum.Failed;
                     result.Message = Constants.ErrorInBackFromPspUrl;
@@ -614,14 +614,14 @@ namespace PaymentManagement.Application.Servicess
                 {
                     payment.PaymentStatusId = (int)PaymentStatusEnum.Failed;
                     await _paymentRepository.AttachAsync(ObjectMapper.Map<PaymentDto, Payment>(payment), o => o.PaymentStatusId);
-                    await CurrentUnitOfWork.CompleteAsync();
+            
 
                     result.StatusCode = (int)StatusCodeEnum.Failed;
                     result.Message = Constants.ErrorInBackFromPspResponseCode;
                     return result;
                 }
 
-                await CurrentUnitOfWork.CompleteAsync();
+             
 
                 result.StatusCode = (int)StatusCodeEnum.Success;
                 result.Message = Constants.BackFromPspSuccess;
@@ -636,7 +636,6 @@ namespace PaymentManagement.Application.Servicess
                     Message = Constants.BackFromPspException,
                     Parameter = ex.Message
                 });
-                await CurrentUnitOfWork.CompleteAsync();
 
                 result.Message = Constants.ErrorInBackFromPsp;
                 return result;

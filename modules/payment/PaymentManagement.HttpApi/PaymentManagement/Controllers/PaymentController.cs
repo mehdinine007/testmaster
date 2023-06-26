@@ -40,7 +40,7 @@ namespace PaymentManagement
         }
 
         [HttpPost]
-        public async Task<ActionResult> BackFromIranKishAsync()
+        public async Task<ContentResult> BackFromIranKishAsync()
         {
             var keyValueList = new Dictionary<string, string>();
 
@@ -62,8 +62,8 @@ namespace PaymentManagement
             };
 
             dp.AddKey("data", JsonConvert.SerializeObject(result));
-            dp.Post(HttpContext);
-            return null;
+            var sb = dp.Post(HttpContext);
+            return Content("");
         }
 
         [HttpPost]
