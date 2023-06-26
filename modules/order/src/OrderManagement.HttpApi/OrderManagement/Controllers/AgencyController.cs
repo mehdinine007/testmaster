@@ -26,7 +26,7 @@ namespace OrderManagement.HttpApi.OrderManagement.Controllers
 
 
         [HttpDelete]
-        public async Task Delete(int id)
+        public async Task<bool> Delete(int id)
          => await _agencyServicecs.Delete(id);
         [HttpGet]
         public async Task<PagedResultDto<AgencyDto>> GetAgencies(int pageNo, int sizeNo)

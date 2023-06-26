@@ -13,7 +13,7 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Services
         Task<AgencySaleDetailListDto> GetBySaleDetailId(int saleDetailId, int agancyId);
         long GetReservCount(int saleDetailId);
         Task<int> Save(AgencySaleDetailDto agencySaleDetailDto);
-        Task Delete(int id);
+        Task<bool> Delete(int id);
 
 
     }

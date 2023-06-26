@@ -23,7 +23,7 @@ namespace OrderManagement.HttpApi.OrderManagement.Controllers
         public AgencySaleDetailController(IAgencySaleDetailService agencySaleDetailService)
             => _agencySaleDetailService = agencySaleDetailService;
         [HttpDelete]
-        public async  Task Delete(int id)
+        public async Task<bool> Delete(int id)
             => await _agencySaleDetailService.Delete(id);
         [HttpGet]
         public async Task<PagedResultDto<AgencySaleDetailListDto>> GetAgencySaleDetail(int saleDetailId, int pageNo, int sizeNo)

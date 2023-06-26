@@ -7,6 +7,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OrderService.Host.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore;
 
+#nullable disable
+
 namespace OrderService.Host.Migrations
 {
     [DbContext(typeof(OrderServiceMigrationDbContext))]
@@ -17,9 +19,10 @@ namespace OrderService.Host.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("_Abp_DatabaseProvider", EfCoreDatabaseProvider.SqlServer)
-                .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("OrderVersion", "5.0.7")
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
             modelBuilder.Entity("OrderManagement.Order", b =>
                 {
@@ -79,7 +82,7 @@ namespace OrderService.Host.Migrations
 
                     b.HasIndex("Name");
 
-                    b.ToTable("PmOrders");
+                    b.ToTable("PmOrders", (string)null);
                 });
 #pragma warning restore 612, 618
         }

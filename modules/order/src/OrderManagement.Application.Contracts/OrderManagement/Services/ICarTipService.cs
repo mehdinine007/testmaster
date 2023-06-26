@@ -7,12 +7,14 @@ using Volo.Abp.Application.Services;
 
 namespace OrderManagement.Application.Contracts.OrderManagement.Services
 {
-    public interface IAgencyService: IApplicationService
+    public interface ICarTipService : IApplicationService
     {
-        Task<PagedResultDto<AgencyDto>> GetAgencies(int pageNo, int sizeNo);
-        Task<int> Save(AgencyDto agencyDto);
-        Task<int> Update(AgencyDto agencyDto);
+
+        Task<PagedResultDto<CarTipDto>> GetCarTips(int pageNo, int sizeNo);
+        Task<int> Save(CarTipDto carTipDto);
+        Task<int> Update(CarTipDto carTipDto);
         Task<bool> Delete(int id);
+        Task<List<CarTipDto>> GetAllCarTips();
 
     }
 }

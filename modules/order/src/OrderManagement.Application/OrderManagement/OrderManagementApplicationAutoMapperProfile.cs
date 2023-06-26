@@ -4,6 +4,7 @@ using OrderManagement.Application.Contracts.OrderManagement;
 using OrderManagement.Application.Helpers;
 using OrderManagement.Application.OrderManagement.Implementations;
 using OrderManagement.Domain;
+using OrderManagement.Domain.OrderManagement;
 using Volo.Abp.AutoMapper;
 
 namespace OrderManagement
@@ -65,6 +66,10 @@ namespace OrderManagement
             CreateMap<AgencySaleDetail, AgencySaleDetailListDto>()
                .ForMember(x => x.AgencyName, opt => opt.MapFrom(y => y.Agency.Name))
                 .ReverseMap();
+            CreateMap<Color, ColorDto>()
+                .ReverseMap();
+            CreateMap<SaleSchema, SaleSchemaDto>()
+               .ReverseMap();
 
         }
     }

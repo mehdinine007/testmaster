@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using OrderManagement.EfCore.Helpers;
 using Volo.Abp.EntityFrameworkCore.Modeling;
+using OrderManagement.Domain.OrderManagement;
 
 namespace OrderManagement.EfCore;
 
@@ -309,5 +310,20 @@ public static class OrderManagementDbContextModelCreatingExtensions
                 .WithMany(x => x.AgencySaleDetails)
                 .HasForeignKey(x => x.SaleDetailId);
         });
+
+
+        builder.Entity<SaleDetailCarColor>(entity =>
+        {
+            entity.ToTable(nameof(SaleDetailCarColor));
+
+            entity.HasOne<Color>(x => x.Color)
+                .WithMany(x => x.SaleDetailCarColor)
+                .HasForeignKey(x => x.ColorId);
+
+            entity.HasOne<SaleDetail>(x => x.SaleDetail)
+                .WithMany(x => x.SaleDetailCarColors)
+                .HasForeignKey(x => x.SaleDetailId);
+        });
+
     }
 }
