@@ -1,4 +1,5 @@
 ﻿using AutoMapper.Internal.Mappers;
+using Esale.Core.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.OrderManagement;
@@ -9,24 +10,30 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp.ObjectMapping;
 
 namespace OrderManagement.Application.OrderManagement.Implementations
 {
-    public class CarTipService:ApplicationService, ICarTipService
+    public class CarTipService : ApplicationService, ICarTipService
     {
         private readonly IRepository<CarTip> _carTipRepository;
-        public CarTipService(IRepository<CarTip> carTipRepository)
+        private readonly IRepository<CarType> _carTypeRepository;
+        public CarTipService(IRepository<CarTip> carTipRepository, IRepository<CarType> carTypeRepository)
         {
             _carTipRepository = carTipRepository;
+            _carTypeRepository = carTypeRepository;
 
         }
 
-        public Task<bool> Delete(int id)
+        public async Task<bool> Delete(int id)
         {
-            throw new NotImplementedException();
+
+            await _carTipRepository.DeleteAsync(x => x.Id == id);
+            return true;
         }
 
         public async Task<List<CarTipDto>> GetAllCarTips()
@@ -48,14 +55,28 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             };
         }
 
-        public Task<int> Save(CarTipDto carTipDto)
+        public async Task<int> Save(CarTipDto carTipDto)
         {
-            throw new NotImplementedException();
+            var carType =await _carTypeRepository.FirstOrDefaultAsync(x => x.Id == carTipDto.CarTypeId);
+            if (carType == null)
+            {
+                throw new UserFriendlyException(" نوع ماشین انتخاب شده وجود ندارد");
+            }
+            var carTip = ObjectMapper.Map<CarTipDto, CarTip>(carTipDto);
+            await _carTipRepository.InsertAsync(carTip, autoSave: true);
+            return carTip.Id;
         }
 
-        public Task<int> Update(CarTipDto carTipDto)
+        public async Task<int> Update(CarTipDto carTipDto)
         {
-            throw new NotImplementedException();
+            var carType =await _carTypeRepository.FirstOrDefaultAsync(x => x.Id == carTipDto.CarTypeId);
+            if (carType == null)
+            {
+                throw new UserFriendlyException(" نوع ماشین انتخاب شده وجود ندارد");
+            }
+            var carTip = ObjectMapper.Map<CarTipDto, CarTip>(carTipDto);
+            await _carTipRepository.AttachAsync(carTip, t => t.Title, c => c.CarTypeId);
+            return carTip.Id;
         }
     }
 }

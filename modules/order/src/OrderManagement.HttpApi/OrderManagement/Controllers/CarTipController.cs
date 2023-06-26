@@ -22,9 +22,7 @@ namespace OrderManagement.HttpApi.OrderManagement.Controllers
             => _carTipService = carTipService;
         [HttpDelete]
         public Task<bool> Delete(int id)
-        {
-            throw new NotImplementedException();
-        }
+        =>_carTipService.Delete(id);    
         [HttpGet]
         public Task<List<CarTipDto>> GetAllCarTips()
        => _carTipService.GetAllCarTips();
@@ -34,13 +32,9 @@ namespace OrderManagement.HttpApi.OrderManagement.Controllers
         => _carTipService.GetCarTips(pageNo, sizeNo);
         [HttpPost]
         public Task<int> Save(CarTipDto carTipDto)
-        {
-            throw new NotImplementedException();
-        }
+        => _carTipService.Save(carTipDto);
         [HttpPut]
         public Task<int> Update(CarTipDto carTipDto)
-        {
-            throw new NotImplementedException();
-        }
+        =>_carTipService.Update(carTipDto);
     }
 }

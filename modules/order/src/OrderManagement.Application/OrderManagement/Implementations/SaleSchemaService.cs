@@ -1,4 +1,6 @@
-﻿using OrderManagement.Application.Contracts;
+﻿using Esale.Core.DataAccess;
+using Microsoft.EntityFrameworkCore;
+using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.OrderManagement;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
 using OrderManagement.Domain;
@@ -10,6 +12,8 @@ using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp.ObjectMapping;
+using Volo.Abp.Uow;
 
 namespace OrderManagement.Application.OrderManagement.Implementations
 {
@@ -22,9 +26,10 @@ namespace OrderManagement.Application.OrderManagement.Implementations
           
         }
 
-        public Task<bool> Delete(int id)
+        public async Task<bool> Delete(int id)
         {
-            throw new NotImplementedException();
+            await _saleSchemaRepository.DeleteAsync(x => x.Id == id);
+            return true;
         }
 
         public async Task<List<SaleSchemaDto>> GetAllSaleSchema()
@@ -34,19 +39,30 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             return saleSchemaDto;
         }
 
-        public Task<PagedResultDto<SaleSchemaDto>> GetSaleSchema(int pageNo, int sizeNo)
+        public async Task<PagedResultDto<SaleSchemaDto>> GetSaleSchema(int pageNo, int sizeNo)
         {
-            throw new NotImplementedException();
+            var count = await _saleSchemaRepository.CountAsync();
+            var saleDetails = await _saleSchemaRepository.WithDetailsAsync();
+            var queryResult = await saleDetails.Skip(pageNo * sizeNo).Take(sizeNo).ToListAsync();
+            return new PagedResultDto<SaleSchemaDto>
+            {
+                TotalCount = count,
+                Items = ObjectMapper.Map<List<SaleSchema>, List<SaleSchemaDto>>(queryResult)
+            };
+        }
+        [UnitOfWork]
+        public async Task<int> Save(SaleSchemaDto saleSchemaDto)
+        {
+            var saleSchema= ObjectMapper.Map<SaleSchemaDto, SaleSchema>(saleSchemaDto);
+            await _saleSchemaRepository.InsertAsync(saleSchema, autoSave: true);
+            return saleSchema.Id;
         }
 
-        public Task<int> Save(SaleSchemaDto saleSchemaDto)
+        public async  Task<int> Update(SaleSchemaDto saleSchemaDto)
         {
-            throw new NotImplementedException();
-        }
-
-        public Task<int> Update(SaleSchemaDto saleSchemaDto)
-        {
-            throw new NotImplementedException();
+            var saleSchema = ObjectMapper.Map<SaleSchemaDto, SaleSchema>(saleSchemaDto);
+            await _saleSchemaRepository.AttachAsync(saleSchema, t => t.Title, d => d.Description,s=>s.SaleStatus);
+            return saleSchema.Id;
         }
     }
 }
