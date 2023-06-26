@@ -62,7 +62,7 @@ namespace PaymentManagement
             };
 
             dp.AddKey("data", JsonConvert.SerializeObject(result));
-            var sb = dp.Post(HttpContext);
+            dp.Post(HttpContext);
             return Content("");
         }
 

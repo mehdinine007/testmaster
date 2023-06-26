@@ -11,7 +11,7 @@ namespace PaymentManagement.HttpApi.Utilities
         private string m_Method = "post"; //or Get
         private string m_FormName = "form1";
 
-        public StringBuilder Post(HttpContext context)
+        public void Post(HttpContext context)
         {
          
             context.Response.Clear();
@@ -39,7 +39,7 @@ namespace PaymentManagement.HttpApi.Utilities
             context.Response.ContentType= "text/html";
             context.Response.CompleteAsync();
           
-            return sb;
+           // return sb;
         }
 
         public void AddKey(string name, string value)
