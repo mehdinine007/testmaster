@@ -5,6 +5,7 @@ using OrderManagement.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp;
@@ -29,10 +30,10 @@ namespace OrderManagement.Application.OrderManagement.Implementations
 
 
 
-        public async Task Delete(int id)
+        public async Task<bool> Delete(int id)
         {
             await _agencyRepository.DeleteAsync(x => x.Id == id, autoSave: true);
-            throw new UserFriendlyException("حذف با موفقیت انجام شد.");
+            return true;
         }
 
         public async Task<PagedResultDto<AgencyDto>> GetAgencies(int pageNo, int sizeNo)
@@ -62,14 +63,21 @@ namespace OrderManagement.Application.OrderManagement.Implementations
 
         public async Task<int> Update(AgencyDto agencyDto)
         {
-            var province = await _provinceRepository.FirstOrDefaultAsync(x => x.Id == agencyDto.ProvinceId);
+            var result = await _agencyRepository.FirstOrDefaultAsync(x => x.Id == agencyDto.Id);
+            if (agencyDto.Id <= 0 || result == null)
+            {
+                throw new UserFriendlyException("نمایندگی انتخاب شده وجود ندارد.");
+            }
+            var province = await _provinceRepository.FirstOrDefaultAsync(x => x.Id == agencyDto.ProvinceId );
+
             if (province == null || agencyDto.ProvinceId <= 0)
             {
                 throw new UserFriendlyException("استان وجود ندارد.");
             }
-            var agency = ObjectMapper.Map<AgencyDto, Agency>(agencyDto);
-            await _agencyRepository.UpdateAsync(agency, autoSave: true);
-            return agency.Id;
+            result.Name = agencyDto.Name;
+            result.ProvinceId = agencyDto.ProvinceId;
+            await _agencyRepository.UpdateAsync(result, autoSave: true);
+            return result.Id;
         }
     }
 }

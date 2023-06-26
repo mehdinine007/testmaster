@@ -8,6 +8,7 @@ using Volo.Abp.AuditLogging.EntityFrameworkCore;
 using Volo.Abp.Data;
 using Volo.Abp.EntityFrameworkCore;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using OrderManagement.Domain.OrderManagement;
 
 namespace OrderManagement.EfCore
 {
@@ -76,6 +77,8 @@ namespace OrderManagement.EfCore
         public DbSet<Agency> Agency { get; set; }
 
         public DbSet<AgencySaleDetail> AgencySaleDetailMap { get; set; }
+        public DbSet<Color> Color { get; set; }
+        public DbSet<SaleDetailCarColor> SaleDetailCarColor { get; set; }
 
         public OrderManagementDbContext(DbContextOptions<OrderManagementDbContext> options)
             : base(options)

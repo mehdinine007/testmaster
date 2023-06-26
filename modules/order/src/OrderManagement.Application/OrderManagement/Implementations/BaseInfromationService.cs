@@ -1,9 +1,13 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.Memory;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.Services;
+using OrderManagement.Application.OrderManagement.Constants;
 using OrderManagement.Domain;
 using OrderManagement.Domain.Shared;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -12,6 +16,7 @@ using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
+using Microsoft.Extensions.Configuration;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -28,25 +33,17 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
     private readonly IRepository<City, int> _cityRepository;
     private readonly IRepository<WhiteList, int> _whiteListRepository;
     private readonly IRepository<AdvocacyUser, int> _advocacyUsersRepository;
+    private readonly IRepository<ESaleType, int> _esaleTypeRepository;
     //private readonly IPasswordHasher<User> _passwordHasher;
     private readonly IEsaleGrpcClient _esaleGrpcClient;
     private readonly IRepository<Agency, int> _agencyRepository;
-    private Microsoft.Extensions.Configuration.IConfiguration _configuration { get; set; }
+    private IConfiguration _configuration { get; set; }
     private IHttpContextAccessor _httpContextAccessor;
 
     private readonly ICommonAppService _commonAppService;
-
-    //    public BaseInformationService(IEsaleGrpcClient esaleGrpcClient,
-    //                                  IRepository<Company, int> companyRepository
-    //                                  , IRepository<CarTip, int> carTipRepository
-    //,
-    //IRepository<Gallery, int> galleryRepository = null)
-    //    {
-    //        _esaleGrpcClient = esaleGrpcClient;
-    //        _companyRepository = companyRepository;
-    //        _carTipRepository = carTipRepository;
-    //        _galleryRepository = galleryRepository;
-    //    }
+    private readonly IRepository<SaleDetail, int> _saleDetailRepository;
+    private readonly IRepository<AgencySaleDetail, int> _agencySaleDetailRepository;
+    private readonly IMemoryCache _memoryCache;
 
     public BaseInformationService(IRepository<Company, int> companyRepository,
                                   IRepository<CarTip, int> carTipRepsoitory,
@@ -57,12 +54,15 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
                                   IRepository<Province, int> ProvinceRepository,
                                   IRepository<WhiteList, int> WhiteListRepository,
                                   IRepository<AdvocacyUser, int> AdvocacyUsersRepository,
-                                  //IPasswordHasher<User> PasswordHasher,
                                   Microsoft.Extensions.Configuration.IConfiguration Configuration,
                                   IRepository<City, int> CityRepository,
                                   IRepository<AdvocacyUsersFromBank, int> advocacyUsersFromBankRepository,
                                   IEsaleGrpcClient esaleGrpcClient,
-                                  IRepository<Agency,int> agencyRepository
+                                  IRepository<Agency, int> agencyRepository,
+                                  IRepository<SaleDetail, int> saleDetailRepository,
+                                  IRepository<AgencySaleDetail, int> agencySaleDetailRepository,
+                                  IMemoryCache memoryCache,
+                                  IRepository<ESaleType, int> esaleTypeRepository
         )
     {
         _esaleGrpcClient = esaleGrpcClient;
@@ -80,6 +80,10 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
         _advocacyUsersRepository = AdvocacyUsersRepository;
         //_passwordHasher = PasswordHasher;
         _agencyRepository = agencyRepository;
+        _saleDetailRepository = saleDetailRepository;
+        _agencySaleDetailRepository = agencySaleDetailRepository;
+        _memoryCache = memoryCache;
+        _esaleTypeRepository = esaleTypeRepository;
     }
 
     [RemoteService(false)]
@@ -295,16 +299,28 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
 
     public async Task<UserDto> GrpcTest()
     {
-       // var dd = await _esaleGrpcClient.GetUserAdvocacyByNationalCode(_commonAppService.GetNationalCode());
+        // var dd = await _esaleGrpcClient.GetUserAdvocacyByNationalCode(_commonAppService.GetNationalCode());
         return await _esaleGrpcClient.GetUserById(_commonAppService.GetUserId());
     }
 
-    public async Task<List<AgencyDto>> GetAgencies()
+    public async Task<List<AgencyDto>> GetAgencies(Guid saleDetailUid)
     {
         var user = await _esaleGrpcClient.GetUserById(_commonAppService.GetUserId());
         var agencyQuery = await _agencyRepository.GetQueryableAsync();
-
-        var agencies = agencyQuery.Where(x => x.ProvinceId == (user.HabitationProvinceId ?? 0)).ToList();
+        var cacheKey = string.Format(RedisConstants.SaleDetailAgenciesCacheKey, saleDetailUid);
+        if (!_memoryCache.TryGetValue<int[]>(string.Format(RedisConstants.SaleDetailAgenciesCacheKey, saleDetailUid), out int[] agencySaleDetailIds))
+        {
+            var saleDetail = await _saleDetailRepository.FirstOrDefaultAsync(x => x.UID == saleDetailUid)
+                ?? throw new UserFriendlyException("برنامه فروش پیدا نشد");
+            agencySaleDetailIds = (await _agencySaleDetailRepository.GetListAsync(x => x.SaleDetailId == saleDetail.Id)).Select(x => x.AgencyId).ToArray();
+            _memoryCache.Set(string.Format(RedisConstants.SaleDetailAgenciesCacheKey, saleDetailUid), agencySaleDetailIds, new DateTimeOffset(DateTime.Now.AddSeconds(10)));
+        }
+        var agencies = agencyQuery.Where(x => x.ProvinceId == (user.HabitationProvinceId ?? 0) && agencySaleDetailIds.Any(y => y == x.Id)).ToList();
         return ObjectMapper.Map<List<Agency>, List<AgencyDto>>(agencies);
+    }
+    public async Task<List<ESaleTypeDto>> GetSaleTypes()
+    {
+        var esaleTypes =await _esaleTypeRepository.GetListAsync();
+        return ObjectMapper.Map<List<ESaleType>, List<ESaleTypeDto>>(esaleTypes);
     }
 }

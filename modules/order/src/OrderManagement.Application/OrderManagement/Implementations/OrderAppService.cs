@@ -27,6 +27,7 @@ using Grpc.Net.Client;
 using ProtoBuf.Grpc.Client;
 using Esale.Core.DataAccess;
 using Volo.Abp.Validation.StringValues;
+using Esale.Core.Caching.Redis;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -44,6 +45,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
     private IConfiguration _configuration { get; set; }
     private readonly IDistributedCache _distributedCache;
     private readonly IMemoryCache _memoryCache;
+    private readonly RedisCacheManager _redisCacheManager;
     private readonly IIpgServiceProvider _ipgServiceProvider;
     private readonly ICapacityControlAppService _capacityControlAppService;
     private readonly IRandomGenerator _randomGenerator;
@@ -88,6 +90,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         _randomGenerator = randomGenerator;
         _carTipGalleryMappingRepository = carTipGalleryMappingRepository;
         _auditingManager = auditingManager;
+        _redisCacheManager = new RedisCacheManager("RedisCache:ConnectionString");
     }
 
 
@@ -608,8 +611,14 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         if (_configuration.GetSection("IsIranCellActive").Value == "1")
         {
-
-            await _distributedCache.SetStringAsync(userId.ToString() + "_" +
+            //await _cacheManager.GetCache("CommitOrderimport").
+            //           SetAsync(
+            //              userId.ToString() + "_" +
+            //                commitOrderDto.PriorityId.ToString() + "_" +
+            //                SaleDetailDto.SaleId.ToString()
+            //               , customerOrder.Id,
+            //              TimeSpan.FromSeconds(ttl.TotalSeconds));
+            await _distributedCache.SetStringAsync(RedisConstants.CommitOrderPrefix + userId.ToString() + "_" +
                             commitOrderDto.PriorityId.ToString() + "_" +
                             SaleDetailDto.SaleId.ToString()
                            , customerOrder.Id.ToString(),
@@ -618,7 +627,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                                AbsoluteExpiration = new DateTimeOffset(DateTime.Now.AddSeconds(ttl.TotalSeconds))
                            });
 
-            await _distributedCache.SetStringAsync(userId.ToString() + "_" +
+            await _distributedCache.SetStringAsync(RedisConstants.CommitOrderPrefix + userId.ToString() + "_" +
                      SaleDetailDto.Id.ToString()
                      , customerOrder.Id.ToString(),
                      new DistributedCacheEntryOptions
@@ -626,7 +635,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                          AbsoluteExpiration = new DateTimeOffset(DateTime.Now.AddSeconds(ttl.TotalSeconds))
                      });
 
-            await _distributedCache.SetStringAsync(userId.ToString()
+            await _distributedCache.SetStringAsync(RedisConstants.CommitOrderPrefix + userId.ToString()
                    , SaleDetailDto.ESaleTypeId.ToString(),
                    new DistributedCacheEntryOptions
                    {
@@ -766,7 +775,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         {
             throw new UserFriendlyException("دسترسی شما کافی نمی باشد");
         }
-        _baseInformationAppService.CheckWhiteList(WhiteListEnumType.WhiteListOrder);
+        //_baseInformationAppService.CheckWhiteList(WhiteListEnumType.WhiteListOrder);
         var customerOrder = _commitOrderRepository.WithDetails().FirstOrDefault(x => x.Id == orderId);
         if (customerOrder == null)
             throw new UserFriendlyException("شماره سفارش صحیح نمی باشد");
@@ -819,23 +828,13 @@ public class OrderAppService : ApplicationService, IOrderAppService
         }//vardat
         if (_configuration.GetSection("IsIranCellActive").Value == "1")
         {
-            //await _cacheManager.GetCache("CommitOrderimport").
-            //           RemoveAsync(
-            //              userId.ToString() + "_" +
+            //await _distributedCache.RemoveAsync(userId.ToString() + "_" +
             //                customerOrder.PriorityId.ToString() + "_" +
-            //                customerOrder.SaleId.ToString())
-            //               ;
-            await _distributedCache.RemoveAsync(userId.ToString() + "_" +
-                            customerOrder.PriorityId.ToString() + "_" +
-                            customerOrder.SaleId.ToString());
-            //await _cacheManager.GetCache("CommitOrderimport").
-            //     RemoveAsync(
+            //                customerOrder.SaleId.ToString());
+            //await _distributedCache.RemoveAsync(
             //         userId.ToString() + "_" +
-            //         customerOrder.SaleDetailId.ToString()
-            //         );
-            await _distributedCache.RemoveAsync(
-                     userId.ToString() + "_" +
-                     customerOrder.SaleDetailId.ToString());
+            //         customerOrder.SaleDetailId.ToString());
+            await _redisCacheManager.RemoveAllAsync(RedisConstants.CommitOrderPrefix + userId.ToString() + "_");
         }
 
 
@@ -1114,7 +1113,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         if (payments != null && payments.Count > 0)
         {
             payments = payments
-                .Where(x => x.FilterParam3 != null && x.FilterParam3 != 0)
+                .Where(x => x.PaymentStatus != 1 && x.FilterParam3 != null && x.FilterParam3 != 0)
                 .ToList();
             foreach (var payment in payments)
             {
@@ -1124,8 +1123,16 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     await UpdateStatus(new CustomerOrderDto()
                     {
                         Id = orderId,
-                        OrderStatus = payment.PaymentStatus == 0 ? (int)OrderStatusType.PaymentSucceeded : (int)OrderStatusType.PaymentNotVerified
+                        OrderStatusCode = payment.PaymentStatus == 2 ? (int)OrderStatusType.PaymentSucceeded : (int)OrderStatusType.PaymentNotVerified
                     });
+                    if (payment.PaymentStatus == 3)
+                    {
+                        var order = _commitOrderRepository.WithDetails()
+                            .AsNoTracking()
+                            .FirstOrDefault(x => x.Id == orderId);
+                        if (order != null)
+                            await _redisCacheManager.RemoveAllAsync(RedisConstants.CommitOrderPrefix + order.UserId.ToString() + "_");
+                    }
                 }
             }
         }

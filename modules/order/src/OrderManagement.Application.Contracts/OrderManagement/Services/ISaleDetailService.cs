@@ -9,9 +9,11 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Services
 {
     public interface ISaleDetailService:IApplicationService
     {
+        SaleDetailDto GetById(int id);
+        List<SaleDetailDto> GetActiveList();
         Task<PagedResultDto<SaleDetailDto>> GetSaleDetails(int pageNo,int sizeNo);
         Task<int> Save(CreateSaleDetailDto createSaleDetailDto);
         Task<int> Update(CreateSaleDetailDto createSaleDetailDto);
-        Task Delete(int id);
+        Task<bool> Delete(int id);
     }
 }

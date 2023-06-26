@@ -17,13 +17,13 @@ namespace OrderManagement.HttpApi.OrderManagement.Controllers
     [DisableAuditing]
     [RemoteService]
     [Route("api/services/app/AgencySaleDetailService/[action]")]
-    public class AgencySaleDetailController : Controller, IAgencySaleDetailService
+    public class AgencySaleDetailController : Controller
     {
         private readonly IAgencySaleDetailService _agencySaleDetailService;
         public AgencySaleDetailController(IAgencySaleDetailService agencySaleDetailService)
             => _agencySaleDetailService = agencySaleDetailService;
         [HttpDelete]
-        public async  Task Delete(int id)
+        public async Task<bool> Delete(int id)
             => await _agencySaleDetailService.Delete(id);
         [HttpGet]
         public async Task<PagedResultDto<AgencySaleDetailListDto>> GetAgencySaleDetail(int saleDetailId, int pageNo, int sizeNo)

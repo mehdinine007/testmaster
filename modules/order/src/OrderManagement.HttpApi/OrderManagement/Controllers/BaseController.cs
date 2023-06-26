@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.Services;
 using OrderManagement.Domain.Shared;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp;
@@ -71,7 +72,11 @@ public class BaseController : IBaseInformationService
         => await _baseInformationService.GrpcTest();
 
     [HttpGet]
+    public Task<List<ESaleTypeDto>> GetSaleTypes()
+        => _baseInformationService.GetSaleTypes();
+
+    [HttpGet]
     [UserAuthorization]
-    public async Task<List<AgencyDto>> GetAgencies()
-        => await _baseInformationService.GetAgencies();
+    public async Task<List<AgencyDto>> GetAgencies(Guid saleDetailUid)
+        => await _baseInformationService.GetAgencies(saleDetailUid);
 }
