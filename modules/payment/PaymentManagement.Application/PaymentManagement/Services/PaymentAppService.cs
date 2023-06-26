@@ -433,7 +433,6 @@ namespace PaymentManagement.Application.Servicess
 
                     result.PspJsonResult = JsonConvert.SerializeObject(handShakeResult);
                 }
-                await _paymentRepository.GetTracker(new Payment());
                 await _paymentLogRepository.InsertAsync(new PaymentLog
                 {
                     PaymentId = payment.Id,
@@ -441,7 +440,6 @@ namespace PaymentManagement.Application.Servicess
                     Message = Constants.HandShakeResult,
                     Parameter = result.PspJsonResult,
                 });
-                await _paymentRepository.GetTracker(new Payment());
 
                 if (!string.IsNullOrEmpty(result.PspJsonResult))
                 {
@@ -1517,12 +1515,15 @@ namespace PaymentManagement.Application.Servicess
         {
             if (string.IsNullOrEmpty(payment.TransactionCode))
             {
-                await InquiryToMellatAsync(payment, pspAccountJsonProps);
-                if (!string.IsNullOrEmpty(payment.TransactionCode) &&
-                    payment.PaymentStatusId == (int)PaymentStatusEnum.InProgress)
-                {
-                    await VerifyToMellatAsync(payment, pspAccountJsonProps, true);
-                }
+                //await InquiryToMellatAsync(payment, pspAccountJsonProps);
+                //if (!string.IsNullOrEmpty(payment.TransactionCode) &&
+                //    payment.PaymentStatusId == (int)PaymentStatusEnum.InProgress)
+                //{
+                //    await VerifyToMellatAsync(payment, pspAccountJsonProps, true);
+                //}
+
+                payment.PaymentStatusId = (int)PaymentStatusEnum.Failed;
+                await _paymentRepository.AttachAsync(ObjectMapper.Map<PaymentDto, Payment>(payment), o => o.PaymentStatusId);
             }
             else
             {
