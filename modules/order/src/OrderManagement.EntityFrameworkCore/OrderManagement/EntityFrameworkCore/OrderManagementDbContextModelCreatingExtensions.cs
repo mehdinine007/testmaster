@@ -321,7 +321,7 @@ public static class OrderManagementDbContextModelCreatingExtensions
                 .HasForeignKey(x => x.ColorId);
 
             entity.HasOne<SaleDetail>(x => x.SaleDetail)
-                .WithMany(x => x.SaleDetailCarColor)
+                .WithMany(x => x.SaleDetailCarColors)
                 .HasForeignKey(x => x.SaleDetailId);
         });
 

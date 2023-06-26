@@ -1,4 +1,5 @@
 ﻿using OrderManagement.Domain.Shared;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Services;
@@ -20,6 +21,8 @@ namespace OrderManagement.Application.Contracts.Services
 
         Task<UserDto> GrpcTest();
 
-        Task<List<AgencyDto>> GetAgencies();
+        Task<List<AgencyDto>> GetAgencies(Guid saleDetailUid);
+        Task<List<ESaleTypeDto>> GetSaleTypes();
+
     }
 }

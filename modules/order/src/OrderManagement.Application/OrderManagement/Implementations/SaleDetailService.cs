@@ -6,19 +6,14 @@ using OrderManagement.Application.Contracts.OrderManagement;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
 using OrderManagement.Domain;
 using OrderManagement.Domain.OrderManagement;
-using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Metadata.Ecma335;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
-using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
-using Volo.Abp.ObjectMapping;
 using Volo.Abp.Uow;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
@@ -29,13 +24,16 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
     private readonly IRepository<CarTip> _carTipRepository;
     private readonly IRepository<ESaleType> _eSaleTypeRepository;
     private readonly IRepository<SaleDetailCarColor> _saleDetailCarColor;
+    private readonly IRepository<Domain.OrderManagement.Color> _color;
 
-    public SaleDetailService(IRepository<SaleDetail> saleDetailRepository, IRepository<CarTip> carTipRepository, IRepository<ESaleType> eSaleTypeRepository, IRepository<SaleDetailCarColor> saleDetailCarColor)
+    public SaleDetailService(IRepository<SaleDetail> saleDetailRepository, IRepository<CarTip> carTipRepository, IRepository<ESaleType> eSaleTypeRepository, IRepository<SaleDetailCarColor> saleDetailCarColor
+, IRepository<Domain.OrderManagement.Color> color)
     {
         _saleDetailRepository = saleDetailRepository;
         _carTipRepository = carTipRepository;
         _eSaleTypeRepository = eSaleTypeRepository;
         _saleDetailCarColor = saleDetailCarColor;
+        _color = color;     
     }
 
 
@@ -89,16 +87,23 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
         {
             throw new UserFriendlyException("تاریخ پایان بایدبزرگتراز تاریخ شروع باشد.");
         }
-        var carTipId = await _carTipRepository.FirstOrDefaultAsync(x => x.Id == createSaleDetailDto.CarTipId);
-        if (carTipId == null || createSaleDetailDto.CarTipId <= 0)
+        var carTip = await _carTipRepository.FirstOrDefaultAsync(x => x.Id == createSaleDetailDto.CarTipId);
+        if (carTip == null || createSaleDetailDto.CarTipId <= 0)
         {
             throw new UserFriendlyException("ماشین انتخاب شده وجودندارد");
         }
-        var esalTypeId = await _eSaleTypeRepository.FirstOrDefaultAsync(x => x.Id == createSaleDetailDto.ESaleTypeId);
-        if (esalTypeId == null || createSaleDetailDto.ESaleTypeId <= 0)
+        var esalType = await _eSaleTypeRepository.FirstOrDefaultAsync(x => x.Id == createSaleDetailDto.ESaleTypeId);
+        if (esalType == null || createSaleDetailDto.ESaleTypeId <= 0)
         {
             throw new UserFriendlyException("نوع طرح فروش انتخاب شده وجود ندارد");
         }
+
+        var color = await _color.FirstOrDefaultAsync(x => x.Id == createSaleDetailDto.ColorId);
+        if (color == null)
+        {
+            throw new UserFriendlyException("رنگ انتخاب شده موجود نمیباشد");
+        }
+
 
         var uid = Guid.NewGuid();
 
@@ -112,6 +117,7 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
             result = await _saleDetailRepository.SingleOrDefaultAsync(x => x.UID == uid);
 
         }
+
 
         var resultQuery = await _saleDetailRepository.InsertAsync(saleDetail, autoSave: true);
 
@@ -128,7 +134,7 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
 
     public async Task<int> Update(CreateSaleDetailDto createSaleDetailDto)
     {
-        var result = await _saleDetailRepository.FirstOrDefaultAsync(x => x.Id == createSaleDetailDto.Id);
+        var result = await _saleDetailRepository.WithDetails().AsNoTracking().FirstOrDefaultAsync(x => x.Id == createSaleDetailDto.Id);
 
         if (result == null)
         {
@@ -150,25 +156,12 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
             throw new UserFriendlyException(" نوع طرح فروش انتخاب شده وجود ندارد");
         }
 
-        result.CircularSaleCode = createSaleDetailDto.CircularSaleCode;
-        result.SalePlanCode = createSaleDetailDto.SalePlanCode;
-        result.SalePlanDescription = createSaleDetailDto.SalePlanDescription;
-        result.CarTipId = createSaleDetailDto.CarTipId;
-        result.ManufactureDate = createSaleDetailDto.ManufactureDate;
-        result.SalePlanStartDate = createSaleDetailDto.ManufactureDate;
-        result.SalePlanEndDate = createSaleDetailDto.SalePlanEndDate;
-        result.CarDeliverDate = createSaleDetailDto.CarDeliverDate;
-        result.SaleTypeCapacity = createSaleDetailDto.SaleTypeCapacity;
-        result.CoOperatingProfitPercentage = createSaleDetailDto.CoOperatingProfitPercentage;
-        result.RefuseProfitPercentage = createSaleDetailDto.RefuseProfitPercentage;
-        result.ESaleTypeId = createSaleDetailDto.ESaleTypeId;
-        result.CarFee = createSaleDetailDto.CarFee;
-        result.DeliverDaysCount = createSaleDetailDto.DeliverDaysCount;
-        result.MinimumAmountOfProxyDeposit = createSaleDetailDto.MinimumAmountOfProxyDeposit;
-        result.SaleId = createSaleDetailDto.SaleId;
-        result.Visible = createSaleDetailDto.Visible;
-        await _saleDetailRepository.UpdateAsync(result, autoSave: true);
-        return result.Id;
+        var saleDetail = ObjectMapper.Map<CreateSaleDetailDto, SaleDetail>(createSaleDetailDto);
+        await _saleDetailRepository.AttachAsync(saleDetail, c => c.CircularSaleCode, s => s.SalePlanCode, s => s.SalePlanDescription,
+        c => c.CarTipId, m => m.ManufactureDate, s => s.SalePlanStartDate, m => m.ManufactureDate, s => s.SalePlanEndDate,
+        c => c.CarDeliverDate, s => s.SaleTypeCapacity, c => c.CoOperatingProfitPercentage, r => r.RefuseProfitPercentage, e => e.ESaleTypeId, c => c.CarFee, d => d.DeliverDaysCount,
+        d => d.MinimumAmountOfProxyDeposit, s => s.SaleId, v => v.Visible);
+        return saleDetail.Id;
     }
 
 

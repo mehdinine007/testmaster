@@ -11,7 +11,7 @@ namespace OrderManagement.Domain
 
         private ICollection<AgencySaleDetail> _agencySaleDetails;
 
-        private ICollection<SaleDetailCarColor> _saleDetailCarColor;
+        private ICollection<SaleDetailCarColor> _saleDetailCarColors;
 
         public Guid UID { get; set; }
 
@@ -63,10 +63,10 @@ namespace OrderManagement.Domain
         }
 
 
-        public virtual ICollection<SaleDetailCarColor> SaleDetailCarColor
+        public virtual ICollection<SaleDetailCarColor> SaleDetailCarColors
         {
-            get => _saleDetailCarColor ?? (_saleDetailCarColor = new List<SaleDetailCarColor>());
-            protected set => _saleDetailCarColor = value;
+            get => _saleDetailCarColors ?? (_saleDetailCarColors = new List<SaleDetailCarColor>());
+            protected set => _saleDetailCarColors = value;
         }
     }
 }

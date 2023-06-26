@@ -42,9 +42,7 @@ namespace OrderManagement
 
             CreateMap<CustomerOrder, CustomerOrderDto>()
                 .ForMember(x => x.OrderStatus, opt => opt.MapFrom(y => y.OrderStatus.GetDisplayName()))
-                .ForMember(x => x.OrderStatusCode, opt => opt.MapFrom(y => (int)y.OrderStatus))
-                .ReverseMap()
-                .ForMember(x => x.OrderStatus, opt => opt.MapFrom(y => (OrderStatusType)y.OrderStatusCode));
+                .ReverseMap();
 
             CreateMap<ESaleType, ESaleTypeDto>()
                 .ReverseMap()
@@ -68,7 +66,8 @@ namespace OrderManagement
                 .ReverseMap();
             CreateMap<Color, ColorDto>()
                 .ReverseMap();
-
+            CreateMap<SaleSchema, SaleSchemaDto>()
+               .ReverseMap();
 
         }
     }

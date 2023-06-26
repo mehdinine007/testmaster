@@ -16,6 +16,7 @@ using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp.ObjectMapping;
 
 namespace OrderManagement.Application.OrderManagement.Implementations
 {
@@ -35,6 +36,13 @@ namespace OrderManagement.Application.OrderManagement.Implementations
         {
             await _colorRepository.DeleteAsync(x => x.Id == id, autoSave: true);
             return true;
+        }
+
+        public async Task<List<ColorDto>> GetAllColors()
+        {
+            var Colors = await _colorRepository.GetListAsync();
+            var ColorDto = ObjectMapper.Map<List<Domain.OrderManagement.Color>, List<ColorDto>>(Colors);
+            return ColorDto;
         }
 
         public async Task<PagedResultDto<ColorDto>> GetColors(int pageNo, int sizeNo)

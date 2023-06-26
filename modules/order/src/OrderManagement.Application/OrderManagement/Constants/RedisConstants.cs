@@ -8,6 +8,7 @@ public static class RedisConstants
 
     public const string SaleDetailPrefix = "n:SaleDetail ,c:{0}";
     public const string CommitOrderPrefix = "n:CommitOrder:";
+    public const string CommitOrderEsaleTypePrefix = "n:CommitOrderEsaleType:";
 
     public static DateTimeOffset SaleDetailTimeOffset = new DateTimeOffset(DateTime.Now.AddMinutes(20));
 
@@ -22,4 +23,6 @@ public static class RedisConstants
     public const string UserTransactionKey = "traansaction,n:{0},co:{1}";
 
     public const string OrderStatusCacheKey = "{0}_status";
+
+    public const string SaleDetailAgenciesCacheKey = "{0}_agencies";
 }

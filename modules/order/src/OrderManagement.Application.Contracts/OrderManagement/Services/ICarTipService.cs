@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
@@ -8,13 +7,14 @@ using Volo.Abp.Application.Services;
 
 namespace OrderManagement.Application.Contracts.OrderManagement.Services
 {
-    public interface IColorService: IApplicationService
+    public interface ICarTipService : IApplicationService
     {
-        Task<List<ColorDto>> GetAllColors();
-        Task<PagedResultDto<ColorDto>> GetColors(int pageNo, int sizeNo);
-        Task<int> Save(ColorDto colorDto);
-        Task<int> Update(ColorDto colorDto);
+
+        Task<PagedResultDto<CarTipDto>> GetCarTips(int pageNo, int sizeNo);
+        Task<int> Save(CarTipDto carTipDto);
+        Task<int> Update(CarTipDto carTipDto);
         Task<bool> Delete(int id);
+        Task<List<CarTipDto>> GetAllCarTips();
 
     }
 }

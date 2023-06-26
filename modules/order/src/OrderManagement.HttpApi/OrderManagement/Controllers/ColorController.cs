@@ -25,6 +25,10 @@ namespace OrderManagement.HttpApi.OrderManagement.Controllers
         public Task<bool> Delete(int id)
         =>_colorService.Delete(id);
         [HttpGet]
+        public Task<List<ColorDto>> GetAllColors()
+        =>_colorService.GetAllColors();
+
+        [HttpGet]
         public Task<PagedResultDto<ColorDto>> GetColors(int pageNo, int sizeNo)
         =>_colorService.GetColors(pageNo, sizeNo);
         [HttpPost]
