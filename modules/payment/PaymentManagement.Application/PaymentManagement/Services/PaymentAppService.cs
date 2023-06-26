@@ -433,7 +433,6 @@ namespace PaymentManagement.Application.Servicess
 
                     result.PspJsonResult = JsonConvert.SerializeObject(handShakeResult);
                 }
-                await _paymentRepository.GetTracker(new Payment());
                 await _paymentLogRepository.InsertAsync(new PaymentLog
                 {
                     PaymentId = payment.Id,
@@ -441,7 +440,6 @@ namespace PaymentManagement.Application.Servicess
                     Message = Constants.HandShakeResult,
                     Parameter = result.PspJsonResult,
                 });
-                await _paymentRepository.GetTracker(new Payment());
 
                 if (!string.IsNullOrEmpty(result.PspJsonResult))
                 {
@@ -539,7 +537,7 @@ namespace PaymentManagement.Application.Servicess
                         Psp = PspEnum.IranKish.ToString(),
                         Message = Constants.DuplicateBackFromPsp
                     });
-                    await CurrentUnitOfWork.CompleteAsync();
+                //    await CurrentUnitOfWork.CompleteAsync();
 
                     result.Message = Constants.ErrorInBackFromPsp;
                     return result;
@@ -570,7 +568,7 @@ namespace PaymentManagement.Application.Servicess
                         Message = Constants.DuplicateBackFromPsp,
                         Parameter = PaymentStatusEnum.Success.ToString(),
                     });
-                    await CurrentUnitOfWork.CompleteAsync();
+                //    await CurrentUnitOfWork.CompleteAsync();
 
                     result.StatusCode = (int)StatusCodeEnum.Success;
                     result.Message = Constants.BackFromPspSuccess;
@@ -586,7 +584,7 @@ namespace PaymentManagement.Application.Servicess
                         Message = Constants.DuplicateBackFromPsp,
                         Parameter = PaymentStatusEnum.Failed.ToString(),
                     });
-                    await CurrentUnitOfWork.CompleteAsync();
+                  //  await CurrentUnitOfWork.CompleteAsync();
 
                     result.StatusCode = (int)StatusCodeEnum.Failed;
                     result.Message = Constants.VerifyFailed;
@@ -604,7 +602,7 @@ namespace PaymentManagement.Application.Servicess
 
                     payment.PaymentStatusId = (int)PaymentStatusEnum.Failed;
                     await _paymentRepository.AttachAsync(ObjectMapper.Map<PaymentDto, Payment>(payment), o => o.PaymentStatusId);
-                    await CurrentUnitOfWork.CompleteAsync();
+                //    await CurrentUnitOfWork.CompleteAsync();
 
                     result.StatusCode = (int)StatusCodeEnum.Failed;
                     result.Message = Constants.ErrorInBackFromPspUrl;
@@ -614,14 +612,14 @@ namespace PaymentManagement.Application.Servicess
                 {
                     payment.PaymentStatusId = (int)PaymentStatusEnum.Failed;
                     await _paymentRepository.AttachAsync(ObjectMapper.Map<PaymentDto, Payment>(payment), o => o.PaymentStatusId);
-                    await CurrentUnitOfWork.CompleteAsync();
+            
 
                     result.StatusCode = (int)StatusCodeEnum.Failed;
                     result.Message = Constants.ErrorInBackFromPspResponseCode;
                     return result;
                 }
 
-                await CurrentUnitOfWork.CompleteAsync();
+             
 
                 result.StatusCode = (int)StatusCodeEnum.Success;
                 result.Message = Constants.BackFromPspSuccess;
@@ -636,7 +634,6 @@ namespace PaymentManagement.Application.Servicess
                     Message = Constants.BackFromPspException,
                     Parameter = ex.Message
                 });
-                await CurrentUnitOfWork.CompleteAsync();
 
                 result.Message = Constants.ErrorInBackFromPsp;
                 return result;
@@ -681,7 +678,7 @@ namespace PaymentManagement.Application.Servicess
                         Psp = PspEnum.Mellat.ToString(),
                         Message = Constants.DuplicateBackFromPsp
                     });
-                    await CurrentUnitOfWork.CompleteAsync();
+             //       await CurrentUnitOfWork.CompleteAsync();
 
                     result.Message = Constants.ErrorInBackFromPsp;
                     return result;
@@ -711,7 +708,7 @@ namespace PaymentManagement.Application.Servicess
                         Message = Constants.DuplicateBackFromPsp,
                         Parameter = PaymentStatusEnum.Success.ToString(),
                     });
-                    await CurrentUnitOfWork.CompleteAsync();
+             //       await CurrentUnitOfWork.CompleteAsync();
 
                     result.StatusCode = (int)StatusCodeEnum.Success;
                     result.Message = Constants.BackFromPspSuccess;
@@ -727,7 +724,7 @@ namespace PaymentManagement.Application.Servicess
                         Message = Constants.DuplicateBackFromPsp,
                         Parameter = PaymentStatusEnum.Failed.ToString(),
                     });
-                    await CurrentUnitOfWork.CompleteAsync();
+              //      await CurrentUnitOfWork.CompleteAsync();
 
                     result.StatusCode = (int)StatusCodeEnum.Failed;
                     result.Message = Constants.VerifyFailed;
@@ -745,7 +742,7 @@ namespace PaymentManagement.Application.Servicess
 
                     payment.PaymentStatusId = (int)PaymentStatusEnum.Failed;
                     await _paymentRepository.AttachAsync(ObjectMapper.Map<PaymentDto, Payment>(payment), o => o.PaymentStatusId);
-                    await CurrentUnitOfWork.CompleteAsync();
+                //    await CurrentUnitOfWork.CompleteAsync();
 
                     result.StatusCode = (int)StatusCodeEnum.Failed;
                     result.Message = Constants.ErrorInBackFromPspUrl;
@@ -755,14 +752,14 @@ namespace PaymentManagement.Application.Servicess
                 {
                     payment.PaymentStatusId = (int)PaymentStatusEnum.Failed;
                     await _paymentRepository.AttachAsync(ObjectMapper.Map<PaymentDto, Payment>(payment), o => o.PaymentStatusId);
-                    await CurrentUnitOfWork.CompleteAsync();
+                //    await CurrentUnitOfWork.CompleteAsync();
 
                     result.StatusCode = (int)StatusCodeEnum.Failed;
                     result.Message = Constants.ErrorInBackFromPspResponseCode;
                     return result;
                 }
 
-                await CurrentUnitOfWork.CompleteAsync();
+            //    await CurrentUnitOfWork.CompleteAsync();
                
                 result.StatusCode = (int)StatusCodeEnum.Success;
                 result.Message = Constants.BackFromPspSuccess;
@@ -777,7 +774,7 @@ namespace PaymentManagement.Application.Servicess
                     Message = Constants.BackFromPspException,
                     Parameter = ex.Message
                 });
-                await CurrentUnitOfWork.CompleteAsync();
+             //   await CurrentUnitOfWork.CompleteAsync();
 
                 result.Message = Constants.ErrorInBackFromPsp;
                 return result;
@@ -1517,12 +1514,15 @@ namespace PaymentManagement.Application.Servicess
         {
             if (string.IsNullOrEmpty(payment.TransactionCode))
             {
-                await InquiryToMellatAsync(payment, pspAccountJsonProps);
-                if (!string.IsNullOrEmpty(payment.TransactionCode) &&
-                    payment.PaymentStatusId == (int)PaymentStatusEnum.InProgress)
-                {
-                    await VerifyToMellatAsync(payment, pspAccountJsonProps, true);
-                }
+                //await InquiryToMellatAsync(payment, pspAccountJsonProps);
+                //if (!string.IsNullOrEmpty(payment.TransactionCode) &&
+                //    payment.PaymentStatusId == (int)PaymentStatusEnum.InProgress)
+                //{
+                //    await VerifyToMellatAsync(payment, pspAccountJsonProps, true);
+                //}
+
+                payment.PaymentStatusId = (int)PaymentStatusEnum.Failed;
+                await _paymentRepository.AttachAsync(ObjectMapper.Map<PaymentDto, Payment>(payment), o => o.PaymentStatusId);
             }
             else
             {
