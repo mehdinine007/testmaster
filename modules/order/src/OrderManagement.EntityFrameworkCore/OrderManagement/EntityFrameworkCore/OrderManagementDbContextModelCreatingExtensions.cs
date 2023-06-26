@@ -288,41 +288,6 @@ public static class OrderManagementDbContextModelCreatingExtensions
             entity.ToTable(nameof(WhiteList));
         });
 
-        builder.Entity<Agency>(entity =>
-        {
-            entity.ToTable(nameof(Agency));
-
-            entity.HasOne<Province>(x => x.Province)
-                .WithMany(x => x.Agencies)
-                .HasForeignKey(x => x.ProvinceId);
-        });
-
-        builder.Entity<AgencySaleDetail>(entity =>
-        {
-            entity.ToTable(nameof(AgencySaleDetail));
-
-            entity.HasOne<Agency>(x => x.Agency)
-                .WithMany(x => x.AgencySaleDetails)
-                .HasForeignKey(x => x.AgencyId);
-
-            entity.HasOne<SaleDetail>(x => x.SaleDetail)
-                .WithMany(x => x.AgencySaleDetails)
-                .HasForeignKey(x => x.SaleDetailId);
-        });
-
-
-        builder.Entity<SaleDetailCarColor>(entity =>
-        {
-            entity.ToTable(nameof(SaleDetailCarColor));
-
-            entity.HasOne<Color>(x => x.Color)
-                .WithMany(x => x.SaleDetailCarColor)
-                .HasForeignKey(x => x.ColorId);
-
-            entity.HasOne<SaleDetail>(x => x.SaleDetail)
-                .WithMany(x => x.SaleDetailCarColors)
-                .HasForeignKey(x => x.SaleDetailId);
-        });
 
         builder.Entity<AnswerComponentType>(entity =>
         {

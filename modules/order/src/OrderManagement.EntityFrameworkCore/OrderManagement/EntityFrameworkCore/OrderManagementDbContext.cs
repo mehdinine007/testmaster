@@ -73,13 +73,13 @@ namespace OrderManagement.EfCore
 
         public DbSet<SaleSchema> SaleSchema { get; set; }
 
-        public DbSet<Agency> Agency { get; set; }
+        //public DbSet<Agency> Agency { get; set; }
 
-        public DbSet<AgencySaleDetail> AgencySaleDetailMap { get; set; }
+        //public DbSet<AgencySaleDetail> AgencySaleDetailMap { get; set; }
 
-        public DbSet<Color> Color { get; set; }
+        //public DbSet<Color> Color { get; set; }
 
-        public DbSet<SaleDetailCarColor> SaleDetailCarColor { get; set; }
+        //public DbSet<SaleDetailCarColor> SaleDetailCarColor { get; set; }
 
         public DbSet<AnswerComponentType> AnswerComponentTypes { get ; set ; }
 

@@ -57,17 +57,17 @@ namespace OrderManagement
                 .ReverseMap()
                 .IgnoreFullAuditedObjectProperties();
             CreateMap<SaleDetail, SaleDetailOrderDto>();
-            CreateMap<Agency, AgencyDto>().ReverseMap();
+            //CreateMap<Agency, AgencyDto>().ReverseMap();
             //CreateMap<ApiResult, HandShakeResultDto>();
-            CreateMap<SaleDetail, CreateSaleDetailDto>().ReverseMap();
-            CreateMap<AgencySaleDetail, AgencySaleDetailDto>().ReverseMap();
-            CreateMap<AgencySaleDetail, AgencySaleDetailListDto>()
-               .ForMember(x => x.AgencyName, opt => opt.MapFrom(y => y.Agency.Name))
-                .ReverseMap();
-            CreateMap<Color, ColorDto>()
-                .ReverseMap();
-            CreateMap<SaleSchema, SaleSchemaDto>()
-               .ReverseMap();
+            //CreateMap<SaleDetail, CreateSaleDetailDto>().ReverseMap();
+            //CreateMap<AgencySaleDetail, AgencySaleDetailDto>().ReverseMap();
+            //CreateMap<AgencySaleDetail, AgencySaleDetailListDto>()
+            //   .ForMember(x => x.AgencyName, opt => opt.MapFrom(y => y.Agency.Name))
+            //    .ReverseMap();
+            //CreateMap<Color, ColorDto>()
+            //    .ReverseMap();
+            //CreateMap<SaleSchema, SaleSchemaDto>()
+            //   .ReverseMap();
             CreateMap<Questionnaire, QuestionnaireDto>()
                 .ReverseMap()
                 .IgnoreFullAuditedObjectProperties();
