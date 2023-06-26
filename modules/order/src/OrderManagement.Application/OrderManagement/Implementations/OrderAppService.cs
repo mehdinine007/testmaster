@@ -635,7 +635,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                          AbsoluteExpiration = new DateTimeOffset(DateTime.Now.AddSeconds(ttl.TotalSeconds))
                      });
 
-            await _distributedCache.SetStringAsync(RedisConstants.CommitOrderPrefix + userId.ToString()
+            await _distributedCache.SetStringAsync(RedisConstants.CommitOrderEsaleTypePrefix + userId.ToString()
                    , SaleDetailDto.ESaleTypeId.ToString(),
                    new DistributedCacheEntryOptions
                    {
@@ -843,13 +843,11 @@ public class OrderAppService : ApplicationService, IOrderAppService
         await CurrentUnitOfWork.SaveChangesAsync();
         customerOrder = _commitOrderRepository.WithDetails().
            FirstOrDefault(x => x.UserId == userId
-           && x.SaleDetailId == saleDetailOrderDto.Id
            && x.OrderStatus == OrderStatusType.RecentlyAdded);
         if (customerOrder == null)
         {
-            await _distributedCache.RemoveAsync(userId.ToString());
+             _distributedCache.Remove (RedisConstants.CommitOrderEsaleTypePrefix + userId.ToString());
         }
-
         return ObjectMapper.Map<CustomerOrder, CustomerOrderDto>(customerOrder, new CustomerOrderDto());
     }
 
@@ -1123,7 +1121,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     await UpdateStatus(new CustomerOrderDto()
                     {
                         Id = orderId,
-                        OrderStatusCode = payment.PaymentStatus == 2 ? (int)OrderStatusType.PaymentSucceeded : (int)OrderStatusType.PaymentNotVerified
+                        OrderStatus = payment.PaymentStatus == 2 ? (int)OrderStatusType.PaymentSucceeded : (int)OrderStatusType.PaymentNotVerified
                     });
                     if (payment.PaymentStatus == 3)
                     {
