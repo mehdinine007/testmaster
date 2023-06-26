@@ -22,4 +22,6 @@ public static class RedisConstants
     public const string UserTransactionKey = "traansaction,n:{0},co:{1}";
 
     public const string OrderStatusCacheKey = "{0}_status";
+
+    public const string SaleDetailAgenciesCacheKey = "{0}_agencies";
 }
