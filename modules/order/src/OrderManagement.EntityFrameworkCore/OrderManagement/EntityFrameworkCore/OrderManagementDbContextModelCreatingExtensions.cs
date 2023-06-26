@@ -246,10 +246,10 @@ public static class OrderManagementDbContextModelCreatingExtensions
             {
                 var current = records[i];
                 dataToWrite.Add(new OrderRejectionTypeReadOnly(
-                    id : i + 1,
-                    orderRejectionCode : current.Item1,
-                    orderRejectionTitleEn : current.Item2,
-                    orderRejectionTitle : current.Item3
+                    id: i + 1,
+                    orderRejectionCode: current.Item1,
+                    orderRejectionTitleEn: current.Item2,
+                    orderRejectionTitle: current.Item3
                 ));
             }
             entity.HasData(dataToWrite);
@@ -269,10 +269,10 @@ public static class OrderManagementDbContextModelCreatingExtensions
             {
                 var status = statuses[i];
                 dataToWrite.Add(new OrderStatusTypeReadOnly(
-                    id : i + 1,
-                    orderStatusCode :status.Item1,
-                    orderStatusTitleEn : status.Item2,
-                    orderStatusTitle : status.Item3
+                    id: i + 1,
+                    orderStatusCode: status.Item1,
+                    orderStatusTitleEn: status.Item2,
+                    orderStatusTitle: status.Item3
                 ));
             }
             entity.HasData(dataToWrite);
@@ -286,6 +286,80 @@ public static class OrderManagementDbContextModelCreatingExtensions
         builder.Entity<WhiteList>(entity =>
         {
             entity.ToTable(nameof(WhiteList));
+        });
+
+        builder.Entity<Agency>(entity =>
+        {
+            entity.ToTable(nameof(Agency));
+
+            entity.HasOne<Province>(x => x.Province)
+                .WithMany(x => x.Agencies)
+                .HasForeignKey(x => x.ProvinceId);
+        });
+
+        builder.Entity<AgencySaleDetail>(entity =>
+        {
+            entity.ToTable(nameof(AgencySaleDetail));
+
+            entity.HasOne<Agency>(x => x.Agency)
+                .WithMany(x => x.AgencySaleDetails)
+                .HasForeignKey(x => x.AgencyId);
+
+            entity.HasOne<SaleDetail>(x => x.SaleDetail)
+                .WithMany(x => x.AgencySaleDetails)
+                .HasForeignKey(x => x.SaleDetailId);
+        });
+
+
+        builder.Entity<SaleDetailCarColor>(entity =>
+        {
+            entity.ToTable(nameof(SaleDetailCarColor));
+
+            entity.HasOne<Color>(x => x.Color)
+                .WithMany(x => x.SaleDetailCarColor)
+                .HasForeignKey(x => x.ColorId);
+
+            entity.HasOne<SaleDetail>(x => x.SaleDetail)
+                .WithMany(x => x.SaleDetailCarColors)
+                .HasForeignKey(x => x.SaleDetailId);
+        });
+
+        builder.Entity<AnswerComponentType>(entity =>
+        {
+            entity.ToTable(nameof(AnswerComponentType));
+
+            entity.HasData(new AnswerComponentType[]
+            {
+                new (1,"Optional"),
+                new (2,"Descriptional"),
+            });
+        });
+
+        builder.Entity<Questionnaire>(entity =>
+        {
+            entity.ToTable(nameof(Questionnaire));
+
+            entity.HasOne<AnswerComponentType>(x => x.AnswerComponentType)
+                .WithMany(x => x.Questionnaire)
+                .HasForeignKey(x => x.AnswerComponentId);
+        });
+
+        builder.Entity<QuestionnaireAnswer>(entity =>
+        {
+            entity.ToTable(nameof(QuestionnaireAnswer));
+
+            entity.HasOne<Questionnaire>(x => x.Questionnaire)
+                .WithMany(x => x.QuestionnaireAnswers)
+                .HasForeignKey(x => x.QuestionnaireId);
+        });
+
+        builder.Entity<SubmitedAnswers>(entity =>
+        {
+            entity.ToTable(nameof(SubmitedAnswers));
+
+            entity.HasOne<QuestionnaireAnswer>(x => x.QuestionnaireAnswer)
+                .WithMany(x => x.SubmitedAnswers)
+                .HasForeignKey(x => x.AnswerId);
         });
     }
 }

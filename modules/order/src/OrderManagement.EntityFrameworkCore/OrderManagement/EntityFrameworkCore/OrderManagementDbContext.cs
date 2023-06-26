@@ -73,6 +73,22 @@ namespace OrderManagement.EfCore
 
         public DbSet<SaleSchema> SaleSchema { get; set; }
 
+        public DbSet<Agency> Agency { get; set; }
+
+        public DbSet<AgencySaleDetail> AgencySaleDetailMap { get; set; }
+
+        public DbSet<Color> Color { get; set; }
+
+        public DbSet<SaleDetailCarColor> SaleDetailCarColor { get; set; }
+
+        public DbSet<AnswerComponentType> AnswerComponentTypes { get ; set ; }
+
+        public DbSet<Questionnaire> Questionnaires { get ; set ; }
+
+        public DbSet<QuestionnaireAnswer> QuestionnaireAnswers { get ; set ; }
+
+        public DbSet<SubmitedAnswers> SubgmitedAnswers { get ; set ; }
+
         public OrderManagementDbContext(DbContextOptions<OrderManagementDbContext> options)
             : base(options)
         {

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OrderManagement.EfCore;
 using Volo.Abp.EntityFrameworkCore;
@@ -12,9 +13,11 @@ using Volo.Abp.EntityFrameworkCore;
 namespace OrderManagement.EfCore.Migrations
 {
     [DbContext(typeof(OrderManagementDbContext))]
-    partial class OrderManagementDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230626064411_Add_Questionnaier_Tables")]
+    partial class AddQuestionnaierTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -489,7 +492,7 @@ namespace OrderManagement.EfCore.Migrations
                         {
                             Id = 15,
                             OrderRejectionCode = 15,
-                            OrderRejectionTitle = "عدم احراز خودرو فرسوده",
+                            OrderRejectionTitle = "عدم احراض خودرو فرسوده",
                             OrderRejectionTitleEn = "OldPlan"
                         });
                 });
@@ -550,6 +553,20 @@ namespace OrderManagement.EfCore.Migrations
                             OrderStatusCode = 50,
                             OrderStatusTitle = "انصراف کلی از اولیت بندی",
                             OrderStatusTitleEn = "FullCancel"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            OrderStatusCode = 70,
+                            OrderStatusTitle = "پرداخت با موفقیت انجام شد",
+                            OrderStatusTitleEn = "PaymentSucceeded"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            OrderStatusCode = 80,
+                            OrderStatusTitle = "پرداخت ناموفق",
+                            OrderStatusTitleEn = "PaymentNotVerified"
                         });
                 });
 
@@ -920,6 +937,9 @@ namespace OrderManagement.EfCore.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("AgencyId")
+                        .HasColumnType("int");
+
                     b.Property<string>("ChassiNo")
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
@@ -970,10 +990,19 @@ namespace OrderManagement.EfCore.Migrations
                     b.Property<int>("OrderStatus")
                         .HasColumnType("int");
 
+                    b.Property<int?>("PaymentId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PaymentSecret")
+                        .HasColumnType("int");
+
                     b.Property<int?>("PriorityId")
                         .HasColumnType("int");
 
                     b.Property<int?>("PriorityUser")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("PspId")
                         .HasColumnType("int");
 
                     b.Property<int>("SaleDetailId")
@@ -1262,6 +1291,108 @@ namespace OrderManagement.EfCore.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Logs");
+                });
+
+            modelBuilder.Entity("OrderManagement.Domain.OrderManagement.Color", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ColorCode")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ColorName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("CreationTime");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("CreatorId");
+
+                    b.Property<Guid?>("DeleterId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("DeleterId");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("DeletionTime");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false)
+                        .HasColumnName("IsDeleted");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("LastModificationTime");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("LastModifierId");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Color");
+                });
+
+            modelBuilder.Entity("OrderManagement.Domain.OrderManagement.SaleDetailCarColor", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ColorId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("CreationTime");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("CreatorId");
+
+                    b.Property<Guid?>("DeleterId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("DeleterId");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("DeletionTime");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false)
+                        .HasColumnName("IsDeleted");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("LastModificationTime");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("LastModifierId");
+
+                    b.Property<int>("SaleDetailId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ColorId");
+
+                    b.HasIndex("SaleDetailId");
+
+                    b.ToTable("SaleDetailCarColor", (string)null);
                 });
 
             modelBuilder.Entity("OrderManagement.Domain.PreSale", b =>
@@ -1720,7 +1851,7 @@ namespace OrderManagement.EfCore.Migrations
                     b.Property<string>("AnswerDescription")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("AnswerId")
+                    b.Property<int>("AnswerId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreationTime")
@@ -1753,8 +1884,8 @@ namespace OrderManagement.EfCore.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("LastModifierId");
 
-                    b.Property<long>("UserId")
-                        .HasColumnType("bigint");
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -2284,6 +2415,36 @@ namespace OrderManagement.EfCore.Migrations
                     b.Navigation("Bank");
                 });
 
+            modelBuilder.Entity("OrderManagement.Domain.Agency", b =>
+                {
+                    b.HasOne("OrderManagement.Domain.Province", "Province")
+                        .WithMany("Agencies")
+                        .HasForeignKey("ProvinceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Province");
+                });
+
+            modelBuilder.Entity("OrderManagement.Domain.AgencySaleDetail", b =>
+                {
+                    b.HasOne("OrderManagement.Domain.Agency", "Agency")
+                        .WithMany("AgencySaleDetails")
+                        .HasForeignKey("AgencyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("OrderManagement.Domain.SaleDetail", "SaleDetail")
+                        .WithMany("AgencySaleDetails")
+                        .HasForeignKey("SaleDetailId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Agency");
+
+                    b.Navigation("SaleDetail");
+                });
+
             modelBuilder.Entity("OrderManagement.Domain.Bank", b =>
                 {
                     b.HasOne("OrderManagement.Domain.Gallery", "Gallery")
@@ -2402,6 +2563,8 @@ namespace OrderManagement.EfCore.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("Color");
+
                     b.Navigation("SaleDetail");
                 });
 
@@ -2481,7 +2644,9 @@ namespace OrderManagement.EfCore.Migrations
                 {
                     b.HasOne("OrderManagement.Domain.QuestionnaireAnswer", "QuestionnaireAnswer")
                         .WithMany("SubmitedAnswers")
-                        .HasForeignKey("AnswerId");
+                        .HasForeignKey("AnswerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("QuestionnaireAnswer");
                 });
@@ -2583,8 +2748,15 @@ namespace OrderManagement.EfCore.Migrations
                     b.Navigation("CompanyLogoInPage");
                 });
 
+            modelBuilder.Entity("OrderManagement.Domain.OrderManagement.Color", b =>
+                {
+                    b.Navigation("SaleDetailCarColor");
+                });
+
             modelBuilder.Entity("OrderManagement.Domain.Province", b =>
                 {
+                    b.Navigation("Agencies");
+
                     b.Navigation("ProvinceCities");
                 });
 
@@ -2600,6 +2772,8 @@ namespace OrderManagement.EfCore.Migrations
 
             modelBuilder.Entity("OrderManagement.Domain.SaleDetail", b =>
                 {
+                    b.Navigation("AgencySaleDetails");
+
                     b.Navigation("CustomerOrders");
 
                     b.Navigation("SaleDetailCarColors");
