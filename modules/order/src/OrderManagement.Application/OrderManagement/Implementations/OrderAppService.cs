@@ -367,12 +367,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         else
         {
             object objectCommitOrderIran = null;
-            //_cacheManager.GetCache("CommitOrderimport").
-            //TryGetValue(
-            //    userId.ToString() + "_" +
-            //    commitOrderDto.PriorityId.ToString() + "_" +
-            //    SaleDetailDto.SaleId.ToString()
-            //    , out objectCommitOrderIran);
+         
 
             objectCommitOrderIran = await _distributedCache.GetStringAsync(userId.ToString() + "_" +
                 commitOrderDto.PriorityId.ToString() + "_" +
@@ -384,13 +379,13 @@ public class OrderAppService : ApplicationService, IOrderAppService
             }
             else
             {
-                var allowedStatusTypes = new List<int>() { (int)OrderStatusType.RecentlyAdded, (int)OrderStatusType.PaymentNotVerified };
+                var allowedStatusTypes = new List<int>() { (int)OrderStatusType.RecentlyAdded };
                 var customerOrderIranFromDb =
                 orderQuery
                 .AsNoTracking()
                 .Select(x => new CustomerOrderDto
                 {
-                    OrderStatusCode = (int)x.OrderStatus,
+                    OrderStatus = (int)x.OrderStatus,
                     SaleId = x.SaleId,
                     PriorityId = x.PriorityId,
                     UserId = x.UserId,
@@ -401,18 +396,12 @@ public class OrderAppService : ApplicationService, IOrderAppService
                    //y.OrderStatus == OrderStatusType.RecentlyAdded
                    && y.SaleId == SaleDetailDto.SaleId
                    && y.PriorityId == (PriorityEnum)commitOrderDto.PriorityId
-                   && allowedStatusTypes.Any(d => y.OrderStatusCode == d));
+                   && allowedStatusTypes.Any(d => y.OrderStatus == d));
 
 
                 if (customerOrderIranFromDb != null && (!commitOrderDto.OrderId.HasValue || customerOrderIranFromDb.Id != commitOrderDto.OrderId.Value))
                 {
-                    //await _cacheManager.GetCache("CommitOrderimport").
-                    //   SetAsync(
-                    //      userId.ToString() + "_" +
-                    //        commitOrderDto.PriorityId.ToString() + "_" +
-                    //        SaleDetailDto.SaleId.ToString()
-                    //       , customerOrderIranFromDb.Id
-                    //       , TimeSpan.FromSeconds(ttl.TotalSeconds));
+                  
                     await _distributedCache.SetStringAsync(
                           userId.ToString() + "_" +
                             commitOrderDto.PriorityId.ToString() + "_" +
@@ -427,49 +416,22 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
             }
             object objectCustomerOrderFromCache = null;
-            //_cacheManager.GetCache("CommitOrderimport")
-            //    .TryGetValue(
-            //    userId.ToString() + "_" +
-            //        SaleDetailDto.Id.ToString(),
-            //    out objectCustomerOrderFromCache
-            //    );
+    
 
             objectCustomerOrderFromCache = await _distributedCache.GetStringAsync(
                 userId.ToString() + "_" +
                     SaleDetailDto.Id.ToString());
 
-            var orderStatusType = await _distributedCache.GetStringAsync(string.Format(RedisConstants.OrderStatusCacheKey, objectCustomerOrderFromCache));
-            if (string.IsNullOrWhiteSpace(orderStatusType))
-            {
-                var allowedOrderStatusTypes = new List<int>() { (int)OrderStatusType.PaymentNotVerified, (int)OrderStatusType.RecentlyAdded };
-                var order = orderQuery
-                     .AsNoTracking()
-                    .Select(x => new CustomerOrderDto
-                    {
-                        SaleDetailId = x.SaleDetailId,
-                        SaleId = x.SaleId,
-                        UserId = x.UserId,
-                        OrderStatusCode = (int)x.OrderStatus,
-                        Id = x.Id
-                    })
-                    .FirstOrDefault(x =>
-                        x.UserId == userId
-                        && x.SaleDetailId == (int)SaleDetailDto.Id
-                        //&& (x.OrderStatusCode == (int)OrderStatusType.RecentlyAdded ||));
-                        && allowedOrderStatusTypes.Any(y => y == (int)x.OrderStatusCode));
-                orderStatusType = ((int)order.OrderStatusCode).ToString();
-                await _distributedCache.SetStringAsync(string.Format(RedisConstants.OrderStatusCacheKey, order.Id), orderStatusType);
-            }
-            if (objectCustomerOrderFromCache != null &&
-                    (string.IsNullOrWhiteSpace(orderStatusType) ||
-                    !int.TryParse(orderStatusType, out int orderStatusTypeCode) ||
-                    orderStatusTypeCode == (int)OrderStatusType.PaymentSucceeded))
+            if (objectCustomerOrderFromCache != null
+              
+                    
+                    )
             {
                 throw new UserFriendlyException("این خودرو را قبلا انتخاب نموده اید");
             }
             if (objectCustomerOrderFromCache == null)
             {
-                var allowedOrderStatusTypes = new List<int>() { (int)OrderStatusType.PaymentNotVerified, (int)OrderStatusType.RecentlyAdded };
+                var allowedOrderStatusTypes = new List<int>() {  (int)OrderStatusType.RecentlyAdded };
                 var CustomerOrderFromDb = orderQuery
                      .AsNoTracking()
                     .Select(x => new CustomerOrder
@@ -483,19 +445,14 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 x.UserId == userId
                 && x.SaleDetailId == (int)SaleDetailDto.Id
                 && allowedOrderStatusTypes.Any(y => y == (int)x.OrderStatus));
-                /*x.OrderStatus == OrderStatusType.RecentlyAdded*/
+            
 
-                if (CustomerOrderFromDb != null &&
-                    (string.IsNullOrWhiteSpace(orderStatusType) ||
-                        !int.TryParse(orderStatusType, out int orderStatusTypeCode2) ||
-                        orderStatusTypeCode2 == (int)OrderStatusType.PaymentSucceeded))
+                if (CustomerOrderFromDb != null
+                
+                        
+                        )
                 {
-                    // await _cacheManager.GetCache("CommitOrderimport").
-                    //SetAsync(
-                    //    userId.ToString() + "_" +
-                    //    SaleDetailDto.Id.ToString()
-                    //    , CustomerOrderFromDb.Id
-                    //    , TimeSpan.FromSeconds(ttl.TotalSeconds));
+                   
                     await _distributedCache.SetStringAsync(userId.ToString() + "_" +
                        SaleDetailDto.Id.ToString()
                        , CustomerOrderFromDb.Id.ToString(),
@@ -528,7 +485,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         CustomerOrder customerOrder = new CustomerOrder();
         var paymentMethodGranted = _configuration.GetValue<bool?>("PaymentMethodGranted") ?? false;
         var customerOrderQuery = await _commitOrderRepository.GetQueryableAsync();
-        var similarOrderTypes = new List<int>() { (int)OrderStatusType.PaymentNotVerified, (int)OrderStatusType.RecentlyAdded };
+        var similarOrderTypes = new List<int>() { (int)OrderStatusType.PaymentNotVerified };
         var similarOrder = customerOrderQuery.FirstOrDefault(x => similarOrderTypes.Any(y => y == (int)x.OrderStatus)
             /* x.OrderStatus == OrderStatusType.PaymentNotVerified*/
             && x.UserId == userId
@@ -620,16 +577,16 @@ public class OrderAppService : ApplicationService, IOrderAppService
         customerOrder.PaymentId = handShakeResponse.Result.PaymentId;
         await _commitOrderRepository.UpdateAsync(customerOrder, autoSave: true);
         await CurrentUnitOfWork.SaveChangesAsync();
-        await _distributedCache.SetStringAsync(
-         userId.ToString() + "_" +
-            commitOrderDto.SaleDetailUId.ToString()
-            , customerOrder.Id.ToString(),
-         new DistributedCacheEntryOptions()
-         {
-             AbsoluteExpiration = new DateTimeOffset(DateTime.Now.AddSeconds(ttl.TotalSeconds))
-         });
+        //await _distributedCache.SetStringAsync(
+        // userId.ToString() + "_" +
+        //    commitOrderDto.SaleDetailUId.ToString()
+        //    , customerOrder.Id.ToString(),
+        // new DistributedCacheEntryOptions()
+        // {
+        //     AbsoluteExpiration = new DateTimeOffset(DateTime.Now.AddSeconds(ttl.TotalSeconds))
+        // });
 
-        await _distributedCache.SetStringAsync(userId.ToString(), SaleDetailDto.ESaleTypeId.ToString());
+        //await _distributedCache.SetStringAsync(userId.ToString(), SaleDetailDto.ESaleTypeId.ToString()); //braye inke ye nafar chan noe forosh ro entekhab nakone
         //if iran
         if (_configuration.GetSection("IsIranCellActive").Value == "7")
         {
@@ -651,13 +608,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         if (_configuration.GetSection("IsIranCellActive").Value == "1")
         {
-            //await _cacheManager.GetCache("CommitOrderimport").
-            //           SetAsync(
-            //              userId.ToString() + "_" +
-            //                commitOrderDto.PriorityId.ToString() + "_" +
-            //                SaleDetailDto.SaleId.ToString()
-            //               , customerOrder.Id,
-            //              TimeSpan.FromSeconds(ttl.TotalSeconds));
+
             await _distributedCache.SetStringAsync(userId.ToString() + "_" +
                             commitOrderDto.PriorityId.ToString() + "_" +
                             SaleDetailDto.SaleId.ToString()
@@ -1112,7 +1063,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 await UpdateStatus(new()
                 {
                     Id = order.Id,
-                    OrderStatusCode = (int)OrderStatusType.PaymentNotVerified
+                    OrderStatus = (int)OrderStatusType.PaymentNotVerified
                 });
                 await _distributedCache.SetStringAsync(string.Format(RedisConstants.OrderStatusCacheKey, order.Id), ((int)order.OrderStatus).ToString());
                 if (callBackRequest.StatusCode == 0 && callBackRequest.PaymentId > 0)
@@ -1126,7 +1077,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             await UpdateStatus(new()
             {
                 Id = order.Id,
-                OrderStatusCode = (int)OrderStatusType.PaymentSucceeded
+                OrderStatus = (int)OrderStatusType.PaymentSucceeded
             });
             await _distributedCache.SetStringAsync(string.Format(RedisConstants.OrderStatusCacheKey, order.Id), ((int)OrderStatusType.PaymentSucceeded).ToString());
             return new PaymentResult()
@@ -1173,7 +1124,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     await UpdateStatus(new CustomerOrderDto()
                     {
                         Id = orderId,
-                        OrderStatusCode = payment.PaymentStatus == 0 ? (int)OrderStatusType.PaymentSucceeded : (int)OrderStatusType.PaymentNotVerified
+                        OrderStatus = payment.PaymentStatus == 0 ? (int)OrderStatusType.PaymentSucceeded : (int)OrderStatusType.PaymentNotVerified
                     });
                 }
             }
