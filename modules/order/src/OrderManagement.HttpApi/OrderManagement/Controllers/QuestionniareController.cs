@@ -40,7 +40,6 @@ namespace OrderManagement.HttpApi.OrderManagement.Controllers
 
         [HttpGet]
         [UserAuthorization]
-        [RemoteService(isEnabled: false)]
         public async Task<List<QuestionnaireTree>> GetQuestionnaireTrees()
             => await _questionnaireService.GetQuestionnaireTrees();
 
