@@ -28,7 +28,7 @@ namespace OrderManagement
                 .ForMember(x => x.BannerUrl, opt => opt.MapFrom(y => y.GalleryBanner.ImageUrl));
 
             CreateMap<CarTip, CarTipDto>()
-                .ForMember(x => x.CarImageUrls, opt => opt.Ignore());
+                .ForMember(x => x.CarImageUrls, opt => opt.Ignore()).ReverseMap();
             CreateMap<ExternalApiLogResult, ExternalApiLogResultDto>()
                 .ReverseMap();
             CreateMap<ExternalApiLogResultDto, ExternalApiLogResult>()
