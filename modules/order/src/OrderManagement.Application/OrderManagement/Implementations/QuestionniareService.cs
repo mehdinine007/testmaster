@@ -155,10 +155,10 @@ namespace OrderManagement.Application.OrderManagement.Implementations
         public async Task SubmitAnswers(List<int> answerIds)
         {
             //TODO : add enum and replace it here
-            var incomingQuestionnaireIds = _questionnaireRepository.WithDetails(x => x.QuestionnaireAnswers).Where(x => x.AnswerComponentId == 1).Select(x => x.Id);
-            var questionnaireIds = (await _questionnaireAnswerRepository.GetQueryableAsync()).Select(x => x.QuestionnaireId);
-            var unAnsweredQuestions = questionnaireIds.Any(x => incomingQuestionnaireIds.Any(y => y != x));
-            if (unAnsweredQuestions)
+            var questionnaireIds = _questionnaireRepository.WithDetails(x => x.QuestionnaireAnswers).Where(x => x.AnswerComponentId == 1).Select(x => x.Id).OrderBy(x => x).ToList();
+            var answers = _questionnaireAnswerRepository.WithDetails().Where(x => answerIds.Any(y => y == x.Id)).Select(x => x.QuestionnaireId).OrderBy(x => x).ToList();
+            var unAnsweredQuestions = Enumerable.SequenceEqual(questionnaireIds, answers);
+            if (!unAnsweredQuestions)
                 throw new UserFriendlyException("لطفا به تمام سوالات پاسخ دهید");
 
             answerIds.ForEach(async x => await SubmitAnswer(new SubmitteAnswerDto()
