@@ -10,7 +10,7 @@ namespace OrderManagement.Application.Contracts.Services
 
         Task<List<AnswerComponentTypeDto>> GetAnswerComponentTypes();
 
-        Task CreatQuestionnaireAnswers(List<QuestionnaireAnswerDto> questionnaireAnswers);
+        Task CreatQuestionnaireAnswers(CreateQuestionnaireAnswerDto questionnaireAnswers);
 
         //Task<QuestionnaireTree> GetQuestionnaireTree(int questionnaireId);
 

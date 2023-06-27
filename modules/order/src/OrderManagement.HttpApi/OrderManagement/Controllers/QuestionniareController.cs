@@ -13,7 +13,7 @@ namespace OrderManagement.HttpApi.OrderManagement.Controllers
     [DisableAuditing]
     [RemoteService]
     [Route("api/services/app/SaleDetailService/[action]")]
-    public class QuestionniareController : AbpController, IQuestionniareService
+    public class QuestionniareController : AbpController
     {
         private readonly IQuestionniareService _questionnaireService;
 
@@ -23,17 +23,19 @@ namespace OrderManagement.HttpApi.OrderManagement.Controllers
 
         [HttpPost]
         [UserAuthorization]
+        [RemoteService(IsEnabled = false)]
         public async Task<QuestionnaireDto> CreateQuestionnaire(QuestionnaireDto questionnaireDto)
             => await _questionnaireService.CreateQuestionnaire(questionnaireDto);
 
         [HttpPost]
         [UserAuthorization]
-        public async Task CreatQuestionnaireAnswers(List<QuestionnaireAnswerDto> questionnaireAnswers)
-            => await _questionnaireService.CreatQuestionnaireAnswers(questionnaireAnswers);
-
+        public async Task<bool> CreatQuestionnaireAnswers(CreateQuestionnaireAnswerDto questionnaireAnswers)
+        {
+            await _questionnaireService.CreatQuestionnaireAnswers(questionnaireAnswers);
+            return true;
+        }
 
         [HttpGet]
-        [UserAuthorization]
         public async Task<List<AnswerComponentTypeDto>> GetAnswerComponentTypes()
             => await _questionnaireService.GetAnswerComponentTypes();
 

@@ -40,15 +40,24 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             return ObjectMapper.Map<Questionnaire, QuestionnaireDto>(questionnaire);
         }
 
-        public async Task CreatQuestionnaireAnswers(List<QuestionnaireAnswerDto> questionnaireAnswers)
+        public async Task CreatQuestionnaireAnswers(CreateQuestionnaireAnswerDto questionnaireAnswers)
         {
             var questionnaireQuery = await _questionnaireRepository.GetQueryableAsync();
-            var questionnaireIds = questionnaireAnswers.Select(x => x.QuestionnaireId).ToList();
-            //if (questionnaireQuery.Any(x => questionnaireIds.Any(y => y != x.Id)))
-            //    throw new UserFriendlyException("مغایرت در اطلاعات ورودی");
+            var questionnaire = questionnaireQuery.FirstOrDefault(x => x.Id == questionnaireAnswers.QuestionnaireId)
+                ?? throw new UserFriendlyException("پرسشنامه پیدا نشد");
+            //TODO : add enum and replace this
+            if (questionnaire.AnswerComponentId != 1)
+                throw new UserFriendlyException("تنها برای سوال های گزینه ای امکان تعریف جواب وجود دارد");
 
-            await _questionnaireAnswerRepository.InsertManyAsync(
-                ObjectMapper.Map<List<QuestionnaireAnswerDto>, List<QuestionnaireAnswer>>(questionnaireAnswers));
+            if (questionnaireAnswers.AnswerDescriptions.Any())
+            {
+                await _questionnaireAnswerRepository.InsertManyAsync(
+                    questionnaireAnswers.AnswerDescriptions.Select(x => new QuestionnaireAnswer
+                    {
+                        Description = x,
+                        QuestionnaireId = questionnaireAnswers.QuestionnaireId
+                    }).ToList());
+            }
         }
 
         public async Task<List<AnswerComponentTypeDto>> GetAnswerComponentTypes()
@@ -59,9 +68,8 @@ namespace OrderManagement.Application.OrderManagement.Implementations
 
         private async Task<QuestionnaireTree> GetQuestionnaireTree(int questionnaireId)
         {
-            var submitedAnswers = _submitedAnswerRepository.WithDetails(x => x.QuestionnaireAnswer)
-                .Where(x => x.QuestionnaireAnswer.QuestionnaireId == questionnaireId && x.UserId == _commonAppService.GetUserId())
-                .ToList();
+            var submitedAnswer = _submitedAnswerRepository.WithDetails(x => x.QuestionnaireAnswer)
+                .FirstOrDefault(x => x.QuestionnaireAnswer.QuestionnaireId == questionnaireId && x.UserId == _commonAppService.GetUserId());
 
             var questionnaire = _questionnaireRepository.WithDetails(x => x.QuestionnaireAnswers)
                 .FirstOrDefault(x => x.Id == questionnaireId) ??
@@ -71,7 +79,9 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             {
                 Questionnaire = ObjectMapper.Map<Questionnaire, QuestionnaireDto>(questionnaire),
                 QuestionnaireAnswers = ObjectMapper.Map<List<QuestionnaireAnswer>, List<QuestionnaireAnswerDto>>(questionnaire.QuestionnaireAnswers.ToList()),
-                SubmitedAnswerIds = submitedAnswers.Select(x => x.Id).ToList()
+                SubmitedAnswerId = submitedAnswer != null
+                    ? submitedAnswer.AnswerId
+                    : null
             };
 
             return questionnaireTree;
@@ -96,7 +106,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             var questionnaire = _questionnaireRepository.WithDetails(x => x.QuestionnaireAnswers).FirstOrDefault(x => x.Id == questionId)
                 ?? throw new UserFriendlyException("سوال مورد نظر پیدا نشد");
             var answerIds = questionnaire.QuestionnaireAnswers.Select(x => x.Id).ToList();
-            submittedAnswerQuery = submittedAnswerQuery.Where(x => x.UserId == userId && answerIds.Any(y => y == x.AnswerId));
+            submittedAnswerQuery = submittedAnswerQuery.Where(x => x.UserId == userId && answerIds.Any(y => y == x.AnswerId.Value));
             if (submittedAnswerQuery.FirstOrDefault() != null)
                 throw new UserFriendlyException("شما قبلا به این سوال جواب داده اید");
 

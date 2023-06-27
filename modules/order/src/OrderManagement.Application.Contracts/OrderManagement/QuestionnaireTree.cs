@@ -8,6 +8,6 @@ namespace OrderManagement.Application.Contracts
 
         public List<QuestionnaireAnswerDto> QuestionnaireAnswers { get; set; }
 
-        public List<int> SubmitedAnswerIds { get; set; }
+        public int? SubmitedAnswerId { get; set; }
     }
 }
