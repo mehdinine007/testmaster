@@ -23,7 +23,6 @@ namespace OrderManagement.HttpApi.OrderManagement.Controllers
 
         [HttpPost]
         [UserAuthorization]
-        [RemoteService(IsEnabled = false)]
         public async Task<QuestionnaireDto> CreateQuestionnaire(QuestionnaireDto questionnaireDto)
             => await _questionnaireService.CreateQuestionnaire(questionnaireDto);
 
