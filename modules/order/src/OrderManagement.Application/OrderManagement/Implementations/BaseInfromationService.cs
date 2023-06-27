@@ -303,6 +303,14 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
         return await _esaleGrpcClient.GetUserById(_commonAppService.GetUserId());
     }
 
+    public async Task<List<AgencyDto>> GetAgencies()
+    {
+        var user = await _esaleGrpcClient.GetUserById(_commonAppService.GetUserId());
+        var agencyQuery = await _agencyRepository.GetQueryableAsync();
+        var agencies = agencyQuery.Where(x => x.ProvinceId == user.HabitationProvinceId).ToList();
+        return ObjectMapper.Map<List<Agency>, List<AgencyDto>>(agencies);
+    }
+
     public async Task<List<AgencyDto>> GetAgencies(Guid saleDetailUid)
     {
         var user = await _esaleGrpcClient.GetUserById(_commonAppService.GetUserId());
