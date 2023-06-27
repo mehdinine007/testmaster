@@ -9,5 +9,7 @@
         public long UserId { get; set; }
 
         public int Id { get; set; }
+
+        public int? QuestionnaireId { get; set; }
     }
 }

@@ -7,6 +7,8 @@ namespace OrderManagement.Domain
     {
         private ICollection<QuestionnaireAnswer> _questionnaireAnswers;
 
+        private ICollection<SubmittedAnswers> _submittedAnswers;
+
         public string QuestiuonTitle { get; set; }
 
         public int AnswerComponentId { get; set; }
@@ -17,6 +19,12 @@ namespace OrderManagement.Domain
         {
             get => _questionnaireAnswers ?? (_questionnaireAnswers = new List<QuestionnaireAnswer>());
             protected set => _questionnaireAnswers = value;
+        }
+
+        public virtual ICollection<SubmittedAnswers> SubmittedAnswers
+        {
+            get => _submittedAnswers ?? (_submittedAnswers= new List<SubmittedAnswers>());
+            protected set => _submittedAnswers = value;
         }
     }
 }

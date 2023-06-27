@@ -325,6 +325,10 @@ public static class OrderManagementDbContextModelCreatingExtensions
             entity.HasOne<QuestionnaireAnswer>(x => x.QuestionnaireAnswer)
                 .WithMany(x => x.SubmittedAnswers)
                 .HasForeignKey(x => x.AnswerId);
+
+            entity.HasOne<Questionnaire>(x => x.Questionnaire)
+                .WithMany(x => x.SubmittedAnswers)
+                .HasForeignKey(x => x.QuestionnaireId);
         });
     }
 }

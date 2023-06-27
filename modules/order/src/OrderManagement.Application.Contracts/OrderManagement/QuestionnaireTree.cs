@@ -9,5 +9,7 @@ namespace OrderManagement.Application.Contracts
         public List<QuestionnaireAnswerDto> QuestionnaireAnswers { get; set; }
 
         public int? SubmitedAnswerId { get; set; }
+
+        public string AnswerContent { get; set; }
     }
 }

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp.ObjectMapping;
 
 namespace OrderManagement.Application.OrderManagement.Implementations
 {
@@ -68,19 +69,23 @@ namespace OrderManagement.Application.OrderManagement.Implementations
 
         private async Task<QuestionnaireTree> GetQuestionnaireTree(int questionnaireId)
         {
-            var submitedAnswer = _submitedAnswerRepository.WithDetails(x => x.QuestionnaireAnswer)
-                .FirstOrDefault(x => x.QuestionnaireAnswer.QuestionnaireId == questionnaireId && x.UserId == _commonAppService.GetUserId());
 
             var questionnaire = _questionnaireRepository.WithDetails(x => x.QuestionnaireAnswers)
                 .FirstOrDefault(x => x.Id == questionnaireId) ??
                 throw new UserFriendlyException("پرسشنامه پیدا نشد");
+            var submitedAnswer = _submitedAnswerRepository.WithDetails(x => x.QuestionnaireAnswer)
+                .FirstOrDefault(x => x.QuestionnaireAnswer.QuestionnaireId == questionnaireId && x.UserId == _commonAppService.GetUserId());
 
             var questionnaireTree = new QuestionnaireTree()
             {
                 Questionnaire = ObjectMapper.Map<Questionnaire, QuestionnaireDto>(questionnaire),
                 QuestionnaireAnswers = ObjectMapper.Map<List<QuestionnaireAnswer>, List<QuestionnaireAnswerDto>>(questionnaire.QuestionnaireAnswers.ToList()),
-                SubmitedAnswerId = submitedAnswer != null
+                //TODO : add enum and replace here
+                SubmitedAnswerId =  questionnaire.AnswerComponentId == 1 && submitedAnswer != null
                     ? submitedAnswer.AnswerId
+                    : null,
+                AnswerContent = questionnaire.AnswerComponentId == 2 && submitedAnswer != null
+                    ? submitedAnswer.AnswerDescription
                     : null
             };
 
@@ -97,25 +102,51 @@ namespace OrderManagement.Application.OrderManagement.Implementations
 
         public async Task<SubmitteAnswerDto> SubmitAnswer(SubmitteAnswerDto submitteAnswerDto)
         {
-            var userId = _commonAppService.GetUserId();
+            Questionnaire questionnaire;
+            SubmittedAnswers submittedAnswer;
             var submittedAnswerQuery = await _submitedAnswerRepository.GetQueryableAsync();
+            if (submitteAnswerDto.QuestionnaireId.HasValue)
+            {
+                questionnaire = _questionnaireRepository.WithDetails().FirstOrDefault(x => x.Id == submitteAnswerDto.QuestionnaireId.Value);
+                //TODO : Add enum and replace here
+                if (questionnaire.AnswerComponentId != 2)
+                    throw new UserFriendlyException("فقط برای سوال های تشریحی میتوان کد پرسشنامه را ارسال کرد");
+                submittedAnswerQuery.Where(x => x.UserId == _commonAppService.GetUserId() && x.QuestionnaireId == submitteAnswerDto.QuestionnaireId.Value);
+                if(submittedAnswerQuery.FirstOrDefault() != null)
+                    throw new UserFriendlyException("شما قبلا به این سوال جواب داده اید");
+                submittedAnswer = await _submitedAnswerRepository.InsertAsync(
+                new SubmittedAnswers()
+                {
+                    UserId = _commonAppService.GetUserId(),
+                    AnswerId = null,
+                    AnswerDescription = submitteAnswerDto.AnswerDescription,
+                    QuestionnaireId = submitteAnswerDto.QuestionnaireId.Value
+                });
+                return ObjectMapper.Map<SubmittedAnswers, SubmitteAnswerDto>(submittedAnswer);
+            }
+            var userId = _commonAppService.GetUserId();
+            
             var answer = _questionnaireAnswerRepository.WithDetails(x => x.Questionnaire)
                 .FirstOrDefault(x => x.Id == submitteAnswerDto.AnswerId)
                 ?? throw new UserFriendlyException("جواب مورد نظر پیدا نشد");
             var questionId = answer.QuestionnaireId;
-            var questionnaire = _questionnaireRepository.WithDetails(x => x.QuestionnaireAnswers).FirstOrDefault(x => x.Id == questionId)
+            questionnaire = _questionnaireRepository.WithDetails(x => x.QuestionnaireAnswers).FirstOrDefault(x => x.Id == questionId)
                 ?? throw new UserFriendlyException("سوال مورد نظر پیدا نشد");
+            if (questionnaire.AnswerComponentId == 2)
+                throw new UserFriendlyException("نوع سوال و پاسخ همخوانی ندارد");
+
             var answerIds = questionnaire.QuestionnaireAnswers.Select(x => x.Id).ToList();
             submittedAnswerQuery = submittedAnswerQuery.Where(x => x.UserId == userId && answerIds.Any(y => y == x.AnswerId.Value));
             if (submittedAnswerQuery.FirstOrDefault() != null)
                 throw new UserFriendlyException("شما قبلا به این سوال جواب داده اید");
 
-            var submittedAnswer = await _submitedAnswerRepository.InsertAsync(
+            submittedAnswer = await _submitedAnswerRepository.InsertAsync(
                 new SubmittedAnswers()
                 {
                     UserId = userId,
                     AnswerId = submitteAnswerDto.AnswerId,
                     AnswerDescription = submitteAnswerDto.AnswerDescription,
+                    QuestionnaireId = questionId
                 });
             return ObjectMapper.Map<SubmittedAnswers, SubmitteAnswerDto>(submittedAnswer);
         }

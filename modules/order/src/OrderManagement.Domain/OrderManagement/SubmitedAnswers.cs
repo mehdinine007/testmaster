@@ -10,6 +10,10 @@ namespace OrderManagement.Domain
 
         public long UserId { get; set; }
 
+        public int QuestionnaireId { get; set; }
+
+        public virtual Questionnaire Questionnaire { get; protected set; }
+
         public virtual QuestionnaireAnswer QuestionnaireAnswer { get; protected set; }
     }
 }
