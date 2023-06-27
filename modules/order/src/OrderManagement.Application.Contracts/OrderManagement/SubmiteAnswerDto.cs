@@ -1,6 +1,6 @@
 ﻿namespace OrderManagement.Application.Contracts
 {
-    public class SubmiteAnswerDto
+    public class SubmitteAnswerDto
     {
         public int AnswerId { get; set; }
 

@@ -71,7 +71,7 @@ namespace OrderManagement
             CreateMap<Questionnaire, QuestionnaireDto>()
                 .ReverseMap()
                 .IgnoreFullAuditedObjectProperties();
-            CreateMap<SubmitedAnswers, SubmiteAnswerDto>()
+            CreateMap<SubmittedAnswers, SubmitteAnswerDto>()
                 .ReverseMap()
                 .IgnoreFullAuditedObjectProperties();
             CreateMap<QuestionnaireAnswer, QuestionnaireAnswerDto>()

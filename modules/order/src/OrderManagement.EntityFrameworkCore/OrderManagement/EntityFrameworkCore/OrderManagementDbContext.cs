@@ -87,7 +87,7 @@ namespace OrderManagement.EfCore
 
         public DbSet<QuestionnaireAnswer> QuestionnaireAnswers { get ; set ; }
 
-        public DbSet<SubmitedAnswers> SubgmitedAnswers { get ; set ; }
+        public DbSet<SubmittedAnswers> SubmittedAnswers { get ; set ; }
 
         public OrderManagementDbContext(DbContextOptions<OrderManagementDbContext> options)
             : base(options)

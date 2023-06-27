@@ -318,12 +318,12 @@ public static class OrderManagementDbContextModelCreatingExtensions
                 .HasForeignKey(x => x.QuestionnaireId);
         });
 
-        builder.Entity<SubmitedAnswers>(entity =>
+        builder.Entity<SubmittedAnswers>(entity =>
         {
-            entity.ToTable(nameof(SubmitedAnswers));
+            entity.ToTable(nameof(SubmittedAnswers));
 
             entity.HasOne<QuestionnaireAnswer>(x => x.QuestionnaireAnswer)
-                .WithMany(x => x.SubmitedAnswers)
+                .WithMany(x => x.SubmittedAnswers)
                 .HasForeignKey(x => x.AnswerId);
         });
     }

@@ -1,4 +1,5 @@
-﻿using OrderManagement.Application.Contracts;
+﻿using Microsoft.AspNetCore.Server.IIS.Core;
+using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.Services;
 using OrderManagement.Domain;
 using System.Collections.Generic;
@@ -16,13 +17,13 @@ namespace OrderManagement.Application.OrderManagement.Implementations
         private readonly IRepository<Questionnaire, int> _questionnaireRepository;
         private readonly IRepository<QuestionnaireAnswer, int> _questionnaireAnswerRepository;
         private readonly IRepository<AnswerComponentType, int> _answerComponentType;
-        private readonly IRepository<SubmitedAnswers, int> _submitedAnswerRepository;
+        private readonly IRepository<SubmittedAnswers, int> _submitedAnswerRepository;
         private readonly ICommonAppService _commonAppService;
 
         public QuestionniareService(IRepository<Questionnaire, int> questionnaireRepository,
                                     IRepository<AnswerComponentType, int> answerComponentType,
                                     IRepository<QuestionnaireAnswer, int> questionnaireAnswerRepository,
-                                    IRepository<SubmitedAnswers, int> submitedAnswerRepository,
+                                    IRepository<SubmittedAnswers, int> submitedAnswerRepository,
                                     ICommonAppService commonAppService
             )
         {
@@ -84,22 +85,29 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             return questionnaireList;
         }
 
-        public async Task<SubmiteAnswerDto> SubmitAnswer(SubmiteAnswerDto submiteAnswerDto)
+        public async Task<SubmitteAnswerDto> SubmitAnswer(SubmitteAnswerDto submitteAnswerDto)
         {
             var userId = _commonAppService.GetUserId();
-            var submitedAnswerQuery = await _submitedAnswerRepository.GetQueryableAsync();
-            var submittedAnswer = submitedAnswerQuery.FirstOrDefault(x => x.UserId == userId && submiteAnswerDto.AnswerId == x.AnswerId);
-            if (submittedAnswer != null)
-                throw new UserFriendlyException("شما قبلا به این سوال پاسخ داده اید");
+            var submittedAnswerQuery = await _submitedAnswerRepository.GetQueryableAsync();
+            var answer = _questionnaireAnswerRepository.WithDetails(x => x.Questionnaire)
+                .FirstOrDefault(x => x.Id == submitteAnswerDto.AnswerId)
+                ?? throw new UserFriendlyException("جواب مورد نظر پیدا نشد");
+            var questionId = answer.QuestionnaireId;
+            var questionnaire = _questionnaireRepository.WithDetails(x => x.QuestionnaireAnswers).FirstOrDefault(x => x.Id == questionId)
+                ?? throw new UserFriendlyException("سوال مورد نظر پیدا نشد");
+            var answerIds = questionnaire.QuestionnaireAnswers.Select(x => x.Id).ToList();
+            submittedAnswerQuery = submittedAnswerQuery.Where(x => x.UserId == userId && answerIds.Any(y => y == x.AnswerId));
+            if (submittedAnswerQuery.FirstOrDefault() != null)
+                throw new UserFriendlyException("شما قبلا به این سوال جواب داده اید");
 
-            var submitedAnswer = await _submitedAnswerRepository.InsertAsync(
-                new SubmitedAnswers()
+            var submittedAnswer = await _submitedAnswerRepository.InsertAsync(
+                new SubmittedAnswers()
                 {
                     UserId = userId,
-                    AnswerId = submiteAnswerDto.AnswerId,
-                    AnswerDescription = submiteAnswerDto.AnswerDescription,
+                    AnswerId = submitteAnswerDto.AnswerId,
+                    AnswerDescription = submitteAnswerDto.AnswerDescription,
                 });
-            return ObjectMapper.Map<SubmitedAnswers, SubmiteAnswerDto>(submitedAnswer);
+            return ObjectMapper.Map<SubmittedAnswers, SubmitteAnswerDto>(submittedAnswer);
         }
     }
 }

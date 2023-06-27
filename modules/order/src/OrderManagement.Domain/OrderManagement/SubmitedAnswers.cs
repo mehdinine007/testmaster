@@ -2,7 +2,7 @@
 
 namespace OrderManagement.Domain
 {
-    public class SubmitedAnswers : FullAuditedEntity<int>
+    public class SubmittedAnswers : FullAuditedEntity<int>
     {
         public int? AnswerId { get; set; }
 
