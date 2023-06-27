@@ -1,8 +1,10 @@
-﻿namespace OrderService.Host.Infrastructures.Hangfire.Abstract
+﻿using System.Threading.Tasks;
+
+namespace OrderService.Host.Infrastructures.Hangfire.Abstract
 {
     public interface ICapacityControlJob
     {
-        void SaleDetail();
-        void Payment();
+        Task SaleDetail();
+        Task Payment();
     }
 }

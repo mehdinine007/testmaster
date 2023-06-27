@@ -1,8 +1,10 @@
 ﻿using Hangfire;
+using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.Services;
 using OrderManagement.Application.OrderManagement;
 using OrderService.Host.Infrastructures.Hangfire.Abstract;
 using System;
+using System.Threading.Tasks;
 
 namespace OrderService.Host.Infrastructures.Hangfire.Concrete
 {
@@ -14,9 +16,11 @@ namespace OrderService.Host.Infrastructures.Hangfire.Concrete
             _orderAppService = orderAppService;
         }
 
-        public void RetryForVerify()
+        public async Task RetryForVerify()
         {
-            _orderAppService.RetryPaymentForVerify();
+          
+            await _orderAppService.RetryPaymentForVerify();
+
             BackgroundJob.Schedule(() => RetryForVerify(), TimeSpan.FromMinutes(15));
         }
 

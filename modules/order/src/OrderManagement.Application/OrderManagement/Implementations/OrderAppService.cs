@@ -28,6 +28,8 @@ using ProtoBuf.Grpc.Client;
 using Esale.Core.DataAccess;
 using Volo.Abp.Validation.StringValues;
 using Esale.Core.Caching.Redis;
+using System.Reflection;
+using Volo.Abp.ObjectMapping;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -51,6 +53,10 @@ public class OrderAppService : ApplicationService, IOrderAppService
     private readonly IRandomGenerator _randomGenerator;
     private readonly IRepository<CarTip_Gallery_Mapping> _carTipGalleryMappingRepository;
     private readonly IAuditingManager _auditingManager;
+    private readonly IObjectMapper _objectMapper;
+    private readonly IUnitOfWorkManager _unitOfWorkManager;
+
+
     public OrderAppService(ICommonAppService commonAppService,
                            IBaseInformationService baseInformationAppService,
                            IRepository<SaleDetail, int> saleDetailRepository,
@@ -70,7 +76,11 @@ public class OrderAppService : ApplicationService, IOrderAppService
                            IRepository<CarTip_Gallery_Mapping, int> carTipGalleryRepsoitory,
                            IRepository<CarTip, int> carTipRepository,
                            IRepository<CarTip_Gallery_Mapping> carTipGalleryMappingRepository,
-                           IAuditingManager auditingManager
+                           IAuditingManager auditingManager,
+                           IObjectMapper objectMapper,
+                           IUnitOfWorkManager unitOfWorkManager
+
+
         )
     {
         _commonAppService = commonAppService;
@@ -91,6 +101,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
         _carTipGalleryMappingRepository = carTipGalleryMappingRepository;
         _auditingManager = auditingManager;
         _redisCacheManager = new RedisCacheManager("RedisCache:ConnectionString");
+        _objectMapper = objectMapper;
+        _unitOfWorkManager = unitOfWorkManager;
     }
 
 
@@ -1100,40 +1112,65 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
     public async Task UpdateStatus(CustomerOrderDto customerOrderDto)
     {
-        var order = ObjectMapper.Map<CustomerOrderDto, CustomerOrder>(customerOrderDto);
-        await _commitOrderRepository.AttachAsync(order, o => o.OrderStatus);
-        await CurrentUnitOfWork.SaveChangesAsync();
+        try
+        {
+            
+            var order = _objectMapper.Map<CustomerOrderDto, CustomerOrder>(customerOrderDto);
+          
+            await _commitOrderRepository.AttachAsync(order, o => o.OrderStatus);
+            await CurrentUnitOfWork.SaveChangesAsync();
+        }
+        catch(Exception ex)
+        {
+            throw ex;
+        }
+       
     }
 
     public async Task RetryPaymentForVerify()
     {
-        var payments = await _esaleGrpcClient.RetryForVerify();
-        if (payments != null && payments.Count > 0)
-        {
-            payments = payments
-                .Where(x => x.PaymentStatus != 1 && x.FilterParam3 != null && x.FilterParam3 != 0)
-                .ToList();
-            foreach (var payment in payments)
+    
+     
+            var payments = await _esaleGrpcClient.RetryForVerify();
+            if (payments != null && payments.Count > 0)
             {
-                int orderId = payment.FilterParam3 ?? 0;
-                if (orderId != 0)
+                payments = payments
+                    .Where(x => x.PaymentStatus != 1 && x.FilterParam3 != null && x.FilterParam3 != 0)
+                    .ToList();
+                foreach (var payment in payments)
                 {
-                    await UpdateStatus(new CustomerOrderDto()
+                    int orderId = payment.FilterParam3 ?? 0;
+                    if (orderId != 0)
                     {
-                        Id = orderId,
-                        OrderStatus = payment.PaymentStatus == 2 ? (int)OrderStatusType.PaymentSucceeded : (int)OrderStatusType.PaymentNotVerified
-                    });
-                    if (payment.PaymentStatus == 3)
-                    {
-                        var order = _commitOrderRepository.WithDetails()
-                            .AsNoTracking()
-                            .FirstOrDefault(x => x.Id == orderId);
-                        if (order != null)
-                            await _redisCacheManager.RemoveAllAsync(RedisConstants.CommitOrderPrefix + order.UserId.ToString() + "_");
+
+                        await UpdateStatus(new CustomerOrderDto()
+                        {
+                            Id = orderId,
+                            OrderStatus = payment.PaymentStatus == 2 ? (int)OrderStatusType.PaymentSucceeded : (int)OrderStatusType.PaymentNotVerified
+                        });
+                        if (payment.PaymentStatus == 3)
+                        {
+                            try
+                            {
+                                var order = _commitOrderRepository.WithDetails()
+                               .AsNoTracking()
+                               .FirstOrDefault(x => x.Id == orderId);
+                                if (order != null)
+                                    await _redisCacheManager.RemoveAllAsync(RedisConstants.CommitOrderPrefix + order.UserId.ToString() + "_");
+                            }
+                            catch (Exception EX)
+                            {
+                                throw EX;
+                            }
+
+                        }
                     }
                 }
-            }
+
+            
         }
+         
+        
     }
 
     public async Task<CustomerOrder_OrderDetailDto> GetDetail(SaleDetail_Order_InquiryDto inquiryDto)

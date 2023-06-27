@@ -1,7 +1,9 @@
-﻿namespace OrderService.Host.Infrastructures.Hangfire.Abstract
+﻿using System.Threading.Tasks;
+
+namespace OrderService.Host.Infrastructures.Hangfire.Abstract
 {
     public interface IIpgJob
     {
-        void RetryForVerify();
+         Task RetryForVerify();
     }
 }

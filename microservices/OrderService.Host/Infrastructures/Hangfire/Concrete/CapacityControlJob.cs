@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using OrderManagement.Application.OrderManagement;
 using OrderService.Host.Infrastructures.Hangfire.Abstract;
 using System;
+using System.Threading.Tasks;
 
 namespace OrderService.Host.Infrastructures.Hangfire.Concrete
 {
@@ -16,15 +17,15 @@ namespace OrderService.Host.Infrastructures.Hangfire.Concrete
             _configuration = configuration;
         }
 
-        public void Payment()
+        public async Task Payment()
         {
-            _capacityControlAppService.Payment();
+            await _capacityControlAppService.Payment();
             BackgroundJob.Schedule(() => Payment(), TimeSpan.FromSeconds(int.Parse(_configuration.GetSection("Hangfire:CapacityControl:PaymentCount_IntervalInSecond").Value)));
         }
 
-        public void SaleDetail()
+        public async Task SaleDetail()
         {
-            _capacityControlAppService.SaleDetail();
+            await _capacityControlAppService.SaleDetail();
             BackgroundJob.Schedule(() => SaleDetail(), TimeSpan.FromSeconds(int.Parse(_configuration.GetSection("Hangfire:CapacityControl:SaleDetail_IntervalInSecond").Value)));
         }
     }

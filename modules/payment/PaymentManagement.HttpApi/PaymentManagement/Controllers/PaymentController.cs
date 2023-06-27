@@ -67,7 +67,7 @@ namespace PaymentManagement
         }
 
         [HttpPost]
-        public async Task<ActionResult> BackFromMellatAsync()
+        public async Task<ContentResult> BackFromMellatAsync()
         {
             var keyValueList = new Dictionary<string, string>();
 
@@ -90,8 +90,8 @@ namespace PaymentManagement
 
             dp.AddKey("data", JsonConvert.SerializeObject(result));
             dp.Post(HttpContext);
+            return Content("");
 
-            return null;
         }
 
         [HttpPost]
