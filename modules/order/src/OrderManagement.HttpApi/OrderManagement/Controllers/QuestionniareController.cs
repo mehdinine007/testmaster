@@ -49,5 +49,12 @@ namespace OrderManagement.HttpApi.OrderManagement.Controllers
         public async Task<SubmitteAnswerDto> SubmitAnswer(SubmitteAnswerDto submitteAnswerDto)
             => await _questionnaireService.SubmitAnswer(submitteAnswerDto);
 
+        [UserAuthorization]
+        [HttpPost]
+        public async Task<bool> SubmitAnswers(List<int> answerIds)
+        {
+            await _questionnaireService.SubmitAnswers(answerIds);
+            return true;
+        }
     }
 }

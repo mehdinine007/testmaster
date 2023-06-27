@@ -17,5 +17,7 @@ namespace OrderManagement.Application.Contracts.Services
         Task<SubmitteAnswerDto> SubmitAnswer(SubmitteAnswerDto submitteAnswerDto);
 
         Task<List<QuestionnaireTree>> GetQuestionnaireTrees();
+
+        Task SubmitAnswers(List<int> answerIds);
     }
 }

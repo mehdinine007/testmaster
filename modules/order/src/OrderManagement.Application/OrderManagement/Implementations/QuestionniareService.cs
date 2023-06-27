@@ -81,7 +81,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
                 Questionnaire = ObjectMapper.Map<Questionnaire, QuestionnaireDto>(questionnaire),
                 QuestionnaireAnswers = ObjectMapper.Map<List<QuestionnaireAnswer>, List<QuestionnaireAnswerDto>>(questionnaire.QuestionnaireAnswers.ToList()),
                 //TODO : add enum and replace here
-                SubmitedAnswerId =  questionnaire.AnswerComponentId == 1 && submitedAnswer != null
+                SubmitedAnswerId = questionnaire.AnswerComponentId == 1 && submitedAnswer != null
                     ? submitedAnswer.AnswerId
                     : null,
                 AnswerContent = questionnaire.AnswerComponentId == 2 && submitedAnswer != null
@@ -112,7 +112,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
                 if (questionnaire.AnswerComponentId != 2)
                     throw new UserFriendlyException("فقط برای سوال های تشریحی میتوان کد پرسشنامه را ارسال کرد");
                 submittedAnswerQuery.Where(x => x.UserId == _commonAppService.GetUserId() && x.QuestionnaireId == submitteAnswerDto.QuestionnaireId.Value);
-                if(submittedAnswerQuery.FirstOrDefault() != null)
+                if (submittedAnswerQuery.FirstOrDefault() != null)
                     throw new UserFriendlyException("شما قبلا به این سوال جواب داده اید");
                 submittedAnswer = await _submitedAnswerRepository.InsertAsync(
                 new SubmittedAnswers()
@@ -125,7 +125,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
                 return ObjectMapper.Map<SubmittedAnswers, SubmitteAnswerDto>(submittedAnswer);
             }
             var userId = _commonAppService.GetUserId();
-            
+
             var answer = _questionnaireAnswerRepository.WithDetails(x => x.Questionnaire)
                 .FirstOrDefault(x => x.Id == submitteAnswerDto.AnswerId)
                 ?? throw new UserFriendlyException("جواب مورد نظر پیدا نشد");
@@ -137,8 +137,9 @@ namespace OrderManagement.Application.OrderManagement.Implementations
 
             var answerIds = questionnaire.QuestionnaireAnswers.Select(x => x.Id).ToList();
             submittedAnswerQuery = submittedAnswerQuery.Where(x => x.UserId == userId && answerIds.Any(y => y == x.AnswerId.Value));
-            if (submittedAnswerQuery.FirstOrDefault() != null)
-                throw new UserFriendlyException("شما قبلا به این سوال جواب داده اید");
+            var submitted = submittedAnswerQuery.FirstOrDefault();
+            if (submitted != null)
+                throw new UserFriendlyException($"شما قبلا به این سوال جواب داده اید");
 
             submittedAnswer = await _submitedAnswerRepository.InsertAsync(
                 new SubmittedAnswers()
@@ -149,6 +150,21 @@ namespace OrderManagement.Application.OrderManagement.Implementations
                     QuestionnaireId = questionId
                 });
             return ObjectMapper.Map<SubmittedAnswers, SubmitteAnswerDto>(submittedAnswer);
+        }
+
+        public async Task SubmitAnswers(List<int> answerIds)
+        {
+            //TODO : add enum and replace it here
+            var incomingQuestionnaireIds = _questionnaireRepository.WithDetails(x => x.QuestionnaireAnswers).Where(x => x.AnswerComponentId == 1).Select(x => x.Id);
+            var questionnaireIds = (await _questionnaireAnswerRepository.GetQueryableAsync()).Select(x => x.QuestionnaireId);
+            var unAnsweredQuestions = questionnaireIds.Any(x => incomingQuestionnaireIds.Any(y => y != x));
+            if (unAnsweredQuestions)
+                throw new UserFriendlyException("لطفا به تمام سوالات پاسخ دهید");
+
+            answerIds.ForEach(async x => await SubmitAnswer(new SubmitteAnswerDto()
+            {
+                AnswerId = x
+            }));
         }
     }
 }
