@@ -107,6 +107,11 @@ public class EsaleGrpcClient : ApplicationService, IEsaleGrpcClient
             RelationIdB = paymentStatusDto.RelationIdB,
             RelationIdC = paymentStatusDto.RelationIdC,
             RelationIdD = paymentStatusDto.RelationIdD,
+            IsRelationIdGroup = paymentStatusDto.IsRelationIdGroup,
+            IsRelationIdBGroup = paymentStatusDto.IsRelationIdBGroup,
+            IsRelationIdCGroup = paymentStatusDto.IsRelationIdCGroup,
+            IsRelationIdDGroup = paymentStatusDto.IsRelationIdDGroup
+
         });
         if (paymentStatus == null || paymentStatus.PaymentStatusData == null || paymentStatus.PaymentStatusData.Count == 0)
         {
@@ -116,7 +121,38 @@ public class EsaleGrpcClient : ApplicationService, IEsaleGrpcClient
         {
             Count = x.Count,
             Message = x.Message,
-            Status = x.Status
+            Status = x.Status,
+            F1 = x.F1,
+            F2 = x.F2,
+            F3 = x.F3,
+            F4 = x.F4
+        }).ToList();
+    }
+    public async Task<List<PaymentStatusModel>> GetPaymentStatusByGroupList(PaymentStatusDto paymentStatusDto)
+    {
+        var channel = GrpcChannel.ForAddress(_configuration.GetValue<string>("Payment:GrpcAddress"));
+        var client = new PaymentServiceGrpc.PaymentServiceGrpc.PaymentServiceGrpcClient(channel);
+
+        var paymentStatus = await client.GetPaymentStatusByGroupListAsync(new()
+        {
+            RelationId = paymentStatusDto.RelationId,
+            RelationIdB = paymentStatusDto.RelationIdB,
+            RelationIdC = paymentStatusDto.RelationIdC,
+            RelationIdD = paymentStatusDto.RelationIdD,
+        });
+        if (paymentStatus == null || paymentStatus.PaymentStatusData == null || paymentStatus.PaymentStatusData.Count == 0)
+        {
+            return new List<PaymentStatusModel>();
+        }
+        return paymentStatus.PaymentStatusData.Select(x => new PaymentStatusModel()
+        {
+            Count = x.Count,
+            Message = x.Message,
+            Status = x.Status,
+            F1= x.F1,
+            F2 = x.F2,
+            F3 = x.F3,
+            F4 = x.F4
         }).ToList();
     }
 

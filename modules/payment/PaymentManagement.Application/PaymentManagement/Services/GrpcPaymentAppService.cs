@@ -16,7 +16,10 @@ namespace PaymentManagement.Application.PaymentManagement.Services
         {
             return _paymentAppService.InquiryWithFilterParam(paymentStatusDto.RelationId, paymentStatusDto.RelationIdB, paymentStatusDto.RelationIdC, paymentStatusDto.RelationIdD);
         }
-
+        public List<InquiryWithFilterParamDto> GetPaymentStatusByGroupList(PaymentStatusDto paymentStatusDto)
+        {
+            return _paymentAppService.InquiryWithFilterParamGroupByParams(paymentStatusDto.RelationId, paymentStatusDto.RelationIdB, paymentStatusDto.RelationIdC, paymentStatusDto.RelationIdD);
+        }
         public async Task<List<RetryForVerifyOutputDto>> RetryForVerify()
         {
             return await _paymentAppService.RetryForVerify();

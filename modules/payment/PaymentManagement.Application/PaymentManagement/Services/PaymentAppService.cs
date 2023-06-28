@@ -56,7 +56,14 @@ namespace PaymentManagement.Application.Servicess
                 .Select(o => new PspAccountDto { Id = o.Id, PspId = o.PspId, AccountName = o.Account.AccountName, Psp = o.Psp.Title })
                 .ToList();
         }
-        public List<InquiryWithFilterParamDto> InquiryWithFilterParam(int? filterParam1, int? filterParam2, int? filterParam3, int? filterParam4)
+   
+        public List<InquiryWithFilterParamDto> InquiryWithFilterParam(int? filterParam1, int? filterParam2, int? filterParam3, int? filterParam4
+            , bool? IsRelationIdGroup
+            , bool? IsRelationIdBGroup
+            , bool? IsRelationIdCGroup
+            , bool? IsRelationIdDGroup
+
+            )
         {
             //todo:باید این قسمت بعدن برداشته شود
             filterParam1 = filterParam1 == 0 ? null : filterParam1;
@@ -64,15 +71,70 @@ namespace PaymentManagement.Application.Servicess
             filterParam3 = filterParam3 == 0 ? null : filterParam3;
             filterParam4 = filterParam4 == 0 ? null : filterParam4;
 
+            IsRelationIdGroup = IsRelationIdGroup != true ? null : true;
+            IsRelationIdBGroup = IsRelationIdBGroup != true ? null : true;
+            IsRelationIdCGroup = IsRelationIdCGroup != true ? null : true;
+            IsRelationIdDGroup = IsRelationIdDGroup != true ? null : true;
+
+
+
+
             return _paymentRepository.WithDetails().AsNoTracking()
                 .Where(o => (filterParam1 == null || o.FilterParam1 == filterParam1) && (filterParam2 == null || o.FilterParam2 == filterParam2) &&
                             (filterParam3 == null || o.FilterParam3 == filterParam3) && (filterParam4 == null || o.FilterParam4 == filterParam4))
-                .GroupBy(o => o.PaymentStatusId).Select(o => new InquiryWithFilterParamDto
+                .GroupBy(o => new 
+                    {
+                        filterParam1 = IsRelationIdGroup != null ? o.FilterParam1 : null,
+                        filterParam2 = IsRelationIdBGroup != null ? o.FilterParam2 : null,
+                        filterParam3 = IsRelationIdCGroup != null ? o.FilterParam3 : null,
+                        filterParam4 = IsRelationIdDGroup != null ? o.FilterParam4 : null,
+                        o.PaymentStatusId
+                }
+                ).Select(o => new InquiryWithFilterParamDto
                 {
-                    Status = o.Key,
-                    Message = EnumExtension.GetEnumDescription((PaymentStatusEnum)o.Key),
+                    Status = o.Key.PaymentStatusId,
+                    filterParam1 = o.Key.filterParam1,
+                    filterParam2 = o.Key.filterParam2,
+                    filterParam3 = o.Key.filterParam3,
+                    filterParam4 = o.Key.filterParam4,
+                    Message = EnumExtension.GetEnumDescription((PaymentStatusEnum)o.Key.PaymentStatusId),
                     Count = o.Count()
                 }).ToList();
+        }
+        public List<InquiryWithFilterParamDto> InquiryWithFilterParamGroupByParams(int? filterParam1, int? filterParam2, int? filterParam3, int? filterParam4)
+        {
+            //todo:باید این قسمت بعدن برداشته شود
+            filterParam1 = filterParam1 == 0 ? null : filterParam1;
+            filterParam2 = filterParam2 == 0 ? null : filterParam2;
+            filterParam3 = filterParam3 == 0 ? null : filterParam3;
+            filterParam4 = filterParam4 == 0 ? null : filterParam4;
+
+
+            return _paymentRepository.WithDetails().AsNoTracking()
+                .Where(o => (filterParam1 == null || o.FilterParam1 == filterParam1) && (filterParam2 == null || o.FilterParam2 == filterParam2) &&
+                            (filterParam3 == null || o.FilterParam3 == filterParam3) && (filterParam4 == null || o.FilterParam4 == filterParam4))
+                .GroupBy(o => new {
+                    filterParam1 = filterParam1 != null ? o.FilterParam1 : null,
+                    filterParam2 = filterParam2 != null ? o.FilterParam2 : null,
+                    filterParam3 = filterParam3 != null ? o.FilterParam3 : null,
+                    filterParam4 = filterParam4 != null ? o.FilterParam4 : null,
+                    o.PaymentStatusId
+
+
+                }).Select(o => new InquiryWithFilterParamDto
+                {
+                    Status = o.Key.PaymentStatusId,
+                    Message = EnumExtension.GetEnumDescription((PaymentStatusEnum)o.Key.PaymentStatusId),
+                    filterParam1 = o.Key.filterParam1,
+                    filterParam2 = o.Key.filterParam2,
+                    filterParam3 = o.Key.filterParam3,
+                    filterParam4 = o.Key.filterParam4,
+                    Count = o.Count()
+                }).ToList();
+
+
+
+        
         }
         public string GetCallBackUrl(int paymentId)
         {

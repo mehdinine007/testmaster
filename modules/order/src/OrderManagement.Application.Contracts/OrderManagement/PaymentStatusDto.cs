@@ -8,6 +8,10 @@ namespace OrderManagement.Application.Contracts
         public int RelationIdB { get; set; }
         public int RelationIdC { get; set; }
         public int RelationIdD { get; set; }
+        public bool IsRelationIdGroup  { get; set; }
+        public bool IsRelationIdBGroup { get; set; }
+        public bool IsRelationIdCGroup { get; set; }
+        public bool IsRelationIdDGroup { get; set; }
 
     }
 }

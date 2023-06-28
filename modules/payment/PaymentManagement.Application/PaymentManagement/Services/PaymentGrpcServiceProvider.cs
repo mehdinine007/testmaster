@@ -32,8 +32,12 @@ namespace PaymentManagement.Application.PaymentManagement.Services
         }
         public override Task<PaymentStatusViewModel> GetPaymentStatusList(PaymentGetStatusDto paymentStatusDto,ServerCallContext context)
         {
-
-            var paymentStatus = _paymentAppService.InquiryWithFilterParam(paymentStatusDto.RelationId, paymentStatusDto.RelationIdB, paymentStatusDto.RelationIdC, paymentStatusDto.RelationIdD);
+            var paymentStatus = _paymentAppService.InquiryWithFilterParam(paymentStatusDto.RelationId, paymentStatusDto.RelationIdB, paymentStatusDto.RelationIdC, paymentStatusDto.RelationIdD
+                , paymentStatusDto.IsRelationIdGroup
+                , paymentStatusDto.IsRelationIdBGroup
+                , paymentStatusDto.IsRelationIdCGroup
+                , paymentStatusDto.IsRelationIdDGroup
+                );
             if (paymentStatus == null)
                 return Task.FromResult(new PaymentStatusViewModel());
             var paymentViewModel = new PaymentStatusViewModel();
@@ -41,7 +45,32 @@ namespace PaymentManagement.Application.PaymentManagement.Services
             {
                 Count = x.Count,
                 Message = x.Message,
-                Status = x.Status
+                Status = x.Status,
+                F1 = x.filterParam1 == null ? 0 : (int)x.filterParam1,
+                F2 = x.filterParam2 == null ? 0 : (int)x.filterParam2,
+                F3 = x.filterParam3 == null ? 0 : (int)x.filterParam3,
+                F4 = x.filterParam4 == null ? 0 : (int)x.filterParam4,
+
+            }).ToList());
+            return Task.FromResult(paymentViewModel);
+        }
+        public override Task<PaymentStatusGroupViewModel> GetPaymentStatusByGroupList(PaymentGetStatusDto paymentStatusDto, ServerCallContext context)
+        {
+
+            var paymentStatus = _paymentAppService.InquiryWithFilterParamGroupByParams(paymentStatusDto.RelationId, paymentStatusDto.RelationIdB, paymentStatusDto.RelationIdC, paymentStatusDto.RelationIdD);
+            if (paymentStatus == null)
+                return Task.FromResult(new PaymentStatusGroupViewModel());
+            var paymentViewModel = new PaymentStatusGroupViewModel();
+            paymentViewModel.PaymentStatusData.AddRange(paymentStatus.Select(x => new PaymentStatusDataGroup()
+            {
+                Count = x.Count,
+                Message = x.Message,
+                Status = x.Status,
+                F1 = x.filterParam1 == null ? 0: (int)x.filterParam1,
+                F2 = x.filterParam2 == null ? 0: (int)x.filterParam2,
+                F3 = x.filterParam3 == null ? 0: (int)x.filterParam3,
+                F4 = x.filterParam4 == null ? 0: (int)x.filterParam4,
+
             }).ToList());
             return Task.FromResult(paymentViewModel);
         }

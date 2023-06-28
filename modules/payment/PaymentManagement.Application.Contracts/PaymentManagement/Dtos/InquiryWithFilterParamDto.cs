@@ -11,5 +11,10 @@ namespace PaymentManagement.Application.Contracts.Dtos
         public string Message { get; set; }
         [DataMember(Order = 3)]
         public int Count { get; set; }
+        public int? filterParam1 { get;set; }
+        public int? filterParam2 { get; set; }
+        public int? filterParam3 { get; set; }
+        public int? filterParam4 { get; set; }
+
     }
 }

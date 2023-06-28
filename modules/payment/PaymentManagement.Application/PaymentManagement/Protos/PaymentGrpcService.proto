@@ -11,6 +11,8 @@ package PaymentService;
 service PaymentServiceGrpc{
 	rpc GetPaymentInformation(PaymentInformationRequest) returns (PaymentInformationResponse);
 	rpc GetPaymentStatusList(PaymentGetStatusDto) returns (PaymentStatusViewModel);
+	rpc GetPaymentStatusByGroupList(PaymentGetStatusDto) returns (PaymentStatusGroupViewModel);
+
 	rpc RetryForVerify(RetryForVerifyRequest) returns (RetryForVerifyResponse);
 }
 
@@ -28,11 +30,30 @@ message PaymentInformationResponse{
 message PaymentStatusViewModel {
     repeated PaymentStatusData PaymentStatusData = 1;
 }
-
+message PaymentStatusGroupViewModel {
+    repeated PaymentStatusDataGroup PaymentStatusData = 1;
+}
 message PaymentStatusData {
     int32 Status = 1;
     string Message = 2;
-    int64 Count = 3;
+    int64 Count = 3;  
+      int32 f1 = 4;
+    int32 f2 = 5;
+    int32 f3 = 6;
+    int32 f4 = 7;
+
+}
+message PaymentStatusDataGroup {
+    int32 Status = 1;
+    string Message = 2;
+    int64 Count = 3; 
+    int32 f1 = 4;
+    int32 f2 = 5;
+    int32 f3 = 6;
+    int32 f4 = 7;
+   
+
+
 }
 
 message PaymentGetStatusDto {
@@ -40,6 +61,12 @@ message PaymentGetStatusDto {
     int32 RelationIdB = 2;
     int32 RelationIdC = 3;
     int32 RelationIdD = 4;
+    bool IsRelationIdGroup = 5;
+    bool IsRelationIdBGroup = 6; 
+    bool IsRelationIdCGroup = 7; 
+    bool IsRelationIdDGroup = 8; 
+    
+   
 }
 
 message RetryForVerifyRequest{

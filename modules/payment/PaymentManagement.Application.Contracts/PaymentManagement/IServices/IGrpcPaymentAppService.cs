@@ -8,6 +8,7 @@ namespace PaymentManagement.Application.Contracts.IServices
     {
         List<InquiryWithFilterParamDto> GetPaymentStatusList(PaymentStatusDto paymentStatusDto);
         Task<List<RetryForVerifyOutputDto>> RetryForVerify();
+        List<InquiryWithFilterParamDto> GetPaymentStatusByGroupList(PaymentStatusDto paymentStatusDto);
 
     }
 }

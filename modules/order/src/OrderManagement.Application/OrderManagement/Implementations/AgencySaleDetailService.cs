@@ -54,13 +54,32 @@ namespace OrderManagement.Application.OrderManagement.Implementations
 
         }
 
-        public async Task<AgencySaleDetailListDto> GetBySaleDetailId(int saleDetailId, int agancyId)
+        public async Task<AgencySaleDetailListDto> GetBySaleDetailId(int saleDetailId, int? agancyId = null)
         {
             var agancySaleDetail = _agencySaleDetailRepository
                 .WithDetails()
                 .AsNoTracking()
-                .FirstOrDefault(x => x.SaleDetailId == saleDetailId && !x.IsDeleted && x.AgencyId == agancyId);
+                .FirstOrDefault(x => x.SaleDetailId == saleDetailId && !x.IsDeleted &&
+                 (agancyId == null || x.AgencyId == agancyId)
+               );
             return ObjectMapper.Map<AgencySaleDetail,AgencySaleDetailListDto>(agancySaleDetail);
+        }
+        public async Task<List<AgencySaleDetailForCapacityControlDto>> GetAgeneciesBySaleDetail(int saleDetailId)
+        {
+            var IQagancySaleDetails = await _agencySaleDetailRepository.GetQueryableAsync();
+            var agancySaleDetail = IQagancySaleDetails
+               .AsNoTracking()
+               .Where(x => x.SaleDetailId == saleDetailId)
+               .Select(x => new AgencySaleDetailForCapacityControlDto
+               {
+                   AgencyId = x.AgencyId,
+                   Id = x.Id,
+                   DistributionCapacity = x.DistributionCapacity,
+                   ReserveCount = x.ReserveCount
+               }).ToList();
+
+
+            return agancySaleDetail;
         }
 
         public long GetReservCount(int saleDetailId)
