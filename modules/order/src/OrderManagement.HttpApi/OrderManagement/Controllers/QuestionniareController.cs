@@ -15,9 +15,9 @@ namespace OrderManagement.HttpApi.OrderManagement.Controllers
     [Route("api/services/app/SaleDetailService/[action]")]
     public class QuestionniareController : AbpController
     {
-        private readonly IQuestionniareService _questionnaireService;
+        private readonly IQuestionnaireService _questionnaireService;
 
-        public QuestionniareController(IQuestionniareService questionnaireService)
+        public QuestionniareController(IQuestionnaireService questionnaireService)
             => _questionnaireService = questionnaireService;
 
 

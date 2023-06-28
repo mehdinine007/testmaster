@@ -13,7 +13,7 @@ using Volo.Abp.ObjectMapping;
 
 namespace OrderManagement.Application.OrderManagement.Implementations
 {
-    public class QuestionniareService : ApplicationService, IQuestionniareService
+    public class QuestionnaireService : ApplicationService, IQuestionnaireService
     {
         private readonly IRepository<Questionnaire, int> _questionnaireRepository;
         private readonly IRepository<QuestionnaireAnswer, int> _questionnaireAnswerRepository;
@@ -21,7 +21,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
         private readonly IRepository<SubmittedAnswers, int> _submitedAnswerRepository;
         private readonly ICommonAppService _commonAppService;
 
-        public QuestionniareService(IRepository<Questionnaire, int> questionnaireRepository,
+        public QuestionnaireService(IRepository<Questionnaire, int> questionnaireRepository,
                                     IRepository<AnswerComponentType, int> answerComponentType,
                                     IRepository<QuestionnaireAnswer, int> questionnaireAnswerRepository,
                                     IRepository<SubmittedAnswers, int> submitedAnswerRepository,
@@ -37,7 +37,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
 
         public async Task<QuestionnaireDto> CreateQuestionnaire(QuestionnaireDto questionnaireDto)
         {
-            var questionnaire = await _questionnaireRepository.InsertAsync(ObjectMapper.Map<QuestionnaireDto, Questionnaire>(questionnaireDto));
+            var questionnaire = await _questionnaireRepository.InsertAsync(ObjectMapper.Map<QuestionnaireDto, Questionnaire>(questionnaireDto), autoSave: true);
             return ObjectMapper.Map<Questionnaire, QuestionnaireDto>(questionnaire);
         }
 

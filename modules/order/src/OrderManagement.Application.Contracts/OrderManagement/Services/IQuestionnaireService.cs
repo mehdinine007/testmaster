@@ -4,7 +4,7 @@ using Volo.Abp.Application.Services;
 
 namespace OrderManagement.Application.Contracts.Services
 {
-    public interface IQuestionniareService : IApplicationService
+    public interface IQuestionnaireService : IApplicationService
     {
         Task<QuestionnaireDto> CreateQuestionnaire(QuestionnaireDto questionnaireDto);
 
