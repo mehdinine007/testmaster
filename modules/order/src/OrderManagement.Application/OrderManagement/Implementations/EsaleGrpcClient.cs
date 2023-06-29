@@ -13,6 +13,7 @@ using StackExchange.Redis;
 using Google.Protobuf.WellKnownTypes;
 using System.Collections.Generic;
 using System.Linq;
+using OrderManagement.Application.PaymentServiceGrpc;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -77,12 +78,14 @@ public class EsaleGrpcClient : ApplicationService, IEsaleGrpcClient
         };
     }
 
-    public async Task<PaymentInformationResponseDto> GetPaymentInformation(int paymentId)
+    private PaymentServiceGrpc.PaymentServiceGrpc.PaymentServiceGrpcClient PaymentServiceGrpcClient()
     {
         var channel = GrpcChannel.ForAddress(_configuration.GetValue<string>("Payment:GrpcAddress"));
-        var client  = new PaymentServiceGrpc.PaymentServiceGrpc.PaymentServiceGrpcClient(channel);
-
-        var paymentInformation = await client.GetPaymentInformationAsync(new()
+        return new PaymentServiceGrpc.PaymentServiceGrpc.PaymentServiceGrpcClient(channel);
+    }
+    public async Task<PaymentInformationResponseDto> GetPaymentInformation(int paymentId)
+    {
+        var paymentInformation = await PaymentServiceGrpcClient().GetPaymentInformationAsync(new()
         {
             PaymentId = paymentId
         });
@@ -98,10 +101,7 @@ public class EsaleGrpcClient : ApplicationService, IEsaleGrpcClient
 
     public async Task<List<PaymentStatusModel>> GetPaymentStatusList(PaymentStatusDto paymentStatusDto)
     {
-        var channel = GrpcChannel.ForAddress(_configuration.GetValue<string>("Payment:GrpcAddress"));
-        var client = new PaymentServiceGrpc.PaymentServiceGrpc.PaymentServiceGrpcClient(channel);
-
-        var paymentStatus = await client.GetPaymentStatusListAsync(new()
+        var paymentStatus = await PaymentServiceGrpcClient().GetPaymentStatusListAsync(new()
         {
             RelationId = paymentStatusDto.RelationId,
             RelationIdB = paymentStatusDto.RelationIdB,
@@ -130,10 +130,7 @@ public class EsaleGrpcClient : ApplicationService, IEsaleGrpcClient
     }
     public async Task<List<PaymentStatusModel>> GetPaymentStatusByGroupList(PaymentStatusDto paymentStatusDto)
     {
-        var channel = GrpcChannel.ForAddress(_configuration.GetValue<string>("Payment:GrpcAddress"));
-        var client = new PaymentServiceGrpc.PaymentServiceGrpc.PaymentServiceGrpcClient(channel);
-
-        var paymentStatus = await client.GetPaymentStatusByGroupListAsync(new()
+        var paymentStatus = await PaymentServiceGrpcClient().GetPaymentStatusByGroupListAsync(new()
         {
             RelationId = paymentStatusDto.RelationId,
             RelationIdB = paymentStatusDto.RelationIdB,
@@ -158,10 +155,7 @@ public class EsaleGrpcClient : ApplicationService, IEsaleGrpcClient
 
     public async Task<List<RetryForVerifyPaymentDto>> RetryForVerify()
     {
-        var channel = GrpcChannel.ForAddress(_configuration.GetValue<string>("Payment:GrpcAddress"));
-        var client = new PaymentServiceGrpc.PaymentServiceGrpc.PaymentServiceGrpcClient(channel);
-
-        var paymentStatus = await client.RetryForVerifyAsync(new PaymentServiceGrpc.RetryForVerifyRequest());
+        var paymentStatus = await PaymentServiceGrpcClient().RetryForVerifyAsync(new RetryForVerifyRequest());
         if (paymentStatus == null || paymentStatus.RetryForVerifyData == null || paymentStatus.RetryForVerifyData.Count == 0)
         {
             return new List<RetryForVerifyPaymentDto>();
@@ -175,5 +169,73 @@ public class EsaleGrpcClient : ApplicationService, IEsaleGrpcClient
             FilterParam3 = x.FilterParam3,
             FilterParam4 = x.FilterParam4
         }).ToList();
+    }
+
+    public async Task<PaymentHandShakeViewModel> HandShake(PaymentHandShakeDto handShakeDto)
+    {
+        var handShake = await PaymentServiceGrpcClient().HandShakeAsync(new HandShakeDto()
+        {
+            AdditionalData = handShakeDto.AdditionalData,
+            Amount = handShakeDto.Amount,
+            CallBackUrl = handShakeDto.CallBackUrl,
+            Mobile = handShakeDto.Mobile,
+            NationalCode = handShakeDto.NationalCode,
+            PspAccountId = handShakeDto.PspAccountId,
+            FilterParam1 = handShakeDto.FilterParam1 ?? 0,
+            FilterParam2 = handShakeDto.FilterParam2 ?? 0,
+            FilterParam3 = handShakeDto.FilterParam3 ?? 0,
+            FilterParam4 = handShakeDto.FilterParam4 ?? 0 
+        });
+        if (handShake == null)
+        {
+            return new PaymentHandShakeViewModel();
+        }
+        return new PaymentHandShakeViewModel()
+        {
+            HtmlContent = handShake.HtmlContent,
+            Message = handShake.Message,
+            PaymentId = handShake.PaymentId,
+            PspJsonResult = handShake.PspJsonResult,
+            StatusCode = handShake.StatusCode,
+            Token = handShake.Token
+        };
+    }
+
+    public async Task<PaymentResultViewModel> Verify(int paymentId)
+    {
+        var verify = await PaymentServiceGrpcClient().VerifyAsync(new PaymentInputDto()
+        {
+            PaymentId = paymentId
+        });
+        if (verify == null)
+        {
+            return new PaymentResultViewModel();
+        }
+        return new PaymentResultViewModel()
+        {
+            Message = verify.Message,
+            PaymentId = verify.PaymentId,
+            PspJsonResult = verify.PspJsonResult,
+            StatusCode = verify.StatusCode,
+        };
+    }
+
+    public async Task<PaymentResultViewModel> Reverse(int paymentId)
+    {
+        var reverse = await PaymentServiceGrpcClient().ReverseAsync(new PaymentInputDto()
+        {
+            PaymentId = paymentId
+        });
+        if (reverse == null)
+        {
+            return new PaymentResultViewModel();
+        }
+        return new PaymentResultViewModel()
+        {
+            Message = reverse.Message,
+            PaymentId = reverse.PaymentId,
+            PspJsonResult = reverse.PspJsonResult,
+            StatusCode = reverse.StatusCode,
+        };
     }
 }
