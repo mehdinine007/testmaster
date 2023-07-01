@@ -5,6 +5,7 @@ option csharp_namespace = "OrderManagement.Application.PaymentServiceGrpc";
 import "google/protobuf/duration.proto";  
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
 
 package PaymentService;
 
@@ -40,30 +41,30 @@ message PaymentStatusData {
     int32 Status = 1;
     string Message = 2;
     int64 Count = 3;  
-      int32 f1 = 4;
-    int32 f2 = 5;
-    int32 f3 = 6;
-    int32 f4 = 7;
+    google.protobuf.Int32Value f1 = 4;
+    google.protobuf.Int32Value f2 = 5;
+    google.protobuf.Int32Value f3 = 6;
+    google.protobuf.Int32Value f4 = 7;
 
 }
 message PaymentStatusDataGroup {
     int32 Status = 1;
     string Message = 2;
     int64 Count = 3; 
-    int32 f1 = 4;
-    int32 f2 = 5;
-    int32 f3 = 6;
-    int32 f4 = 7;
+    google.protobuf.Int32Value f1 = 4;
+    google.protobuf.Int32Value f2 = 5;
+    google.protobuf.Int32Value f3 = 6;
+    google.protobuf.Int32Value f4 = 7;
    
 
 
 }
 
 message PaymentGetStatusDto {
-    int32 RelationId = 1;
-    int32 RelationIdB = 2;
-    int32 RelationIdC = 3;
-    int32 RelationIdD = 4;
+    google.protobuf.Int32Value RelationId = 1;
+    google.protobuf.Int32Value RelationIdB = 2;
+    google.protobuf.Int32Value RelationIdC = 3;
+    google.protobuf.Int32Value RelationIdD = 4;
     bool IsRelationIdGroup = 5;
     bool IsRelationIdBGroup = 6; 
     bool IsRelationIdCGroup = 7; 
@@ -82,10 +83,10 @@ message RetryForVerifyResponse {
 message RetryForVerifyData {
     int32 PaymentId = 1;
     int32 PaymentStatus = 2;
-    int32 FilterParam1 = 3;
-    int32 FilterParam2 = 4;
-    int32 FilterParam3 = 5;
-    int32 FilterParam4 = 6;
+    google.protobuf.Int32Value FilterParam1 = 3;
+    google.protobuf.Int32Value FilterParam2 = 4;
+    google.protobuf.Int32Value FilterParam3 = 5;
+    google.protobuf.Int32Value FilterParam4 = 6;
 } 
 
 message HandShakeDto {
@@ -95,10 +96,10 @@ message HandShakeDto {
      string NationalCode =4;
      string Mobile =5;
      string AdditionalData =6;
-     int32 FilterParam1 =7;
-     int32 FilterParam2 =8;
-     int32 FilterParam3 =9;
-     int32 FilterParam4 =10;
+     google.protobuf.Int32Value FilterParam1 =7;
+     google.protobuf.Int32Value FilterParam2 =8;
+     google.protobuf.Int32Value FilterParam3 =9;
+     google.protobuf.Int32Value FilterParam4 =10;
 }
 
 message HandShakeViewModel {
