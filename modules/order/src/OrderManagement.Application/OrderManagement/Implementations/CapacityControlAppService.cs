@@ -44,15 +44,6 @@ namespace OrderManagement.Application.OrderManagement
                     try
                     {
                         await _redisCacheManager.StringSetAsync(string.Format(CapacityControlConstants.CapacityControlPrefix, _key), saledetail.SaleTypeCapacity.ToString());
-                        //var agences = GetAgancySaleDetails(saledetail.Id);
-                        //if (agences != null && agences.Count > 0)
-                        //{
-                        //    foreach (var agency in agences)
-                        //    {
-                        //        _key = string.Format(CapacityControlConstants.AgancySaleDetailPrefix, saledetail.UID.ToString(), agency.AgencyId.ToString());
-                        //        await _redisCacheManager.StringSetAsync(string.Format(CapacityControlConstants.CapacityControlPrefix, _key), agency.DistributionCapacity.ToString());
-                        //    }
-                        //}
                     }
                     catch (Exception ex)
                     {
@@ -80,28 +71,7 @@ namespace OrderManagement.Application.OrderManagement
                     {
                         _value = paymentDtos.FirstOrDefault(x => x.Status == 2).Count;
                     }
-                    //using (var channel = GrpcChannel.ForAddress(_configuration.GetSection("gRPC:PaymentUrl").Value))
-                    //{
-                    //    var paymentAppService = channel.CreateGrpcService<IGrpcPaymentAppService>();
-                    //    var paymentDtos = paymentAppService.GetPaymentStatusList(new PaymentStatusDto()
-                    //    {
-                    //        RelationId = saledetail.Id
-                    //    });
-                    //    if (paymentDtos != null && paymentDtos.Any(x => x.Status == 0))
-                    //    {
-                    //        _value = paymentDtos.FirstOrDefault(x => x.Status == 0).Count;
-                    //    }
-                    //}
                     await _redisCacheManager.StringSetAsync(string.Format(CapacityControlConstants.CapacityControlPrefix, _key), _value.ToString());
-                    //var agences = GetAgancySaleDetails(saledetail.Id);
-                    //if (agences != null && agences.Count > 0)
-                    //{
-                    //    foreach (var agency in agences)
-                    //    {
-                    //        _key = string.Format(CapacityControlConstants.AgancyPaymentPrefix, saledetail.UID.ToString(), agency.AgencyId.ToString());
-                    //        await _redisCacheManager.StringSetAsync(string.Format(CapacityControlConstants.CapacityControlPrefix, _key), "0");
-                    //    }
-                    //}
                 }
             }
             return new SuccsessResult();
@@ -115,6 +85,15 @@ namespace OrderManagement.Application.OrderManagement
             //{
             //    RelationId = 60
             //});
+            var handshake = await _grpcClient.HandShake(new PaymentHandShakeDto()
+            {
+                Amount = 10000,
+                PspAccountId = 4,
+                CallBackUrl = "http",
+                Mobile = "09140352778",
+                NationalCode = "1092271600",
+                AdditionalData = "asda"
+            });
             Validation(165, 1029);
         }
 
@@ -127,26 +106,10 @@ namespace OrderManagement.Application.OrderManagement
             _key = string.Format(CapacityControlConstants.PaymentCountPrefix, saleDetailUId.ToString());
             long _request = await _redisCacheManager.StringIncrementAsync(string.Format(CapacityControlConstants.CapacityControlPrefix, _key));
 
-            //_key = string.Format(CapacityControlConstants.PaymentRequestPrefix, saleDetailId.ToString());
-            //await _redisCacheManager.StringIncrementAsync(string.Format(CapacityControlConstants.CapacityControlPrefix));
             if (_request > _capacity && _capacity > 0)
             {
                 throw new UserFriendlyException(CapacityControlConstants.NoCapacityCreateTicket,code: CapacityControlConstants.NoCapacityCreateTicketId);
             }
-            //agancy
-            //if (agancyId != null && agancyId != 0)
-            //{
-            //    long _agancyCapacity = 0;
-            //    _key = string.Format(CapacityControlConstants.AgancySaleDetailPrefix, saleDetailUId.ToString(), agancyId.ToString());
-            //    long.TryParse(await _redisCacheManager.GetStringAsync(string.Format(CapacityControlConstants.CapacityControlPrefix, _key)), out _agancyCapacity);
-
-            //    _key = string.Format(CapacityControlConstants.AgancyPaymentPrefix, saleDetailUId.ToString(), agancyId.ToString());
-            //    long _agancyRequest = await _redisCacheManager.StringIncrementAsync(string.Format(CapacityControlConstants.CapacityControlPrefix, _key));
-            //    if (_agancyRequest > _agancyCapacity && _agancyCapacity > 0)
-            //    {
-            //        return new ErrorResult(CapacityControlConstants.AgancyNoCapacityCreateTicket, CapacityControlConstants.AgancyNoCapacityCreateTicketId);
-            //    }
-            //}
             return true;
         }
 
@@ -172,19 +135,6 @@ namespace OrderManagement.Application.OrderManagement
             {
                 _saleDetailPaymentCount = paymentDtos.Where(x => x.Status == 2).Sum(x => x.Count);
             }
-
-            //using (var channel = GrpcChannel.ForAddress(_configuration.GetSection("gRPC:PaymentUrl").Value))
-            //{
-            //    var paymentAppService = channel.CreateGrpcService<IGrpcPaymentAppService>();
-            //    var paymentDtos = paymentAppService.GetPaymentStatusList(new PaymentStatusDto()
-            //    {
-            //        RelationIdB = saleDetaild
-            //    });
-            //    if (paymentDtos != null && paymentDtos.Any(x => x.Status == 0))
-            //    {
-            //        _saleDetailPaymentCount = paymentDtos.FirstOrDefault(x => x.Status == 0).Count;
-            //    }
-            //}
             if (_saleDetailPaymentCount >= _saledetailCapacity && _saledetailCapacity > 0) //control zarfiat koli
             {
                 return new ErrorResult(CapacityControlConstants.NoCapacityCreateTicket, CapacityControlConstants.NoCapacityCreateTicketId);
@@ -200,12 +150,6 @@ namespace OrderManagement.Application.OrderManagement
                 int _agencyReserveCount = agencySaledetail.ReserveCount;
                 long _agancyPaymentCount = 0;
                 var paymentDtosForAgency = paymentDtos.Where(x => x.F3 == agencyId).ToList();
-                //var pppp = await _grpcClient.GetPaymentStatusList(new PaymentStatusDto()
-                //{
-                //    RelationIdB = saleDetaild,
-                //    IsRelationIdCGroup = true,
-                //    IsRelationIdBGroup= true,
-                //});
                 if (paymentDtosForAgency != null && paymentDtosForAgency.Any(x => x.Status == 2))
                 {
                     _agancyPaymentCount = paymentDtosForAgency.Where(x => x.Status == 2).Sum(x => x.Count);
@@ -214,24 +158,6 @@ namespace OrderManagement.Application.OrderManagement
                 {
                     return new ErrorResult(CapacityControlConstants.AgancyNoCapacityCreateTicket, CapacityControlConstants.AgancyNoCapacityCreateTicketId);
                 }
-                //using (var channel = GrpcChannel.ForAddress(_configuration.GetSection("gRPC:PaymentUrl").Value))
-                //{
-                //    var paymentAppService = channel.CreateGrpcService<IGrpcPaymentAppService>();
-                //    var paymentDtos = paymentAppService.GetPaymentStatusList(new PaymentStatusDto()
-                //    {
-                //        RelationIdB = saleDetaild,
-                //        RelationIdC = agencyId
-                //    });
-                //    if (paymentDtos != null && paymentDtos.Any(x => x.Status == 0))
-                //    {
-                //        _agancyPaymentCount = paymentDtos.FirstOrDefault(x => x.Status == 0).Count;
-                //    }
-                //    if (_agancyCapacity > _agancyPaymentCount && _agancyPaymentCount > 0)
-                //    {
-                //        return new ErrorResult(CapacityControlConstants.AgancyNoCapacityCreateTicket, CapacityControlConstants.AgancyNoCapacityCreateTicketId);
-                //    }
-
-                //}
                 if (agencySaledetail.ReserveCount > 0)
                 {
 
@@ -258,23 +184,7 @@ namespace OrderManagement.Application.OrderManagement
                         {
                                 return new ErrorResult(CapacityControlConstants.AgancyNoCapacityCreateTicket, CapacityControlConstants.AgancyNoCapacityCreateTicketId);
                         }
-                       
-
-
-
                     }
-
-
-
-                    //long freeCapacity = (_saledetailCapacity) - (_agencySaleDetailService.GetReservCount(saleDetaild)) - (_saleDetailPaymentCount);
-                    //if (freeCapacity > 0)
-                    //{
-                    //    return new SuccsessResult();
-                    //}
-                    //if (agencySaledetail.ReserveCount< _agancyPaymentCount)
-                    //{
-                    //    return new ErrorResult(CapacityControlConstants.AgancyNoCapacityCreateTicket, CapacityControlConstants.AgancyNoCapacityCreateTicketId);
-                    //}
                 }
             }
             return new SuccsessResult();

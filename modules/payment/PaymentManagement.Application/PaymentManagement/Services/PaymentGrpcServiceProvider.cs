@@ -4,6 +4,7 @@ using Grpc.Core;
 using Google.Protobuf.WellKnownTypes;
 using PaymentManagement.Application.Contracts.Dtos;
 using PaymentManagement.Domain.Models;
+using NPOI.POIFS.Properties;
 
 namespace PaymentManagement.Application.PaymentManagement.Services
 {
@@ -85,12 +86,75 @@ namespace PaymentManagement.Application.PaymentManagement.Services
             {
                 PaymentId = x.PaymentId,
                 PaymentStatus = (int)x.PaymentStatus,
-                FilterParam1 = x.FilterParam1 ?? 0,
-                FilterParam2 = x.FilterParam2 ?? 0,
-                FilterParam3 = x.FilterParam3 ?? 0,
-                FilterParam4 = x.FilterParam4 ?? 0
+                FilterParam1 = x.FilterParam1,
+                FilterParam2 = x.FilterParam2,
+                FilterParam3 = x.FilterParam3,
+                FilterParam4 = x.FilterParam4
             }).ToList());
             return paymentViewModel;
         }
+
+        public override async Task<HandShakeViewModel> HandShake(HandShakeDto handShakeDto, ServerCallContext context)
+        {
+            var handShake = await _paymentAppService.HandShakeAsync(
+                 new HandShakeInputDto()
+                 {
+                     AdditionalData = handShakeDto.AdditionalData,
+                     Amount = handShakeDto.Amount,
+                     CallBackUrl = handShakeDto.CallBackUrl,
+                     Mobile = handShakeDto.Mobile,
+                     NationalCode = handShakeDto.NationalCode,
+                     PspAccountId = handShakeDto.PspAccountId,
+                     FilterParam1 = handShakeDto.FilterParam1,
+                     FilterParam2 = handShakeDto.FilterParam2,
+                     FilterParam3 = handShakeDto.FilterParam3,
+                     FilterParam4 = handShakeDto.FilterParam4
+                 }
+                );
+            if (handShake == null)
+            {
+                return new HandShakeViewModel();
+            }
+            return new HandShakeViewModel()
+            {
+                Token = handShake.Token,
+                HtmlContent = handShake.HtmlContent,
+                Message = handShake.Message,
+                PaymentId = handShake.PaymentId,
+                PspJsonResult = handShake.PspJsonResult,
+                StatusCode = handShake.StatusCode
+            };
+        }
+        public override async Task<PaymentOutputViewModel> Verify(PaymentInputDto paymentInputDto, ServerCallContext context)
+        {
+            var verify = await _paymentAppService.VerifyAsync(paymentInputDto.PaymentId);
+            if (verify == null)
+            {
+                return new PaymentOutputViewModel();
+            }
+            return new PaymentOutputViewModel()
+            {
+                Message = verify.Message,
+                PaymentId = verify.PaymentId,
+                PspJsonResult = verify.PspJsonResult,
+                StatusCode = verify.StatusCode
+            };
+        }
+        public override async Task<PaymentOutputViewModel> Reverse(PaymentInputDto paymentInputDto, ServerCallContext context)
+        {
+            var reverse = await _paymentAppService.ReverseAsync(paymentInputDto.PaymentId);
+            if (reverse == null)
+            {
+                return new PaymentOutputViewModel();
+            }
+            return new PaymentOutputViewModel()
+            {
+                Message = reverse.Message,
+                PaymentId = reverse.PaymentId,
+                PspJsonResult = reverse.PspJsonResult,
+                StatusCode = reverse.StatusCode
+            };
+        }
+
     }
 }
