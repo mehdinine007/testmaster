@@ -30,6 +30,7 @@ using Volo.Abp.Validation.StringValues;
 using Esale.Core.Caching.Redis;
 using System.Reflection;
 using Volo.Abp.ObjectMapping;
+using StackExchange.Redis;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -1043,13 +1044,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             {
                 exceptionCollection.Add(new UserFriendlyException("عملیات پرداخت ناموفق بود"));
                 exceptionCollection.Add(new UserFriendlyException(callBackRequest.Message));
-            }
-
-            var capacityControl = await _capacityControlAppService.Validation(order.SaleDetailId, order.AgencyId);
-            if (!capacityControl.Succsess)
-            {
-                await _ipgServiceProvider.ReverseTransaction(paymentId);
-                exceptionCollection.Add(new UserFriendlyException(capacityControl.Message));
+                await NotVerifyActions(order.UserId, order.Id);
                 return new PaymentResult()
                 {
                     Message = exceptionCollection.ConcatErrorMessages(),
@@ -1058,37 +1053,30 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     OrderId = order.Id
                 };
             }
-            if (exceptionCollection.Any())
+          
+
+            var capacityControl = await _capacityControlAppService.Validation(order.SaleDetailId, order.AgencyId);
+            if (!capacityControl.Succsess)
             {
-                //order.OrderStatus = OrderStatusType.PaymentNotVerified;
-                //await _commitOrderRepository.UpdateAsync(order, autoSave: true);
-                //await CurrentUnitOfWork.SaveChangesAsync();
-                var saleDetail = (await _saleDetailRepository.GetQueryableAsync()).FirstOrDefault(x => x.Id == order.SaleDetailId);
-                await _distributedCache.RemoveAsync(order.UserId.ToString() + "_" + order.SaleId);
-                await _distributedCache.RemoveAsync(order.UserId.ToString() + "_" + saleDetail.UID.ToString());
-                await _distributedCache.RemoveAsync(order.UserId.ToString());
-                await _distributedCache.RemoveAsync(order.UserId.ToString() + "_" + order.PriorityId.ToString() + "_" + order.SaleId.ToString());
-                await _distributedCache.RemoveAsync(order.UserId.ToString() + "_" + saleDetail.Id.ToString());
-                await UpdateStatus(new()
+                await _ipgServiceProvider.ReverseTransaction(paymentId);
+                exceptionCollection.Add(new UserFriendlyException(capacityControl.Message));
+                await NotVerifyActions(order.UserId, order.Id);
+                return new PaymentResult()
                 {
-                    Id = order.Id,
-                    OrderStatus = (int)OrderStatusType.PaymentNotVerified
-                });
-                await _distributedCache.SetStringAsync(string.Format(RedisConstants.OrderStatusCacheKey, order.Id), ((int)order.OrderStatus).ToString());
-                if (callBackRequest.StatusCode == 0 && callBackRequest.PaymentId > 0)
-                    await _ipgServiceProvider.ReverseTransaction(paymentId);
-                throw new UserFriendlyException("درخواست با خطا مواجه شد");
+                    Message = exceptionCollection.ConcatErrorMessages(),
+                    Status = 1,
+                    PaymentId = 0,
+                    OrderId = order.Id
+                };
             }
+          
             var verificationResponse = await _ipgServiceProvider.VerifyTransaction(paymentId);
-            //order.OrderStatus = OrderStatusType.PaymentSucceeded;
-            //await _commitOrderRepository.UpdateAsync(order, autoSave: true);
-            //await CurrentUnitOfWork.SaveChangesAsync();
+          
             await UpdateStatus(new()
             {
                 Id = order.Id,
                 OrderStatus = (int)OrderStatusType.PaymentSucceeded
             });
-            await _distributedCache.SetStringAsync(string.Format(RedisConstants.OrderStatusCacheKey, order.Id), ((int)OrderStatusType.PaymentSucceeded).ToString());
             return new PaymentResult()
             {
                 PaymentId = paymentId,
@@ -1109,7 +1097,15 @@ public class OrderAppService : ApplicationService, IOrderAppService
             };
         }
     }
-
+    private async Task NotVerifyActions(long UserId, int OrderId)
+    {
+        await _redisCacheManager.RemoveAllAsync(RedisConstants.CommitOrderPrefix + UserId.ToString() + "_");
+        await UpdateStatus(new()
+        {
+            Id = OrderId,
+            OrderStatus = (int)OrderStatusType.PaymentNotVerified
+        });
+    }
     public async Task UpdateStatus(CustomerOrderDto customerOrderDto)
     {
         try

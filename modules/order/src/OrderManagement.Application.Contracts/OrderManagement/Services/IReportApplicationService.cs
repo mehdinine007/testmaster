@@ -1,10 +1,11 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Volo.Abp.Application.Services;
 
 namespace OrderManagement.Application.Contracts.Services
 {
     public interface IReportApplicationService : IApplicationService
     {
-        Task<object> Test();
+        Task<List<SaleDetailReportDto>> SaleDetailReport(int saleDetailId);
     }
 }

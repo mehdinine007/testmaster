@@ -1499,7 +1499,7 @@ namespace PaymentManagement.Application.Servicess
         public async Task<List<RetryForVerifyOutputDto>> RetryForVerify()
         {
             //todo:شرط زمان با اضافه کردن درگاه ها باید تکمیل شود
-            var deadLine = DateTime.Now.AddMinutes(-12);
+            var deadLine = DateTime.Now.AddMinutes(_config.GetValue<int>("App:RetryForVerifyFromDateMinute"));
 
             var retryCount = _config.GetValue<int>("App:RetryCount");
             var condidateCount = _config.GetValue<int>("App:CondidateCount");

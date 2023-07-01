@@ -1,11 +1,7 @@
-﻿using System;
-using Microsoft.Extensions.Caching.Distributed;
-using OrderManagement.Application.Contracts;
+﻿using OrderManagement.Application.Contracts;
 using OrderManagement.Domain;
-using Volo.Abp;
 using Volo.Abp.AutoMapper;
 using Volo.Abp.Modularity;
-using AutoMapper.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using OrderManagement.Application.Contracts.Services;
 using OrderManagement.Application.OrderManagement.Implementations;
@@ -28,19 +24,7 @@ public class OrderManagementApplicationModule : AbpModule
             options.AddMaps<OrderManagementApplicationAutoMapperProfile>();
         });
         StaticConfig = context.Services.GetConfiguration();
-        //context.Services.AddScoped<IBaseInformationService, BaseInformationService>();
-
-        //Configure<AbpDistributedCacheOptions>(options =>
-        //{
-        //    options.GlobalCacheEntryOptions = new DistributedCacheEntryOptions()
-        //    {
-        //        AbsoluteExpiration = new DateTimeOffset(DateTime.Now.AddMinutes(20)) //20 mins default
-        //    };
-        //    options.KeyPrefix = "MyApp1";
-        //    //options.CacheConfigurators.Add(x =>
-        //    //{
-        //    //    x.
-        //    //});
-        //});
+        if(StaticConfig.GetValue<bool?>("UseGrpcPaymentService") ?? false)
+            context.Services.AddScoped<IIpgServiceProvider, IpgGrpcServiceProvider>();
     }
 }
