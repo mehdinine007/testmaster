@@ -63,12 +63,14 @@ namespace OrderManagement
             CreateMap<AgencySaleDetail, AgencySaleDetailDto>().ReverseMap();
             CreateMap<AgencySaleDetail, AgencySaleDetailListDto>()
                .ForMember(x => x.AgencyName, opt => opt.MapFrom(y => y.Agency.Name))
-                .ReverseMap();
+               .ReverseMap();
             CreateMap<Color, ColorDto>()
                 .ReverseMap();
             CreateMap<SaleSchema, SaleSchemaDto>()
                .ReverseMap();
-
+            CreateMap<PspHandShakeRequest, PaymentHandShakeDto>();
+            CreateMap<PaymentHandShakeViewModel, IpgApiResult>();
+            CreateMap<PaymentResultViewModel, PspInteractionResult>();
         }
     }
 }
