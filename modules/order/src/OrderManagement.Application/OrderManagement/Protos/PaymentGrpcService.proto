@@ -13,8 +13,10 @@ service PaymentServiceGrpc{
 	rpc GetPaymentInformation(PaymentInformationRequest) returns (PaymentInformationResponse);
 	rpc GetPaymentStatusList(PaymentGetStatusDto) returns (PaymentStatusViewModel);
 	rpc GetPaymentStatusByGroupList(PaymentGetStatusDto) returns (PaymentStatusGroupViewModel);
-
 	rpc RetryForVerify(RetryForVerifyRequest) returns (RetryForVerifyResponse);
+	rpc HandShake(HandShakeDto) returns (HandShakeViewModel);
+	rpc Verify(PaymentInputDto) returns (PaymentOutputViewModel);
+	rpc Reverse(PaymentInputDto) returns (PaymentOutputViewModel);
 }
 
 message PaymentInformationRequest{
@@ -37,8 +39,8 @@ message PaymentStatusGroupViewModel {
 message PaymentStatusData {
     int32 Status = 1;
     string Message = 2;
-    int64 Count = 3;    
-     int32 f1 = 4;
+    int64 Count = 3;  
+      int32 f1 = 4;
     int32 f2 = 5;
     int32 f3 = 6;
     int32 f4 = 7;
@@ -66,6 +68,8 @@ message PaymentGetStatusDto {
     bool IsRelationIdBGroup = 6; 
     bool IsRelationIdCGroup = 7; 
     bool IsRelationIdDGroup = 8; 
+    
+   
 }
 
 message RetryForVerifyRequest{
@@ -84,3 +88,35 @@ message RetryForVerifyData {
     int32 FilterParam4 = 6;
 } 
 
+message HandShakeDto {
+     int32 PspAccountId =1;
+     int64 Amount =2;
+     string CallBackUrl =3;
+     string NationalCode =4;
+     string Mobile =5;
+     string AdditionalData =6;
+     int32 FilterParam1 =7;
+     int32 FilterParam2 =8;
+     int32 FilterParam3 =9;
+     int32 FilterParam4 =10;
+}
+
+message HandShakeViewModel {
+     int32 StatusCode =1;
+     string Message =2;        
+     int32 PaymentId =3;
+     string Token =4;
+     string HtmlContent =5;
+     string PspJsonResult =6;
+}
+
+message PaymentInputDto {
+     int32 PaymentId =1;
+}
+
+message PaymentOutputViewModel {
+     int32 StatusCode = 1;
+     string Message = 2;
+     int32 PaymentId = 3;
+     string PspJsonResult = 4;
+}
