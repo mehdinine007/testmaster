@@ -47,7 +47,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
     private IConfiguration _configuration { get; set; }
     private readonly IDistributedCache _distributedCache;
     private readonly IMemoryCache _memoryCache;
-    private readonly RedisCacheManager _redisCacheManager;
+    private readonly IRedisCacheManager _redisCacheManager;
     private readonly IIpgServiceProvider _ipgServiceProvider;
     private readonly ICapacityControlAppService _capacityControlAppService;
     private readonly IRandomGenerator _randomGenerator;
@@ -78,8 +78,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
                            IRepository<CarTip_Gallery_Mapping> carTipGalleryMappingRepository,
                            IAuditingManager auditingManager,
                            IObjectMapper objectMapper,
-                           IUnitOfWorkManager unitOfWorkManager
-
+                           IUnitOfWorkManager unitOfWorkManager,
+                           IRedisCacheManager redisCacheManager
 
         )
     {
@@ -100,9 +100,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
         _randomGenerator = randomGenerator;
         _carTipGalleryMappingRepository = carTipGalleryMappingRepository;
         _auditingManager = auditingManager;
-        _redisCacheManager = new RedisCacheManager("RedisCache:ConnectionString");
         _objectMapper = objectMapper;
         _unitOfWorkManager = unitOfWorkManager;
+        _redisCacheManager = redisCacheManager;
     }
 
 

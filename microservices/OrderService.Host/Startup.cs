@@ -14,6 +14,7 @@ using OrderService.Host.Infrastructures.Hangfire;
 using OrderService.Host.Infrastructures.Hangfire.Abstract;
 using OrderService.Host.Infrastructures.Hangfire.Concrete;
 using Esale.Core.IOC;
+using Esale.Core.Caching.Redis;
 
 namespace OrderService.Host
 {
@@ -35,6 +36,7 @@ namespace OrderService.Host
             {
                 services.AddScoped<IAuditingStore, AuditingStoreDb>();
             }
+            services.AddSingleton<IRedisCacheManager, RedisCacheManager>();
             services.AddSingleton<ICapacityControlJob, CapacityControlJob>();
             services.AddSingleton<IIpgJob, IpgJob>();
             ServiceTool.Create(services);
