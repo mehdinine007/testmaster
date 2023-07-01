@@ -181,10 +181,10 @@ public class EsaleGrpcClient : ApplicationService, IEsaleGrpcClient
             Mobile = handShakeDto.Mobile,
             NationalCode = handShakeDto.NationalCode,
             PspAccountId = handShakeDto.PspAccountId,
-            FilterParam1 = handShakeDto.FilterParam1 ?? 0,
-            FilterParam2 = handShakeDto.FilterParam2 ?? 0,
-            FilterParam3 = handShakeDto.FilterParam3 ?? 0,
-            FilterParam4 = handShakeDto.FilterParam4 ?? 0 
+            FilterParam1 = handShakeDto.FilterParam1,
+            FilterParam2 = handShakeDto.FilterParam2,
+            FilterParam3 = handShakeDto.FilterParam3,
+            FilterParam4 = handShakeDto.FilterParam4 
         });
         if (handShake == null)
         {

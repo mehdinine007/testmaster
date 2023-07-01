@@ -86,10 +86,10 @@ namespace PaymentManagement.Application.PaymentManagement.Services
             {
                 PaymentId = x.PaymentId,
                 PaymentStatus = (int)x.PaymentStatus,
-                FilterParam1 = x.FilterParam1 ?? 0,
-                FilterParam2 = x.FilterParam2 ?? 0,
-                FilterParam3 = x.FilterParam3 ?? 0,
-                FilterParam4 = x.FilterParam4 ?? 0
+                FilterParam1 = x.FilterParam1,
+                FilterParam2 = x.FilterParam2,
+                FilterParam3 = x.FilterParam3,
+                FilterParam4 = x.FilterParam4
             }).ToList());
             return paymentViewModel;
         }
