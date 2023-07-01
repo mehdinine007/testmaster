@@ -21,8 +21,8 @@ namespace OrderManagement.Application.Contracts.Services
 
         Task<UserDto> GrpcTest();
 
-        //Task<List<AgencyDto>> GetAgencies(Guid saleDetailUid);
-        Task<List<AgencyDto>> GetAgencies();
+        Task<List<AgencyDto>> GetAgencies(Guid saleDetailUid);
+       // Task<List<AgencyDto>> GetAgencies();
         Task<List<ESaleTypeDto>> GetSaleTypes();
 
     }
