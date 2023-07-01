@@ -5,6 +5,7 @@ using OrderManagement.Application.Contracts.Services;
 using Volo.Abp.Auditing;
 using Volo.Abp;
 using OrderManagement.Application.Contracts;
+using System.Collections.Generic;
 
 namespace OrderManagement.HttpApi.OrderManagement.Controllers
 {
@@ -21,7 +22,7 @@ namespace OrderManagement.HttpApi.OrderManagement.Controllers
         }
 
         [HttpGet]
-        public async Task<SaleDetailReportDto> SaleDetailReport(int saleDetailId)
+        public async Task<List<SaleDetailReportDto>> SaleDetailReport(int saleDetailId)
             => await _reportApplicationService.SaleDetailReport(saleDetailId);
     }
 }

@@ -4,7 +4,7 @@
     {
         public string PaymentStatus { get; set; }
 
-        public int Count { get; set; }
+        public long Count { get; set; }
 
         public string SaleDetailTitle { get; set; }
 
