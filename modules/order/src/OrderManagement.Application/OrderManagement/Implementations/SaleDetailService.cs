@@ -82,64 +82,60 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
             x => x.SaleDetailCarColors,
             x => x.SaleSchema,
             x => x.SaleDetailCarColors);
-        try
+        var queryResult = saleDetails.PageBy(input).Select(x => new SaleDetailDto()
         {
-            var queryResult = saleDetails.PageBy(input).Select(x => new SaleDetailDto()
-            {
-                CarDeliverDate = x.CarDeliverDate,
-                CarFamilyId = x.CarTip.CarType.CarFamily.Id,
-                CarFamilyTitle = x.CarTip.CarType.CarFamily.Title,
-                CarFee = x.CarFee,
-                CarTipId = x.CarTipId,
-                CarTipTitle = x.CarTip.Title,
-                CarTypeId = x.CarTip.CarTypeId,
-                CarTypeTitle = x.CarTip.CarType.Title,
-                CircularSaleCode = x.CircularSaleCode,
-                CompanyId = x.CarTip.CarType.CarFamily.CompanyId,
-                CompanyName = x.CarTip.CarType.CarFamily.Company.Name,
-                CoOperatingProfitPercentage = x.CoOperatingProfitPercentage,
-                Id = x.Id,
-                DeliverDaysCount = x.DeliverDaysCount,
-                EsaleName = x.ESaleType.SaleTypeName,
-                EsaleTypeId = x.ESaleTypeId,
-                ManufactureDate = x.ManufactureDate,
-                Visible = x.Visible,
-                SaleId = x.SaleId,
-                SaleTitle = x.SaleSchema.Title,
-                SalePlanCode = x.SalePlanCode,
-                UID = x.UID,
-                SaleTypeCapacity = x.SaleTypeCapacity,
-                SalePlanEndDate = x.SalePlanEndDate,
-                SalePlanStartDate = x.SalePlanStartDate,
-                SalePlanDescription = x.SalePlanDescription,
-                RefuseProfitPercentage = x.RefuseProfitPercentage,
-                MinimumAmountOfProxyDeposit = x.MinimumAmountOfProxyDeposit
-            }).ToList();
+            CarDeliverDate = x.CarDeliverDate,
+            CarFamilyId = x.CarTip.CarType.CarFamily.Id,
+            CarFamilyTitle = x.CarTip.CarType.CarFamily.Title,
+            CarFee = x.CarFee,
+            CarTipId = x.CarTipId,
+            CarTipTitle = x.CarTip.Title,
+            CarTypeId = x.CarTip.CarTypeId,
+            CarTypeTitle = x.CarTip.CarType.Title,
+            CircularSaleCode = x.CircularSaleCode,
+            CompanyId = x.CarTip.CarType.CarFamily.CompanyId,
+            CompanyName = x.CarTip.CarType.CarFamily.Company.Name,
+            CoOperatingProfitPercentage = x.CoOperatingProfitPercentage,
+            Id = x.Id,
+            DeliverDaysCount = x.DeliverDaysCount,
+            EsaleName = x.ESaleType.SaleTypeName,
+            EsaleTypeId = x.ESaleTypeId,
+            ManufactureDate = x.ManufactureDate,
+            Visible = x.Visible,
+            SaleId = x.SaleId,
+            SaleTitle = x.SaleSchema.Title,
+            SalePlanCode = x.SalePlanCode,
+            UID = x.UID,
+            SaleTypeCapacity = x.SaleTypeCapacity,
+            SalePlanEndDate = x.SalePlanEndDate,
+            SalePlanStartDate = x.SalePlanStartDate,
+            SalePlanDescription = x.SalePlanDescription,
+            RefuseProfitPercentage = x.RefuseProfitPercentage,
+            MinimumAmountOfProxyDeposit = x.MinimumAmountOfProxyDeposit
+        }).ToList();
 
-            var saleDetailIds = queryResult.Select(x => x.Id).ToList();
-            var saleDetailColors = (await _saleDetailColorRepository.GetQueryableAsync()).Where(x => saleDetailIds.Any(y => y == x.SaleDetailId));
-            var colorIds = saleDetailColors.Select(x => x.ColorId);
-            var colors = (await _colorRepository.GetQueryableAsync()).Where(x => colorIds.Any(y => y == x.Id));
-            queryResult.ForEach(x =>
+        var saleDetailIds = queryResult.Select(x => x.Id).ToList();
+        var saleDetailColors = (await _saleDetailColorRepository.GetQueryableAsync()).Where(x => saleDetailIds.Any(y => y == x.SaleDetailId));
+        var colorIds = saleDetailColors.Select(x => x.ColorId);
+        var colors = (await _colorRepository.GetQueryableAsync()).Where(x => colorIds.Any(y => y == x.Id));
+        queryResult.ForEach(x =>
+        {
+            var saleDetailColor = saleDetailColors.FirstOrDefault(y => y.SaleDetailId == x.Id);
+            if (saleDetailColor != null)
             {
-                var saleDetailColor = saleDetailColors.FirstOrDefault(y => y.SaleDetailId == x.Id);
-                if (saleDetailColor != null)
+                var color = colors.FirstOrDefault(y => y.Id == saleDetailColor.ColorId);
+                if (color != null)
                 {
-                    var color = colors.FirstOrDefault(y => y.Id == saleDetailColor.ColorId);
-                    if (color != null)
-                    {
-                        x.ColorTitle = color.ColorName;
-                        x.ColorId = color.Id;
-                    }
+                    x.ColorTitle = color.ColorName;
+                    x.ColorId = color.Id;
                 }
-            });
-            return new PagedResultDto<SaleDetailDto>
-            {
-                TotalCount = count,
-                Items = queryResult
-            };
-        }
-        catch (Exception ex) { throw ex; }
+            }
+        });
+        return new PagedResultDto<SaleDetailDto>
+        {
+            TotalCount = count,
+            Items = queryResult
+        };
     }
 
     [UnitOfWork(isTransactional: false)]
