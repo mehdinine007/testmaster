@@ -126,7 +126,7 @@ namespace OrderManagement.Application.OrderManagement
             var paymentDtos = await _grpcClient.GetPaymentStatusList(new PaymentStatusDto()
             {
                 RelationId = saleDetaild,
-                IsRelationIdCGroup = true,
+                IsRelationIdGroup = true,
                 IsRelationIdBGroup = true,
                
 

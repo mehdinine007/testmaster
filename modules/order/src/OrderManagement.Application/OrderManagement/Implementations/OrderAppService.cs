@@ -174,6 +174,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
     [UnitOfWork(isTransactional: false)]
     public async Task<CommitOrderResultDto> CommitOrder(CommitOrderDto commitOrderDto)
     {
+        var allowedStatusTypes = new List<int>() { (int)OrderStatusType.RecentlyAdded, (int)OrderStatusType.PaymentSucceeded };
+
         Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
         TimeSpan ttl = DateTime.Now.Subtract(DateTime.Now);
 
@@ -395,7 +397,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
             }
             else
             {
-                var allowedStatusTypes = new List<int>() { (int)OrderStatusType.RecentlyAdded };
                 var customerOrderIranFromDb =
                 orderQuery
                 .AsNoTracking()
@@ -447,7 +448,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
             }
             if (objectCustomerOrderFromCache == null)
             {
-                var allowedOrderStatusTypes = new List<int>() {  (int)OrderStatusType.RecentlyAdded };
                 var CustomerOrderFromDb = orderQuery
                      .AsNoTracking()
                     .Select(x => new CustomerOrder
@@ -460,7 +460,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     .FirstOrDefault(x =>
                 x.UserId == userId
                 && x.SaleDetailId == (int)SaleDetailDto.Id
-                && allowedOrderStatusTypes.Any(y => y == (int)x.OrderStatus));
+                && allowedStatusTypes.Any(y => y == (int)x.OrderStatus));
             
 
                 if (CustomerOrderFromDb != null
