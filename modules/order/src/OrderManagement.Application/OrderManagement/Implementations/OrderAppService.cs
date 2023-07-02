@@ -1029,7 +1029,16 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 .FirstOrDefault(x => x.PaymentId == paymentId);
 
             if (order.OrderStatus != OrderStatusType.RecentlyAdded)
-                throw new UserFriendlyException("سفارش معتبر نمیباشد");
+            {
+                exceptionCollection.Add(new UserFriendlyException("سفارش معتبر نمیباشد"));
+                return new PaymentResult()
+                {
+                    Message = exceptionCollection.ConcatErrorMessages(),
+                    Status = 1,
+                    PaymentId = 0,
+                    OrderId = order.Id
+                };
+            }
             //var orderId = (await _commitOrderRepository.GetQueryableAsync())
             //    .AsNoTracking()
             //    .Select(x => new { x.PaymentId, x.Id })
@@ -1103,7 +1112,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
     }
     private async Task NotVerifyActions(long UserId, int OrderId)
     {
-        await _redisCacheManager.RemoveAllAsync(RedisConstants.CommitOrderPrefix + UserId.ToString() + "_");
+        await _redisCacheManager.RemoveAllAsync(RedisConstants.CommitOrderPrefix + UserId.ToString() + "_*");
         await UpdateStatus(new()
         {
             Id = OrderId,
@@ -1156,7 +1165,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                            .AsNoTracking()
                            .FirstOrDefault(x => x.Id == orderId);
                             if (order != null)
-                                await _redisCacheManager.RemoveAllAsync(RedisConstants.CommitOrderPrefix + order.UserId.ToString() + "_");
+                                await _redisCacheManager.RemoveAllAsync(RedisConstants.CommitOrderPrefix + order.UserId.ToString() + "_*");
                         }
                         catch (Exception EX)
                         {
