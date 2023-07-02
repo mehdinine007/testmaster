@@ -21,7 +21,7 @@ namespace OrderService.Host.Infrastructures.Hangfire.Concrete
           
             await _orderAppService.RetryPaymentForVerify();
 
-            BackgroundJob.Schedule(() => RetryForVerify(), TimeSpan.FromMinutes(15));
+            BackgroundJob.Schedule(() => RetryForVerify(), TimeSpan.FromMinutes(2));
         }
 
     }

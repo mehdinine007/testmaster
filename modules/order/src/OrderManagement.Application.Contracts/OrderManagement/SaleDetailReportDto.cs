@@ -1,4 +1,6 @@
-﻿namespace OrderManagement.Application.Contracts
+﻿using System.Collections.Generic;
+
+namespace OrderManagement.Application.Contracts
 {
     public class SaleDetailReportDto
     {
@@ -9,5 +11,12 @@
         public string SaleDetailTitle { get; set; }
 
         public string AgencyName { get; set; }
+    }
+
+    public class SaleDetailResultDto
+    {
+        public int SaleDetailId { get; set; }
+
+        public List<SaleDetailReportDto> Reports { get; set; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OrderManagement.Application.Contracts.OrderManagement.Inqueries;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,7 +12,7 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Services
     {
         SaleDetailDto GetById(int id);
         List<SaleDetailDto> GetActiveList();
-        Task<PagedResultDto<SaleDetailDto>> GetSaleDetails(int pageNo,int sizeNo);
+        Task<PagedResultDto<SaleDetailDto>> GetSaleDetails(BaseInquery input);
         Task<int> Save(CreateSaleDetailDto createSaleDetailDto);
         Task<int> Update(CreateSaleDetailDto createSaleDetailDto);
         Task<bool> Delete(int id);

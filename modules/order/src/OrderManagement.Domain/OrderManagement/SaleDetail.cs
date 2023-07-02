@@ -47,8 +47,10 @@ namespace OrderManagement.Domain
 
         public bool Visible { get; set; }
 
-        public virtual CarTip CarTip { get; set; }
-        public virtual ESaleType ESaleType { get; set; }
+        public virtual CarTip CarTip { get; protected set; }
+        public virtual ESaleType ESaleType { get; protected set; }
+
+        public virtual SaleSchema SaleSchema { get; protected set; }
 
         public virtual ICollection<CustomerOrder> CustomerOrders
         {

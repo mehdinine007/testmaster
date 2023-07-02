@@ -82,6 +82,10 @@ public static class OrderManagementDbContextModelCreatingExtensions
                 .IsUnique();
             entity.Property(x => x.Visible)
                 .HasDefaultValue(true);
+
+            entity.HasOne<SaleSchema>(x => x.SaleSchema)
+                .WithMany(x => x.SaleDetails)
+                .HasForeignKey(x => x.SaleId);
         });
 
         builder.Entity<Bank>(entity => entity.ToTable(nameof(Bank)));

@@ -61,5 +61,7 @@ namespace OrderManagement.Application.Contracts
         public int CarTipId { get; set; }
 
         public int? PaymentId { get; set; }
+
+        public DateTime SalePlanEndDate { get; set; }
     }
 }

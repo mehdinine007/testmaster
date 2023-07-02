@@ -8,7 +8,6 @@ namespace OrderManagement.Application.Contracts
         public int Id { get; set; }
         public Guid UID { get; set; }
  
-
         public int CircularSaleCode { get; set; } // شماره بخشنامه فروش
 
         public int SalePlanCode { get; set; }
@@ -30,6 +29,8 @@ namespace OrderManagement.Application.Contracts
         public double RefuseProfitPercentage { get; set; }
 
         public int EsaleTypeId { get; set; }
+
+        public string EsaleName { get; set; }
 
         public decimal CarFee { get; set; }
 
@@ -56,6 +57,14 @@ namespace OrderManagement.Application.Contracts
         public string CarTipTitle { get; set; }
 
         public bool Visible { get; set; }
+
+        public string ColorTitle { get; set; }
+
+        public int ColorId { get; set; }
+
+        public int SaleId { get; set; }
+
+        public string SaleTitle { get; set; }
 
         public List<string> CarTipImageUrls { get; set; }
     }
