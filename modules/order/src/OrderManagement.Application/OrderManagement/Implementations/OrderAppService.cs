@@ -385,7 +385,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         else
         {
             object objectCommitOrderIran = null;
-         
+
 
             objectCommitOrderIran = await _distributedCache.GetStringAsync(userId.ToString() + "_" +
                 commitOrderDto.PriorityId.ToString() + "_" +
@@ -418,7 +418,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
                 if (customerOrderIranFromDb != null && (!commitOrderDto.OrderId.HasValue || customerOrderIranFromDb.Id != commitOrderDto.OrderId.Value))
                 {
-                  
+
                     await _distributedCache.SetStringAsync(
                           userId.ToString() + "_" +
                             commitOrderDto.PriorityId.ToString() + "_" +
@@ -433,15 +433,15 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
             }
             object objectCustomerOrderFromCache = null;
-    
+
 
             objectCustomerOrderFromCache = await _distributedCache.GetStringAsync(
                 userId.ToString() + "_" +
                     SaleDetailDto.Id.ToString());
 
             if (objectCustomerOrderFromCache != null
-              
-                    
+
+
                     )
             {
                 throw new UserFriendlyException("این خودرو را قبلا انتخاب نموده اید");
@@ -461,14 +461,14 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 x.UserId == userId
                 && x.SaleDetailId == (int)SaleDetailDto.Id
                 && allowedStatusTypes.Any(y => y == (int)x.OrderStatus));
-            
+
 
                 if (CustomerOrderFromDb != null
-                
-                        
+
+
                         )
                 {
-                   
+
                     await _distributedCache.SetStringAsync(userId.ToString() + "_" +
                        SaleDetailDto.Id.ToString()
                        , CustomerOrderFromDb.Id.ToString(),
@@ -516,12 +516,12 @@ public class OrderAppService : ApplicationService, IOrderAppService
         //}
         // else
         IResult agencyCapacityControl = null;
-       // try
-       // {
-            agencyCapacityControl = await _capacityControlAppService.Validation(SaleDetailDto.Id, commitOrderDto.AgencyId);
-            if (!agencyCapacityControl.Succsess)
-                throw new UserFriendlyException(agencyCapacityControl.Message);
-      //  }
+        // try
+        // {
+        agencyCapacityControl = await _capacityControlAppService.Validation(SaleDetailDto.Id, commitOrderDto.AgencyId);
+        if (!agencyCapacityControl.Succsess)
+            throw new UserFriendlyException(agencyCapacityControl.Message);
+        //  }
         //catch (Exception ex)
         //{
         //    customerOrder.OrderStatus = OrderStatusType.PaymentNotVerified;
@@ -545,7 +545,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             await _commitOrderRepository.InsertAsync(customerOrder);
             await CurrentUnitOfWork.SaveChangesAsync();
         }
-        
+
 
         //Console.WriteLine("afterasli");
 
@@ -860,7 +860,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
            && x.OrderStatus == OrderStatusType.RecentlyAdded);
         if (customerOrder == null)
         {
-             _distributedCache.Remove (RedisConstants.CommitOrderEsaleTypePrefix + userId.ToString());
+            _distributedCache.Remove(RedisConstants.CommitOrderEsaleTypePrefix + userId.ToString());
         }
         return ObjectMapper.Map<CustomerOrder, CustomerOrderDto>(customerOrder, new CustomerOrderDto());
     }
@@ -1054,7 +1054,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     OrderId = order.Id
                 };
             }
-          
+
 
             var capacityControl = await _capacityControlAppService.Validation(order.SaleDetailId, order.AgencyId);
             if (!capacityControl.Succsess)
@@ -1070,9 +1070,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     OrderId = order.Id
                 };
             }
-          
+
             var verificationResponse = await _ipgServiceProvider.VerifyTransaction(paymentId);
-          
+
             await UpdateStatus(new()
             {
                 Id = order.Id,
@@ -1111,63 +1111,63 @@ public class OrderAppService : ApplicationService, IOrderAppService
     {
         try
         {
-            
+
             var order = _objectMapper.Map<CustomerOrderDto, CustomerOrder>(customerOrderDto);
-          
+
             await _commitOrderRepository.AttachAsync(order, o => o.OrderStatus);
             await CurrentUnitOfWork.SaveChangesAsync();
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             throw ex;
         }
-       
+
     }
 
     public async Task RetryPaymentForVerify()
     {
-    
-     
-            var payments = await _esaleGrpcClient.RetryForVerify();
-            if (payments != null && payments.Count > 0)
+
+
+        var payments = await _esaleGrpcClient.RetryForVerify();
+        if (payments != null && payments.Count > 0)
+        {
+            payments = payments
+                .Where(x => x.PaymentStatus != 1 && x.FilterParam3 != null && x.FilterParam3 != 0)
+                .ToList();
+            foreach (var payment in payments)
             {
-                payments = payments
-                    .Where(x => x.PaymentStatus != 1 && x.FilterParam3 != null && x.FilterParam3 != 0)
-                    .ToList();
-                foreach (var payment in payments)
+                int orderId = payment.FilterParam3 ?? 0;
+                if (orderId != 0)
                 {
-                    int orderId = payment.FilterParam3 ?? 0;
-                    if (orderId != 0)
+
+                    await UpdateStatus(new CustomerOrderDto()
                     {
-
-                        await UpdateStatus(new CustomerOrderDto()
+                        Id = orderId,
+                        OrderStatus = payment.PaymentStatus == 2 ? (int)OrderStatusType.PaymentSucceeded : (int)OrderStatusType.PaymentNotVerified
+                    });
+                    if (payment.PaymentStatus == 3)
+                    {
+                        try
                         {
-                            Id = orderId,
-                            OrderStatus = payment.PaymentStatus == 2 ? (int)OrderStatusType.PaymentSucceeded : (int)OrderStatusType.PaymentNotVerified
-                        });
-                        if (payment.PaymentStatus == 3)
-                        {
-                            try
-                            {
-                                var order = _commitOrderRepository.WithDetails()
-                               .AsNoTracking()
-                               .FirstOrDefault(x => x.Id == orderId);
-                                if (order != null)
-                                    await _redisCacheManager.RemoveAllAsync(RedisConstants.CommitOrderPrefix + order.UserId.ToString() + "_");
-                            }
-                            catch (Exception EX)
-                            {
-                                throw EX;
-                            }
-
+                            var order = _commitOrderRepository.WithDetails()
+                           .AsNoTracking()
+                           .FirstOrDefault(x => x.Id == orderId);
+                            if (order != null)
+                                await _redisCacheManager.RemoveAllAsync(RedisConstants.CommitOrderPrefix + order.UserId.ToString() + "_");
                         }
+                        catch (Exception EX)
+                        {
+                            throw EX;
+                        }
+
                     }
                 }
+            }
 
-            
+
         }
-         
-        
+
+
     }
 
     public async Task<CustomerOrder_OrderDetailDto> GetDetail(SaleDetail_Order_InquiryDto inquiryDto)
@@ -1175,7 +1175,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
         CustomerOrder_OrderDetailDto inquiryResult = new();
 
         var exception = new UserFriendlyException("درخواست معتبر نیست");
-
         if (!inquiryDto.SaleDetailUid.HasValue && !inquiryDto.OrderId.HasValue)
             throw exception;
 
@@ -1216,8 +1215,13 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 ManufactureDate = y.ManufactureDate,
                 DeliveryDate = y.CarDeliverDate,
                 CarTipId = y.CarTipId,
+                SalePlanEndDate = y.SalePlanEndDate
             })
             .FirstOrDefault(x => x.SaleDetailUid == saleDetailUid);
+
+        if (saleDetail.SalePlanEndDate <= DateTime.Now)
+            throw new UserFriendlyException("تاریخ برنامه فروش به پایان و سفارش قابل مشاده نیست");
+
         var realtedGalleryRecords = (await _carTipGalleryMappingRepository.GetQueryableAsync())
             .Include(x => x.Gallery)
             .Where(x => x.CarTipId == saleDetail.CarTipId);
@@ -1263,6 +1267,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 ESaleTypeId = y.ESaleTypeId,
                 ManufactureDate = y.ManufactureDate,
                 SaleDetailUid = y.UID,
+                SalePlanEndDate = y.SalePlanEndDate,
                 //TransactionCommitDate = paymentInformation != null
                 //    ? paymentInformation.TransactionDate
                 //    : null,
@@ -1271,6 +1276,10 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 //    : string.Empty,
                 PaymentId = x.PaymentId
             }).FirstOrDefault(x => x.UserId == userId && x.OrderId == id);
+
+        if (customerOrder.SalePlanEndDate <= DateTime.Now)
+            throw new UserFriendlyException("تاریخ برنامه فروش به پایان و سفارش قابل مشاده نیست");
+
         if (customerOrder.PaymentId.HasValue)
         {
             try
