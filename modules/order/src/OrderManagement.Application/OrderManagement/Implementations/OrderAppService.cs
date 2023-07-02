@@ -1026,7 +1026,10 @@ public class OrderAppService : ApplicationService, IOrderAppService
         {
             var order = (await _commitOrderRepository.GetQueryableAsync())
                 .AsNoTracking()
-                .FirstOrDefault(x => x.PaymentId == paymentId && x.OrderStatus == OrderStatusType.RecentlyAdded);
+                .FirstOrDefault(x => x.PaymentId == paymentId);
+
+            if (order.OrderStatus != OrderStatusType.RecentlyAdded)
+                throw new UserFriendlyException("سفارش معتبر نمیباشد");
             //var orderId = (await _commitOrderRepository.GetQueryableAsync())
             //    .AsNoTracking()
             //    .Select(x => new { x.PaymentId, x.Id })
