@@ -73,6 +73,7 @@ namespace Esale.Core.Caching.Redis
             var keys = _cacheClient.GetServer().Keys(pattern: pattern);
             var listKeys = new List<string>();
             listKeys.AddRange(keys.Select(key => (string)key).ToList());
+            var x = keys.ToList();
             if (listKeys !=null && listKeys.Count > 0)
             {
                 foreach (var key in listKeys)

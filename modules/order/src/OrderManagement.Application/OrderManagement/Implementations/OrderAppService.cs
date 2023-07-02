@@ -387,7 +387,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             object objectCommitOrderIran = null;
          
 
-            objectCommitOrderIran = await _distributedCache.GetStringAsync(userId.ToString() + "_" +
+            objectCommitOrderIran = await _distributedCache.GetStringAsync(RedisConstants.CommitOrderPrefix + userId.ToString() + "_" +
                 commitOrderDto.PriorityId.ToString() + "_" +
                 SaleDetailDto.SaleId.ToString());
 
@@ -420,7 +420,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 {
                   
                     await _distributedCache.SetStringAsync(
-                          userId.ToString() + "_" +
+                          RedisConstants.CommitOrderPrefix + userId.ToString() + "_" +
                             commitOrderDto.PriorityId.ToString() + "_" +
                             SaleDetailDto.SaleId.ToString()
                            , customerOrderIranFromDb.Id.ToString(),
@@ -436,7 +436,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
     
 
             objectCustomerOrderFromCache = await _distributedCache.GetStringAsync(
-                userId.ToString() + "_" +
+                RedisConstants.CommitOrderPrefix + userId.ToString() + "_" +
                     SaleDetailDto.Id.ToString());
 
             if (objectCustomerOrderFromCache != null
@@ -469,7 +469,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                         )
                 {
                    
-                    await _distributedCache.SetStringAsync(userId.ToString() + "_" +
+                    await _distributedCache.SetStringAsync(RedisConstants.CommitOrderPrefix + userId.ToString() + "_" +
                        SaleDetailDto.Id.ToString()
                        , CustomerOrderFromDb.Id.ToString(),
                        new DistributedCacheEntryOptions()
@@ -1153,7 +1153,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                                .AsNoTracking()
                                .FirstOrDefault(x => x.Id == orderId);
                                 if (order != null)
-                                    await _redisCacheManager.RemoveAllAsync(RedisConstants.CommitOrderPrefix + order.UserId.ToString() + "_");
+                                    await _redisCacheManager.RemoveAllAsync(RedisConstants.CommitOrderPrefix + order.UserId.ToString() + "_" + "*");
                             }
                             catch (Exception EX)
                             {
