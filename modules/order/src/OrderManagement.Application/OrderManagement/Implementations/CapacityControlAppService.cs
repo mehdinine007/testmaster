@@ -125,7 +125,7 @@ namespace OrderManagement.Application.OrderManagement
             long _saleDetailPaymentCount = 0;
             var paymentDtos = await _grpcClient.GetPaymentStatusList(new PaymentStatusDto()
             {
-                RelationIdB = saleDetaild,
+                RelationId = saleDetaild,
                 IsRelationIdCGroup = true,
                 IsRelationIdBGroup = true,
                
@@ -149,7 +149,7 @@ namespace OrderManagement.Application.OrderManagement
                 long _agancyCapacity = agencySaledetail.DistributionCapacity;
                 int _agencyReserveCount = agencySaledetail.ReserveCount;
                 long _agancyPaymentCount = 0;
-                var paymentDtosForAgency = paymentDtos.Where(x => x.F3 == agencyId).ToList();
+                var paymentDtosForAgency = paymentDtos.Where(x => x.F2 == agencyId).ToList();
                 if (paymentDtosForAgency != null && paymentDtosForAgency.Any(x => x.Status == 2))
                 {
                     _agancyPaymentCount = paymentDtosForAgency.Where(x => x.Status == 2).Sum(x => x.Count);

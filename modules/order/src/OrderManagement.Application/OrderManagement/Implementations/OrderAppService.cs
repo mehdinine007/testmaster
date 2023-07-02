@@ -500,21 +500,36 @@ public class OrderAppService : ApplicationService, IOrderAppService
         //Console.WriteLine("beforeasli");
         CustomerOrder customerOrder = new CustomerOrder();
         var paymentMethodGranted = _configuration.GetValue<bool?>("PaymentMethodGranted") ?? false;
-        var customerOrderQuery = await _commitOrderRepository.GetQueryableAsync();
-        var similarOrderTypes = new List<int>() { (int)OrderStatusType.PaymentNotVerified };
-        var similarOrder = customerOrderQuery.FirstOrDefault(x => similarOrderTypes.Any(y => y == (int)x.OrderStatus)
-            /* x.OrderStatus == OrderStatusType.PaymentNotVerified*/
-            && x.UserId == userId
-            && x.SaleDetailId == SaleDetailDto.Id);
-        if (paymentMethodGranted && similarOrder != null)
-        {
-            customerOrder = similarOrder;
-            customerOrder.OrderStatus = OrderStatusType.RecentlyAdded;
-            customerOrder.AgencyId = commitOrderDto.AgencyId;
-            await _commitOrderRepository.UpdateAsync(customerOrder, autoSave: true);
-            await CurrentUnitOfWork.SaveChangesAsync();
-        }
-        else
+        //var customerOrderQuery = await _commitOrderRepository.GetQueryableAsync();
+        //var similarOrderTypes = new List<int>() { (int)OrderStatusType.PaymentNotVerified };
+        //var similarOrder = customerOrderQuery.FirstOrDefault(x => similarOrderTypes.Any(y => y == (int)x.OrderStatus)
+        //    /* x.OrderStatus == OrderStatusType.PaymentNotVerified*/
+        //    && x.UserId == userId
+        //    && x.SaleDetailId == SaleDetailDto.Id);
+        //if (paymentMethodGranted && similarOrder != null)
+        //{
+        //    customerOrder = similarOrder;
+        //    customerOrder.OrderStatus = OrderStatusType.RecentlyAdded;
+        //    customerOrder.AgencyId = commitOrderDto.AgencyId;
+        //    await _commitOrderRepository.UpdateAsync(customerOrder, autoSave: true);
+        //    await CurrentUnitOfWork.SaveChangesAsync();
+        //}
+        // else
+        IResult agencyCapacityControl = null;
+       // try
+       // {
+            agencyCapacityControl = await _capacityControlAppService.Validation(SaleDetailDto.Id, commitOrderDto.AgencyId);
+            if (!agencyCapacityControl.Succsess)
+                throw new UserFriendlyException(agencyCapacityControl.Message);
+      //  }
+        //catch (Exception ex)
+        //{
+        //    customerOrder.OrderStatus = OrderStatusType.PaymentNotVerified;
+        //    await _commitOrderRepository.UpdateAsync(customerOrder);
+        //    await CurrentUnitOfWork.SaveChangesAsync();
+
+        //    throw ex;
+        //}
         {
             customerOrder.SaleDetailId = SaleDetailDto.Id;
             customerOrder.UserId = (int)userId;
@@ -530,21 +545,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             await _commitOrderRepository.InsertAsync(customerOrder);
             await CurrentUnitOfWork.SaveChangesAsync();
         }
-        IResult agencyCapacityControl = null;
-        try
-        {
-            agencyCapacityControl = await _capacityControlAppService.Validation(SaleDetailDto.Id, commitOrderDto.AgencyId);
-            if (!agencyCapacityControl.Succsess)
-                throw new UserFriendlyException(agencyCapacityControl.Message);
-        }
-        catch (Exception ex)
-        {
-            customerOrder.OrderStatus = OrderStatusType.PaymentNotVerified;
-            await _commitOrderRepository.UpdateAsync(customerOrder);
-            await CurrentUnitOfWork.SaveChangesAsync();
-
-            throw ex;
-        }
+        
 
         //Console.WriteLine("afterasli");
 
