@@ -61,21 +61,29 @@ namespace OrderManagement.Application.OrderManagement.Implementations
 
             var data = await _grpcClient.GetPaymentStatusList(new PaymentStatusDto
             {
-                RelationIdB = saleDetailId,
-                IsRelationIdCGroup = true,
+                RelationId = saleDetailId,
+                IsRelationIdGroup = true,
                 IsRelationIdBGroup = true,
 
             });
             var reports = data.Select(x =>
             {
                 var currentAgency = agencies.FirstOrDefault(y => y.Id == x.F2);
-                return new SaleDetailReportDto()
+                if(currentAgency != null)
                 {
-                    AgencyName = currentAgency.Name,
-                    Count = x.Count,
-                    PaymentStatus = x.Message,
-                    SaleDetailTitle = saleDetail.SalePlanDescription
-                };
+                    return new SaleDetailReportDto()
+                    {
+                        AgencyName = currentAgency.Name,
+                        Count = x.Count,
+                        PaymentStatus = x.Message,
+                        SaleDetailTitle = saleDetail.SalePlanDescription
+                    };
+                }
+                else
+                {
+                    return new SaleDetailReportDto();
+                }
+               
             }).ToList();
             var result = new SaleDetailResultDto()
             {
