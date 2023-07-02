@@ -24,14 +24,14 @@ namespace OrderManagement.Application.OrderManagement
         private readonly IAgencySaleDetailService _agencySaleDetailService;
         private readonly IEsaleGrpcClient _grpcClient;
         private IConfiguration _configuration { get; set; }
-        private readonly RedisCacheManager _redisCacheManager;
-        public CapacityControlAppService(IConfiguration configuration, IEsaleGrpcClient grpcClient, IAgencySaleDetailService agencySaleDetailService, ISaleDetailService saleDetailService)
+        private readonly IRedisCacheManager _redisCacheManager;
+        public CapacityControlAppService(IConfiguration configuration, IEsaleGrpcClient grpcClient, IAgencySaleDetailService agencySaleDetailService, ISaleDetailService saleDetailService, IRedisCacheManager redisCacheManager)
         {
             _configuration = configuration;
-            _redisCacheManager = new RedisCacheManager("RedisCache:ConnectionString");
             _grpcClient = grpcClient;
             _agencySaleDetailService = agencySaleDetailService;
             _saleDetailService = saleDetailService;
+            _redisCacheManager = redisCacheManager;
         }
         public async Task<IResult> SaleDetail()
         {
@@ -79,22 +79,22 @@ namespace OrderManagement.Application.OrderManagement
 
         public async Task GrpcPaymentTest()
         {
-            //var redis = _redisCacheManager.RemoveAllAsync("n:CapacityControl:*");
+            var redis = _redisCacheManager.RemoveAllAsync("n:CapacityControl:*");
             //var payment = await _grpcClient.RetryForVerify();
             //var _result = await _grpcClient.GetPaymentStatusList(new PaymentStatusDto()
             //{
             //    RelationId = 60
             //});
-            var handshake = await _grpcClient.HandShake(new PaymentHandShakeDto()
-            {
-                Amount = 10000,
-                PspAccountId = 4,
-                CallBackUrl = "http",
-                Mobile = "09140352778",
-                NationalCode = "1092271600",
-                AdditionalData = "asda"
-            });
-            Validation(165, 1029);
+            //var handshake = await _grpcClient.HandShake(new PaymentHandShakeDto()
+            //{
+            //    Amount = 10000,
+            //    PspAccountId = 4,
+            //    CallBackUrl = "http",
+            //    Mobile = "09140352778",
+            //    NationalCode = "1092271600",
+            //    AdditionalData = "asda"
+            //});
+            //Validation(165, 1029);
         }
 
         public async Task<bool> ValidationBySaleDetailUId(Guid saleDetailUId)

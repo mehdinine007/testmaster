@@ -1,4 +1,5 @@
 ﻿using Esale.Core.Caching.Redis.Provider;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using StackExchange.Redis;
 using System;
@@ -10,12 +11,12 @@ using System.Threading.Tasks;
 
 namespace Esale.Core.Caching.Redis
 {
-    public class RedisCacheManager
+    public class RedisCacheManager : IRedisCacheManager
     {
         private MultiplexerProvider _cacheClient;
-        public RedisCacheManager(string redisConfig)
+        public RedisCacheManager()
         {
-            _cacheClient = new MultiplexerProvider(redisConfig);
+            _cacheClient = new MultiplexerProvider("RedisCache:ConnectionString");
         }
         public async Task<bool> StringSetAsync(string key, string value, int duration = 0)
         {
