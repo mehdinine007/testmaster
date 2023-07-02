@@ -5,7 +5,6 @@ using OrderManagement.Application.Contracts.Services;
 using Volo.Abp.Auditing;
 using Volo.Abp;
 using OrderManagement.Application.Contracts;
-using Esale.Share.Authorize;
 using OrderManagement.Application.Contracts.OrderManagement.Inqueries;
 
 namespace OrderManagement.HttpApi.OrderManagement.Controllers
@@ -23,7 +22,7 @@ namespace OrderManagement.HttpApi.OrderManagement.Controllers
         }
 
         [HttpGet]
-        [UserAuthorization]
+        //[UserAuthorization]
         public async Task<CustomPagedResultDto<SaleDetailResultDto>> SaleDetailReport(SaleDetailReportInquery input)
             => await _reportApplicationService.SaleDetailReport(input);
 
