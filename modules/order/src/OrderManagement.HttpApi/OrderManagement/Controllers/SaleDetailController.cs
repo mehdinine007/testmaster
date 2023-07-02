@@ -13,6 +13,7 @@ using OrderManagement.Application.OrderManagement.Implementations;
 using Nest;
 using OrderManagement.Application.Contracts.OrderManagement;
 using Volo.Abp.Application.Dtos;
+using OrderManagement.Application.Contracts.OrderManagement.Inqueries;
 
 namespace OrderManagement.HttpApi.OrderManagement.Controllers
 {
@@ -36,8 +37,8 @@ namespace OrderManagement.HttpApi.OrderManagement.Controllers
         =>_saleDetailService.GetById(id);
 
         [HttpGet]
-        public async Task<PagedResultDto<SaleDetailDto>> GetSaleDetails(int pageNo, int sizeNo)
-          => await _saleDetailService.GetSaleDetails(pageNo,sizeNo);
+        public async Task<PagedResultDto<SaleDetailDto>> GetSaleDetails(BaseInquery input)
+          => await _saleDetailService.GetSaleDetails(input);
         [HttpPost]
         public async Task<int> Save(CreateSaleDetailDto createSaleDetailDto)
           => await _saleDetailService.Save(createSaleDetailDto);
