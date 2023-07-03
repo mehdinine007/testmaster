@@ -87,7 +87,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             var result = new SaleDetailResultDto()
             {
                 Reports = reports,
-                SaleDetailId = saleDetailId
+                SaleDescription = saleDetail.SalePlanDescription
             };
             return result;
         }
