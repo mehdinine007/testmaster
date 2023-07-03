@@ -48,8 +48,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             {
                 saleDetailInqueries.Add(await GetSaleDetailReport(saleDetailId));
             }
-            var saleDetailReport = saleDetailInqueries.Select(x => x).ToList();
-            return new CustomPagedResultDto<SaleDetailResultDto>(saleDetailReport, totalCount);
+            return new CustomPagedResultDto<SaleDetailResultDto>(saleDetailInqueries, totalCount);
         }
 
         private async Task<SaleDetailResultDto> GetSaleDetailReport(int saleDetailId)
