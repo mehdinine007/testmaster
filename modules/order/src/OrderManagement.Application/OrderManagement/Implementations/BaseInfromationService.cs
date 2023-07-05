@@ -17,6 +17,8 @@ using Volo.Abp;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
 using Microsoft.Extensions.Configuration;
+using EasyCaching.Core;
+using Newtonsoft.Json;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -45,6 +47,9 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
     private readonly IRepository<AgencySaleDetail, int> _agencySaleDetailRepository;
     private readonly IMemoryCache _memoryCache;
     private readonly ICapacityControlAppService _capacityControlAppService;
+    private readonly IHybridCachingProvider _hybridCache;
+
+
     public BaseInformationService(IRepository<Company, int> companyRepository,
                                   IRepository<CarTip, int> carTipRepsoitory,
                                   IRepository<Gallery, int> galleryRepository,
@@ -63,7 +68,8 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
                                   IRepository<AgencySaleDetail, int> agencySaleDetailRepository,
                                   IMemoryCache memoryCache,
                                   IRepository<ESaleType, int> esaleTypeRepository,
-                                  ICapacityControlAppService capacityControlAppService)
+                                  ICapacityControlAppService capacityControlAppService,
+                                  IHybridCachingProvider hybridCache)
     {
         _esaleGrpcClient = esaleGrpcClient;
         _companyRepository = companyRepository;
@@ -85,6 +91,7 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
         _memoryCache = memoryCache;
         _esaleTypeRepository = esaleTypeRepository;
         _capacityControlAppService = capacityControlAppService;
+        _hybridCache = hybridCache;
     }
 
     [RemoteService(false)]
@@ -314,34 +321,39 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
 
     public async Task<List<AgencyDto>> GetAgencies(Guid saleDetailUid)
     {
-        var user = await _esaleGrpcClient.GetUserById(_commonAppService.GetUserId());
+        //var user = await _esaleGrpcClient.GetUserById(_commonAppService.GetUserId());
         var agencyQuery = await _agencyRepository.GetQueryableAsync();
         var cacheKey = string.Format(RedisConstants.SaleDetailAgenciesCacheKey, saleDetailUid);
-        if (!_memoryCache.TryGetValue(string.Format(RedisConstants.SaleDetailAgenciesCacheKey, saleDetailUid), out List<int> agencySaleDetailIds))
+        var agencySaleDetailIds = _hybridCache.Get<List<int>>(cacheKey).Value??new List<int>();
+        if (agencySaleDetailIds?.Count == 0)
         {
             var saleDetail = await _saleDetailRepository.FirstOrDefaultAsync(x => x.UID == saleDetailUid)
                 ?? throw new UserFriendlyException("برنامه فروش پیدا نشد");
+            var capacitySaleDetail = await _capacityControlAppService.Validation(saleDetail.Id, null);
+            if (!capacitySaleDetail.Succsess)
+            {
+                throw new UserFriendlyException(CapacityControlConstants.NoCapacitySaleDetail);
+            }
             var _agencySaleDetailIds = (await _agencySaleDetailRepository
                 .GetListAsync(x => x.SaleDetailId == saleDetail.Id))
                 .Select(x => x.AgencyId)
-                .ToArray();
-            agencySaleDetailIds = new List<int>();
+                .ToList();
             foreach (var agency in _agencySaleDetailIds)
             {
-                var hasCapacity = await _capacityControlAppService.Validation(saleDetail.Id, agency);
+                var hasCapacity = await _capacityControlAppService.AgencyValidation(saleDetail.Id,agency,capacitySaleDetail.Data);
                 if (hasCapacity.Succsess)
                 {
                     agencySaleDetailIds.Add(agency);
                 }
             }
-            _memoryCache.Set(string.Format(RedisConstants.SaleDetailAgenciesCacheKey, saleDetailUid), agencySaleDetailIds, new DateTimeOffset(DateTime.Now.AddSeconds(10)));
+            _hybridCache.Set(cacheKey, agencySaleDetailIds, TimeSpan.FromSeconds(20));
         }
-        var agencies = agencyQuery.Where(x => x.ProvinceId == (user.HabitationProvinceId ?? 0) && agencySaleDetailIds.Any(y => y == x.Id)).ToList();
+        var agencies = agencyQuery.Where(x => agencySaleDetailIds.Any(y => y == x.Id)).ToList();
         return ObjectMapper.Map<List<Agency>, List<AgencyDto>>(agencies);
     }
     public async Task<List<ESaleTypeDto>> GetSaleTypes()
     {
-        var esaleTypes =await _esaleTypeRepository.GetListAsync();
+        var esaleTypes = await _esaleTypeRepository.GetListAsync();
         return ObjectMapper.Map<List<ESaleType>, List<ESaleTypeDto>>(esaleTypes);
     }
 }

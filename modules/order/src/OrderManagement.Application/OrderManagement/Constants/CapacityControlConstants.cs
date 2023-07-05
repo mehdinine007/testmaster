@@ -20,5 +20,9 @@ namespace OrderManagement.Application.OrderManagement
 
         public static string AgancyNoCapacityCreateTicket = "در حال حاضر كل ظرفيت اين برنامه فروش در نمایندگی، در حال خريد مي باشد، در صورت آزاد شدن ظرفيت و انصراف مشتريان در صف خريد،  مي توانيد مجددا براي سفارش خودرو تلاش فرماييد";
         public static string AgancyNoCapacityCreateTicketId = "1003";
+
+        public static string NoCapacitySaleDetail = "اتمام ظرفیت برنامه فروش!";
+        public static string NoCapacitySaleDetailId = "1004";
+
     }
 }

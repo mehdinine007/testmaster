@@ -114,14 +114,63 @@ namespace OrderManagement.Application.OrderManagement
             return true;
         }
 
-        public async Task<IResult> Validation(int saleDetaild, int? agencyId)
+        public async Task<IResult> AgencyValidation(int saledetailid, int? agencyId, List<PaymentStatusModel> paymentDtos)
+        {
+            var saledetail = _saleDetailService.GetById(saledetailid);
+            var agencySaledetail = await _agencySaleDetailService.GetBySaleDetailId(saledetail.Id, agencyId ?? 0);
+            if (agencySaledetail == null)
+            {
+                return new ErrorResult("خطا در بازیابی نمایندگی ها", CapacityControlConstants.NoCapacityCreateTicketId);
+            }
+            long _agancyCapacity = agencySaledetail.DistributionCapacity;
+            int _agencyReserveCount = agencySaledetail.ReserveCount;
+            long _agancyPaymentCount = 0;
+            var paymentDtosForAgency = paymentDtos.Where(x => x.F2 == agencyId).ToList();
+            if (paymentDtosForAgency != null && paymentDtosForAgency.Any(x => x.Status == 2))
+            {
+                _agancyPaymentCount = paymentDtosForAgency.Where(x => x.Status == 2).Sum(x => x.Count);
+            }
+            if (_agancyPaymentCount >= _agancyCapacity && _agancyCapacity > 0) //control zarfiat kili
+            {
+                return new ErrorResult(CapacityControlConstants.AgancyNoCapacityCreateTicket, CapacityControlConstants.AgancyNoCapacityCreateTicketId);
+            }
+            if (agencySaledetail.ReserveCount > 0)
+            {
+
+                if (_agancyPaymentCount < _agencyReserveCount)//agar be reserve nareside
+                {
+                    return new SuccsessResult();
+                }
+                else
+                {
+                    var _allAgenecyForSaleDetail = await _agencySaleDetailService.GetAgeneciesBySaleDetail(saledetail.Id);
+                    int _sumReseverCount = _allAgenecyForSaleDetail.Sum(x => x.ReserveCount);//sum reserve
+                    int FreeSpace = saledetail.SaleTypeCapacity - _sumReseverCount;
+                    var lsSum = from ag in _allAgenecyForSaleDetail
+                                join pr in paymentDtos
+                                on ag.AgencyId equals pr.F2
+                                where ag.ReserveCount < pr.Count
+                                && pr.Status == 2
+                                select new
+                                {
+                                    cnt = pr.Count - ag.ReserveCount
+                                };
+                    long _sumBuyMoreThanReserve = lsSum.Sum(x => x.cnt);
+                    if (_sumBuyMoreThanReserve > FreeSpace) //agar zafiat azad(dovom) tamom shode
+                    {
+                        return new ErrorResult(CapacityControlConstants.AgancyNoCapacityCreateTicket, CapacityControlConstants.AgancyNoCapacityCreateTicketId);
+                    }
+                }
+            }
+            return new SuccsessResult();
+        }
+        public async Task<IDataResult<List<PaymentStatusModel>>> Validation(int saleDetaild, int? agencyId)
         {
             var saledetail = _saleDetailService.GetById(saleDetaild);
             if (saledetail == null)
             {
-                return new ErrorResult("خطا در بازیابی برنامه های فروش", CapacityControlConstants.NoCapacityCreateTicketId);
+                return new ErrorDataResult<List<PaymentStatusModel>>("خطا در بازیابی برنامه های فروش", CapacityControlConstants.NoCapacityCreateTicketId);
             }
-
             long _saledetailCapacity = saledetail.SaleTypeCapacity;
             long _saleDetailPaymentCount = 0;
             var paymentDtos = await _grpcClient.GetPaymentStatusList(new PaymentStatusDto()
@@ -129,8 +178,6 @@ namespace OrderManagement.Application.OrderManagement
                 RelationId = saleDetaild,
                 IsRelationIdGroup = true,
                 IsRelationIdBGroup = true,
-
-
             });
             if (paymentDtos != null && paymentDtos.Any(x => x.Status == 2))
             {
@@ -138,57 +185,15 @@ namespace OrderManagement.Application.OrderManagement
             }
             if (_saleDetailPaymentCount >= _saledetailCapacity && _saledetailCapacity > 0) //control zarfiat koli
             {
-                return new ErrorResult(CapacityControlConstants.NoCapacityCreateTicket, CapacityControlConstants.NoCapacityCreateTicketId);
+                return new ErrorDataResult<List<PaymentStatusModel>>(CapacityControlConstants.NoCapacityCreateTicket, CapacityControlConstants.NoCapacityCreateTicketId);
             }
             if (agencyId != null && agencyId != 0)
             {
-                var agencySaledetail = await _agencySaleDetailService.GetBySaleDetailId(saleDetaild, agencyId ?? 0);
-                if (agencySaledetail == null)
-                {
-                    return new ErrorResult("خطا در بازیابی نمایندگی ها", CapacityControlConstants.NoCapacityCreateTicketId);
-                }
-                long _agancyCapacity = agencySaledetail.DistributionCapacity;
-                int _agencyReserveCount = agencySaledetail.ReserveCount;
-                long _agancyPaymentCount = 0;
-                var paymentDtosForAgency = paymentDtos.Where(x => x.F2 == agencyId).ToList();
-                if (paymentDtosForAgency != null && paymentDtosForAgency.Any(x => x.Status == 2))
-                {
-                    _agancyPaymentCount = paymentDtosForAgency.Where(x => x.Status == 2).Sum(x => x.Count);
-                }
-                if (_agancyPaymentCount >= _agancyCapacity && _agancyCapacity > 0) //control zarfiat kili
-                {
-                    return new ErrorResult(CapacityControlConstants.AgancyNoCapacityCreateTicket, CapacityControlConstants.AgancyNoCapacityCreateTicketId);
-                }
-                if (agencySaledetail.ReserveCount > 0)
-                {
-
-                    if (_agancyPaymentCount < _agencyReserveCount)//agar be reserve nareside
-                    {
-                        return new SuccsessResult();
-                    }
-                    else
-                    {
-                        var _allAgenecyForSaleDetail = await _agencySaleDetailService.GetAgeneciesBySaleDetail(saleDetaild);
-                        int _sumReseverCount = _allAgenecyForSaleDetail.Sum(x => x.ReserveCount);//sum reserve
-                        int FreeSpace = saledetail.SaleTypeCapacity - _sumReseverCount;
-                        var lsSum = from ag in _allAgenecyForSaleDetail
-                                    join pr in paymentDtos
-                                    on ag.AgencyId equals pr.F2
-                                    where ag.ReserveCount < pr.Count
-                                    && pr.Status == 2
-                                    select new
-                                    {
-                                        cnt = pr.Count - ag.ReserveCount
-                                    };
-                        long _sumBuyMoreThanReserve = lsSum.Sum(x => x.cnt);
-                        if (_sumBuyMoreThanReserve > FreeSpace) //agar zafiat azad(dovom) tamom shode
-                        {
-                            return new ErrorResult(CapacityControlConstants.AgancyNoCapacityCreateTicket, CapacityControlConstants.AgancyNoCapacityCreateTicketId);
-                        }
-                    }
-                }
+                var agency = await AgencyValidation(saledetail.Id, agencyId, paymentDtos);
+                if (!agency.Succsess)
+                    return new ErrorDataResult<List<PaymentStatusModel>>(agency.Message, agency.MessageId);
             }
-            return new SuccsessResult();
+            return new SuccsessDataResult<List<PaymentStatusModel>>(paymentDtos);
         }
     }
 }
