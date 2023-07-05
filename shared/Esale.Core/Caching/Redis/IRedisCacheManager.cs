@@ -20,5 +20,6 @@ namespace Esale.Core.Caching.Redis
         string CreateCachKey(string prefix, int userId);
         Task<long> StringIncrementAsync(string key);
         long StringIncrement(string key);
+        Task<List<string>> ScanKeysAsync(string match, int count=250);
     }
 }

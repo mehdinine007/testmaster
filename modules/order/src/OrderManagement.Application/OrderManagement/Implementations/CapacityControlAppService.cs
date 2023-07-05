@@ -79,7 +79,8 @@ namespace OrderManagement.Application.OrderManagement
 
         public async Task GrpcPaymentTest()
         {
-            var redis = _redisCacheManager.RemoveAllAsync("n:CapacityControl:*");
+            var redis = await _redisCacheManager.ScanKeysAsync("n:CapacityControl:*");
+            //var redis = _redisCacheManager.RemoveAllAsync("n:CapacityControl:*");
             //var payment = await _grpcClient.RetryForVerify();
             //var _result = await _grpcClient.GetPaymentStatusList(new PaymentStatusDto()
             //{
@@ -108,7 +109,7 @@ namespace OrderManagement.Application.OrderManagement
 
             if (_request > _capacity && _capacity > 0)
             {
-                throw new UserFriendlyException(CapacityControlConstants.NoCapacityCreateTicket,code: CapacityControlConstants.NoCapacityCreateTicketId);
+                throw new UserFriendlyException(CapacityControlConstants.NoCapacityCreateTicket, code: CapacityControlConstants.NoCapacityCreateTicketId);
             }
             return true;
         }
@@ -120,7 +121,7 @@ namespace OrderManagement.Application.OrderManagement
             {
                 throw new UserFriendlyException("خطا در بازیابی برنامه های فروش");
             }
-           
+
             long _saledetailCapacity = saledetail.SaleTypeCapacity;
             long _saleDetailPaymentCount = 0;
             var paymentDtos = await _grpcClient.GetPaymentStatusList(new PaymentStatusDto()
@@ -128,7 +129,7 @@ namespace OrderManagement.Application.OrderManagement
                 RelationId = saleDetaild,
                 IsRelationIdGroup = true,
                 IsRelationIdBGroup = true,
-               
+
 
             });
             if (paymentDtos != null && paymentDtos.Any(x => x.Status == 2))
@@ -141,8 +142,8 @@ namespace OrderManagement.Application.OrderManagement
             }
             if (agencyId != null && agencyId != 0)
             {
-                var agencySaledetail = await _agencySaleDetailService.GetBySaleDetailId(saleDetaild, agencyId??0);
-                if(agencySaledetail == null)
+                var agencySaledetail = await _agencySaleDetailService.GetBySaleDetailId(saleDetaild, agencyId ?? 0);
+                if (agencySaledetail == null)
                 {
                     throw new UserFriendlyException("خطا در بازیابی نمایندگی ها");
                 }
@@ -161,28 +162,28 @@ namespace OrderManagement.Application.OrderManagement
                 if (agencySaledetail.ReserveCount > 0)
                 {
 
-                    if(_agancyPaymentCount < _agencyReserveCount)//agar be reserve nareside
+                    if (_agancyPaymentCount < _agencyReserveCount)//agar be reserve nareside
                     {
-                            return new SuccsessResult();
+                        return new SuccsessResult();
                     }
                     else
                     {
                         var _allAgenecyForSaleDetail = await _agencySaleDetailService.GetAgeneciesBySaleDetail(saleDetaild);
                         int _sumReseverCount = _allAgenecyForSaleDetail.Sum(x => x.ReserveCount);//sum reserve
                         int FreeSpace = saledetail.SaleTypeCapacity - _sumReseverCount;
-                        var lsSum  = from ag in _allAgenecyForSaleDetail
-                                join pr in paymentDtos
-                                on ag.AgencyId equals pr.F2
-                                where ag.ReserveCount < pr.Count
-                                && pr.Status == 2
-                                select new
-                                {
-                                    cnt = pr.Count - ag.ReserveCount
-                                };
+                        var lsSum = from ag in _allAgenecyForSaleDetail
+                                    join pr in paymentDtos
+                                    on ag.AgencyId equals pr.F2
+                                    where ag.ReserveCount < pr.Count
+                                    && pr.Status == 2
+                                    select new
+                                    {
+                                        cnt = pr.Count - ag.ReserveCount
+                                    };
                         long _sumBuyMoreThanReserve = lsSum.Sum(x => x.cnt);
-                        if(_sumBuyMoreThanReserve > FreeSpace) //agar zafiat azad(dovom) tamom shode
+                        if (_sumBuyMoreThanReserve > FreeSpace) //agar zafiat azad(dovom) tamom shode
                         {
-                                return new ErrorResult(CapacityControlConstants.AgancyNoCapacityCreateTicket, CapacityControlConstants.AgancyNoCapacityCreateTicketId);
+                            return new ErrorResult(CapacityControlConstants.AgancyNoCapacityCreateTicket, CapacityControlConstants.AgancyNoCapacityCreateTicketId);
                         }
                     }
                 }

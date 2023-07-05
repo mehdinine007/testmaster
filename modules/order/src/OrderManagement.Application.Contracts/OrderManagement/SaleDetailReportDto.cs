@@ -15,7 +15,7 @@ namespace OrderManagement.Application.Contracts
 
     public class SaleDetailResultDto
     {
-        public int SaleDetailId { get; set; }
+        public string SaleDescription { get; set; }
 
         public List<SaleDetailReportDto> Reports { get; set; }
     }

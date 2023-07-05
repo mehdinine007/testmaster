@@ -96,5 +96,24 @@ namespace Esale.Core.Caching.Redis
         {
             return _cacheClient.GetDataBase().StringIncrement(key);
         }
+
+        public async Task<List<string>> ScanKeysAsync(string match, int count = 250)
+        {
+            var schemas = new List<string>();
+            int nextCursor = 0;
+            do
+            {
+                RedisResult redisResult = await _cacheClient.GetDataBase().ExecuteAsync("SCAN", nextCursor.ToString(), "MATCH", match, "COUNT", count.ToString());
+                var innerResult = (RedisResult[])redisResult;
+
+                nextCursor = int.Parse((string)innerResult[0]);
+
+                List<string> resultLines = ((string[])innerResult[1]).ToList();
+                schemas.AddRange(resultLines);
+            }
+            while (nextCursor != 0);
+
+            return schemas;
+        }
     }
 }
