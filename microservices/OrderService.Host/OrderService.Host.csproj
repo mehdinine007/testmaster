@@ -40,6 +40,7 @@
         <ProjectReference Include="..\..\modules\order\src\OrderManagement.Application\OrderManagement.Application.csproj" />
         <ProjectReference Include="..\..\modules\order\src\OrderManagement.EntityFrameworkCore\OrderManagement.EntityFrameworkCore.csproj" />
         <ProjectReference Include="..\..\modules\order\src\OrderManagement.HttpApi\OrderManagement.HttpApi.csproj" />
+        <ProjectReference Include="..\..\shared\Extensions\Extensions.csproj" />
         <ProjectReference Include="..\..\shared\MsDemo.Shared\MsDemo.Shared.csproj" />
     </ItemGroup>
 
