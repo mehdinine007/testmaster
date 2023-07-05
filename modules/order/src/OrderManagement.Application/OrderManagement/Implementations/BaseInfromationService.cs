@@ -44,7 +44,7 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
     private readonly IRepository<SaleDetail, int> _saleDetailRepository;
     private readonly IRepository<AgencySaleDetail, int> _agencySaleDetailRepository;
     private readonly IMemoryCache _memoryCache;
-
+    private readonly ICapacityControlAppService _capacityControlAppService;
     public BaseInformationService(IRepository<Company, int> companyRepository,
                                   IRepository<CarTip, int> carTipRepsoitory,
                                   IRepository<Gallery, int> galleryRepository,
@@ -62,8 +62,8 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
                                   IRepository<SaleDetail, int> saleDetailRepository,
                                   IRepository<AgencySaleDetail, int> agencySaleDetailRepository,
                                   IMemoryCache memoryCache,
-                                  IRepository<ESaleType, int> esaleTypeRepository
-        )
+                                  IRepository<ESaleType, int> esaleTypeRepository,
+                                  ICapacityControlAppService capacityControlAppService)
     {
         _esaleGrpcClient = esaleGrpcClient;
         _companyRepository = companyRepository;
@@ -84,6 +84,7 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
         _agencySaleDetailRepository = agencySaleDetailRepository;
         _memoryCache = memoryCache;
         _esaleTypeRepository = esaleTypeRepository;
+        _capacityControlAppService = capacityControlAppService;
     }
 
     [RemoteService(false)]
@@ -316,11 +317,23 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
         var user = await _esaleGrpcClient.GetUserById(_commonAppService.GetUserId());
         var agencyQuery = await _agencyRepository.GetQueryableAsync();
         var cacheKey = string.Format(RedisConstants.SaleDetailAgenciesCacheKey, saleDetailUid);
-        if (!_memoryCache.TryGetValue<int[]>(string.Format(RedisConstants.SaleDetailAgenciesCacheKey, saleDetailUid), out int[] agencySaleDetailIds))
+        if (!_memoryCache.TryGetValue(string.Format(RedisConstants.SaleDetailAgenciesCacheKey, saleDetailUid), out List<int> agencySaleDetailIds))
         {
             var saleDetail = await _saleDetailRepository.FirstOrDefaultAsync(x => x.UID == saleDetailUid)
                 ?? throw new UserFriendlyException("برنامه فروش پیدا نشد");
-            agencySaleDetailIds = (await _agencySaleDetailRepository.GetListAsync(x => x.SaleDetailId == saleDetail.Id)).Select(x => x.AgencyId).ToArray();
+            var _agencySaleDetailIds = (await _agencySaleDetailRepository
+                .GetListAsync(x => x.SaleDetailId == saleDetail.Id))
+                .Select(x => x.AgencyId)
+                .ToArray();
+            agencySaleDetailIds = new List<int>();
+            foreach (var agency in _agencySaleDetailIds)
+            {
+                var hasCapacity = await _capacityControlAppService.Validation(saleDetail.Id, agency);
+                if (hasCapacity.Succsess)
+                {
+                    agencySaleDetailIds.Add(agency);
+                }
+            }
             _memoryCache.Set(string.Format(RedisConstants.SaleDetailAgenciesCacheKey, saleDetailUid), agencySaleDetailIds, new DateTimeOffset(DateTime.Now.AddSeconds(10)));
         }
         var agencies = agencyQuery.Where(x => x.ProvinceId == (user.HabitationProvinceId ?? 0) && agencySaleDetailIds.Any(y => y == x.Id)).ToList();

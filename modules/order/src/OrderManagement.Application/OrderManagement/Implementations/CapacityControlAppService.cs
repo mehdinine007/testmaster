@@ -119,7 +119,7 @@ namespace OrderManagement.Application.OrderManagement
             var saledetail = _saleDetailService.GetById(saleDetaild);
             if (saledetail == null)
             {
-                throw new UserFriendlyException("خطا در بازیابی برنامه های فروش");
+                return new ErrorResult("خطا در بازیابی برنامه های فروش", CapacityControlConstants.NoCapacityCreateTicketId);
             }
 
             long _saledetailCapacity = saledetail.SaleTypeCapacity;
@@ -145,7 +145,7 @@ namespace OrderManagement.Application.OrderManagement
                 var agencySaledetail = await _agencySaleDetailService.GetBySaleDetailId(saleDetaild, agencyId ?? 0);
                 if (agencySaledetail == null)
                 {
-                    throw new UserFriendlyException("خطا در بازیابی نمایندگی ها");
+                    return new ErrorResult("خطا در بازیابی نمایندگی ها", CapacityControlConstants.NoCapacityCreateTicketId);
                 }
                 long _agancyCapacity = agencySaledetail.DistributionCapacity;
                 int _agencyReserveCount = agencySaledetail.ReserveCount;
