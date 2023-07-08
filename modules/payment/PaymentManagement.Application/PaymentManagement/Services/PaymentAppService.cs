@@ -56,39 +56,27 @@ namespace PaymentManagement.Application.Servicess
                 .Select(o => new PspAccountDto { Id = o.Id, PspId = o.PspId, AccountName = o.Account.AccountName, Psp = o.Psp.Title })
                 .ToList();
         }
-   
         public List<InquiryWithFilterParamDto> InquiryWithFilterParam(int? filterParam1, int? filterParam2, int? filterParam3, int? filterParam4
             , bool? IsRelationIdGroup
             , bool? IsRelationIdBGroup
             , bool? IsRelationIdCGroup
-            , bool? IsRelationIdDGroup
-
-            )
+            , bool? IsRelationIdDGroup)
         {
-            //todo:باید این قسمت بعدن برداشته شود
-            filterParam1 = filterParam1 == 0 ? null : filterParam1;
-            filterParam2 = filterParam2 == 0 ? null : filterParam2;
-            filterParam3 = filterParam3 == 0 ? null : filterParam3;
-            filterParam4 = filterParam4 == 0 ? null : filterParam4;
-
             IsRelationIdGroup = IsRelationIdGroup != true ? null : true;
             IsRelationIdBGroup = IsRelationIdBGroup != true ? null : true;
             IsRelationIdCGroup = IsRelationIdCGroup != true ? null : true;
             IsRelationIdDGroup = IsRelationIdDGroup != true ? null : true;
 
-
-
-
             return _paymentRepository.WithDetails().AsNoTracking()
                 .Where(o => (filterParam1 == null || o.FilterParam1 == filterParam1) && (filterParam2 == null || o.FilterParam2 == filterParam2) &&
                             (filterParam3 == null || o.FilterParam3 == filterParam3) && (filterParam4 == null || o.FilterParam4 == filterParam4))
-                .GroupBy(o => new 
-                    {
-                        filterParam1 = IsRelationIdGroup != null ? o.FilterParam1 : null,
-                        filterParam2 = IsRelationIdBGroup != null ? o.FilterParam2 : null,
-                        filterParam3 = IsRelationIdCGroup != null ? o.FilterParam3 : null,
-                        filterParam4 = IsRelationIdDGroup != null ? o.FilterParam4 : null,
-                        o.PaymentStatusId
+                .GroupBy(o => new
+                {
+                    filterParam1 = IsRelationIdGroup != null ? o.FilterParam1 : null,
+                    filterParam2 = IsRelationIdBGroup != null ? o.FilterParam2 : null,
+                    filterParam3 = IsRelationIdCGroup != null ? o.FilterParam3 : null,
+                    filterParam4 = IsRelationIdDGroup != null ? o.FilterParam4 : null,
+                    o.PaymentStatusId
                 }
                 ).Select(o => new InquiryWithFilterParamDto
                 {
@@ -103,23 +91,16 @@ namespace PaymentManagement.Application.Servicess
         }
         public List<InquiryWithFilterParamDto> InquiryWithFilterParamGroupByParams(int? filterParam1, int? filterParam2, int? filterParam3, int? filterParam4)
         {
-            //todo:باید این قسمت بعدن برداشته شود
-            filterParam1 = filterParam1 == 0 ? null : filterParam1;
-            filterParam2 = filterParam2 == 0 ? null : filterParam2;
-            filterParam3 = filterParam3 == 0 ? null : filterParam3;
-            filterParam4 = filterParam4 == 0 ? null : filterParam4;
-
-
             return _paymentRepository.WithDetails().AsNoTracking()
                 .Where(o => (filterParam1 == null || o.FilterParam1 == filterParam1) && (filterParam2 == null || o.FilterParam2 == filterParam2) &&
                             (filterParam3 == null || o.FilterParam3 == filterParam3) && (filterParam4 == null || o.FilterParam4 == filterParam4))
-                .GroupBy(o => new {
+                .GroupBy(o => new
+                {
                     filterParam1 = filterParam1 != null ? o.FilterParam1 : null,
                     filterParam2 = filterParam2 != null ? o.FilterParam2 : null,
                     filterParam3 = filterParam3 != null ? o.FilterParam3 : null,
                     filterParam4 = filterParam4 != null ? o.FilterParam4 : null,
                     o.PaymentStatusId
-
 
                 }).Select(o => new InquiryWithFilterParamDto
                 {
@@ -131,10 +112,6 @@ namespace PaymentManagement.Application.Servicess
                     filterParam4 = o.Key.filterParam4,
                     Count = o.Count()
                 }).ToList();
-
-
-
-        
         }
         public string GetCallBackUrl(int paymentId)
         {
@@ -267,7 +244,7 @@ namespace PaymentManagement.Application.Servicess
         {
             try
             {
-              //  using var uow = _unitOfWorkManager.Begin(requiresNew: true, isTransactional: false);
+                //  using var uow = _unitOfWorkManager.Begin(requiresNew: true, isTransactional: false);
                 var payment = await _paymentRepository.InsertAsync(new Payment
                 {
                     PspAccountId = input.PspAccountId,
@@ -599,7 +576,7 @@ namespace PaymentManagement.Application.Servicess
                         Psp = PspEnum.IranKish.ToString(),
                         Message = Constants.DuplicateBackFromPsp
                     });
-                //    await CurrentUnitOfWork.CompleteAsync();
+                    //    await CurrentUnitOfWork.CompleteAsync();
 
                     result.Message = Constants.ErrorInBackFromPsp;
                     return result;
@@ -630,7 +607,7 @@ namespace PaymentManagement.Application.Servicess
                         Message = Constants.DuplicateBackFromPsp,
                         Parameter = PaymentStatusEnum.Success.ToString(),
                     });
-                //    await CurrentUnitOfWork.CompleteAsync();
+                    //    await CurrentUnitOfWork.CompleteAsync();
 
                     result.StatusCode = (int)StatusCodeEnum.Success;
                     result.Message = Constants.BackFromPspSuccess;
@@ -646,7 +623,7 @@ namespace PaymentManagement.Application.Servicess
                         Message = Constants.DuplicateBackFromPsp,
                         Parameter = PaymentStatusEnum.Failed.ToString(),
                     });
-                  //  await CurrentUnitOfWork.CompleteAsync();
+                    //  await CurrentUnitOfWork.CompleteAsync();
 
                     result.StatusCode = (int)StatusCodeEnum.Failed;
                     result.Message = Constants.VerifyFailed;
@@ -664,7 +641,7 @@ namespace PaymentManagement.Application.Servicess
 
                     payment.PaymentStatusId = (int)PaymentStatusEnum.Failed;
                     await _paymentRepository.AttachAsync(ObjectMapper.Map<PaymentDto, Payment>(payment), o => o.PaymentStatusId);
-                //    await CurrentUnitOfWork.CompleteAsync();
+                    //    await CurrentUnitOfWork.CompleteAsync();
 
                     result.StatusCode = (int)StatusCodeEnum.Failed;
                     result.Message = Constants.ErrorInBackFromPspUrl;
@@ -674,14 +651,14 @@ namespace PaymentManagement.Application.Servicess
                 {
                     payment.PaymentStatusId = (int)PaymentStatusEnum.Failed;
                     await _paymentRepository.AttachAsync(ObjectMapper.Map<PaymentDto, Payment>(payment), o => o.PaymentStatusId);
-            
+
 
                     result.StatusCode = (int)StatusCodeEnum.Failed;
                     result.Message = Constants.ErrorInBackFromPspResponseCode;
                     return result;
                 }
 
-             
+
 
                 result.StatusCode = (int)StatusCodeEnum.Success;
                 result.Message = Constants.BackFromPspSuccess;
@@ -740,7 +717,7 @@ namespace PaymentManagement.Application.Servicess
                         Psp = PspEnum.Mellat.ToString(),
                         Message = Constants.DuplicateBackFromPsp
                     });
-             //       await CurrentUnitOfWork.CompleteAsync();
+                    //       await CurrentUnitOfWork.CompleteAsync();
 
                     result.Message = Constants.ErrorInBackFromPsp;
                     return result;
@@ -770,7 +747,7 @@ namespace PaymentManagement.Application.Servicess
                         Message = Constants.DuplicateBackFromPsp,
                         Parameter = PaymentStatusEnum.Success.ToString(),
                     });
-             //       await CurrentUnitOfWork.CompleteAsync();
+                    //       await CurrentUnitOfWork.CompleteAsync();
 
                     result.StatusCode = (int)StatusCodeEnum.Success;
                     result.Message = Constants.BackFromPspSuccess;
@@ -786,7 +763,7 @@ namespace PaymentManagement.Application.Servicess
                         Message = Constants.DuplicateBackFromPsp,
                         Parameter = PaymentStatusEnum.Failed.ToString(),
                     });
-              //      await CurrentUnitOfWork.CompleteAsync();
+                    //      await CurrentUnitOfWork.CompleteAsync();
 
                     result.StatusCode = (int)StatusCodeEnum.Failed;
                     result.Message = Constants.VerifyFailed;
@@ -804,7 +781,7 @@ namespace PaymentManagement.Application.Servicess
 
                     payment.PaymentStatusId = (int)PaymentStatusEnum.Failed;
                     await _paymentRepository.AttachAsync(ObjectMapper.Map<PaymentDto, Payment>(payment), o => o.PaymentStatusId);
-                //    await CurrentUnitOfWork.CompleteAsync();
+                    //    await CurrentUnitOfWork.CompleteAsync();
 
                     result.StatusCode = (int)StatusCodeEnum.Failed;
                     result.Message = Constants.ErrorInBackFromPspUrl;
@@ -814,15 +791,15 @@ namespace PaymentManagement.Application.Servicess
                 {
                     payment.PaymentStatusId = (int)PaymentStatusEnum.Failed;
                     await _paymentRepository.AttachAsync(ObjectMapper.Map<PaymentDto, Payment>(payment), o => o.PaymentStatusId);
-                //    await CurrentUnitOfWork.CompleteAsync();
+                    //    await CurrentUnitOfWork.CompleteAsync();
 
                     result.StatusCode = (int)StatusCodeEnum.Failed;
                     result.Message = Constants.ErrorInBackFromPspResponseCode;
                     return result;
                 }
 
-            //    await CurrentUnitOfWork.CompleteAsync();
-               
+                //    await CurrentUnitOfWork.CompleteAsync();
+
                 result.StatusCode = (int)StatusCodeEnum.Success;
                 result.Message = Constants.BackFromPspSuccess;
                 return result;
@@ -836,7 +813,7 @@ namespace PaymentManagement.Application.Servicess
                     Message = Constants.BackFromPspException,
                     Parameter = ex.Message
                 });
-             //   await CurrentUnitOfWork.CompleteAsync();
+                //   await CurrentUnitOfWork.CompleteAsync();
 
                 result.Message = Constants.ErrorInBackFromPsp;
                 return result;
