@@ -321,7 +321,7 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
 
     public async Task<List<AgencyDto>> GetAgencies(Guid saleDetailUid)
     {
-        //var user = await _esaleGrpcClient.GetUserById(_commonAppService.GetUserId());
+        var user = await _esaleGrpcClient.GetUserById(_commonAppService.GetUserId());
         var agencyQuery = await _agencyRepository.GetQueryableAsync();
         var cacheKey = string.Format(RedisConstants.SaleDetailAgenciesCacheKey, saleDetailUid);
         var agencySaleDetailIds = _hybridCache.Get<List<int>>(cacheKey).Value??new List<int>();
@@ -348,7 +348,7 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
             }
             _hybridCache.Set(cacheKey, agencySaleDetailIds, TimeSpan.FromSeconds(20));
         }
-        var agencies = agencyQuery.Where(x => agencySaleDetailIds.Any(y => y == x.Id)).ToList();
+        var agencies = agencyQuery.Where(x => x.ProvinceId == (user.HabitationProvinceId ?? 0) && agencySaleDetailIds.Any(y => y == x.Id)).ToList();
         return ObjectMapper.Map<List<Agency>, List<AgencyDto>>(agencies);
     }
     public async Task<List<ESaleTypeDto>> GetSaleTypes()

@@ -76,7 +76,7 @@ public class BaseController : IBaseInformationService
         => _baseInformationService.GetSaleTypes();
 
     [HttpGet]
-    //[UserAuthorization]
+    [UserAuthorization]
     public async Task<List<AgencyDto>> GetAgencies(Guid saleDetailUid)
         => await _baseInformationService.GetAgencies(saleDetailUid);
 
