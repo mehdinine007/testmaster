@@ -27,6 +27,7 @@ using Volo.Abp.BackgroundJobs.Hangfire;
 using Hangfire;
 using Microsoft.Extensions.Configuration;
 using Volo.Abp.Hangfire;
+using EasyCaching.Host.Extensions;
 
 namespace OrderService.Host
 {
@@ -123,6 +124,7 @@ namespace OrderService.Host
             ConfigureHangfire(context, configuration);
 
             context.Services.AddGrpc();
+            context.Services.EasyCaching(configuration, "RedisCache:ConnectionString");
             //var redis = ConnectionMultiplexer.Connect(configuration["Redis:Configuration"]);
             //context.Services.AddDataProtection()
             //    .PersistKeysToStackExchangeRedis(redis, "MsDemo-DataProtection-Keys");
@@ -133,6 +135,7 @@ namespace OrderService.Host
             {
                 config.UseSqlServerStorage(configuration.GetConnectionString("OrderHangfire"));
             });
+
         }
 
         public override void OnApplicationInitialization(ApplicationInitializationContext context)
