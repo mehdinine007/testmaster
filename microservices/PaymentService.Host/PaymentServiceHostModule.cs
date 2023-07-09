@@ -39,7 +39,7 @@ namespace PaymentService.Host
         typeof(AbpAspNetCoreMvcModule),
         //typeof(AbpEventBusRabbitMqModule),
         typeof(AbpEntityFrameworkCoreSqlServerModule),
-        //typeof(AbpAuditLoggingEntityFrameworkCoreModule),
+        typeof(AbpAuditLoggingEntityFrameworkCoreModule),
         //typeof(AbpPermissionManagementEntityFrameworkCoreModule),
         //typeof(AbpSettingManagementEntityFrameworkCoreModule),
         typeof(PaymentManagementApplicationModule),
@@ -88,7 +88,10 @@ namespace PaymentService.Host
                
 
             });
-
+            Configure<AbpAuditingOptions>(options =>
+            {
+                options.IsEnabledForGetRequests = true;
+            });
             using var scope = context.Services.BuildServiceProvider();
             var service = scope.GetRequiredService<IActionResultWrapperFactory>();
             context.Services.AddControllers(x =>
