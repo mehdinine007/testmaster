@@ -115,5 +115,24 @@ namespace Esale.Core.Caching.Redis
 
             return schemas;
         }
+
+        public async Task StringAppendAsync(string key, string value, int duration = 0)
+        {
+            await _cacheClient.GetDataBase().StringAppendAsync(key, value.ToString());
+        }
+
+        public async Task<bool> RemoveWithPrefixAsync(string prefix)
+        {
+            var cacheKeys = new List<string>();
+            string getCacheKeys = await GetStringAsync(prefix);
+            if (string.IsNullOrEmpty(getCacheKeys))
+                return false;
+            cacheKeys = getCacheKeys.Substring(0, getCacheKeys.Length - 1).Split(",").ToList();
+            foreach (var key in cacheKeys)
+            {
+                await RemoveAsync(key);
+            }
+            return await RemoveAsync(prefix);
+        }
     }
 }
