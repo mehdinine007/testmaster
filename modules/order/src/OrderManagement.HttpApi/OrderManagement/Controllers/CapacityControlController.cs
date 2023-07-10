@@ -38,6 +38,7 @@ public class CapacityControlController :Controller
           => await _capacityControlAppService.GrpcPaymentTest();
 
     [HttpPost]
+    [UserAuthorization]
     public async Task<bool> Validation(Guid saleDetailUId)
           => await _capacityControlAppService.ValidationBySaleDetailUId(saleDetailUId);
 }

@@ -23,15 +23,17 @@ namespace OrderManagement.Application.OrderManagement
         private readonly ISaleDetailService _saleDetailService;
         private readonly IAgencySaleDetailService _agencySaleDetailService;
         private readonly IEsaleGrpcClient _grpcClient;
+        private readonly ICommonAppService _commonAppService;
         private IConfiguration _configuration { get; set; }
         private readonly IRedisCacheManager _redisCacheManager;
-        public CapacityControlAppService(IConfiguration configuration, IEsaleGrpcClient grpcClient, IAgencySaleDetailService agencySaleDetailService, ISaleDetailService saleDetailService, IRedisCacheManager redisCacheManager)
+        public CapacityControlAppService(IConfiguration configuration, IEsaleGrpcClient grpcClient, IAgencySaleDetailService agencySaleDetailService, ISaleDetailService saleDetailService, IRedisCacheManager redisCacheManager, ICommonAppService commonAppService)
         {
             _configuration = configuration;
             _grpcClient = grpcClient;
             _agencySaleDetailService = agencySaleDetailService;
             _saleDetailService = saleDetailService;
             _redisCacheManager = redisCacheManager;
+            _commonAppService = commonAppService;
         }
         public async Task<IResult> SaleDetail()
         {
@@ -100,6 +102,7 @@ namespace OrderManagement.Application.OrderManagement
 
         public async Task<bool> ValidationBySaleDetailUId(Guid saleDetailUId)
         {
+            await _commonAppService.ValidateOrderStep(OrderStepEnum.SubmitOrder);
             long _capacity = 0;
             string _key = string.Format(CapacityControlConstants.SaleDetailPrefix, saleDetailUId.ToString());
             long.TryParse(await _redisCacheManager.GetStringAsync(string.Format(CapacityControlConstants.CapacityControlPrefix, _key)), out _capacity);
@@ -109,8 +112,9 @@ namespace OrderManagement.Application.OrderManagement
 
             if (_request > _capacity && _capacity > 0)
             {
-                throw new UserFriendlyException(CapacityControlConstants.NoCapacityCreateTicket, code: CapacityControlConstants.NoCapacityCreateTicketId);
+                throw new UserFriendlyException(OrderConstant.NoCapacityCreateTicket, code: OrderConstant.NoCapacityCreateTicketId);
             }
+            await _commonAppService.SetOrderStep(OrderStepEnum.SubmitOrder);
             return true;
         }
 
@@ -120,7 +124,7 @@ namespace OrderManagement.Application.OrderManagement
             var agencySaledetail = await _agencySaleDetailService.GetBySaleDetailId(saledetail.Id, agencyId ?? 0);
             if (agencySaledetail == null)
             {
-                return new ErrorResult("خطا در بازیابی نمایندگی ها", CapacityControlConstants.NoCapacityCreateTicketId);
+                return new ErrorResult("خطا در بازیابی نمایندگی ها", OrderConstant.NoCapacityCreateTicketId);
             }
             long _agancyCapacity = agencySaledetail.DistributionCapacity;
             int _agencyReserveCount = agencySaledetail.ReserveCount;
@@ -132,7 +136,7 @@ namespace OrderManagement.Application.OrderManagement
             }
             if (_agancyPaymentCount >= _agancyCapacity && _agancyCapacity > 0) //control zarfiat kili
             {
-                return new ErrorResult(CapacityControlConstants.AgancyNoCapacityCreateTicket, CapacityControlConstants.AgancyNoCapacityCreateTicketId);
+                return new ErrorResult(OrderConstant.AgancyNoCapacityCreateTicket, OrderConstant.AgancyNoCapacityCreateTicketId);
             }
             if (agencySaledetail.ReserveCount > 0)
             {
@@ -158,7 +162,7 @@ namespace OrderManagement.Application.OrderManagement
                     long _sumBuyMoreThanReserve = lsSum.Sum(x => x.cnt);
                     if (_sumBuyMoreThanReserve > FreeSpace) //agar zafiat azad(dovom) tamom shode
                     {
-                        return new ErrorResult(CapacityControlConstants.AgancyNoCapacityCreateTicket, CapacityControlConstants.AgancyNoCapacityCreateTicketId);
+                        return new ErrorResult(OrderConstant.AgancyNoCapacityCreateTicket, OrderConstant.AgancyNoCapacityCreateTicketId);
                     }
                 }
             }
@@ -169,7 +173,7 @@ namespace OrderManagement.Application.OrderManagement
             var saledetail = _saleDetailService.GetById(saleDetaild);
             if (saledetail == null)
             {
-                return new ErrorDataResult<List<PaymentStatusModel>>("خطا در بازیابی برنامه های فروش", CapacityControlConstants.NoCapacityCreateTicketId);
+                return new ErrorDataResult<List<PaymentStatusModel>>("خطا در بازیابی برنامه های فروش", OrderConstant.NoCapacityCreateTicketId);
             }
             long _saledetailCapacity = saledetail.SaleTypeCapacity;
             long _saleDetailPaymentCount = 0;
@@ -185,7 +189,7 @@ namespace OrderManagement.Application.OrderManagement
             }
             if (_saleDetailPaymentCount >= _saledetailCapacity && _saledetailCapacity > 0) //control zarfiat koli
             {
-                return new ErrorDataResult<List<PaymentStatusModel>>(CapacityControlConstants.NoCapacityCreateTicket, CapacityControlConstants.NoCapacityCreateTicketId);
+                return new ErrorDataResult<List<PaymentStatusModel>>(OrderConstant.NoCapacityCreateTicket, OrderConstant.NoCapacityCreateTicketId);
             }
             if (agencyId != null && agencyId != 0)
             {

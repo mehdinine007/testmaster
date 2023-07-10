@@ -177,6 +177,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
     [UnitOfWork(isTransactional: false)]
     public async Task<CommitOrderResultDto> CommitOrder(CommitOrderDto commitOrderDto)
     {
+        await _commonAppService.ValidateOrderStep(OrderStepEnum.SaveOrder);
         var allowedStatusTypes = new List<int>() { (int)OrderStatusType.RecentlyAdded, (int)OrderStatusType.PaymentSucceeded };
 
         Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
@@ -667,7 +668,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         //}
         //await _distributedCache.SetStringAsync(cacheKey, handShakeResponse.Token);
         //var  ObjectMapper.Map<HandShakeResponseDto, HandShakeResultDto>(handShakeResponse);
-
+        await _commonAppService.SetOrderStep(OrderStepEnum.SaveOrder);
         return new CommitOrderResultDto()
         {
             PaymentGranted = paymentMethodGranted,

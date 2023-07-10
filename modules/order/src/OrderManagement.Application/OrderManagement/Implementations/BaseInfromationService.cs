@@ -332,7 +332,7 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
             var capacitySaleDetail = await _capacityControlAppService.Validation(saleDetail.Id, null);
             if (!capacitySaleDetail.Succsess)
             {
-                throw new UserFriendlyException(CapacityControlConstants.NoCapacitySaleDetail);
+                throw new UserFriendlyException(OrderConstant.NoCapacitySaleDetail);
             }
             var _agencySaleDetailIds = (await _agencySaleDetailRepository
                 .GetListAsync(x => x.SaleDetailId == saleDetail.Id))
