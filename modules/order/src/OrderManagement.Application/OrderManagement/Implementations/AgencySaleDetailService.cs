@@ -96,7 +96,11 @@ namespace OrderManagement.Application.OrderManagement.Implementations
          var result= await  _agencySaleDetailRepository.SingleOrDefaultAsync(x=>x.AgencyId == agencySaleDetailDto.AgencyId && x.SaleDetailId== agencySaleDetailDto.SaleDetailId);
             if (result != null)
             {
-                throw new UserFriendlyException("برنامه فروش برای نمایندگی انتخاب شده تعریف شده است");
+                //throw new UserFriendlyException("برنامه فروش برای نمایندگی انتخاب شده تعریف شده است");
+                result.DistributionCapacity = agencySaleDetailDto.DistributionCapacity;
+                result.ReserveCount  = agencySaleDetailDto.ReserveCount;
+                await _agencySaleDetailRepository.UpdateAsync(result);
+                return result.Id;
             }
 
             var agency=await _agencyRepository.FirstOrDefaultAsync(x => x.Id == agencySaleDetailDto.AgencyId);
