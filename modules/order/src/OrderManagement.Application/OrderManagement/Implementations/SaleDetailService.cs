@@ -1,9 +1,11 @@
 ﻿using Esale.Core.DataAccess;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.OrderManagement;
 using OrderManagement.Application.Contracts.OrderManagement.Inqueries;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
+using OrderManagement.Application.Contracts.Services;
 using OrderManagement.Domain;
 using OrderManagement.Domain.OrderManagement;
 using System;
@@ -26,14 +28,17 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
     private readonly IRepository<SaleDetailCarColor> _saleDetailCarColor;
     private readonly IRepository<Color> _colorRepository;
     private readonly IRepository<SaleDetailCarColor, int> _saleDetailColorRepository;
+    private readonly IHttpContextAccessor _contextAccessor;
+    private readonly ICommonAppService _commonAppService;
 
     public SaleDetailService(IRepository<SaleDetail> saleDetailRepository,
                              IRepository<CarTip> carTipRepository,
                              IRepository<ESaleType> eSaleTypeRepository,
                              IRepository<SaleDetailCarColor> saleDetailCarColor,
                              IRepository<Color> color,
-                             IRepository<SaleDetailCarColor, int> saleDetailColorRepository
-        )
+                             IRepository<SaleDetailCarColor, int> saleDetailColorRepository,
+                             IHttpContextAccessor contextAccessor,
+                             ICommonAppService commonAppService)
     {
         _saleDetailRepository = saleDetailRepository;
         _carTipRepository = carTipRepository;
@@ -41,6 +46,8 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
         _saleDetailCarColor = saleDetailCarColor;
         _colorRepository = color;
         _saleDetailColorRepository = saleDetailColorRepository;
+        _contextAccessor = contextAccessor;
+        _commonAppService = commonAppService;
     }
 
 

@@ -1184,6 +1184,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
     public async Task<CustomerOrder_OrderDetailDto> GetDetail(SaleDetail_Order_InquiryDto inquiryDto)
     {
+        await _commonAppService.ValidateOrderStep(OrderStepEnum.PreviewOrder);
         CustomerOrder_OrderDetailDto inquiryResult = new();
 
         var exception = new UserFriendlyException("درخواست معتبر نیست");
@@ -1201,7 +1202,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             default:
                 throw exception;
         }
-
+        await _commonAppService.SetOrderStep(OrderStepEnum.PreviewOrder);
         return inquiryResult;
     }
 

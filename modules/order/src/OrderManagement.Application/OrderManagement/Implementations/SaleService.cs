@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using System.Linq;
 using Volo.Abp.Domain.Entities;
 using OrderManagement.Application.OrderManagement.Utitlities;
+using Microsoft.AspNetCore.Http;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -19,19 +20,24 @@ public class SaleService : ApplicationService , ISaleService
     private readonly IRepository<SaleDetail, int> _saleDetailRepository;
     private readonly IRepository<Gallery, int> _galleriesRepository;
     private readonly IRepository<ESaleType, int> _esaleTypeRepository;
+    private readonly IHttpContextAccessor _contextAccessor;
+    private readonly ICommonAppService _commonAppService;
     private IConfiguration _configuration { get; set; }
     public SaleService(IRepository<PreSale> PreSaleRepository,
                        IRepository<SaleDetail, int> saleDetailRepository,
                        IRepository<Gallery, int> galleryRepository,
                        IRepository<ESaleType, int> esaleTypeRepository,
-                       IConfiguration configuration
-        )
+                       IConfiguration configuration,
+                       IHttpContextAccessor contextAccessor,
+                       ICommonAppService commonAppService)
     {
         _preSaleRepository = PreSaleRepository;
         _saleDetailRepository = saleDetailRepository;
         _galleriesRepository = galleryRepository;
         _esaleTypeRepository = esaleTypeRepository;
         _configuration = configuration;
+        _contextAccessor = contextAccessor;
+        _commonAppService = commonAppService;
     }
 
     public async Task<List<PreSaleDto>> GetPreSales()
@@ -91,6 +97,10 @@ public class SaleService : ApplicationService , ISaleService
         if (!queryResult.Any())
             return new List<SaleDetailDto>();
         var saleDetailDtos = await queryResult.MapSaleDetailsToDto(_galleriesRepository, ObjectMapper);
+        if (_contextAccessor.HttpContext.Request.Headers.TryGetValue("Authorization", out var token))
+        {
+            await _commonAppService.SetOrderStep(OrderStepEnum.Start);
+        }
         return saleDetailDtos.OrderBy(x => x.SalePlanDescription).ToList();
     }
 
