@@ -477,9 +477,10 @@ public class CommonAppService : ApplicationService, ICommonAppService
         ? token
         : throw new UserFriendlyException("لطفا مجددا لاگین کنید");
 
-    public async Task<bool> SetOrderStep(OrderStepEnum orderStep)
+    public async Task<bool> SetOrderStep(OrderStepEnum orderStep, long? userId = null)
     {
-        var userId = GetUserId();
+        if (userId == null)
+            userId = GetUserId();
         var orderStepDto = new OrderStepDto();
         if (orderStep == OrderStepEnum.Start)
         {
@@ -487,7 +488,7 @@ public class CommonAppService : ApplicationService, ICommonAppService
         }
         else
         {
-            orderStepDto = await GetOrderStep();
+            orderStepDto = await GetOrderStep(userId);
         }
         orderStepDto.Step = orderStep;
         string cacheKey = string.Format(RedisConstants.OrderStepCacheKey, userId.ToString());
@@ -517,9 +518,10 @@ public class CommonAppService : ApplicationService, ICommonAppService
         return true;
     }
 
-    private async Task<OrderStepDto> GetOrderStep()
+    private async Task<OrderStepDto> GetOrderStep(long? userId = null)
     {
-        var userId = GetUserId();
+        if (userId == null)
+            userId = GetUserId();
         string cacheKey = string.Format(RedisConstants.OrderStepCacheKey, userId.ToString());
         var getOrderStep = await _distributedCache.GetStringAsync(cacheKey);
         if (string.IsNullOrEmpty(getOrderStep))
