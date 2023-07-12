@@ -1117,6 +1117,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             Id = OrderId,
             OrderStatus = (int)OrderStatusType.PaymentNotVerified
         });
+        await _commonAppService.SetOrderStep(OrderStepEnum.PreviewOrder);
     }
     public async Task UpdateStatus(CustomerOrderDto customerOrderDto)
     {
