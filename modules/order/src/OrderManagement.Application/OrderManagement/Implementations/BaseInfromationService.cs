@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.Services;
@@ -18,7 +17,6 @@ using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
 using Microsoft.Extensions.Configuration;
 using EasyCaching.Core;
-using Newtonsoft.Json;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -49,7 +47,6 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
     private readonly ICapacityControlAppService _capacityControlAppService;
     private readonly IHybridCachingProvider _hybridCache;
 
-
     public BaseInformationService(IRepository<Company, int> companyRepository,
                                   IRepository<CarTip, int> carTipRepsoitory,
                                   IRepository<Gallery, int> galleryRepository,
@@ -59,7 +56,7 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
                                   IRepository<Province, int> ProvinceRepository,
                                   IRepository<WhiteList, int> WhiteListRepository,
                                   IRepository<AdvocacyUser, int> AdvocacyUsersRepository,
-                                  Microsoft.Extensions.Configuration.IConfiguration Configuration,
+                                  IConfiguration Configuration,
                                   IRepository<City, int> CityRepository,
                                   IRepository<AdvocacyUsersFromBank, int> advocacyUsersFromBankRepository,
                                   IEsaleGrpcClient esaleGrpcClient,
@@ -69,7 +66,8 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
                                   IMemoryCache memoryCache,
                                   IRepository<ESaleType, int> esaleTypeRepository,
                                   ICapacityControlAppService capacityControlAppService,
-                                  IHybridCachingProvider hybridCache)
+                                  IHybridCachingProvider hybridCache
+        )
     {
         _esaleGrpcClient = esaleGrpcClient;
         _companyRepository = companyRepository;
@@ -324,7 +322,7 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
         var user = await _esaleGrpcClient.GetUserById(_commonAppService.GetUserId());
         var agencyQuery = await _agencyRepository.GetQueryableAsync();
         var cacheKey = string.Format(RedisConstants.SaleDetailAgenciesCacheKey, saleDetailUid);
-        var agencySaleDetailIds = _hybridCache.Get<List<int>>(cacheKey).Value??new List<int>();
+        var agencySaleDetailIds = _hybridCache.Get<List<int>>(cacheKey).Value ?? new List<int>();
         if (agencySaleDetailIds?.Count == 0)
         {
             var saleDetail = await _saleDetailRepository.FirstOrDefaultAsync(x => x.UID == saleDetailUid)
@@ -340,7 +338,7 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
                 .ToList();
             foreach (var agency in _agencySaleDetailIds)
             {
-                var hasCapacity = await _capacityControlAppService.AgencyValidation(saleDetail.Id,agency,capacitySaleDetail.Data);
+                var hasCapacity = await _capacityControlAppService.AgencyValidation(saleDetail.Id, agency, capacitySaleDetail.Data);
                 if (hasCapacity.Succsess)
                 {
                     agencySaleDetailIds.Add(agency);
@@ -351,9 +349,16 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
         var agencies = agencyQuery.Where(x => x.ProvinceId == (user.HabitationProvinceId ?? 0) && agencySaleDetailIds.Any(y => y == x.Id)).ToList();
         return ObjectMapper.Map<List<Agency>, List<AgencyDto>>(agencies);
     }
+
     public async Task<List<ESaleTypeDto>> GetSaleTypes()
     {
         var esaleTypes = await _esaleTypeRepository.GetListAsync();
         return ObjectMapper.Map<List<ESaleType>, List<ESaleTypeDto>>(esaleTypes);
+    }
+
+    public async Task ClearCache(string prefix)
+    {
+        var cacheKeyPrefix = string.IsNullOrWhiteSpace(prefix) ? "**" : prefix;
+        await _hybridCache.RemoveByPrefixAsync(prefix);
     }
 }

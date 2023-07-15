@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using PaymentManagement.Application.Contracts.Dtos;
+using PaymentManagement.Application.Contracts.Enums;
 using PaymentManagement.Application.Contracts.IServices;
 using PaymentManagement.HttpApi.Utilities;
 using Volo.Abp;
@@ -62,7 +63,14 @@ namespace PaymentManagement
             };
 
             dp.AddKey("data", JsonConvert.SerializeObject(result));
-            dp.Post(HttpContext);
+            var res = dp.Post(HttpContext);
+            await _paymentAppService.InsertPaymentLogAsync(new PaymentLogDto
+            {
+                PaymentId = int.Parse(keyValueList["requestId"] ?? "0"),
+                Psp = PspEnum.IranKish.ToString(),
+                Message = "BackFromPspHtmlContent",
+                Parameter = res
+            });
             return Content("");
         }
 
@@ -89,9 +97,15 @@ namespace PaymentManagement
             };
 
             dp.AddKey("data", JsonConvert.SerializeObject(result));
-            dp.Post(HttpContext);
+            var res = dp.Post(HttpContext);
+            await _paymentAppService.InsertPaymentLogAsync(new PaymentLogDto
+            {
+                PaymentId = int.Parse(keyValueList["SaleOrderId"] ?? "0"),
+                Psp = PspEnum.Mellat.ToString(),
+                Message = "BackFromPspHtmlContent",
+                Parameter = res
+            });
             return Content("");
-
         }
 
         [HttpPost]

@@ -9,12 +9,14 @@ using Microsoft.AspNetCore.Mvc;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
 using Volo.Abp.Application.Dtos;
 using OrderManagement.Application.Contracts.OrderManagement;
+using Esale.Share.Authorize;
 
 namespace OrderManagement.HttpApi.OrderManagement.Controllers
 {
     [DisableAuditing]
     [RemoteService]
     [Route("api/services/app/ColorService/[action]")]
+    [UserAuthorization]
     public class ColorController : Controller, IColorService
     {
         private readonly IColorService _colorService;

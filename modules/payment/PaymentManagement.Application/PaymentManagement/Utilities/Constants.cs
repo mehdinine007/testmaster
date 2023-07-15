@@ -31,6 +31,7 @@
         public const string HandShakeException = "HandShakeException";
         public const string RedirectToPsp = "RedirectToPsp";
         public const string BackFromPsp = "BackFromPsp";
+        public const string BackFromPspHtmlContent = "BackFromPspHtmlContent";
         public const string DuplicateBackFromPsp = "DuplicateBackFromPsp";
         public const string BackFromPspWithInCorrectUrl = "BackFromPspWithInCorrectUrl";
         public const string BackFromPspException = "BackFromPspException";
@@ -48,14 +49,18 @@
         public const string ReverseResult = "ReverseResult";
         #endregion
 
-        #region PspUrl
-        public const string IranKishGetTokenUrl = "https://ikc.shaparak.ir/api/v3/tokenization/make";
+        #region Url
+        public const string IranKishHandShakeUrlInGateway = "/api/services/app/GatewayService/HandShakeWithIranKish";
+        public const string IranKishVerifyUrlInGateway = "/api/services/app/GatewayService/VerifyToIranKish";
+        public const string IranKishInquiryUrlInGateway = "/api/services/app/GatewayService/InquiryToIranKish";
+        public const string IranKishReverseUrlInGateway = "/api/services/app/GatewayService/ReverseToIranKish";        
         public const string IranKishRedirectUrl = "https://ikc.shaparak.ir/iuiv3/IPG/Index";
         public const string IranKishOriginUrl = "https://ikc.shaparak.ir";
-        public const string IranKishVerifyUrl = "https://ikc.shaparak.ir/api/v3/confirmation/purchase";
-        public const string IranKishInquiryUrl = "https://ikc.shaparak.ir/api/v3/inquiry/single";
-        public const string IranKishReverseUrl = "https://ikc.shaparak.ir/api/v3/confirmation/reversePurchase";
 
+        public const string MellatHandShakeUrlInGateway = "/api/services/app/GatewayService/HandShakeWithMellat";
+        public const string MellatVerifyUrlInGateway = "/api/services/app/GatewayService/VerifyToMellat";
+        public const string MellatInquiryUrlInGateway = "/api/services/app/GatewayService/InquiryToMellat";
+        public const string MellatReverseUrlInGateway = "/api/services/app/GatewayService/ReverseToMellat";        
         public const string MellatRedirectUrl1 = "https://bpm.shaparak.ir/pgwchannel/startpay.mellat";
         public const string MellatRedirectUrl2 = "https://bpm.shaparak.ir/pgwchannel2/startpay.mellat";
         public const string MellatOriginUrl = "https://bpm.shaparak.ir";

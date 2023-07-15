@@ -80,8 +80,9 @@ public class BaseController : IBaseInformationService
     public async Task<List<AgencyDto>> GetAgencies(Guid saleDetailUid)
         => await _baseInformationService.GetAgencies(saleDetailUid);
 
-    //[HttpGet]
-    //[UserAuthorization]
-    //public async Task<List<AgencyDto>> GetAgencies()
-    //    => await _baseInformationService.GetAgencies();
+
+    [HttpGet]
+    [UserAuthorization]
+    public async Task ClearCache(string prefix)
+        => await _baseInformationService.ClearCache(prefix);
 }
