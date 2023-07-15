@@ -15,4 +15,9 @@
         public string transactionType { get; set; }
         public BillInfo billInfo { get; set; }
     }
+    public class BillInfo
+    {
+        public string BillId { get; set; }
+        public string billPaymentId { get; set; }
+    }
 }
