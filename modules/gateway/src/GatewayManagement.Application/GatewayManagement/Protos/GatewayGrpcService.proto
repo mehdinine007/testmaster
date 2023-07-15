@@ -1,0 +1,89 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "GatewayManagement.Application.GatewayServiceGrpc";
+
+import "google/protobuf/duration.proto";  
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
+
+package GatewayService;
+
+service GatewayServiceGrpc{
+	rpc HandShakeWithIranKish(IranKishHandShakeInput) returns (Output);
+	rpc HandShakeWithMellat(MellatHandShakeInput) returns (Output);
+	rpc VerifyToIranKish(IranKishVerifyInput) returns (Output);
+	rpc VerifyToMellat(MellatVerifyInput) returns (Output);
+    rpc InquiryToIranKish(IranKishInquiryInput) returns (Output);
+	rpc InquiryToMellat(MellatInquiryInput) returns (Output);
+    rpc ReverseToIranKish(IranKishReverseInput) returns (Output);
+    rpc ReverseToMellat(MellatReverseInput) returns (Output);
+}
+message Output{
+	string Result = 1;
+}
+message IranKishHandShakeInput{
+	string TerminalId = 1;
+	string AcceptorId = 2;
+	string PassPhrase = 3;
+	string CallBackUrl = 4;
+	int64 Amount = 5;
+	string RequestId = 6;
+	string NationalCode = 7;
+	string Mobile = 8;
+	string RsaPublicKey = 9;
+}
+message MellatHandShakeInput{
+	int64 TerminalId = 1;
+	string UserName = 2;
+	string UserPassword = 3;
+	int32 OrderId = 4;
+	int64 Amount = 5;
+	string CallBackUrl = 6;
+	string MobileNo = 7;
+	string EncryptedNationalCode = 8;
+	int32 Switch = 9;
+}
+message IranKishVerifyInput{
+	string TerminalId = 1;
+	string RetrievalReferenceNumber = 2;
+	string SystemTraceAuditNumber = 3;
+	string TokenIdentity = 4;
+}
+message MellatVerifyInput{
+	int64 TerminalId = 1;
+	string UserName = 2;
+	string UserPassword = 3;
+	int64 OrderId = 4;
+	int64 SaleOrderId = 5;
+	int64 SaleReferenceId = 6;
+	int32 Switch = 7;
+}
+message IranKishInquiryInput{
+	string TerminalId = 1;
+	string PassPhrase = 2;
+	string TokenIdentity = 3;
+	int32 FindOption = 4;
+}
+message MellatInquiryInput{
+	int64 TerminalId = 1;
+	string ReportServiceUserName = 2;
+	string ReportServicePassword = 3;
+	int64 OrderId = 4;
+	int32 Switch = 5;
+}
+message IranKishReverseInput{
+	string TerminalId = 1;
+	string RetrievalReferenceNumber = 2;
+	string SystemTraceAuditNumber = 3;
+	string TokenIdentity = 4;
+}
+message MellatReverseInput{
+	int64 TerminalId = 1;
+	string UserName = 2;
+	string UserPassword = 3;
+	int64 OrderId = 4;
+	int64 SaleOrderId = 5;
+	int64 SaleReferenceId = 6;
+	int32 Switch = 7;
+}

@@ -56,7 +56,34 @@ public class EsaleGrpcClient : ApplicationService, IEsaleGrpcClient
             SurName = user.SurName
         };
     }
+    public async Task<UserDto> GetUserByUBPId(string userId)
+    {
+        AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2Support", true);
+        AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
+        var channel = GrpcChannel.ForAddress(_configuration.GetValue<string>("Esale:GrpcAddress"));
+        var client = new UserServiceGrpc.UserServiceGrpcClient(channel);
 
+        var user = client.GetUserByUBPId(new GetUserUBPModel() { UserId = userId });
+        if (user.BankId == 0)
+            return null;
+        return new UserDto
+        {
+            AccountNumber = user.AccountNumber,
+            BankId = user.BankId,
+            BirthCityId = user.BirthCityId,
+            BirthProvinceId = user.BirthProvinceId,
+            HabitationCityId = user.HabitationCityId,
+            HabitationProvinceId = user.HabitationProvinceId,
+            IssuingCityId = user.IssuingCityId,
+            IssuingProvinceId = user.IssuingProvinceId,
+            NationalCode = user.NationalCode,
+            Shaba = user.Shaba,
+            MobileNumber = user.MobileNumber,
+            CompanyId = user.CompanyId,
+            Name = user.Name,
+            SurName = user.SurName
+        };
+    }
     public async Task<AdvocacyUserDto> GetUserAdvocacyByNationalCode(string nationlCode)
     {
         var channel = GrpcChannel.ForAddress(_configuration.GetValue<string>("Esale:GrpcAddress"));

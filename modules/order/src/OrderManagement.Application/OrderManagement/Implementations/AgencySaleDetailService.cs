@@ -1,8 +1,10 @@
 ﻿using AutoMapper.Internal.Mappers;
+using EasyCaching.Core;
 using Microsoft.EntityFrameworkCore;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.OrderManagement;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
+using OrderManagement.Application.OrderManagement.Constants;
 using OrderManagement.Domain;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,17 +25,26 @@ namespace OrderManagement.Application.OrderManagement.Implementations
         private readonly IRepository<AgencySaleDetail> _agencySaleDetailRepository;
         private readonly IRepository<Agency> _agencyRepository;
         private readonly IRepository<SaleDetail> _saleDetailRepository;
+        private readonly IHybridCachingProvider _hybridCache;
 
-        public AgencySaleDetailService(IRepository<AgencySaleDetail> agencySaleDetailRepository, IRepository<Agency> agencyRepository, IRepository<SaleDetail> saleDetailRepository)
+        public AgencySaleDetailService(IRepository<AgencySaleDetail> agencySaleDetailRepository, IRepository<Agency> agencyRepository, IRepository<SaleDetail> saleDetailRepository
+            , IHybridCachingProvider hybridCache)
         {
             _agencySaleDetailRepository = agencySaleDetailRepository;
             _agencyRepository = agencyRepository;
             _saleDetailRepository = saleDetailRepository;
+            _hybridCache = hybridCache;
         }
 
         public async Task<bool> Delete(int id)
         {
-            await _agencySaleDetailRepository.DeleteAsync(x => x.Id == id, autoSave: true);
+             var agancySaleDetail =  _agencySaleDetailRepository.WithDetails(x=>x.SaleDetail).AsNoTracking().FirstOrDefault(x => x.Id == id);
+            if (agancySaleDetail != null)
+            {
+                await _agencySaleDetailRepository.DeleteAsync(x => x.Id == id, autoSave: true);
+                var cacheKey = string.Format(RedisConstants.SaleDetailAgenciesCacheKey, agancySaleDetail.SaleDetail.UID);
+                await _hybridCache.RemoveAsync(cacheKey);
+            }
             return true;
         }
 

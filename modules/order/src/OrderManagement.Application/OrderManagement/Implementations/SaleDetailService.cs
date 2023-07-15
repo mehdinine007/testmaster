@@ -1,4 +1,5 @@
-﻿using Esale.Core.DataAccess;
+﻿using EasyCaching.Core;
+using Esale.Core.DataAccess;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using OrderManagement.Application.Contracts;
@@ -6,6 +7,7 @@ using OrderManagement.Application.Contracts.OrderManagement;
 using OrderManagement.Application.Contracts.OrderManagement.Inqueries;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
 using OrderManagement.Application.Contracts.Services;
+using OrderManagement.Application.OrderManagement.Constants;
 using OrderManagement.Domain;
 using OrderManagement.Domain.OrderManagement;
 using System;
@@ -30,6 +32,7 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
     private readonly IRepository<SaleDetailCarColor, int> _saleDetailColorRepository;
     private readonly IHttpContextAccessor _contextAccessor;
     private readonly ICommonAppService _commonAppService;
+    private readonly IHybridCachingProvider _hybridCache;
 
     public SaleDetailService(IRepository<SaleDetail> saleDetailRepository,
                              IRepository<CarTip> carTipRepository,
@@ -38,7 +41,7 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
                              IRepository<Color> color,
                              IRepository<SaleDetailCarColor, int> saleDetailColorRepository,
                              IHttpContextAccessor contextAccessor,
-                             ICommonAppService commonAppService)
+                             ICommonAppService commonAppService, IHybridCachingProvider hybridCache)
     {
         _saleDetailRepository = saleDetailRepository;
         _carTipRepository = carTipRepository;
@@ -48,14 +51,20 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
         _saleDetailColorRepository = saleDetailColorRepository;
         _contextAccessor = contextAccessor;
         _commonAppService = commonAppService;
+        _hybridCache = hybridCache;
     }
 
 
 
     public async Task<bool> Delete(int id)
     {
-
-        await _saleDetailRepository.DeleteAsync(x => x.Id == id, autoSave: true);
+        var saleDetail=await _saleDetailRepository.FirstOrDefaultAsync(x => x.Id == id);
+        if (saleDetail == null) {
+            var cacheKey = string.Format(RedisConstants.SaleDetailPrefix, saleDetail.UID);
+            await _saleDetailRepository.DeleteAsync(x => x.Id == id, autoSave: true);
+            await _hybridCache.RemoveAsync(cacheKey);
+        }
+        
         return true;
 
     }
@@ -200,7 +209,6 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
     public async Task<int> Update(CreateSaleDetailDto createSaleDetailDto)
     {
         var result = await _saleDetailRepository.WithDetails().AsNoTracking().FirstOrDefaultAsync(x => x.Id == createSaleDetailDto.Id);
-
         if (result == null)
         {
             throw new UserFriendlyException("رکوردی برای ویرایش وجود ندارد");
@@ -226,6 +234,8 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
         c => c.CarTipId, m => m.ManufactureDate, s => s.SalePlanStartDate, m => m.ManufactureDate, s => s.SalePlanEndDate,
         c => c.CarDeliverDate, s => s.SaleTypeCapacity, c => c.CoOperatingProfitPercentage, r => r.RefuseProfitPercentage, e => e.ESaleTypeId, c => c.CarFee, d => d.DeliverDaysCount,
         d => d.MinimumAmountOfProxyDeposit, s => s.SaleId, v => v.Visible);
+        var cacheKey = string.Format(RedisConstants.SaleDetailPrefix, result.UID);
+        await _hybridCache.RemoveAsync(cacheKey);
         return saleDetail.Id;
     }
 

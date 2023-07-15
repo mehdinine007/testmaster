@@ -20,7 +20,7 @@ namespace OrderManagement.Application.Contracts.Services
         string GetNationalCode();
         //Task<string> GetRole();
         long GetUserId();
-
+        string GetUserUBPId();
         string GetIncomigToken();
         Task<bool> SetOrderStep(OrderStepEnum orderStep, long? userId = null);
         Task<bool> ValidateOrderStep(OrderStepEnum orderStep);

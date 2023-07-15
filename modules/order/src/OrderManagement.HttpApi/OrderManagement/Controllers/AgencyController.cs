@@ -10,12 +10,14 @@ using OrderManagement.Application.Contracts.OrderManagement.Services;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.OrderManagement.Implementations;
 using Volo.Abp.Application.Dtos;
+using Esale.Share.Authorize;
 
 namespace OrderManagement.HttpApi.OrderManagement.Controllers
 {
     [DisableAuditing]
     [RemoteService]
     [Route("api/services/app/AgencyService/[action]")]
+    [UserAuthorization]
     public class AgencyController : Controller, IAgencyService
     {
 
