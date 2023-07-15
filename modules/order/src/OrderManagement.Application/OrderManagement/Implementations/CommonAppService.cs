@@ -1,13 +1,16 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Esale.Core.Caching.Redis;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using OrderManagement.Application.Contracts;
+using OrderManagement.Application.Contracts.OrderManagement;
 using OrderManagement.Application.Contracts.Services;
 using OrderManagement.Application.OrderManagement.Constants;
 using OrderManagement.Application.OrderManagement.Utitlities;
 using OrderManagement.Domain;
+using Polly.Caching;
 using RestSharp;
 using System;
 using System.Collections.Generic;
@@ -42,7 +45,7 @@ public class CommonAppService : ApplicationService, ICommonAppService
                             IRepository<ExternalApiLogResult, int> externalApiLogResultRepository,
                             IRepository<ExternalApiResponsLog, int> externalApiResponsLogRepositor,
                             IHttpContextAccessor contextAccessor
-        )
+                            )
     {
         _distributedCache = distributedCache;
         _configuration = configuration;
@@ -473,4 +476,59 @@ public class CommonAppService : ApplicationService, ICommonAppService
         => _contextAccessor.HttpContext.Request.Headers.TryGetValue("Authorization", out var token)
         ? token
         : throw new UserFriendlyException("لطفا مجددا لاگین کنید");
+
+    public async Task<bool> SetOrderStep(OrderStepEnum orderStep, long? userId = null)
+    {
+        if (userId == null)
+            userId = GetUserId();
+        var orderStepDto = new OrderStepDto();
+        if (orderStep == OrderStepEnum.Start)
+        {
+            orderStepDto.StartTime = DateTime.Now;
+        }
+        else
+        {
+            orderStepDto = await GetOrderStep(userId);
+        }
+        orderStepDto.Step = orderStep;
+        string cacheKey = string.Format(RedisConstants.OrderStepCacheKey, userId.ToString());
+        await _distributedCache.SetStringAsync(cacheKey, JsonConvert.SerializeObject(orderStepDto),
+            new DistributedCacheEntryOptions()
+            {
+                AbsoluteExpiration = new DateTimeOffset(DateTime.Now.AddSeconds(int.Parse(_configuration.GetSection("OrderStepTTL").Value)))
+            });
+        return true;
+    }
+
+    public async Task<bool> ValidateOrderStep(OrderStepEnum orderStep)
+    {
+        var orderStepDto = await GetOrderStep();
+        var orderSteps = new List<OrderStepEnum>();
+        if (!bool.Parse(_configuration.GetSection("PaymentMethodGranted").Value))
+            orderSteps = OrderConstant.OrderStepWithoutPayment;
+        else
+            orderSteps = OrderConstant.OrderStepWithPayment;
+        var beforeStep = orderSteps
+            .OrderByDescending(x => (int)x)
+            .FirstOrDefault(x => (int)x < (int)orderStep);
+        if (beforeStep == null || beforeStep != orderStepDto.Step)
+        {
+            throw new UserFriendlyException(OrderConstant.NoValidFlowOrderStep, OrderConstant.NoValidFlowOrderStepId);
+        }
+        return true;
+    }
+
+    private async Task<OrderStepDto> GetOrderStep(long? userId = null)
+    {
+        if (userId == null)
+            userId = GetUserId();
+        string cacheKey = string.Format(RedisConstants.OrderStepCacheKey, userId.ToString());
+        var getOrderStep = await _distributedCache.GetStringAsync(cacheKey);
+        if (string.IsNullOrEmpty(getOrderStep))
+        {
+            throw new UserFriendlyException(OrderConstant.NoValidFlowOrderStep, OrderConstant.NoValidFlowOrderStepId);
+        }
+        return JsonConvert.DeserializeObject<OrderStepDto>(getOrderStep);
+    }
+
 }

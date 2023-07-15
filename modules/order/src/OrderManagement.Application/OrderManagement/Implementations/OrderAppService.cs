@@ -31,6 +31,9 @@ using Esale.Core.Caching.Redis;
 using System.Reflection;
 using Volo.Abp.ObjectMapping;
 using StackExchange.Redis;
+using Polly.Caching;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using static OrderManagement.Application.Contracts.OrderManagementPermissions;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -174,6 +177,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
     [UnitOfWork(isTransactional: false)]
     public async Task<CommitOrderResultDto> CommitOrder(CommitOrderDto commitOrderDto)
     {
+        await _commonAppService.ValidateOrderStep(OrderStepEnum.SaveOrder);
         var allowedStatusTypes = new List<int>() { (int)OrderStatusType.RecentlyAdded, (int)OrderStatusType.PaymentSucceeded };
 
         Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
@@ -625,29 +629,28 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         if (_configuration.GetSection("IsIranCellActive").Value == "1")
         {
-            //await _cacheManager.GetCache("CommitOrderimport").
-            //           SetAsync(
-            //              userId.ToString() + "_" +
+            await AddCacheKey(RedisConstants.CommitOrderPrefix+ userId.ToString(),
+                            "_"+commitOrderDto.PriorityId.ToString() + "_" +
+                            SaleDetailDto.SaleId.ToString()
+                           ,customerOrder.Id.ToString()
+                           ,ttl.TotalSeconds);
+            await AddCacheKey(RedisConstants.CommitOrderPrefix + userId.ToString(), "_" + SaleDetailDto.Id.ToString(),customerOrder.Id.ToString(), ttl.TotalSeconds);
+            //await _distributedCache.SetStringAsync(RedisConstants.CommitOrderPrefix + userId.ToString() + "_" +
             //                commitOrderDto.PriorityId.ToString() + "_" +
             //                SaleDetailDto.SaleId.ToString()
-            //               , customerOrder.Id,
-            //              TimeSpan.FromSeconds(ttl.TotalSeconds));
-            await _distributedCache.SetStringAsync(RedisConstants.CommitOrderPrefix + userId.ToString() + "_" +
-                            commitOrderDto.PriorityId.ToString() + "_" +
-                            SaleDetailDto.SaleId.ToString()
-                           , customerOrder.Id.ToString(),
-                           new DistributedCacheEntryOptions()
-                           {
-                               AbsoluteExpiration = new DateTimeOffset(DateTime.Now.AddSeconds(ttl.TotalSeconds))
-                           });
+            //               , customerOrder.Id.ToString(),
+            //               new DistributedCacheEntryOptions()
+            //               {
+            //                   AbsoluteExpiration = new DateTimeOffset(DateTime.Now.AddSeconds(ttl.TotalSeconds))
+            //               });
 
-            await _distributedCache.SetStringAsync(RedisConstants.CommitOrderPrefix + userId.ToString() + "_" +
-                     SaleDetailDto.Id.ToString()
-                     , customerOrder.Id.ToString(),
-                     new DistributedCacheEntryOptions
-                     {
-                         AbsoluteExpiration = new DateTimeOffset(DateTime.Now.AddSeconds(ttl.TotalSeconds))
-                     });
+            //await _distributedCache.SetStringAsync(RedisConstants.CommitOrderPrefix + userId.ToString() + "_" +
+            //         SaleDetailDto.Id.ToString()
+            //         , customerOrder.Id.ToString(),
+            //         new DistributedCacheEntryOptions
+            //         {
+            //             AbsoluteExpiration = new DateTimeOffset(DateTime.Now.AddSeconds(ttl.TotalSeconds))
+            //         });
 
             await _distributedCache.SetStringAsync(RedisConstants.CommitOrderEsaleTypePrefix + userId.ToString()
                    , SaleDetailDto.ESaleTypeId.ToString(),
@@ -655,12 +658,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
                    {
                        AbsoluteExpiration = new DateTimeOffset(DateTime.Now.AddSeconds(ttl.TotalSeconds))
                    });
-            //await _cacheManager.GetCache("CommitOrderimport").
-            //     SetAsync(
-            //         userId.ToString() + "_" +
-            //         SaleDetailDto.Id.ToString()
-            //         , customerOrder.Id
-            //         , TimeSpan.FromSeconds(ttl.TotalSeconds));
         }
 
         //var pspCacheKey = string.Format(RedisConstants.UserTransactionKey, nationalCode, customerOrder.Id);
@@ -671,7 +668,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         //}
         //await _distributedCache.SetStringAsync(cacheKey, handShakeResponse.Token);
         //var  ObjectMapper.Map<HandShakeResponseDto, HandShakeResultDto>(handShakeResponse);
-
+        await _commonAppService.SetOrderStep(OrderStepEnum.SaveOrder);
         return new CommitOrderResultDto()
         {
             PaymentGranted = paymentMethodGranted,
@@ -848,7 +845,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
             //await _distributedCache.RemoveAsync(
             //         userId.ToString() + "_" +
             //         customerOrder.SaleDetailId.ToString());
-            await _redisCacheManager.RemoveAllAsync(RedisConstants.CommitOrderPrefix + userId.ToString() + "_");
+            //await _redisCacheManager.RemoveAllAsync(RedisConstants.CommitOrderPrefix + userId.ToString() + "_");
+            await _redisCacheManager.RemoveWithPrefixAsync(RedisConstants.CommitOrderPrefix + userId.ToString());
         }
 
 
@@ -1112,12 +1110,14 @@ public class OrderAppService : ApplicationService, IOrderAppService
     }
     private async Task NotVerifyActions(long UserId, int OrderId)
     {
-        await _redisCacheManager.RemoveAllAsync(RedisConstants.CommitOrderPrefix + UserId.ToString() + "_*");
+        //await _redisCacheManager.RemoveAllAsync(RedisConstants.CommitOrderPrefix + UserId.ToString() + "_*");
+        await _redisCacheManager.RemoveWithPrefixAsync(RedisConstants.CommitOrderPrefix + UserId.ToString());
         await UpdateStatus(new()
         {
             Id = OrderId,
             OrderStatus = (int)OrderStatusType.PaymentNotVerified
         });
+        await _commonAppService.SetOrderStep(OrderStepEnum.PreviewOrder, UserId);
     }
     public async Task UpdateStatus(CustomerOrderDto customerOrderDto)
     {
@@ -1165,7 +1165,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
                            .AsNoTracking()
                            .FirstOrDefault(x => x.Id == orderId);
                             if (order != null)
-                                await _redisCacheManager.RemoveAllAsync(RedisConstants.CommitOrderPrefix + order.UserId.ToString() + "_*");
+                                //await _redisCacheManager.RemoveAllAsync(RedisConstants.CommitOrderPrefix + order.UserId.ToString() + "_*");
+                                await _redisCacheManager.RemoveWithPrefixAsync(RedisConstants.CommitOrderPrefix + order.UserId.ToString());
                         }
                         catch (Exception EX)
                         {
@@ -1196,12 +1197,13 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 inquiryResult = await GetOrderDetailById(dto.OrderId.Value);
                 break;
             case SaleDetail_Order_InquiryDto dto when dto.SaleDetailUid.HasValue:
+                await _commonAppService.ValidateOrderStep(OrderStepEnum.PreviewOrder);
                 inquiryResult = await GetSaleDetailByUid(dto.SaleDetailUid.Value);
+                await _commonAppService.SetOrderStep(OrderStepEnum.PreviewOrder);
                 break;
             default:
                 throw exception;
         }
-
         return inquiryResult;
     }
 
@@ -1315,4 +1317,16 @@ public class OrderAppService : ApplicationService, IOrderAppService
         customerOrder.NationalCode = user.NationalCode;
         return customerOrder;
     }
+
+    private async Task AddCacheKey(string prefix,string key,string value,double ttl)
+    {
+        string cacheKeyName = prefix + key;
+        await _distributedCache.SetStringAsync(cacheKeyName, value,
+                       new DistributedCacheEntryOptions()
+                       {
+                           AbsoluteExpiration = new DateTimeOffset(DateTime.Now.AddSeconds(ttl))
+                       });
+        await _redisCacheManager.StringAppendAsync(prefix, cacheKeyName+",");
+    }
+
 }

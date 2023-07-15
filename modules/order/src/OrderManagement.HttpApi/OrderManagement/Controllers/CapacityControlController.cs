@@ -1,4 +1,4 @@
-﻿using Esale.Core.Utility.Results;
+﻿
 using Esale.Share.Authorize;
 using Microsoft.AspNetCore.Mvc;
 using OrderManagement.Application.Contracts;
@@ -38,6 +38,7 @@ public class CapacityControlController :Controller
           => await _capacityControlAppService.GrpcPaymentTest();
 
     [HttpPost]
+    [UserAuthorization]
     public async Task<bool> Validation(Guid saleDetailUId)
           => await _capacityControlAppService.ValidationBySaleDetailUId(saleDetailUId);
 }

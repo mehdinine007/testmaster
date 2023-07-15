@@ -18,6 +18,7 @@ using System.Text;
 using System.Text.Json;
 using System.Xml.Serialization;
 using Volo.Abp.Application.Services;
+using Volo.Abp.Auditing;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Uow;
 
@@ -61,6 +62,8 @@ namespace PaymentManagement.Application.Servicess
                 .Select(o => new PspAccountDto { Id = o.Id, PspId = o.PspId, AccountName = o.Account.AccountName, Psp = o.Psp.Title })
                 .ToList();
         }
+
+        [Audited]
         public List<InquiryWithFilterParamDto> InquiryWithFilterParam(int? filterParam1, int? filterParam2, int? filterParam3, int? filterParam4
             , bool? IsRelationIdGroup
             , bool? IsRelationIdBGroup
@@ -93,6 +96,8 @@ namespace PaymentManagement.Application.Servicess
                     Count = o.Count()
                 }).ToList();
         }
+
+        [Audited]
         public List<InquiryWithFilterParamDto> InquiryWithFilterParamGroupByParams(int? filterParam1, int? filterParam2, int? filterParam3, int? filterParam4)
         {
             return _paymentRepository.WithDetails().AsNoTracking()
@@ -123,6 +128,7 @@ namespace PaymentManagement.Application.Servicess
             return result == null ? string.Empty : result.CallBackUrl;
         }
         [UnitOfWork(false)]
+        [Audited]
         public PaymentInfoDto GetPaymentInfo(int paymentId)
         {
             return _paymentRepository.WithDetails().AsNoTracking().Select(o => new PaymentInfoDto
@@ -150,8 +156,10 @@ namespace PaymentManagement.Application.Servicess
 
         #region HandShake
         [UnitOfWork(isTransactional: false)]
+        [Audited]
         public async Task<HandShakeOutputDto> HandShakeAsync(HandShakeInputDto input)
         {
+            throw new Volo.Abp.UserFriendlyException("dalam");
             var result = new HandShakeOutputDto()
             {
                 StatusCode = (int)StatusCodeEnum.Failed,
@@ -775,6 +783,7 @@ namespace PaymentManagement.Application.Servicess
 
         #region Verify
         [UnitOfWork(isTransactional: false)]
+        [Audited]
         public async Task<VerifyOutputDto> VerifyAsync(int paymentId)
         {
             var result = new VerifyOutputDto()
@@ -1186,6 +1195,7 @@ namespace PaymentManagement.Application.Servicess
 
         #region Reverse
         [UnitOfWork(isTransactional: false)]
+        [Audited]
         public async Task<ReverseOutputDto> ReverseAsync(int paymentId)
         {
             var result = new ReverseOutputDto()
@@ -1378,6 +1388,7 @@ namespace PaymentManagement.Application.Servicess
 
         #region RetryForVerify
         [UnitOfWork(isTransactional: false)]
+        [Audited]
         public async Task<List<RetryForVerifyOutputDto>> RetryForVerify()
         {
             var deadLine = DateTime.Now.AddMinutes(_config.GetValue<int>("App:RetryForVerifyFromDateMinute"));

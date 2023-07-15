@@ -24,6 +24,6 @@ namespace OrderManagement.Application.Contracts.Services
         Task<List<AgencyDto>> GetAgencies(Guid saleDetailUid);
        // Task<List<AgencyDto>> GetAgencies();
         Task<List<ESaleTypeDto>> GetSaleTypes();
-
+        Task ClearCache(string prefix);
     }
 }
