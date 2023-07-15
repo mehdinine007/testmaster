@@ -22,7 +22,7 @@ namespace OrderManagement.Application.Contracts.Services
         long GetUserId();
 
         string GetIncomigToken();
-        Task<bool> SetOrderStep(OrderStepEnum orderStep);
+        Task<bool> SetOrderStep(OrderStepEnum orderStep, long? userId = null);
         Task<bool> ValidateOrderStep(OrderStepEnum orderStep);
 
     }
