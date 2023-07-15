@@ -25,5 +25,6 @@ public static class RedisConstants
 
     public const string OrderStatusCacheKey = "{0}_status";
 
-    public const string SaleDetailAgenciesCacheKey = "n:Agency:AgencySaleDetail_{0}";
+    public const string AgencyCacheKey = "n:Agency:";
+    public const string SaleDetailAgenciesCacheKey = AgencyCacheKey + "AgencySaleDetail_{0}";
 }
