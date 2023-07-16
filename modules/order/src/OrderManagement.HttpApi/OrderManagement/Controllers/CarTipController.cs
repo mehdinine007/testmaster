@@ -9,12 +9,14 @@ using Volo.Abp;
 using Microsoft.AspNetCore.Mvc;
 using Volo.Abp.Application.Dtos;
 using OrderManagement.Application.Contracts;
+using Esale.Share.Authorize;
 
 namespace OrderManagement.HttpApi.OrderManagement.Controllers
 {
     [DisableAuditing]
     [RemoteService]
     [Route("api/services/app/CarTipService/[action]")]
+    [UserAuthorization]
     public class CarTipController : Controller, ICarTipService
     {
         private readonly ICarTipService _carTipService;

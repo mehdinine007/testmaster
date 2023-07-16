@@ -6,7 +6,7 @@ public static class RedisConstants
 {
     public const string RedisDefaultPrefix = "n:{0} ,c:{1}";
 
-    public const string SaleDetailPrefix = "n:SaleDetail ,c:{0}";
+    public const string SaleDetailPrefix = "n:SaleDetail:";
     public const string CommitOrderPrefix = "n:CommitOrder:";
     public const string OrderStepCacheKey = CommitOrderPrefix+"OrderStep_{0}";
     public const string CommitOrderEsaleTypePrefix = "n:CommitOrderEsaleType:";

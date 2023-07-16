@@ -1,8 +1,10 @@
 ﻿using AutoMapper.Internal.Mappers;
+using EasyCaching.Core;
 using Microsoft.EntityFrameworkCore;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.OrderManagement;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
+using OrderManagement.Application.OrderManagement.Constants;
 using OrderManagement.Domain;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,17 +25,26 @@ namespace OrderManagement.Application.OrderManagement.Implementations
         private readonly IRepository<AgencySaleDetail> _agencySaleDetailRepository;
         private readonly IRepository<Agency> _agencyRepository;
         private readonly IRepository<SaleDetail> _saleDetailRepository;
+        private readonly IHybridCachingProvider _hybridCache;
 
-        public AgencySaleDetailService(IRepository<AgencySaleDetail> agencySaleDetailRepository, IRepository<Agency> agencyRepository, IRepository<SaleDetail> saleDetailRepository)
+        public AgencySaleDetailService(IRepository<AgencySaleDetail> agencySaleDetailRepository, IRepository<Agency> agencyRepository, IRepository<SaleDetail> saleDetailRepository
+            , IHybridCachingProvider hybridCache)
         {
             _agencySaleDetailRepository = agencySaleDetailRepository;
             _agencyRepository = agencyRepository;
             _saleDetailRepository = saleDetailRepository;
+            _hybridCache = hybridCache;
         }
 
         public async Task<bool> Delete(int id)
         {
-            await _agencySaleDetailRepository.DeleteAsync(x => x.Id == id, autoSave: true);
+             var agancySaleDetail =  _agencySaleDetailRepository.WithDetails(x=>x.SaleDetail).AsNoTracking().FirstOrDefault(x => x.Id == id);
+            if (agancySaleDetail != null)
+            {
+                await _agencySaleDetailRepository.DeleteAsync(x => x.Id == id, autoSave: true);
+                var cacheKey = string.Format(RedisConstants.SaleDetailAgenciesCacheKey, agancySaleDetail.SaleDetail.UID);
+                await _hybridCache.RemoveAsync(cacheKey);
+            }
             return true;
         }
 
@@ -93,7 +104,18 @@ namespace OrderManagement.Application.OrderManagement.Implementations
         [UnitOfWork]
         public async Task<int> Save(AgencySaleDetailDto agencySaleDetailDto)
         {
-         var result= await  _agencySaleDetailRepository.SingleOrDefaultAsync(x=>x.AgencyId == agencySaleDetailDto.AgencyId && x.SaleDetailId== agencySaleDetailDto.SaleDetailId);
+            var agency = await _agencyRepository.FirstOrDefaultAsync(x => x.Id == agencySaleDetailDto.AgencyId);
+
+            if (agency == null)
+            {
+                throw new UserFriendlyException("نمایندگی وجود ندارد.");
+            }
+            var saleDetail = await _saleDetailRepository.FirstOrDefaultAsync(x => x.Id == agencySaleDetailDto.SaleDetailId);
+            if (saleDetail == null)
+            {
+                throw new UserFriendlyException("جزییات برنامه فروش وجود ندارد.");
+            }
+            var result= await  _agencySaleDetailRepository.SingleOrDefaultAsync(x=>x.AgencyId == agencySaleDetailDto.AgencyId && x.SaleDetailId== agencySaleDetailDto.SaleDetailId);
             if (result != null)
             {
                 //throw new UserFriendlyException("برنامه فروش برای نمایندگی انتخاب شده تعریف شده است");
@@ -102,18 +124,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
                 await _agencySaleDetailRepository.UpdateAsync(result);
                 return result.Id;
             }
-
-            var agency=await _agencyRepository.FirstOrDefaultAsync(x => x.Id == agencySaleDetailDto.AgencyId);
-
-            if (agency==null ||agencySaleDetailDto.AgencyId <= 0)
-            {
-                throw new UserFriendlyException("نمایندگی وجود ندارد.");
-            }
-            var saleDetail =await _saleDetailRepository.FirstOrDefaultAsync(x => x.Id == agencySaleDetailDto.SaleDetailId);
-            if (saleDetail==null||agencySaleDetailDto.SaleDetailId <= 0)
-            {
-                throw new UserFriendlyException("جزییات برنامه فروش وجود ندارد.");
-            }
+            
          var  agencySaleDetail = ObjectMapper.Map<AgencySaleDetailDto, AgencySaleDetail>(agencySaleDetailDto);
 
             await _agencySaleDetailRepository.InsertAsync(agencySaleDetail, autoSave: true);

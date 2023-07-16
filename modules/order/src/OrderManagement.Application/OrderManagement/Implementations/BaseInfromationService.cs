@@ -306,7 +306,7 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
     public async Task<UserDto> GrpcTest()
     {
         // var dd = await _esaleGrpcClient.GetUserAdvocacyByNationalCode(_commonAppService.GetNationalCode());
-        return await _esaleGrpcClient.GetUserById(_commonAppService.GetUserId());
+        return await _esaleGrpcClient.GetUserByUBPId(_commonAppService.GetUserUBPId());
     }
 
     public async Task<List<AgencyDto>> GetAgencies()

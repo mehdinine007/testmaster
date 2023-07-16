@@ -461,6 +461,15 @@ public class CommonAppService : ApplicationService, ICommonAppService
             });
         }
     }
+    public string GetUserUBPId()
+    {
+        var userIdStr = _httpContextAccessor.HttpContext.User.Claims.SingleOrDefault(x => x.Type.Equals("UBP"))?.Value ?? string.Empty;
+        if (string.IsNullOrWhiteSpace(userIdStr))
+            throw new UserFriendlyException("لطفا لاگین کنید");
+
+        
+        return userIdStr;
+    }
 
     public long GetUserId()
     {

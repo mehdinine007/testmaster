@@ -34,6 +34,7 @@ using StackExchange.Redis;
 using Polly.Caching;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using static OrderManagement.Application.Contracts.OrderManagementPermissions;
+using Esale.Core.Caching;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -59,7 +60,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
     private readonly IAuditingManager _auditingManager;
     private readonly IObjectMapper _objectMapper;
     private readonly IUnitOfWorkManager _unitOfWorkManager;
-
+    private readonly ICacheManager _cacheManager;
 
     public OrderAppService(ICommonAppService commonAppService,
                            IBaseInformationService baseInformationAppService,
@@ -84,7 +85,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
                            IObjectMapper objectMapper,
                            IUnitOfWorkManager unitOfWorkManager,
                            IRedisCacheManager redisCacheManager
-
+,
+                           ICacheManager cacheManager
         )
     {
         _commonAppService = commonAppService;
@@ -107,6 +109,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         _objectMapper = objectMapper;
         _unitOfWorkManager = unitOfWorkManager;
         _redisCacheManager = redisCacheManager;
+        _cacheManager = cacheManager;
     }
 
 
@@ -210,8 +213,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
         }
         var nationalCode = _commonAppService.GetNationalCode();
         SaleDetailOrderDto SaleDetailDto = null;
-        var cacheKey = string.Format(RedisConstants.SaleDetailPrefix, commitOrderDto.SaleDetailUId);
-        _memoryCache.TryGetValue(cacheKey, out SaleDetailDto);
+        SaleDetailDto = await _cacheManager.GetAsync<SaleDetailOrderDto>(commitOrderDto.SaleDetailUId.ToString(), RedisConstants.SaleDetailPrefix,CacheProviderEnum.Hybrid);
+        //var cacheKey = string.Format(RedisConstants.SaleDetailPrefix, commitOrderDto.SaleDetailUId);
+        //_memoryCache.TryGetValue(cacheKey, out SaleDetailDto);
         if (SaleDetailDto == null)
         {
             var saleDetailQuery = await _saleDetailRepository.GetQueryableAsync();
@@ -237,7 +241,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
             {
                 SaleDetailDto = SaleDetailFromDb;
                 ttl = SaleDetailDto.SalePlanEndDate.Subtract(DateTime.Now);
-                _memoryCache.Set(string.Format(RedisConstants.SaleDetailPrefix, commitOrderDto.SaleDetailUId.ToString()), SaleDetailDto, DateTime.Now.AddMinutes(4));
+                await _cacheManager.SetAsync(commitOrderDto.SaleDetailUId.ToString(), RedisConstants.SaleDetailPrefix, SaleDetailDto, 240, CacheProviderEnum.Hybrid);
+                //_memoryCache.Set(string.Format(RedisConstants.SaleDetailPrefix, commitOrderDto.SaleDetailUId.ToString()), SaleDetailDto, DateTime.Now.AddMinutes(4));
 
                 ////await _cacheManager.GetCache("SaleDetail").SetAsync(commitOrderDto.SaleDetailUId.ToString(), SaleDetailDto);
                 //await _distributedCache.SetStringAsync(string.Format(RedisConstants.SaleDetailPrefix, commitOrderDto.SaleDetailUId.ToString()),
@@ -798,29 +803,38 @@ public class OrderAppService : ApplicationService, IOrderAppService
             throw new UserFriendlyException("شماره سفارش صحیح نمی باشد");
 
         SaleDetailOrderDto saleDetailOrderDto;
-        var saleDetailCahce = await _distributedCache.GetStringAsync(string.Format(RedisConstants.SaleDetailPrefix, customerOrder.SaleDetailId.ToString()));
-        if (!string.IsNullOrWhiteSpace(saleDetailCahce))
-        {
-
-            //if (_cacheManager.GetCache("SaleDetail").TryGetValue(customerOrder.SaleDetailId.ToString(), out var saleDetailFromCache))
-            //{
-            saleDetailOrderDto = ObjectMapper.Map<SaleDetail, SaleDetailOrderDto>(JsonConvert.DeserializeObject<SaleDetail>(saleDetailCahce));
-            //}
-        }
-        else
+        saleDetailOrderDto = await _cacheManager.GetAsync<SaleDetailOrderDto>(customerOrder.SaleDetailId.ToString(),RedisConstants.SaleDetailPrefix, CacheProviderEnum.Hybrid);
+        if (saleDetailOrderDto == null)
         {
             var saleDetail = _saleDetailRepository.WithDetails().FirstOrDefault(x => x.Id == customerOrder.SaleDetailId)
                 ?? throw new UserFriendlyException("جزئیات برنامه فروش یافت نشد");
             saleDetailOrderDto = ObjectMapper.Map<SaleDetail, SaleDetailOrderDto>(saleDetail);
-            //await _cacheManager.GetCache("SaleDetail").SetAsync(saleDetailOrderDto.Id.ToString(), saleDetailOrderDto);
-            await _distributedCache.SetStringAsync(string.Format(RedisConstants.SaleDetailPrefix, customerOrder.SaleDetailId.ToString()),
-                JsonConvert.SerializeObject(saleDetailOrderDto),
-                new DistributedCacheEntryOptions
-                {
-                    AbsoluteExpiration = new DateTimeOffset(DateTime.Now.AddSeconds(saleDetail.SalePlanEndDate.Subtract(DateTime.Now).TotalSeconds))
-                });
-
+            await _cacheManager.SetAsync(customerOrder.SaleDetailId.ToString(), RedisConstants.SaleDetailPrefix, saleDetailOrderDto, 240, CacheProviderEnum.Hybrid);
         }
+
+        //var saleDetailCahce = await _distributedCache.GetStringAsync(string.Format(RedisConstants.SaleDetailPrefix, customerOrder.SaleDetailId.ToString()));
+        //if (!string.IsNullOrWhiteSpace(saleDetailCahce))
+        //{
+
+        //    //if (_cacheManager.GetCache("SaleDetail").TryGetValue(customerOrder.SaleDetailId.ToString(), out var saleDetailFromCache))
+        //    //{
+        //    saleDetailOrderDto = ObjectMapper.Map<SaleDetail, SaleDetailOrderDto>(JsonConvert.DeserializeObject<SaleDetail>(saleDetailCahce));
+        //    //}
+        //}
+        //else
+        //{
+        //    var saleDetail = _saleDetailRepository.WithDetails().FirstOrDefault(x => x.Id == customerOrder.SaleDetailId)
+        //        ?? throw new UserFriendlyException("جزئیات برنامه فروش یافت نشد");
+        //    saleDetailOrderDto = ObjectMapper.Map<SaleDetail, SaleDetailOrderDto>(saleDetail);
+        //    //await _cacheManager.GetCache("SaleDetail").SetAsync(saleDetailOrderDto.Id.ToString(), saleDetailOrderDto);
+        //    await _distributedCache.SetStringAsync(string.Format(RedisConstants.SaleDetailPrefix, customerOrder.SaleDetailId.ToString()),
+        //        JsonConvert.SerializeObject(saleDetailOrderDto),
+        //        new DistributedCacheEntryOptions
+        //        {
+        //            AbsoluteExpiration = new DateTimeOffset(DateTime.Now.AddSeconds(saleDetail.SalePlanEndDate.Subtract(DateTime.Now).TotalSeconds))
+        //        });
+
+        //}
         // CheckSaleDetailValidation(saleDetailOrderDto);
         //var currentTime = DateTime.Now;
         //if (currentTime > saleDetailOrderDto.SalePlanEndDate)

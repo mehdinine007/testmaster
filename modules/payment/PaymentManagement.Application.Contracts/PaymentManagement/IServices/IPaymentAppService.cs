@@ -22,5 +22,6 @@ namespace PaymentManagement.Application.Contracts.IServices
             , bool? IsRelationIdDGroup = null );
         List<InquiryWithFilterParamDto> InquiryWithFilterParamGroupByParams(int? filterParam1, int? filterParam2, int? filterParam3, int? filterParam4);
         Task<List<RetryForVerifyOutputDto>> RetryForVerify();
+        Task InsertPaymentLogAsync(PaymentLogDto input);
     }
 }

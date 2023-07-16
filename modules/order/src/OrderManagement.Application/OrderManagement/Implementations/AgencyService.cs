@@ -1,6 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using EasyCaching.Core;
+using Microsoft.EntityFrameworkCore;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
+using OrderManagement.Application.OrderManagement.Constants;
 using OrderManagement.Domain;
 using System;
 using System.Collections.Generic;
@@ -21,11 +23,13 @@ namespace OrderManagement.Application.OrderManagement.Implementations
     {
         private readonly IRepository<Agency> _agencyRepository;
         private readonly IRepository<Province> _provinceRepository;
+        private readonly IHybridCachingProvider _hybridCache;
 
-        public AgencyService(IRepository<Agency> agencyRepository, IRepository<Province> provinceRepository)
+        public AgencyService(IRepository<Agency> agencyRepository, IRepository<Province> provinceRepository, IHybridCachingProvider hybridCache)
         {
             _agencyRepository = agencyRepository;
             _provinceRepository = provinceRepository;
+            _hybridCache = hybridCache;
         }
 
 
@@ -33,6 +37,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
         public async Task<bool> Delete(int id)
         {
             await _agencyRepository.DeleteAsync(x => x.Id == id, autoSave: true);
+            await _hybridCache.RemoveByPrefixAsync(RedisConstants.AgencyCacheKey);
             return true;
         }
 
@@ -52,7 +57,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
         public async Task<int> Save(AgencyDto agencyDto)
         {
             var province = await _provinceRepository.FirstOrDefaultAsync(x => x.Id == agencyDto.ProvinceId);
-            if (province == null || agencyDto.ProvinceId <= 0)
+            if (province == null)
             {
                 throw new UserFriendlyException("استان وجود ندارد.");
             }
@@ -64,19 +69,20 @@ namespace OrderManagement.Application.OrderManagement.Implementations
         public async Task<int> Update(AgencyDto agencyDto)
         {
             var result = await _agencyRepository.FirstOrDefaultAsync(x => x.Id == agencyDto.Id);
-            if (agencyDto.Id <= 0 || result == null)
+            if (result == null)
             {
                 throw new UserFriendlyException("نمایندگی انتخاب شده وجود ندارد.");
             }
             var province = await _provinceRepository.FirstOrDefaultAsync(x => x.Id == agencyDto.ProvinceId );
 
-            if (province == null || agencyDto.ProvinceId <= 0)
+            if (province == null)
             {
                 throw new UserFriendlyException("استان وجود ندارد.");
             }
             result.Name = agencyDto.Name;
             result.ProvinceId = agencyDto.ProvinceId;
             await _agencyRepository.UpdateAsync(result, autoSave: true);
+            await _hybridCache.RemoveByPrefixAsync(RedisConstants.AgencyCacheKey);
             return result.Id;
         }
     }
