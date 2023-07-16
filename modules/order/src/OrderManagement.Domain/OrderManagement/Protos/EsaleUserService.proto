@@ -8,10 +8,15 @@ package UserService;
 
 service UserServiceGrpc{
 	rpc GetUserById(GetUserModel) returns (UserModel);
+	rpc GetUserByUBPId(GetUserUBPModel) returns (UserModel);
+
 }
 
 message GetUserModel{
 	int64 userId = 1;
+}
+message GetUserUBPModel{
+	string userId = 1;
 }
 
 message UserModel{

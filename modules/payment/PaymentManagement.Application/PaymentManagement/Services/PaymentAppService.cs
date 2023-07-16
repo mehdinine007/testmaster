@@ -1,17 +1,21 @@
 ﻿using Esale.Core.DataAccess;
 using Esale.Core.Validation;
-using MellatPaymentService;
+using Grpc.Net.Client;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using NPOI.POIFS.Properties;
 using PaymentManagement.Application.Contracts.Dtos;
 using PaymentManagement.Application.Contracts.Enums;
 using PaymentManagement.Application.Contracts.IServices;
+using PaymentManagement.Application.GatewayServiceGrpc;
 using PaymentManagement.Application.IranKish;
 using PaymentManagement.Application.Mellat;
 using PaymentManagement.Application.Utilities;
 using PaymentManagement.Domain.Models;
-using System.Xml;
+using System.Text;
+using System.Text.Json;
 using System.Xml.Serialization;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Auditing;
@@ -28,7 +32,6 @@ namespace PaymentManagement.Application.Servicess
         private readonly IRepository<Payment, int> _paymentRepository;
         private readonly IRepository<PaymentLog, int> _paymentLogRepository;
         private readonly IConfiguration _config;
-        private readonly IUnitOfWorkManager _unitOfWorkManager;
 
         public PaymentAppService(
             IRepository<Psp, int> pspRepository,
@@ -36,7 +39,6 @@ namespace PaymentManagement.Application.Servicess
             IRepository<PspAccount, int> pspAccountRepository,
             IRepository<Payment, int> paymentRepository,
             IRepository<PaymentLog, int> paymentLogRepository,
-            IUnitOfWorkManager unitOfWorkManager,
             IConfiguration config
             )
         {
@@ -45,10 +47,13 @@ namespace PaymentManagement.Application.Servicess
             _pspAccountRepository = pspAccountRepository;
             _paymentRepository = paymentRepository;
             _paymentLogRepository = paymentLogRepository;
-            _unitOfWorkManager = unitOfWorkManager;
             _config = config;
         }
-
+        private GatewayServiceGrpc.GatewayServiceGrpc.GatewayServiceGrpcClient GatewayServiceGrpcClient()
+        {
+            var channel = GrpcChannel.ForAddress(_config.GetValue<string>("App:GatewayGrpcAddress"));
+            return new GatewayServiceGrpc.GatewayServiceGrpc.GatewayServiceGrpcClient(channel);
+        }
         public List<PspAccountDto> GetPsps()
         {
             return _pspAccountRepository.WithDetails().AsNoTracking()
@@ -80,8 +85,7 @@ namespace PaymentManagement.Application.Servicess
                     filterParam3 = IsRelationIdCGroup != null ? o.FilterParam3 : null,
                     filterParam4 = IsRelationIdDGroup != null ? o.FilterParam4 : null,
                     o.PaymentStatusId
-                }
-                ).Select(o => new InquiryWithFilterParamDto
+                }).Select(o => new InquiryWithFilterParamDto
                 {
                     Status = o.Key.PaymentStatusId,
                     filterParam1 = o.Key.filterParam1,
@@ -127,14 +131,27 @@ namespace PaymentManagement.Application.Servicess
         [Audited]
         public PaymentInfoDto GetPaymentInfo(int paymentId)
         {
-            return _paymentRepository.WithDetails().AsNoTracking()
-              .Select(o => new PaymentInfoDto
-              {
-                  PaymentId = o.Id,
-                  TransactionCode = o.TransactionCode,
-                  TransactionDate = o.TransactionDate,
-                  TransactionPersianDate = o.TransactionPersianDate
-              }).FirstOrDefault(o => o.PaymentId == paymentId);
+            return _paymentRepository.WithDetails().AsNoTracking().Select(o => new PaymentInfoDto
+            {
+                PaymentId = o.Id,
+                TransactionCode = o.TransactionCode,
+                TransactionDate = o.TransactionDate,
+                TransactionPersianDate = o.TransactionPersianDate
+            }).FirstOrDefault(o => o.PaymentId == paymentId);
+        }
+
+        public async Task InsertPaymentLogAsync(PaymentLogDto input)
+        {
+            if (input.PaymentId != 0)
+            {
+                await _paymentLogRepository.InsertAsync(new PaymentLog
+                {
+                    PaymentId = input.PaymentId,
+                    Psp = input.Psp,
+                    Message = input.Message,
+                    Parameter = input.Parameter
+                });
+            }
         }
 
         #region HandShake
@@ -148,10 +165,8 @@ namespace PaymentManagement.Application.Servicess
                 StatusCode = (int)StatusCodeEnum.Failed,
                 Message = Constants.UnknownError
             };
-
             string pspTitle = string.Empty;
             PaymentDto payment = null;
-
             try
             {
                 #region ValidateInput
@@ -202,9 +217,7 @@ namespace PaymentManagement.Application.Servicess
                 #endregion
 
                 payment = await CreatePaymentAsync(input);
-
                 pspTitle = ((PspEnum)pspAccount.PspId).ToString();
-
                 await _paymentLogRepository.InsertAsync(new PaymentLog
                 {
                     PaymentId = payment.Id,
@@ -212,7 +225,6 @@ namespace PaymentManagement.Application.Servicess
                     Message = Constants.HandShakeWithPaymentStart,
                     Parameter = JsonConvert.SerializeObject(input),
                 });
-
                 result.PaymentId = payment.Id;
 
                 #region HandShake
@@ -237,61 +249,48 @@ namespace PaymentManagement.Application.Servicess
                     Message = Constants.HandShakeException,
                     Parameter = ex.Message,
                 });
-
                 if (payment != null)
                 {
                     payment.PaymentStatusId = (int)PaymentStatusEnum.Failed;
                     await _paymentRepository.AttachAsync(ObjectMapper.Map<PaymentDto, Payment>(payment), o => o.PaymentStatusId);
                 }
-
                 result.Message = Constants.ErrorInConnectToPsp;
                 return result;
             }
         }
         private async Task<PaymentDto> CreatePaymentAsync(HandShakeInputDto input)
         {
-            try
+            var payment = await _paymentRepository.InsertAsync(new Payment
             {
-                //  using var uow = _unitOfWorkManager.Begin(requiresNew: true, isTransactional: false);
-                var payment = await _paymentRepository.InsertAsync(new Payment
-                {
-                    PspAccountId = input.PspAccountId,
-                    PaymentStatusId = (int)PaymentStatusEnum.InProgress,
-                    Amount = input.Amount,
-                    CallBackUrl = input.CallBackUrl,
-                    NationalCode = input.NationalCode,
-                    Mobile = input.Mobile,
-                    AdditionalData = input.AdditionalData,
-                    TransactionDate = DateTime.Now,
-                    TransactionPersianDate = DateUtil.Now,
-                    FilterParam1 = input.FilterParam1,
-                    FilterParam2 = input.FilterParam2,
-                    FilterParam3 = input.FilterParam3,
-                    FilterParam4 = input.FilterParam4
-                });
-
-                //  await uow.CompleteAsync();
-                await CurrentUnitOfWork.SaveChangesAsync();
-                await _paymentRepository.RemoveTracking(payment);
-
-                var paymentDto = new PaymentDto
-                {
-                    Id = payment.Id,
-                    PaymentStatusId = payment.PaymentStatusId,
-                    TraceNo = payment.TraceNo,
-                    TransactionCode = payment.TransactionCode,
-                    Token = payment.Token,
-                    PspAccountId = payment.PspAccountId,
-                    Amount = payment.Amount,
-                    Mobile = payment.Mobile,
-                    NationalCode = payment.NationalCode
-                };
-                return paymentDto;
-            }
-            catch (Exception ex)
+                PspAccountId = input.PspAccountId,
+                PaymentStatusId = (int)PaymentStatusEnum.InProgress,
+                Amount = input.Amount,
+                CallBackUrl = input.CallBackUrl,
+                NationalCode = input.NationalCode,
+                Mobile = input.Mobile,
+                AdditionalData = input.AdditionalData,
+                TransactionDate = DateTime.Now,
+                TransactionPersianDate = DateUtil.Now,
+                FilterParam1 = input.FilterParam1,
+                FilterParam2 = input.FilterParam2,
+                FilterParam3 = input.FilterParam3,
+                FilterParam4 = input.FilterParam4
+            });
+            await CurrentUnitOfWork.SaveChangesAsync();
+            await _paymentRepository.RemoveTracking(payment);
+            var paymentDto = new PaymentDto
             {
-                throw ex;
-            }
+                Id = payment.Id,
+                PaymentStatusId = payment.PaymentStatusId,
+                TraceNo = payment.TraceNo,
+                TransactionCode = payment.TransactionCode,
+                Token = payment.Token,
+                PspAccountId = payment.PspAccountId,
+                Amount = payment.Amount,
+                Mobile = payment.Mobile,
+                NationalCode = payment.NationalCode
+            };
+            return paymentDto;
         }
         private async Task<HandShakeOutputDto> HandShakeWithIranKishAsync(PaymentDto payment, string pspAccountJsonProps)
         {
@@ -304,61 +303,56 @@ namespace PaymentManagement.Application.Servicess
             try
             {
                 var pspAccountProps = JsonConvert.DeserializeObject<IranKish.PspAccountProps>(pspAccountJsonProps);
-                string callBackUrl = _config.GetValue<string>("App:IranKishCallBackUrl");
-
-                WebHelper webHelper = new WebHelper();
-                XmlDocument doc = new XmlDocument();
-
-                string request = string.Empty;
-                IPGData iPGData = new()
+                IranKishHandShakeInput input = new()
                 {
-                    TreminalId = pspAccountProps.TerminalId,
+                    TerminalId = pspAccountProps.TerminalId,
                     AcceptorId = pspAccountProps.AcceptorId,
                     PassPhrase = pspAccountProps.PassPhrase,
-                    RevertURL = callBackUrl,
+                    CallBackUrl = _config.GetValue<string>("App:IranKishCallBackUrl"),
                     Amount = (long)payment.Amount,
                     RequestId = payment.Id.ToString(),
-                    NationalId = payment.NationalCode ?? string.Empty,
-                    CmsPreservationId = string.IsNullOrEmpty(payment.Mobile)
+                    NationalCode = payment.NationalCode ?? string.Empty,
+                    Mobile = string.IsNullOrEmpty(payment.Mobile)
                     ? string.Empty
-                    : (payment.Mobile[..1] == "0" ? string.Concat("98", payment.Mobile[1..]) : payment.Mobile)
+                    : (payment.Mobile[..1] == "0" ? string.Concat("98", payment.Mobile[1..]) : payment.Mobile),
+                    RsaPublicKey = pspAccountProps.RsaPublicKey
                 };
-
-                iPGData.TransactionType = TransactionType.Purchase;
-                iPGData.BillInfo = null;
-                iPGData.RsaPublicKey = pspAccountProps.RsaPublicKey;
-
-                request = CreateJsonRequest.CreateJasonRequest(iPGData);
-
                 await _paymentLogRepository.InsertAsync(new PaymentLog
                 {
                     PaymentId = payment.Id,
                     Psp = PspEnum.IranKish.ToString(),
                     Message = Constants.HandShakeWithPspStart,
-                    Parameter = request,
+                    Parameter = JsonConvert.SerializeObject(input),
                 });
-
-                Uri url = new(Constants.IranKishGetTokenUrl);
-                string jresponse = webHelper.Post(url, request);
-
+                string handShakeResult = string.Empty;
+                var connectToGatewayMode = _config.GetValue<bool>("App:ConnectToGatewayMode");
+                if (connectToGatewayMode) //grpc
+                {
+                    handShakeResult = (await GatewayServiceGrpcClient().HandShakeWithIranKishAsync(input)).Result;
+                }
+                else //restApi
+                {
+                    string url = _config.GetValue<string>("App:GatewayApiAddress") + Constants.IranKishHandShakeUrlInGateway;
+                    HttpClient client = new();
+                    var response = await client.PostAsync(url, new StringContent(JsonConvert.SerializeObject(input), Encoding.UTF8, "application/json"));
+                    handShakeResult = response.Content.ReadAsStringAsync().Result;
+                    handShakeResult = JsonDocument.Parse(handShakeResult).RootElement.GetProperty("result").ToString();
+                }
                 await _paymentLogRepository.InsertAsync(new PaymentLog
                 {
                     PaymentId = payment.Id,
                     Psp = PspEnum.IranKish.ToString(),
                     Message = Constants.HandShakeResult,
-                    Parameter = jresponse,
+                    Parameter = handShakeResult,
                 });
-
-                result.PspJsonResult = jresponse;
-
-                if (jresponse != null)
+                result.PspJsonResult = handShakeResult;
+                if (handShakeResult != null)
                 {
-                    JsonResult jResult = JsonConvert.DeserializeObject<JsonResult>(jresponse);
+                    JsonResult jResult = JsonConvert.DeserializeObject<JsonResult>(handShakeResult);
                     if (jResult.status)
                     {
                         payment.Token = jResult.result.token;
                         await _paymentRepository.AttachAsync(ObjectMapper.Map<PaymentDto, Payment>(payment), o => o.Token);
-
                         result.StatusCode = (int)StatusCodeEnum.Success;
                         result.Token = jResult.result.token;
                         var inputParams = new System.Collections.Specialized.NameValueCollection
@@ -370,10 +364,8 @@ namespace PaymentManagement.Application.Servicess
                         return result;
                     }
                 }
-
                 payment.PaymentStatusId = (int)PaymentStatusEnum.Failed;
                 await _paymentRepository.AttachAsync(ObjectMapper.Map<PaymentDto, Payment>(payment), o => o.PaymentStatusId);
-
                 result.Message = Constants.ErrorInHandShakeResult;
                 return result;
             }
@@ -386,10 +378,8 @@ namespace PaymentManagement.Application.Servicess
                     Message = Constants.HandShakeException,
                     Parameter = ex.Message,
                 });
-
                 payment.PaymentStatusId = (int)PaymentStatusEnum.Failed;
                 await _paymentRepository.AttachAsync(ObjectMapper.Map<PaymentDto, Payment>(payment), o => o.PaymentStatusId);
-
                 result.Message = Constants.ErrorInConnectToPsp;
                 return result;
             }
@@ -406,101 +396,67 @@ namespace PaymentManagement.Application.Servicess
             try
             {
                 var pspAccountProps = JsonConvert.DeserializeObject<Mellat.PspAccountProps>(pspAccountJsonProps);
-
                 string encryptedNationalCode = string.Empty;
                 if (!string.IsNullOrEmpty(payment.NationalCode))
                 {
                     byte[] keyByteArray = Mellat.Encrypt.StringToByteArray("2C7D202B960A96AA");
                     encryptedNationalCode = Mellat.Encrypt.EncryptPinBlock(keyByteArray, Mellat.Encrypt.StringToByteArray(payment.NationalCode));
                 }
-
-                var handShakeRequest = new
+                MellatHandShakeInput input = new()
                 {
                     TerminalId = pspAccountProps.TerminalId,
                     UserName = pspAccountProps.UserName,
                     UserPassword = pspAccountProps.UserPassword,
                     OrderId = payment.Id,
                     Amount = (long)payment.Amount,
-                    LocalDate = DateTime.Now.Year + DateTime.Now.Month.ToString().PadLeft(2, '0') + DateTime.Now.Day.ToString().PadLeft(2, '0'),
-                    LocalTime = DateTime.Now.Hour.ToString().PadLeft(2, '0') + DateTime.Now.Minute.ToString().PadLeft(2, '0') + DateTime.Now.Second.ToString().PadLeft(2, '0'),
                     CallBackUrl = _config.GetValue<string>("App:MellatCallBackUrl"),
                     MobileNo = string.IsNullOrEmpty(payment.Mobile)
                     ? string.Empty
                     : (payment.Mobile[..1] == "0" ? string.Concat("98", payment.Mobile[1..]) : payment.Mobile),
-                    Enc = encryptedNationalCode
+                    EncryptedNationalCode = encryptedNationalCode,
+                    Switch = pspAccountProps.Switch
                 };
-
                 await _paymentLogRepository.InsertAsync(new PaymentLog
                 {
                     PaymentId = payment.Id,
                     Psp = PspEnum.Mellat.ToString(),
                     Message = Constants.HandShakeWithPspStart,
-                    Parameter = JsonConvert.SerializeObject(handShakeRequest),
+                    Parameter = JsonConvert.SerializeObject(input),
                 });
 
-                if (pspAccountProps.Switch == 1)
+                string handShakeResult = string.Empty;
+                var connectToGatewayMode = _config.GetValue<bool>("App:ConnectToGatewayMode");
+                if (connectToGatewayMode) //grpc
                 {
-                    var handShakeResult = await new MellatPaymentService.PaymentGatewayClient().bpPayRequestAsync(
-                        handShakeRequest.TerminalId,
-                        handShakeRequest.UserName,
-                        handShakeRequest.UserPassword,
-                        handShakeRequest.OrderId,
-                        handShakeRequest.Amount,
-                        handShakeRequest.LocalDate,
-                        handShakeRequest.LocalTime,
-                        "",//AdditionalData,
-                        handShakeRequest.CallBackUrl,
-                        "0",//PayerId,
-                        handShakeRequest.MobileNo,
-                        "",//EncPan,
-                        "",//PanHiddenMode,
-                        "",//CartItem,
-                        handShakeRequest.Enc);
-
-                    result.PspJsonResult = JsonConvert.SerializeObject(handShakeResult);
+                    handShakeResult = (await GatewayServiceGrpcClient().HandShakeWithMellatAsync(input)).Result;
                 }
-                else if (pspAccountProps.Switch == 2)
+                else //restApi
                 {
-                    var handShakeResult = await new MellatPaymentService2.PaymentGatewayClient().bpPayRequestAsync(
-                        handShakeRequest.TerminalId,
-                        handShakeRequest.UserName,
-                        handShakeRequest.UserPassword,
-                        handShakeRequest.OrderId,
-                        handShakeRequest.Amount,
-                        handShakeRequest.LocalDate,
-                        handShakeRequest.LocalTime,
-                        "",//AdditionalData,
-                        handShakeRequest.CallBackUrl,
-                        "0",//PayerId,
-                        handShakeRequest.MobileNo,
-                        "",//EncPan,
-                        "",//PanHiddenMode,
-                        "",//CartItem,
-                        handShakeRequest.Enc);
-
-                    result.PspJsonResult = JsonConvert.SerializeObject(handShakeResult);
+                    string url = _config.GetValue<string>("App:GatewayApiAddress") + Constants.MellatHandShakeUrlInGateway;
+                    HttpClient client = new();
+                    var response = await client.PostAsync(url, new StringContent(JsonConvert.SerializeObject(input), Encoding.UTF8, "application/json"));
+                    handShakeResult = response.Content.ReadAsStringAsync().Result;
+                    handShakeResult = JsonDocument.Parse(handShakeResult).RootElement.GetProperty("result").ToString();
                 }
                 await _paymentLogRepository.InsertAsync(new PaymentLog
                 {
                     PaymentId = payment.Id,
                     Psp = PspEnum.Mellat.ToString(),
                     Message = Constants.HandShakeResult,
-                    Parameter = result.PspJsonResult,
+                    Parameter = handShakeResult,
                 });
-
-                if (!string.IsNullOrEmpty(result.PspJsonResult))
+                result.PspJsonResult = handShakeResult;
+                if (!string.IsNullOrEmpty(handShakeResult))
                 {
-                    var res = JsonConvert.DeserializeObject<bpPayRequestResponse>(result.PspJsonResult).Body.@return.Split(",".ToCharArray());
+                    var res = JsonConvert.DeserializeObject<MellatOutputDto>(handShakeResult).Body.@return.Split(",".ToCharArray());
 
                     if (res[0] == "0")
                     {
                         payment.Token = res[1];
                         await _paymentRepository.AttachAsync(ObjectMapper.Map<PaymentDto, Payment>(payment), o => o.Token);
-
                         result.StatusCode = (int)StatusCodeEnum.Success;
                         result.Token = res[1];
                         result.Message = Constants.HandShakeSuccess;
-
                         var inputParams = new System.Collections.Specialized.NameValueCollection
                         {
                             { "RefId", res[1] }
@@ -509,20 +465,18 @@ namespace PaymentManagement.Application.Servicess
                         {
                             inputParams.Add("ENC", encryptedNationalCode);
                         }
-                        if (!string.IsNullOrEmpty(handShakeRequest.MobileNo))
+                        if (!string.IsNullOrEmpty(input.MobileNo))
                         {
-                            inputParams.Add("MobileNo", handShakeRequest.MobileNo);
+                            inputParams.Add("MobileNo", input.MobileNo);
                         }
 
                         result.HtmlContent = StringUtil.GenerateForm(pspAccountProps.Switch == 1 ? Constants.MellatRedirectUrl1 : Constants.MellatRedirectUrl2, "post", inputParams);
-
                         return result;
                     }
                 }
 
                 payment.PaymentStatusId = (int)PaymentStatusEnum.Failed;
                 await _paymentRepository.AttachAsync(ObjectMapper.Map<PaymentDto, Payment>(payment), o => o.PaymentStatusId);
-
                 result.Message = Constants.ErrorInHandShakeResult;
                 return result;
             }
@@ -535,10 +489,8 @@ namespace PaymentManagement.Application.Servicess
                     Message = Constants.HandShakeException,
                     Parameter = ex.Message,
                 });
-
                 payment.PaymentStatusId = (int)PaymentStatusEnum.Failed;
                 await _paymentRepository.AttachAsync(ObjectMapper.Map<PaymentDto, Payment>(payment), o => o.PaymentStatusId);
-
                 result.Message = Constants.ErrorInConnectToPsp;
                 return result;
             }
@@ -840,7 +792,6 @@ namespace PaymentManagement.Application.Servicess
                 Message = Constants.UnknownError,
                 PaymentId = paymentId
             };
-
             var payment = _paymentRepository.WithDetails().AsNoTracking()
                 .Select(o => new PaymentDto
                 {
@@ -851,11 +802,8 @@ namespace PaymentManagement.Application.Servicess
                     PspAccountId = o.PspAccountId,
                     PaymentStatusId = o.PaymentStatusId
                 }).FirstOrDefault(o => o.Id == paymentId);
-
             if (payment == null) { return result; }
-
             var pspAccount = _pspAccountRepository.WithDetails().AsNoTracking().Select(o => new { o.Id, o.PspId, o.JsonProps }).First(o => o.Id == payment.PspAccountId);
-
             switch ((PspEnum)pspAccount.PspId)
             {
                 case PspEnum.Mellat:
@@ -863,7 +811,6 @@ namespace PaymentManagement.Application.Servicess
                 case PspEnum.IranKish:
                     return await VerifyToIranKishAsync(payment, pspAccount.JsonProps, false);
             }
-
             return result;
         }
         private async Task<VerifyOutputDto> VerifyToIranKishAsync(PaymentDto payment, string pspAccountJsonProps, bool isRetryForVerify)
@@ -874,47 +821,48 @@ namespace PaymentManagement.Application.Servicess
                 Message = Constants.UnknownError,
                 PaymentId = payment.Id
             };
-
             try
             {
                 var pspAccountProps = JsonConvert.DeserializeObject<IranKish.PspAccountProps>(pspAccountJsonProps);
-
-                WebHelper webHelper = new();
-
-                RequestVerify requestVerify = new()
+                IranKishVerifyInput input = new()
                 {
-                    terminalId = pspAccountProps.TerminalId,
-                    systemTraceAuditNumber = payment.TraceNo,
-                    retrievalReferenceNumber = payment.TransactionCode,
-                    tokenIdentity = payment.Token
+                    TerminalId = pspAccountProps.TerminalId,
+                    SystemTraceAuditNumber = payment.TraceNo,
+                    RetrievalReferenceNumber = payment.TransactionCode,
+                    TokenIdentity = payment.Token
                 };
-                string requestVerifyJson = JsonConvert.SerializeObject(requestVerify);
-
                 await _paymentLogRepository.InsertAsync(new PaymentLog
                 {
                     PaymentId = payment.Id,
                     Psp = PspEnum.IranKish.ToString(),
                     Message = isRetryForVerify ? Constants.RetryForVerifyStart : Constants.VerifyStart,
-                    Parameter = requestVerifyJson,
+                    Parameter = JsonConvert.SerializeObject(input)
                 });
-
-                Uri url = new(Constants.IranKishVerifyUrl);
-                string jresponse = webHelper.Post(url, requestVerifyJson);
-
-                result.PspJsonResult = jresponse;
-
+                string verifyResult = string.Empty;
+                var connectToGatewayMode = _config.GetValue<bool>("App:ConnectToGatewayMode");
+                if (connectToGatewayMode) //grpc
+                {
+                    verifyResult = (await GatewayServiceGrpcClient().VerifyToIranKishAsync(input)).Result;
+                }
+                else //restApi
+                {
+                    string url = _config.GetValue<string>("App:GatewayApiAddress") + Constants.IranKishVerifyUrlInGateway;
+                    HttpClient client = new();
+                    var response = await client.PostAsync(url, new StringContent(JsonConvert.SerializeObject(input), Encoding.UTF8, "application/json"));
+                    verifyResult = response.Content.ReadAsStringAsync().Result;
+                    verifyResult = JsonDocument.Parse(verifyResult).RootElement.GetProperty("result").ToString();
+                }
                 await _paymentLogRepository.InsertAsync(new PaymentLog
                 {
                     PaymentId = payment.Id,
                     Psp = PspEnum.IranKish.ToString(),
                     Message = isRetryForVerify ? Constants.RetryForVerifyResult : Constants.VerifyResult,
-                    Parameter = jresponse,
+                    Parameter = verifyResult,
                 });
-
-                if (jresponse != null)
+                result.PspJsonResult = verifyResult;
+                if (verifyResult != null)
                 {
-                    VerifyJsonResult jResult = JsonConvert.DeserializeObject<VerifyJsonResult>(jresponse);
-
+                    VerifyJsonResult jResult = JsonConvert.DeserializeObject<VerifyJsonResult>(verifyResult);
                     if (jResult.status && jResult.responseCode == "00")
                     {
                         payment.PaymentStatusId = (int)PaymentStatusEnum.Success;
@@ -925,10 +873,8 @@ namespace PaymentManagement.Application.Servicess
                         return result;
                     }
                 }
-
                 payment.PaymentStatusId = (int)PaymentStatusEnum.Failed;
                 await _paymentRepository.AttachAsync(ObjectMapper.Map<PaymentDto, Payment>(payment), o => o.PaymentStatusId);
-
                 result.StatusCode = (int)StatusCodeEnum.Failed;
                 result.Message = Constants.VerifyFailed;
                 return result;
@@ -942,7 +888,6 @@ namespace PaymentManagement.Application.Servicess
                     Message = isRetryForVerify ? Constants.RetryForVerifyException : Constants.VerifyException,
                     Parameter = ex.Message
                 });
-
                 result.Message = Constants.ErrorInVerify;
                 return result;
             }
@@ -955,63 +900,49 @@ namespace PaymentManagement.Application.Servicess
                 Message = Constants.UnknownError,
                 PaymentId = payment.Id
             };
-
             try
             {
                 var pspAccountProps = JsonConvert.DeserializeObject<Mellat.PspAccountProps>(pspAccountJsonProps);
-
-                var verifyRequest = new
+                MellatVerifyInput input = new()
                 {
                     TerminalId = pspAccountProps.TerminalId,
                     UserName = pspAccountProps.UserName,
                     UserPassword = pspAccountProps.UserPassword,
-                    SequentialOrderId = payment.Id,
+                    OrderId = payment.Id,
                     SaleOrderId = payment.Id,
                     SaleReferenceId = long.Parse(payment.TransactionCode),
+                    Switch = pspAccountProps.Switch
                 };
-
                 await _paymentLogRepository.InsertAsync(new PaymentLog
                 {
                     PaymentId = payment.Id,
                     Psp = PspEnum.Mellat.ToString(),
                     Message = isRetryForVerify ? Constants.RetryForVerifyStart : Constants.VerifyStart,
-                    Parameter = JsonConvert.SerializeObject(verifyRequest),
+                    Parameter = JsonConvert.SerializeObject(input),
                 });
-
-                if (pspAccountProps.Switch == 1)
+                string verifyResult = string.Empty;
+                var connectToGatewayMode = _config.GetValue<bool>("App:ConnectToGatewayMode");
+                if (connectToGatewayMode) //grpc
                 {
-                    var verifyResult = await new MellatPaymentService.PaymentGatewayClient().bpVerifyRequestAsync(
-                        verifyRequest.TerminalId,
-                        verifyRequest.UserName,
-                        verifyRequest.UserPassword,
-                        verifyRequest.SequentialOrderId,
-                        verifyRequest.SaleOrderId,
-                        verifyRequest.SaleReferenceId);
-
-                    result.PspJsonResult = JsonConvert.SerializeObject(verifyResult);
+                    verifyResult = (await GatewayServiceGrpcClient().VerifyToMellatAsync(input)).Result;
                 }
-                else if (pspAccountProps.Switch == 2)
+                else //restApi
                 {
-                    var verifyResult = await new MellatPaymentService2.PaymentGatewayClient().bpVerifyRequestAsync(
-                        verifyRequest.TerminalId,
-                        verifyRequest.UserName,
-                        verifyRequest.UserPassword,
-                        verifyRequest.SequentialOrderId,
-                        verifyRequest.SaleOrderId,
-                        verifyRequest.SaleReferenceId);
-
-                    result.PspJsonResult = JsonConvert.SerializeObject(verifyResult);
+                    string url = _config.GetValue<string>("App:GatewayApiAddress") + Constants.MellatVerifyUrlInGateway;
+                    HttpClient client = new();
+                    var response = await client.PostAsync(url, new StringContent(JsonConvert.SerializeObject(input), Encoding.UTF8, "application/json"));
+                    verifyResult = response.Content.ReadAsStringAsync().Result;
+                    verifyResult = JsonDocument.Parse(verifyResult).RootElement.GetProperty("result").ToString();
                 }
-
-                var verifyRes = JsonConvert.DeserializeObject<bpVerifyRequestResponse>(result.PspJsonResult);
-
                 await _paymentLogRepository.InsertAsync(new PaymentLog
                 {
                     PaymentId = payment.Id,
                     Psp = PspEnum.Mellat.ToString(),
                     Message = isRetryForVerify ? Constants.RetryForVerifyResult : Constants.VerifyResult,
-                    Parameter = result.PspJsonResult,
+                    Parameter = verifyResult,
                 });
+                result.PspJsonResult = verifyResult;
+                var verifyRes = JsonConvert.DeserializeObject<MellatOutputDto>(result.PspJsonResult);
 
                 //ResCode = 0 پرداخت موفق
                 //ResCode = 43 پرداخت موفق است و درخواست تاییدیه تکراری ارسال شده است
@@ -1025,7 +956,6 @@ namespace PaymentManagement.Application.Servicess
                     result.Message = Constants.VerifyFailed;
                     return result;
                 }
-
                 if (verifyRes.Body.@return is "0" or "43")
                 {
                     payment.PaymentStatusId = (int)PaymentStatusEnum.Success;
@@ -1035,7 +965,6 @@ namespace PaymentManagement.Application.Servicess
                     result.Message = Constants.VerifySuccess;
                     return result;
                 }
-
                 result.Message = Constants.ErrorInVerify;
                 return result;
             }
@@ -1048,7 +977,6 @@ namespace PaymentManagement.Application.Servicess
                     Message = isRetryForVerify ? Constants.RetryForVerifyException : Constants.VerifyException,
                     Parameter = ex.Message
                 });
-
                 result.Message = Constants.ErrorInVerify;
                 return result;
             }
@@ -1065,7 +993,6 @@ namespace PaymentManagement.Application.Servicess
                 Message = Constants.UnknownError,
                 PaymentId = paymentId
             };
-
             var payment = _paymentRepository.WithDetails().AsNoTracking()
                 .Select(o => new PaymentDto
                 {
@@ -1078,9 +1005,7 @@ namespace PaymentManagement.Application.Servicess
                 }).FirstOrDefault(o => o.Id == paymentId);
 
             if (payment == null) { return result; }
-
             var pspAccount = _pspAccountRepository.WithDetails().AsNoTracking().Select(o => new { o.Id, o.PspId, o.JsonProps }).First(o => o.Id == payment.PspAccountId);
-
             switch ((PspEnum)pspAccount.PspId)
             {
                 case PspEnum.Mellat:
@@ -1088,7 +1013,6 @@ namespace PaymentManagement.Application.Servicess
                 case PspEnum.IranKish:
                     return await InquiryToIranKishAsync(payment, pspAccount.JsonProps);
             }
-
             return result;
         }
         private async Task<InquiryOutputDto> InquiryToIranKishAsync(PaymentDto payment, string pspAccountJsonProps)
@@ -1099,45 +1023,49 @@ namespace PaymentManagement.Application.Servicess
                 Message = Constants.UnknownError,
                 PaymentId = payment.Id
             };
-
             try
             {
                 var pspAccountProps = JsonConvert.DeserializeObject<IranKish.PspAccountProps>(pspAccountJsonProps);
 
-                string requestirankish = JsonConvert.SerializeObject(new
+                IranKishInquiryInput input = new()
                 {
-                    passPhrase = pspAccountProps.PassPhrase,
-                    terminalId = pspAccountProps.TerminalId,
-                    tokenIdentity = payment.Token,
-                    findOption = 2 // جستجو بر اساس شناسه نشانه
-                });
-
+                    TerminalId = pspAccountProps.TerminalId,
+                    PassPhrase = pspAccountProps.PassPhrase,
+                    TokenIdentity = payment.Token,
+                    FindOption = 2 // جستجو بر اساس شناسه نشانه
+                };
                 await _paymentLogRepository.InsertAsync(new PaymentLog
                 {
                     PaymentId = payment.Id,
                     Psp = PspEnum.IranKish.ToString(),
                     Message = Constants.InquiryStart,
-                    Parameter = requestirankish,
+                    Parameter = JsonConvert.SerializeObject(input),
                 });
-
-                WebHelper webHelper = new WebHelper();
-
-                Uri url = new(Constants.IranKishInquiryUrl);
-                string jresponse = webHelper.Post(url, requestirankish);
-
-                result.PspJsonResult = jresponse;
-
+                string inquiryResult = string.Empty;
+                var connectToGatewayMode = _config.GetValue<bool>("App:ConnectToGatewayMode");
+                if (connectToGatewayMode) //grpc
+                {
+                    inquiryResult = (await GatewayServiceGrpcClient().InquiryToIranKishAsync(input)).Result;
+                }
+                else //restApi
+                {
+                    string url = _config.GetValue<string>("App:GatewayApiAddress") + Constants.IranKishInquiryUrlInGateway;
+                    HttpClient client = new();
+                    var response = await client.PostAsync(url, new StringContent(JsonConvert.SerializeObject(input), Encoding.UTF8, "application/json"));
+                    inquiryResult = response.Content.ReadAsStringAsync().Result;
+                    inquiryResult = JsonDocument.Parse(inquiryResult).RootElement.GetProperty("result").ToString();
+                }
                 await _paymentLogRepository.InsertAsync(new PaymentLog
                 {
                     PaymentId = payment.Id,
                     Psp = PspEnum.IranKish.ToString(),
                     Message = Constants.InquiryResult,
-                    Parameter = jresponse,
+                    Parameter = inquiryResult
                 });
-
-                if (jresponse != null)
+                result.PspJsonResult = inquiryResult;
+                if (inquiryResult != null)
                 {
-                    InquiryJsonResult jResult = JsonConvert.DeserializeObject<InquiryJsonResult>(jresponse);
+                    InquiryJsonResult jResult = JsonConvert.DeserializeObject<InquiryJsonResult>(inquiryResult);
 
                     if (jResult.status && jResult.responseCode == "00")
                     {
@@ -1151,16 +1079,13 @@ namespace PaymentManagement.Application.Servicess
                         payment.PaymentStatusId = (int)PaymentStatusEnum.Failed;
                         await _paymentRepository.AttachAsync(ObjectMapper.Map<PaymentDto, Payment>(payment), o => o.PaymentStatusId);
                     }
-
                     //todo:باید سایر حالات خروجی استعلام بررسی شود و این قسمت تکمیل شود
-
                     result.PaymentStatus = payment.PaymentStatusId;
                     result.PaymentStatusDescription = EnumExtension.GetEnumDescription((PaymentStatusEnum)payment.PaymentStatusId);
                     result.StatusCode = (int)StatusCodeEnum.Success;
                     result.Message = Constants.InquirySuccess;
                     return result;
                 }
-
                 result.Message = Constants.InquiryFailed;
                 return result;
             }
@@ -1173,7 +1098,6 @@ namespace PaymentManagement.Application.Servicess
                     Message = Constants.InquiryException,
                     Parameter = ex.Message
                 });
-
                 result.Message = Constants.ErrorInInquiry;
                 return result;
             }
@@ -1186,75 +1110,71 @@ namespace PaymentManagement.Application.Servicess
                 Message = Constants.UnknownError,
                 PaymentId = payment.Id
             };
-
             try
             {
                 var pspAccountProps = JsonConvert.DeserializeObject<Mellat.PspAccountProps>(pspAccountJsonProps);
-
-                var mellatInputDto = new WcfServiceLibrary.MellatInputDto
+                MellatInquiryInput input = new()
                 {
-                    Switch = pspAccountProps.Switch,
-                    UserName = pspAccountProps.ReportServiceUserName,
-                    Password = pspAccountProps.ReportServicePassword,
                     TerminalId = pspAccountProps.TerminalId,
-                    PaymentId = payment.Id
+                    ReportServiceUserName = pspAccountProps.ReportServiceUserName,
+                    ReportServicePassword = pspAccountProps.ReportServicePassword,
+                    OrderId = payment.Id,
+                    Switch = pspAccountProps.Switch
                 };
-
                 await _paymentLogRepository.InsertAsync(new PaymentLog
                 {
                     PaymentId = payment.Id,
                     Psp = PspEnum.Mellat.ToString(),
                     Message = Constants.InquiryStart,
-                    Parameter = JsonConvert.SerializeObject(mellatInputDto),
+                    Parameter = JsonConvert.SerializeObject(input),
                 });
-
-                WcfServiceLibrary.Service1Client client = new();
-                var inquiryResponse = await client.MellatGetTransactionStatusByTerminalIdAndOrderIdAsync(mellatInputDto);
-
-                inquiryResponse = inquiryResponse.Replace("\n", "").Replace("\r", "");
-
-                result.PspJsonResult = inquiryResponse;
-
+                string inquiryResult = string.Empty;
+                var connectToGatewayMode = _config.GetValue<bool>("App:ConnectToGatewayMode");
+                if (connectToGatewayMode) //grpc
+                {
+                    inquiryResult = (await GatewayServiceGrpcClient().InquiryToMellatAsync(input)).Result;
+                }
+                else //restApi
+                {
+                    string url = _config.GetValue<string>("App:GatewayApiAddress") + Constants.MellatInquiryUrlInGateway;
+                    HttpClient client = new();
+                    var response = await client.PostAsync(url, new StringContent(JsonConvert.SerializeObject(input), Encoding.UTF8, "application/json"));
+                    inquiryResult = response.Content.ReadAsStringAsync().Result;
+                    inquiryResult = JsonDocument.Parse(inquiryResult).RootElement.GetProperty("result").ToString();
+                }
                 await _paymentLogRepository.InsertAsync(new PaymentLog
                 {
                     PaymentId = payment.Id,
                     Psp = PspEnum.Mellat.ToString(),
                     Message = Constants.InquiryResult,
-                    Parameter = inquiryResponse,
+                    Parameter = inquiryResult,
                 });
-
-                if (inquiryResponse != null)
+                result.PspJsonResult = inquiryResult;
+                if (inquiryResult != null)
                 {
                     var serializer = new XmlSerializer(typeof(Response));
-
-                    using (TextReader reader = new StringReader(inquiryResponse))
+                    using TextReader reader = new StringReader(inquiryResult);
+                    Response response = (Response)serializer.Deserialize(reader);
+                    //914=>Transaction Not Found
+                    if (response.Record.First().Field.First().Value == "000" || response.Record.First().Field.First().Value == "914")
                     {
-                        Response response = (Response)serializer.Deserialize(reader);
-
-                        //914=>Transaction Not Found
-                        if (response.Record.First().Field.First().Value == "000" || response.Record.First().Field.First().Value == "914")
+                        response.Record.RemoveAt(0);
+                        if (response.Record.Any())
                         {
-                            response.Record.RemoveAt(0);
-
-                            if (response.Record.Any())
-                            {
-                                var record = response.Record.First();
-                                payment.TransactionCode = record.Field.First(o => o.Name == "internalRefrenceId" || o.Name == "internalReferenceId").Value;
-                                var transactionStatus = record.Field.First(o => o.Name == "transactionStatus").Value;
-                                //todo:این قسمت با حالت های مختلف باید تست و تکمیل شود
-                                payment.PaymentStatusId = transactionStatus == "Successful" ? (int)PaymentStatusEnum.Success : payment.PaymentStatusId;
-                                await _paymentRepository.AttachAsync(ObjectMapper.Map<PaymentDto, Payment>(payment), o => o.TransactionCode, o => o.PaymentStatusId);
-                            }
-
-                            result.PaymentStatus = payment.PaymentStatusId;
-                            result.PaymentStatusDescription = EnumExtension.GetEnumDescription((PaymentStatusEnum)payment.PaymentStatusId);
-                            result.StatusCode = (int)StatusCodeEnum.Success;
-                            result.Message = Constants.InquirySuccess;
-                            return result;
+                            var record = response.Record.First();
+                            payment.TransactionCode = record.Field.First(o => o.Name == "internalRefrenceId" || o.Name == "internalReferenceId").Value;
+                            var transactionStatus = record.Field.First(o => o.Name == "transactionStatus").Value;
+                            //todo:این قسمت با حالت های مختلف باید تست و تکمیل شود
+                            payment.PaymentStatusId = transactionStatus == "Successful" ? (int)PaymentStatusEnum.Success : payment.PaymentStatusId;
+                            await _paymentRepository.AttachAsync(ObjectMapper.Map<PaymentDto, Payment>(payment), o => o.TransactionCode, o => o.PaymentStatusId);
                         }
+                        result.PaymentStatus = payment.PaymentStatusId;
+                        result.PaymentStatusDescription = EnumExtension.GetEnumDescription((PaymentStatusEnum)payment.PaymentStatusId);
+                        result.StatusCode = (int)StatusCodeEnum.Success;
+                        result.Message = Constants.InquirySuccess;
+                        return result;
                     }
                 }
-
                 result.Message = Constants.InquiryFailed;
                 return result;
             }
@@ -1267,7 +1187,6 @@ namespace PaymentManagement.Application.Servicess
                     Message = Constants.InquiryException,
                     Parameter = ex.Message
                 });
-
                 result.Message = Constants.ErrorInInquiry;
                 return result;
             }
@@ -1319,44 +1238,48 @@ namespace PaymentManagement.Application.Servicess
                 Message = Constants.UnknownError,
                 PaymentId = payment.Id
             };
-
             try
             {
                 var pspAccountProps = JsonConvert.DeserializeObject<IranKish.PspAccountProps>(pspAccountJsonProps);
-
-                RequestVerify requestVerify = new RequestVerify();
-                requestVerify.terminalId = pspAccountProps.TerminalId;
-                requestVerify.systemTraceAuditNumber = payment.TraceNo;
-                requestVerify.retrievalReferenceNumber = payment.TransactionCode;
-                requestVerify.tokenIdentity = payment.Token;
-                string requestirankish = JsonConvert.SerializeObject(requestVerify);
-
+                IranKishReverseInput input = new()
+                {
+                    TerminalId = pspAccountProps.TerminalId,
+                    SystemTraceAuditNumber = payment.TraceNo,
+                    RetrievalReferenceNumber = payment.TransactionCode,
+                    TokenIdentity = payment.Token
+                };
                 await _paymentLogRepository.InsertAsync(new PaymentLog
                 {
                     PaymentId = payment.Id,
                     Psp = PspEnum.IranKish.ToString(),
                     Message = Constants.ReverseStart,
-                    Parameter = requestirankish,
+                    Parameter = JsonConvert.SerializeObject(input)
                 });
-
-                WebHelper webHelper = new WebHelper();
-
-                Uri url = new(Constants.IranKishReverseUrl);
-                string jresponse = webHelper.Post(url, requestirankish);
-
-                result.PspJsonResult = jresponse;
-
+                string reverseResult = string.Empty;
+                var connectToGatewayMode = _config.GetValue<bool>("App:ConnectToGatewayMode");
+                if (connectToGatewayMode) //grpc
+                {
+                    reverseResult = (await GatewayServiceGrpcClient().ReverseToIranKishAsync(input)).Result;
+                }
+                else //restApi
+                {
+                    string url = _config.GetValue<string>("App:GatewayApiAddress") + Constants.IranKishReverseUrlInGateway;
+                    HttpClient client = new();
+                    var response = await client.PostAsync(url, new StringContent(JsonConvert.SerializeObject(input), Encoding.UTF8, "application/json"));
+                    reverseResult = response.Content.ReadAsStringAsync().Result;
+                    reverseResult = JsonDocument.Parse(reverseResult).RootElement.GetProperty("result").ToString();
+                }
                 await _paymentLogRepository.InsertAsync(new PaymentLog
                 {
                     PaymentId = payment.Id,
                     Psp = PspEnum.IranKish.ToString(),
                     Message = Constants.ReverseResult,
-                    Parameter = jresponse,
+                    Parameter = reverseResult,
                 });
-
-                if (jresponse != null)
+                result.PspJsonResult = reverseResult;
+                if (reverseResult != null)
                 {
-                    InquiryJsonResult jResult = JsonConvert.DeserializeObject<InquiryJsonResult>(jresponse);
+                    ReverseJsonResult jResult = JsonConvert.DeserializeObject<ReverseJsonResult>(reverseResult);
                     if (jResult.status && jResult.responseCode == "00")
                     {
                         payment.PaymentStatusId = (int)PaymentStatusEnum.Failed;
@@ -1367,7 +1290,6 @@ namespace PaymentManagement.Application.Servicess
                         return result;
                     }
                 }
-
                 result.Message = Constants.ReverseFailed;
                 return result;
             }
@@ -1393,64 +1315,49 @@ namespace PaymentManagement.Application.Servicess
                 Message = Constants.UnknownError,
                 PaymentId = payment.Id
             };
-
             try
             {
                 var pspAccountProps = JsonConvert.DeserializeObject<Mellat.PspAccountProps>(pspAccountJsonProps);
-
-                var reverseRequest = new
+                MellatReverseInput input = new()
                 {
                     TerminalId = pspAccountProps.TerminalId,
                     UserName = pspAccountProps.UserName,
                     UserPassword = pspAccountProps.UserPassword,
-                    SequentialOrderId = payment.Id,
+                    OrderId = payment.Id,
                     SaleOrderId = payment.Id,
                     SaleReferenceId = long.Parse(payment.TransactionCode),
+                    Switch = pspAccountProps.Switch
                 };
-
                 await _paymentLogRepository.InsertAsync(new PaymentLog
                 {
                     PaymentId = payment.Id,
                     Psp = PspEnum.Mellat.ToString(),
                     Message = Constants.ReverseStart,
-                    Parameter = JsonConvert.SerializeObject(reverseRequest),
+                    Parameter = JsonConvert.SerializeObject(input),
                 });
-
-                if (pspAccountProps.Switch == 1)
+                string reverseResult = string.Empty;
+                var connectToGatewayMode = _config.GetValue<bool>("App:ConnectToGatewayMode");
+                if (connectToGatewayMode) //grpc
                 {
-                    var reverseResult = await new MellatPaymentService.PaymentGatewayClient().bpReversalRequestAsync(
-                        reverseRequest.TerminalId,
-                        reverseRequest.UserName,
-                        reverseRequest.UserPassword,
-                        reverseRequest.SequentialOrderId,
-                        reverseRequest.SaleOrderId,
-                        reverseRequest.SaleReferenceId);
-
-                    result.PspJsonResult = JsonConvert.SerializeObject(reverseResult);
+                    reverseResult = (await GatewayServiceGrpcClient().ReverseToMellatAsync(input)).Result;
                 }
-                else if (pspAccountProps.Switch == 2)
+                else //restApi
                 {
-                    var reverseResult = await new MellatPaymentService2.PaymentGatewayClient().bpReversalRequestAsync(
-                        reverseRequest.TerminalId,
-                        reverseRequest.UserName,
-                        reverseRequest.UserPassword,
-                        reverseRequest.SequentialOrderId,
-                        reverseRequest.SaleOrderId,
-                        reverseRequest.SaleReferenceId);
-
-                    result.PspJsonResult = JsonConvert.SerializeObject(reverseResult);
+                    string url = _config.GetValue<string>("App:GatewayApiAddress") + Constants.MellatReverseUrlInGateway;
+                    HttpClient client = new();
+                    var response = await client.PostAsync(url, new StringContent(JsonConvert.SerializeObject(input), Encoding.UTF8, "application/json"));
+                    reverseResult = response.Content.ReadAsStringAsync().Result;
+                    reverseResult = JsonDocument.Parse(reverseResult).RootElement.GetProperty("result").ToString();
                 }
-
-                var reverseRes = JsonConvert.DeserializeObject<bpReversalRequestResponse>(result.PspJsonResult);
-
                 await _paymentLogRepository.InsertAsync(new PaymentLog
                 {
                     PaymentId = payment.Id,
                     Psp = PspEnum.Mellat.ToString(),
                     Message = Constants.ReverseResult,
-                    Parameter = result.PspJsonResult,
+                    Parameter = reverseResult,
                 });
-
+                result.PspJsonResult = reverseResult;
+                var reverseRes = JsonConvert.DeserializeObject<MellatOutputDto>(reverseResult);
                 if (!string.IsNullOrEmpty(result.PspJsonResult) && reverseRes.Body.@return == "0")
                 {
                     payment.PaymentStatusId = (int)PaymentStatusEnum.Failed;
@@ -1460,7 +1367,6 @@ namespace PaymentManagement.Application.Servicess
                     result.Message = Constants.ReverseSuccess;
                     return result;
                 }
-
                 result.StatusCode = (int)StatusCodeEnum.Failed;
                 result.Message = Constants.ReverseFailed;
                 return result;
@@ -1474,7 +1380,6 @@ namespace PaymentManagement.Application.Servicess
                     Message = Constants.ReverseException,
                     Parameter = ex.Message
                 });
-
                 result.Message = Constants.ErrorInReverse;
                 return result;
             }
@@ -1486,9 +1391,7 @@ namespace PaymentManagement.Application.Servicess
         [Audited]
         public async Task<List<RetryForVerifyOutputDto>> RetryForVerify()
         {
-            //todo:شرط زمان با اضافه کردن درگاه ها باید تکمیل شود
             var deadLine = DateTime.Now.AddMinutes(_config.GetValue<int>("App:RetryForVerifyFromDateMinute"));
-
             var retryCount = _config.GetValue<int>("App:RetryCount");
             var condidateCount = _config.GetValue<int>("App:CondidateCount");
 
@@ -1510,13 +1413,10 @@ namespace PaymentManagement.Application.Servicess
                     FilterParam4 = o.FilterParam4
                 })
                 .Take(condidateCount).ToList();
-
             var result = new List<RetryForVerifyOutputDto>();
-
             foreach (var payment in payments)
             {
                 var pspAccount = _pspAccountRepository.WithDetails().AsNoTracking().Select(o => new { o.Id, o.PspId, o.JsonProps }).First(o => o.Id == payment.PspAccountId);
-
                 switch ((PspEnum)pspAccount.PspId)
                 {
                     case PspEnum.Mellat:
@@ -1526,7 +1426,6 @@ namespace PaymentManagement.Application.Servicess
                         await RetryForVerifyToIranKishAsync(payment, pspAccount.JsonProps);
                         break;
                 }
-
                 result.Add(new RetryForVerifyOutputDto
                 {
                     PaymentId = payment.Id,
@@ -1556,7 +1455,6 @@ namespace PaymentManagement.Application.Servicess
             {
                 await VerifyToIranKishAsync(payment, pspAccountJsonProps, true);
             }
-
             payment.RetryCount += 1;
             await _paymentRepository.AttachAsync(ObjectMapper.Map<PaymentDto, Payment>(payment), o => o.RetryCount);
         }
@@ -1578,7 +1476,6 @@ namespace PaymentManagement.Application.Servicess
             {
                 await VerifyToMellatAsync(payment, pspAccountJsonProps, true);
             }
-
             payment.RetryCount += 1;
             await _paymentRepository.AttachAsync(ObjectMapper.Map<PaymentDto, Payment>(payment), o => o.RetryCount);
         }
