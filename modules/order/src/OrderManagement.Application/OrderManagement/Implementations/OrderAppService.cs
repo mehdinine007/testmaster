@@ -472,7 +472,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
                         )
                 {
-                   
+
                     await _distributedCache.SetStringAsync(RedisConstants.CommitOrderPrefix + userId.ToString() + "_" +
                        SaleDetailDto.Id.ToString()
                        , CustomerOrderFromDb.Id.ToString(),
@@ -629,12 +629,12 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         if (_configuration.GetSection("IsIranCellActive").Value == "1")
         {
-            await AddCacheKey(RedisConstants.CommitOrderPrefix+ userId.ToString(),
-                            "_"+commitOrderDto.PriorityId.ToString() + "_" +
+            await AddCacheKey(RedisConstants.CommitOrderPrefix + userId.ToString(),
+                            "_" + commitOrderDto.PriorityId.ToString() + "_" +
                             SaleDetailDto.SaleId.ToString()
-                           ,customerOrder.Id.ToString()
-                           ,ttl.TotalSeconds);
-            await AddCacheKey(RedisConstants.CommitOrderPrefix + userId.ToString(), "_" + SaleDetailDto.Id.ToString(),customerOrder.Id.ToString(), ttl.TotalSeconds);
+                           , customerOrder.Id.ToString()
+                           , ttl.TotalSeconds);
+            await AddCacheKey(RedisConstants.CommitOrderPrefix + userId.ToString(), "_" + SaleDetailDto.Id.ToString(), customerOrder.Id.ToString(), ttl.TotalSeconds);
             //await _distributedCache.SetStringAsync(RedisConstants.CommitOrderPrefix + userId.ToString() + "_" +
             //                commitOrderDto.PriorityId.ToString() + "_" +
             //                SaleDetailDto.SaleId.ToString()
@@ -1282,6 +1282,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 ManufactureDate = y.ManufactureDate,
                 SaleDetailUid = y.UID,
                 SalePlanEndDate = y.SalePlanEndDate,
+                CarTipId = y.CarTipId,
                 //TransactionCommitDate = paymentInformation != null
                 //    ? paymentInformation.TransactionDate
                 //    : null,
@@ -1290,7 +1291,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 //    : string.Empty,
                 PaymentId = x.PaymentId
             }).FirstOrDefault(x => x.UserId == userId && x.OrderId == id);
-
+        var galleryMappings = _carTipGalleryMappingRepository.WithDetails(x => x.Gallery).Where(x => x.CarTipId == customerOrder.CarTipId).ToList();
+        var imageUrls = galleryMappings.Select(x => x.Gallery.ImageUrl).ToList() ?? new();
+        customerOrder.CarTipImageUrls = imageUrls;
         if (customerOrder.SalePlanEndDate <= DateTime.Now)
             throw new UserFriendlyException("تاریخ برنامه فروش به پایان و سفارش قابل مشاده نیست");
 
@@ -1318,7 +1321,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         return customerOrder;
     }
 
-    private async Task AddCacheKey(string prefix,string key,string value,double ttl)
+    private async Task AddCacheKey(string prefix, string key, string value, double ttl)
     {
         string cacheKeyName = prefix + key;
         await _distributedCache.SetStringAsync(cacheKeyName, value,
@@ -1326,7 +1329,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                        {
                            AbsoluteExpiration = new DateTimeOffset(DateTime.Now.AddSeconds(ttl))
                        });
-        await _redisCacheManager.StringAppendAsync(prefix, cacheKeyName+",");
+        await _redisCacheManager.StringAppendAsync(prefix, cacheKeyName + ",");
     }
 
 }
