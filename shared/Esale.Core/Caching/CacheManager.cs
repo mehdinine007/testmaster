@@ -99,11 +99,7 @@ namespace Esale.Core.Caching
                 Provider = CacheProviderEnum.Redis
             }, ttl);
             string cacheKeyName = prefix + key;
-            await SetStringAsync(prefix, "", cacheKeyName + ",", new CacheOptions()
-            {
-                Provider = CacheProviderEnum.Redis,
-                RedisHash = false
-            });
+            await _redisCacheManager.StringAppendAsync(prefix, cacheKeyName + ",");
         }
 
         public async Task<long> StringIncrementAsync(string key)
