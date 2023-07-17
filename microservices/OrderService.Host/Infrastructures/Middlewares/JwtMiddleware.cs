@@ -67,13 +67,18 @@ public class JwtMiddleware
                 new Claim(ClaimTypes.NameIdentifier, uid),
                 new Claim(ClaimTypes.Surname , userName),
                 new Claim(ClaimTypes.Role,roleName),
-                new Claim("UserIdLong", uidLong)
+                new Claim("UserIdLong", uidLong),
+                new Claim("UBP", uid)
+
+
             };
             //roleList.ForEach(x => claims.Add(new Claim(ClaimTypes.Role, x.Value)));
             var appIdentity = new ClaimsIdentity(claims);
             httpContext.User.AddIdentity(appIdentity);
             httpContext.Items["UserId"] = uid;
             httpContext.Items["UserIdLong"] = uidLong;
+            httpContext.Items["UBP"] = uid;
+
 
             httpContext.Items["exp"] = DateTime.Now.AddDays(1).Ticks;
         }

@@ -57,7 +57,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
         public async Task<int> Save(AgencyDto agencyDto)
         {
             var province = await _provinceRepository.FirstOrDefaultAsync(x => x.Id == agencyDto.ProvinceId);
-            if (province == null || agencyDto.ProvinceId <= 0)
+            if (province == null)
             {
                 throw new UserFriendlyException("استان وجود ندارد.");
             }
@@ -69,13 +69,13 @@ namespace OrderManagement.Application.OrderManagement.Implementations
         public async Task<int> Update(AgencyDto agencyDto)
         {
             var result = await _agencyRepository.FirstOrDefaultAsync(x => x.Id == agencyDto.Id);
-            if (agencyDto.Id <= 0 || result == null)
+            if (result == null)
             {
                 throw new UserFriendlyException("نمایندگی انتخاب شده وجود ندارد.");
             }
             var province = await _provinceRepository.FirstOrDefaultAsync(x => x.Id == agencyDto.ProvinceId );
 
-            if (province == null || agencyDto.ProvinceId <= 0)
+            if (province == null)
             {
                 throw new UserFriendlyException("استان وجود ندارد.");
             }
