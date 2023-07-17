@@ -74,10 +74,15 @@ namespace Esale.Core.Caching
             if (options.Provider == CacheProviderEnum.Redis)
             {
                 if (options.RedisHash)
-                    await _distributedCache.SetStringAsync(prefix + key, value, new DistributedCacheEntryOptions
-                    {
-                        AbsoluteExpiration = new DateTimeOffset(DateTime.Now.AddSeconds(ttl))
-                    });
+                {
+                    if (ttl != 0)
+                        await _distributedCache.SetStringAsync(prefix + key, value, new DistributedCacheEntryOptions
+                        {
+                            AbsoluteExpiration = new DateTimeOffset(DateTime.Now.AddSeconds(ttl))
+                        });
+                    else
+                        await _distributedCache.SetStringAsync(prefix + key, value);
+                }
                 else
                     await _redisCacheManager.StringSetAsync(prefix + key, value, (int)ttl);
             }
@@ -85,6 +90,20 @@ namespace Esale.Core.Caching
             {
                 await _hybridCache.SetAsync(prefix + key, value, TimeSpan.FromSeconds(ttl));
             }
+        }
+
+        public async Task SetWithPrefixKeyAsync(string key, string prefix, string value, double ttl)
+        {
+            await SetStringAsync(key, prefix, value, new CacheOptions()
+            {
+                Provider = CacheProviderEnum.Redis
+            }, ttl);
+            string cacheKeyName = prefix + key;
+            await SetStringAsync(prefix, "", cacheKeyName + ",", new CacheOptions()
+            {
+                Provider = CacheProviderEnum.Redis,
+                RedisHash = false
+            });
         }
 
         public async Task<long> StringIncrementAsync(string key)
