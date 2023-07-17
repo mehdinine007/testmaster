@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Polly.Caching;
 
 namespace Esale.Core.Caching
 {
@@ -21,7 +22,7 @@ namespace Esale.Core.Caching
             _distributedCache = distributedCache;
             _hybridCache = hybridCache;
         }
-        public async Task<T?> GetAsync<T>(string key, string prefix, CacheProviderEnum provider = CacheProviderEnum.Redis)
+        public async Task<T?> GetAsync<T>(string key, string prefix,CacheOptions options)
         {
             var getValue = await _hybridCache.GetAsync<T>(prefix+key);
             if (getValue.HasValue)
@@ -29,26 +30,41 @@ namespace Esale.Core.Caching
             return default(T);
         }
 
-        public async Task<string?> GetStringAsync(string key, string prefix, CacheProviderEnum provider = CacheProviderEnum.Redis)
+        public async Task<string?> GetStringAsync(string key, string prefix, CacheOptions options)
         {
-            if (provider == CacheProviderEnum.Redis)
+            if (options.Provider == CacheProviderEnum.Redis)
                 return await _distributedCache.GetStringAsync(prefix + key);
-            else if (provider == CacheProviderEnum.Hybrid)
-                return await GetAsync<string>(key, prefix);
+            else if (options.Provider == CacheProviderEnum.Hybrid)
+                return await GetAsync<string>(key, prefix, options);
             return null;
         }
 
-        public async Task RemoveAsync(string key, string prefix, CacheProviderEnum provider = CacheProviderEnum.Redis)
+        public async Task RemoveAsync(string key, string prefix, CacheOptions options)
         {
-            if (provider == CacheProviderEnum.Redis)
+            if (options.Provider == CacheProviderEnum.Redis)
                 await _distributedCache.RemoveAsync(prefix + key);
-            else if (provider == CacheProviderEnum.Hybrid)
+            else if (options.Provider == CacheProviderEnum.Hybrid)
                 await _hybridCache.RemoveAsync(prefix+key);
         }
 
-        public async Task SetAsync<T>(string key, string prefix, T value, double ttl = 0, CacheProviderEnum provider = CacheProviderEnum.Redis)
+        public async Task SetAsync<T>(string key, string prefix, T value, double ttl, CacheOptions options)
         {
             await _hybridCache.SetAsync(prefix + key, value, TimeSpan.FromSeconds(ttl));
+        }
+
+        public async Task SetStringAsync(string key, string prefix, string value,CacheOptions options,double ttl = 0)
+        {
+            if (options.Provider == CacheProviderEnum.Redis)
+            {
+                await _distributedCache.SetStringAsync(prefix + key, value, new DistributedCacheEntryOptions
+                {
+                    AbsoluteExpiration = new DateTimeOffset(DateTime.Now.AddSeconds(ttl))
+                });
+            }
+            else if (options.Provider == CacheProviderEnum.Hybrid)
+            {
+                await _hybridCache.SetAsync(prefix + key, value, TimeSpan.FromSeconds(ttl));
+            }
         }
     }
 }

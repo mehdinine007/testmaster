@@ -213,7 +213,13 @@ public class OrderAppService : ApplicationService, IOrderAppService
         }
         var nationalCode = _commonAppService.GetNationalCode();
         SaleDetailOrderDto SaleDetailDto = null;
-        SaleDetailDto = await _cacheManager.GetAsync<SaleDetailOrderDto>(commitOrderDto.SaleDetailUId.ToString(), RedisConstants.SaleDetailPrefix,CacheProviderEnum.Hybrid);
+        SaleDetailDto = await _cacheManager.GetAsync<SaleDetailOrderDto>(
+            commitOrderDto.SaleDetailUId.ToString(), 
+            RedisConstants.SaleDetailPrefix,
+            new CacheOptions() 
+            {
+                Provider = CacheProviderEnum.Hybrid
+            });
         //var cacheKey = string.Format(RedisConstants.SaleDetailPrefix, commitOrderDto.SaleDetailUId);
         //_memoryCache.TryGetValue(cacheKey, out SaleDetailDto);
         if (SaleDetailDto == null)
@@ -241,7 +247,14 @@ public class OrderAppService : ApplicationService, IOrderAppService
             {
                 SaleDetailDto = SaleDetailFromDb;
                 ttl = SaleDetailDto.SalePlanEndDate.Subtract(DateTime.Now);
-                await _cacheManager.SetAsync(commitOrderDto.SaleDetailUId.ToString(), RedisConstants.SaleDetailPrefix, SaleDetailDto, 240, CacheProviderEnum.Hybrid);
+                await _cacheManager.SetAsync(
+                    commitOrderDto.SaleDetailUId.ToString(), 
+                    RedisConstants.SaleDetailPrefix, 
+                    SaleDetailDto, 240, 
+                    new CacheOptions()
+                    {
+                       Provider = CacheProviderEnum.Hybrid 
+                    });
                 //_memoryCache.Set(string.Format(RedisConstants.SaleDetailPrefix, commitOrderDto.SaleDetailUId.ToString()), SaleDetailDto, DateTime.Now.AddMinutes(4));
 
                 ////await _cacheManager.GetCache("SaleDetail").SetAsync(commitOrderDto.SaleDetailUId.ToString(), SaleDetailDto);
@@ -803,13 +816,25 @@ public class OrderAppService : ApplicationService, IOrderAppService
             throw new UserFriendlyException("شماره سفارش صحیح نمی باشد");
 
         SaleDetailOrderDto saleDetailOrderDto;
-        saleDetailOrderDto = await _cacheManager.GetAsync<SaleDetailOrderDto>(customerOrder.SaleDetailId.ToString(),RedisConstants.SaleDetailPrefix, CacheProviderEnum.Hybrid);
+        saleDetailOrderDto = await _cacheManager.GetAsync<SaleDetailOrderDto>(
+            customerOrder.SaleDetailId.ToString(),
+            RedisConstants.SaleDetailPrefix, 
+            new CacheOptions()
+            {
+                Provider = CacheProviderEnum.Hybrid
+            });
         if (saleDetailOrderDto == null)
         {
             var saleDetail = _saleDetailRepository.WithDetails().FirstOrDefault(x => x.Id == customerOrder.SaleDetailId)
                 ?? throw new UserFriendlyException("جزئیات برنامه فروش یافت نشد");
             saleDetailOrderDto = ObjectMapper.Map<SaleDetail, SaleDetailOrderDto>(saleDetail);
-            await _cacheManager.SetAsync(customerOrder.SaleDetailId.ToString(), RedisConstants.SaleDetailPrefix, saleDetailOrderDto, 240, CacheProviderEnum.Hybrid);
+            await _cacheManager.SetAsync(customerOrder.SaleDetailId.ToString(), 
+                RedisConstants.SaleDetailPrefix, 
+                saleDetailOrderDto, 240, 
+                new CacheOptions()
+                {
+                    Provider = CacheProviderEnum.Hybrid
+                });
         }
 
         //var saleDetailCahce = await _distributedCache.GetStringAsync(string.Format(RedisConstants.SaleDetailPrefix, customerOrder.SaleDetailId.ToString()));
