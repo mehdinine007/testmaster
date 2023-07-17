@@ -15,6 +15,7 @@ using Volo.Abp.Domain.Repositories;
 using OrderManagement.Application.Contracts.Services;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
+using Esale.Core.Caching;
 
 namespace OrderManagement.Application.OrderManagement
 {
@@ -24,16 +25,16 @@ namespace OrderManagement.Application.OrderManagement
         private readonly IAgencySaleDetailService _agencySaleDetailService;
         private readonly IEsaleGrpcClient _grpcClient;
         private readonly ICommonAppService _commonAppService;
+        private readonly ICacheManager _cacheManager;
         private IConfiguration _configuration { get; set; }
-        private readonly IRedisCacheManager _redisCacheManager;
-        public CapacityControlAppService(IConfiguration configuration, IEsaleGrpcClient grpcClient, IAgencySaleDetailService agencySaleDetailService, ISaleDetailService saleDetailService, IRedisCacheManager redisCacheManager, ICommonAppService commonAppService)
+        public CapacityControlAppService(IConfiguration configuration, IEsaleGrpcClient grpcClient, IAgencySaleDetailService agencySaleDetailService, ISaleDetailService saleDetailService, ICommonAppService commonAppService, ICacheManager cacheManager)
         {
             _configuration = configuration;
             _grpcClient = grpcClient;
             _agencySaleDetailService = agencySaleDetailService;
             _saleDetailService = saleDetailService;
-            _redisCacheManager = redisCacheManager;
             _commonAppService = commonAppService;
+            _cacheManager = cacheManager;
         }
         public async Task<IResult> SaleDetail()
         {
@@ -45,7 +46,14 @@ namespace OrderManagement.Application.OrderManagement
                     string _key = string.Format(CapacityControlConstants.SaleDetailPrefix, saledetail.UID.ToString());
                     try
                     {
-                        await _redisCacheManager.StringSetAsync(string.Format(CapacityControlConstants.CapacityControlPrefix, _key), saledetail.SaleTypeCapacity.ToString());
+                        await _cacheManager.SetStringAsync(_key,
+                            CapacityControlConstants.CapacityControlPrefix,
+                            saledetail.SaleTypeCapacity.ToString(),
+                            new CacheOptions() 
+                            {
+                                Provider = CacheProviderEnum.Redis,
+                                RedisHash = false
+                            });
                     }
                     catch (Exception ex)
                     {
@@ -73,7 +81,14 @@ namespace OrderManagement.Application.OrderManagement
                     {
                         _value = paymentDtos.FirstOrDefault(x => x.Status == 2).Count;
                     }
-                    await _redisCacheManager.StringSetAsync(string.Format(CapacityControlConstants.CapacityControlPrefix, _key), _value.ToString());
+                    await _cacheManager.SetStringAsync(_key,
+                        CapacityControlConstants.CapacityControlPrefix,
+                         _value.ToString(),
+                        new CacheOptions()
+                        {
+                            Provider = CacheProviderEnum.Redis,
+                            RedisHash = false
+                        });
                 }
             }
             return new SuccsessResult();
@@ -105,10 +120,10 @@ namespace OrderManagement.Application.OrderManagement
             await _commonAppService.ValidateOrderStep(OrderStepEnum.SubmitOrder);
             long _capacity = 0;
             string _key = string.Format(CapacityControlConstants.SaleDetailPrefix, saleDetailUId.ToString());
-            long.TryParse(await _redisCacheManager.GetStringAsync(string.Format(CapacityControlConstants.CapacityControlPrefix, _key)), out _capacity);
+            long.TryParse(await _cacheManager.GetStringAsync(_key, CapacityControlConstants.CapacityControlPrefix,new CacheOptions() { Provider = CacheProviderEnum.Redis,RedisHash = false}), out _capacity);
 
             _key = string.Format(CapacityControlConstants.PaymentCountPrefix, saleDetailUId.ToString());
-            long _request = await _redisCacheManager.StringIncrementAsync(string.Format(CapacityControlConstants.CapacityControlPrefix, _key));
+            long _request = await _cacheManager.StringIncrementAsync(CapacityControlConstants.CapacityControlPrefix+ _key);
 
             if (_request > _capacity && _capacity > 0)
             {

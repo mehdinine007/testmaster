@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Polly.Caching;
+using Esale.Core.Caching.Redis;
 
 namespace Esale.Core.Caching
 {
@@ -17,23 +18,33 @@ namespace Esale.Core.Caching
     {
         private readonly IDistributedCache _distributedCache;
         private readonly IHybridCachingProvider _hybridCache;
-        public CacheManager(IDistributedCache distributedCache, IHybridCachingProvider hybridCache)
+        private readonly IRedisCacheManager _redisCacheManager;
+        public CacheManager(IDistributedCache distributedCache, IHybridCachingProvider hybridCache, IRedisCacheManager redisCacheManager)
         {
             _distributedCache = distributedCache;
             _hybridCache = hybridCache;
+            _redisCacheManager = redisCacheManager;
         }
-        public async Task<T?> GetAsync<T>(string key, string prefix,CacheOptions options)
+        public async Task<T?> GetAsync<T>(string key, string prefix, CacheOptions options)
         {
-            var getValue = await _hybridCache.GetAsync<T>(prefix+key);
-            if (getValue.HasValue)
-                return getValue.Value;
+            if (options.Provider == CacheProviderEnum.Hybrid)
+            {
+                var getValue = await _hybridCache.GetAsync<T>(prefix + key);
+                if (getValue.HasValue)
+                    return getValue.Value;
+            }
             return default(T);
         }
 
         public async Task<string?> GetStringAsync(string key, string prefix, CacheOptions options)
         {
             if (options.Provider == CacheProviderEnum.Redis)
-                return await _distributedCache.GetStringAsync(prefix + key);
+            {
+                if (options.RedisHash)
+                    return await _distributedCache.GetStringAsync(prefix + key);
+                else
+                    return await _redisCacheManager.GetStringAsync(prefix + key);
+            }
             else if (options.Provider == CacheProviderEnum.Hybrid)
                 return await GetAsync<string>(key, prefix, options);
             return null;
@@ -44,27 +55,41 @@ namespace Esale.Core.Caching
             if (options.Provider == CacheProviderEnum.Redis)
                 await _distributedCache.RemoveAsync(prefix + key);
             else if (options.Provider == CacheProviderEnum.Hybrid)
-                await _hybridCache.RemoveAsync(prefix+key);
+                await _hybridCache.RemoveAsync(prefix + key);
+        }
+
+        public async Task<bool> RemoveWithPrefixKeyAsync(string prefixKey)
+        {
+            return await _redisCacheManager.RemoveWithPrefixKeyAsync(prefixKey);
         }
 
         public async Task SetAsync<T>(string key, string prefix, T value, double ttl, CacheOptions options)
         {
-            await _hybridCache.SetAsync(prefix + key, value, TimeSpan.FromSeconds(ttl));
+            if (options.Provider == CacheProviderEnum.Hybrid)
+                await _hybridCache.SetAsync(prefix + key, value, TimeSpan.FromSeconds(ttl));
         }
 
-        public async Task SetStringAsync(string key, string prefix, string value,CacheOptions options,double ttl = 0)
+        public async Task SetStringAsync(string key, string prefix, string value, CacheOptions options, double ttl = 0)
         {
             if (options.Provider == CacheProviderEnum.Redis)
             {
-                await _distributedCache.SetStringAsync(prefix + key, value, new DistributedCacheEntryOptions
-                {
-                    AbsoluteExpiration = new DateTimeOffset(DateTime.Now.AddSeconds(ttl))
-                });
+                if (options.RedisHash)
+                    await _distributedCache.SetStringAsync(prefix + key, value, new DistributedCacheEntryOptions
+                    {
+                        AbsoluteExpiration = new DateTimeOffset(DateTime.Now.AddSeconds(ttl))
+                    });
+                else
+                    await _redisCacheManager.StringSetAsync(prefix + key, value, (int)ttl);
             }
             else if (options.Provider == CacheProviderEnum.Hybrid)
             {
                 await _hybridCache.SetAsync(prefix + key, value, TimeSpan.FromSeconds(ttl));
             }
+        }
+
+        public async Task<long> StringIncrementAsync(string key)
+        {
+            return await _redisCacheManager.StringIncrementAsync(key);
         }
     }
 }

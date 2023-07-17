@@ -18,7 +18,7 @@ namespace Esale.Core.Caching.Redis
         Task<bool> RemoveAsync(string key);
         IEnumerable<string> SearchKeys(string pattern);
         Task<bool> RemoveAllAsync(string pattern);
-        Task<bool> RemoveWithPrefixAsync(string prefix);
+        Task<bool> RemoveWithPrefixKeyAsync(string prefixKey);
         string CreateCachKey(string prefix, int userId);
         Task<long> StringIncrementAsync(string key);
         long StringIncrement(string key);

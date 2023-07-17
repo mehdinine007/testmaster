@@ -52,7 +52,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
     private IConfiguration _configuration { get; set; }
     private readonly IDistributedCache _distributedCache;
     private readonly IMemoryCache _memoryCache;
-    private readonly IRedisCacheManager _redisCacheManager;
     private readonly IIpgServiceProvider _ipgServiceProvider;
     private readonly ICapacityControlAppService _capacityControlAppService;
     private readonly IRandomGenerator _randomGenerator;
@@ -84,8 +83,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
                            IAuditingManager auditingManager,
                            IObjectMapper objectMapper,
                            IUnitOfWorkManager unitOfWorkManager,
-                           IRedisCacheManager redisCacheManager
-,
                            ICacheManager cacheManager
         )
     {
@@ -108,7 +105,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
         _auditingManager = auditingManager;
         _objectMapper = objectMapper;
         _unitOfWorkManager = unitOfWorkManager;
-        _redisCacheManager = redisCacheManager;
         _cacheManager = cacheManager;
     }
 
@@ -885,7 +881,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             //         userId.ToString() + "_" +
             //         customerOrder.SaleDetailId.ToString());
             //await _redisCacheManager.RemoveAllAsync(RedisConstants.CommitOrderPrefix + userId.ToString() + "_");
-            await _redisCacheManager.RemoveWithPrefixAsync(RedisConstants.CommitOrderPrefix + userId.ToString());
+            await _cacheManager.RemoveWithPrefixKeyAsync(RedisConstants.CommitOrderPrefix + userId.ToString());
         }
 
 
@@ -1150,7 +1146,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
     private async Task NotVerifyActions(long UserId, int OrderId)
     {
         //await _redisCacheManager.RemoveAllAsync(RedisConstants.CommitOrderPrefix + UserId.ToString() + "_*");
-        await _redisCacheManager.RemoveWithPrefixAsync(RedisConstants.CommitOrderPrefix + UserId.ToString());
+        await _cacheManager.RemoveWithPrefixKeyAsync(RedisConstants.CommitOrderPrefix + UserId.ToString());
         await UpdateStatus(new()
         {
             Id = OrderId,
@@ -1205,7 +1201,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                            .FirstOrDefault(x => x.Id == orderId);
                             if (order != null)
                                 //await _redisCacheManager.RemoveAllAsync(RedisConstants.CommitOrderPrefix + order.UserId.ToString() + "_*");
-                                await _redisCacheManager.RemoveWithPrefixAsync(RedisConstants.CommitOrderPrefix + order.UserId.ToString());
+                                await _cacheManager.RemoveWithPrefixKeyAsync(RedisConstants.CommitOrderPrefix + order.UserId.ToString());
                         }
                         catch (Exception EX)
                         {
@@ -1368,7 +1364,11 @@ public class OrderAppService : ApplicationService, IOrderAppService
                        {
                            AbsoluteExpiration = new DateTimeOffset(DateTime.Now.AddSeconds(ttl))
                        });
-        await _redisCacheManager.StringAppendAsync(prefix, cacheKeyName + ",");
+        await _cacheManager.SetStringAsync(prefix,"", cacheKeyName + ",",new CacheOptions()
+        {
+            Provider = CacheProviderEnum.Redis,
+            RedisHash = false
+        });
     }
 
 }
