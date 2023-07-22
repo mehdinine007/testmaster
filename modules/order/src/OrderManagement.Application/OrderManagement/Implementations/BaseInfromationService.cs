@@ -70,8 +70,8 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
                                   IRepository<ESaleType, int> esaleTypeRepository,
                                   ICapacityControlAppService capacityControlAppService,
                                   IHybridCachingProvider hybridCache,
-                                  IRepository<UserMongo, ObjectId> UserMongo
-        )
+                                  IRepository<UserMongo, ObjectId> UserMongo,
+                                  ICacheManager cacheManager)
     {
         _esaleGrpcClient = esaleGrpcClient;
         _companyRepository = companyRepository;
@@ -94,6 +94,7 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
         _capacityControlAppService = capacityControlAppService;
         _hybridCache = hybridCache;
         _userMongo = UserMongo;
+        _cacheManager = cacheManager;
     }
 
     [RemoteService(false)]
