@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Polly.Caching;
 using Esale.Core.Caching.Redis;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace Esale.Core.Caching
 {
@@ -56,6 +57,15 @@ namespace Esale.Core.Caching
                 await _distributedCache.RemoveAsync(prefix + key);
             else if (options.Provider == CacheProviderEnum.Hybrid)
                 await _hybridCache.RemoveAsync(prefix + key);
+        }
+
+        public async Task<bool> RemoveByPrefixAsync(string prefixKey, CacheOptions options)
+        {
+            if (options.Provider == CacheProviderEnum.Hybrid)
+                await _hybridCache.RemoveByPrefixAsync(prefixKey);
+            if (options.Provider == CacheProviderEnum.Redis)
+                await _redisCacheManager.RemoveAllAsync(prefixKey);
+            return true;
         }
 
         public async Task<bool> RemoveWithPrefixKeyAsync(string prefixKey)

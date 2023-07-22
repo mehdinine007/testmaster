@@ -18,6 +18,7 @@ namespace Esale.Core.Caching
         Task RemoveAsync(string key, string prefix,CacheOptions options);
         Task<long> StringIncrementAsync(string key);
         Task<bool> RemoveWithPrefixKeyAsync(string prefixKey);
+        Task<bool> RemoveByPrefixAsync(string prefixKey, CacheOptions options);
 
     }
 }
