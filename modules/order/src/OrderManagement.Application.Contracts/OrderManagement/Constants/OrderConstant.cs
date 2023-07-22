@@ -32,5 +32,17 @@ namespace OrderManagement.Application.Contracts
             OrderStepEnum.PreviewOrder,
             OrderStepEnum.SaveOrder 
         };
+
+        public static string AttachmentNotFound = "ضمیمه وجود ندارد";
+        public static string AttachmentNotFoundId = "2001";
+        public static string FileUploadNotFound = "فایل نامعتبر";
+        public static string FileUploadNotFoundId = "2002";
+        public static string FileUploadNotExtention = "پسوند نامعتبر فایل";
+        public static string FileUploadNotExtentionId = "2003";
+        public static string FileUploadNotPathNotExists = "مسیر آپلود فایل وجود ندارد";
+        public static string FileUploadNotPathNotExistsId = "2004";
+        public static string FileUploadCopyError = "خطا در انتقال فایل به سرور";
+        public static string FileUploadCopyErrorId = "2004";
+
     }
 }

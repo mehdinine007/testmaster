@@ -15,6 +15,7 @@ namespace OrderManagement.EfCore
     [ConnectionStringName("OrderManagement")]
     public class OrderManagementDbContext : AbpDbContext<OrderManagementDbContext>, IOrderManagementDbContext
     {
+        public DbSet<Attachment> Attachments { get; set; }
         public static string TablePrefix { get; set; } = OrderManagementConsts.DefaultDbTablePrefix;
 
         public static string Schema { get; set; } = OrderManagementConsts.DefaultDbSchema;

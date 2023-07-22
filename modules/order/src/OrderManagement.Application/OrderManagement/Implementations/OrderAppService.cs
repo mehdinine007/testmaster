@@ -204,9 +204,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
         var nationalCode = _commonAppService.GetNationalCode();
         SaleDetailOrderDto SaleDetailDto = null;
         SaleDetailDto = await _cacheManager.GetAsync<SaleDetailOrderDto>(
-            commitOrderDto.SaleDetailUId.ToString(), 
+            commitOrderDto.SaleDetailUId.ToString(),
             RedisConstants.SaleDetailPrefix,
-            new CacheOptions() 
+            new CacheOptions()
             {
                 Provider = CacheProviderEnum.Hybrid
             });
@@ -238,12 +238,12 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 SaleDetailDto = SaleDetailFromDb;
                 ttl = SaleDetailDto.SalePlanEndDate.Subtract(DateTime.Now);
                 await _cacheManager.SetAsync(
-                    commitOrderDto.SaleDetailUId.ToString(), 
-                    RedisConstants.SaleDetailPrefix, 
-                    SaleDetailDto, 240, 
+                    commitOrderDto.SaleDetailUId.ToString(),
+                    RedisConstants.SaleDetailPrefix,
+                    SaleDetailDto, 240,
                     new CacheOptions()
                     {
-                       Provider = CacheProviderEnum.Hybrid 
+                        Provider = CacheProviderEnum.Hybrid
                     });
                 //_memoryCache.Set(string.Format(RedisConstants.SaleDetailPrefix, commitOrderDto.SaleDetailUId.ToString()), SaleDetailDto, DateTime.Now.AddMinutes(4));
 
@@ -304,8 +304,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
         //if (activeSuccessfulOrderExists != null)
         //    throw new UserFriendlyException("جهت ثبت سفارش جدید لطفا ابتدا از جزئیات سفارش، سفارش قبلی خود که موعد تحویل آن در سال 1403 می باشد را لغو نمایید .");
         ///////////////////////////////check entekhab yek no tarh////////////
-        string EsaleTypeId = await _cacheManager.GetStringAsync(userId.ToString(),""
-            ,new CacheOptions() 
+        string EsaleTypeId = await _cacheManager.GetStringAsync(userId.ToString(), ""
+            , new CacheOptions()
             {
                 Provider = CacheProviderEnum.Redis
             });
@@ -331,7 +331,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             {
                 if (SaleDetailDto.ESaleTypeId != activeSuccessfulOrderExists.ESaleTypeId)
                 {
-                    await _cacheManager.SetStringAsync(userId.ToString(),"",activeSuccessfulOrderExists.ESaleTypeId.ToString(),
+                    await _cacheManager.SetStringAsync(userId.ToString(), "", activeSuccessfulOrderExists.ESaleTypeId.ToString(),
                         new CacheOptions()
                         {
                             Provider = CacheProviderEnum.Redis
@@ -354,7 +354,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             //    userId.ToString() + "_" +
             //    SaleDetailDto.SaleId.ToString()
             //    , out objectCommitOrderIran);
-            objectCommitOrderIran = await _cacheManager.GetStringAsync(userId.ToString() + "_" + SaleDetailDto.SaleId.ToString(),"",
+            objectCommitOrderIran = await _cacheManager.GetStringAsync(userId.ToString() + "_" + SaleDetailDto.SaleId.ToString(), "",
                 new CacheOptions()
                 {
                     Provider = CacheProviderEnum.Redis
@@ -662,7 +662,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         if (_configuration.GetSection("IsIranCellActive").Value == "1")
         {
-            await _cacheManager.SetWithPrefixKeyAsync("_" + commitOrderDto.PriorityId.ToString() + "_" +SaleDetailDto.SaleId.ToString(),
+            await _cacheManager.SetWithPrefixKeyAsync("_" + commitOrderDto.PriorityId.ToString() + "_" + SaleDetailDto.SaleId.ToString(),
                             RedisConstants.CommitOrderPrefix + userId.ToString(),
                             customerOrder.Id.ToString(),
                             ttl.TotalSeconds);
@@ -836,7 +836,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         SaleDetailOrderDto saleDetailOrderDto;
         saleDetailOrderDto = await _cacheManager.GetAsync<SaleDetailOrderDto>(
             customerOrder.SaleDetailId.ToString(),
-            RedisConstants.SaleDetailPrefix, 
+            RedisConstants.SaleDetailPrefix,
             new CacheOptions()
             {
                 Provider = CacheProviderEnum.Hybrid
@@ -846,9 +846,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
             var saleDetail = _saleDetailRepository.WithDetails().FirstOrDefault(x => x.Id == customerOrder.SaleDetailId)
                 ?? throw new UserFriendlyException("جزئیات برنامه فروش یافت نشد");
             saleDetailOrderDto = ObjectMapper.Map<SaleDetail, SaleDetailOrderDto>(saleDetail);
-            await _cacheManager.SetAsync(customerOrder.SaleDetailId.ToString(), 
-                RedisConstants.SaleDetailPrefix, 
-                saleDetailOrderDto, 240, 
+            await _cacheManager.SetAsync(customerOrder.SaleDetailId.ToString(),
+                RedisConstants.SaleDetailPrefix,
+                saleDetailOrderDto, 240,
                 new CacheOptions()
                 {
                     Provider = CacheProviderEnum.Hybrid
@@ -891,7 +891,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             //      customerOrder.SaleId.ToString()
             //  );
             await _cacheManager.RemoveAsync(
-                userId.ToString() + "_" +customerOrder.SaleId.ToString(),
+                userId.ToString() + "_" + customerOrder.SaleId.ToString(),
                 "",
                 new CacheOptions()
                 {
@@ -1213,49 +1213,47 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
     public async Task RetryPaymentForVerify()
     {
-
-
         var payments = await _esaleGrpcClient.RetryForVerify();
-        if (payments != null && payments.Count > 0)
+        if (payments == null || payments.Count == 0)
+            return;
+        payments = payments
+            .Where(x => x.PaymentStatus != 1 && x.FilterParam3 != null && x.FilterParam3 != 0)
+            .ToList();
+        foreach (var payment in payments)
         {
-            payments = payments
-                .Where(x => x.PaymentStatus != 1 && x.FilterParam3 != null && x.FilterParam3 != 0)
-                .ToList();
-            foreach (var payment in payments)
+            int orderId = payment.FilterParam3 ?? 0;
+            await UpdateStatus(new CustomerOrderDto()
             {
-                int orderId = payment.FilterParam3 ?? 0;
-                if (orderId != 0)
+                Id = orderId,
+                OrderStatus = payment.PaymentStatus == 2 ? (int)OrderStatusType.PaymentSucceeded : (int)OrderStatusType.PaymentNotVerified
+            });
+            if (payment.PaymentStatus == 3)
+            {
+                try
                 {
-
-                    await UpdateStatus(new CustomerOrderDto()
-                    {
-                        Id = orderId,
-                        OrderStatus = payment.PaymentStatus == 2 ? (int)OrderStatusType.PaymentSucceeded : (int)OrderStatusType.PaymentNotVerified
-                    });
-                    if (payment.PaymentStatus == 3)
-                    {
-                        try
-                        {
-                            var order = _commitOrderRepository.WithDetails()
-                           .AsNoTracking()
-                           .FirstOrDefault(x => x.Id == orderId);
-                            if (order != null)
-                                //await _redisCacheManager.RemoveAllAsync(RedisConstants.CommitOrderPrefix + order.UserId.ToString() + "_*");
-                                await _cacheManager.RemoveWithPrefixKeyAsync(RedisConstants.CommitOrderPrefix + order.UserId.ToString());
-                        }
-                        catch (Exception EX)
-                        {
-                            throw EX;
-                        }
-
-                    }
+                    var order = _commitOrderRepository.WithDetails()
+                   .AsNoTracking()
+                   .FirstOrDefault(x => x.Id == orderId);
+                    if (order != null)
+                        //await _redisCacheManager.RemoveAllAsync(RedisConstants.CommitOrderPrefix + order.UserId.ToString() + "_*");
+                        await _cacheManager.RemoveWithPrefixKeyAsync(RedisConstants.CommitOrderPrefix + order.UserId.ToString());
+                }
+                catch (Exception EX)
+                {
+                    throw EX;
                 }
             }
-
-
         }
+    }
 
-
+    public async Task RetryOrderForVerify()
+    {
+        var deadLine = DateTime.Now.AddMinutes(_configuration.GetValue<int>("RetryOrderForVerifyMinute"));
+        var orders = _commitOrderRepository
+            .WithDetails()
+            .AsNoTracking()
+            .Where(x => x.OrderStatus == OrderStatusType.RecentlyAdded && x.CreationTime < deadLine)
+            .ToList();
     }
 
     public async Task<CustomerOrder_OrderDetailDto> GetDetail(SaleDetail_Order_InquiryDto inquiryDto)

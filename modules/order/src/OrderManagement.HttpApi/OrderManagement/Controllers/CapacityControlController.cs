@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.Services;
 using OrderManagement.Application.OrderManagement;
+using OrderManagement.Application.OrderManagement.Implementations;
 using OrderManagement.Domain;
 using System;
 using System.Collections.Generic;
@@ -18,10 +19,11 @@ namespace OrderManagement.HttpApi;
 public class CapacityControlController :Controller
 {
     private readonly ICapacityControlAppService _capacityControlAppService;
-
-    public CapacityControlController(ICapacityControlAppService capacityControlAppService)
+    private readonly IAttachmentService _attachmentService;
+    public CapacityControlController(ICapacityControlAppService capacityControlAppService, IAttachmentService attachmentService)
     {
         _capacityControlAppService = capacityControlAppService;
+        _attachmentService = attachmentService;
     }
 
     //[HttpPost]
@@ -36,6 +38,10 @@ public class CapacityControlController :Controller
     [HttpPost]
     public async Task GrpcPaymentTest()
           => await _capacityControlAppService.GrpcPaymentTest();
+
+    [HttpPost]
+    public async Task UploadFile([FromForm]UploadFileDto uploadFileDto)
+          => await _attachmentService.UploadFile(uploadFileDto);
 
     [HttpPost]
     [UserAuthorization]
