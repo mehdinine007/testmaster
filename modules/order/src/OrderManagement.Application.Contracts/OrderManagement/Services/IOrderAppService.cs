@@ -25,6 +25,7 @@ namespace OrderManagement.Application.Contracts.Services
 
         Task<CommitOrderResultDto> CommitOrder(CommitOrderDto commitOrderDto);
         Task RetryPaymentForVerify();
+        Task RetryOrderForVerify();
         Task<bool> UserRejectionStatus();
 
         Task<bool> Test();
