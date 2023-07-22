@@ -1,4 +1,5 @@
 ﻿using EasyCaching.Core;
+using Esale.Core.Caching;
 using Microsoft.EntityFrameworkCore;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
@@ -24,12 +25,14 @@ namespace OrderManagement.Application.OrderManagement.Implementations
         private readonly IRepository<Agency> _agencyRepository;
         private readonly IRepository<Province> _provinceRepository;
         private readonly IHybridCachingProvider _hybridCache;
+        private readonly ICacheManager _cacheManager;
 
-        public AgencyService(IRepository<Agency> agencyRepository, IRepository<Province> provinceRepository, IHybridCachingProvider hybridCache)
+        public AgencyService(IRepository<Agency> agencyRepository, IRepository<Province> provinceRepository, IHybridCachingProvider hybridCache, ICacheManager cacheManager)
         {
             _agencyRepository = agencyRepository;
             _provinceRepository = provinceRepository;
             _hybridCache = hybridCache;
+            _cacheManager = cacheManager;
         }
 
 
@@ -37,7 +40,8 @@ namespace OrderManagement.Application.OrderManagement.Implementations
         public async Task<bool> Delete(int id)
         {
             await _agencyRepository.DeleteAsync(x => x.Id == id, autoSave: true);
-            await _hybridCache.RemoveByPrefixAsync(RedisConstants.AgencyCacheKey);
+
+            //await _hybridCache.RemoveByPrefixAsync(RedisConstants.AgencyCacheKey);
             return true;
         }
 
@@ -82,7 +86,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             result.Name = agencyDto.Name;
             result.ProvinceId = agencyDto.ProvinceId;
             await _agencyRepository.UpdateAsync(result, autoSave: true);
-            await _hybridCache.RemoveByPrefixAsync(RedisConstants.AgencyCacheKey);
+            //await _hybridCache.RemoveByPrefixAsync(RedisConstants.AgencyCacheKey);
             return result.Id;
         }
     }

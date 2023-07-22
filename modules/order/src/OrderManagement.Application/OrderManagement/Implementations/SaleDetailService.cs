@@ -1,4 +1,5 @@
 ﻿using EasyCaching.Core;
+using Esale.Core.Caching;
 using Esale.Core.DataAccess;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -33,6 +34,7 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
     private readonly IHttpContextAccessor _contextAccessor;
     private readonly ICommonAppService _commonAppService;
     private readonly IHybridCachingProvider _hybridCache;
+    private readonly ICacheManager _cacheManager;
 
     public SaleDetailService(IRepository<SaleDetail> saleDetailRepository,
                              IRepository<CarTip> carTipRepository,
@@ -41,7 +43,7 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
                              IRepository<Color> color,
                              IRepository<SaleDetailCarColor, int> saleDetailColorRepository,
                              IHttpContextAccessor contextAccessor,
-                             ICommonAppService commonAppService, IHybridCachingProvider hybridCache)
+                             ICommonAppService commonAppService, IHybridCachingProvider hybridCache, ICacheManager cacheManager)
     {
         _saleDetailRepository = saleDetailRepository;
         _carTipRepository = carTipRepository;
@@ -52,6 +54,7 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
         _contextAccessor = contextAccessor;
         _commonAppService = commonAppService;
         _hybridCache = hybridCache;
+        _cacheManager = cacheManager;
     }
 
 
@@ -59,10 +62,10 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
     public async Task<bool> Delete(int id)
     {
         var saleDetail=await _saleDetailRepository.FirstOrDefaultAsync(x => x.Id == id);
-        if (saleDetail == null) {
-            var cacheKey = string.Format(RedisConstants.SaleDetailPrefix, saleDetail.UID);
+        if (saleDetail != null) {
             await _saleDetailRepository.DeleteAsync(x => x.Id == id, autoSave: true);
-            await _hybridCache.RemoveAsync(cacheKey);
+            var cacheKey = string.Format(RedisConstants.SaleDetailPrefix, saleDetail.UID.ToString());
+            await _cacheManager.RemoveAsync(cacheKey, RedisConstants.SaleDetailPrefix, new CacheOptions() { Provider = CacheProviderEnum.Hybrid });
         }
         
         return true;
@@ -234,8 +237,7 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
         c => c.CarTipId, m => m.ManufactureDate, s => s.SalePlanStartDate, m => m.ManufactureDate, s => s.SalePlanEndDate,
         c => c.CarDeliverDate, s => s.SaleTypeCapacity, c => c.CoOperatingProfitPercentage, r => r.RefuseProfitPercentage, e => e.ESaleTypeId, c => c.CarFee, d => d.DeliverDaysCount,
         d => d.MinimumAmountOfProxyDeposit, s => s.SaleId, v => v.Visible);
-        var cacheKey = string.Format(RedisConstants.SaleDetailPrefix, result.UID);
-        await _hybridCache.RemoveAsync(cacheKey);
+        await _cacheManager.RemoveAsync(saleDetail.UID.ToString(), RedisConstants.SaleDetailPrefix, new CacheOptions() { Provider = CacheProviderEnum.Hybrid });
         return saleDetail.Id;
     }
 

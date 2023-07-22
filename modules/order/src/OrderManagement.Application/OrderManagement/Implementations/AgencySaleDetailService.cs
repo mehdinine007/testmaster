@@ -1,5 +1,6 @@
 ﻿using AutoMapper.Internal.Mappers;
 using EasyCaching.Core;
+using Esale.Core.Caching;
 using Microsoft.EntityFrameworkCore;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.OrderManagement;
@@ -26,14 +27,16 @@ namespace OrderManagement.Application.OrderManagement.Implementations
         private readonly IRepository<Agency> _agencyRepository;
         private readonly IRepository<SaleDetail> _saleDetailRepository;
         private readonly IHybridCachingProvider _hybridCache;
+        private readonly ICacheManager _cacheManager;
 
         public AgencySaleDetailService(IRepository<AgencySaleDetail> agencySaleDetailRepository, IRepository<Agency> agencyRepository, IRepository<SaleDetail> saleDetailRepository
-            , IHybridCachingProvider hybridCache)
+            , IHybridCachingProvider hybridCache, ICacheManager cacheManager)
         {
             _agencySaleDetailRepository = agencySaleDetailRepository;
             _agencyRepository = agencyRepository;
             _saleDetailRepository = saleDetailRepository;
             _hybridCache = hybridCache;
+            _cacheManager = cacheManager;   
         }
 
         public async Task<bool> Delete(int id)
@@ -42,8 +45,9 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             if (agancySaleDetail != null)
             {
                 await _agencySaleDetailRepository.DeleteAsync(x => x.Id == id, autoSave: true);
-                var cacheKey = string.Format(RedisConstants.SaleDetailAgenciesCacheKey, agancySaleDetail.SaleDetail.UID);
-                await _hybridCache.RemoveAsync(cacheKey);
+                var cacheKey = string.Format(RedisConstants.SaleDetailAgenciesCacheName, agancySaleDetail.SaleDetail.UID.ToString());
+                await _cacheManager.RemoveAsync(cacheKey, RedisConstants.AgencyPrefix, new CacheOptions() { Provider = CacheProviderEnum.Hybrid });
+
             }
             return true;
         }
