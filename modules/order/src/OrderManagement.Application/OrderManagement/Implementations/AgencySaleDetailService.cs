@@ -104,7 +104,18 @@ namespace OrderManagement.Application.OrderManagement.Implementations
         [UnitOfWork]
         public async Task<int> Save(AgencySaleDetailDto agencySaleDetailDto)
         {
-         var result= await  _agencySaleDetailRepository.SingleOrDefaultAsync(x=>x.AgencyId == agencySaleDetailDto.AgencyId && x.SaleDetailId== agencySaleDetailDto.SaleDetailId);
+            var agency = await _agencyRepository.FirstOrDefaultAsync(x => x.Id == agencySaleDetailDto.AgencyId);
+
+            if (agency == null)
+            {
+                throw new UserFriendlyException("نمایندگی وجود ندارد.");
+            }
+            var saleDetail = await _saleDetailRepository.FirstOrDefaultAsync(x => x.Id == agencySaleDetailDto.SaleDetailId);
+            if (saleDetail == null)
+            {
+                throw new UserFriendlyException("جزییات برنامه فروش وجود ندارد.");
+            }
+            var result= await  _agencySaleDetailRepository.SingleOrDefaultAsync(x=>x.AgencyId == agencySaleDetailDto.AgencyId && x.SaleDetailId== agencySaleDetailDto.SaleDetailId);
             if (result != null)
             {
                 //throw new UserFriendlyException("برنامه فروش برای نمایندگی انتخاب شده تعریف شده است");
@@ -113,18 +124,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
                 await _agencySaleDetailRepository.UpdateAsync(result);
                 return result.Id;
             }
-
-            var agency=await _agencyRepository.FirstOrDefaultAsync(x => x.Id == agencySaleDetailDto.AgencyId);
-
-            if (agency==null ||agencySaleDetailDto.AgencyId <= 0)
-            {
-                throw new UserFriendlyException("نمایندگی وجود ندارد.");
-            }
-            var saleDetail =await _saleDetailRepository.FirstOrDefaultAsync(x => x.Id == agencySaleDetailDto.SaleDetailId);
-            if (saleDetail==null||agencySaleDetailDto.SaleDetailId <= 0)
-            {
-                throw new UserFriendlyException("جزییات برنامه فروش وجود ندارد.");
-            }
+            
          var  agencySaleDetail = ObjectMapper.Map<AgencySaleDetailDto, AgencySaleDetail>(agencySaleDetailDto);
 
             await _agencySaleDetailRepository.InsertAsync(agencySaleDetail, autoSave: true);

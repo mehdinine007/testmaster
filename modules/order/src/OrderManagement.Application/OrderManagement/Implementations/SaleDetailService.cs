@@ -162,12 +162,12 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
             throw new UserFriendlyException("تاریخ پایان بایدبزرگتراز تاریخ شروع باشد.");
         }
         var carTip = await _carTipRepository.FirstOrDefaultAsync(x => x.Id == createSaleDetailDto.CarTipId);
-        if (carTip == null || createSaleDetailDto.CarTipId <= 0)
+        if (carTip == null)
         {
             throw new UserFriendlyException("ماشین انتخاب شده وجودندارد");
         }
         var esalType = await _eSaleTypeRepository.FirstOrDefaultAsync(x => x.Id == createSaleDetailDto.EsaleTypeId);
-        if (esalType == null || createSaleDetailDto.EsaleTypeId <= 0)
+        if (esalType == null )
         {
             throw new UserFriendlyException("نوع طرح فروش انتخاب شده وجود ندارد");
         }
@@ -219,12 +219,12 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
         }
 
         var carTipId = await _carTipRepository.FirstOrDefaultAsync(x => x.Id == createSaleDetailDto.CarTipId);
-        if (carTipId == null || createSaleDetailDto.CarTipId <= 0)
+        if (carTipId == null )
         {
             throw new UserFriendlyException("ماشین انتخاب شده وجودندارد");
         }
         var esalTypeId = await _eSaleTypeRepository.FirstOrDefaultAsync(x => x.Id == createSaleDetailDto.EsaleTypeId);
-        if (esalTypeId == null || createSaleDetailDto.EsaleTypeId <= 0)
+        if (esalTypeId == null )
         {
             throw new UserFriendlyException(" نوع طرح فروش انتخاب شده وجود ندارد");
         }

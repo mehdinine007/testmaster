@@ -121,7 +121,7 @@ namespace Esale.Core.Caching.Redis
             await _cacheClient.GetDataBase().StringAppendAsync(key, value.ToString());
         }
 
-        public async Task<bool> RemoveWithPrefixAsync(string prefix)
+        public async Task<bool> RemoveWithPrefixKeyAsync(string prefix)
         {
             var cacheKeys = new List<string>();
             string getCacheKeys = await GetStringAsync(prefix);

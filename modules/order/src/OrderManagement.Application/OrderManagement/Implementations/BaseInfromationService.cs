@@ -19,6 +19,7 @@ using Microsoft.Extensions.Configuration;
 using EasyCaching.Core;
 using OrderManagement.Mongo.Domain;
 using MongoDB.Bson;
+using Esale.Core.Caching;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -45,11 +46,11 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
     private readonly ICommonAppService _commonAppService;
     private readonly IRepository<SaleDetail, int> _saleDetailRepository;
     private readonly IRepository<AgencySaleDetail, int> _agencySaleDetailRepository;
-    private readonly IMemoryCache _memoryCache;
     private readonly ICapacityControlAppService _capacityControlAppService;
     private readonly IHybridCachingProvider _hybridCache;
     private readonly IRepository<UserMongo, ObjectId> _userMongo;
 
+    private readonly ICacheManager _cacheManager;
     public BaseInformationService(IRepository<Company, int> companyRepository,
                                   IRepository<CarTip, int> carTipRepsoitory,
                                   IRepository<Gallery, int> galleryRepository,
@@ -66,7 +67,6 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
                                   IRepository<Agency, int> agencyRepository,
                                   IRepository<SaleDetail, int> saleDetailRepository,
                                   IRepository<AgencySaleDetail, int> agencySaleDetailRepository,
-                                  IMemoryCache memoryCache,
                                   IRepository<ESaleType, int> esaleTypeRepository,
                                   ICapacityControlAppService capacityControlAppService,
                                   IHybridCachingProvider hybridCache,
@@ -90,7 +90,6 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
         _agencyRepository = agencyRepository;
         _saleDetailRepository = saleDetailRepository;
         _agencySaleDetailRepository = agencySaleDetailRepository;
-        _memoryCache = memoryCache;
         _esaleTypeRepository = esaleTypeRepository;
         _capacityControlAppService = capacityControlAppService;
         _hybridCache = hybridCache;
@@ -333,8 +332,11 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
     {
         var user = await _esaleGrpcClient.GetUserById(_commonAppService.GetUserId());
         var agencyQuery = await _agencyRepository.GetQueryableAsync();
-        var cacheKey = string.Format(RedisConstants.SaleDetailAgenciesCacheKey, saleDetailUid);
-        var agencySaleDetailIds = _hybridCache.Get<List<int>>(cacheKey).Value ?? new List<int>();
+        var cacheKey = string.Format(RedisConstants.SaleDetailAgenciesCacheName, saleDetailUid);
+        var agencySaleDetailIds = await _cacheManager.GetAsync<List<int>>(cacheKey, RedisConstants.AgencyPrefix, new CacheOptions()
+        {
+            Provider = CacheProviderEnum.Hybrid
+        });
         if (agencySaleDetailIds?.Count == 0)
         {
             var saleDetail = await _saleDetailRepository.FirstOrDefaultAsync(x => x.UID == saleDetailUid)
@@ -356,7 +358,10 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
                     agencySaleDetailIds.Add(agency);
                 }
             }
-            _hybridCache.Set(cacheKey, agencySaleDetailIds, TimeSpan.FromSeconds(20));
+            await _cacheManager.SetAsync(cacheKey, RedisConstants.AgencyPrefix, agencySaleDetailIds, 20, new CacheOptions()
+            {
+                Provider = CacheProviderEnum.Hybrid
+            });
         }
         var agencies = agencyQuery.Where(x => x.ProvinceId == (user.HabitationProvinceId ?? 0) && agencySaleDetailIds.Any(y => y == x.Id)).ToList();
         return ObjectMapper.Map<List<Agency>, List<AgencyDto>>(agencies);
@@ -371,6 +376,9 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
     public async Task ClearCache(string prefix)
     {
         var cacheKeyPrefix = string.IsNullOrWhiteSpace(prefix) ? "**" : prefix;
-        await _hybridCache.RemoveByPrefixAsync(prefix);
+        await _cacheManager.RemoveByPrefixAsync(prefix,new CacheOptions()
+        {
+            Provider = CacheProviderEnum.Hybrid
+        });
     }
 }

@@ -5,12 +5,14 @@ using OrderManagement.Domain;
 using OrderManagement.Domain.Bases;
 using Volo.Abp.Data;
 using Volo.Abp.EntityFrameworkCore;
+using OrderManagement.Domain.OrderManagement;
 
 namespace OrderManagement.EfCore
 {
     [ConnectionStringName("OrderManagement")]
     public interface IOrderManagementDbContext : IEfCoreDbContext
     {
+        DbSet<Attachment> Attachments { get; set; }
         DbSet<CustomerOrder> CustomerOrders { get; set; }
 
         DbSet<SaleDetail> SaleDetails { get; set; }
