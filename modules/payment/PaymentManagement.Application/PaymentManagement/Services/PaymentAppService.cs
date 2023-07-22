@@ -51,7 +51,9 @@ namespace PaymentManagement.Application.Servicess
         }
         private GatewayServiceGrpc.GatewayServiceGrpc.GatewayServiceGrpcClient GatewayServiceGrpcClient()
         {
-            var channel = GrpcChannel.ForAddress(_config.GetValue<string>("App:GatewayGrpcAddress"));
+            var httpHandler = new HttpClientHandler();
+            httpHandler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+            var channel = GrpcChannel.ForAddress(_config.GetValue<string>("App:GatewayGrpcAddress"), new GrpcChannelOptions { HttpHandler = httpHandler });
             return new GatewayServiceGrpc.GatewayServiceGrpc.GatewayServiceGrpcClient(channel);
         }
         public List<PspAccountDto> GetPsps()
@@ -159,7 +161,7 @@ namespace PaymentManagement.Application.Servicess
         [Audited]
         public async Task<HandShakeOutputDto> HandShakeAsync(HandShakeInputDto input)
         {
-            throw new Volo.Abp.UserFriendlyException("dalam");
+         
             var result = new HandShakeOutputDto()
             {
                 StatusCode = (int)StatusCodeEnum.Failed,

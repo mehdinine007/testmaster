@@ -28,6 +28,9 @@ using Hangfire;
 using Microsoft.Extensions.Configuration;
 using Volo.Abp.Hangfire;
 using EasyCaching.Host.Extensions;
+using Volo.Abp.MongoDB;
+using Microsoft.EntityFrameworkCore;
+using OrderManagement.EfCore.Mongo;
 
 namespace OrderService.Host
 {
@@ -37,6 +40,7 @@ namespace OrderService.Host
         //typeof(AbpEventBusRabbitMqModule),
         typeof(AbpEntityFrameworkCoreSqlServerModule),
         typeof(AbpAuditLoggingEntityFrameworkCoreModule),
+        typeof(AbpMongoDbModule),
         //typeof(AbpPermissionManagementEntityFrameworkCoreModule),
         //typeof(AbpSettingManagementEntityFrameworkCoreModule),
         typeof(OrderManagementApplicationModule),
@@ -125,6 +129,11 @@ namespace OrderService.Host
 
             context.Services.AddGrpc();
             context.Services.EasyCaching(configuration, "RedisCache:ConnectionString");
+            context.Services.AddMongoDbContext<MongoDbContext>(options =>
+            {
+                options.AddDefaultRepositories(includeAllEntities: true);
+            });
+
             //var redis = ConnectionMultiplexer.Connect(configuration["Redis:Configuration"]);
             //context.Services.AddDataProtection()
             //    .PersistKeysToStackExchangeRedis(redis, "MsDemo-DataProtection-Keys");

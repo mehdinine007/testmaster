@@ -17,6 +17,8 @@ using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
 using Microsoft.Extensions.Configuration;
 using EasyCaching.Core;
+using OrderManagement.Mongo.Domain;
+using MongoDB.Bson;
 using Esale.Core.Caching;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
@@ -45,6 +47,9 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
     private readonly IRepository<SaleDetail, int> _saleDetailRepository;
     private readonly IRepository<AgencySaleDetail, int> _agencySaleDetailRepository;
     private readonly ICapacityControlAppService _capacityControlAppService;
+    private readonly IHybridCachingProvider _hybridCache;
+    private readonly IRepository<UserMongo, ObjectId> _userMongo;
+
     private readonly ICacheManager _cacheManager;
     public BaseInformationService(IRepository<Company, int> companyRepository,
                                   IRepository<CarTip, int> carTipRepsoitory,
@@ -64,7 +69,9 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
                                   IRepository<AgencySaleDetail, int> agencySaleDetailRepository,
                                   IRepository<ESaleType, int> esaleTypeRepository,
                                   ICapacityControlAppService capacityControlAppService,
-                                  ICacheManager cacheManager)
+                                  IHybridCachingProvider hybridCache,
+                                  IRepository<UserMongo, ObjectId> UserMongo
+        )
     {
         _esaleGrpcClient = esaleGrpcClient;
         _companyRepository = companyRepository;
@@ -85,7 +92,8 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
         _agencySaleDetailRepository = agencySaleDetailRepository;
         _esaleTypeRepository = esaleTypeRepository;
         _capacityControlAppService = capacityControlAppService;
-        _cacheManager = cacheManager;
+        _hybridCache = hybridCache;
+        _userMongo = UserMongo;
     }
 
     [RemoteService(false)]
@@ -196,9 +204,14 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
 
     }
 
-    public async Task RegistrationValidation(RegistrationValidationDto input)
+    public async Task RegistrationValidation()
     {
-        throw new System.Exception();
+        UserMongo user = new UserMongo();
+       
+        await _userMongo.InsertAsync(user);
+        var x = await _userMongo.ToListAsync();
+
+        
         //await _commonAppService.ValidateVisualizeCaptcha(new CommonService.Dto.VisualCaptchaInput(input.CK, input.CIT));
 
         //// await _commonAppService.ValidateVisualizeCaptcha(new CommonService.Dto.VisualCaptchaInput(input.CT,input.CK, input.CIT));
@@ -255,6 +268,7 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
 
     public async Task<List<CarTipDto>> GetCarTipsByCompanyId(int companyId)
     {
+
         var carTipQuery = _carTipRepository.WithDetails(x => x.CarType.CarFamily.Company,
             x => x.CarTip_Gallery_Mappings);
         var carTips = carTipQuery.Where(x => x.CarType.CarFamily.Company.Id == companyId)
@@ -284,7 +298,7 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
 
     public List<CompanyDto> GetCompanies()
     {
-        var companiesQuery = _companyRepository.WithDetails(x => x.GalleryLogo, x => x.GalleryBanner, x => x.GalleryLogoInPage);
+    var companiesQuery = _companyRepository.WithDetails(x => x.GalleryLogo, x => x.GalleryBanner, x => x.GalleryLogoInPage);
         var companies = companiesQuery.Where(x => x.Visible).ToList();
         return ObjectMapper.Map<List<Company>, List<CompanyDto>>(companies, new List<CompanyDto>());
     }
@@ -301,6 +315,7 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
 
     public async Task<UserDto> GrpcTest()
     {
+
         // var dd = await _esaleGrpcClient.GetUserAdvocacyByNationalCode(_commonAppService.GetNationalCode());
         return await _esaleGrpcClient.GetUserByUBPId(_commonAppService.GetUserUBPId());
     }

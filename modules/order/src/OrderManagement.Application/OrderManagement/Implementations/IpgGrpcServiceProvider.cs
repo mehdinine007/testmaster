@@ -32,16 +32,25 @@ public class IpgGrpcServiceProvider : ApplicationService, IIpgServiceProvider
 
     public async Task<ApiResult<IpgApiResult>> HandShakeWithPsp(PspHandShakeRequest handShakeRequest)
     {
-        var handshakeResult = await _esaleGrpcClient.HandShake(ObjectMapper.Map<PspHandShakeRequest, PaymentHandShakeDto>(handShakeRequest));
-        if (handshakeResult != null && handshakeResult.StatusCode == 0)
-            return new ApiResult<IpgApiResult>
-            {
-                Result = ObjectMapper.Map<PaymentHandShakeViewModel, IpgApiResult>(handshakeResult),
-                Success = true
-            };
+        try
+        {
+            var handshakeResult = await _esaleGrpcClient.HandShake(ObjectMapper.Map<PspHandShakeRequest, PaymentHandShakeDto>(handShakeRequest));
+            if (handshakeResult != null && handshakeResult.StatusCode == 0)
+                return new ApiResult<IpgApiResult>
+                {
+                    Result = ObjectMapper.Map<PaymentHandShakeViewModel, IpgApiResult>(handshakeResult),
+                    Success = true
+                };
 
-        _auditingManager.Current.Log.Exceptions.Add(
-            new UserFriendlyException(handshakeResult?.Message ?? "Handshake proccess with psp has been failed"));
+            _auditingManager.Current.Log.Exceptions.Add(
+                new UserFriendlyException(handshakeResult?.Message ?? "Handshake proccess with psp has been failed"));
+        }
+        catch(Exception ex)
+        {
+            _auditingManager.Current.Log.Exceptions.Add(
+              new UserFriendlyException(ex.Message));
+        }
+      
         return null;
     }
 
