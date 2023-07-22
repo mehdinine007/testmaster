@@ -14,6 +14,7 @@ using Google.Protobuf.WellKnownTypes;
 using System.Collections.Generic;
 using System.Linq;
 using OrderManagement.Application.PaymentServiceGrpc;
+using System.Net.Http;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -32,7 +33,9 @@ public class EsaleGrpcClient : ApplicationService, IEsaleGrpcClient
     {
         AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2Support", true);
         AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
-        var channel = GrpcChannel.ForAddress(_configuration.GetValue<string>("Esale:GrpcAddress"));
+        var httpHandler = new HttpClientHandler();
+        httpHandler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+        var channel = GrpcChannel.ForAddress(_configuration.GetValue<string>("Esale:GrpcAddress"), new GrpcChannelOptions { HttpHandler = httpHandler });
         var client = new UserServiceGrpc.UserServiceGrpcClient(channel);
 
         var user = client.GetUserById(new GetUserModel() { UserId = userId });
@@ -60,7 +63,11 @@ public class EsaleGrpcClient : ApplicationService, IEsaleGrpcClient
     {
         AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2Support", true);
         AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
-        var channel = GrpcChannel.ForAddress(_configuration.GetValue<string>("Esale:GrpcAddress"));
+        var httpHandler = new HttpClientHandler();
+        httpHandler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+        var channel = GrpcChannel.ForAddress(_configuration.GetValue<string>("Esale:GrpcAddress"), new GrpcChannelOptions { HttpHandler = httpHandler });
+       
+
         var client = new UserServiceGrpc.UserServiceGrpcClient(channel);
 
         var user = client.GetUserByUBPId(new GetUserUBPModel() { UserId = userId });
@@ -86,7 +93,9 @@ public class EsaleGrpcClient : ApplicationService, IEsaleGrpcClient
     }
     public async Task<AdvocacyUserDto> GetUserAdvocacyByNationalCode(string nationlCode)
     {
-        var channel = GrpcChannel.ForAddress(_configuration.GetValue<string>("Esale:GrpcAddress"));
+        var httpHandler = new HttpClientHandler();
+        httpHandler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+        var channel = GrpcChannel.ForAddress(_configuration.GetValue<string>("Esale:GrpcAddress"), new GrpcChannelOptions { HttpHandler = httpHandler });
         var client = new UserServiceGrpc.UserServiceGrpcClient(channel);
 
         var userAdvocacy = await client.GetUserAdvocacyAsync(new UserAdvocacyRequest()
@@ -107,7 +116,9 @@ public class EsaleGrpcClient : ApplicationService, IEsaleGrpcClient
 
     private PaymentServiceGrpc.PaymentServiceGrpc.PaymentServiceGrpcClient PaymentServiceGrpcClient()
     {
-        var channel = GrpcChannel.ForAddress(_configuration.GetValue<string>("Payment:GrpcAddress"));
+        var httpHandler = new HttpClientHandler();
+        httpHandler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+        var channel = GrpcChannel.ForAddress(_configuration.GetValue<string>("Payment:GrpcAddress"), new GrpcChannelOptions { HttpHandler = httpHandler });
         return new PaymentServiceGrpc.PaymentServiceGrpc.PaymentServiceGrpcClient(channel);
     }
     public async Task<PaymentInformationResponseDto> GetPaymentInformation(int paymentId)
