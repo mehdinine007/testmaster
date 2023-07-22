@@ -138,7 +138,8 @@ namespace PaymentManagement.Application.Servicess
                 PaymentId = o.Id,
                 TransactionCode = o.TransactionCode,
                 TransactionDate = o.TransactionDate,
-                TransactionPersianDate = o.TransactionPersianDate
+                TransactionPersianDate = o.TransactionPersianDate,
+                PaymentStatusId = o.PaymentStatusId
             }).FirstOrDefault(o => o.PaymentId == paymentId);
         }
 
