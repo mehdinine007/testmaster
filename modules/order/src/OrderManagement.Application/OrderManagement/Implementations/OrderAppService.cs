@@ -1248,12 +1248,28 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
     public async Task RetryOrderForVerify()
     {
-        var deadLine = DateTime.Now.AddMinutes(_configuration.GetValue<int>("RetryOrderForVerifyMinute"));
+        var deadLine = _configuration.GetValue<int>("RetryOrderForVerifyMinute");
         var orders = _commitOrderRepository
             .WithDetails()
             .AsNoTracking()
-            .Where(x => x.OrderStatus == OrderStatusType.RecentlyAdded && x.CreationTime < deadLine)
+            .Where(x => x.OrderStatus == OrderStatusType.RecentlyAdded && x.PaymentId != null && (DateTime.Now - x.CreationTime).TotalMinutes > deadLine)
             .ToList();
+        if (orders == null || orders.Count == 0)
+            return;
+        foreach (var order in orders)
+        {
+            var payment = await _esaleGrpcClient.GetPaymentInformation(order.PaymentId ?? 0);
+            if (payment != null && payment.PaymentStatusId > 1)
+            {
+                await UpdateStatus(new CustomerOrderDto()
+                {
+                    Id = order.Id,
+                    OrderStatus = payment.PaymentStatusId == 2 ? (int)OrderStatusType.PaymentSucceeded : (int)OrderStatusType.PaymentNotVerified
+                });
+                if (payment.PaymentStatusId == 3)
+                    await _cacheManager.RemoveWithPrefixKeyAsync(RedisConstants.CommitOrderPrefix + order.UserId.ToString());
+            }
+        }
     }
 
     public async Task<CustomerOrder_OrderDetailDto> GetDetail(SaleDetail_Order_InquiryDto inquiryDto)

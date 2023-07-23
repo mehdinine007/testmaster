@@ -64,8 +64,7 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
         var saleDetail=await _saleDetailRepository.FirstOrDefaultAsync(x => x.Id == id);
         if (saleDetail != null) {
             await _saleDetailRepository.DeleteAsync(x => x.Id == id, autoSave: true);
-            var cacheKey = string.Format(RedisConstants.SaleDetailPrefix, saleDetail.UID.ToString());
-            await _cacheManager.RemoveAsync(cacheKey, RedisConstants.SaleDetailPrefix, new CacheOptions() { Provider = CacheProviderEnum.Hybrid });
+            await _cacheManager.RemoveAsync(saleDetail.UID.ToString(), RedisConstants.SaleDetailPrefix, new CacheOptions() { Provider = CacheProviderEnum.Hybrid });
         }
         
         return true;

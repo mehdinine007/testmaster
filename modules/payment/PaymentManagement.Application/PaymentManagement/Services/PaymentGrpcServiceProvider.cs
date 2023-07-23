@@ -29,6 +29,7 @@ namespace PaymentManagement.Application.PaymentManagement.Services
                 TransactionCode  = paymentInformation.TransactionCode,
                 TransactionDate = Timestamp.FromDateTimeOffset(paymentInformation.TransactionDate),
                 TransactionPersianDate =  paymentInformation.TransactionPersianDate,
+                PaymentStatusId = paymentInformation.PaymentStatusId
             });
         }
         public override Task<PaymentStatusViewModel> GetPaymentStatusList(PaymentGetStatusDto paymentStatusDto,ServerCallContext context)

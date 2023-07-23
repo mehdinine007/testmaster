@@ -41,7 +41,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
         {
             await _agencyRepository.DeleteAsync(x => x.Id == id, autoSave: true);
 
-            //await _hybridCache.RemoveByPrefixAsync(RedisConstants.AgencyCacheKey);
+            await _cacheManager.RemoveByPrefixAsync(RedisConstants.AgencyPrefix ,new CacheOptions() { Provider = CacheProviderEnum.Hybrid });
             return true;
         }
 
@@ -86,7 +86,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             result.Name = agencyDto.Name;
             result.ProvinceId = agencyDto.ProvinceId;
             await _agencyRepository.UpdateAsync(result, autoSave: true);
-            //await _hybridCache.RemoveByPrefixAsync(RedisConstants.AgencyCacheKey);
+            await _cacheManager.RemoveByPrefixAsync(RedisConstants.AgencyPrefix, new CacheOptions() { Provider = CacheProviderEnum.Hybrid });
             return result.Id;
         }
     }

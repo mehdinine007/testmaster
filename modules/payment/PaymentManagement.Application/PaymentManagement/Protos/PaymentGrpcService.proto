@@ -28,6 +28,7 @@ message PaymentInformationResponse{
     string TransactionCode = 2;
     google.protobuf.Timestamp TransactionDate  = 3;
     string TransactionPersianDate = 4;
+    int32 PaymentStatusId = 5;
 }
 
 message PaymentStatusViewModel {

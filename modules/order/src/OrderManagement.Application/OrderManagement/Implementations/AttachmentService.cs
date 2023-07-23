@@ -26,7 +26,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             return attachmentDto.Id;
         }
 
-        private async Task<System.Guid> Update( Attachment attachmentDto)
+        private async Task<Guid> Update( Attachment attachmentDto)
         {
             var attachment = await Validation(attachmentDto.Id,attachmentDto);
             attachment.Title = attachmentDto.Title;
