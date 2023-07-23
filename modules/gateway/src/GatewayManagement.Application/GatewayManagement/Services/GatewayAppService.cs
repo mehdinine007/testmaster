@@ -4,11 +4,13 @@ using GatewayManagement.Application.IranKish;
 using GatewayManagement.Application.Utilities;
 using Newtonsoft.Json;
 using Volo.Abp.Application.Services;
+using Volo.Abp.Auditing;
 
 namespace GatewayManagement.Application.Servicess
 {
     public class GatewayAppService : ApplicationService, IGatewayAppService
     {
+        [Audited]
         public async Task<OutputDto> HandShakeWithIranKish(IranKishHandShakeInputDto input)
         {
             WebHelper webHelper = new();
@@ -32,6 +34,7 @@ namespace GatewayManagement.Application.Servicess
             string jresponse = webHelper.Post(url, request);
             return new() { Result = jresponse };
         }
+        [Audited]
         public async Task<OutputDto> HandShakeWithMellat(MellatHandShakeInputDto input)
         {
             string LocalDate = DateTime.Now.Year + DateTime.Now.Month.ToString().PadLeft(2, '0') + DateTime.Now.Day.ToString().PadLeft(2, '0');
@@ -82,6 +85,7 @@ namespace GatewayManagement.Application.Servicess
 
             return new() { Result = string.Empty };
         }
+        [Audited]
         public async Task<OutputDto> VerifyToIranKish(IranKishVerifyInputDto input)
         {
             WebHelper webHelper = new();
@@ -90,6 +94,7 @@ namespace GatewayManagement.Application.Servicess
             string jresponse = webHelper.Post(url, requestVerifyJson);
             return new() { Result = jresponse };
         }
+        [Audited]
         public async Task<OutputDto> VerifyToMellat(MellatVerifyInputDto input)
         {
             if (input.Switch == 1)
@@ -116,6 +121,7 @@ namespace GatewayManagement.Application.Servicess
             }
             return new() { Result = string.Empty };
         }
+        [Audited]
         public async Task<OutputDto> InquiryToIranKish(IranKishInquiryInputDto input)
         {
             WebHelper webHelper = new();
@@ -124,6 +130,7 @@ namespace GatewayManagement.Application.Servicess
             string jresponse = webHelper.Post(url, requestVerifyJson);
             return new() { Result = jresponse };
         }
+        [Audited]
         public async Task<OutputDto> InquiryToMellat(MellatInquiryInputDto input)
         {
             var mellatInputDto = new WcfServiceLibrary.MellatInquiryInputDto
@@ -139,6 +146,7 @@ namespace GatewayManagement.Application.Servicess
             var inquiryResponse = await client.MellatGetTransactionStatusByTerminalIdAndOrderIdAsync(mellatInputDto);
             return new() { Result = inquiryResponse };
         }
+        [Audited]
         public async Task<OutputDto> ReverseToIranKish(IranKishReverseInputDto input)
         {
             WebHelper webHelper = new();
@@ -147,6 +155,7 @@ namespace GatewayManagement.Application.Servicess
             string jresponse = webHelper.Post(url, requestVerifyJson);
             return new() { Result = jresponse };
         }
+        [Audited]
         public async Task<OutputDto> ReverseToMellat(MellatReverseInputDto input)
         {
             if (input.Switch == 1)

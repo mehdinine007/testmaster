@@ -19,6 +19,7 @@ using ProtoBuf.Grpc.Server;
 using Volo.Abp.Uow;
 using Microsoft.EntityFrameworkCore;
 using GatewayManagement.Application.Servicess;
+using Volo.Abp.AuditLogging.EntityFrameworkCore;
 
 namespace GatewayService.Host
 {
@@ -27,7 +28,7 @@ namespace GatewayService.Host
         typeof(AbpAspNetCoreMvcModule),
         //typeof(AbpEventBusRabbitMqModule),
         typeof(AbpEntityFrameworkCoreSqlServerModule),
-        //typeof(AbpAuditLoggingEntityFrameworkCoreModule),
+        typeof(AbpAuditLoggingEntityFrameworkCoreModule),
         //typeof(AbpPermissionManagementEntityFrameworkCoreModule),
         //typeof(AbpSettingManagementEntityFrameworkCoreModule),
         typeof(GatewayManagementApplicationModule),

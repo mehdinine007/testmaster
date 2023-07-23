@@ -1,9 +1,8 @@
-﻿using System;
-using Volo.Abp;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
+﻿using Volo.Abp;
+using Esale.Core.IOC;
+using GatewayService.Host.Infrastructures.Extensions;
+using Volo.Abp.Auditing;
+using GatewayService.Host.Infrastructures.Middlewares;
 
 namespace GatewayService.Host
 {
@@ -12,6 +11,16 @@ namespace GatewayService.Host
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddApplication<GatewayServiceHostModule>();
+            var configurations = services.GetConfiguration();
+            if (configurations["IsElkEnabled"] == "1")
+            {
+                services.ElkNest(configurations, configurations["ElkIndexName"]);
+            }
+            else
+            {
+                services.AddScoped<IAuditingStore, AuditingStoreDb>();
+            }
+            ServiceTool.Create(services);
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)

@@ -2,17 +2,18 @@
 using GatewayManagement.Application.Contracts.IServices;
 using GatewayManagement.Application.GatewayServiceGrpc;
 using Grpc.Core;
+using Volo.Abp.Auditing;
 
 namespace GatewayManagement.Application.Servicess
 {
     public class GatewayGrpcServiceProvider : GatewayServiceGrpc.GatewayServiceGrpc.GatewayServiceGrpcBase
     {
         private readonly IGatewayAppService _gatewayAppService;
-
         public GatewayGrpcServiceProvider(IGatewayAppService gatewayAppService)
         {
             _gatewayAppService = gatewayAppService;
         }
+        [Audited]
         public override async Task<Output> HandShakeWithIranKish(IranKishHandShakeInput input, ServerCallContext context)
         {
             var output = await _gatewayAppService.HandShakeWithIranKish(new IranKishHandShakeInputDto
@@ -29,6 +30,7 @@ namespace GatewayManagement.Application.Servicess
             });
             return new Output() { Result = output.Result };
         }
+        [Audited]
         public override async Task<Output> HandShakeWithMellat(MellatHandShakeInput input, ServerCallContext context)
         {
             var output = await _gatewayAppService.HandShakeWithMellat(new MellatHandShakeInputDto
@@ -45,6 +47,7 @@ namespace GatewayManagement.Application.Servicess
             });
             return new Output() { Result = output.Result };
         }
+        [Audited]
         public override async Task<Output> VerifyToIranKish(IranKishVerifyInput input, ServerCallContext context)
         {
             var output = await _gatewayAppService.VerifyToIranKish(new IranKishVerifyInputDto
@@ -56,6 +59,7 @@ namespace GatewayManagement.Application.Servicess
             });
             return new Output() { Result = output.Result };
         }
+        [Audited]
         public override async Task<Output> VerifyToMellat(MellatVerifyInput input, ServerCallContext context)
         {
             var output = await _gatewayAppService.VerifyToMellat(new MellatVerifyInputDto
@@ -70,6 +74,7 @@ namespace GatewayManagement.Application.Servicess
             });
             return new Output() { Result = output.Result };
         }
+        [Audited]
         public override async Task<Output> InquiryToIranKish(IranKishInquiryInput input, ServerCallContext context)
         {
             var output = await _gatewayAppService.InquiryToIranKish(new IranKishInquiryInputDto
@@ -81,6 +86,7 @@ namespace GatewayManagement.Application.Servicess
             });
             return new Output() { Result = output.Result };
         }
+        [Audited]
         public override async Task<Output> ReverseToIranKish(IranKishReverseInput input, ServerCallContext context)
         {
             var output = await _gatewayAppService.ReverseToIranKish(new IranKishReverseInputDto
@@ -92,6 +98,7 @@ namespace GatewayManagement.Application.Servicess
             });
             return new Output() { Result = output.Result };
         }
+        [Audited]
         public override async Task<Output> ReverseToMellat(MellatReverseInput input, ServerCallContext context)
         {
             var output = await _gatewayAppService.ReverseToMellat(new MellatReverseInputDto
