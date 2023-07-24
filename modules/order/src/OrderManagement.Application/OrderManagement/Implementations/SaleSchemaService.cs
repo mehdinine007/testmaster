@@ -1,9 +1,11 @@
 ﻿using Esale.Core.DataAccess;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.OrderManagement;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
 using OrderManagement.Domain;
+using OrderManagement.Domain.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,10 +22,11 @@ namespace OrderManagement.Application.OrderManagement.Implementations
     public class SaleSchemaService : ApplicationService, ISaleSchemaService
     {
         private readonly IRepository<SaleSchema> _saleSchemaRepository;
-        public SaleSchemaService(IRepository<SaleSchema> saleSchemaRepository)
+        private readonly IAttachmentService _attachmentService;
+        public SaleSchemaService(IRepository<SaleSchema> saleSchemaRepository, IAttachmentService attachmentService)
         {
             _saleSchemaRepository = saleSchemaRepository;
-          
+            _attachmentService = attachmentService;
         }
 
         public async Task<bool> Delete(int id)
@@ -64,5 +67,19 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             await _saleSchemaRepository.AttachAsync(saleSchema, t => t.Title, d => d.Description,s=>s.SaleStatus);
             return saleSchema.Id;
         }
+
+        public async Task<bool> UploadFile(UploadFileDto uploadFile)
+        {
+            await _attachmentService.UploadFile(new AttachFileDto()
+            {
+                Entity = Domain.Shared.AttachmentEntityEnum.SaleSchema,
+                EntityId = uploadFile.Id,
+                EntityType = uploadFile.AttachmentEntityTypeEnum,
+                File = uploadFile.File,
+            });
+
+            return true;
+        }
+
     }
 }

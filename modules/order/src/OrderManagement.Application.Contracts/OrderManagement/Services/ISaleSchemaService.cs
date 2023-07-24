@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,5 +15,6 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Services
         Task<int> Save(SaleSchemaDto saleSchemaDto);
         Task<int> Update(SaleSchemaDto saleSchemaDto);
         Task<bool> Delete(int id);
+        Task<bool> UploadFile(UploadFileDto uploadFile); 
     }
 }

@@ -10,13 +10,14 @@ using OrderManagement.Application.Contracts.OrderManagement.Services;
 using OrderManagement.Application.Contracts.OrderManagement;
 using Volo.Abp.Application.Dtos;
 using Esale.Share.Authorize;
+using Microsoft.AspNetCore.Http;
 
 namespace OrderManagement.HttpApi.OrderManagement.Controllers
 {
     [DisableAuditing]
     [RemoteService]
     [Route("api/services/app/SaleSchemaService/[action]")]
-    [UserAuthorization]
+    //[UserAuthorization]
     public class SaleSchemaController : Controller, ISaleSchemaService
     {
         private readonly ISaleSchemaService _saleSchemaService;
@@ -36,8 +37,11 @@ namespace OrderManagement.HttpApi.OrderManagement.Controllers
         [HttpPost]
         public Task<int> Save(SaleSchemaDto saleSchemaDto)
         => _saleSchemaService.Save(saleSchemaDto);
-        [HttpPut    ]
+        [HttpPut]
         public Task<int> Update(SaleSchemaDto saleSchemaDto)
         => _saleSchemaService.Update(saleSchemaDto);
+        [HttpPost]
+        public Task<bool> UploadFile(UploadFileDto uploadFile)
+       => _saleSchemaService.UploadFile(uploadFile);
     }
 }
