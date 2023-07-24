@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Esale.Core.Utility.Tools;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.OrderManagement;
 using OrderManagement.Application.Helpers;
@@ -6,6 +7,7 @@ using OrderManagement.Application.OrderManagement.Implementations;
 using OrderManagement.Domain;
 using OrderManagement.Domain.OrderManagement;
 using Volo.Abp.AutoMapper;
+using Volo.Abp.ObjectMapping;
 
 namespace OrderManagement
 {
@@ -74,6 +76,13 @@ namespace OrderManagement
             CreateMap<PspHandShakeRequest, PaymentHandShakeDto>();
             CreateMap<PaymentHandShakeViewModel, IpgApiResult>();
             CreateMap<PaymentResultViewModel, PspInteractionResult>();
+            CreateMap<ProductAndCategory, ProductAndCategoryDto>()
+                .ForMember(x => x.ProductAndCategoryTypeCode, opt => opt.MapFrom(x => (int)x.ProductAndCategoryType))
+                .ForMember(x => x.ProductAndCategoryTypeTitle, opt => opt.MapFrom(x => x.ProductAndCategoryType.GetDisplayName()))
+                .ReverseMap()
+                .IgnoreFullAuditedObjectProperties()
+                .ForMember(x => x.ProductAndCategoryType, opt => opt.MapFrom(x => (ProductAndCategoryType)x.ProductAndCategoryTypeCode));
+
         }
     }
 }

@@ -796,12 +796,12 @@ public class OrderAppService : ApplicationService, IOrderAppService
         var cancleableDate = _configuration.GetValue<string>("CancelableDate");
         customerOrders.ForEach(x =>
         {
-            var orderStatusType = orderStatusTypes.FirstOrDefault(y => y.OrderStatusCode == x.OrderStatusCode);
-            x.OrderstatusTitle = orderStatusType.OrderStatusTitle;
+            var orderStatusType = orderStatusTypes.FirstOrDefault(y => y.Code == x.OrderStatusCode);
+            x.OrderstatusTitle = orderStatusType.Title;
             if (x.OrderRejectionCode.HasValue)
             {
-                var orderRejection = orderRejections.FirstOrDefault(y => y.OrderRejectionCode == x.OrderRejectionCode);
-                x.OrderRejectionTitle = orderRejection.OrderRejectionTitle;
+                var orderRejection = orderRejections.FirstOrDefault(y => y.Code == x.OrderRejectionCode);
+                x.OrderRejectionTitle = orderRejection.Title;
                 if ((OrderRejectionType)x.OrderRejectionCode == OrderRejectionType.PhoneNumberAndNationalCodeConflict)
                     x.DeliveryDate = null;
             }

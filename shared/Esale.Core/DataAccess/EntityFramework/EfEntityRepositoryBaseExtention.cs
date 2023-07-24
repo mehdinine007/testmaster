@@ -1,10 +1,10 @@
-﻿
+﻿using Esale.Core.Bases;
+using Esale.Core.Utility.Tools;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.Linq.Expressions;
 using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
-using Volo.Abp.Domain.Repositories.EntityFrameworkCore;
-using Volo.Abp.EntityFrameworkCore;
 
 namespace Esale.Core.DataAccess
 {
@@ -52,6 +52,31 @@ namespace Esale.Core.DataAccess
             dbContext.Entry(entity).State = EntityState.Detached;
 
 
+        }
+
+        public static void AddEnumChangeTracker<TEntity, TEnum>(this EntityTypeBuilder<TEntity> entityTypeBuilder)
+            where TEntity : BaseReadOnlyTable, new()
+            where TEnum : struct, Enum
+        {
+            // Add control to ensure enum inherited from int32
+            var enumDatas = Enum.GetValues<TEnum>()
+                .Cast<TEnum>()
+                .Select(x => new Tuple<int, string, string>(Convert.ToInt32(x), x.ToString(), x.GetDisplayName()))
+                .OrderBy(x => x.Item1)
+                .ToList();
+            var recordsToInsert = new List<TEntity>(enumDatas.Capacity);
+            for (var i = 0; i < enumDatas.Count; i++)
+            {
+                var record = enumDatas[i];
+                recordsToInsert.Add(new TEntity
+                {
+                    Code = record.Item1,
+                    Id = i + 1,
+                    Title = record.Item3,
+                    Title_En = record.Item2,
+                });
+            }
+            entityTypeBuilder.HasData(recordsToInsert);
         }
     }
 }

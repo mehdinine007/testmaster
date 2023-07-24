@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OrderManagement.EfCore;
 using Volo.Abp.EntityFrameworkCore;
@@ -12,9 +13,11 @@ using Volo.Abp.EntityFrameworkCore;
 namespace OrderManagement.EfCore.Migrations
 {
     [DbContext(typeof(OrderManagementDbContext))]
-    partial class OrderManagementDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230724114921_Add_ProductAndCategoryType_ReadOnly_tb")]
+    partial class AddProductAndCategoryTypeReadOnlytb
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -331,106 +334,106 @@ namespace OrderManagement.EfCore.Migrations
                         {
                             Id = 1,
                             Code = 1,
-                            Title = "عدم تطابق کدملی و شماره موبایل",
-                            TitleEn = "PhoneNumberAndNationalCodeConflict"
+                            Title = "PhoneNumberAndNationalCodeConflict",
+                            TitleEn = "عدم تطابق کدملی و شماره موبایل"
                         },
                         new
                         {
                             Id = 2,
                             Code = 2,
-                            Title = "نداشتن گواهی نامه معتبر",
-                            TitleEn = "DoesntHadQualifiedDrivingLicense"
+                            Title = "DoesntHadQualifiedDrivingLicense",
+                            TitleEn = "نداشتن گواهی نامه معتبر"
                         },
                         new
                         {
                             Id = 3,
                             Code = 3,
-                            Title = "دارای پلاک فعال",
-                            TitleEn = "ActivePlaqueDetected"
+                            Title = "ActivePlaqueDetected",
+                            TitleEn = "دارای پلاک فعال"
                         },
                         new
                         {
                             Id = 4,
                             Code = 4,
-                            Title = "ثبت سفارش در سامانه خودروهای وارداتی",
-                            TitleEn = "OrderRegisteredInInternalVehicleSite"
+                            Title = "OrderRegisteredInInternalVehicleSite",
+                            TitleEn = "ثبت سفارش در سامانه خودروهای وارداتی"
                         },
                         new
                         {
                             Id = 5,
                             Code = 5,
-                            Title = "لیست خرید خودروساز (سایپا)",
-                            TitleEn = "SaipaVehicleManufactureList"
+                            Title = "SaipaVehicleManufactureList",
+                            TitleEn = "لیست خرید خودروساز (سایپا)"
                         },
                         new
                         {
                             Id = 6,
                             Code = 6,
-                            Title = "لیست خرید خودروساز (ایران خودرو)",
-                            TitleEn = "IkcoVehicleManufactureList"
+                            Title = "IkcoVehicleManufactureList",
+                            TitleEn = "لیست خرید خودروساز (ایران خودرو)"
                         },
                         new
                         {
                             Id = 7,
                             Code = 7,
-                            Title = "لیست خرید خودروساز (کرمان موتور)",
-                            TitleEn = "KermanMotorVehicleManufactureList"
+                            Title = "KermanMotorVehicleManufactureList",
+                            TitleEn = "لیست خرید خودروساز (کرمان موتور)"
                         },
                         new
                         {
                             Id = 8,
                             Code = 8,
-                            Title = "لیست خرید خودروساز (صنایع خودرو سازی ایلیا)",
-                            TitleEn = "IliaAutoVehicleManufactureList"
+                            Title = "IliaAutoVehicleManufactureList",
+                            TitleEn = "لیست خرید خودروساز (صنایع خودرو سازی ایلیا)"
                         },
                         new
                         {
                             Id = 9,
                             Code = 9,
-                            Title = "لیست خرید خودروساز (فردا موتورز)",
-                            TitleEn = "FardaMotorsVehicleManufactureList"
+                            Title = "FardaMotorsVehicleManufactureList",
+                            TitleEn = "لیست خرید خودروساز (فردا موتورز)"
                         },
                         new
                         {
                             Id = 10,
                             Code = 10,
-                            Title = "لیست خرید خودروساز (آرین پارس)",
-                            TitleEn = "ArianParsVehicleManufactureList"
+                            Title = "ArianParsVehicleManufactureList",
+                            TitleEn = "لیست خرید خودروساز (آرین پارس)"
                         },
                         new
                         {
                             Id = 11,
                             Code = 11,
-                            Title = "لیست خرید خودروساز (مکث موتور)",
-                            TitleEn = "MaxMotorVehicleManufactureList"
+                            Title = "MaxMotorVehicleManufactureList",
+                            TitleEn = "لیست خرید خودروساز (مکث موتور)"
                         },
                         new
                         {
                             Id = 12,
                             Code = 12,
-                            Title = "لیست خرید خودروساز (بهمن موتور)",
-                            TitleEn = "BahmanMotorVehicleManufactureList"
+                            Title = "BahmanMotorVehicleManufactureList",
+                            TitleEn = "لیست خرید خودروساز (بهمن موتور)"
                         },
                         new
                         {
                             Id = 13,
                             Code = 13,
-                            Title = "لیست خرید خودروساز (مدیران خودرو)",
-                            TitleEn = "MvmVehicleManufactureList"
+                            Title = "MvmVehicleManufactureList",
+                            TitleEn = "لیست خرید خودروساز (مدیران خودرو)"
                         },
                         new
                         {
                             Id = 14,
                             Code = 14,
-                            Title = "عدم احراز در طرح جوانی توسط ثبت احول",
-                            TitleEn = "YoungPlan"
+                            Title = "YoungPlan",
+                            TitleEn = "عدم احراز در طرح جوانی توسط ثبت احول"
                         },
                         new
                         {
                             Id = 15,
                             Code = 15,
-                            Title = "عدم احراض خودرو فرسوده",
-                            TitleEn = "OldPlan"
+                            Title = "OldPlan",
+                            TitleEn = "عدم احراض خودرو فرسوده"
                         });
                 });
 
@@ -462,50 +465,50 @@ namespace OrderManagement.EfCore.Migrations
                         {
                             Id = 1,
                             Code = 10,
-                            Title = "ثبت سفارش اولیه با موفقیت انجام شد",
-                            TitleEn = "RecentlyAdded"
+                            Title = "RecentlyAdded",
+                            TitleEn = "ثبت سفارش اولیه با موفقیت انجام شد"
                         },
                         new
                         {
                             Id = 2,
                             Code = 20,
-                            Title = "انصراف داده شده",
-                            TitleEn = "Canceled"
+                            Title = "Canceled",
+                            TitleEn = "انصراف داده شده"
                         },
                         new
                         {
                             Id = 3,
                             Code = 30,
-                            Title = "انتخاب نشده اید",
-                            TitleEn = "loser"
+                            Title = "loser",
+                            TitleEn = "انتخاب نشده اید"
                         },
                         new
                         {
                             Id = 4,
                             Code = 40,
-                            Title = "برنده شده اید",
-                            TitleEn = "Winner"
+                            Title = "Winner",
+                            TitleEn = "برنده شده اید"
                         },
                         new
                         {
                             Id = 5,
                             Code = 50,
-                            Title = "انصراف کلی از اولیت بندی",
-                            TitleEn = "FullCancel"
+                            Title = "FullCancel",
+                            TitleEn = "انصراف کلی از اولیت بندی"
                         },
                         new
                         {
                             Id = 6,
                             Code = 70,
-                            Title = "پرداخت با موفقیت انجام شد",
-                            TitleEn = "PaymentSucceeded"
+                            Title = "PaymentSucceeded",
+                            TitleEn = "پرداخت با موفقیت انجام شد"
                         },
                         new
                         {
                             Id = 7,
                             Code = 80,
-                            Title = "پرداخت ناموفق",
-                            TitleEn = "PaymentNotVerified"
+                            Title = "PaymentNotVerified",
+                            TitleEn = "پرداخت ناموفق"
                         });
                 });
 
@@ -1426,15 +1429,15 @@ namespace OrderManagement.EfCore.Migrations
                         {
                             Id = 1,
                             Code = 1,
-                            Title = "محصول",
-                            TitleEn = "Product"
+                            Title = "Product",
+                            TitleEn = "محصول"
                         },
                         new
                         {
                             Id = 2,
                             Code = 2,
-                            Title = "دسته بندی",
-                            TitleEn = "Category"
+                            Title = "Category",
+                            TitleEn = "دسته بندی"
                         });
                 });
 

@@ -74,5 +74,7 @@ namespace OrderManagement.EfCore
         DbSet<AgencySaleDetail> AgencySaleDetailMap { get; set; }
 
         DbSet<ProductAndCategory> ProductAndCategory { get; set; }
+
+        DbSet<ProductAndCategoryType_ReadOnly> ProductAndCategoryType_ReadOnly { get; set; }
     }
 }

@@ -5,9 +5,10 @@ using OrderManagement.Domain;
 using OrderManagement.Domain.Bases;
 using System.Collections.Generic;
 using System.Linq;
-using OrderManagement.EfCore.Helpers;
 using Volo.Abp.EntityFrameworkCore.Modeling;
 using OrderManagement.Domain.OrderManagement;
+using Esale.Core.Utility.Tools;
+using Esale.Core.DataAccess;
 
 namespace OrderManagement.EfCore;
 
@@ -241,46 +242,14 @@ public static class OrderManagementDbContextModelCreatingExtensions
         {
             entity.ToTable(nameof(OrderRejectionTypeReadOnly));
 
-            var records = Enum.GetValues(typeof(OrderRejectionType))
-                .Cast<OrderRejectionType>()
-                .OrderBy(x => (int)x)
-                .Select(x => new Tuple<int, string, string>((int)x, x.ToString(), x.GetDisplayName()))
-                .ToList();
-            var dataToWrite = new List<OrderRejectionTypeReadOnly>(records.Count);
-            for (var i = 0; i < records.Count; i++)
-            {
-                var current = records[i];
-                dataToWrite.Add(new OrderRejectionTypeReadOnly(
-                    id : i + 1,
-                    orderRejectionCode : current.Item1,
-                    orderRejectionTitleEn : current.Item2,
-                    orderRejectionTitle : current.Item3
-                ));
-            }
-            entity.HasData(dataToWrite);
+            entity.AddEnumChangeTracker<OrderRejectionTypeReadOnly, OrderRejectionType>();
         });
 
         builder.Entity<OrderStatusTypeReadOnly>(entity =>
         {
             entity.ToTable(nameof(OrderStatusTypeReadOnly));
 
-            var statuses = Enum.GetValues(typeof(OrderStatusType))
-                .Cast<OrderStatusType>()
-                .OrderBy(x => (int)x)
-                .Select(x => new Tuple<int, string, string>((int)x, x.ToString(), x.GetDisplayName()))
-                .ToList();
-            var dataToWrite = new List<OrderStatusTypeReadOnly>(statuses.Count);
-            for (var i = 0; i < statuses.Count; i++)
-            {
-                var status = statuses[i];
-                dataToWrite.Add(new OrderStatusTypeReadOnly(
-                    id : i + 1,
-                    orderStatusCode :status.Item1,
-                    orderStatusTitleEn : status.Item2,
-                    orderStatusTitle : status.Item3
-                ));
-            }
-            entity.HasData(dataToWrite);
+            entity.AddEnumChangeTracker<OrderStatusTypeReadOnly, OrderStatusType>();
         });
 
         builder.Entity<UserRejectionAdvocacy>(entity =>
@@ -343,6 +312,12 @@ public static class OrderManagementDbContextModelCreatingExtensions
 
             entity.Property(x => x.Title)
                 .HasMaxLength(250);
+        });
+
+        builder.Entity<ProductAndCategoryType_ReadOnly>(entity =>
+        {
+            entity.ToTable(nameof(ProductAndCategoryType_ReadOnly));
+            entity.AddEnumChangeTracker<ProductAndCategoryType_ReadOnly, ProductAndCategoryType>();
         });
     }
 }

@@ -85,6 +85,8 @@ namespace OrderManagement.EfCore
 
         public DbSet<ProductAndCategory> ProductAndCategory { get; set; }
 
+        public DbSet<ProductAndCategoryType_ReadOnly> ProductAndCategoryType_ReadOnly { get ; set ; }
+
         public OrderManagementDbContext(DbContextOptions<OrderManagementDbContext> options)
             : base(options)
         {
