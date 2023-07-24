@@ -329,5 +329,20 @@ public static class OrderManagementDbContextModelCreatingExtensions
                 .HasForeignKey(x => x.SaleDetailId);
         });
 
+        builder.Entity<ProductAndCategory>(entity =>
+        {
+            entity.ToTable(nameof(ProductAndCategory));
+
+            entity.HasOne<ProductAndCategory>(x => x.Parent)
+                .WithMany(x => x.Childrens)
+                .HasForeignKey(x => x.ParentId)
+                .OnDelete(DeleteBehavior.ClientCascade);
+
+            entity.Property(x => x.Code)
+                .HasMaxLength(250);
+
+            entity.Property(x => x.Title)
+                .HasMaxLength(250);
+        });
     }
 }
