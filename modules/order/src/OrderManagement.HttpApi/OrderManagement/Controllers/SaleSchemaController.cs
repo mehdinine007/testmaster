@@ -17,7 +17,7 @@ namespace OrderManagement.HttpApi.OrderManagement.Controllers
     [DisableAuditing]
     [RemoteService]
     [Route("api/services/app/SaleSchemaService/[action]")]
-    //[UserAuthorization]
+    [UserAuthorization]
     public class SaleSchemaController : Controller, ISaleSchemaService
     {
         private readonly ISaleSchemaService _saleSchemaService;
@@ -41,7 +41,7 @@ namespace OrderManagement.HttpApi.OrderManagement.Controllers
         public Task<int> Update(SaleSchemaDto saleSchemaDto)
         => _saleSchemaService.Update(saleSchemaDto);
         [HttpPost]
-        public Task<bool> UploadFile(UploadFileDto uploadFile)
+        public Task<bool> UploadFile([FromForm]UploadFileDto uploadFile)
        => _saleSchemaService.UploadFile(uploadFile);
     }
 }
