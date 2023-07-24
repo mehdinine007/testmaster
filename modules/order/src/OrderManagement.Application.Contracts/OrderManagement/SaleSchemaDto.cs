@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -7,6 +8,7 @@ namespace OrderManagement.Application.Contracts.OrderManagement
     public class SaleSchemaDto
     {
 
+        [JsonIgnore]
         public int Id { get; set; }
 
         public string Title { get; set; }
@@ -15,7 +17,7 @@ namespace OrderManagement.Application.Contracts.OrderManagement
 
         public int SaleStatus { get; set; }
 
-        public virtual ICollection<AttachmentDto> Attachments { get; set; }
+        public List<AttachmentViewModel> Attachments { get; set; }
 
 
     }

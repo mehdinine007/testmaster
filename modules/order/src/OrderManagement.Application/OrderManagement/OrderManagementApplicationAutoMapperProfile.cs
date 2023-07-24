@@ -5,6 +5,7 @@ using OrderManagement.Application.Helpers;
 using OrderManagement.Application.OrderManagement.Implementations;
 using OrderManagement.Domain;
 using OrderManagement.Domain.OrderManagement;
+using System.Security.Cryptography.X509Certificates;
 using Volo.Abp.AutoMapper;
 
 namespace OrderManagement
@@ -55,6 +56,9 @@ namespace OrderManagement
 
             CreateMap<Attachment, AttachmentDto>()
                 .ReverseMap();
+            CreateMap<Attachment, AttachmentViewModel>()
+                .ReverseMap()
+                .ForAllMembers(x => x.Ignore());
 
             CreateMap<SaleDetail, SaleDetailDto>()
                 .ReverseMap()
@@ -70,6 +74,7 @@ namespace OrderManagement
             CreateMap<Color, ColorDto>()
                 .ReverseMap();
             CreateMap<SaleSchema, SaleSchemaDto>()
+                .ForMember(x=> x.Attachments,c=> c.MapFrom(m=> m.Attachments))
                .ReverseMap();
             CreateMap<PspHandShakeRequest, PaymentHandShakeDto>();
             CreateMap<PaymentHandShakeViewModel, IpgApiResult>();

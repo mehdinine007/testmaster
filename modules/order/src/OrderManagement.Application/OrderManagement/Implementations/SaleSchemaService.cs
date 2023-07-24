@@ -48,21 +48,11 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             var queryResult = _saleSchemaRepository
                 .WithDetails(x => x.Attachments.Where(w => w.Entity == AttachmentEntityEnum.SaleSchema)).OrderByDescending(x => x.Id)
                 .Skip(pageNo * sizeNo).Take(sizeNo).AsNoTracking()
+              
                 .ToList();
 
-            var attachments = queryResult.Select(x => x.Attachments).ToList();
-            List<SaleSchemaDto> saleSchemaDtos = new List<SaleSchemaDto>();
-            
-            foreach (var item in queryResult)
-            {
-                foreach (var attachment in item.Attachments)
-                { 
-
-
-                }
-                    SaleSchemaDto SaleSchemaDto = new SaleSchemaDto();
-            };
-
+          
+          
 
 
                 return new PagedResultDto<SaleSchemaDto>
