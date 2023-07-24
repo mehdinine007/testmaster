@@ -10,7 +10,7 @@ namespace OrderManagement.Application.Contracts
 {
     public interface IAttachmentService : IApplicationService
     {
-        Task<bool> UploadFile(UploadFileDto attachDto);
+        Task<bool> UploadFile(AttachFileDto attachDto);
 
     }
 }

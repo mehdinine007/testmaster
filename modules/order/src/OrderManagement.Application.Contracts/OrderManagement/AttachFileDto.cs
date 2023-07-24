@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace OrderManagement.Application.Contracts
 {
-    public class UploadFileDto : AttachmentDto
+    public class AttachFileDto : AttachmentDto
     {
         public IFormFile File { get; set; }
     }

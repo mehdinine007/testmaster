@@ -40,7 +40,7 @@ public class CapacityControlController :Controller
           => await _capacityControlAppService.GrpcPaymentTest();
 
     [HttpPost]
-    public async Task UploadFile([FromForm]UploadFileDto uploadFileDto)
+    public async Task UploadFile([FromForm]AttachFileDto uploadFileDto)
           => await _attachmentService.UploadFile(uploadFileDto);
 
     [HttpPost]

@@ -52,7 +52,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             return attachment;
         }
 
-        public async Task<bool> UploadFile(UploadFileDto attachDto)
+        public async Task<bool> UploadFile(AttachFileDto attachDto)
         {
             bool hasAdd = attachDto.Id is null;
             if (hasAdd)
@@ -65,7 +65,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             return true;
         }
 
-        private Attachment CopyFile(UploadFileDto attachDto)
+        private Attachment CopyFile(AttachFileDto attachDto)
         {
             if (attachDto.File is null)
                 throw new UserFriendlyException(OrderConstant.FileUploadNotFound, OrderConstant.FileUploadNotFoundId);
