@@ -32,7 +32,7 @@ namespace OrderManagement.HttpApi.OrderManagement.Controllers
         public Task<List<SaleSchemaDto>> GetAllSaleSchema()
         => _saleSchemaService.GetAllSaleSchema();
         [HttpGet]
-        public Task<PagedResultDto<SaleSchemaDto>> GetSaleSchema(int pageNo, int sizeNo)
+        public PagedResultDto<SaleSchemaDto> GetSaleSchema(int pageNo, int sizeNo)
         => _saleSchemaService.GetSaleSchema(pageNo, sizeNo);
         [HttpPost]
         public Task<int> Save(SaleSchemaDto saleSchemaDto)
