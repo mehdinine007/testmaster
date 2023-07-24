@@ -13,7 +13,7 @@ namespace OrderManagement.Domain.OrderManagement
 
         public int? ParentId { get; set; }
 
-        public ProducAndCategoryType ProductAndCategoryType { get; set; }
+        public ProductAndCategoryType ProductAndCategoryType { get; set; }
 
         public int LevelId { get; set; }
 

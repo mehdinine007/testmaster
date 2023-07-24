@@ -1,21 +1,8 @@
-﻿using Volo.Abp.Domain.Entities;
+﻿using Esale.Core.Bases;
 
 namespace OrderManagement.Domain.Bases;
 
-public class OrderRejectionTypeReadOnly : Entity<int>
+public class OrderRejectionTypeReadOnly : BaseReadOnlyTable
 {
 
-    public OrderRejectionTypeReadOnly(int orderRejectionCode, string orderRejectionTitleEn, string orderRejectionTitle, int id)
-    {
-        Id = id;
-        OrderRejectionCode = orderRejectionCode;
-        OrderRejectionTitleEn = orderRejectionTitleEn;
-        OrderRejectionTitle = orderRejectionTitle;
-    }
-
-    public int OrderRejectionCode { get; set; }
-
-    public string OrderRejectionTitleEn { get; set; }
-
-    public string OrderRejectionTitle { get; set; }
 }
