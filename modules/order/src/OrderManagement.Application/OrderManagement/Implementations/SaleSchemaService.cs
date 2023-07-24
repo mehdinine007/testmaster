@@ -45,26 +45,45 @@ namespace OrderManagement.Application.OrderManagement.Implementations
         public async Task<PagedResultDto<SaleSchemaDto>> GetSaleSchema(int pageNo, int sizeNo)
         {
             var count = await _saleSchemaRepository.CountAsync();
-            var saleDetails = await _saleSchemaRepository.WithDetailsAsync();
-            var queryResult = await saleDetails.Skip(pageNo * sizeNo).Take(sizeNo).ToListAsync();
-            return new PagedResultDto<SaleSchemaDto>
+            var queryResult = _saleSchemaRepository
+                .WithDetails(x => x.Attachments.Where(w => w.Entity == AttachmentEntityEnum.SaleSchema)).OrderByDescending(x => x.Id)
+                .Skip(pageNo * sizeNo).Take(sizeNo).AsNoTracking()
+                .ToList();
+
+            var attachments = queryResult.Select(x => x.Attachments).ToList();
+            List<SaleSchemaDto> saleSchemaDtos = new List<SaleSchemaDto>();
+            
+            foreach (var item in queryResult)
             {
-                TotalCount = count,
-                Items = ObjectMapper.Map<List<SaleSchema>, List<SaleSchemaDto>>(queryResult)
+                foreach (var attachment in item.Attachments)
+                { 
+
+
+                }
+                    SaleSchemaDto SaleSchemaDto = new SaleSchemaDto();
             };
+
+
+
+                return new PagedResultDto<SaleSchemaDto>
+                {
+                    TotalCount = count,
+                    Items = ObjectMapper.Map<List<SaleSchema>, List<SaleSchemaDto>>(queryResult)
+                };
+
         }
         [UnitOfWork]
         public async Task<int> Save(SaleSchemaDto saleSchemaDto)
         {
-            var saleSchema= ObjectMapper.Map<SaleSchemaDto, SaleSchema>(saleSchemaDto);
+            var saleSchema = ObjectMapper.Map<SaleSchemaDto, SaleSchema>(saleSchemaDto);
             await _saleSchemaRepository.InsertAsync(saleSchema, autoSave: true);
             return saleSchema.Id;
         }
 
-        public async  Task<int> Update(SaleSchemaDto saleSchemaDto)
+        public async Task<int> Update(SaleSchemaDto saleSchemaDto)
         {
             var saleSchema = ObjectMapper.Map<SaleSchemaDto, SaleSchema>(saleSchemaDto);
-            await _saleSchemaRepository.AttachAsync(saleSchema, t => t.Title, d => d.Description,s=>s.SaleStatus);
+            await _saleSchemaRepository.AttachAsync(saleSchema, t => t.Title, d => d.Description, s => s.SaleStatus);
             return saleSchema.Id;
         }
 

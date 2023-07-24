@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using OrderManagement.Domain.OrderManagement;
+using System.Collections.Generic;
 using Volo.Abp.Domain.Entities.Auditing;
 
 namespace OrderManagement.Domain
@@ -14,6 +15,9 @@ namespace OrderManagement.Domain
         public string Description { get; set; }
 
         public int SaleStatus { get; set; }
+
+        public virtual ICollection<Attachment> Attachments { get; set; }
+
 
         public virtual ICollection<SaleDetail> SaleDetails
         { 

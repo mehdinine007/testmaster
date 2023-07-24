@@ -15,5 +15,8 @@ namespace OrderManagement.Application.Contracts.OrderManagement
 
         public int SaleStatus { get; set; }
 
+        public virtual ICollection<AttachmentDto> Attachments { get; set; }
+
+
     }
 }

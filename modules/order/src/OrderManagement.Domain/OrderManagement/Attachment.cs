@@ -10,6 +10,7 @@ using Volo.Abp.Domain.Entities.Auditing;
 
 namespace OrderManagement.Domain.OrderManagement
 {
+    [Table("Attachments",Schema ="dbo")]
     public class Attachment  : FullAuditedEntity<Guid>
     {
         [Column(TypeName = "nvarchar(100)")]
@@ -19,5 +20,6 @@ namespace OrderManagement.Domain.OrderManagement
         public AttachmentEntityEnum Entity { get; set; }
         public int EntityId { get; set; }
         public AttachmentEntityTypeEnum EntityType { get; set; }
+        public virtual SaleSchema SaleSchema { get; set; }
     }
 }
