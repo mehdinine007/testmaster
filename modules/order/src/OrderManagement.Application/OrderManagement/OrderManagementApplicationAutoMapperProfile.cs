@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Esale.Core.Utility.Tools;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.OrderManagement;
 using OrderManagement.Application.Helpers;
@@ -59,8 +60,9 @@ namespace OrderManagement
             CreateMap<Attachment, AttachmentDto>()
                 .ReverseMap();
             CreateMap<Attachment, AttachmentViewModel>()
-                .ReverseMap()
-                .ForAllMembers(x => x.Ignore());
+                .ForMember(x=> x.FileName,c=> c.MapFrom(m=> m.Id + "." + m.FileExtension))
+                .ForMember(x => x.EntityTypeTitle, c => c.MapFrom(m => m.EntityType != 0 ? EnumHelper.GetDescription(m.EntityType) : ""))
+                .ReverseMap();
 
             CreateMap<SaleDetail, SaleDetailDto>()
                 .ReverseMap()
