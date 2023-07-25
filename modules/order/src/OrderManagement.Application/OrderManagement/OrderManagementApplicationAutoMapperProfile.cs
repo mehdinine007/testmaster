@@ -1,12 +1,14 @@
 ﻿using AutoMapper;
 using Esale.Core.Utility.Tools;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Newtonsoft.Json;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.OrderManagement;
 using OrderManagement.Application.Helpers;
 using OrderManagement.Application.OrderManagement.Implementations;
 using OrderManagement.Domain;
 using OrderManagement.Domain.OrderManagement;
+using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
 using Volo.Abp.AutoMapper;
 using Volo.Abp.ObjectMapping;
@@ -63,6 +65,7 @@ namespace OrderManagement
                 .ForMember(x=> x.FileName,c=> c.MapFrom(m=> m.Id + "." + m.FileExtension))
                 .ForMember(x => x.Type, c => c.MapFrom(m => m.EntityType))
                 .ForMember(x => x.TypeTitle, c => c.MapFrom(m => m.EntityType != 0 ? EnumHelper.GetDescription(m.EntityType) : ""))
+                .ForMember(x => x.Content, c => c.MapFrom(m => !string.IsNullOrWhiteSpace(m.Content) ? JsonConvert.DeserializeObject<List<string>>(m.Content) : null))
                 .ReverseMap();
 
             CreateMap<SaleDetail, SaleDetailDto>()

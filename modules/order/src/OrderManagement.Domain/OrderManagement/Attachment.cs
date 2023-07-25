@@ -21,6 +21,8 @@ namespace OrderManagement.Domain.OrderManagement
         public int EntityId { get; set; }
         public AttachmentEntityTypeEnum EntityType { get; set; }
         public string Description { get; set; }
+        public string Content { get; set; }
+        public int Priority { get; set; }
         public virtual SaleSchema SaleSchema { get; set; }
     }
 }

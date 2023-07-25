@@ -14,6 +14,7 @@ namespace OrderManagement.Application.Contracts
         public AttachmentEntityTypeEnum Type { get; set; }
         public string TypeTitle { get; set; }
         public string Description { get; set; }
-
+        public List<string> Content { get; set; }
+        public int Priority { get; set; }
     }
 }

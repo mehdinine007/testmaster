@@ -4,6 +4,7 @@ using OrderManagement.Application.Contracts;
 using OrderManagement.Domain.OrderManagement;
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Services;
@@ -22,6 +23,14 @@ namespace OrderManagement.Application.OrderManagement.Implementations
         }
         private async Task<Guid> Add(Attachment attachmentDto)
         {
+            var iqAttachment = await _attachementRepository.GetQueryableAsync();
+            var attachment = iqAttachment
+                .Where(x => x.Entity == attachmentDto.Entity && x.EntityId == attachmentDto.EntityId && x.EntityType == attachmentDto.EntityType)
+                .ToList();
+            var _priroity = 1;
+            if (attachment != null && attachment.Count>1)
+                _priroity = attachment.Max(x=> x.Priority)+1;
+            attachmentDto.Priority = _priroity;
             await _attachementRepository.InsertAsync(attachmentDto, autoSave: true);
             return attachmentDto.Id;
         }
