@@ -13,7 +13,7 @@ namespace OrderManagement.HttpApi.OrderManagement.Controllers;
 [DisableAuditing]
 [RemoteService]
 [Route("api/services/app/ProductAndCategory/[action]")]
-[UserAuthorization]
+//[UserAuthorization]
 public class ProductAndCategoryController : AbpController //, IProductAndCategoryService
 {
     private readonly IProductAndCategoryService _productAndCategoryService;

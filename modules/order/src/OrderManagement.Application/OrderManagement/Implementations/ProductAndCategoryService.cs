@@ -19,13 +19,16 @@ public partial class ProductAndCategoryService : ApplicationService, IProductAnd
 {
     private readonly IRepository<ProductAndCategory, int> _productAndCategoryRepository;
     private readonly IAttachmentService _attachmentService;
+    private readonly IRepository<Attachment, Guid> _attachmentRepository;
 
     public ProductAndCategoryService(IRepository<ProductAndCategory, int> productAndCategoryRepository,
-                                     IAttachmentService attachmentService
+                                     IAttachmentService attachmentService,
+                                     IRepository<Attachment, Guid> attachmentRepository
         )
     {
         _productAndCategoryRepository = productAndCategoryRepository;
         _attachmentService = attachmentService;
+        _attachmentRepository = attachmentRepository;
     }
 
     public async Task Delete(int id)
@@ -104,7 +107,7 @@ public partial class ProductAndCategoryService : ApplicationService, IProductAnd
     {
         var attachmentStatus = await _attachmentService.UploadFile(new AttachFileDto()
         {
-            Entity = AttachmentEntityEnum.SaleSchema,
+            Entity = AttachmentEntityEnum.ProductAndCategory,
             EntityId = uploadFileDto.Id,
             EntityType = uploadFileDto.AttachmentEntityTypeEnum,
             File = uploadFileDto.File,
@@ -124,6 +127,19 @@ public partial class ProductAndCategoryService : ApplicationService, IProductAnd
             return new CustomPagedResultDto<ProductAndCategoryDto>(new ProductAndCategoryDto[0], 0);
 
         var queryResult = productCategoryQuery.PageBy(input).ToList();
-        return new CustomPagedResultDto<ProductAndCategoryDto>(ObjectMapper.Map<List<ProductAndCategory>, List<ProductAndCategoryDto>>(queryResult), totalCount);
+        var attachmentQuery = await _attachmentRepository.GetQueryableAsync();
+        if (input.AttachmentEntityType > 0)
+            attachmentQuery = attachmentQuery.Where(x => x.EntityType == (AttachmentEntityTypeEnum)input.AttachmentEntityType);
+        var ids = queryResult.Select(x => x.Id).ToList();
+        attachmentQuery = attachmentQuery.Where(x => x.Entity == AttachmentEntityEnum.ProductAndCategory && ids.Any(y => y == x.EntityId));
+        var attachments = attachmentQuery.ToList();
+
+        var resultList = ObjectMapper.Map<List<ProductAndCategory>, List<ProductAndCategoryDto>>(queryResult);
+        resultList.ForEach(x =>
+        {
+            var pacAttachments = attachments.Where(y => y.EntityId == x.Id).ToList();
+            x.Attachments = ObjectMapper.Map<List<Attachment>, List<AttachmentViewModel>>(pacAttachments);
+        });
+        return new CustomPagedResultDto<ProductAndCategoryDto>(resultList, totalCount);
     }
 }

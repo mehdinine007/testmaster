@@ -17,5 +17,7 @@ namespace OrderManagement.Application.Contracts
         public int LevelId { get; set; }
 
         public bool HasChild { get; set; }
+
+        public List<AttachmentViewModel> Attachments { get; set; }
     }
 }
