@@ -11,6 +11,9 @@ namespace OrderManagement.Application.Contracts
     {
         public string Title { get; set; }
         public string FileName { get; set; }
-        public string EntityTypeTitle { get; set; }
+        public AttachmentEntityTypeEnum Type { get; set; }
+        public string TypeTitle { get; set; }
+        public string Description { get; set; }
+
     }
 }

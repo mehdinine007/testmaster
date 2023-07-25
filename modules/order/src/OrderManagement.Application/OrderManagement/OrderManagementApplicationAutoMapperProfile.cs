@@ -61,7 +61,8 @@ namespace OrderManagement
                 .ReverseMap();
             CreateMap<Attachment, AttachmentViewModel>()
                 .ForMember(x=> x.FileName,c=> c.MapFrom(m=> m.Id + "." + m.FileExtension))
-                .ForMember(x => x.EntityTypeTitle, c => c.MapFrom(m => m.EntityType != 0 ? EnumHelper.GetDescription(m.EntityType) : ""))
+                .ForMember(x => x.Type, c => c.MapFrom(m => m.EntityType))
+                .ForMember(x => x.TypeTitle, c => c.MapFrom(m => m.EntityType != 0 ? EnumHelper.GetDescription(m.EntityType) : ""))
                 .ReverseMap();
 
             CreateMap<SaleDetail, SaleDetailDto>()

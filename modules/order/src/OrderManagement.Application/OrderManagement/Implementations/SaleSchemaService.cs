@@ -45,8 +45,8 @@ namespace OrderManagement.Application.OrderManagement.Implementations
         public async Task<PagedResultDto<SaleSchemaDto>> GetSaleSchema(int pageNo, int sizeNo)
         {
             var count = _saleSchemaRepository.WithDetails().Count();
-            var queryResult = _saleSchemaRepository
-                .WithDetails(x => x.Attachments.Where(w => w.Entity == AttachmentEntityEnum.SaleSchema)).OrderByDescending(x => x.Id)
+            var iqResult = await _saleSchemaRepository.GetQueryableAsync();
+            var queryResult = iqResult.Include(x => x.Attachments.Where(w => w.Entity == AttachmentEntityEnum.SaleSchema)).OrderByDescending(x => x.Id)
                 .Skip(pageNo * sizeNo).Take(sizeNo).AsNoTracking()
                 .ToList();
             return new PagedResultDto<SaleSchemaDto>
