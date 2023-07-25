@@ -18,76 +18,75 @@ using Volo.Abp.Domain.Repositories;
 using Volo.Abp.ObjectMapping;
 using Volo.Abp.Uow;
 
-namespace OrderManagement.Application.OrderManagement.Implementations
+namespace OrderManagement.Application.OrderManagement.Implementations;
+
+public class AgencyService : ApplicationService, IAgencyService
 {
-    public class AgencyService : ApplicationService, IAgencyService
+    private readonly IRepository<Agency> _agencyRepository;
+    private readonly IRepository<Province> _provinceRepository;
+    private readonly IHybridCachingProvider _hybridCache;
+    private readonly ICacheManager _cacheManager;
+
+    public AgencyService(IRepository<Agency> agencyRepository, IRepository<Province> provinceRepository, IHybridCachingProvider hybridCache, ICacheManager cacheManager)
     {
-        private readonly IRepository<Agency> _agencyRepository;
-        private readonly IRepository<Province> _provinceRepository;
-        private readonly IHybridCachingProvider _hybridCache;
-        private readonly ICacheManager _cacheManager;
+        _agencyRepository = agencyRepository;
+        _provinceRepository = provinceRepository;
+        _hybridCache = hybridCache;
+        _cacheManager = cacheManager;
+    }
 
-        public AgencyService(IRepository<Agency> agencyRepository, IRepository<Province> provinceRepository, IHybridCachingProvider hybridCache, ICacheManager cacheManager)
+
+
+    public async Task<bool> Delete(int id)
+    {
+        await _agencyRepository.DeleteAsync(x => x.Id == id, autoSave: true);
+
+        await _cacheManager.RemoveByPrefixAsync(RedisConstants.AgencyPrefix ,new CacheOptions() { Provider = CacheProviderEnum.Hybrid });
+        return true;
+    }
+
+    public async Task<PagedResultDto<AgencyDto>> GetAgencies(int pageNo, int sizeNo)
+    {
+        var count = await _agencyRepository.CountAsync();
+        var agencies = await _agencyRepository.WithDetailsAsync(x => x.Province);
+        var queryResult = await agencies.Skip(pageNo * sizeNo).Take(sizeNo).ToListAsync();
+        return new PagedResultDto<AgencyDto>
         {
-            _agencyRepository = agencyRepository;
-            _provinceRepository = provinceRepository;
-            _hybridCache = hybridCache;
-            _cacheManager = cacheManager;
-        }
+            TotalCount = count,
+            Items = ObjectMapper.Map<List<Agency>, List<AgencyDto>>(queryResult)
+        };
 
-
-
-        public async Task<bool> Delete(int id)
+    }
+    [UnitOfWork]
+    public async Task<int> Save(AgencyDto agencyDto)
+    {
+        var province = await _provinceRepository.FirstOrDefaultAsync(x => x.Id == agencyDto.ProvinceId);
+        if (province == null)
         {
-            await _agencyRepository.DeleteAsync(x => x.Id == id, autoSave: true);
-
-            await _cacheManager.RemoveByPrefixAsync(RedisConstants.AgencyPrefix ,new CacheOptions() { Provider = CacheProviderEnum.Hybrid });
-            return true;
+            throw new UserFriendlyException("استان وجود ندارد.");
         }
+        var agency = ObjectMapper.Map<AgencyDto, Agency>(agencyDto);
+        await _agencyRepository.InsertAsync(agency, autoSave: true);
+        return agency.Id;
+    }
 
-        public async Task<PagedResultDto<AgencyDto>> GetAgencies(int pageNo, int sizeNo)
+    public async Task<int> Update(AgencyDto agencyDto)
+    {
+        var result = await _agencyRepository.FirstOrDefaultAsync(x => x.Id == agencyDto.Id);
+        if (result == null)
         {
-            var count = await _agencyRepository.CountAsync();
-            var agencies = await _agencyRepository.WithDetailsAsync(x => x.Province);
-            var queryResult = await agencies.Skip(pageNo * sizeNo).Take(sizeNo).ToListAsync();
-            return new PagedResultDto<AgencyDto>
-            {
-                TotalCount = count,
-                Items = ObjectMapper.Map<List<Agency>, List<AgencyDto>>(queryResult)
-            };
-
+            throw new UserFriendlyException("نمایندگی انتخاب شده وجود ندارد.");
         }
-        [UnitOfWork]
-        public async Task<int> Save(AgencyDto agencyDto)
+        var province = await _provinceRepository.FirstOrDefaultAsync(x => x.Id == agencyDto.ProvinceId );
+
+        if (province == null)
         {
-            var province = await _provinceRepository.FirstOrDefaultAsync(x => x.Id == agencyDto.ProvinceId);
-            if (province == null)
-            {
-                throw new UserFriendlyException("استان وجود ندارد.");
-            }
-            var agency = ObjectMapper.Map<AgencyDto, Agency>(agencyDto);
-            await _agencyRepository.InsertAsync(agency, autoSave: true);
-            return agency.Id;
+            throw new UserFriendlyException("استان وجود ندارد.");
         }
-
-        public async Task<int> Update(AgencyDto agencyDto)
-        {
-            var result = await _agencyRepository.FirstOrDefaultAsync(x => x.Id == agencyDto.Id);
-            if (result == null)
-            {
-                throw new UserFriendlyException("نمایندگی انتخاب شده وجود ندارد.");
-            }
-            var province = await _provinceRepository.FirstOrDefaultAsync(x => x.Id == agencyDto.ProvinceId );
-
-            if (province == null)
-            {
-                throw new UserFriendlyException("استان وجود ندارد.");
-            }
-            result.Name = agencyDto.Name;
-            result.ProvinceId = agencyDto.ProvinceId;
-            await _agencyRepository.UpdateAsync(result, autoSave: true);
-            await _cacheManager.RemoveByPrefixAsync(RedisConstants.AgencyPrefix, new CacheOptions() { Provider = CacheProviderEnum.Hybrid });
-            return result.Id;
-        }
+        result.Name = agencyDto.Name;
+        result.ProvinceId = agencyDto.ProvinceId;
+        await _agencyRepository.UpdateAsync(result, autoSave: true);
+        await _cacheManager.RemoveByPrefixAsync(RedisConstants.AgencyPrefix, new CacheOptions() { Provider = CacheProviderEnum.Hybrid });
+        return result.Id;
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using OrderManagement.Domain.Shared;
+using System.Collections.Generic;
 using Volo.Abp.Domain.Entities.Auditing;
 
 namespace OrderManagement.Domain.OrderManagement
@@ -13,7 +14,7 @@ namespace OrderManagement.Domain.OrderManagement
 
         public int? ParentId { get; set; }
 
-        public ProductAndCategoryType ProductAndCategoryType { get; set; }
+        public ProductAndCategoryType Type { get; set; }
 
         public int LevelId { get; set; }
 

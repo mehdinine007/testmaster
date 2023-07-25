@@ -11,85 +11,84 @@ using Volo.Abp;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
 
-namespace OrderManagement.Application.OrderManagement.Implementations
+namespace OrderManagement.Application.OrderManagement.Implementations;
+
+public class ReportApplicationService : ApplicationService, IReportApplicationService
 {
-    public class ReportApplicationService : ApplicationService, IReportApplicationService
+    private readonly IEsaleGrpcClient _grpcClient;
+    private readonly IRepository<SaleDetail, int> _saleDetailRepository;
+    private readonly IRepository<Agency, int> _agencyRepository;
+
+    public ReportApplicationService(IEsaleGrpcClient grpcClient,
+                                    IRepository<SaleDetail, int> saleDetailRepository,
+                                    IRepository<Agency, int> agencyRepository
+        )
     {
-        private readonly IEsaleGrpcClient _grpcClient;
-        private readonly IRepository<SaleDetail, int> _saleDetailRepository;
-        private readonly IRepository<Agency, int> _agencyRepository;
+        _grpcClient = grpcClient;
+        _saleDetailRepository = saleDetailRepository;
+        _agencyRepository = agencyRepository;
+    }
 
-        public ReportApplicationService(IEsaleGrpcClient grpcClient,
-                                        IRepository<SaleDetail, int> saleDetailRepository,
-                                        IRepository<Agency, int> agencyRepository
-            )
+    public async Task<CustomPagedResultDto<SaleDetailResultDto>> SaleDetailReport(SaleDetailReportInquery input)
+    {
+        input.MaxResultCount = 10;
+        var saleDetailQuery = await _saleDetailRepository.GetQueryableAsync();
+        var now = DateTime.Now;
+        saleDetailQuery = input.ActiveOrDeactive
+            ? /* actives */ saleDetailQuery.Where(x => x.SalePlanEndDate >= now)
+            : /* deactives */ saleDetailQuery.Where(x => x.SalePlanStartDate < now && x.SalePlanEndDate > now);
+        var totalCount = await saleDetailQuery.CountAsync();
+        if (totalCount <= 0)
+            return new CustomPagedResultDto<SaleDetailResultDto>(new List<SaleDetailResultDto>(), totalCount);
+
+        saleDetailQuery = saleDetailQuery.PageBy(input);
+        var saleDetailIds = saleDetailQuery.Select(x => x.Id).ToList();
+        List<SaleDetailResultDto> saleDetailInqueries = new(saleDetailIds.Count);
+        foreach (var saleDetailId in saleDetailIds)
         {
-            _grpcClient = grpcClient;
-            _saleDetailRepository = saleDetailRepository;
-            _agencyRepository = agencyRepository;
+            saleDetailInqueries.Add(await GetSaleDetailReport(saleDetailId));
         }
+        return new CustomPagedResultDto<SaleDetailResultDto>(saleDetailInqueries, totalCount);
+    }
 
-        public async Task<CustomPagedResultDto<SaleDetailResultDto>> SaleDetailReport(SaleDetailReportInquery input)
+    private async Task<SaleDetailResultDto> GetSaleDetailReport(int saleDetailId)
+    {
+        var saleDetail = _saleDetailRepository.WithDetails(x => x.AgencySaleDetails).FirstOrDefault(x => x.Id == saleDetailId)
+            ?? throw new UserFriendlyException("برنامه فروش پیدا نشد");
+        var agencyIds = saleDetail.AgencySaleDetails.Select(x => x.AgencyId).ToList();
+        var agencies = _agencyRepository.WithDetails().Where(x => agencyIds.Any(y => y == x.Id));
+
+        var data = await _grpcClient.GetPaymentStatusList(new PaymentStatusDto
         {
-            input.MaxResultCount = 10;
-            var saleDetailQuery = await _saleDetailRepository.GetQueryableAsync();
-            var now = DateTime.Now;
-            saleDetailQuery = input.ActiveOrDeactive
-                ? /* actives */ saleDetailQuery.Where(x => x.SalePlanEndDate >= now)
-                : /* deactives */ saleDetailQuery.Where(x => x.SalePlanStartDate < now && x.SalePlanEndDate > now);
-            var totalCount = await saleDetailQuery.CountAsync();
-            if (totalCount <= 0)
-                return new CustomPagedResultDto<SaleDetailResultDto>(new List<SaleDetailResultDto>(), totalCount);
+            RelationId = saleDetailId,
+            IsRelationIdGroup = true,
+            IsRelationIdBGroup = true,
 
-            saleDetailQuery = saleDetailQuery.PageBy(input);
-            var saleDetailIds = saleDetailQuery.Select(x => x.Id).ToList();
-            List<SaleDetailResultDto> saleDetailInqueries = new(saleDetailIds.Count);
-            foreach (var saleDetailId in saleDetailIds)
+        });
+        var reports = data.Select(x =>
+        {
+            var currentAgency = agencies.FirstOrDefault(y => y.Id == x.F2);
+            if(currentAgency != null)
             {
-                saleDetailInqueries.Add(await GetSaleDetailReport(saleDetailId));
+                return new SaleDetailReportDto()
+                {
+                    AgencyName = currentAgency.Name,
+                    Count = x.Count,
+                    PaymentStatus = x.Message,
+                    SaleDetailTitle = saleDetail.SalePlanDescription
+                };
             }
-            return new CustomPagedResultDto<SaleDetailResultDto>(saleDetailInqueries, totalCount);
-        }
-
-        private async Task<SaleDetailResultDto> GetSaleDetailReport(int saleDetailId)
+            else
+            {
+                return new SaleDetailReportDto();
+            }
+           
+        }).ToList();
+        var result = new SaleDetailResultDto()
         {
-            var saleDetail = _saleDetailRepository.WithDetails(x => x.AgencySaleDetails).FirstOrDefault(x => x.Id == saleDetailId)
-                ?? throw new UserFriendlyException("برنامه فروش پیدا نشد");
-            var agencyIds = saleDetail.AgencySaleDetails.Select(x => x.AgencyId).ToList();
-            var agencies = _agencyRepository.WithDetails().Where(x => agencyIds.Any(y => y == x.Id));
-
-            var data = await _grpcClient.GetPaymentStatusList(new PaymentStatusDto
-            {
-                RelationId = saleDetailId,
-                IsRelationIdGroup = true,
-                IsRelationIdBGroup = true,
-
-            });
-            var reports = data.Select(x =>
-            {
-                var currentAgency = agencies.FirstOrDefault(y => y.Id == x.F2);
-                if(currentAgency != null)
-                {
-                    return new SaleDetailReportDto()
-                    {
-                        AgencyName = currentAgency.Name,
-                        Count = x.Count,
-                        PaymentStatus = x.Message,
-                        SaleDetailTitle = saleDetail.SalePlanDescription
-                    };
-                }
-                else
-                {
-                    return new SaleDetailReportDto();
-                }
-               
-            }).ToList();
-            var result = new SaleDetailResultDto()
-            {
-                Reports = reports,
-                SaleDescription = saleDetail.SalePlanDescription
-            };
-            return result;
-        }
+            Reports = reports,
+            SaleDescription = saleDetail.SalePlanDescription
+        };
+        return result;
     }
 }

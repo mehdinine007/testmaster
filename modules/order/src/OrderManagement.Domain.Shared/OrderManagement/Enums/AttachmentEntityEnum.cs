@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace OrderManagement.Domain.Shared
+﻿namespace OrderManagement.Domain.Shared
 {
     public enum AttachmentEntityEnum
     {
@@ -12,3 +8,5 @@ namespace OrderManagement.Domain.Shared
 
     }
 }
+
+
