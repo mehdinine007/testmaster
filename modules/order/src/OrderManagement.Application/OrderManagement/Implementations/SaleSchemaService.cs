@@ -42,7 +42,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             return saleSchemaDto;
         }
 
-        public async Task<PagedResultDto<SaleSchemaDto>> GetSaleSchema(int pageNo, int sizeNo)
+        public  PagedResultDto<SaleSchemaDto> GetSaleSchema(int pageNo, int sizeNo)
         {
             var count = _saleSchemaRepository.WithDetails().Count();
             var iqResult = await _saleSchemaRepository.GetQueryableAsync();
