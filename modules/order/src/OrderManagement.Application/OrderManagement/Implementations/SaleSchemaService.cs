@@ -4,6 +4,7 @@ using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.OrderManagement;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
 using OrderManagement.Domain;
+using OrderManagement.Domain.Shared;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
