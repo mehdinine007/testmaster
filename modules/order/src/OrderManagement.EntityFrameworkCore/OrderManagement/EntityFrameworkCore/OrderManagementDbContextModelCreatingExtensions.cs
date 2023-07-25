@@ -22,9 +22,20 @@ public static class OrderManagementDbContextModelCreatingExtensions
 
         optionsAction?.Invoke(options);
 
+
+        builder.Entity<Attachment>(entity =>
+        {
+            entity.HasOne(x => x.SaleSchema)
+                .WithMany(x => x.Attachments)
+                .HasForeignKey(x => x.EntityId);
+        });
+
+
         builder.Entity<PreSale>(entity => entity.ToTable(nameof(PreSale)));
 
-        builder.Entity<SaleSchema>(entity => entity.ToTable(nameof(SaleSchema)));
+        builder.Entity<SaleSchema>(
+            entity => entity.ToTable(nameof(SaleSchema))
+            );
 
         builder.Entity<Season>(entity => entity.ToTable(nameof(Season)));
 
