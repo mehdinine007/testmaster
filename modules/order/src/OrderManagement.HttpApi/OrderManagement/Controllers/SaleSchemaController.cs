@@ -17,7 +17,7 @@ namespace OrderManagement.HttpApi.OrderManagement.Controllers
     [DisableAuditing]
     [RemoteService]
     [Route("api/services/app/SaleSchemaService/[action]")]
-    //[UserAuthorization]
+    [UserAuthorization]
     public class SaleSchemaController : Controller, ISaleSchemaService
     {
         private readonly ISaleSchemaService _saleSchemaService;
@@ -32,7 +32,7 @@ namespace OrderManagement.HttpApi.OrderManagement.Controllers
         public Task<List<SaleSchemaDto>> GetAllSaleSchema()
         => _saleSchemaService.GetAllSaleSchema();
         [HttpGet]
-        public PagedResultDto<SaleSchemaDto> GetSaleSchema(int pageNo, int sizeNo)
+        public Task<PagedResultDto<SaleSchemaDto>> GetSaleSchema(int pageNo, int sizeNo)
         => _saleSchemaService.GetSaleSchema(pageNo, sizeNo);
         [HttpPost]
         public Task<int> Save(SaleSchemaDto saleSchemaDto)
