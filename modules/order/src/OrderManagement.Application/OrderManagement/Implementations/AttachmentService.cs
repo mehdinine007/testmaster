@@ -28,70 +28,71 @@ namespace OrderManagement.Application.OrderManagement.Implementations
                 .Where(x => x.Entity == attachmentDto.Entity && x.EntityId == attachmentDto.EntityId && x.EntityType == attachmentDto.EntityType)
                 .ToList();
             var _priroity = 1;
-            if (attachment != null && attachment.Count>1)
-                _priroity = attachment.Max(x=> x.Priority)+1;
+            if (attachment != null && attachment.Count > 1)
+                _priroity = attachment.Max(x => x.Priority) + 1;
             attachmentDto.Priority = _priroity;
             await _attachementRepository.InsertAsync(attachmentDto, autoSave: true);
             return attachmentDto.Id;
         }
 
-    private async Task<Guid> Update( Attachment attachmentDto)
-    {
-        var attachment = await Validation(attachmentDto.Id,attachmentDto);
-        attachment.Title = attachmentDto.Title;
-        await _attachementRepository.UpdateAsync(attachment, autoSave: true);
-        return attachment.Id;
-    }
-    private async Task<bool> Delete(Guid id)
-    {
-        await Validation(id,null);
-        await _attachementRepository.DeleteAsync(x => x.Id == id);
-        return true;
-    }
-    private async Task<Attachment> Validation(Guid id,Attachment attachmentDto)
-    {
-        var attachment = await _attachementRepository
-            .WithDetails()
-            .AsNoTracking()
-            .FirstOrDefaultAsync(x => x.Id == id);
-        if (attachment is null)
+        private async Task<Guid> Update(Attachment attachmentDto)
         {
-            throw new UserFriendlyException(OrderConstant.AttachmentNotFound, OrderConstant.AttachmentNotFoundId);
+            var attachment = await Validation(attachmentDto.Id, attachmentDto);
+            attachment.Title = attachmentDto.Title;
+            await _attachementRepository.UpdateAsync(attachment, autoSave: true);
+            return attachment.Id;
         }
-        return attachment;
-    }
-
-    public async Task<bool> UploadFile(AttachFileDto attachDto)
-    {
-        bool hasAdd = attachDto.Id is null;
-        if (hasAdd)
-            attachDto.Id = Guid.NewGuid();
-        var attachment = CopyFile(attachDto);
-        if (hasAdd)
-            await Add(attachment);
-        else
-            await Update(attachment);
-        return true;
-    }
-
-    private Attachment CopyFile(AttachFileDto attachDto)
-    {
-        if (attachDto.File is null)
-            throw new UserFriendlyException(OrderConstant.FileUploadNotFound, OrderConstant.FileUploadNotFoundId);
-        string fileExtention = Path.GetExtension(attachDto.File.FileName);
-        if (string.IsNullOrEmpty(fileExtention))
-            throw new UserFriendlyException(OrderConstant.FileUploadNotExtention, OrderConstant.FileUploadNotExtentionId);
-        string basePath = _configuration.GetSection("Attachment:UploadFilePath").Value;
-        if (string.IsNullOrEmpty(basePath))
-            throw new UserFriendlyException(OrderConstant.FileUploadNotPathNotExists, OrderConstant.FileUploadNotPathNotExistsId);
-        var attachment = ObjectMapper.Map<AttachmentDto, Attachment>(attachDto);
-        attachment.FileExtension = fileExtention.Replace(".","");
-        string fileName = attachDto.Id.ToString() + "." + attachment.FileExtension;
-        string filePath = Path.Combine(basePath, fileName);
-        using (Stream stream = new FileStream(filePath, FileMode.Create))
+        private async Task<bool> Delete(Guid id)
         {
-            attachDto.File.CopyTo(stream);
+            await Validation(id, null);
+            await _attachementRepository.DeleteAsync(x => x.Id == id);
+            return true;
         }
-        return attachment;
+        private async Task<Attachment> Validation(Guid id, Attachment attachmentDto)
+        {
+            var attachment = await _attachementRepository
+                .WithDetails()
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == id);
+            if (attachment is null)
+            {
+                throw new UserFriendlyException(OrderConstant.AttachmentNotFound, OrderConstant.AttachmentNotFoundId);
+            }
+            return attachment;
+        }
+
+        public async Task<bool> UploadFile(AttachFileDto attachDto)
+        {
+            bool hasAdd = attachDto.Id is null;
+            if (hasAdd)
+                attachDto.Id = Guid.NewGuid();
+            var attachment = CopyFile(attachDto);
+            if (hasAdd)
+                await Add(attachment);
+            else
+                await Update(attachment);
+            return true;
+        }
+
+        private Attachment CopyFile(AttachFileDto attachDto)
+        {
+            if (attachDto.File is null)
+                throw new UserFriendlyException(OrderConstant.FileUploadNotFound, OrderConstant.FileUploadNotFoundId);
+            string fileExtention = Path.GetExtension(attachDto.File.FileName);
+            if (string.IsNullOrEmpty(fileExtention))
+                throw new UserFriendlyException(OrderConstant.FileUploadNotExtention, OrderConstant.FileUploadNotExtentionId);
+            string basePath = _configuration.GetSection("Attachment:UploadFilePath").Value;
+            if (string.IsNullOrEmpty(basePath))
+                throw new UserFriendlyException(OrderConstant.FileUploadNotPathNotExists, OrderConstant.FileUploadNotPathNotExistsId);
+            var attachment = ObjectMapper.Map<AttachmentDto, Attachment>(attachDto);
+            attachment.FileExtension = fileExtention.Replace(".", "");
+            string fileName = attachDto.Id.ToString() + "." + attachment.FileExtension;
+            string filePath = Path.Combine(basePath, fileName);
+            using (Stream stream = new FileStream(filePath, FileMode.Create))
+            {
+                attachDto.File.CopyTo(stream);
+            }
+            return attachment;
+        }
     }
 }
