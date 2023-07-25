@@ -11,7 +11,7 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Services
     public interface ISaleSchemaService: IApplicationService
     {
         Task<List<SaleSchemaDto>> GetAllSaleSchema();
-        PagedResultDto<SaleSchemaDto> GetSaleSchema(int pageNo, int sizeNo);
+        Task<PagedResultDto<SaleSchemaDto>> GetSaleSchema(int pageNo, int sizeNo);
         Task<int> Save(SaleSchemaDto saleSchemaDto);
         Task<int> Update(SaleSchemaDto saleSchemaDto);
         Task<bool> Delete(int id);
