@@ -3,12 +3,10 @@ using Microsoft.EntityFrameworkCore;
 using Volo.Abp;
 using OrderManagement.Domain;
 using OrderManagement.Domain.Bases;
-using System.Collections.Generic;
-using System.Linq;
 using Volo.Abp.EntityFrameworkCore.Modeling;
 using OrderManagement.Domain.OrderManagement;
-using Esale.Core.Utility.Tools;
 using Esale.Core.DataAccess;
+using OrderManagement.Domain.Shared;
 
 namespace OrderManagement.EfCore;
 

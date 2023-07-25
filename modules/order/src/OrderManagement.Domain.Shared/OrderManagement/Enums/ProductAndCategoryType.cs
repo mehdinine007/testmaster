@@ -1,13 +1,15 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace OrderManagement.Domain.OrderManagement
+namespace OrderManagement.Domain.Shared
 {
     public enum ProductAndCategoryType
     {
         [Display(Name = "محصول")]
-        Product = 1 ,
+        Product = 1,
 
         [Display(Name = "دسته بندی")]
         Category = 2
     }
 }
+
+

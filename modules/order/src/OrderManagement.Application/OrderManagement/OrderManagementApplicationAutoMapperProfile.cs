@@ -88,11 +88,8 @@ namespace OrderManagement
             CreateMap<PaymentHandShakeViewModel, IpgApiResult>();
             CreateMap<PaymentResultViewModel, PspInteractionResult>();
             CreateMap<ProductAndCategory, ProductAndCategoryDto>()
-                .ForMember(x => x.ProductAndCategoryTypeCode, opt => opt.MapFrom(x => (int)x.ProductAndCategoryType))
-                .ForMember(x => x.ProductAndCategoryTypeTitle, opt => opt.MapFrom(x => x.ProductAndCategoryType.GetDisplayName()))
                 .ReverseMap()
-                .IgnoreFullAuditedObjectProperties()
-                .ForMember(x => x.ProductAndCategoryType, opt => opt.MapFrom(x => (ProductAndCategoryType)x.ProductAndCategoryTypeCode));
+                .IgnoreFullAuditedObjectProperties();
 
         }
     }
