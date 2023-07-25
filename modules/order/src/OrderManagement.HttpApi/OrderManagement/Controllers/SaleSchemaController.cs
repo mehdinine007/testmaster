@@ -12,36 +12,35 @@ using Volo.Abp.Application.Dtos;
 using Esale.Share.Authorize;
 using Microsoft.AspNetCore.Http;
 
-namespace OrderManagement.HttpApi.OrderManagement.Controllers
+namespace OrderManagement.HttpApi.OrderManagement.Controllers;
+
+[DisableAuditing]
+[RemoteService]
+[Route("api/services/app/SaleSchemaService/[action]")]
+[UserAuthorization]
+public class SaleSchemaController : Controller, ISaleSchemaService
 {
-    [DisableAuditing]
-    [RemoteService]
-    [Route("api/services/app/SaleSchemaService/[action]")]
-    [UserAuthorization]
-    public class SaleSchemaController : Controller, ISaleSchemaService
-    {
-        private readonly ISaleSchemaService _saleSchemaService;
-        public SaleSchemaController(ISaleSchemaService saleSchemaService)
-            => _saleSchemaService = saleSchemaService;
+    private readonly ISaleSchemaService _saleSchemaService;
+    public SaleSchemaController(ISaleSchemaService saleSchemaService)
+        => _saleSchemaService = saleSchemaService;
 
 
-        [HttpDelete]
-        public Task<bool> Delete(int id)
-        => _saleSchemaService.Delete(id);
-        [HttpGet]
-        public Task<List<SaleSchemaDto>> GetAllSaleSchema()
-        => _saleSchemaService.GetAllSaleSchema();
-        [HttpGet]
-        public Task<PagedResultDto<SaleSchemaDto>> GetSaleSchema(int pageNo, int sizeNo)
-        => _saleSchemaService.GetSaleSchema(pageNo, sizeNo);
-        [HttpPost]
-        public Task<int> Save(SaleSchemaDto saleSchemaDto)
-        => _saleSchemaService.Save(saleSchemaDto);
-        [HttpPut]
-        public Task<int> Update(SaleSchemaDto saleSchemaDto)
-        => _saleSchemaService.Update(saleSchemaDto);
-        [HttpPost]
-        public Task<bool> UploadFile([FromForm]UploadFileDto uploadFile)
-       => _saleSchemaService.UploadFile(uploadFile);
-    }
+    [HttpDelete]
+    public Task<bool> Delete(int id)
+    => _saleSchemaService.Delete(id);
+    [HttpGet]
+    public Task<List<SaleSchemaDto>> GetAllSaleSchema()
+    => _saleSchemaService.GetAllSaleSchema();
+    [HttpGet]
+    public Task<PagedResultDto<SaleSchemaDto>> GetSaleSchema(int pageNo, int sizeNo)
+    => _saleSchemaService.GetSaleSchema(pageNo, sizeNo);
+    [HttpPost]
+    public Task<int> Save(SaleSchemaDto saleSchemaDto)
+    => _saleSchemaService.Save(saleSchemaDto);
+    [HttpPut]
+    public Task<int> Update(SaleSchemaDto saleSchemaDto)
+    => _saleSchemaService.Update(saleSchemaDto);
+    [HttpPost]
+    public Task<bool> UploadFile([FromForm]UploadFileDto uploadFile)
+   => _saleSchemaService.UploadFile(uploadFile);
 }

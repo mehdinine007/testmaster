@@ -9,5 +9,7 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Services
         Task<ProductAndCategoryDto> Insert(ProductAndCategoryDto productAndCategoryDto);
 
         Task Delete(int id);
+
+        Task<bool> UploadFile(UploadFileDto uploadFileDto);
     }
 }

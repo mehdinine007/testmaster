@@ -9,16 +9,21 @@ using Volo.Abp;
 using OrderManagement.Domain.Shared;
 using System;
 using Core.Utility.Tools;
+using OrderManagement.Application.Contracts.OrderManagement;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
 public partial class ProductAndCategoryService : ApplicationService, IProductAndCategoryService
 {
     private readonly IRepository<ProductAndCategory, int> _productAndCategoryRepository;
+    private readonly IAttachmentService _attachmentService;
 
-    public ProductAndCategoryService(IRepository<ProductAndCategory, int> productAndCategoryRepository)
+    public ProductAndCategoryService(IRepository<ProductAndCategory, int> productAndCategoryRepository,
+                                     IAttachmentService attachmentService
+        )
     {
         _productAndCategoryRepository = productAndCategoryRepository;
+        _attachmentService = attachmentService;
     }
 
     public async Task Delete(int id)
@@ -45,7 +50,7 @@ public partial class ProductAndCategoryService : ApplicationService, IProductAnd
 
     public async Task<ProductAndCategoryDto> Insert(ProductAndCategoryDto productAndCategoryDto)
     {
-        if (productAndCategoryDto.ParentId.HasValue)
+        if (productAndCategoryDto.ParentId.HasValue && productAndCategoryDto.ParentId.Value > 0)
         {
             var parent = (await _productAndCategoryRepository.GetQueryableAsync())
                 .FirstOrDefault(x => x.Id == productAndCategoryDto.ParentId)
@@ -67,11 +72,14 @@ public partial class ProductAndCategoryService : ApplicationService, IProductAnd
                 if (parentFirstProductChild != null)
                     throw new UserFriendlyException("برای دسته بندی سطح بالایی قبلا زیر سطح از نوع محصول تعریف شده است");
             }
+            productAndCategoryDto.LevelId = parent.LevelId + 1;
         }
+        else
+            productAndCategoryDto.LevelId = 1;
         var _parentCode = "";
         var igResult = await _productAndCategoryRepository.GetQueryableAsync();
         int codeLength = 4;
-        if (productAndCategoryDto.ParentId != null)
+        if (productAndCategoryDto.ParentId.HasValue && productAndCategoryDto.ParentId.Value > 0)
             _parentCode = igResult.FirstOrDefault(x => x.Id == productAndCategoryDto.ParentId).Code;
 
         var _maxCode = igResult
@@ -82,8 +90,23 @@ public partial class ProductAndCategoryService : ApplicationService, IProductAnd
         else _maxCode = "1";
         _maxCode = _parentCode + StringHelper.Repeat(_maxCode, codeLength);
         productAndCategoryDto.Code = _maxCode;
+        productAndCategoryDto.ParentId = productAndCategoryDto.ParentId.HasValue && productAndCategoryDto.ParentId.Value > 0
+            ? productAndCategoryDto.ParentId.Value
+            : null;
         var entity = await _productAndCategoryRepository.InsertAsync(
             ObjectMapper.Map<ProductAndCategoryDto, ProductAndCategory>(productAndCategoryDto));
         return ObjectMapper.Map<ProductAndCategory, ProductAndCategoryDto>(entity);
+    }
+
+    public async Task<bool> UploadFile(UploadFileDto uploadFileDto)
+    {
+        var attachmentStatus = await _attachmentService.UploadFile(new AttachFileDto()
+        {
+            Entity = AttachmentEntityEnum.SaleSchema,
+            EntityId = uploadFileDto.Id,
+            EntityType = uploadFileDto.AttachmentEntityTypeEnum,
+            File = uploadFileDto.File,
+        });
+        return attachmentStatus;
     }
 }
