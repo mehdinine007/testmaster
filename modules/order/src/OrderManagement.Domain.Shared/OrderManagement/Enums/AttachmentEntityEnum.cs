@@ -3,7 +3,7 @@
     public enum AttachmentEntityEnum
     {
         None = 0,
-        CategoryAndProduct = 1,
+        ProductAndCategory = 1,
         SaleSchema = 2
 
     }

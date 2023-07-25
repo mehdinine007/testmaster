@@ -331,106 +331,91 @@ namespace OrderManagement.EfCore.Migrations
                         {
                             Id = 1,
                             Code = 1,
-                            Title = "عدم تطابق کدملی و شماره موبایل",
-                            TitleEn = "PhoneNumberAndNationalCodeConflict"
+                            Title = "عدم تطابق کدملی و شماره موبایل"
                         },
                         new
                         {
                             Id = 2,
                             Code = 2,
-                            Title = "نداشتن گواهی نامه معتبر",
-                            TitleEn = "DoesntHadQualifiedDrivingLicense"
+                            Title = "نداشتن گواهی نامه معتبر"
                         },
                         new
                         {
                             Id = 3,
                             Code = 3,
-                            Title = "دارای پلاک فعال",
-                            TitleEn = "ActivePlaqueDetected"
+                            Title = "دارای پلاک فعال"
                         },
                         new
                         {
                             Id = 4,
                             Code = 4,
-                            Title = "ثبت سفارش در سامانه خودروهای وارداتی",
-                            TitleEn = "OrderRegisteredInInternalVehicleSite"
+                            Title = "ثبت سفارش در سامانه خودروهای وارداتی"
                         },
                         new
                         {
                             Id = 5,
                             Code = 5,
-                            Title = "لیست خرید خودروساز (سایپا)",
-                            TitleEn = "SaipaVehicleManufactureList"
+                            Title = "لیست خرید خودروساز (سایپا)"
                         },
                         new
                         {
                             Id = 6,
                             Code = 6,
-                            Title = "لیست خرید خودروساز (ایران خودرو)",
-                            TitleEn = "IkcoVehicleManufactureList"
+                            Title = "لیست خرید خودروساز (ایران خودرو)"
                         },
                         new
                         {
                             Id = 7,
                             Code = 7,
-                            Title = "لیست خرید خودروساز (کرمان موتور)",
-                            TitleEn = "KermanMotorVehicleManufactureList"
+                            Title = "لیست خرید خودروساز (کرمان موتور)"
                         },
                         new
                         {
                             Id = 8,
                             Code = 8,
-                            Title = "لیست خرید خودروساز (صنایع خودرو سازی ایلیا)",
-                            TitleEn = "IliaAutoVehicleManufactureList"
+                            Title = "لیست خرید خودروساز (صنایع خودرو سازی ایلیا)"
                         },
                         new
                         {
                             Id = 9,
                             Code = 9,
-                            Title = "لیست خرید خودروساز (فردا موتورز)",
-                            TitleEn = "FardaMotorsVehicleManufactureList"
+                            Title = "لیست خرید خودروساز (فردا موتورز)"
                         },
                         new
                         {
                             Id = 10,
                             Code = 10,
-                            Title = "لیست خرید خودروساز (آرین پارس)",
-                            TitleEn = "ArianParsVehicleManufactureList"
+                            Title = "لیست خرید خودروساز (آرین پارس)"
                         },
                         new
                         {
                             Id = 11,
                             Code = 11,
-                            Title = "لیست خرید خودروساز (مکث موتور)",
-                            TitleEn = "MaxMotorVehicleManufactureList"
+                            Title = "لیست خرید خودروساز (مکث موتور)"
                         },
                         new
                         {
                             Id = 12,
                             Code = 12,
-                            Title = "لیست خرید خودروساز (بهمن موتور)",
-                            TitleEn = "BahmanMotorVehicleManufactureList"
+                            Title = "لیست خرید خودروساز (بهمن موتور)"
                         },
                         new
                         {
                             Id = 13,
                             Code = 13,
-                            Title = "لیست خرید خودروساز (مدیران خودرو)",
-                            TitleEn = "MvmVehicleManufactureList"
+                            Title = "لیست خرید خودروساز (مدیران خودرو)"
                         },
                         new
                         {
                             Id = 14,
                             Code = 14,
-                            Title = "عدم احراز در طرح جوانی توسط ثبت احول",
-                            TitleEn = "YoungPlan"
+                            Title = "عدم احراز در طرح جوانی توسط ثبت احول"
                         },
                         new
                         {
                             Id = 15,
                             Code = 15,
-                            Title = "عدم احراض خودرو فرسوده",
-                            TitleEn = "OldPlan"
+                            Title = "عدم احراض خودرو فرسوده"
                         });
                 });
 
@@ -462,50 +447,43 @@ namespace OrderManagement.EfCore.Migrations
                         {
                             Id = 1,
                             Code = 10,
-                            Title = "ثبت سفارش اولیه با موفقیت انجام شد",
-                            TitleEn = "RecentlyAdded"
+                            Title = "ثبت سفارش اولیه با موفقیت انجام شد"
                         },
                         new
                         {
                             Id = 2,
                             Code = 20,
-                            Title = "انصراف داده شده",
-                            TitleEn = "Canceled"
+                            Title = "انصراف داده شده"
                         },
                         new
                         {
                             Id = 3,
                             Code = 30,
-                            Title = "انتخاب نشده اید",
-                            TitleEn = "loser"
+                            Title = "انتخاب نشده اید"
                         },
                         new
                         {
                             Id = 4,
                             Code = 40,
-                            Title = "برنده شده اید",
-                            TitleEn = "Winner"
+                            Title = "برنده شده اید"
                         },
                         new
                         {
                             Id = 5,
                             Code = 50,
-                            Title = "انصراف کلی از اولیت بندی",
-                            TitleEn = "FullCancel"
+                            Title = "انصراف کلی از اولیت بندی"
                         },
                         new
                         {
                             Id = 6,
                             Code = 70,
-                            Title = "پرداخت با موفقیت انجام شد",
-                            TitleEn = "PaymentSucceeded"
+                            Title = "پرداخت با موفقیت انجام شد"
                         },
                         new
                         {
                             Id = 7,
                             Code = 80,
-                            Title = "پرداخت ناموفق",
-                            TitleEn = "PaymentNotVerified"
+                            Title = "پرداخت ناموفق"
                         });
                 });
 
@@ -1229,16 +1207,13 @@ namespace OrderManagement.EfCore.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Logs");
+                    b.ToTable("Logs", (string)null);
                 });
 
             modelBuilder.Entity("OrderManagement.Domain.OrderManagement.Attachment", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Content")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2")
@@ -1284,9 +1259,6 @@ namespace OrderManagement.EfCore.Migrations
                     b.Property<Guid?>("LastModifierId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("LastModifierId");
-
-                    b.Property<int>("Priority")
-                        .HasColumnType("int");
 
                     b.Property<string>("Title")
                         .HasColumnType("nvarchar(100)");
@@ -1344,7 +1316,7 @@ namespace OrderManagement.EfCore.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Color");
+                    b.ToTable("Color", (string)null);
                 });
 
             modelBuilder.Entity("OrderManagement.Domain.OrderManagement.ProductAndCategory", b =>
@@ -1437,15 +1409,13 @@ namespace OrderManagement.EfCore.Migrations
                         {
                             Id = 1,
                             Code = 1,
-                            Title = "محصول",
-                            TitleEn = "Product"
+                            Title = "محصول"
                         },
                         new
                         {
                             Id = 2,
                             Code = 2,
-                            Title = "دسته بندی",
-                            TitleEn = "Category"
+                            Title = "دسته بندی"
                         });
                 });
 
@@ -1989,7 +1959,7 @@ namespace OrderManagement.EfCore.Migrations
                     b.HasIndex("nationalcode")
                         .HasFilter("IsDeleted = 0");
 
-                    b.ToTable("UserRejectionFromBank");
+                    b.ToTable("UserRejectionFromBank", (string)null);
                 });
 
             modelBuilder.Entity("OrderManagement.Domain.WhiteList", b =>
@@ -2090,7 +2060,7 @@ namespace OrderManagement.EfCore.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Year");
+                    b.ToTable("Year", (string)null);
                 });
 
             modelBuilder.Entity("Volo.Abp.AuditLogging.AuditLog", b =>

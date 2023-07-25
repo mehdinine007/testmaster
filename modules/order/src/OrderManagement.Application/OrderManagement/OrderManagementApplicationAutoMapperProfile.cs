@@ -90,6 +90,7 @@ namespace OrderManagement
             CreateMap<PaymentResultViewModel, PspInteractionResult>();
             CreateMap<ProductAndCategory, ProductAndCategoryDto>()
                 .ForMember(x => x.HasChild, opt => opt.MapFrom(x => x.Childrens.Any()))
+                .ForMember(x => x.Attachments, opt => opt.Ignore())
                 .ReverseMap()
                 .IgnoreFullAuditedObjectProperties();
 
