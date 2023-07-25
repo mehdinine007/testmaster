@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OrderManagement.EfCore;
 using Volo.Abp.EntityFrameworkCore;
@@ -12,9 +13,11 @@ using Volo.Abp.EntityFrameworkCore;
 namespace OrderManagement.EfCore.Migrations
 {
     [DbContext(typeof(OrderManagementDbContext))]
-    partial class OrderManagementDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230725122511_add_productid_saledetail")]
+    partial class addproductidsaledetail
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1637,7 +1640,7 @@ namespace OrderManagement.EfCore.Migrations
                     b.Property<decimal>("MinimumAmountOfProxyDeposit")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int?>("ProductId")
+                    b.Property<int>("ProductId")
                         .HasColumnType("int");
 
                     b.Property<double>("RefuseProfitPercentage")
@@ -1676,8 +1679,7 @@ namespace OrderManagement.EfCore.Migrations
                     b.HasIndex("ESaleTypeId");
 
                     b.HasIndex("ProductId")
-                        .IsUnique()
-                        .HasFilter("[ProductId] IS NOT NULL");
+                        .IsUnique();
 
                     b.HasIndex("SaleId");
 
@@ -2565,7 +2567,9 @@ namespace OrderManagement.EfCore.Migrations
 
                     b.HasOne("OrderManagement.Domain.OrderManagement.ProductAndCategory", "ProductAndCategory")
                         .WithOne("SaleDetail")
-                        .HasForeignKey("OrderManagement.Domain.SaleDetail", "ProductId");
+                        .HasForeignKey("OrderManagement.Domain.SaleDetail", "ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("OrderManagement.Domain.SaleSchema", "SaleSchema")
                         .WithMany("SaleDetails")
