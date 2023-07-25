@@ -10,6 +10,8 @@ using OrderManagement.Domain.Shared;
 using System;
 using Core.Utility.Tools;
 using OrderManagement.Application.Contracts.OrderManagement;
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -35,7 +37,7 @@ public partial class ProductAndCategoryService : ApplicationService, IProductAnd
                 .Select(x => new { x.ParentId, x.Type })
                 .FirstOrDefault(x => x.Type == ProductAndCategoryType.Category && x.ParentId == productCategory.Id);
             if (firstDependentCategory != null)
-                throw new UserFriendlyException("این دسته بندی قابل حذف نمیباشد");
+                throw new UserFriendlyException("این دسته بندی در حال استفاده است");
         }
         await _productAndCategoryRepository.DeleteAsync(id);
     }
@@ -108,5 +110,20 @@ public partial class ProductAndCategoryService : ApplicationService, IProductAnd
             File = uploadFileDto.File,
         });
         return attachmentStatus;
+    }
+
+    public async Task<CustomPagedResultDto<ProductAndCategoryDto>> GetListWithPagination(ProductAndCategoryQueryDto input)
+    {
+        var productCategoryQuery = await _productAndCategoryRepository.WithDetailsAsync(x => x.Childrens);
+        productCategoryQuery = productCategoryQuery.AsSingleQuery();
+        if (input.ParentId > 0)
+            productCategoryQuery = productCategoryQuery.Where(x => x.ParentId == input.ParentId);
+
+        var totalCount = await productCategoryQuery.CountAsync();
+        if (totalCount <= 0)
+            return new CustomPagedResultDto<ProductAndCategoryDto>(new ProductAndCategoryDto[0], 0);
+
+        var queryResult = productCategoryQuery.PageBy(input).ToList();
+        return new CustomPagedResultDto<ProductAndCategoryDto>(ObjectMapper.Map<List<ProductAndCategory>, List<ProductAndCategoryDto>>(queryResult), totalCount);
     }
 }

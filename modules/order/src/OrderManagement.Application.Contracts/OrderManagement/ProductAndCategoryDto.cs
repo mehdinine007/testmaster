@@ -15,5 +15,7 @@ namespace OrderManagement.Application.Contracts
         public ProductAndCategoryType Type { get; set; }
 
         public int LevelId { get; set; }
+
+        public bool HasChild { get; set; }
     }
 }

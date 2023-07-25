@@ -9,6 +9,7 @@ using OrderManagement.Application.OrderManagement.Implementations;
 using OrderManagement.Domain;
 using OrderManagement.Domain.OrderManagement;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using Volo.Abp.AutoMapper;
 using Volo.Abp.ObjectMapping;
@@ -62,7 +63,7 @@ namespace OrderManagement
             CreateMap<Attachment, AttachmentDto>()
                 .ReverseMap();
             CreateMap<Attachment, AttachmentViewModel>()
-                .ForMember(x=> x.FileName,c=> c.MapFrom(m=> m.Id + "." + m.FileExtension))
+                .ForMember(x => x.FileName, c => c.MapFrom(m => m.Id + "." + m.FileExtension))
                 .ForMember(x => x.Type, c => c.MapFrom(m => m.EntityType))
                 .ForMember(x => x.TypeTitle, c => c.MapFrom(m => m.EntityType != 0 ? EnumHelper.GetDescription(m.EntityType) : ""))
                 .ForMember(x => x.Content, c => c.MapFrom(m => !string.IsNullOrWhiteSpace(m.Content) ? JsonConvert.DeserializeObject<List<string>>(m.Content) : null))
@@ -82,12 +83,13 @@ namespace OrderManagement
             CreateMap<Color, ColorDto>()
                 .ReverseMap();
             CreateMap<SaleSchema, SaleSchemaDto>()
-                .ForMember(x=> x.Attachments,c=> c.MapFrom(m=> m.Attachments))
+                .ForMember(x => x.Attachments, c => c.MapFrom(m => m.Attachments))
                .ReverseMap();
             CreateMap<PspHandShakeRequest, PaymentHandShakeDto>();
             CreateMap<PaymentHandShakeViewModel, IpgApiResult>();
             CreateMap<PaymentResultViewModel, PspInteractionResult>();
             CreateMap<ProductAndCategory, ProductAndCategoryDto>()
+                .ForMember(x => x.HasChild, opt => opt.MapFrom(x => x.Childrens.Any()))
                 .ReverseMap()
                 .IgnoreFullAuditedObjectProperties();
 

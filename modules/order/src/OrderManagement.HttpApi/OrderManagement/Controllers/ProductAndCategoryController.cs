@@ -39,4 +39,8 @@ public class ProductAndCategoryController : AbpController //, IProductAndCategor
     [HttpPost]
     public async Task<bool> UploadFile([FromForm] UploadFileDto uploadFileDto)
         => await _productAndCategoryService.UploadFile(uploadFileDto);
+
+    [HttpPost]
+    public async Task<CustomPagedResultDto<ProductAndCategoryDto>> GetPagination([FromBody] ProductAndCategoryQueryDto input)
+        => await _productAndCategoryService.GetListWithPagination(input);
 }

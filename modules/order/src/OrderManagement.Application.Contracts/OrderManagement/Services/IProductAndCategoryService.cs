@@ -11,5 +11,7 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Services
         Task Delete(int id);
 
         Task<bool> UploadFile(UploadFileDto uploadFileDto);
+
+        Task<CustomPagedResultDto<ProductAndCategoryDto>> GetListWithPagination(ProductAndCategoryQueryDto input);
     }
 }
