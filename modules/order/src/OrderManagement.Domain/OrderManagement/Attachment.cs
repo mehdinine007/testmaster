@@ -23,6 +23,5 @@ namespace OrderManagement.Domain.OrderManagement
         public string Description { get; set; }
         public string Content { get; set; }
         public int Priority { get; set; }
-        public virtual SaleSchema SaleSchema { get; set; }
     }
 }

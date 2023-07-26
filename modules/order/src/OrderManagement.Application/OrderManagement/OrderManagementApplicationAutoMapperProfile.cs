@@ -61,6 +61,8 @@ namespace OrderManagement
 
             CreateMap<Attachment, AttachmentDto>()
                 .ReverseMap();
+            CreateMap<Attachment, AttachFileDto>()
+                .ReverseMap();
             CreateMap<Attachment, AttachmentViewModel>()
                 .ForMember(x=> x.FileName,c=> c.MapFrom(m=> m.Id + "." + m.FileExtension))
                 .ForMember(x => x.Type, c => c.MapFrom(m => m.EntityType))
@@ -82,7 +84,6 @@ namespace OrderManagement
             CreateMap<Color, ColorDto>()
                 .ReverseMap();
             CreateMap<SaleSchema, SaleSchemaDto>()
-                .ForMember(x=> x.Attachments,c=> c.MapFrom(m=> m.Attachments))
                .ReverseMap();
             CreateMap<PspHandShakeRequest, PaymentHandShakeDto>();
             CreateMap<PaymentHandShakeViewModel, IpgApiResult>();

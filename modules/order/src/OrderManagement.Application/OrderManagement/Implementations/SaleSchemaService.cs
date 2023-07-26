@@ -38,34 +38,40 @@ public class SaleSchemaService : ApplicationService, ISaleSchemaService
         return saleSchemaDto;
     }
 
-        public async Task<PagedResultDto<SaleSchemaDto>> GetSaleSchema(int pageNo, int sizeNo)
+    public async Task<PagedResultDto<SaleSchemaDto>> GetSaleSchema(int pageNo, int sizeNo)
+    {
+        var count = _saleSchemaRepository.WithDetails().Count();
+        var saleSchemaResult = await _saleSchemaRepository.GetQueryableAsync();
+        var saleSchema = saleSchemaResult
+            .Skip(pageNo * sizeNo).Take(sizeNo)
+            .AsNoTracking()
+            .ToList();
+        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.SaleSchema, saleSchema.Select(x => x.Id).ToList());
+        saleSchema.ForEach(x =>
         {
-            var count = _saleSchemaRepository.WithDetails().Count();
-            var iqResult = await _saleSchemaRepository.GetQueryableAsync();
-            var queryResult = iqResult.Include(x => x.Attachments.Where(w => w.Entity == AttachmentEntityEnum.SaleSchema)).OrderByDescending(x => x.Id)
-                .Skip(pageNo * sizeNo).Take(sizeNo).AsNoTracking()
-                .ToList();
-            return new PagedResultDto<SaleSchemaDto>
-            {
-                TotalCount = count,
-                Items = ObjectMapper.Map<List<SaleSchema>, List<SaleSchemaDto>>(queryResult)
-            };
 
-        }
-        [UnitOfWork]
-        public async Task<int> Save(SaleSchemaDto saleSchemaDto)
+        });
+        return new PagedResultDto<SaleSchemaDto>
         {
-            var saleSchema = ObjectMapper.Map<SaleSchemaDto, SaleSchema>(saleSchemaDto);
-            await _saleSchemaRepository.InsertAsync(saleSchema, autoSave: true);
-            return saleSchema.Id;
-        }
+            TotalCount = count,
+            Items = ObjectMapper.Map<List<SaleSchema>, List<SaleSchemaDto>>(queryResult)
+        };
 
-        public async Task<int> Update(SaleSchemaDto saleSchemaDto)
-        {
-            var saleSchema = ObjectMapper.Map<SaleSchemaDto, SaleSchema>(saleSchemaDto);
-            await _saleSchemaRepository.AttachAsync(saleSchema, t => t.Title, d => d.Description, s => s.SaleStatus);
-            return saleSchema.Id;
-        }
+    }
+    [UnitOfWork]
+    public async Task<int> Save(SaleSchemaDto saleSchemaDto)
+    {
+        var saleSchema = ObjectMapper.Map<SaleSchemaDto, SaleSchema>(saleSchemaDto);
+        await _saleSchemaRepository.InsertAsync(saleSchema, autoSave: true);
+        return saleSchema.Id;
+    }
+
+    public async Task<int> Update(SaleSchemaDto saleSchemaDto)
+    {
+        var saleSchema = ObjectMapper.Map<SaleSchemaDto, SaleSchema>(saleSchemaDto);
+        await _saleSchemaRepository.AttachAsync(saleSchema, t => t.Title, d => d.Description, s => s.SaleStatus);
+        return saleSchema.Id;
+    }
 
     public async Task<bool> UploadFile(UploadFileDto uploadFile)
     {

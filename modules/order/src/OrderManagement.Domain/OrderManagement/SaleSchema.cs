@@ -16,9 +16,6 @@ namespace OrderManagement.Domain
 
         public int SaleStatus { get; set; }
 
-        public virtual ICollection<Attachment> Attachments { get; set; }
-
-
         public virtual ICollection<SaleDetail> SaleDetails
         { 
             get => _saleDetails ?? (_saleDetails = new List<SaleDetail>());

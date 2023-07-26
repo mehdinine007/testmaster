@@ -12,11 +12,14 @@ namespace OrderManagement.Application.Contracts
 {
     public class AttachmentDto
     {
-        public Guid? Id { get; set; }
+        public Guid Id { get; set; }
         public string Title { get; set; }
+        public string FileExtension { get; set; }
         public AttachmentEntityEnum Entity { get; set; }
         public int EntityId { get; set; }
         public AttachmentEntityTypeEnum EntityType { get; set; }
-
+        public string Description { get; set; }
+        public string Content { get; set; }
+        public int Priority { get; set; }
     }
 }
