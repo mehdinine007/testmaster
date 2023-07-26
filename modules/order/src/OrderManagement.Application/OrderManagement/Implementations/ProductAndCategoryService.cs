@@ -9,16 +9,20 @@ using Volo.Abp;
 using OrderManagement.Domain.Shared;
 using System;
 using Core.Utility.Tools;
+using OrderManagement.Application.Contracts.OrderManagement;
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
 public partial class ProductAndCategoryService : ApplicationService, IProductAndCategoryService
 {
     private readonly IRepository<ProductAndCategory, int> _productAndCategoryRepository;
-
-    public ProductAndCategoryService(IRepository<ProductAndCategory, int> productAndCategoryRepository)
+    private readonly IAttachmentService _attachmentService;
+    public ProductAndCategoryService(IRepository<ProductAndCategory, int> productAndCategoryRepository,IAttachmentService attachmentService)
     {
         _productAndCategoryRepository = productAndCategoryRepository;
+        _attachmentService = attachmentService;
     }
 
     public async Task Delete(int id)
@@ -30,7 +34,7 @@ public partial class ProductAndCategoryService : ApplicationService, IProductAnd
                 .Select(x => new { x.ParentId, x.Type })
                 .FirstOrDefault(x => x.Type == ProductAndCategoryType.Category && x.ParentId == productCategory.Id);
             if (firstDependentCategory != null)
-                throw new UserFriendlyException("این دسته بندی قابل حذف نمیباشد");
+                throw new UserFriendlyException("این دسته بندی در حال استفاده است");
         }
         await _productAndCategoryRepository.DeleteAsync(id);
     }
@@ -45,7 +49,7 @@ public partial class ProductAndCategoryService : ApplicationService, IProductAnd
 
     public async Task<ProductAndCategoryDto> Insert(ProductAndCategoryDto productAndCategoryDto)
     {
-        if (productAndCategoryDto.ParentId.HasValue)
+        if (productAndCategoryDto.ParentId.HasValue && productAndCategoryDto.ParentId.Value > 0)
         {
             var parent = (await _productAndCategoryRepository.GetQueryableAsync())
                 .FirstOrDefault(x => x.Id == productAndCategoryDto.ParentId)
@@ -67,11 +71,14 @@ public partial class ProductAndCategoryService : ApplicationService, IProductAnd
                 if (parentFirstProductChild != null)
                     throw new UserFriendlyException("برای دسته بندی سطح بالایی قبلا زیر سطح از نوع محصول تعریف شده است");
             }
+            productAndCategoryDto.LevelId = parent.LevelId + 1;
         }
+        else
+            productAndCategoryDto.LevelId = 1;
         var _parentCode = "";
         var igResult = await _productAndCategoryRepository.GetQueryableAsync();
         int codeLength = 4;
-        if (productAndCategoryDto.ParentId != null)
+        if (productAndCategoryDto.ParentId.HasValue && productAndCategoryDto.ParentId.Value > 0)
             _parentCode = igResult.FirstOrDefault(x => x.Id == productAndCategoryDto.ParentId).Code;
 
         var _maxCode = igResult
@@ -82,8 +89,55 @@ public partial class ProductAndCategoryService : ApplicationService, IProductAnd
         else _maxCode = "1";
         _maxCode = _parentCode + StringHelper.Repeat(_maxCode, codeLength);
         productAndCategoryDto.Code = _maxCode;
+        productAndCategoryDto.ParentId = productAndCategoryDto.ParentId.HasValue && productAndCategoryDto.ParentId.Value > 0
+            ? productAndCategoryDto.ParentId.Value
+            : null;
         var entity = await _productAndCategoryRepository.InsertAsync(
             ObjectMapper.Map<ProductAndCategoryDto, ProductAndCategory>(productAndCategoryDto));
         return ObjectMapper.Map<ProductAndCategory, ProductAndCategoryDto>(entity);
+    }
+
+    public async Task<bool> UploadFile(UploadFileDto uploadFileDto)
+    {
+        var attachmentStatus = await _attachmentService.UploadFile(new AttachFileDto()
+        {
+            Entity = AttachmentEntityEnum.ProductAndCategory,
+            EntityId = uploadFileDto.Id,
+            EntityType = uploadFileDto.AttachmentEntityTypeEnum,
+            File = uploadFileDto.File,
+        });
+        return attachmentStatus;
+    }
+
+    public async Task<CustomPagedResultDto<ProductAndCategoryDto>> GetListWithPagination(ProductAndCategoryQueryDto input)
+    {
+        var productCategoryQuery = await _productAndCategoryRepository.WithDetailsAsync(x => x.Childrens);
+        productCategoryQuery = productCategoryQuery.AsSingleQuery();
+        if (input.ParentId > 0)
+            productCategoryQuery = productCategoryQuery.Where(x => x.ParentId == input.ParentId);
+
+        var totalCount = await productCategoryQuery.CountAsync();
+        if (totalCount <= 0)
+            return new CustomPagedResultDto<ProductAndCategoryDto>(new ProductAndCategoryDto[0], 0);
+
+        var queryResult = productCategoryQuery.PageBy(input).ToList();
+
+        //var attachmentQuery = await _attachmentRepository.GetQueryableAsync();
+        //if (input.AttachmentEntityType > 0)
+        //    attachmentQuery = attachmentQuery.Where(x => x.EntityType == (AttachmentEntityTypeEnum)input.AttachmentEntityType);
+        //var ids = queryResult.Select(x => x.Id).ToList();
+        //attachmentQuery = attachmentQuery.Where(x => x.Entity == AttachmentEntityEnum.ProductAndCategory && ids.Any(y => y == x.EntityId));
+        //var attachments = attachmentQuery.ToList();
+
+        var ids = queryResult.Select(x => x.Id).ToList();
+        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, ids, input.AttachmentEntityType);
+
+        var resultList = ObjectMapper.Map<List<ProductAndCategory>, List<ProductAndCategoryDto>>(queryResult);
+        resultList.ForEach(x =>
+        {
+            var pacAttachments = attachments.Where(y => y.EntityId == x.Id).ToList();
+            x.Attachments = ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(pacAttachments);
+        });
+        return new CustomPagedResultDto<ProductAndCategoryDto>(resultList, totalCount);
     }
 }

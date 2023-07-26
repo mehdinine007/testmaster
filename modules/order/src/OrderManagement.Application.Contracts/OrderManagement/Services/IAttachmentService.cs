@@ -10,7 +10,7 @@ namespace OrderManagement.Application.Contracts
 {
     public interface IAttachmentService : IApplicationService
     {
-        Task<List<AttachmentDto>> GetList(AttachmentEntityEnum entity, List<int> idList);
+        Task<List<AttachmentDto>> GetList(AttachmentEntityEnum entity,List<int> idList,AttachmentEntityTypeEnum? entityType = null);
         Task<bool> UploadFile(AttachFileDto attachDto);
 
     }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Configuration;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Domain.OrderManagement;
@@ -98,12 +99,17 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             return attachment;
         }
 
-        public async Task<List<AttachmentDto>> GetList(AttachmentEntityEnum entity, List<int> entityIds)
+        public async Task<List<AttachmentDto>> GetList(AttachmentEntityEnum entity, List<int> entityIds, AttachmentEntityTypeEnum? entityType = null)
         {
             var iqAttachment = await _attachementRepository.GetQueryableAsync();
-            var attachments = iqAttachment
-                .Where(x => x.Entity == entity && x.EntityId.IsIn(entityIds))
-                .ToList();
+            if (entityType is null)
+                iqAttachment = iqAttachment
+                    .Where(x => x.Entity == entity && entityIds.Contains(x.EntityId));
+            else
+                iqAttachment = iqAttachment
+                    .Where(x => x.Entity == entity && x.EntityType == entityType && entityIds.Contains(x.EntityId));
+
+            var attachments = iqAttachment.ToList();
             return ObjectMapper.Map<List<Attachment>, List<AttachmentDto>>(attachments);
         }
     }

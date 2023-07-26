@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp.ObjectMapping;
 using Volo.Abp.Uow;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
@@ -42,19 +43,21 @@ public class SaleSchemaService : ApplicationService, ISaleSchemaService
     {
         var count = _saleSchemaRepository.WithDetails().Count();
         var saleSchemaResult = await _saleSchemaRepository.GetQueryableAsync();
-        var saleSchema = saleSchemaResult
+        var saleSchemaList = saleSchemaResult
             .Skip(pageNo * sizeNo).Take(sizeNo)
             .AsNoTracking()
             .ToList();
-        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.SaleSchema, saleSchema.Select(x => x.Id).ToList());
+        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.SaleSchema, saleSchemaList.Select(x => x.Id).ToList());
+        var saleSchema = ObjectMapper.Map<List<SaleSchema>, List<SaleSchemaDto>>(saleSchemaList);
         saleSchema.ForEach(x =>
         {
-
+            var attachment = attachments.Where(y => y.EntityId == x.Id).ToList();
+            x.Attachments = ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(attachment);
         });
         return new PagedResultDto<SaleSchemaDto>
         {
             TotalCount = count,
-            Items = ObjectMapper.Map<List<SaleSchema>, List<SaleSchemaDto>>(queryResult)
+            Items = saleSchema
         };
 
     }
@@ -77,7 +80,7 @@ public class SaleSchemaService : ApplicationService, ISaleSchemaService
     {
         await _attachmentService.UploadFile(new AttachFileDto()
         {
-            Entity = Domain.Shared.AttachmentEntityEnum.SaleSchema,
+            Entity = AttachmentEntityEnum.SaleSchema,
             EntityId = uploadFile.Id,
             EntityType = uploadFile.AttachmentEntityTypeEnum,
             File = uploadFile.File,
