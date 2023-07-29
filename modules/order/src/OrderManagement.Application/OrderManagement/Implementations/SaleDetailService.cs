@@ -103,16 +103,8 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
         var queryResult = saleDetails.PageBy(input).Select(x => new SaleDetailDto()
         {
             CarDeliverDate = x.CarDeliverDate,
-            CarFamilyId = x.CarTip.CarType.CarFamily.Id,
-            CarFamilyTitle = x.CarTip.CarType.CarFamily.Title,
             CarFee = x.CarFee,
-            CarTipId = x.CarTipId,
-            CarTipTitle = x.CarTip.Title,
-            CarTypeId = x.CarTip.CarTypeId,
-            CarTypeTitle = x.CarTip.CarType.Title,
             CircularSaleCode = x.CircularSaleCode,
-            CompanyId = x.CarTip.CarType.CarFamily.CompanyId,
-            CompanyName = x.CarTip.CarType.CarFamily.Company.Name,
             CoOperatingProfitPercentage = x.CoOperatingProfitPercentage,
             Id = x.Id,
             DeliverDaysCount = x.DeliverDaysCount,

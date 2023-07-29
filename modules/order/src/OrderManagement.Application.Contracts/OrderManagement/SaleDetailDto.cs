@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OrderManagement.Application.Contracts.OrderManagement.Models;
+using System;
 using System.Collections.Generic;
 
 namespace OrderManagement.Application.Contracts
@@ -37,25 +38,7 @@ namespace OrderManagement.Application.Contracts
         public decimal MinimumAmountOfProxyDeposit { get; set; }
 
         public int DeliverDaysCount { get; set; }
-
-        public int CompanyId { get; set; }
-
-        public string CompanyName { get; set; }
-
         public string CompanyImageUrl { get; set; }
-
-        public int CarFamilyId { get; set; }
-
-        public string CarFamilyTitle { get; set; }
-
-        public int CarTypeId { get; set; }
-
-        public string CarTypeTitle { get; set; }
-
-        public int CarTipId { get; set; }
-
-        public string CarTipTitle { get; set; }
-
         public bool Visible { get; set; }
 
         public string ColorTitle { get; set; }
@@ -67,5 +50,11 @@ namespace OrderManagement.Application.Contracts
         public string SaleTitle { get; set; }
 
         public List<string> CarTipImageUrls { get; set; }
+        public int? ProductId { get; set; }
+
+        public ProductAndCategoryViewModel ProductAndCategory { get; set; }
+        
+
+
     }
 }
