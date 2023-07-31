@@ -103,7 +103,7 @@ public partial class ProductAndCategoryService : ApplicationService, IProductAnd
         {
             Entity = AttachmentEntityEnum.ProductAndCategory,
             EntityId = uploadFileDto.Id,
-            EntityType = uploadFileDto.AttachmentEntityTypeEnum,
+            EntityType = uploadFileDto.Type,
             File = uploadFileDto.File,
         });
         return attachmentStatus;

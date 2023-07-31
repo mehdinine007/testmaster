@@ -82,7 +82,7 @@ public class SaleSchemaService : ApplicationService, ISaleSchemaService
         {
             Entity = AttachmentEntityEnum.SaleSchema,
             EntityId = uploadFile.Id,
-            EntityType = uploadFile.AttachmentEntityTypeEnum,
+            EntityType = uploadFile.Type,
             File = uploadFile.File,
         });
 

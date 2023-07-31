@@ -68,6 +68,7 @@ namespace OrderManagement
                 .ForMember(x => x.FileName, c => c.MapFrom(m => m.Id + "." + m.FileExtension))
                 .ForMember(x => x.Type, c => c.MapFrom(m => m.EntityType))
                 .ForMember(x => x.TypeTitle, c => c.MapFrom(m => m.EntityType != 0 ? EnumHelper.GetDescription(m.EntityType) : ""))
+                .ForMember(x => x.LocationTitle, c => c.MapFrom(m => m.Location != 0 ? EnumHelper.GetDescription(m.Location) : ""))
                 .ForMember(x => x.Content, c => c.MapFrom(m => !string.IsNullOrWhiteSpace(m.Content) ? JsonConvert.DeserializeObject<List<string>>(m.Content) : null))
                 .ReverseMap();
 

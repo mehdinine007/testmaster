@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using OrderManagement.Domain.Shared.OrderManagement.Enums;
 
 namespace OrderManagement.Application.Contracts
 {
@@ -18,6 +19,7 @@ namespace OrderManagement.Application.Contracts
         public AttachmentEntityEnum Entity { get; set; }
         public int EntityId { get; set; }
         public AttachmentEntityTypeEnum EntityType { get; set; }
+        public AttachmentLocationEnum Location { get; set; }
         public string Description { get; set; }
         public string Content { get; set; }
         public int Priority { get; set; }

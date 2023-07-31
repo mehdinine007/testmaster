@@ -1,4 +1,5 @@
 ﻿using OrderManagement.Domain.Shared;
+using OrderManagement.Domain.Shared.OrderManagement.Enums;
 
 namespace OrderManagement.Application.Contracts
 {
@@ -8,6 +9,8 @@ namespace OrderManagement.Application.Contracts
         public string FileName { get; set; }
         public AttachmentEntityTypeEnum Type { get; set; }
         public string TypeTitle { get; set; }
+        public AttachmentLocationEnum Location { get; set; }
+        public string LocationTitle { get; set; }
         public string Description { get; set; }
         public List<string> Content { get; set; }
         public int Priority { get; set; }
