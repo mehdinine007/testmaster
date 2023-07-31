@@ -15,7 +15,7 @@ using System.Collections.Generic;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
-public partial class ProductAndCategoryService : ApplicationService, IProductAndCategoryService
+public class ProductAndCategoryService : ApplicationService, IProductAndCategoryService
 {
     private readonly IRepository<ProductAndCategory, int> _productAndCategoryRepository;
     private readonly IAttachmentService _attachmentService;
@@ -119,8 +119,7 @@ public partial class ProductAndCategoryService : ApplicationService, IProductAnd
     {
         var productCategoryQuery = await _productAndCategoryRepository.WithDetailsAsync(x => x.Childrens);
         productCategoryQuery = productCategoryQuery.AsSingleQuery();
-        if (input.ParentId > 0)
-            productCategoryQuery = productCategoryQuery.Where(x => x.ParentId == input.ParentId);
+        productCategoryQuery = productCategoryQuery.Where(x => x.ParentId == input.ParentId);
 
         var totalCount = await productCategoryQuery.CountAsync();
         if (totalCount <= 0)
