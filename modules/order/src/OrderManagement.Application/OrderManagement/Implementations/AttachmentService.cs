@@ -1,14 +1,18 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Configuration;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Domain.OrderManagement;
+using OrderManagement.Domain.Shared;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp.ObjectMapping;
 
 namespace OrderManagement.Application.OrderManagement.Implementations
 {
@@ -84,7 +88,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             string basePath = _configuration.GetSection("Attachment:UploadFilePath").Value;
             if (string.IsNullOrEmpty(basePath))
                 throw new UserFriendlyException(OrderConstant.FileUploadNotPathNotExists, OrderConstant.FileUploadNotPathNotExistsId);
-            var attachment = ObjectMapper.Map<AttachmentDto, Attachment>(attachDto);
+            var attachment = ObjectMapper.Map<AttachFileDto, Attachment>(attachDto);
             attachment.FileExtension = fileExtention.Replace(".", "");
             string fileName = attachDto.Id.ToString() + "." + attachment.FileExtension;
             string filePath = Path.Combine(basePath, fileName);
@@ -93,6 +97,20 @@ namespace OrderManagement.Application.OrderManagement.Implementations
                 attachDto.File.CopyTo(stream);
             }
             return attachment;
+        }
+
+        public async Task<List<AttachmentDto>> GetList(AttachmentEntityEnum entity, List<int> entityIds, AttachmentEntityTypeEnum? entityType = null)
+        {
+            var iqAttachment = await _attachementRepository.GetQueryableAsync();
+            if (entityType is null)
+                iqAttachment = iqAttachment
+                    .Where(x => x.Entity == entity && entityIds.Contains(x.EntityId));
+            else
+                iqAttachment = iqAttachment
+                    .Where(x => x.Entity == entity && x.EntityType == entityType && entityIds.Contains(x.EntityId));
+
+            var attachments = iqAttachment.ToList();
+            return ObjectMapper.Map<List<Attachment>, List<AttachmentDto>>(attachments);
         }
     }
 }

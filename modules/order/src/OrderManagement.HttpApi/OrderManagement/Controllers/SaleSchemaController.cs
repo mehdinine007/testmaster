@@ -17,7 +17,7 @@ namespace OrderManagement.HttpApi.OrderManagement.Controllers;
 [DisableAuditing]
 [RemoteService]
 [Route("api/services/app/SaleSchemaService/[action]")]
-[UserAuthorization]
+//[UserAuthorization]
 public class SaleSchemaController : Controller, ISaleSchemaService
 {
     private readonly ISaleSchemaService _saleSchemaService;

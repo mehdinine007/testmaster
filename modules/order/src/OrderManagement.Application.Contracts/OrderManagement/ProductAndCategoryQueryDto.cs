@@ -1,4 +1,5 @@
-﻿using Volo.Abp.Application.Dtos;
+﻿using OrderManagement.Domain.Shared;
+using Volo.Abp.Application.Dtos;
 
 namespace OrderManagement.Application.Contracts.OrderManagement
 {
@@ -6,6 +7,6 @@ namespace OrderManagement.Application.Contracts.OrderManagement
     {
         public int? ParentId { get; set; }
 
-        public int AttachmentEntityType { get; set; }
+        public AttachmentEntityTypeEnum? AttachmentEntityType { get; set; }
     }
 }

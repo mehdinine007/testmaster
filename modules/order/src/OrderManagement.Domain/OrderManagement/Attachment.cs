@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using OrderManagement.Domain.Shared;
+using OrderManagement.Domain.Shared.OrderManagement.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -20,9 +21,9 @@ namespace OrderManagement.Domain.OrderManagement
         public AttachmentEntityEnum Entity { get; set; }
         public int EntityId { get; set; }
         public AttachmentEntityTypeEnum EntityType { get; set; }
+        public AttachmentLocationEnum Location { get; set; }
         public string Description { get; set; }
         public string Content { get; set; }
         public int Priority { get; set; }
-        public virtual SaleSchema SaleSchema { get; set; }
     }
 }

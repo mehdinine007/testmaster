@@ -31,10 +31,10 @@ namespace OrderManagement.Application.OrderManagement.Utitlities
             var saleDetailDtos = objectMapper.Map<List<SaleDetail>, List<SaleDetailDto>>(saleDetails, new List<SaleDetailDto>());
             saleDetailDtos.ForEach(x =>
             {
-                if (carTipGalleryImageRelations.TryGetValue(x.CarTipId, out List<int> relatedImageIds))
-                {
-                    x.CarTipImageUrls = allReltaedGAlleryImages.Where(y => relatedImageIds.Any(z => z == y.Id)).Select(y =>y.ImageUrl).ToList();
-                }
+                //if (carTipGalleryImageRelations.TryGetValue(x.CarTipId, out List<int> relatedImageIds))
+                //{
+                //    x.CarTipImageUrls = allReltaedGAlleryImages.Where(y => relatedImageIds.Any(z => z == y.Id)).Select(y =>y.ImageUrl).ToList();
+                //}
             });
             return saleDetailDtos;
         }

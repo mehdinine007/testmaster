@@ -70,5 +70,10 @@ namespace OrderManagement.Domain
             get => _saleDetailCarColors ?? (_saleDetailCarColors = new List<SaleDetailCarColor>());
             protected set => _saleDetailCarColors = value;
         }
+
+        public int? ProductId { get; set; }
+        public virtual ProductAndCategory ProductAndCategory { get; protected set; }
+
+
     }
 }

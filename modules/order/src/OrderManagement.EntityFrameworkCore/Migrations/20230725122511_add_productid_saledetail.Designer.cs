@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OrderManagement.EfCore;
 using Volo.Abp.EntityFrameworkCore;
@@ -12,9 +13,11 @@ using Volo.Abp.EntityFrameworkCore;
 namespace OrderManagement.EfCore.Migrations
 {
     [DbContext(typeof(OrderManagementDbContext))]
-    partial class OrderManagementDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230725122511_add_productid_saledetail")]
+    partial class addproductidsaledetail
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1285,9 +1288,6 @@ namespace OrderManagement.EfCore.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("LastModifierId");
 
-                    b.Property<int>("Location")
-                        .HasColumnType("int");
-
                     b.Property<int>("Priority")
                         .HasColumnType("int");
 
@@ -1295,6 +1295,8 @@ namespace OrderManagement.EfCore.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("EntityId");
 
                     b.ToTable("Attachments", "dbo");
                 });
@@ -1638,10 +1640,7 @@ namespace OrderManagement.EfCore.Migrations
                     b.Property<decimal>("MinimumAmountOfProxyDeposit")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int?>("ProductAndCategoryId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("ProductId")
+                    b.Property<int>("ProductId")
                         .HasColumnType("int");
 
                     b.Property<double>("RefuseProfitPercentage")
@@ -1679,7 +1678,8 @@ namespace OrderManagement.EfCore.Migrations
 
                     b.HasIndex("ESaleTypeId");
 
-                    b.HasIndex("ProductAndCategoryId");
+                    b.HasIndex("ProductId")
+                        .IsUnique();
 
                     b.HasIndex("SaleId");
 
@@ -2511,6 +2511,17 @@ namespace OrderManagement.EfCore.Migrations
                     b.Navigation("SaleDetail");
                 });
 
+            modelBuilder.Entity("OrderManagement.Domain.OrderManagement.Attachment", b =>
+                {
+                    b.HasOne("OrderManagement.Domain.SaleSchema", "SaleSchema")
+                        .WithMany("Attachments")
+                        .HasForeignKey("EntityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("SaleSchema");
+                });
+
             modelBuilder.Entity("OrderManagement.Domain.OrderManagement.ProductAndCategory", b =>
                 {
                     b.HasOne("OrderManagement.Domain.OrderManagement.ProductAndCategory", "Parent")
@@ -2555,8 +2566,10 @@ namespace OrderManagement.EfCore.Migrations
                         .IsRequired();
 
                     b.HasOne("OrderManagement.Domain.OrderManagement.ProductAndCategory", "ProductAndCategory")
-                        .WithMany()
-                        .HasForeignKey("ProductAndCategoryId");
+                        .WithOne("SaleDetail")
+                        .HasForeignKey("OrderManagement.Domain.SaleDetail", "ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("OrderManagement.Domain.SaleSchema", "SaleSchema")
                         .WithMany("SaleDetails")
@@ -2704,6 +2717,8 @@ namespace OrderManagement.EfCore.Migrations
             modelBuilder.Entity("OrderManagement.Domain.OrderManagement.ProductAndCategory", b =>
                 {
                     b.Navigation("Childrens");
+
+                    b.Navigation("SaleDetail");
                 });
 
             modelBuilder.Entity("OrderManagement.Domain.Province", b =>
@@ -2724,6 +2739,8 @@ namespace OrderManagement.EfCore.Migrations
 
             modelBuilder.Entity("OrderManagement.Domain.SaleSchema", b =>
                 {
+                    b.Navigation("Attachments");
+
                     b.Navigation("SaleDetails");
                 });
 

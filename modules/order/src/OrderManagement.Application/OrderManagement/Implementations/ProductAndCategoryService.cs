@@ -19,16 +19,10 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
 {
     private readonly IRepository<ProductAndCategory, int> _productAndCategoryRepository;
     private readonly IAttachmentService _attachmentService;
-    private readonly IRepository<Attachment, Guid> _attachmentRepository;
-
-    public ProductAndCategoryService(IRepository<ProductAndCategory, int> productAndCategoryRepository,
-                                     IAttachmentService attachmentService,
-                                     IRepository<Attachment, Guid> attachmentRepository
-        )
+    public ProductAndCategoryService(IRepository<ProductAndCategory, int> productAndCategoryRepository,IAttachmentService attachmentService)
     {
         _productAndCategoryRepository = productAndCategoryRepository;
         _attachmentService = attachmentService;
-        _attachmentRepository = attachmentRepository;
     }
 
     public async Task Delete(int id)
@@ -109,7 +103,7 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
         {
             Entity = AttachmentEntityEnum.ProductAndCategory,
             EntityId = uploadFileDto.Id,
-            EntityType = uploadFileDto.AttachmentEntityTypeEnum,
+            EntityType = uploadFileDto.Type,
             File = uploadFileDto.File,
         });
         return attachmentStatus;
@@ -126,18 +120,22 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
             return new CustomPagedResultDto<ProductAndCategoryDto>(new ProductAndCategoryDto[0], 0);
 
         var queryResult = productCategoryQuery.PageBy(input).ToList();
-        var attachmentQuery = await _attachmentRepository.GetQueryableAsync();
-        if (input.AttachmentEntityType > 0)
-            attachmentQuery = attachmentQuery.Where(x => x.EntityType == (AttachmentEntityTypeEnum)input.AttachmentEntityType);
+
+        //var attachmentQuery = await _attachmentRepository.GetQueryableAsync();
+        //if (input.AttachmentEntityType > 0)
+        //    attachmentQuery = attachmentQuery.Where(x => x.EntityType == (AttachmentEntityTypeEnum)input.AttachmentEntityType);
+        //var ids = queryResult.Select(x => x.Id).ToList();
+        //attachmentQuery = attachmentQuery.Where(x => x.Entity == AttachmentEntityEnum.ProductAndCategory && ids.Any(y => y == x.EntityId));
+        //var attachments = attachmentQuery.ToList();
+
         var ids = queryResult.Select(x => x.Id).ToList();
-        attachmentQuery = attachmentQuery.Where(x => x.Entity == AttachmentEntityEnum.ProductAndCategory && ids.Any(y => y == x.EntityId));
-        var attachments = attachmentQuery.ToList();
+        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, ids, input.AttachmentEntityType);
 
         var resultList = ObjectMapper.Map<List<ProductAndCategory>, List<ProductAndCategoryDto>>(queryResult);
         resultList.ForEach(x =>
         {
             var pacAttachments = attachments.Where(y => y.EntityId == x.Id).ToList();
-            x.Attachments = ObjectMapper.Map<List<Attachment>, List<AttachmentViewModel>>(pacAttachments);
+            x.Attachments = ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(pacAttachments);
         });
         return new CustomPagedResultDto<ProductAndCategoryDto>(resultList, totalCount);
     }

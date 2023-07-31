@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp.ObjectMapping;
 using Volo.Abp.Uow;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
@@ -41,14 +42,22 @@ public class SaleSchemaService : ApplicationService, ISaleSchemaService
     public async Task<PagedResultDto<SaleSchemaDto>> GetSaleSchema(int pageNo, int sizeNo)
     {
         var count = _saleSchemaRepository.WithDetails().Count();
-        var iqResult = await _saleSchemaRepository.GetQueryableAsync();
-        var queryResult = iqResult.Include(x => x.Attachments.Where(w => w.Entity == AttachmentEntityEnum.SaleSchema)).OrderByDescending(x => x.Id)
-            .Skip(pageNo * sizeNo).Take(sizeNo).AsNoTracking()
+        var saleSchemaResult = await _saleSchemaRepository.GetQueryableAsync();
+        var saleSchemaList = saleSchemaResult
+            .Skip(pageNo * sizeNo).Take(sizeNo)
+            .AsNoTracking()
             .ToList();
+        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.SaleSchema, saleSchemaList.Select(x => x.Id).ToList());
+        var saleSchema = ObjectMapper.Map<List<SaleSchema>, List<SaleSchemaDto>>(saleSchemaList);
+        saleSchema.ForEach(x =>
+        {
+            var attachment = attachments.Where(y => y.EntityId == x.Id).ToList();
+            x.Attachments = ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(attachment);
+        });
         return new PagedResultDto<SaleSchemaDto>
         {
             TotalCount = count,
-            Items = ObjectMapper.Map<List<SaleSchema>, List<SaleSchemaDto>>(queryResult)
+            Items = saleSchema
         };
 
     }
@@ -73,7 +82,7 @@ public class SaleSchemaService : ApplicationService, ISaleSchemaService
         {
             Entity = AttachmentEntityEnum.SaleSchema,
             EntityId = uploadFile.Id,
-            EntityType = uploadFile.AttachmentEntityTypeEnum,
+            EntityType = uploadFile.Type,
             File = uploadFile.File,
         });
 
