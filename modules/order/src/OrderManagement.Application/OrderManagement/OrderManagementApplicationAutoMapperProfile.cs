@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using Esale.Core.Utility.Tools;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Newtonsoft.Json;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.OrderManagement;
@@ -51,6 +50,7 @@ namespace OrderManagement
                 .ForMember(x => x.OrderStatus, opt => opt.MapFrom(y => y.OrderStatus.GetDisplayName()))
                 .ReverseMap();
 
+
             CreateMap<ESaleType, ESaleTypeDto>()
                 .ReverseMap()
                 .IgnoreFullAuditedObjectProperties();
@@ -70,6 +70,16 @@ namespace OrderManagement
                 .ForMember(x => x.TypeTitle, c => c.MapFrom(m => m.EntityType != 0 ? EnumHelper.GetDescription(m.EntityType) : ""))
                 .ForMember(x => x.LocationTitle, c => c.MapFrom(m => m.Location != 0 ? EnumHelper.GetDescription(m.Location) : ""))
                 .ForMember(x => x.Content, c => c.MapFrom(m => !string.IsNullOrWhiteSpace(m.Content) ? JsonConvert.DeserializeObject<List<string>>(m.Content) : null))
+                .ReverseMap();
+
+            CreateMap<Property, PropertyDto>()
+                .ForMember(x=> x.TypeTitle, c => c.MapFrom(m => m.Type != 0 ? EnumHelper.GetDescription(m.Type) : ""))
+                .ReverseMap();
+            CreateMap<PropertyCategory, PropertyCategoryDto>()
+                .ReverseMap();
+            CreateMap<ProductProperty, ProductPropertyDto>()
+                .ReverseMap();
+            CreateMap<DropDownItem, DropDownItemDto>()
                 .ReverseMap();
 
             CreateMap<SaleDetail, SaleDetailDto>()

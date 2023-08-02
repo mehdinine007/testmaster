@@ -1,5 +1,5 @@
 ﻿using MongoDB.Driver;
-using OrderManagement.Mongo.Domain;
+using OrderManagement.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,22 +8,17 @@ using System.Threading.Tasks;
 using Volo.Abp.Data;
 using Volo.Abp.MongoDB;
 
-namespace OrderManagement.EfCore.Mongo
+namespace OrderManagement.EfCore.MongoDb
 {
     [ConnectionStringName("MongoConnection")]
-    public class MongoDbContext : AbpMongoDbContext
+    public class OrderManagementMongoDbContext : AbpMongoDbContext
     {
         public IMongoCollection<UserMongo> Customers => Collection<UserMongo>();
+        public IMongoCollection<PropertyCategory> PropertyCategories => Collection<PropertyCategory>();
+        public IMongoCollection<ProductProperty> ProductProperties => Collection<ProductProperty>();
         protected override void CreateModel(IMongoModelBuilder modelBuilder)
         {
             base.CreateModel(modelBuilder);
-
-            //Customize the configuration for your collections.
-            //modelBuilder.Entity<Question>(b =>
-            //{
-            //    b.CollectionName = "MyQuestions"; //Sets the collection name
-            //    b.BsonMap.UnmapProperty(x => x.MyProperty); //Ignores 'MyProperty'
-            //});
         }
     }
 }

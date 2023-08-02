@@ -7,6 +7,7 @@ namespace OrderManagement.Domain.Shared
 {
     public enum AttachmentEntityTypeEnum
     {
+        [EnumProperty(Description = "نامشخص")]
         None = 0,
         [EnumProperty(Description = "گالری")]
         Gallery = 1,

@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
 using OrderManagement.Domain.Shared;
-using OrderManagement.Domain.Shared.OrderManagement.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;

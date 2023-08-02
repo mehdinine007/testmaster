@@ -12,6 +12,7 @@ using Core.Utility.Tools;
 using OrderManagement.Application.Contracts.OrderManagement;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using Nest;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -19,15 +20,17 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
 {
     private readonly IRepository<ProductAndCategory, int> _productAndCategoryRepository;
     private readonly IAttachmentService _attachmentService;
-    public ProductAndCategoryService(IRepository<ProductAndCategory, int> productAndCategoryRepository,IAttachmentService attachmentService)
+    private readonly IProductPropertyService _productPropertyService;
+    public ProductAndCategoryService(IRepository<ProductAndCategory, int> productAndCategoryRepository, IAttachmentService attachmentService, IProductPropertyService productPropertyService)
     {
         _productAndCategoryRepository = productAndCategoryRepository;
         _attachmentService = attachmentService;
+        _productPropertyService = productPropertyService;
     }
 
     public async Task Delete(int id)
     {
-        var productCategory = await Get(id);
+        var productCategory = await GetById(id);
         if (productCategory.Type == ProductAndCategoryType.Category)
         {
             var firstDependentCategory = (await _productAndCategoryRepository.GetQueryableAsync())
@@ -39,12 +42,17 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
         await _productAndCategoryRepository.DeleteAsync(id);
     }
 
-    public async Task<ProductAndCategoryDto> Get(int id)
+    public async Task<ProductAndCategoryDto> GetById(int id)
     {
         var productCategory = (await _productAndCategoryRepository.GetQueryableAsync())
             .FirstOrDefault(x => x.Id == id) ??
             throw new UserFriendlyException("محصول یا دسته بندی مورد نطر پیدا نشد");
-        return ObjectMapper.Map<ProductAndCategory, ProductAndCategoryDto>(productCategory);
+        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, new List<int>() { id });
+        var propertyCategories = await _productPropertyService.GetByProductId(id);
+        var productResult = ObjectMapper.Map<ProductAndCategory, ProductAndCategoryDto>(productCategory);
+        productResult.Attachments = ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(attachments);
+        productResult.PropertyCategories = propertyCategories;
+        return productResult;
     }
 
     public async Task<ProductAndCategoryDto> Insert(ProductAndCategoryDto productAndCategoryDto)

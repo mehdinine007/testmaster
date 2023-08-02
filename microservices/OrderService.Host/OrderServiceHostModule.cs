@@ -30,7 +30,7 @@ using Volo.Abp.Hangfire;
 using EasyCaching.Host.Extensions;
 using Volo.Abp.MongoDB;
 using Microsoft.EntityFrameworkCore;
-using OrderManagement.EfCore.Mongo;
+using OrderManagement.EfCore.MongoDb;
 
 namespace OrderService.Host
 {
@@ -129,7 +129,7 @@ namespace OrderService.Host
 
             context.Services.AddGrpc();
             context.Services.EasyCaching(configuration, "RedisCache:ConnectionString");
-            context.Services.AddMongoDbContext<MongoDbContext>(options =>
+            context.Services.AddMongoDbContext<OrderManagementMongoDbContext>(options =>
             {
                 options.AddDefaultRepositories(includeAllEntities: true);
             });

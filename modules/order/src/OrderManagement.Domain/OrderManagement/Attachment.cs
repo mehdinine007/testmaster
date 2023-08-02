@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using OrderManagement.Domain.Shared;
-using OrderManagement.Domain.Shared.OrderManagement.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;

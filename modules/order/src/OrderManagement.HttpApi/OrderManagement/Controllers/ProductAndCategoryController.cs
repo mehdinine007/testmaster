@@ -29,8 +29,8 @@ public class ProductAndCategoryController : AbpController //, IProductAndCategor
     }
 
     [HttpGet]
-    public async Task<ProductAndCategoryDto> Get(int id)
-        => await _productAndCategoryService.Get(id);
+    public async Task<ProductAndCategoryDto> GetById(int id)
+        => await _productAndCategoryService.GetById(id);
 
     [HttpPost]
     public async Task<ProductAndCategoryDto> Insert([FromBody] ProductAndCategoryDto productAndCategoryDto)

@@ -16,6 +16,12 @@ using OrderManagement.Application.Contracts.Services;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
 using Esale.Core.Caching;
+using MongoDB.Bson;
+using StackExchange.Redis;
+using System.Linq.Dynamic.Core;
+using Volo.Abp.Features;
+using OrderManagement.Domain.Shared;
+using Volo.Abp.ObjectMapping;
 
 namespace OrderManagement.Application.OrderManagement;
 
@@ -26,8 +32,10 @@ public class CapacityControlAppService : ApplicationService, ICapacityControlApp
     private readonly IEsaleGrpcClient _grpcClient;
     private readonly ICommonAppService _commonAppService;
     private readonly ICacheManager _cacheManager;
+    private readonly IRepository<PropertyCategory, Guid> _propertyDefinitionRepository;
+    private readonly IRepository<ProductProperty, Guid> _productPropertyRepository;
     private IConfiguration _configuration { get; set; }
-    public CapacityControlAppService(IConfiguration configuration, IEsaleGrpcClient grpcClient, IAgencySaleDetailService agencySaleDetailService, ISaleDetailService saleDetailService, ICommonAppService commonAppService, ICacheManager cacheManager)
+    public CapacityControlAppService(IConfiguration configuration, IEsaleGrpcClient grpcClient, IAgencySaleDetailService agencySaleDetailService, ISaleDetailService saleDetailService, ICommonAppService commonAppService, ICacheManager cacheManager, IRepository<PropertyCategory, Guid> propertyDefinitionRepository, IRepository<ProductProperty, Guid> productPropertyRepository)
     {
         _configuration = configuration;
         _grpcClient = grpcClient;
@@ -35,6 +43,8 @@ public class CapacityControlAppService : ApplicationService, ICapacityControlApp
         _saleDetailService = saleDetailService;
         _commonAppService = commonAppService;
         _cacheManager = cacheManager;
+        _propertyDefinitionRepository = propertyDefinitionRepository;
+        _productPropertyRepository = productPropertyRepository;
     }
     public async Task<IResult> SaleDetail()
     {
@@ -49,7 +59,7 @@ public class CapacityControlAppService : ApplicationService, ICapacityControlApp
                     await _cacheManager.SetStringAsync(_key,
                         CapacityControlConstants.CapacityControlPrefix,
                         saledetail.SaleTypeCapacity.ToString(),
-                        new CacheOptions() 
+                        new CacheOptions()
                         {
                             Provider = CacheProviderEnum.Redis,
                             RedisHash = false
@@ -96,6 +106,68 @@ public class CapacityControlAppService : ApplicationService, ICapacityControlApp
 
     public async Task GrpcPaymentTest()
     {
+        var propertydto = new PropertyCategoryDto()
+        {
+            Title = "مشخصات فنی",
+            Properties = new List<PropertyDto>()
+            {
+                new PropertyDto()
+                {
+                    Id = Guid.NewGuid(),
+                    Tilte = "سرعت",
+                    Type = PropertyTypeEnum.Text
+                },
+                new PropertyDto()
+                {
+                    Id = Guid.NewGuid(),
+                    Tilte = "موتور",
+                    Type = PropertyTypeEnum.DropDown,
+                    DropDownItems = new List<DropDownItemDto>()
+                    {
+                        new DropDownItemDto()
+                        {
+                            Title = "موتور 1",
+                            Value = 1
+                        },
+                        new DropDownItemDto()
+                        {
+                            Title = "موتور 2",
+                            Value = 2
+                        }
+                    }
+                }
+            }
+        };
+        await _propertyDefinitionRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto, PropertyCategory>(propertydto));
+        //IMongoCollection<PropertyDefinition> productFeatureCollection = await _productFeatureRepository.GetCollectionAsync();
+        //IAggregateFluent<PropertyDefinition> productFeatureAggregate = await _productFeatureRepository.GetAggregateAsync();
+        ////FilterDefinition<ProductFeature> matchFilter = Builders<ProductFeature>.Filter.ElemMatch<ProductFeature>("ProductFeature", Builders<ProductFeature>.Filter.Eq("FeatureValues.ProductId", 1));
+        //var filter = Builders<PropertyDefinition>.Filter.Where(e => e.FeatureValues.Any(x=> x.ProductId == 2));
+        //var a = productFeatureAggregate.Match(filter).ToList();
+        var propertyQuery = await _propertyDefinitionRepository.GetQueryableAsync();
+        var property = propertyQuery.ToList();
+        property.ForEach(x =>
+        {
+            x.Priority = 1;
+            int i = 0;
+            int v = 100;
+            x.Properties.ForEach(p =>
+            {
+                i += 1;
+                v += 1;
+                p.Priority = i;
+                p.Value = v.ToString();
+            });
+        });
+        var productpropertydto = new ProductPropertyDto()
+        {
+            ProductId = 42,
+            PropertyCategories = ObjectMapper.Map<List<PropertyCategory>, List<PropertyCategoryDto>>(property)
+        };
+        await _productPropertyRepository.InsertAsync(ObjectMapper.Map<ProductPropertyDto, ProductProperty>(productpropertydto));
+        var productQuery = await _productPropertyRepository.GetQueryableAsync();
+        var getproduct = productQuery.ToList();
+        var products = ObjectMapper.Map<List<ProductProperty>, List<ProductPropertyDto>>(getproduct.ToList());
         //var redis = await _redisCacheManager.ScanKeysAsync("n:CapacityControl:*");
         //var redis = _redisCacheManager.RemoveAllAsync("n:CapacityControl:*");
         //var payment = await _grpcClient.RetryForVerify();
@@ -120,10 +192,10 @@ public class CapacityControlAppService : ApplicationService, ICapacityControlApp
         await _commonAppService.ValidateOrderStep(OrderStepEnum.SubmitOrder);
         long _capacity = 0;
         string _key = string.Format(CapacityControlConstants.SaleDetailPrefix, saleDetailUId.ToString());
-        long.TryParse(await _cacheManager.GetStringAsync(_key, CapacityControlConstants.CapacityControlPrefix,new CacheOptions() { Provider = CacheProviderEnum.Redis,RedisHash = false}), out _capacity);
+        long.TryParse(await _cacheManager.GetStringAsync(_key, CapacityControlConstants.CapacityControlPrefix, new CacheOptions() { Provider = CacheProviderEnum.Redis, RedisHash = false }), out _capacity);
 
         _key = string.Format(CapacityControlConstants.PaymentCountPrefix, saleDetailUId.ToString());
-        long _request = await _cacheManager.StringIncrementAsync(CapacityControlConstants.CapacityControlPrefix+ _key);
+        long _request = await _cacheManager.StringIncrementAsync(CapacityControlConstants.CapacityControlPrefix + _key);
 
         if (_request > _capacity && _capacity > 0)
         {

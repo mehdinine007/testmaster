@@ -17,7 +17,6 @@ using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
 using Microsoft.Extensions.Configuration;
 using EasyCaching.Core;
-using OrderManagement.Mongo.Domain;
 using MongoDB.Bson;
 using Esale.Core.Caching;
 

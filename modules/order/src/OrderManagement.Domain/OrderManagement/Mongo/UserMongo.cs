@@ -10,9 +10,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Domain.Entities.Auditing;
 
-namespace OrderManagement.Mongo.Domain
+namespace OrderManagement.Domain
 {
-    public class UserMongo:  FullAuditedEntity<ObjectId>
+    public class UserMongo : FullAuditedEntity<ObjectId>
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
@@ -30,7 +30,7 @@ namespace OrderManagement.Mongo.Domain
         public string BirthCertId { get; set; }
         [Required]
         public DateTime BirthDate { get; set; }
-      
+
         [Required]
         [Column(TypeName = "NVARCHAR(10)")]
         public string PostalCode { get; set; }
@@ -51,7 +51,7 @@ namespace OrderManagement.Mongo.Domain
         [Column(TypeName = "VARCHAR(26)")]
         public string Shaba { get; set; }
         //public Province Province { get; set; }
-     
+
         [Column(TypeName = "VARCHAR(6)")]
         public string PreTel { get; set; }
         [ForeignKey("City")]
@@ -68,7 +68,7 @@ namespace OrderManagement.Mongo.Domain
         public int? HabitationProvinceId { get; set; }
 
         public DateTime? IssuingDate { get; set; }
-        public Int16? RegionId { get; set; }
+        public short? RegionId { get; set; }
         [Column(TypeName = "NVARCHAR(100)")]
         public string Street { get; set; }
         [Column(TypeName = "VARCHAR(10)")]
@@ -77,7 +77,7 @@ namespace OrderManagement.Mongo.Domain
         public string Alley { get; set; }
         public int? Priority { get; set; }
         public string NormalizedUserName { get; set; }
-        public string ConcurrencyStamp { get;set; }
+        public string ConcurrencyStamp { get; set; }
         public int? CompanyId { get; set; }
         public Guid UID { get; set; }
         public string ChassiNo { get; set; }
@@ -86,7 +86,7 @@ namespace OrderManagement.Mongo.Domain
         public string Vehicle { get; set; }
         public List<string> Roles { get; set; }
         public const int MaxUserNameLength = 256;
-      
+
         /// <summary>
         /// Maximum length of the <see cref="EmailAddress"/> property.
         /// </summary>
@@ -190,7 +190,7 @@ namespace OrderManagement.Mongo.Domain
         /// Return full name (Name Surname )
         /// </summary>
         [NotMapped]
-        public virtual string FullName { get { return this.Name + " " + this.Surname; } }
+        public virtual string FullName { get { return Name + " " + Surname; } }
 
         /// <summary>
         /// Password of the user.
@@ -253,7 +253,7 @@ namespace OrderManagement.Mongo.Domain
         /// <summary>
         /// Login definitions for this user.
         /// </summary>
-     
+
 
         /// <summary>
         /// Is the <see cref="AbpUserBase.EmailAddress"/> confirmed.
@@ -266,7 +266,7 @@ namespace OrderManagement.Mongo.Domain
         /// </summary>
         public virtual bool IsActive { get; set; }
 
-      
+
         public virtual void SetNewPasswordResetCode()
         {
             PasswordResetCode = Guid.NewGuid().ToString("N").Truncate(MaxPasswordResetCodeLength);
@@ -282,6 +282,6 @@ namespace OrderManagement.Mongo.Domain
             return Guid.NewGuid().ToString("N").Truncate(16);
         }
 
-       
+
     }
 }
