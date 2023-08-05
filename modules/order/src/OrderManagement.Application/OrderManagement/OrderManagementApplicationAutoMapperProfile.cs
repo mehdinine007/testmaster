@@ -105,7 +105,8 @@ namespace OrderManagement
                 .ForMember(x => x.Attachments, opt => opt.Ignore())
                 .ReverseMap()
                 .IgnoreFullAuditedObjectProperties();
-
+            CreateMap<ProductAndCategory, ProductAndCategoryWithChildDto>();
+                //.ForMember(x => x.ProductAndCategoryWithChilds)
         }
     }
 }

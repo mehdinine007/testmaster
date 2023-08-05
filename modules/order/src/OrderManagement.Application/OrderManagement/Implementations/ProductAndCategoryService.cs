@@ -13,6 +13,7 @@ using OrderManagement.Application.Contracts.OrderManagement;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using Nest;
+using Newtonsoft.Json;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -146,5 +147,22 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
             x.Attachments = ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(pacAttachments);
         });
         return new CustomPagedResultDto<ProductAndCategoryDto>(resultList, totalCount);
+    }
+
+    public async Task<List<ProductAndCategoryWithChildDto>> GetList(ProductAndCategoryGetListQueryDto input)
+    {
+        List<ProductAndCategory> ls = new();
+        var productAndCategoryQuery = await _productAndCategoryRepository.GetQueryableAsync();
+        switch (input.Type)
+        {
+            case ProductAndCategoryType.Category:
+                var parent = productAndCategoryQuery.Include(x => x.Childrens).Where(x => EF.Functions.Like(x.Code, "0002%") && x.Type == ProductAndCategoryType.Category).ToList();
+                ls = parent.Where(x => x.Code == "0002").ToList();
+                break;
+            case ProductAndCategoryType.Product:
+                ls = productAndCategoryQuery.Where(x => EF.Functions.Like(x.Code, "0002%") && x.Type == ProductAndCategoryType.Product).ToList();
+                break;
+        }
+        return ObjectMapper.Map<List<ProductAndCategory>, List<ProductAndCategoryWithChildDto>>(ls);
     }
 }
