@@ -11,7 +11,7 @@ using Volo.Abp.Domain.Entities.Auditing;
 
 namespace OrderManagement.Domain
 {
-    public class PropertyCategory : FullAuditedEntity<Guid>
+    public class PropertyCategory : FullAuditedEntity<ObjectId>
     {
         public string Title { get; set; }
         public List<Property> Properties { get; set; }

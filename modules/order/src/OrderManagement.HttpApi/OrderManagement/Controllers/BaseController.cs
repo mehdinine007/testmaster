@@ -39,10 +39,10 @@ public class BaseController : IBaseInformationService
     public void CheckWhiteList(WhiteListEnumType whiteListEnumType, string Nationalcode = "")
         => _baseInformationService.CheckWhiteList(whiteListEnumType, Nationalcode);
 
-    [HttpGet]
-    [UserAuthorization]
-    public async Task<List<CarTipDto>> GetCarTipsByCompanyId(int companyId)
-        => await _baseInformationService.GetCarTipsByCompanyId(companyId);
+    //[HttpGet]
+    //[UserAuthorization]
+    //public async Task<List<CarTipDto>> GetCarTipsByCompanyId(int companyId)
+    //    => await _baseInformationService.GetCarTipsByCompanyId(companyId);
 
     [HttpGet]
     public List<PublicDto> GetCities(int ProvienceId)

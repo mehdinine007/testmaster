@@ -13,6 +13,7 @@ using OrderManagement.Application.Contracts.OrderManagement;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using Nest;
+using Newtonsoft.Json;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -21,7 +22,10 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
     private readonly IRepository<ProductAndCategory, int> _productAndCategoryRepository;
     private readonly IAttachmentService _attachmentService;
     private readonly IProductPropertyService _productPropertyService;
-    public ProductAndCategoryService(IRepository<ProductAndCategory, int> productAndCategoryRepository, IAttachmentService attachmentService, IProductPropertyService productPropertyService)
+    public ProductAndCategoryService(IRepository<ProductAndCategory, int> productAndCategoryRepository,
+                                     IAttachmentService attachmentService,
+                                     IProductPropertyService productPropertyService
+        )
     {
         _productAndCategoryRepository = productAndCategoryRepository;
         _attachmentService = attachmentService;
@@ -100,6 +104,7 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
         productAndCategoryDto.ParentId = productAndCategoryDto.ParentId.HasValue && productAndCategoryDto.ParentId.Value > 0
             ? productAndCategoryDto.ParentId.Value
             : null;
+        productAndCategoryDto.Active = true;
         var entity = await _productAndCategoryRepository.InsertAsync(
             ObjectMapper.Map<ProductAndCategoryDto, ProductAndCategory>(productAndCategoryDto));
         return ObjectMapper.Map<ProductAndCategory, ProductAndCategoryDto>(entity);
@@ -146,5 +151,29 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
             x.Attachments = ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(pacAttachments);
         });
         return new CustomPagedResultDto<ProductAndCategoryDto>(resultList, totalCount);
+    }
+
+    public async Task<List<ProductAndCategoryWithChildDto>> GetList(ProductAndCategoryGetListQueryDto input)
+    {
+        List<ProductAndCategory> ls = new();
+        var productAndCategoryQuery = await _productAndCategoryRepository.GetQueryableAsync();
+        switch (input.Type)
+        {
+            case ProductAndCategoryType.Category:
+                var parent = productAndCategoryQuery
+                    .Include(x => x.Childrens.Where(y => y.Type == ProductAndCategoryType.Category))
+                    .Where(x => EF.Functions.Like(x.Code, input.NodePath + "%") && x.Type == ProductAndCategoryType.Category)
+                    .ToList();
+                ls = string.IsNullOrWhiteSpace(input.NodePath)
+                    ? parent.ToList()
+                    : parent.Where(x => x.Code == input.NodePath).ToList();
+                break;
+            case ProductAndCategoryType.Product:
+                if (string.IsNullOrWhiteSpace(input.NodePath))
+                    throw new UserFriendlyException("مسیر نود خالی است");
+                ls = productAndCategoryQuery.Where(x => EF.Functions.Like(x.Code, input.NodePath + "%") && x.Type == ProductAndCategoryType.Product).ToList();
+                break;
+        }
+        return ObjectMapper.Map<List<ProductAndCategory>, List<ProductAndCategoryWithChildDto>>(ls);
     }
 }

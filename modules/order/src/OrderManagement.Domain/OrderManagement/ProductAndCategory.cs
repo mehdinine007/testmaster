@@ -18,12 +18,20 @@ namespace OrderManagement.Domain.OrderManagement
 
         public int LevelId { get; set; }
 
+        public bool Active { get; set; }
+
         public virtual ProductAndCategory Parent { get; protected set; }
 
         public virtual ICollection<ProductAndCategory> Childrens
         {
             get => _childrens ?? (_childrens = new List<ProductAndCategory>());
             protected set => _childrens = value;
+        }
+
+
+        public ProductAndCategory()
+        {
+            Childrens = new HashSet<ProductAndCategory>();
         }
     }
 }

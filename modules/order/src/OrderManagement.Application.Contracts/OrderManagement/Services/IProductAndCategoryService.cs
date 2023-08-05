@@ -13,5 +13,7 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Services
         Task<bool> UploadFile(UploadFileDto uploadFileDto);
 
         Task<CustomPagedResultDto<ProductAndCategoryDto>> GetListWithPagination(ProductAndCategoryQueryDto input);
+
+        Task<List<ProductAndCategoryWithChildDto>> GetList(ProductAndCategoryGetListQueryDto input);
     }
 }

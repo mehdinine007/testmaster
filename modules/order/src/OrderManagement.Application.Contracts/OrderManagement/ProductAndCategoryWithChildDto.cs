@@ -2,7 +2,7 @@
 
 namespace OrderManagement.Application.Contracts
 {
-    public class ProductAndCategoryDto
+    public class ProductAndCategoryWithChildDto
     {
         public int Id { get; set; }
 
@@ -20,7 +20,6 @@ namespace OrderManagement.Application.Contracts
 
         public bool Active { get; set; }
 
-        public List<AttachmentViewModel> Attachments { get; set; }
-        public List<PropertyCategoryDto> PropertyCategories { get; set; }
+        public virtual ICollection<ProductAndCategoryWithChildDto> Childrens { get; set; }
     }
 }
