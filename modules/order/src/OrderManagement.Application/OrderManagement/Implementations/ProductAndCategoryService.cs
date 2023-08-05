@@ -156,11 +156,14 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
         switch (input.Type)
         {
             case ProductAndCategoryType.Category:
-                var parent = productAndCategoryQuery.Include(x => x.Childrens).Where(x => EF.Functions.Like(x.Code, "0002%") && x.Type == ProductAndCategoryType.Category).ToList();
-                ls = parent.Where(x => x.Code == "0002").ToList();
+                var parent = productAndCategoryQuery
+                    .Include(x => x.Childrens.Where(y => y.Type == ProductAndCategoryType.Category))
+                    .Where(x => EF.Functions.Like(x.Code, input.NodePath + "%") && x.Type == ProductAndCategoryType.Category)
+                    .ToList();
+                ls = parent.Where(x => x.Code == input.NodePath).ToList();
                 break;
             case ProductAndCategoryType.Product:
-                ls = productAndCategoryQuery.Where(x => EF.Functions.Like(x.Code, "0002%") && x.Type == ProductAndCategoryType.Product).ToList();
+                ls = productAndCategoryQuery.Where(x => EF.Functions.Like(x.Code, input.NodePath+"%") && x.Type == ProductAndCategoryType.Product).ToList();
                 break;
         }
         return ObjectMapper.Map<List<ProductAndCategory>, List<ProductAndCategoryWithChildDto>>(ls);
