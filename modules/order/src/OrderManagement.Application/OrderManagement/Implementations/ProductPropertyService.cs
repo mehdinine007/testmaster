@@ -1,4 +1,5 @@
-﻿using OrderManagement.Application.Contracts;
+﻿using MongoDB.Bson;
+using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
 using OrderManagement.Domain;
 using System;
@@ -15,8 +16,8 @@ namespace OrderManagement.Application
 {
     public class ProductPropertyService : ApplicationService, IProductPropertyService
     {
-        private readonly IRepository<ProductProperty, Guid> _productPropertyRepository;
-        public ProductPropertyService(IRepository<ProductProperty, Guid> productPropertyRepository)
+        private readonly IRepository<ProductProperty, ObjectId> _productPropertyRepository;
+        public ProductPropertyService(IRepository<ProductProperty, ObjectId> productPropertyRepository)
         {
             _productPropertyRepository = productPropertyRepository;
         }
