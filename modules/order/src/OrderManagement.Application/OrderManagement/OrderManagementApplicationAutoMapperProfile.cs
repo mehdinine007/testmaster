@@ -3,6 +3,7 @@ using Esale.Core.Utility.Tools;
 using Newtonsoft.Json;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.OrderManagement;
+using OrderManagement.Application.Contracts.OrderManagement.Models;
 using OrderManagement.Application.Helpers;
 using OrderManagement.Application.OrderManagement.Implementations;
 using OrderManagement.Domain;
@@ -105,6 +106,9 @@ namespace OrderManagement
                 .ForMember(x => x.Attachments, opt => opt.Ignore())
                 .ReverseMap()
                 .IgnoreFullAuditedObjectProperties();
+
+
+            CreateMap<ProductAndCategory, ProductAndCategoryViewModel>().ReverseMap();
 
         }
     }

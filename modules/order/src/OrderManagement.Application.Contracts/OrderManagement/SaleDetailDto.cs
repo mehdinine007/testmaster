@@ -50,9 +50,9 @@ namespace OrderManagement.Application.Contracts
         public string SaleTitle { get; set; }
 
         public List<string> CarTipImageUrls { get; set; }
-        public int? ProductId { get; set; }
+        public int ProductId { get; set; }
 
-        public ProductAndCategoryViewModel ProductAndCategory { get; set; }
+        public ProductAndCategoryViewModel Product { get; set; }
         
 
 

@@ -1,6 +1,7 @@
 ﻿using OrderManagement.Domain.OrderManagement;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using Volo.Abp.Domain.Entities.Auditing;
 
 namespace OrderManagement.Domain
@@ -71,8 +72,9 @@ namespace OrderManagement.Domain
             protected set => _saleDetailCarColors = value;
         }
 
-        public int? ProductId { get; set; }
-        public virtual ProductAndCategory ProductAndCategory { get; protected set; }
+        [ForeignKey("ProductAndCategory")]
+        public int ProductId { get; set; }
+        public virtual ProductAndCategory Product { get; protected set; }
 
 
     }

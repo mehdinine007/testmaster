@@ -11,10 +11,15 @@ using System.Linq;
 using Volo.Abp.Domain.Entities;
 using OrderManagement.Application.OrderManagement.Utitlities;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
+using Volo.Abp.ObjectMapping;
+using OrderManagement.Application.Contracts.OrderManagement.Models;
+using OrderManagement.Domain.OrderManagement;
+using OrderManagement.Domain.Shared;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
-public class SaleService : ApplicationService , ISaleService
+public class SaleService : ApplicationService, ISaleService
 {
     private readonly IRepository<PreSale> _preSaleRepository;
     private readonly IRepository<SaleDetail, int> _saleDetailRepository;
@@ -22,6 +27,7 @@ public class SaleService : ApplicationService , ISaleService
     private readonly IRepository<ESaleType, int> _esaleTypeRepository;
     private readonly IHttpContextAccessor _contextAccessor;
     private readonly ICommonAppService _commonAppService;
+    private readonly IAttachmentService _attachmentService;
     private IConfiguration _configuration { get; set; }
     public SaleService(IRepository<PreSale> PreSaleRepository,
                        IRepository<SaleDetail, int> saleDetailRepository,
@@ -29,7 +35,8 @@ public class SaleService : ApplicationService , ISaleService
                        IRepository<ESaleType, int> esaleTypeRepository,
                        IConfiguration configuration,
                        IHttpContextAccessor contextAccessor,
-                       ICommonAppService commonAppService)
+                       ICommonAppService commonAppService,
+                        IAttachmentService attachmentService)
     {
         _preSaleRepository = PreSaleRepository;
         _saleDetailRepository = saleDetailRepository;
@@ -38,11 +45,12 @@ public class SaleService : ApplicationService , ISaleService
         _configuration = configuration;
         _contextAccessor = contextAccessor;
         _commonAppService = commonAppService;
+        _attachmentService = attachmentService;
     }
 
     public async Task<List<PreSaleDto>> GetPreSales()
     {
-        return ObjectMapper.Map<List<PreSale>,List<PreSaleDto>>
+        return ObjectMapper.Map<List<PreSale>, List<PreSaleDto>>
             (
                 _preSaleRepository.WithDetails().ToList()
             );
@@ -50,58 +58,86 @@ public class SaleService : ApplicationService , ISaleService
 
     public async Task<SaleDetailDto> GetSaleDetail(Guid uid)
     {
-        var saleDetailQuery = _saleDetailRepository.WithDetails(x => x.CarTip,
-                x => x.CarTip.CarType,
-                x => x.CarTip.CarType.CarFamily,
-                x => x.CarTip.CarType.CarFamily.Company,
-                x => x.CarTip.CarTip_Gallery_Mappings,
-                x => x.CarTip.CarType.CarFamily.Company.GalleryBanner,
-                x => x.CarTip.CarType.CarFamily.Company.GalleryLogo,
-                x => x.CarTip.CarType.CarFamily.Company.GalleryLogoInPage).OrderBy(x => x.ESaleTypeId);
+        var saleDetailQuery = _saleDetailRepository
+            .WithDetails(x => x.Product, x => x.ESaleType, x => x.SaleSchema).OrderBy(x => x.ESaleTypeId);
 
         var saleDetail = saleDetailQuery.SingleOrDefault(x => x.UID == uid)
             ?? throw new EntityNotFoundException(typeof(SaleDetail), uid);
 
-        var company = await _galleriesRepository.GetAsync(saleDetail.CarTip.CarType.CarFamily.Company.Id);
-        var galleryIds = saleDetail.CarTip.CarTip_Gallery_Mappings.Select(x => x.GalleryId).ToList();
-        var carGalleries = (await _galleriesRepository.GetQueryableAsync()).Where(x => galleryIds.Any(y => y == x.Id)).ToList();
-        var saleDetailDto = ObjectMapper.Map<SaleDetail, SaleDetailDto>(saleDetail, new SaleDetailDto());
-        saleDetailDto.CarTipImageUrls = carGalleries.Select(x => x.ImageUrl).ToList();
-        saleDetailDto.CompanyImageUrl = company.ImageUrl;
+        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, new List<int> { saleDetail.ProductId });
+        var attachment = attachments.Where(y => y.EntityId == saleDetail.ProductId).ToList();
+        var saleDetailDto = ObjectMapper.Map<SaleDetail, SaleDetailDto>(saleDetail);
+        saleDetailDto.Product.Attachments = ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(attachment);
+
         return saleDetailDto;
     }
 
-    public async Task<List<SaleDetailDto>> GetSaleDetails(int tipId, int typeId, int familyId, int companyId, int esaleTypeId)
+    public async Task<List<SaleDetailDto>> GetSaleDetails(string categoryNode)
     {
-        var saleDetailQuery = _saleDetailRepository.WithDetails(x => x.CarTip,
-                x => x.CarTip.CarType,
-                x => x.CarTip.CarType.CarFamily,
-                x => x.CarTip.CarType.CarFamily.Company,
-                x => x.CarTip.CarTip_Gallery_Mappings,
-                x => x.CarTip.CarType.CarFamily.Company.GalleryBanner,
-                x => x.CarTip.CarType.CarFamily.Company.GalleryLogo,
-                x => x.CarTip.CarType.CarFamily.Company.GalleryLogoInPage);
+        IQueryable<SaleDetail> saleDetailQuery;
         var currentTime = DateTime.Now;
-        saleDetailQuery = saleDetailQuery.Where(x => x.SalePlanStartDate <= currentTime && currentTime <= x.SalePlanEndDate && x.Visible);
-        if (esaleTypeId > 0)
-            saleDetailQuery = saleDetailQuery.Where(x => x.ESaleTypeId == esaleTypeId);
-        if (tipId > 0)
-            saleDetailQuery = saleDetailQuery.Where(x => x.CarTip.Id == tipId);
-        if (typeId > 0)
-            saleDetailQuery = saleDetailQuery.Where(x => x.CarTip.CarType.Id == typeId);
-        if (familyId > 0)
-            saleDetailQuery = saleDetailQuery.Where(x => x.CarTip.CarType.CarFamily.Id == familyId);
-        if (companyId > 0)
-            saleDetailQuery = saleDetailQuery.Where(x => x.CarTip.CarType.CarFamily.Company.Id == companyId);
-        var queryResult = saleDetailQuery.ToList();
-        if (!queryResult.Any())
+        if (categoryNode.IsNullOrEmpty())
+        {
+            saleDetailQuery = _saleDetailRepository
+            .WithDetails(x => x.Product, x => x.ESaleType, x => x.SaleSchema)
+            .Where(x => x.SalePlanStartDate <= currentTime && currentTime <= x.SalePlanEndDate && x.Visible);
+        }
+        else
+        {
+            saleDetailQuery = _saleDetailRepository
+           .WithDetails(x => x.Product, x => x.ESaleType, x => x.SaleSchema)
+           .Where(x => x.SalePlanStartDate <= currentTime && currentTime <= x.SalePlanEndDate && x.Visible && EF.Functions.Like(x.Product.Code, categoryNode + "%"));
+        }
+
+
+        var queryResult = saleDetailQuery.Select(x => new SaleDetailDto()
+        {
+            CarDeliverDate = x.CarDeliverDate,
+            CarFee = x.CarFee,
+            CircularSaleCode = x.CircularSaleCode,
+            CoOperatingProfitPercentage = x.CoOperatingProfitPercentage,
+            Id = x.Id,
+            DeliverDaysCount = x.DeliverDaysCount,
+            EsaleName = x.ESaleType.SaleTypeName,
+            EsaleTypeId = x.ESaleTypeId,
+            ManufactureDate = x.ManufactureDate,
+            Visible = x.Visible,
+            SaleId = x.SaleId,
+            SaleTitle = x.SaleSchema.Title,
+            SalePlanCode = x.SalePlanCode,
+            UID = x.UID,
+            SaleTypeCapacity = x.SaleTypeCapacity,
+            SalePlanEndDate = x.SalePlanEndDate,
+            SalePlanStartDate = x.SalePlanStartDate,
+            SalePlanDescription = x.SalePlanDescription,
+            RefuseProfitPercentage = x.RefuseProfitPercentage,
+            MinimumAmountOfProxyDeposit = x.MinimumAmountOfProxyDeposit,
+            ProductId = x.ProductId,
+            Product = ObjectMapper.Map<ProductAndCategory, ProductAndCategoryViewModel>(x.Product)
+        }).ToList();
+
+
+
+        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, queryResult.Select(x => x.ProductId).ToList());
+
+
+        queryResult.ForEach(x =>
+        {
+
+            var attachment = attachments.Where(y => y.EntityId == x.ProductId).ToList();
+
+            x.Product.Attachments = ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(attachment);
+
+        });
+
+
+        if (!saleDetailQuery.Any())
             return new List<SaleDetailDto>();
-        var saleDetailDtos = await queryResult.MapSaleDetailsToDto(_galleriesRepository, ObjectMapper);
         if (_contextAccessor.HttpContext.Request.Headers.TryGetValue("Authorization", out var token))
         {
             await _commonAppService.SetOrderStep(OrderStepEnum.Start);
         }
-        return saleDetailDtos.OrderBy(x => x.SalePlanDescription).ToList();
+        return queryResult.OrderBy(x => x.SalePlanDescription).ToList();
     }
 
     public async Task<List<SalePlanDto>> GetSalePlans(int companyId)
@@ -165,17 +201,17 @@ public class SaleService : ApplicationService , ISaleService
     {
         throw new NotImplementedException();
 
-       // var users = await _customerOrderRepository.Query(
-       //x => x.Join(_userRepository.GetAllIncluding(),
-       //x => x.UserId,
-       //x => x.Id, (x, y) => new { nationalCode = y.NationalCode, mobile = y.Mobile, saleDetailId = x.SaleDetailId, saleId = x.SaleId, orderStatus = x.OrderStatus }
-       //).Where(x => x.saleId == saleId && x.orderStatus != OrderStatusType.Canceled).Select(x => new UserOrderMobileDto
-       //{
-       //    NationalCode = x.nationalCode,
-       //    Mobile = x.mobile,
-       //    SaleDetailId = x.saleDetailId,
-       //    SaleId = x.saleId,
-       //}).ToListAsync());
+        // var users = await _customerOrderRepository.Query(
+        //x => x.Join(_userRepository.GetAllIncluding(),
+        //x => x.UserId,
+        //x => x.Id, (x, y) => new { nationalCode = y.NationalCode, mobile = y.Mobile, saleDetailId = x.SaleDetailId, saleId = x.SaleId, orderStatus = x.OrderStatus }
+        //).Where(x => x.saleId == saleId && x.orderStatus != OrderStatusType.Canceled).Select(x => new UserOrderMobileDto
+        //{
+        //    NationalCode = x.nationalCode,
+        //    Mobile = x.mobile,
+        //    SaleDetailId = x.saleDetailId,
+        //    SaleId = x.saleId,
+        //}).ToListAsync());
 
     }
 

@@ -13,5 +13,7 @@ namespace OrderManagement.Application.Contracts
         public string Description { get; set; }
         public List<string> Content { get; set; }
         public int Priority { get; set; }
+        public int EntityId { get; set; }
+
     }
 }
