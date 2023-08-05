@@ -18,6 +18,8 @@ namespace OrderManagement.Domain.OrderManagement
 
         public int LevelId { get; set; }
 
+        public bool Active { get; set; }
+
         public virtual ProductAndCategory Parent { get; protected set; }
 
         public virtual ICollection<ProductAndCategory> Childrens

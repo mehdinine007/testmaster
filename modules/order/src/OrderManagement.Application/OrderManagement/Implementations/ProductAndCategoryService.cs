@@ -22,7 +22,10 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
     private readonly IRepository<ProductAndCategory, int> _productAndCategoryRepository;
     private readonly IAttachmentService _attachmentService;
     private readonly IProductPropertyService _productPropertyService;
-    public ProductAndCategoryService(IRepository<ProductAndCategory, int> productAndCategoryRepository, IAttachmentService attachmentService, IProductPropertyService productPropertyService)
+    public ProductAndCategoryService(IRepository<ProductAndCategory, int> productAndCategoryRepository, 
+                                     IAttachmentService attachmentService, 
+                                     IProductPropertyService productPropertyService
+        )
     {
         _productAndCategoryRepository = productAndCategoryRepository;
         _attachmentService = attachmentService;
@@ -101,6 +104,7 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
         productAndCategoryDto.ParentId = productAndCategoryDto.ParentId.HasValue && productAndCategoryDto.ParentId.Value > 0
             ? productAndCategoryDto.ParentId.Value
             : null;
+        productAndCategoryDto.Active = true;
         var entity = await _productAndCategoryRepository.InsertAsync(
             ObjectMapper.Map<ProductAndCategoryDto, ProductAndCategory>(productAndCategoryDto));
         return ObjectMapper.Map<ProductAndCategory, ProductAndCategoryDto>(entity);
