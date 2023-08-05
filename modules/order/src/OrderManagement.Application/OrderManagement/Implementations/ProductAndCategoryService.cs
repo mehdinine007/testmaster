@@ -22,8 +22,8 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
     private readonly IRepository<ProductAndCategory, int> _productAndCategoryRepository;
     private readonly IAttachmentService _attachmentService;
     private readonly IProductPropertyService _productPropertyService;
-    public ProductAndCategoryService(IRepository<ProductAndCategory, int> productAndCategoryRepository, 
-                                     IAttachmentService attachmentService, 
+    public ProductAndCategoryService(IRepository<ProductAndCategory, int> productAndCategoryRepository,
+                                     IAttachmentService attachmentService,
                                      IProductPropertyService productPropertyService
         )
     {
@@ -164,10 +164,14 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
                     .Include(x => x.Childrens.Where(y => y.Type == ProductAndCategoryType.Category))
                     .Where(x => EF.Functions.Like(x.Code, input.NodePath + "%") && x.Type == ProductAndCategoryType.Category)
                     .ToList();
-                ls = parent.Where(x => x.Code == input.NodePath).ToList();
+                ls = string.IsNullOrWhiteSpace(input.NodePath)
+                    ? parent.ToList()
+                    : parent.Where(x => x.Code == input.NodePath).ToList();
                 break;
             case ProductAndCategoryType.Product:
-                ls = productAndCategoryQuery.Where(x => EF.Functions.Like(x.Code, input.NodePath+"%") && x.Type == ProductAndCategoryType.Product).ToList();
+                if (string.IsNullOrWhiteSpace(input.NodePath))
+                    throw new UserFriendlyException("مسیر نود خالی است");
+                ls = productAndCategoryQuery.Where(x => EF.Functions.Like(x.Code, input.NodePath + "%") && x.Type == ProductAndCategoryType.Product).ToList();
                 break;
         }
         return ObjectMapper.Map<List<ProductAndCategory>, List<ProductAndCategoryWithChildDto>>(ls);
