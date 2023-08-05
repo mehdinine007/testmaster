@@ -27,7 +27,6 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
 
     private readonly IRepository<Company, int> _companyRepository;
     //private readonly IRepository<User, long> _userRepository;
-    private readonly IRepository<CarTip, int> _carTipRepository;
     private readonly IRepository<Gallery, int> _galleryRepository;
     private readonly IRepository<CarMakerBlackList, long> _carMakerBlackListRepository;
     private readonly IRepository<AdvocacyUsersFromBank, int> _advocacyUsersFromBankRepository;
@@ -51,7 +50,6 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
 
     private readonly ICacheManager _cacheManager;
     public BaseInformationService(IRepository<Company, int> companyRepository,
-                                  IRepository<CarTip, int> carTipRepsoitory,
                                   IRepository<Gallery, int> galleryRepository,
                                   ICommonAppService CommonAppService,
                                   IHttpContextAccessor HttpContextAccessor,
@@ -74,7 +72,6 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
     {
         _esaleGrpcClient = esaleGrpcClient;
         _companyRepository = companyRepository;
-        _carTipRepository = carTipRepsoitory;
         _galleryRepository = galleryRepository;
         _advocacyUsersFromBankRepository = advocacyUsersFromBankRepository;
         _carMakerBlackListRepository = CarMakerBlackListRepository;
@@ -266,35 +263,35 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
 
     }
 
-    public async Task<List<CarTipDto>> GetCarTipsByCompanyId(int companyId)
-    {
+    //public async Task<List<CarTipDto>> GetCarTipsByCompanyId(int companyId)
+    //{
 
-        var carTipQuery = _carTipRepository.WithDetails(x => x.CarType.CarFamily.Company,
-            x => x.CarTip_Gallery_Mappings);
-        var carTips = carTipQuery.Where(x => x.CarType.CarFamily.Company.Id == companyId)
-            .ToList();
-        var carTipGalleryImageRelations = new Dictionary<int, List<int>>();//cartipId //galleryRecordIds
-        var allRelateGalleryImageIds = new List<int>();
-        carTips.ForEach(x =>
-        {
-            if (!carTipGalleryImageRelations.TryGetValue(x.Id, out var _))
-            {
-                var galleryIds = x.CarTip_Gallery_Mappings.Select(y => y.GalleryId).ToList();
-                carTipGalleryImageRelations.Add(x.Id, galleryIds);
-                allRelateGalleryImageIds.AddRange(galleryIds);
-            }
-        });
-        var allReltaedGAlleryImages = _galleryRepository.WithDetails().Where(x => allRelateGalleryImageIds.Any(y => y == x.Id));
-        var carTipDtos = ObjectMapper.Map<List<CarTip>, List<CarTipDto>>(carTips, new List<CarTipDto>());
-        carTipDtos.ForEach(x =>
-        {
-            if (carTipGalleryImageRelations.TryGetValue(x.Id, out List<int> relatedImageIds))
-            {
-                x.CarImageUrls = allReltaedGAlleryImages.Where(y => relatedImageIds.Any(z => z == y.Id)).Select(y => y.ImageUrl).ToList();
-            }
-        });
-        return carTipDtos;
-    }
+    //    var carTipQuery = _carTipRepository.WithDetails(x => x.CarType.CarFamily.Company,
+    //        x => x.CarTip_Gallery_Mappings);
+    //    var carTips = carTipQuery.Where(x => x.CarType.CarFamily.Company.Id == companyId)
+    //        .ToList();
+    //    var carTipGalleryImageRelations = new Dictionary<int, List<int>>();//cartipId //galleryRecordIds
+    //    var allRelateGalleryImageIds = new List<int>();
+    //    carTips.ForEach(x =>
+    //    {
+    //        if (!carTipGalleryImageRelations.TryGetValue(x.Id, out var _))
+    //        {
+    //            var galleryIds = x.CarTip_Gallery_Mappings.Select(y => y.GalleryId).ToList();
+    //            carTipGalleryImageRelations.Add(x.Id, galleryIds);
+    //            allRelateGalleryImageIds.AddRange(galleryIds);
+    //        }
+    //    });
+    //    var allReltaedGAlleryImages = _galleryRepository.WithDetails().Where(x => allRelateGalleryImageIds.Any(y => y == x.Id));
+    //    var carTipDtos = ObjectMapper.Map<List<CarTip>, List<CarTipDto>>(carTips, new List<CarTipDto>());
+    //    carTipDtos.ForEach(x =>
+    //    {
+    //        if (carTipGalleryImageRelations.TryGetValue(x.Id, out List<int> relatedImageIds))
+    //        {
+    //            x.CarImageUrls = allReltaedGAlleryImages.Where(y => relatedImageIds.Any(z => z == y.Id)).Select(y => y.ImageUrl).ToList();
+    //        }
+    //    });
+    //    return carTipDtos;
+    //}
 
     public List<CompanyDto> GetCompanies()
     {

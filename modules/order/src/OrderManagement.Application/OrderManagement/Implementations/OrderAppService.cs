@@ -74,7 +74,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
                            IRandomGenerator randomGenerator,
                            IRepository<Gallery, int> galleryRepository,
                            IRepository<CarTip_Gallery_Mapping, int> carTipGalleryRepsoitory,
-                           IRepository<CarTip, int> carTipRepository,
                            IRepository<CarTip_Gallery_Mapping> carTipGalleryMappingRepository,
                            IAuditingManager auditingManager,
                            IObjectMapper objectMapper,
