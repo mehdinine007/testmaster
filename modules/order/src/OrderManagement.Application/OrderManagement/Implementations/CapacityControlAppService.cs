@@ -32,10 +32,10 @@ public class CapacityControlAppService : ApplicationService, ICapacityControlApp
     private readonly IEsaleGrpcClient _grpcClient;
     private readonly ICommonAppService _commonAppService;
     private readonly ICacheManager _cacheManager;
-    private readonly IRepository<PropertyCategory, Guid> _propertyDefinitionRepository;
-    private readonly IRepository<ProductProperty, Guid> _productPropertyRepository;
+    private readonly IRepository<PropertyCategory, ObjectId> _propertyDefinitionRepository;
+    private readonly IRepository<ProductProperty, ObjectId> _productPropertyRepository;
     private IConfiguration _configuration { get; set; }
-    public CapacityControlAppService(IConfiguration configuration, IEsaleGrpcClient grpcClient, IAgencySaleDetailService agencySaleDetailService, ISaleDetailService saleDetailService, ICommonAppService commonAppService, ICacheManager cacheManager, IRepository<PropertyCategory, Guid> propertyDefinitionRepository, IRepository<ProductProperty, Guid> productPropertyRepository)
+    public CapacityControlAppService(IConfiguration configuration, IEsaleGrpcClient grpcClient, IAgencySaleDetailService agencySaleDetailService, ISaleDetailService saleDetailService, ICommonAppService commonAppService, ICacheManager cacheManager, IRepository<PropertyCategory, ObjectId> propertyDefinitionRepository, IRepository<ProductProperty, ObjectId> productPropertyRepository)
     {
         _configuration = configuration;
         _grpcClient = grpcClient;
@@ -139,13 +139,39 @@ public class CapacityControlAppService : ApplicationService, ICapacityControlApp
             }
         };
         await _propertyDefinitionRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto, PropertyCategory>(propertydto));
+        propertydto = new PropertyCategoryDto()
+        {
+            Title = "مشخصات ظاهری",
+            Properties = new List<PropertyDto>()
+            {
+                new PropertyDto()
+                {
+                    Id = Guid.NewGuid(),
+                    Tilte = "رنگ بدنه",
+                    Type = PropertyTypeEnum.Text
+                },
+                new PropertyDto()
+                {
+                    Id = Guid.NewGuid(),
+                    Tilte = "جنس لاستیک",
+                    Type = PropertyTypeEnum.Text,
+                },
+                new PropertyDto()
+                {
+                    Id = Guid.NewGuid(),
+                    Tilte = "سپر عقب",
+                    Type = PropertyTypeEnum.Text,
+                },
+            }
+        };
+        await _propertyDefinitionRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto, PropertyCategory>(propertydto));
         //IMongoCollection<PropertyDefinition> productFeatureCollection = await _productFeatureRepository.GetCollectionAsync();
         //IAggregateFluent<PropertyDefinition> productFeatureAggregate = await _productFeatureRepository.GetAggregateAsync();
         ////FilterDefinition<ProductFeature> matchFilter = Builders<ProductFeature>.Filter.ElemMatch<ProductFeature>("ProductFeature", Builders<ProductFeature>.Filter.Eq("FeatureValues.ProductId", 1));
         //var filter = Builders<PropertyDefinition>.Filter.Where(e => e.FeatureValues.Any(x=> x.ProductId == 2));
         //var a = productFeatureAggregate.Match(filter).ToList();
         var propertyQuery = await _propertyDefinitionRepository.GetQueryableAsync();
-        var property = propertyQuery.ToList();
+        var property = propertyQuery.ToList().Take(1).ToList();
         property.ForEach(x =>
         {
             x.Priority = 1;
@@ -165,6 +191,47 @@ public class CapacityControlAppService : ApplicationService, ICapacityControlApp
             PropertyCategories = ObjectMapper.Map<List<PropertyCategory>, List<PropertyCategoryDto>>(property)
         };
         await _productPropertyRepository.InsertAsync(ObjectMapper.Map<ProductPropertyDto, ProductProperty>(productpropertydto));
+        property = propertyQuery.ToList().ToList();
+        property.ForEach(x =>
+        {
+            x.Priority = 1;
+            int i = 0;
+            int v = 100;
+            x.Properties.ForEach(p =>
+            {
+                i += 1;
+                v += 1;
+                p.Priority = i;
+                p.Value = v.ToString();
+            });
+        });
+        productpropertydto = new ProductPropertyDto()
+        {
+            ProductId = 43,
+            PropertyCategories = ObjectMapper.Map<List<PropertyCategory>, List<PropertyCategoryDto>>(property)
+        };
+        await _productPropertyRepository.InsertAsync(ObjectMapper.Map<ProductPropertyDto, ProductProperty>(productpropertydto));
+        property = propertyQuery.ToList().ToList().Take(1).ToList();
+        property.ForEach(x =>
+        {
+            x.Priority = 1;
+            int i = 0;
+            int v = 100;
+            x.Properties.ForEach(p =>
+            {
+                i += 1;
+                v += 1;
+                p.Priority = i;
+                p.Value = v.ToString();
+            });
+        });
+        productpropertydto = new ProductPropertyDto()
+        {
+            ProductId = 44,
+            PropertyCategories = ObjectMapper.Map<List<PropertyCategory>, List<PropertyCategoryDto>>(property)
+        };
+        await _productPropertyRepository.InsertAsync(ObjectMapper.Map<ProductPropertyDto, ProductProperty>(productpropertydto));
+
         var productQuery = await _productPropertyRepository.GetQueryableAsync();
         var getproduct = productQuery.ToList();
         var products = ObjectMapper.Map<List<ProductProperty>, List<ProductPropertyDto>>(getproduct.ToList());

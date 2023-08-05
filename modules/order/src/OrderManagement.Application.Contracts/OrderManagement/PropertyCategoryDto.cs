@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MongoDB.Bson;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,7 @@ namespace OrderManagement.Application.Contracts
 {
     public class PropertyCategoryDto
     {
+        public ObjectId Id { get; set; }
         public string Title { get; set; }
         public List<PropertyDto> Properties { get; set; }
         public int Priority { get; set; }
