@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.OrderManagement;
 using Volo.Abp.AspNetCore.Mvc;
+using System.Collections.Generic;
 
 namespace OrderManagement.HttpApi.OrderManagement.Controllers;
 
@@ -43,4 +44,8 @@ public class ProductAndCategoryController : AbpController //, IProductAndCategor
     [HttpPost]
     public async Task<CustomPagedResultDto<ProductAndCategoryDto>> GetPagination([FromBody] ProductAndCategoryQueryDto input)
         => await _productAndCategoryService.GetListWithPagination(input);
+
+    [HttpPost]
+    public async Task<List<ProductAndCategoryWithChildDto>> GetList(ProductAndCategoryGetListQueryDto input)
+        => await _productAndCategoryService.GetList(input);
 }

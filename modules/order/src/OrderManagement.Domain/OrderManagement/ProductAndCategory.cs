@@ -25,5 +25,11 @@ namespace OrderManagement.Domain.OrderManagement
             get => _childrens ?? (_childrens = new List<ProductAndCategory>());
             protected set => _childrens = value;
         }
+
+
+        public ProductAndCategory()
+        {
+            Childrens = new HashSet<ProductAndCategory>();
+        }
     }
 }
