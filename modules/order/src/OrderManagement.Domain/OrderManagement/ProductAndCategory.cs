@@ -8,6 +8,10 @@ namespace OrderManagement.Domain.OrderManagement
     {
         private ICollection<ProductAndCategory> _childrens;
 
+        private ICollection<Season_Product_Category> _categorySeason;
+
+        private ICollection<Season_Product_Category> _productSeason;
+
         public string Code { get; set; }
 
         public string Title { get; set; }
@@ -21,6 +25,18 @@ namespace OrderManagement.Domain.OrderManagement
         public bool Active { get; set; }
 
         public virtual ProductAndCategory Parent { get; protected set; }
+
+        public virtual ICollection<Season_Product_Category> CategorySeason
+        {
+            get => _categorySeason ?? (_categorySeason = new List<Season_Product_Category>());
+            protected set => _categorySeason = value;
+        }
+
+        public virtual ICollection<Season_Product_Category> ProductSeason
+        {
+            get => _productSeason ?? (_productSeason = new List<Season_Product_Category>());
+            protected set => _productSeason = value;
+        }
 
         public virtual ICollection<ProductAndCategory> Childrens
         {

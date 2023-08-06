@@ -8,7 +8,7 @@ namespace OrderManagement.Domain
     {
         public String Name { get; set; }
 
-        public virtual ICollection<Season_Company_CarTip> SeasonCompanyCarTip { get; set; }
+        public virtual ICollection<Season_Product_Category> SeasonCompanyCarTip { get; set; }
     }
 
 }

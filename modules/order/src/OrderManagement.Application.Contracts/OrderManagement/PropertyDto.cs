@@ -1,4 +1,5 @@
-﻿using OrderManagement.Domain.Shared;
+﻿using MongoDB.Bson;
+using OrderManagement.Domain.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,7 @@ namespace OrderManagement.Application.Contracts
 {
     public class PropertyDto
     {
-        public Guid Id { get; set; }
+        public ObjectId Id { get; set; }
         public string Tilte { get; set; }
         public PropertyTypeEnum Type { get; set; }
         public string TypeTitle { get; set; }

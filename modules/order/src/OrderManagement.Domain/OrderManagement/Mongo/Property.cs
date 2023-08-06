@@ -1,4 +1,5 @@
-﻿using Nest;
+﻿using MongoDB.Bson;
+using Nest;
 using OrderManagement.Domain.Shared;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ namespace OrderManagement.Domain
 {
     public class Property
     {
-        public Guid Id { get; set; }
+        public ObjectId Id { get; set; }
         public string Tilte { get; set; }
         public PropertyTypeEnum Type { get; set; }
         public string Value { get; set; }

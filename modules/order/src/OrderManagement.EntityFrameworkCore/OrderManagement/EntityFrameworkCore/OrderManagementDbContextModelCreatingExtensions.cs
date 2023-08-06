@@ -194,20 +194,24 @@ public static class OrderManagementDbContextModelCreatingExtensions
                 .OnDelete(DeleteBehavior.ClientCascade);
         });
 
-        builder.Entity<Season_Company_CarTip>(entity =>
+        builder.Entity<Season_Product_Category>(entity =>
         {
-            entity.ToTable(nameof(Season_Company_CarTip));
+            entity.ToTable(/*nameof(Season_Product_Category)*/"Season_Company_CarTip");
             entity.HasOne<ESaleType>(x => x.ESaleType)
                 .WithMany(x => x.SeasonCompanyCarTip)
                 .HasForeignKey(x => x.EsaleTypeId);
 
-            entity.HasOne<CarTip>(x => x.CarTip)
-                .WithMany(x => x.SeasonCompanyCarTip)
-                .HasForeignKey(x => x.CarTipId);
-
             entity.HasOne<Season>(x => x.Season)
                 .WithMany(x => x.SeasonCompanyCarTip)
                 .HasForeignKey(x => x.SeasonId);
+
+            entity.HasOne<ProductAndCategory>(x => x.Category)
+                .WithMany(x => x.CategorySeason)
+                .HasForeignKey(x => x.CategoryId);
+
+            entity.HasOne<ProductAndCategory>(x => x.Product)
+                .WithMany(x => x.ProductSeason)
+                .HasForeignKey(x => x.ProductId);
         });
 
         builder.Entity<ESaleType>(entity => entity.ToTable(nameof(ESaleType)));
@@ -314,6 +318,8 @@ public static class OrderManagementDbContextModelCreatingExtensions
             entity.Property(x => x.Title)
                 .HasMaxLength(250);
         });
+
+
 
         builder.Entity<ProductAndCategoryType_ReadOnly>(entity =>
         {
