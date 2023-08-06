@@ -113,13 +113,13 @@ public class CapacityControlAppService : ApplicationService, ICapacityControlApp
             {
                 new PropertyDto()
                 {
-                    Id = Guid.NewGuid(),
+                    Id = ObjectId.GenerateNewId(),
                     Tilte = "سرعت",
                     Type = PropertyTypeEnum.Text
                 },
                 new PropertyDto()
                 {
-                    Id = Guid.NewGuid(),
+                    Id = ObjectId.GenerateNewId(),
                     Tilte = "موتور",
                     Type = PropertyTypeEnum.DropDown,
                     DropDownItems = new List<DropDownItemDto>()
@@ -146,19 +146,19 @@ public class CapacityControlAppService : ApplicationService, ICapacityControlApp
             {
                 new PropertyDto()
                 {
-                    Id = Guid.NewGuid(),
+                    Id = ObjectId.GenerateNewId(),
                     Tilte = "رنگ بدنه",
                     Type = PropertyTypeEnum.Text
                 },
                 new PropertyDto()
                 {
-                    Id = Guid.NewGuid(),
+                    Id = ObjectId.GenerateNewId(),
                     Tilte = "جنس لاستیک",
                     Type = PropertyTypeEnum.Text,
                 },
                 new PropertyDto()
                 {
-                    Id = Guid.NewGuid(),
+                    Id = ObjectId.GenerateNewId(),
                     Tilte = "سپر عقب",
                     Type = PropertyTypeEnum.Text,
                 },

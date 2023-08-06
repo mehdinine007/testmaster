@@ -31,8 +31,8 @@ public class SaleController : Controller,ISaleService
         => await _saleService.GetSaleDetail(uid);
 
     [HttpGet]
-    public async Task<List<SaleDetailDto>> GetSaleDetails(int tipId, int typeId, int familyId, int companyId, int esaleTypeId)
-        => await _saleService.GetSaleDetails(tipId,typeId,familyId,companyId,esaleTypeId);
+    public async Task<List<SaleDetailDto>> GetSaleDetails(string categoryNode)
+        => await _saleService.GetSaleDetails(categoryNode);
 
     [HttpGet]
     [RemoteService(IsEnabled =false)]

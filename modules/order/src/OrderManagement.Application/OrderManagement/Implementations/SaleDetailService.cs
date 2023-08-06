@@ -6,11 +6,13 @@ using Microsoft.EntityFrameworkCore;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.OrderManagement;
 using OrderManagement.Application.Contracts.OrderManagement.Inqueries;
+using OrderManagement.Application.Contracts.OrderManagement.Models;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
 using OrderManagement.Application.Contracts.Services;
 using OrderManagement.Application.OrderManagement.Constants;
 using OrderManagement.Domain;
 using OrderManagement.Domain.OrderManagement;
+using OrderManagement.Domain.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,7 +28,6 @@ namespace OrderManagement.Application.OrderManagement.Implementations;
 public class SaleDetailService : ApplicationService, ISaleDetailService
 {
     private readonly IRepository<SaleDetail> _saleDetailRepository;
-    private readonly IRepository<CarTip> _carTipRepository;
     private readonly IRepository<ESaleType> _eSaleTypeRepository;
     private readonly IRepository<SaleDetailCarColor> _saleDetailCarColor;
     private readonly IRepository<Color> _colorRepository;
@@ -35,18 +36,18 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
     private readonly ICommonAppService _commonAppService;
     private readonly IHybridCachingProvider _hybridCache;
     private readonly ICacheManager _cacheManager;
+    private readonly IAttachmentService _attachmentService;
 
     public SaleDetailService(IRepository<SaleDetail> saleDetailRepository,
-                             IRepository<CarTip> carTipRepository,
                              IRepository<ESaleType> eSaleTypeRepository,
                              IRepository<SaleDetailCarColor> saleDetailCarColor,
                              IRepository<Color> color,
                              IRepository<SaleDetailCarColor, int> saleDetailColorRepository,
                              IHttpContextAccessor contextAccessor,
-                             ICommonAppService commonAppService, IHybridCachingProvider hybridCache, ICacheManager cacheManager)
+                             ICommonAppService commonAppService, IHybridCachingProvider hybridCache, ICacheManager cacheManager,
+                            IAttachmentService attachmentService)
     {
         _saleDetailRepository = saleDetailRepository;
-        _carTipRepository = carTipRepository;
         _eSaleTypeRepository = eSaleTypeRepository;
         _saleDetailCarColor = saleDetailCarColor;
         _colorRepository = color;
@@ -55,18 +56,20 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
         _commonAppService = commonAppService;
         _hybridCache = hybridCache;
         _cacheManager = cacheManager;
+        _attachmentService = attachmentService;
     }
 
 
 
     public async Task<bool> Delete(int id)
     {
-        var saleDetail=await _saleDetailRepository.FirstOrDefaultAsync(x => x.Id == id);
-        if (saleDetail != null) {
+        var saleDetail = await _saleDetailRepository.FirstOrDefaultAsync(x => x.Id == id);
+        if (saleDetail != null)
+        {
             await _saleDetailRepository.DeleteAsync(x => x.Id == id, autoSave: true);
             await _cacheManager.RemoveAsync(saleDetail.UID.ToString(), RedisConstants.SaleDetailPrefix, new CacheOptions() { Provider = CacheProviderEnum.Hybrid });
         }
-        
+
         return true;
 
     }
@@ -94,12 +97,12 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
     public async Task<PagedResultDto<SaleDetailDto>> GetSaleDetails(BaseInquery input)
     {
         var count = await _saleDetailRepository.CountAsync();
-        var saleDetails = _saleDetailRepository.WithDetails(x => x.CarTip,
-            x => x.CarTip.CarType.CarFamily.Company,
+        var saleDetails = _saleDetailRepository.WithDetails(
             x => x.SaleDetailCarColors,
             x => x.SaleDetailCarColors,
             x => x.SaleSchema,
-            x => x.SaleDetailCarColors);
+            x => x.SaleDetailCarColors,
+            x => x.Product);
         var queryResult = saleDetails.PageBy(input).Select(x => new SaleDetailDto()
         {
             CarDeliverDate = x.CarDeliverDate,
@@ -121,15 +124,20 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
             SalePlanStartDate = x.SalePlanStartDate,
             SalePlanDescription = x.SalePlanDescription,
             RefuseProfitPercentage = x.RefuseProfitPercentage,
-            MinimumAmountOfProxyDeposit = x.MinimumAmountOfProxyDeposit
-        }).ToList();
-
+            MinimumAmountOfProxyDeposit = x.MinimumAmountOfProxyDeposit,
+            ProductId = x.ProductId,
+            Product = ObjectMapper.Map<ProductAndCategory, ProductAndCategoryViewModel>(x.Product)
+    }).ToList();
+        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, queryResult.Select(x => x.ProductId).ToList());
         var saleDetailIds = queryResult.Select(x => x.Id).ToList();
         var saleDetailColors = (await _saleDetailColorRepository.GetQueryableAsync()).Where(x => saleDetailIds.Any(y => y == x.SaleDetailId));
         var colorIds = saleDetailColors.Select(x => x.ColorId);
         var colors = (await _colorRepository.GetQueryableAsync()).Where(x => colorIds.Any(y => y == x.Id));
         queryResult.ForEach(x =>
         {
+
+            var attachment = attachments.Where(y => y.EntityId == x.ProductId).ToList();
+            x.Product.Attachments = ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(attachment);
             var saleDetailColor = saleDetailColors.FirstOrDefault(y => y.SaleDetailId == x.Id);
             if (saleDetailColor != null)
             {
@@ -155,13 +163,9 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
         {
             throw new UserFriendlyException("تاریخ پایان بایدبزرگتراز تاریخ شروع باشد.");
         }
-        var carTip = await _carTipRepository.FirstOrDefaultAsync(x => x.Id == createSaleDetailDto.CarTipId);
-        if (carTip == null)
-        {
-            throw new UserFriendlyException("ماشین انتخاب شده وجودندارد");
-        }
+       
         var esalType = await _eSaleTypeRepository.FirstOrDefaultAsync(x => x.Id == createSaleDetailDto.EsaleTypeId);
-        if (esalType == null )
+        if (esalType == null)
         {
             throw new UserFriendlyException("نوع طرح فروش انتخاب شده وجود ندارد");
         }
@@ -212,13 +216,8 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
             throw new UserFriendlyException("تاریخ پایان بایدبزرگتراز تاریخ شروع باشد.");
         }
 
-        var carTipId = await _carTipRepository.FirstOrDefaultAsync(x => x.Id == createSaleDetailDto.CarTipId);
-        if (carTipId == null )
-        {
-            throw new UserFriendlyException("ماشین انتخاب شده وجودندارد");
-        }
         var esalTypeId = await _eSaleTypeRepository.FirstOrDefaultAsync(x => x.Id == createSaleDetailDto.EsaleTypeId);
-        if (esalTypeId == null )
+        if (esalTypeId == null)
         {
             throw new UserFriendlyException(" نوع طرح فروش انتخاب شده وجود ندارد");
         }

@@ -11,7 +11,7 @@ namespace OrderManagement.Application.Contracts.Services
 
         Task<SaleDetailDto> GetSaleDetail(Guid uid);
 
-        Task<List<SaleDetailDto>> GetSaleDetails(int tipId, int typeId, int familyId, int companyId, int esaleTypeId);
+        Task<List<SaleDetailDto>> GetSaleDetails(string categoryNode);
         Task<List<SalePlanDto>> GetSalePlans(int companyId);
 
         Task<List<ESaleTypeDto>> GetSaleTypes();
