@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OrderManagement.Application.Contracts.OrderManagement.Models;
+using System;
 using System.Collections.Generic;
 
 namespace OrderManagement.Application.Contracts
@@ -8,15 +9,6 @@ namespace OrderManagement.Application.Contracts
         public DateTime CarDeliverDate { get; set; }
 
         public string SaleDescription { get; set; }
-
-        public string CompanyName { get; set; }
-
-        public string CarFamilyTitle { get; set; }
-
-        public string CarTypeTitle { get; set; }
-
-        public string CarTipTitle { get; set; }
-
         public long UserId { get; set; }
 
         public string OrderstatusTitle { get; set; }
@@ -54,14 +46,14 @@ namespace OrderManagement.Application.Contracts
 
         public DateTime ManufactureDate { get; set; }
 
-        public List<string> CarTipImageUrls { get; set; }
-
         public decimal MinimumAmountOfProxyDeposit { get; set; }
-
-        public int CarTipId { get; set; }
 
         public int? PaymentId { get; set; }
 
         public DateTime SalePlanEndDate { get; set; }
+        public int ProductId { get; set; }
+
+        public ProductAndCategoryViewModel Product { get; set; }
+
     }
 }

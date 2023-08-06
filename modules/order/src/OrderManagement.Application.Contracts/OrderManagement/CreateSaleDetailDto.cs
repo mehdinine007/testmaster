@@ -15,8 +15,6 @@ namespace OrderManagement.Application.Contracts.OrderManagement
 
         public string SalePlanDescription { get; set; }
 
-        public int CarTipId { get; set; }
-
         public DateTime ManufactureDate { get; set; }
 
         public DateTime SalePlanStartDate { get; set; }
@@ -40,7 +38,8 @@ namespace OrderManagement.Application.Contracts.OrderManagement
         public int DeliverDaysCount { get; set; }
 
         public bool Visible { get; set; }
-        public int ColorId { get; set; }    
+        public int ColorId { get; set; }
+        public int ProductId { get; set; }
 
     }
 }
