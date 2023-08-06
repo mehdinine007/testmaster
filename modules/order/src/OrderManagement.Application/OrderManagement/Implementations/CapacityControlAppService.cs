@@ -171,7 +171,7 @@ public class CapacityControlAppService : ApplicationService, ICapacityControlApp
         var x = productFeatureCollection.Aggregate().Unwind(x => x.PropertyCategories).Unwind(x => x["PropertyCategories.Properties"]).Match(x => x["PropertyCategories.Properties.Type"] == 999).ToList();
         var filter = new BsonDocument( );
 
-        var update = Builders<ProductProperty>.Update.Set("PropertyCategories.$[i].Properties.$[j].Type", 100);
+        var update = Builders<ProductProperty>.Update.Set("PropertyCategories.$[].Properties.$[j].Type", 100);
 
         var arrayFilters = new List<ArrayFilterDefinition>
 {
