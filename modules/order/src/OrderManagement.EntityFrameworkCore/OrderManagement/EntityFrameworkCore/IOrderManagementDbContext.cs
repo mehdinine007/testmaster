@@ -35,7 +35,7 @@ namespace OrderManagement.EfCore
 
         DbSet<CarTip_Gallery_Mapping> CarTip_Gallery_Mappings { get; set; }
 
-        DbSet<Season_Company_CarTip> Season_Company_CarTip { get; set; }
+        DbSet<Season_Product_Category> Season_Company_CarTip { get; set; }
 
         DbSet<ESaleType> ESaleTypes { get; set; }
 

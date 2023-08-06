@@ -42,7 +42,7 @@ namespace OrderManagement.EfCore
 
         public DbSet<CarTip_Gallery_Mapping> CarTip_Gallery_Mappings { get; set; }
 
-        public DbSet<Season_Company_CarTip> Season_Company_CarTip { get; set; }
+        public DbSet<Season_Product_Category> Season_Company_CarTip { get; set; }
 
         public DbSet<UserRejectionAdvocacy> UserRejectionAdvocacies { get; set; }
 
