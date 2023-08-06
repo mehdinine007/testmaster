@@ -169,16 +169,18 @@ public class CapacityControlAppService : ApplicationService, ICapacityControlApp
         IMongoCollection<ProductProperty> productFeatureCollection = await _productPropertyRepository.GetCollectionAsync();
        // IAggregateFluent<ProductProperty> productFeatureAggregate = await _productPropertyRepository.GetAggregateAsync();
         var x = productFeatureCollection.Aggregate().Unwind(x => x.PropertyCategories).Unwind(x => x["PropertyCategories.Properties"]).Match(x => x["PropertyCategories.Properties.Type"] == 999).ToList();
+        var filter = new BsonDocument( );
 
-        var filter = new BsonDocument
-            {
-           
-            };
-        FilterDefinition<ProductProperty> matchFilter = Builders<ProductProperty>.Filter.Where(x => x.PropertyCategories.Any(y => y.Properties.Any(z => z.Type == PropertyTypeEnum.Text)));
+        var update = Builders<ProductProperty>.Update.Set("PropertyCategories.$[i].Properties.$[j].Type", 100);
 
-        var update = Builders<ProductProperty>.Update.Set("PropertyCategories.$.Properties.$.Type", 3434);
+        var arrayFilters = new List<ArrayFilterDefinition>
+{
+    new BsonDocumentArrayFilterDefinition<ProductProperty>(new BsonDocument("j.Type", 1))
+};
+        var updateOptions = new UpdateOptions { ArrayFilters = arrayFilters };
+        var xx =  productFeatureCollection.UpdateMany(filter,
+         update, updateOptions);
 
-        productFeatureCollection.UpdateMany(matchFilter, update);
         ////FilterDefinition<ProductFeature> matchFilter = Builders<ProductFeature>.Filter.ElemMatch<ProductFeature>("ProductFeature", Builders<ProductFeature>.Filter.Eq("FeatureValues.ProductId", 1));
         //var filter = Builders<PropertyDefinition>.Filter.Where(e => e.FeatureValues.Any(x=> x.ProductId == 2));
         //var a = productFeatureAggregate.Match(filter).ToList();
