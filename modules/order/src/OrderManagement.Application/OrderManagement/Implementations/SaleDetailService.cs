@@ -88,10 +88,11 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
     public SaleDetailDto GetById(int id)
     {
         var saleDetail = _saleDetailRepository
-            .WithDetails()
+            .WithDetails(x => x.Product)
             .AsNoTracking()
             .FirstOrDefault(x => x.Id == id);
-        return ObjectMapper.Map<SaleDetail, SaleDetailDto>(saleDetail);
+        var result = ObjectMapper.Map<SaleDetail, SaleDetailDto>(saleDetail);
+        return result;
     }
 
     public async Task<PagedResultDto<SaleDetailDto>> GetSaleDetails(BaseInquery input)
