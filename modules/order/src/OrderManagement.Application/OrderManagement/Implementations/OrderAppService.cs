@@ -35,6 +35,8 @@ using Polly.Caching;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using static OrderManagement.Application.Contracts.OrderManagementPermissions;
 using Esale.Core.Caching;
+using OrderManagement.Application.Contracts.OrderManagement.Models;
+using OrderManagement.Domain.OrderManagement;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -58,6 +60,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
     private readonly IObjectMapper _objectMapper;
     private readonly IUnitOfWorkManager _unitOfWorkManager;
     private readonly ICacheManager _cacheManager;
+    private readonly IAttachmentService _attachmentService;
 
     public OrderAppService(ICommonAppService commonAppService,
                            IBaseInformationService baseInformationAppService,
@@ -78,7 +81,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
                            IAuditingManager auditingManager,
                            IObjectMapper objectMapper,
                            IUnitOfWorkManager unitOfWorkManager,
-                           ICacheManager cacheManager
+                           ICacheManager cacheManager,
+                           IAttachmentService attachmentService
         )
     {
         _commonAppService = commonAppService;
@@ -99,6 +103,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         _objectMapper = objectMapper;
         _unitOfWorkManager = unitOfWorkManager;
         _cacheManager = cacheManager;
+        _attachmentService = attachmentService;
     }
 
 
@@ -753,17 +758,13 @@ public class OrderAppService : ApplicationService, IOrderAppService
         //var customerOrder = await _commitOrderRepository.GetAllListAsync(x => x.UserId == userId);
         var customerOrders = _commitOrderRepository.WithDetails()
             .AsNoTracking()
-            .Join(_saleDetailRepository.WithDetails(x => x.CarTip.CarType.CarFamily.Company),
+            .Join(_saleDetailRepository.WithDetails(x => x.Product),
             x => x.SaleDetailId,
             y => y.Id,
             (x, y) => new
             {
                 y.CarDeliverDate,
                 y.SalePlanDescription,
-                CompanyName = y.CarTip.CarType.CarFamily.Company.Name,
-                CarFamilyTitle = y.CarTip.CarType.CarFamily.Title,
-                CarTypeTitle = y.CarTip.CarType.Title,
-                CarTipTitle = y.CarTip.Title,
                 x.UserId,
                 x.OrderStatus,
                 x.CreationTime,
@@ -772,15 +773,13 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 x.DeliveryDate,
                 x.DeliveryDateDescription,
                 x.OrderRejectionStatus,
-                y.ESaleTypeId
+                y.ESaleTypeId,
+                y.ProductId,
+                y.Product
             }).Where(x => x.UserId == userId)
             .Select(x => new CustomerOrder_OrderDetailDto
             {
                 CarDeliverDate = x.CarDeliverDate,
-                CarFamilyTitle = x.CarFamilyTitle,
-                CarTipTitle = x.CarTipTitle,
-                CarTypeTitle = x.CarTipTitle,
-                CompanyName = x.CompanyName,
                 CreationTime = x.CreationTime,
                 OrderId = x.OrderId,
                 SaleDescription = x.SalePlanDescription,
@@ -791,6 +790,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 DeliveryDate = x.DeliveryDate,
                 OrderRejectionCode = x.OrderRejectionStatus.HasValue ? (int)x.OrderRejectionStatus : null,
                 ESaleTypeId = x.ESaleTypeId,
+                ProductId = x.ProductId,
+                Product = ObjectMapper.Map<ProductAndCategory, ProductAndCategoryViewModel>(x.Product)
             }).ToList();
         var cancleableDate = _configuration.GetValue<string>("CancelableDate");
         customerOrders.ForEach(x =>
@@ -1302,32 +1303,29 @@ public class OrderAppService : ApplicationService, IOrderAppService
             throw new UserFriendlyException("دسترسی شما کافی نمی باشد");
         }
         var userId = _commonAppService.GetUserId();
-        var saleDetailQuery = await _saleDetailRepository.GetQueryableAsync();
+        var saleDetailQuery = (await _saleDetailRepository.GetQueryableAsync()).Include(x => x.Product);
         var saleDetail = saleDetailQuery.AsNoTracking()
             .Select(y => new CustomerOrder_OrderDetailDto
             {
                 CarDeliverDate = y.CarDeliverDate,
-                CarFamilyTitle = y.CarTip.CarType.CarFamily.Title,
-                CarTipTitle = y.CarTip.Title,
-                CarTypeTitle = y.CarTip.CarType.Title,
-                CompanyName = y.CarTip.CarType.CarFamily.Company.Name,
                 ESaleTypeId = y.ESaleTypeId,
                 SaleDetailUid = y.UID,
                 MinimumAmountOfProxyDeposit = y.MinimumAmountOfProxyDeposit,
                 ManufactureDate = y.ManufactureDate,
                 DeliveryDate = y.CarDeliverDate,
-                CarTipId = y.CarTipId,
-                SalePlanEndDate = y.SalePlanEndDate
+                SalePlanEndDate = y.SalePlanEndDate,
+                ProductId=y.ProductId,
+                Product = ObjectMapper.Map<ProductAndCategory, ProductAndCategoryViewModel>(y.Product)
             })
             .FirstOrDefault(x => x.SaleDetailUid == saleDetailUid);
 
         if (saleDetail.SalePlanEndDate <= DateTime.Now)
             throw new UserFriendlyException("تاریخ برنامه فروش به پایان و سفارش قابل مشاده نیست");
 
-        var realtedGalleryRecords = (await _carTipGalleryMappingRepository.GetQueryableAsync())
-            .Include(x => x.Gallery)
-            .Where(x => x.CarTipId == saleDetail.CarTipId);
-        saleDetail.CarTipImageUrls = realtedGalleryRecords.Select(x => x.Gallery.ImageUrl).ToList();
+
+        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, new List<int> { saleDetail.ProductId }.ToList());
+        var attachment = attachments.Where(y => y.EntityId == saleDetail.ProductId).ToList();
+        saleDetail.Product.Attachments = ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(attachment);
         var user = await _esaleGrpcClient.GetUserById(_commonAppService.GetUserId());
         saleDetail.SurName = user.SurName;
         saleDetail.Name = user.Name;
@@ -1347,16 +1345,12 @@ public class OrderAppService : ApplicationService, IOrderAppService
         PaymentInformationResponseDto paymentInformation = new();
         var customerOrder = customerOrderQuery
             .AsNoTracking()
-            .Join(_saleDetailRepository.WithDetails(x => x.CarTip.CarType.CarFamily.Company),
+            .Join(_saleDetailRepository.WithDetails(x=>x.Product),
             x => x.SaleDetailId,
             y => y.Id,
             (x, y) => new CustomerOrder_OrderDetailDto()
             {
                 CarDeliverDate = y.CarDeliverDate,
-                CarFamilyTitle = y.CarTip.CarType.CarFamily.Title,
-                CarTipTitle = y.CarTip.Title,
-                CarTypeTitle = y.CarTip.CarType.Title,
-                CompanyName = y.CarTip.CarType.CarFamily.Company.Name,
                 CreationTime = x.CreationTime,
                 OrderId = x.Id,
                 SaleDescription = y.SalePlanDescription,
@@ -1370,7 +1364,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 ManufactureDate = y.ManufactureDate,
                 SaleDetailUid = y.UID,
                 SalePlanEndDate = y.SalePlanEndDate,
-                CarTipId = y.CarTipId,
+                ProductId = y.ProductId,
+                Product = ObjectMapper.Map<ProductAndCategory, ProductAndCategoryViewModel>(y.Product),
                 //TransactionCommitDate = paymentInformation != null
                 //    ? paymentInformation.TransactionDate
                 //    : null,
@@ -1379,9 +1374,11 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 //    : string.Empty,
                 PaymentId = x.PaymentId
             }).FirstOrDefault(x => x.UserId == userId && x.OrderId == id);
-        var galleryMappings = _carTipGalleryMappingRepository.WithDetails(x => x.Gallery).Where(x => x.CarTipId == customerOrder.CarTipId).ToList();
-        var imageUrls = galleryMappings.Select(x => x.Gallery.ImageUrl).ToList() ?? new();
-        customerOrder.CarTipImageUrls = imageUrls;
+
+        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, new List<int> { customerOrder.ProductId }.ToList());
+        var attachment = attachments.Where(y => y.EntityId == customerOrder.ProductId).ToList();
+        customerOrder.Product.Attachments = ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(attachment);
+
         if (customerOrder.SalePlanEndDate <= DateTime.Now)
             throw new UserFriendlyException("تاریخ برنامه فروش به پایان و سفارش قابل مشاده نیست");
 
@@ -1399,10 +1396,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
             }
         }
         var user = await _esaleGrpcClient.GetUserById(customerOrder.UserId);
-        var realtedGalleryRecords = (await _carTipGalleryMappingRepository.GetQueryableAsync())
-            .Include(x => x.Gallery)
-            .Where(x => x.CarTipId == customerOrder.CarTipId);
-        customerOrder.CarTipImageUrls = realtedGalleryRecords.Select(x => x.Gallery.ImageUrl).ToList();
         customerOrder.SurName = user.SurName;
         customerOrder.Name = user.Name;
         customerOrder.NationalCode = user.NationalCode;

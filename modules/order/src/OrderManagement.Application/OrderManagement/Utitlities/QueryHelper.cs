@@ -20,12 +20,12 @@ namespace OrderManagement.Application.OrderManagement.Utitlities
             var allRelateGalleryImageIds = new List<int>();
             saleDetails.ForEach(x =>
             {
-                if (!carTipGalleryImageRelations.TryGetValue(x.CarTipId, out var _))
-                {
-                    var galleryIds = x.CarTip.CarTip_Gallery_Mappings.Select(y => y.GalleryId).ToList();
-                    carTipGalleryImageRelations.Add(x.CarTipId, galleryIds);
-                    allRelateGalleryImageIds.AddRange(galleryIds);
-                }
+                //if (!carTipGalleryImageRelations.TryGetValue(x.CarTipId, out var _))
+                //{
+                //    var galleryIds = x.CarTip.CarTip_Gallery_Mappings.Select(y => y.GalleryId).ToList();
+                //    carTipGalleryImageRelations.Add(x.CarTipId, galleryIds);
+                //    allRelateGalleryImageIds.AddRange(galleryIds);
+                //}
             });
             var allReltaedGAlleryImages = galleryRepository.WithDetails().Where(x => allRelateGalleryImageIds.Any(y => y == x.Id)).ToList();
             var saleDetailDtos = objectMapper.Map<List<SaleDetail>, List<SaleDetailDto>>(saleDetails, new List<SaleDetailDto>());

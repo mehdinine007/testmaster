@@ -22,7 +22,7 @@ namespace OrderManagement.Domain
 
         public string SalePlanDescription { get; set; }
 
-        public int CarTipId { get; set; }
+        public int? CarTipId { get; set; }
 
         public DateTime ManufactureDate { get; set; }
 
