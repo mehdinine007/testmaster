@@ -17,5 +17,7 @@ namespace OrderManagement.Application.Contracts
         public AttachmentEntityTypeEnum EntityType { get; set; }
         public AttachmentLocationEnum Location { get; set; }
         public IFormFile File { get; set; }
+        public string Description { get; set; }
+        public List<string> Content { get; set; }
     }
 }

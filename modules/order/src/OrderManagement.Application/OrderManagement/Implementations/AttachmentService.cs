@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Configuration;
 using OrderManagement.Application.Contracts;
+using OrderManagement.Application.Contracts.OrderManagement;
 using OrderManagement.Domain.OrderManagement;
 using OrderManagement.Domain.Shared;
 using System;
@@ -11,6 +12,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Services;
+using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.ObjectMapping;
 
@@ -65,8 +67,19 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             return attachment;
         }
 
-        public async Task<bool> UploadFile(AttachFileDto attachDto)
+        public async Task<bool> UploadFile(AttachmentEntityEnum entity, UploadFileDto uploadFile)
         {
+            var attachDto = new AttachFileDto()
+            {
+                Entity = entity,
+                EntityId = uploadFile.Id,
+                EntityType = uploadFile.Type,
+                File = uploadFile.File,
+                Description = uploadFile.Description,
+                Title = uploadFile.Title,
+                Content = uploadFile.Content,
+                Location = uploadFile.Location
+            };
             bool hasAdd = attachDto.Id is null;
             if (hasAdd)
                 attachDto.Id = Guid.NewGuid();

@@ -112,13 +112,7 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
 
     public async Task<bool> UploadFile(UploadFileDto uploadFileDto)
     {
-        var attachmentStatus = await _attachmentService.UploadFile(new AttachFileDto()
-        {
-            Entity = AttachmentEntityEnum.ProductAndCategory,
-            EntityId = uploadFileDto.Id,
-            EntityType = uploadFileDto.Type,
-            File = uploadFileDto.File,
-        });
+        var attachmentStatus = await _attachmentService.UploadFile(AttachmentEntityEnum.ProductAndCategory, uploadFileDto);
         return attachmentStatus;
     }
 

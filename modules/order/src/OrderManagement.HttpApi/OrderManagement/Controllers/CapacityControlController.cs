@@ -39,9 +39,9 @@ public class CapacityControlController :Controller
     public async Task GrpcPaymentTest()
           => await _capacityControlAppService.GrpcPaymentTest();
 
-    [HttpPost]
-    public async Task UploadFile([FromForm]AttachFileDto uploadFileDto)
-          => await _attachmentService.UploadFile(uploadFileDto);
+    //[HttpPost]
+    //public async Task UploadFile([FromForm]AttachFileDto uploadFileDto)
+    //      => await _attachmentService.UploadFile(uploadFileDto);
 
     [HttpPost]
     [UserAuthorization]
