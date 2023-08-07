@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OrderManagement.EfCore;
 using Volo.Abp.EntityFrameworkCore;
@@ -12,9 +13,11 @@ using Volo.Abp.EntityFrameworkCore;
 namespace OrderManagement.EfCore.Migrations
 {
     [DbContext(typeof(OrderManagementDbContext))]
-    partial class OrderManagementDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230807074007_Add_SiteStructure")]
+    partial class AddSiteStructure
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1399,9 +1402,6 @@ namespace OrderManagement.EfCore.Migrations
                     b.Property<int?>("ParentId")
                         .HasColumnType("int");
 
-                    b.Property<int>("ProductLevelId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Title")
                         .HasMaxLength(250)
                         .HasColumnType("nvarchar(250)");
@@ -1412,8 +1412,6 @@ namespace OrderManagement.EfCore.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ParentId");
-
-                    b.HasIndex("ProductLevelId");
 
                     b.ToTable("ProductAndCategory", (string)null);
                 });
@@ -1456,55 +1454,6 @@ namespace OrderManagement.EfCore.Migrations
                             Title = "دسته بندی",
                             TitleEn = "Category"
                         });
-                });
-
-            modelBuilder.Entity("OrderManagement.Domain.OrderManagement.ProductLevel", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("CreationTime");
-
-                    b.Property<Guid?>("CreatorId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("CreatorId");
-
-                    b.Property<Guid?>("DeleterId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("DeleterId");
-
-                    b.Property<DateTime?>("DeletionTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("DeletionTime");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false)
-                        .HasColumnName("IsDeleted");
-
-                    b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("LastModificationTime");
-
-                    b.Property<Guid?>("LastModifierId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("LastModifierId");
-
-                    b.Property<int>("Priority")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Title")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ProductLevel");
                 });
 
             modelBuilder.Entity("OrderManagement.Domain.OrderManagement.SaleDetailCarColor", b =>
@@ -2637,15 +2586,7 @@ namespace OrderManagement.EfCore.Migrations
                         .HasForeignKey("ParentId")
                         .OnDelete(DeleteBehavior.ClientCascade);
 
-                    b.HasOne("OrderManagement.Domain.OrderManagement.ProductLevel", "ProductLevel")
-                        .WithMany("ProductAndCategories")
-                        .HasForeignKey("ProductLevelId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Parent");
-
-                    b.Navigation("ProductLevel");
                 });
 
             modelBuilder.Entity("OrderManagement.Domain.OrderManagement.SaleDetailCarColor", b =>
@@ -2845,11 +2786,6 @@ namespace OrderManagement.EfCore.Migrations
                     b.Navigation("Childrens");
 
                     b.Navigation("ProductSeason");
-                });
-
-            modelBuilder.Entity("OrderManagement.Domain.OrderManagement.ProductLevel", b =>
-                {
-                    b.Navigation("ProductAndCategories");
                 });
 
             modelBuilder.Entity("OrderManagement.Domain.Province", b =>

@@ -44,5 +44,7 @@ namespace OrderManagement.Application.Contracts
         public static string FileUploadCopyError = "خطا در انتقال فایل به سرور";
         public static string FileUploadCopyErrorId = "2004";
 
+        public static string SiteStuctureNotFound = "ساختار سایت وجود ندارد";
+        public static string SiteStuctureNotFoundId = "3001";
     }
 }

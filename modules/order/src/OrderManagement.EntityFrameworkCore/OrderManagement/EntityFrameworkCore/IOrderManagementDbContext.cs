@@ -12,6 +12,7 @@ namespace OrderManagement.EfCore
     [ConnectionStringName("OrderManagement")]
     public interface IOrderManagementDbContext : IEfCoreDbContext
     {
+        DbSet<SiteStructure> SiteStructures { get; set; }
         DbSet<Attachment> Attachments { get; set; }
         DbSet<CustomerOrder> CustomerOrders { get; set; }
 
