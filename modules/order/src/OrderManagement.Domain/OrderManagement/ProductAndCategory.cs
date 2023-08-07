@@ -1,5 +1,6 @@
 ﻿using OrderManagement.Domain.Shared;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using Volo.Abp.Domain.Entities.Auditing;
 
 namespace OrderManagement.Domain.OrderManagement
@@ -49,5 +50,9 @@ namespace OrderManagement.Domain.OrderManagement
         {
             Childrens = new HashSet<ProductAndCategory>();
         }
+
+        [ForeignKey("ProductLevel")]
+        public int ProductLevelId { get; set; }
+        public virtual ProductLevel ProductLevel { get; protected set; }
     }
 }

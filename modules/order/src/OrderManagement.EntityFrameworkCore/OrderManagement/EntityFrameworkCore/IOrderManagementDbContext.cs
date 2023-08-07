@@ -76,5 +76,7 @@ namespace OrderManagement.EfCore
         DbSet<ProductAndCategory> ProductAndCategory { get; set; }
 
         DbSet<ProductAndCategoryType_ReadOnly> ProductAndCategoryType_ReadOnly { get; set; }
+        DbSet<ProductLevel> ProductLevel { get; set; }
+
     }
 }
