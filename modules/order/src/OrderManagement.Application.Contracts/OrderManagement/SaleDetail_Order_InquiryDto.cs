@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OrderManagement.Domain.Shared;
+using System;
 
 namespace OrderManagement.Application.Contracts
 {
@@ -7,5 +8,7 @@ namespace OrderManagement.Application.Contracts
         public int? OrderId { get; set; }
 
         public Guid? SaleDetailUid { get; set; }
+        public AttachmentEntityTypeEnum AttachmentEntityType { get; set; }
+       
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Esale.Share.Authorize;
 using Microsoft.AspNetCore.Mvc;
 using OrderManagement.Application.Contracts;
+using OrderManagement.Application.Contracts.OrderManagement;
 using OrderManagement.Application.Contracts.Services;
 using System;
 using System.Collections.Generic;
@@ -31,8 +32,8 @@ public class SaleController : Controller,ISaleService
         => await _saleService.GetSaleDetail(uid);
 
     [HttpGet]
-    public async Task<List<SaleDetailDto>> GetSaleDetails(string categoryNode)
-        => await _saleService.GetSaleDetails(categoryNode);
+    public async Task<List<SaleDetailDto>> GetSaleDetails(SaleDetailGetListDto input)
+        => await _saleService.GetSaleDetails(input);
 
     [HttpGet]
     [RemoteService(IsEnabled =false)]

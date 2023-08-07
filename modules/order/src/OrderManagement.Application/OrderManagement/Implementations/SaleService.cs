@@ -16,6 +16,7 @@ using Volo.Abp.ObjectMapping;
 using OrderManagement.Application.Contracts.OrderManagement.Models;
 using OrderManagement.Domain.OrderManagement;
 using OrderManagement.Domain.Shared;
+using OrderManagement.Application.Contracts.OrderManagement;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -72,22 +73,24 @@ public class SaleService : ApplicationService, ISaleService
         return saleDetailDto;
     }
 
-    public async Task<List<SaleDetailDto>> GetSaleDetails(string categoryNode)
+    public async Task<List<SaleDetailDto>> GetSaleDetails(SaleDetailGetListDto input)
     {
-        IQueryable<SaleDetail> saleDetailQuery;
+    
         var currentTime = DateTime.Now;
-        if (categoryNode.IsNullOrEmpty())
+        var saleDetailQuery = _saleDetailRepository
+            .WithDetails(x => x.Product).Where(x => x.SalePlanStartDate <= currentTime && currentTime <= x.SalePlanEndDate && x.Visible);
+
+
+
+        if (!input.CategoryNode.IsNullOrEmpty())
         {
             saleDetailQuery = _saleDetailRepository
             .WithDetails(x => x.Product, x => x.ESaleType, x => x.SaleSchema)
-            .Where(x => x.SalePlanStartDate <= currentTime && currentTime <= x.SalePlanEndDate && x.Visible);
+            .Where(x => EF.Functions.Like(x.Product.Code, input.CategoryNode + "%"));
         }
-        else
-        {
-            saleDetailQuery = _saleDetailRepository
-           .WithDetails(x => x.Product, x => x.ESaleType, x => x.SaleSchema)
-           .Where(x => x.SalePlanStartDate <= currentTime && currentTime <= x.SalePlanEndDate && x.Visible && EF.Functions.Like(x.Product.Code, categoryNode + "%"));
-        }
+
+        if (input.EsaleTypeId > 0)
+            saleDetailQuery = saleDetailQuery.Where(x => x.ESaleTypeId == input.EsaleTypeId);
 
 
         var queryResult = saleDetailQuery.Select(x => new SaleDetailDto()
@@ -118,7 +121,7 @@ public class SaleService : ApplicationService, ISaleService
 
 
 
-        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, queryResult.Select(x => x.ProductId).ToList());
+        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, queryResult.Select(x => x.ProductId).ToList(), input.AttachmentEntityType);
 
 
         queryResult.ForEach(x =>

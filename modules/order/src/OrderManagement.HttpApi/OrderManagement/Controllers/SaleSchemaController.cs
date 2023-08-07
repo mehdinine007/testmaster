@@ -32,8 +32,8 @@ public class SaleSchemaController : Controller, ISaleSchemaService
     public Task<List<SaleSchemaDto>> GetAllSaleSchema()
     => _saleSchemaService.GetAllSaleSchema();
     [HttpGet]
-    public Task<PagedResultDto<SaleSchemaDto>> GetSaleSchema(int pageNo, int sizeNo)
-    => _saleSchemaService.GetSaleSchema(pageNo, sizeNo);
+    public Task<PagedResultDto<SaleSchemaDto>> GetSaleSchema(SaleSchemaGetListDto input)
+    => _saleSchemaService.GetSaleSchema(input);
     [HttpPost]
     public Task<int> Save(SaleSchemaDto saleSchemaDto)
     => _saleSchemaService.Save(saleSchemaDto);

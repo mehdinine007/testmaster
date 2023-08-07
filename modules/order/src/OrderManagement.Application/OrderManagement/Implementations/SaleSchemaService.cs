@@ -39,15 +39,15 @@ public class SaleSchemaService : ApplicationService, ISaleSchemaService
         return saleSchemaDto;
     }
 
-    public async Task<PagedResultDto<SaleSchemaDto>> GetSaleSchema(int pageNo, int sizeNo)
+    public async Task<PagedResultDto<SaleSchemaDto>> GetSaleSchema(SaleSchemaGetListDto input)
     {
         var count = _saleSchemaRepository.WithDetails().Count();
         var saleSchemaResult = await _saleSchemaRepository.GetQueryableAsync();
         var saleSchemaList = saleSchemaResult
-            .Skip(pageNo * sizeNo).Take(sizeNo)
+            .Skip(input.SkipCount * input.MaxResultCount).Take(input.MaxResultCount)
             .AsNoTracking()
             .ToList();
-        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.SaleSchema, saleSchemaList.Select(x => x.Id).ToList());
+        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.SaleSchema, saleSchemaList.Select(x => x.Id).ToList(), input.AttachmentEntityType);
         var saleSchema = ObjectMapper.Map<List<SaleSchema>, List<SaleSchemaDto>>(saleSchemaList);
         saleSchema.ForEach(x =>
         {

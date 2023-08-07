@@ -7,6 +7,7 @@ using Volo.Abp;
 using Esale.Share.Authorize;
 using Volo.Abp.Auditing;
 using System;
+using OrderManagement.Domain.Shared;
 
 namespace OrderManagement.HttpApi;
 
@@ -48,17 +49,17 @@ public class OrderManagementController
         => await _orderAppService.GetCustomerInfoPriorityUser();
     [DisableAuditing]
     [HttpGet]
-    [UserAuthorization]
-    public List<CustomerOrder_OrderDetailDto> GetCustomerOrderList()
-        => _orderAppService.GetCustomerOrderList();
+
+    public Task<List<CustomerOrder_OrderDetailDto>> GetCustomerOrderList(AttachmentEntityTypeEnum attachmentEntityType)
+        => _orderAppService.GetCustomerOrderList(attachmentEntityType);
 
     [RemoteService(IsEnabled = false)]
-    public async Task<CustomerOrder_OrderDetailDto> GetOrderDetailById(int id)
-        => await _orderAppService.GetOrderDetailById(id);
+    public async Task<CustomerOrder_OrderDetailDto> GetOrderDetailById(int id, AttachmentEntityTypeEnum attachmentEntityType)
+        => await _orderAppService.GetOrderDetailById(id, attachmentEntityType);
 
     [RemoteService(IsEnabled =false)]
-    public async Task<CustomerOrder_OrderDetailDto> GetSaleDetailByUid(Guid saleDetailUid)
-        => await _orderAppService.GetSaleDetailByUid(saleDetailUid);
+    public async Task<CustomerOrder_OrderDetailDto> GetSaleDetailByUid(Guid saleDetailUid, AttachmentEntityTypeEnum attachmentEntityType)
+        => await _orderAppService.GetSaleDetailByUid(saleDetailUid, attachmentEntityType);
 
     [DisableAuditing]
     [HttpPost]

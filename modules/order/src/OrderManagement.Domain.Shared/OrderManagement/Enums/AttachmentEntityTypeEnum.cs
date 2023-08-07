@@ -19,5 +19,7 @@ namespace OrderManagement.Domain.Shared
         LogoInPage = 4,
         [EnumProperty(Description = "بخشنامه")]
         Circular = 5,
+        [EnumProperty(Description = "آیکون")]
+        Icon = 6,
     }
 }

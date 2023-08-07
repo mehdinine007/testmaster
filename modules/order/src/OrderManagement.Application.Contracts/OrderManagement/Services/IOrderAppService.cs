@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OrderManagement.Domain.Shared;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Services;
@@ -7,11 +8,11 @@ namespace OrderManagement.Application.Contracts.Services
 {
     public interface IOrderAppService : IApplicationService
     {
-        List<CustomerOrder_OrderDetailDto> GetCustomerOrderList();
+        Task<List<CustomerOrder_OrderDetailDto>> GetCustomerOrderList(AttachmentEntityTypeEnum attachmentEntityType);
 
-        Task<CustomerOrder_OrderDetailDto> GetOrderDetailById(int id);
+        Task<CustomerOrder_OrderDetailDto> GetOrderDetailById(int id, AttachmentEntityTypeEnum attachmentEntityType);
 
-        Task<CustomerOrder_OrderDetailDto> GetSaleDetailByUid(Guid saleDetailUid);
+        Task<CustomerOrder_OrderDetailDto> GetSaleDetailByUid(Guid saleDetailUid, AttachmentEntityTypeEnum attachmentEntityType);
 
         Task<CustomerOrder_OrderDetailDto> GetDetail(SaleDetail_Order_InquiryDto inquiryDto);
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OrderManagement.Application.Contracts.OrderManagement;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Services;
@@ -11,7 +12,7 @@ namespace OrderManagement.Application.Contracts.Services
 
         Task<SaleDetailDto> GetSaleDetail(Guid uid);
 
-        Task<List<SaleDetailDto>> GetSaleDetails(string categoryNode);
+        Task<List<SaleDetailDto>> GetSaleDetails(SaleDetailGetListDto input);
         Task<List<SalePlanDto>> GetSalePlans(int companyId);
 
         Task<List<ESaleTypeDto>> GetSaleTypes();
