@@ -12,8 +12,6 @@ using Core.Utility.Tools;
 using OrderManagement.Application.Contracts.OrderManagement;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
-using Nest;
-using Newtonsoft.Json;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -136,7 +134,7 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
         //var attachments = attachmentQuery.ToList();
 
         var ids = queryResult.Select(x => x.Id).ToList();
-        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, ids, input.AttachmentEntityType);
+        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, ids, input.AttachmentType);
 
         var resultList = ObjectMapper.Map<List<ProductAndCategory>, List<ProductAndCategoryDto>>(queryResult);
         resultList.ForEach(x =>
@@ -169,5 +167,16 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
                 break;
         }
         return ObjectMapper.Map<List<ProductAndCategory>, List<ProductAndCategoryWithChildDto>>(ls);
+    }
+
+    public async Task<ProductAndCategoryDto> Update(ProductAndCategoryDto productAndCategoryDto)
+    {
+        var productAndCategory = (await _productAndCategoryRepository.GetQueryableAsync()).FirstOrDefault(x => x.Id == productAndCategoryDto.Id)
+            ?? throw new UserFriendlyException("محصول یا دسته بندی یافت نشد");
+
+        productAndCategory.Active = productAndCategoryDto.Active;
+        productAndCategory.Title = productAndCategoryDto.Title;
+        var entity =  await _productAndCategoryRepository.UpdateAsync(productAndCategory);
+        return ObjectMapper.Map<ProductAndCategory, ProductAndCategoryDto>(entity);
     }
 }

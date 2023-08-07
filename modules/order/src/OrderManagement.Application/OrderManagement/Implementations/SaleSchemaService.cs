@@ -47,7 +47,7 @@ public class SaleSchemaService : ApplicationService, ISaleSchemaService
             .Skip(input.SkipCount * input.MaxResultCount).Take(input.MaxResultCount)
             .AsNoTracking()
             .ToList();
-        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.SaleSchema, saleSchemaList.Select(x => x.Id).ToList(), input.AttachmentEntityType);
+        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.SaleSchema, saleSchemaList.Select(x => x.Id).ToList(), input.AttachmentType);
         var saleSchema = ObjectMapper.Map<List<SaleSchema>, List<SaleSchemaDto>>(saleSchemaList);
         saleSchema.ForEach(x =>
         {

@@ -7,6 +7,6 @@ namespace OrderManagement.Application.Contracts.OrderManagement
     {
         public int? ParentId { get; set; }
 
-        public AttachmentEntityTypeEnum? AttachmentEntityType { get; set; }
+        public AttachmentEntityTypeEnum? AttachmentType { get; set; }
     }
 }
