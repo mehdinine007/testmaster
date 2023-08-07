@@ -15,5 +15,7 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Services
         Task<CustomPagedResultDto<ProductAndCategoryDto>> GetListWithPagination(ProductAndCategoryQueryDto input);
 
         Task<List<ProductAndCategoryWithChildDto>> GetList(ProductAndCategoryGetListQueryDto input);
+
+        Task<ProductAndCategoryDto> Update(ProductAndCategoryDto productAndCategoryDto);
     }
 }

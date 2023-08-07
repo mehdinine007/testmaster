@@ -48,4 +48,8 @@ public class ProductAndCategoryController : AbpController //, IProductAndCategor
     [HttpPost]
     public async Task<List<ProductAndCategoryWithChildDto>> GetList(ProductAndCategoryGetListQueryDto input)
         => await _productAndCategoryService.GetList(input);
+
+    [HttpPut]
+    public async Task<ProductAndCategoryDto> Update(ProductAndCategoryDto productAndCategoryDto)
+        => await _productAndCategoryService.Update(productAndCategoryDto);
 }
