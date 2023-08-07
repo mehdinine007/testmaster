@@ -136,7 +136,7 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
         //var attachments = attachmentQuery.ToList();
 
         var ids = queryResult.Select(x => x.Id).ToList();
-        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, ids, input.AttachmentEntityType);
+        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, ids, input.AttachmentType);
 
         var resultList = ObjectMapper.Map<List<ProductAndCategory>, List<ProductAndCategoryDto>>(queryResult);
         resultList.ForEach(x =>

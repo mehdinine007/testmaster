@@ -747,7 +747,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         }
     }
     [UnitOfWork(false, IsolationLevel.ReadUncommitted)]
-    public async Task<List<CustomerOrder_OrderDetailDto>> GetCustomerOrderList(AttachmentEntityTypeEnum attachmentEntityType)
+    public async Task<List<CustomerOrder_OrderDetailDto>> GetCustomerOrderList(AttachmentEntityTypeEnum attachmentType)
     {
         if (!_commonAppService.IsInRole("Customer"))
         {
@@ -795,7 +795,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 Product = ObjectMapper.Map<ProductAndCategory, ProductAndCategoryViewModel>(x.Product)
             }).ToList();
         var cancleableDate = _configuration.GetValue<string>("CancelableDate");
-        var attachments =await  _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, customerOrders.Select(x => x.ProductId).ToList(), attachmentEntityType);
+        var attachments =await  _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, customerOrders.Select(x => x.ProductId).ToList(), attachmentType);
         customerOrders.ForEach(x =>
         {
 
@@ -1290,11 +1290,11 @@ public class OrderAppService : ApplicationService, IOrderAppService
         switch (inquiryDto)
         {
             case SaleDetail_Order_InquiryDto dto when dto.OrderId.HasValue:
-                inquiryResult = await GetOrderDetailById(dto.OrderId.Value, inquiryDto.AttachmentEntityType);
+                inquiryResult = await GetOrderDetailById(dto.OrderId.Value, inquiryDto.AttachmentType);
                 break;
             case SaleDetail_Order_InquiryDto dto when dto.SaleDetailUid.HasValue:
                 await _commonAppService.ValidateOrderStep(OrderStepEnum.PreviewOrder);
-                inquiryResult = await GetSaleDetailByUid(dto.SaleDetailUid.Value, inquiryDto.AttachmentEntityType);
+                inquiryResult = await GetSaleDetailByUid(dto.SaleDetailUid.Value, inquiryDto.AttachmentType);
                 await _commonAppService.SetOrderStep(OrderStepEnum.PreviewOrder);
                 break;
             default:
@@ -1340,7 +1340,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         return saleDetail;
     }
 
-    public async Task<CustomerOrder_OrderDetailDto> GetOrderDetailById(int id, AttachmentEntityTypeEnum attachmentEntityType)
+    public async Task<CustomerOrder_OrderDetailDto> GetOrderDetailById(int id, AttachmentEntityTypeEnum attachmentType)
     {
         if (!_commonAppService.IsInRole("Customer"))
         {
@@ -1382,7 +1382,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 PaymentId = x.PaymentId
             }).FirstOrDefault(x => x.UserId == userId && x.OrderId == id);
 
-        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, new List<int> { customerOrder.ProductId }.ToList(), attachmentEntityType);
+        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, new List<int> { customerOrder.ProductId }.ToList(), attachmentType);
         var attachment = attachments.Where(y => y.EntityId == customerOrder.ProductId).ToList();
         customerOrder.Product.Attachments = ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(attachment);
 

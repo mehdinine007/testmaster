@@ -121,7 +121,7 @@ public class SaleService : ApplicationService, ISaleService
 
 
 
-        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, queryResult.Select(x => x.ProductId).ToList(), input.AttachmentEntityType);
+        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, queryResult.Select(x => x.ProductId).ToList(), input.AttachmentType);
 
 
         queryResult.ForEach(x =>

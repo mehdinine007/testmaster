@@ -13,6 +13,6 @@ namespace OrderManagement.Application.Contracts.OrderManagement
 
         public string CategoryNode { get; set; }
         public int EsaleTypeId { get; set; }
-        public AttachmentEntityTypeEnum? AttachmentEntityType { get; set; }
+        public AttachmentEntityTypeEnum? AttachmentType { get; set; }
     }
 }

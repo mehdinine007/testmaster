@@ -10,7 +10,7 @@ namespace OrderManagement.Application.Contracts.OrderManagement
 {
     public class SaleSchemaGetListDto: PagedResultRequestDto
     {
-        public AttachmentEntityTypeEnum? AttachmentEntityType { get; set; }
+        public AttachmentEntityTypeEnum? AttachmentType { get; set; }
 
     }
 }
