@@ -22,6 +22,7 @@ using System.Linq.Dynamic.Core;
 using Volo.Abp.Features;
 using OrderManagement.Domain.Shared;
 using Volo.Abp.ObjectMapping;
+using MongoDB.Driver;
 
 namespace OrderManagement.Application.OrderManagement;
 
@@ -106,67 +107,80 @@ public class CapacityControlAppService : ApplicationService, ICapacityControlApp
 
     public async Task GrpcPaymentTest()
     {
-        var propertydto = new PropertyCategoryDto()
-        {
-            Title = "مشخصات فنی",
-            Properties = new List<PropertyDto>()
-            {
-                new PropertyDto()
-                {
-                    Id = ObjectId.GenerateNewId(),
-                    Tilte = "سرعت",
-                    Type = PropertyTypeEnum.Text
-                },
-                new PropertyDto()
-                {
-                    Id = ObjectId.GenerateNewId(),
-                    Tilte = "موتور",
-                    Type = PropertyTypeEnum.DropDown,
-                    DropDownItems = new List<DropDownItemDto>()
-                    {
-                        new DropDownItemDto()
-                        {
-                            Title = "موتور 1",
-                            Value = 1
-                        },
-                        new DropDownItemDto()
-                        {
-                            Title = "موتور 2",
-                            Value = 2
-                        }
-                    }
-                }
-            }
-        };
-        await _propertyDefinitionRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto, PropertyCategory>(propertydto));
-        propertydto = new PropertyCategoryDto()
-        {
-            Title = "مشخصات ظاهری",
-            Properties = new List<PropertyDto>()
-            {
-                new PropertyDto()
-                {
-                    Id = ObjectId.GenerateNewId(),
-                    Tilte = "رنگ بدنه",
-                    Type = PropertyTypeEnum.Text
-                },
-                new PropertyDto()
-                {
-                    Id = ObjectId.GenerateNewId(),
-                    Tilte = "جنس لاستیک",
-                    Type = PropertyTypeEnum.Text,
-                },
-                new PropertyDto()
-                {
-                    Id = ObjectId.GenerateNewId(),
-                    Tilte = "سپر عقب",
-                    Type = PropertyTypeEnum.Text,
-                },
-            }
-        };
-        await _propertyDefinitionRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto, PropertyCategory>(propertydto));
-        //IMongoCollection<PropertyDefinition> productFeatureCollection = await _productFeatureRepository.GetCollectionAsync();
-        //IAggregateFluent<PropertyDefinition> productFeatureAggregate = await _productFeatureRepository.GetAggregateAsync();
+        //var propertydto = new PropertyCategoryDto()
+        //{
+        //    Title = "مشخصات فنی",
+        //    Properties = new List<PropertyDto>()
+        //    {
+        //        new PropertyDto()
+        //        {
+        //            Id = ObjectId.GenerateNewId(),
+        //            Tilte = "سرعت",
+        //            Type = PropertyTypeEnum.Text
+        //        },
+        //        new PropertyDto()
+        //        {
+        //            Id = ObjectId.GenerateNewId(),
+        //            Tilte = "موتور",
+        //            Type = PropertyTypeEnum.DropDown,
+        //            DropDownItems = new List<DropDownItemDto>()
+        //            {
+        //                new DropDownItemDto()
+        //                {
+        //                    Title = "موتور 1",
+        //                    Value = 1
+        //                },
+        //                new DropDownItemDto()
+        //                {
+        //                    Title = "موتور 2",
+        //                    Value = 2
+        //                }
+        //            }
+        //        }
+        //    }
+        //};
+        //await _propertyDefinitionRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto, PropertyCategory>(propertydto));
+        //propertydto = new PropertyCategoryDto()
+        //{
+        //    Title = "مشخصات ظاهری",
+        //    Properties = new List<PropertyDto>()
+        //    {
+        //        new PropertyDto()
+        //        {
+        //            Id = ObjectId.GenerateNewId(),
+        //            Tilte = "رنگ بدنه",
+        //            Type = PropertyTypeEnum.Text
+        //        },
+        //        new PropertyDto()
+        //        {
+        //            Id = ObjectId.GenerateNewId(),
+        //            Tilte = "جنس لاستیک",
+        //            Type = PropertyTypeEnum.Text,
+        //        },
+        //        new PropertyDto()
+        //        {
+        //            Id = ObjectId.GenerateNewId(),
+        //            Tilte = "سپر عقب",
+        //            Type = PropertyTypeEnum.Text,
+        //        },
+        //    }
+        //};
+        //await _propertyDefinitionRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto, PropertyCategory>(propertydto));
+        IMongoCollection<ProductProperty> productFeatureCollection = await _productPropertyRepository.GetCollectionAsync();
+       // IAggregateFluent<ProductProperty> productFeatureAggregate = await _productPropertyRepository.GetAggregateAsync();
+        var x = productFeatureCollection.Aggregate().Unwind(x => x.PropertyCategories).Unwind(x => x["PropertyCategories.Properties"]).Match(x => x["PropertyCategories.Properties.Type"] == 999).ToList();
+        var filter = new BsonDocument( );
+
+        var update = Builders<ProductProperty>.Update.Set("PropertyCategories.$[].Properties.$[j].Type", 100);
+
+        var arrayFilters = new List<ArrayFilterDefinition>
+{
+    new BsonDocumentArrayFilterDefinition<ProductProperty>(new BsonDocument("j.Type", 1))
+};
+        var updateOptions = new UpdateOptions { ArrayFilters = arrayFilters };
+        var xx =  productFeatureCollection.UpdateMany(filter,
+         update, updateOptions);
+
         ////FilterDefinition<ProductFeature> matchFilter = Builders<ProductFeature>.Filter.ElemMatch<ProductFeature>("ProductFeature", Builders<ProductFeature>.Filter.Eq("FeatureValues.ProductId", 1));
         //var filter = Builders<PropertyDefinition>.Filter.Where(e => e.FeatureValues.Any(x=> x.ProductId == 2));
         //var a = productFeatureAggregate.Match(filter).ToList();
