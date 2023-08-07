@@ -326,5 +326,13 @@ public static class OrderManagementDbContextModelCreatingExtensions
             entity.ToTable(nameof(ProductAndCategoryType_ReadOnly));
             entity.AddEnumChangeTracker<ProductAndCategoryType_ReadOnly, ProductAndCategoryType>();
         });
+
+        builder.Entity<ProductAndCategory>(entity =>
+        {
+            entity.ToTable(nameof(ProductAndCategory));
+            entity.HasOne<ProductLevel>(x => x.ProductLevel)
+                .WithMany(x => x.ProductAndCategories)
+                .HasForeignKey(x => x.ProductLevelId);
+        });
     }
 }
