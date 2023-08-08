@@ -12,6 +12,8 @@ namespace OrderManagement.Domain.OrderManagement
 
         private ICollection<Season_Product_Category> _productSeason;
 
+        private ICollection<OrderStatusInquiry> _orderStatusInquiries;
+
         public string Code { get; set; }
 
         public string Title { get; set; }
@@ -42,6 +44,12 @@ namespace OrderManagement.Domain.OrderManagement
         {
             get => _childrens ?? (_childrens = new List<ProductAndCategory>());
             protected set => _childrens = value;
+        }
+
+        public virtual ICollection<OrderStatusInquiry> OrderStatusInquiries
+        {
+            get => _orderStatusInquiries ?? (_orderStatusInquiries = new List<OrderStatusInquiry>());
+            protected set => _orderStatusInquiries = value;
         }
 
 

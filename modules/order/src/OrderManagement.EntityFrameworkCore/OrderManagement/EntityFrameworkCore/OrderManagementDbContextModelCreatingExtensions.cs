@@ -319,12 +319,19 @@ public static class OrderManagementDbContextModelCreatingExtensions
                 .HasMaxLength(250);
         });
 
-
-
         builder.Entity<ProductAndCategoryType_ReadOnly>(entity =>
         {
             entity.ToTable(nameof(ProductAndCategoryType_ReadOnly));
             entity.AddEnumChangeTracker<ProductAndCategoryType_ReadOnly, ProductAndCategoryType>();
+        });
+
+        builder.Entity<OrderStatusInquiry>(entity =>
+        {
+            entity.ToTable(nameof(OrderStatusInquiry));
+
+            entity.HasOne<ProductAndCategory>(x => x.CompanyCategory)
+                .WithMany(x => x.OrderStatusInquiries)
+                .HasForeignKey(x => x.CompanyId);
         });
     }
 }

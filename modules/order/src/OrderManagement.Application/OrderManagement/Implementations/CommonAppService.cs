@@ -1,4 +1,4 @@
-﻿using Esale.Core.Caching.Redis;
+﻿using EasyCaching.Core;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
@@ -8,14 +8,13 @@ using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.OrderManagement;
 using OrderManagement.Application.Contracts.Services;
 using OrderManagement.Application.OrderManagement.Constants;
-using OrderManagement.Application.OrderManagement.Utitlities;
 using OrderManagement.Domain;
-using Polly.Caching;
 using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text;
 using System.Threading;
@@ -36,6 +35,7 @@ public class CommonAppService : ApplicationService, ICommonAppService
     private readonly IRepository<ExternalApiLogResult, int> _externalApiLogResultRepository;
     private readonly IRepository<ExternalApiResponsLog, int> _externalApiResponsLogRepository;
     private readonly IHttpContextAccessor _contextAccessor;
+    private readonly IHybridCachingProvider _hybridCachingProvider;
 
     public CommonAppService(IDistributedCache distributedCache,
                             IConfiguration configuration,
@@ -467,7 +467,7 @@ public class CommonAppService : ApplicationService, ICommonAppService
         if (string.IsNullOrWhiteSpace(userIdStr))
             throw new UserFriendlyException("لطفا لاگین کنید");
 
-        
+
         return userIdStr;
     }
 
@@ -540,4 +540,56 @@ public class CommonAppService : ApplicationService, ICommonAppService
         return JsonConvert.DeserializeObject<OrderStepDto>(getOrderStep);
     }
 
+    public async Task<IkcoApiResult<IkcoInquiry[]>> OrderStatusInquiryAsync(string nationalCode, int orderId, string accessToken)
+    {
+        if (string.IsNullOrWhiteSpace(nationalCode) || nationalCode.AsParallel().Any(x => !char.IsDigit(x)))
+            throw new UserFriendlyException("خطا در استعلام سفارش. کدملی صحیح نمیباشد");
+
+        if (string.IsNullOrWhiteSpace(accessToken))
+            accessToken = await GetIkcoAccessTokenAsync(false);
+
+        using var client = new HttpClient();
+        client.DefaultRequestHeaders.Add("Authorization", "Bearer " + accessToken);
+        var serviceRequest = await client.GetAsync(string.Format(_configuration.GetValue<string>("IkcoOrderInquiryAddresses:InquiryAddress"), nationalCode, orderId));
+        if (!serviceRequest.IsSuccessStatusCode)
+            throw new UserFriendlyException("خطا در استعلام سفارش");
+
+        var strContent = await serviceRequest.Content.ReadAsStringAsync();
+        var response = JsonConvert.DeserializeObject<IkcoApiResult<IkcoInquiry[]>>(strContent);
+        return response;
+    }
+
+    public async Task<string> GetIkcoAccessTokenAsync(bool useCache = true)
+    {
+        if (useCache)
+        {
+            var accessTokenFromCache = await _hybridCachingProvider.GetAsync<string>(RedisConstants.IkcoBearerToken);
+            if (!accessTokenFromCache.HasValue)
+                return accessTokenFromCache.Value;
+        }
+        using var client = new HttpClient();
+        //var loginModel = _configuration.GetValue<IkcoOrderInquiryProfile>(nameof(IkcoOrderInquiryProfile));
+        IkcoOrderInquiryProfile loginModel = new();
+        _configuration.GetSection(nameof(IkcoOrderInquiryProfile)).Bind(loginModel);
+        var stringContent = new StringContent(
+            JsonConvert.SerializeObject(loginModel), new MediaTypeHeaderValue("application/json"));
+
+        var serviceRequest = await client.PostAsync(_configuration.GetValue<string>("IkcoOrderInquiryAddresses:LoginAddresss"), stringContent);
+        if (!serviceRequest.IsSuccessStatusCode)
+            throw new UserFriendlyException("خطا در فرآیند لاگین سرویس استعلام سفارش");
+
+        var strContent = await serviceRequest.Content.ReadAsStringAsync();
+        var response = JsonConvert.DeserializeObject<IkcoApiResult<IkcoLogin>>(strContent);
+        if (response.Data == null)
+            throw new UserFriendlyException(response?.Errors ?? "خطا در فرآیند لاگین سرویس استعلام سفارش");
+
+        await _hybridCachingProvider.SetAsync<string>(RedisConstants.IkcoBearerToken, response.Data.AccessToken, new TimeSpan(1, 0, 0, 0));
+
+        return response.Data.AccessToken;
+    }
+
+    public Task<BahmanLoginResult> GetBahmanAccessToken(bool useCache = true)
+    {
+        throw new NotImplementedException();
+    }
 }
