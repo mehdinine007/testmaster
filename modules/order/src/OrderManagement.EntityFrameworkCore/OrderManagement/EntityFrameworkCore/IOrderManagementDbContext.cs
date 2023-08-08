@@ -12,6 +12,7 @@ namespace OrderManagement.EfCore
     [ConnectionStringName("OrderManagement")]
     public interface IOrderManagementDbContext : IEfCoreDbContext
     {
+        DbSet<SiteStructure> SiteStructures { get; set; }
         DbSet<Attachment> Attachments { get; set; }
         DbSet<CustomerOrder> CustomerOrders { get; set; }
 
@@ -76,6 +77,8 @@ namespace OrderManagement.EfCore
         DbSet<ProductAndCategory> ProductAndCategory { get; set; }
 
         DbSet<ProductAndCategoryType_ReadOnly> ProductAndCategoryType_ReadOnly { get; set; }
+        DbSet<ProductLevel> ProductLevel { get; set; }
+
 
         DbSet<OrderStatusInquiry> OrderStatusInquiry { get; set; }
     }

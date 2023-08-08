@@ -4,7 +4,8 @@
     {
         None = 0,
         ProductAndCategory = 1,
-        SaleSchema = 2
+        SaleSchema = 2,
+        SiteStructure = 3
 
     }
 }

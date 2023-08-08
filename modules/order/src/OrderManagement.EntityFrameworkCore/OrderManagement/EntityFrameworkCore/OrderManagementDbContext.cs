@@ -15,6 +15,7 @@ namespace OrderManagement.EfCore
     [ConnectionStringName("OrderManagement")]
     public class OrderManagementDbContext : AbpDbContext<OrderManagementDbContext>, IOrderManagementDbContext
     {
+        public DbSet<SiteStructure> SiteStructures { get; set; }
         public DbSet<Attachment> Attachments { get; set; }
         public static string TablePrefix { get; set; } = OrderManagementConsts.DefaultDbTablePrefix;
 
@@ -86,6 +87,7 @@ namespace OrderManagement.EfCore
         public DbSet<ProductAndCategory> ProductAndCategory { get; set; }
 
         public DbSet<ProductAndCategoryType_ReadOnly> ProductAndCategoryType_ReadOnly { get ; set ; }
+        public DbSet<ProductLevel> ProductLevel { get; set; }
 
         public DbSet<OrderStatusInquiry> OrderStatusInquiry { get; set; }
 

@@ -73,6 +73,13 @@ namespace OrderManagement
                 .ForMember(x => x.Content, c => c.MapFrom(m => !string.IsNullOrWhiteSpace(m.Content) ? JsonConvert.DeserializeObject<List<string>>(m.Content) : null))
                 .ReverseMap();
 
+            CreateMap<SiteStructure, SiteStructureDto>()
+                .ForMember(x => x.TypeTitle, c => c.MapFrom(m => m.Type != 0 ? EnumHelper.GetDescription(m.Type) : ""))
+                .ReverseMap();
+
+            CreateMap<SiteStructure, SiteStructureAddOrUpdateDto>()
+                .ReverseMap();
+
             CreateMap<Property, PropertyDto>()
                 .ForMember(x=> x.TypeTitle, c => c.MapFrom(m => m.Type != 0 ? EnumHelper.GetDescription(m.Type) : ""))
                 .ReverseMap();
@@ -111,6 +118,7 @@ namespace OrderManagement
 
 
             CreateMap<ProductAndCategory, ProductAndCategoryViewModel>().ReverseMap();
+            CreateMap<ProductLevel, ProductLevelDto>().ReverseMap();
 
         }
     }
