@@ -563,14 +563,9 @@ public class CommonAppService : ApplicationService, ICommonAppService
         return response;
     }
 
-    public async Task<string> GetIkcoAccessTokenAsync(bool useCache = true)
+    public async Task<string> GetIkcoAccessTokenAsync()
     {
-        if (useCache)
-        {
-            var accessTokenFromCache = await _hybridCachingProvider.GetAsync<string>(RedisConstants.IkcoBearerToken);
-            if (!accessTokenFromCache.HasValue)
-                return accessTokenFromCache.Value;
-        }
+        var 
         using var client = new HttpClient();
         //var loginModel = _configuration.GetValue<IkcoOrderInquiryProfile>(nameof(IkcoOrderInquiryProfile));
         IkcoOrderInquiryProfile loginModel = new();

@@ -1,6 +1,8 @@
-﻿using OrderManagement.Application.Contracts;
+﻿using Microsoft.EntityFrameworkCore;
+using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
 using OrderManagement.Domain.OrderManagement;
+using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
@@ -14,6 +16,13 @@ public class OrderStatusInquiryService : ApplicationService, IOrderStatusInquiry
     public OrderStatusInquiryService(IRepository<OrderStatusInquiry, long> orderStatusInquiryRepository)
     {
         _orderStatusInquiryRepository = orderStatusInquiryRepository;
+    }
+
+    public async Task<OrderStatusInquiryDto> GetCurrentUserOrderStatus(string nationalCode, int customerOrderId)
+    {
+        //(await _orderStatusInquiryRepository.GetQueryableAsync()).Where(x => EF.Functions.)
+
+        throw new System.NotImplementedException();
     }
 
     public async Task<OrderStatusInquiryDto> Insert(OrderStatusInquiryDto orderStatusInquiryDto)
