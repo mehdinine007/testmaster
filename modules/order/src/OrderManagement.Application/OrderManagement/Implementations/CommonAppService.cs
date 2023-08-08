@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.OrderManagement;
+using OrderManagement.Application.Contracts.OrderManagement.Services;
 using OrderManagement.Application.Contracts.Services;
 using OrderManagement.Application.OrderManagement.Constants;
 using OrderManagement.Domain;
@@ -36,6 +37,7 @@ public class CommonAppService : ApplicationService, ICommonAppService
     private readonly IRepository<ExternalApiResponsLog, int> _externalApiResponsLogRepository;
     private readonly IHttpContextAccessor _contextAccessor;
     private readonly IHybridCachingProvider _hybridCachingProvider;
+    private readonly IOrderStatusInquiryService _orderStatusInquiryService;
 
     public CommonAppService(IDistributedCache distributedCache,
                             IConfiguration configuration,
@@ -44,7 +46,8 @@ public class CommonAppService : ApplicationService, ICommonAppService
                             IHttpContextAccessor HttpContextAccessor,
                             IRepository<ExternalApiLogResult, int> externalApiLogResultRepository,
                             IRepository<ExternalApiResponsLog, int> externalApiResponsLogRepositor,
-                            IHttpContextAccessor contextAccessor
+                            IHttpContextAccessor contextAccessor,
+                            IOrderStatusInquiryService orderStatusInquiryService
                             )
     {
         _distributedCache = distributedCache;
@@ -55,6 +58,7 @@ public class CommonAppService : ApplicationService, ICommonAppService
         _externalApiLogResultRepository = externalApiLogResultRepository;
         _externalApiResponsLogRepository = externalApiResponsLogRepositor;
         _contextAccessor = contextAccessor;
+        _orderStatusInquiryService = orderStatusInquiryService;
     }
 
     //private async Task<AuthtenticateResult> AuthenticateBank()
