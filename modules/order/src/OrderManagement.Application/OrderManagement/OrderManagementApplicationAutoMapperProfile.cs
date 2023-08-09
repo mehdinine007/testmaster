@@ -123,7 +123,7 @@ namespace OrderManagement
                 .ReverseMap()
                 .IgnoreFullAuditedObjectProperties();
             CreateMap<CreateSaleSchemaDto, SaleSchema>().ReverseMap();
-
+            CreateMap<ProductAndCategoryCreateDto, ProductAndCategory>();
             
         }
     }
