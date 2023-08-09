@@ -73,13 +73,6 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             {
                 throw new UserFriendlyException("شناسه وارد شده معتبر نمیباشد.");
             }
-
-            if (uploadFile.File is null)
-            {
-                throw new UserFriendlyException("پرکردن فایل ضروری میباشد");
-            }
-
-            
             var attachDto = new AttachFileDto()
             {
                 Entity = entity,
