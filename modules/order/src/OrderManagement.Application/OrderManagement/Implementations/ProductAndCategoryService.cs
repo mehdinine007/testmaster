@@ -105,7 +105,11 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
             productAndCategoryCreateDto.ProductLevelId = currentProductlevel.Id;
         }
         else
+        {
             productAndCategoryCreateDto.LevelId = 1;
+            var productLevelId = productLevelQuery.FirstOrDefault().Id;
+            productAndCategoryCreateDto.ProductLevelId = productLevelId;
+        }
 
         var _parentCode = "";
         var igResult = await _productAndCategoryRepository.GetQueryableAsync();
@@ -126,8 +130,7 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
             : null;
         productAndCategoryCreateDto.Active = true;
 
-        var productLevelId = productLevelQuery.FirstOrDefault().Id;
-        productAndCategoryCreateDto.ProductLevelId = productLevelId;
+
 
 
         var entity = await _productAndCategoryRepository.InsertAsync(
