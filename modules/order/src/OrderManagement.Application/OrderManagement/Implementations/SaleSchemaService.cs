@@ -62,16 +62,16 @@ public class SaleSchemaService : ApplicationService, ISaleSchemaService
 
     }
     [UnitOfWork]
-    public async Task<int> Save(SaleSchemaDto saleSchemaDto)
+    public async Task<int> Save(CreateSaleSchemaDto saleSchemaDto)
     {
-        var saleSchema = ObjectMapper.Map<SaleSchemaDto, SaleSchema>(saleSchemaDto);
+        var saleSchema = ObjectMapper.Map<CreateSaleSchemaDto, SaleSchema>(saleSchemaDto);
         await _saleSchemaRepository.InsertAsync(saleSchema, autoSave: true);
         return saleSchema.Id;
     }
 
-    public async Task<int> Update(SaleSchemaDto saleSchemaDto)
+    public async Task<int> Update(CreateSaleSchemaDto saleSchemaDto)
     {
-        var saleSchema = ObjectMapper.Map<SaleSchemaDto, SaleSchema>(saleSchemaDto);
+        var saleSchema = ObjectMapper.Map<CreateSaleSchemaDto, SaleSchema>(saleSchemaDto);
         await _saleSchemaRepository.AttachAsync(saleSchema, t => t.Title, d => d.Description, s => s.SaleStatus);
         return saleSchema.Id;
     }

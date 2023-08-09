@@ -35,10 +35,10 @@ public class SaleSchemaController : Controller, ISaleSchemaService
     public Task<PagedResultDto<SaleSchemaDto>> GetSaleSchema(SaleSchemaGetListDto input)
     => _saleSchemaService.GetSaleSchema(input);
     [HttpPost]
-    public Task<int> Save(SaleSchemaDto saleSchemaDto)
+    public Task<int> Save(CreateSaleSchemaDto saleSchemaDto)
     => _saleSchemaService.Save(saleSchemaDto);
     [HttpPut]
-    public Task<int> Update(SaleSchemaDto saleSchemaDto)
+    public Task<int> Update(CreateSaleSchemaDto saleSchemaDto)
     => _saleSchemaService.Update(saleSchemaDto);
     [HttpPost]
     public Task<bool> UploadFile([FromForm]UploadFileDto uploadFile)

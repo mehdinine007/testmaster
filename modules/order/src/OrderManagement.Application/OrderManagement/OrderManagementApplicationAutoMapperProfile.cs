@@ -122,6 +122,9 @@ namespace OrderManagement
             CreateMap<OrderStatusInquiry, OrderStatusInquiryDto>()
                 .ReverseMap()
                 .IgnoreFullAuditedObjectProperties();
+            CreateMap<CreateSaleSchemaDto, SaleSchema>().ReverseMap();
+
+            
         }
     }
 }

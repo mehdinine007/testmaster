@@ -22,5 +22,6 @@ namespace OrderManagement.Application.Contracts
 
         public List<AttachmentViewModel> Attachments { get; set; }
         public List<PropertyCategoryDto> PropertyCategories { get; set; }
+        public int ProductLevelId { get; set; }
     }
 }
