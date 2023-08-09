@@ -70,7 +70,7 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
 
     public async Task<ProductAndCategoryDto> Insert(ProductAndCategoryDto productAndCategoryDto)
     {
-        var productLevelQuery = (await _productLevelRepository.GetQueryableAsync()).OrderBy(x => x.Priority).ToList();
+        var productLevelQuery = (await _productLevelRepository.GetQueryableAsync());
 
         if (productAndCategoryDto.ParentId.HasValue && productAndCategoryDto.ParentId.Value > 0)
         {
@@ -97,8 +97,8 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
             productAndCategoryDto.LevelId = parent.LevelId + 1;
             var parentPriority = productLevelQuery.FirstOrDefault(x => x.Id == parent.ProductLevelId).Priority;
             var currentProductlevel = productLevelQuery.FirstOrDefault(x => x.Priority == parentPriority + 1);
-            var lastProductlevelId = productLevelQuery.Last().Id;
-            if (currentProductlevel == null)
+            var lastPriority = productLevelQuery.Max(x => x.Priority);
+            if (currentProductlevel == null || currentProductlevel.Priority > lastPriority)
             {
                 throw new UserFriendlyException("دسته بندی سطح آخر یافت نشد");
             }
@@ -106,28 +106,28 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
         }
         else
             productAndCategoryDto.LevelId = 1;
-        var _parentCode = "";
-        var igResult = await _productAndCategoryRepository.GetQueryableAsync();
-        int codeLength = 4;
-        if (productAndCategoryDto.ParentId.HasValue && productAndCategoryDto.ParentId.Value > 0)
-            _parentCode = igResult.FirstOrDefault(x => x.Id == productAndCategoryDto.ParentId).Code;
+            var _parentCode = "";
+            var igResult = await _productAndCategoryRepository.GetQueryableAsync();
+            int codeLength = 4;
+            if (productAndCategoryDto.ParentId.HasValue && productAndCategoryDto.ParentId.Value > 0)
+                _parentCode = igResult.FirstOrDefault(x => x.Id == productAndCategoryDto.ParentId).Code;
 
-        var _maxCode = igResult
-            .Where(x => x.ParentId == productAndCategoryDto.ParentId)
-            .Max(x => x.Code);
-        if (!string.IsNullOrWhiteSpace(_maxCode))
-            _maxCode = (Convert.ToInt32(_maxCode.Substring(_maxCode.Length - codeLength)) + 1).ToString();
-        else _maxCode = "1";
-        _maxCode = _parentCode + StringHelper.Repeat(_maxCode, codeLength);
-        productAndCategoryDto.Code = _maxCode;
-        productAndCategoryDto.ParentId = productAndCategoryDto.ParentId.HasValue && productAndCategoryDto.ParentId.Value > 0
-            ? productAndCategoryDto.ParentId.Value
-            : null;
-        productAndCategoryDto.Active = true;
+            var _maxCode = igResult
+                .Where(x => x.ParentId == productAndCategoryDto.ParentId)
+                .Max(x => x.Code);
+            if (!string.IsNullOrWhiteSpace(_maxCode))
+                _maxCode = (Convert.ToInt32(_maxCode.Substring(_maxCode.Length - codeLength)) + 1).ToString();
+            else _maxCode = "1";
+            _maxCode = _parentCode + StringHelper.Repeat(_maxCode, codeLength);
+            productAndCategoryDto.Code = _maxCode;
+            productAndCategoryDto.ParentId = productAndCategoryDto.ParentId.HasValue && productAndCategoryDto.ParentId.Value > 0
+                ? productAndCategoryDto.ParentId.Value
+                : null;
+            productAndCategoryDto.Active = true;
 
-        var productLevelId = productLevelQuery.FirstOrDefault().Id;
-        productAndCategoryDto.ProductLevelId = productLevelId;
-
+            var productLevelId = productLevelQuery.FirstOrDefault().Id;
+            productAndCategoryDto.ProductLevelId = productLevelId;
+        
 
         var entity = await _productAndCategoryRepository.InsertAsync(
             ObjectMapper.Map<ProductAndCategoryDto, ProductAndCategory>(productAndCategoryDto));
