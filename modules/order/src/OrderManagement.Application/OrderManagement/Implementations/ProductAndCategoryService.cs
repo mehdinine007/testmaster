@@ -12,6 +12,8 @@ using Core.Utility.Tools;
 using OrderManagement.Application.Contracts.OrderManagement;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using static Nest.JoinField;
+using System.ComponentModel.DataAnnotations;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -20,14 +22,18 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
     private readonly IRepository<ProductAndCategory, int> _productAndCategoryRepository;
     private readonly IAttachmentService _attachmentService;
     private readonly IProductPropertyService _productPropertyService;
+    private readonly IRepository<ProductLevel, int> _productLevelRepository;
+
     public ProductAndCategoryService(IRepository<ProductAndCategory, int> productAndCategoryRepository,
                                      IAttachmentService attachmentService,
-                                     IProductPropertyService productPropertyService
+                                     IProductPropertyService productPropertyService,
+                                     IRepository<ProductLevel, int> productLevelRepository
         )
     {
         _productAndCategoryRepository = productAndCategoryRepository;
         _attachmentService = attachmentService;
         _productPropertyService = productPropertyService;
+        _productLevelRepository = productLevelRepository;
     }
 
     public async Task Delete(int id)
@@ -59,6 +65,8 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
 
     public async Task<ProductAndCategoryDto> Insert(ProductAndCategoryDto productAndCategoryDto)
     {
+        var productLevelQuery = (await _productLevelRepository.GetQueryableAsync()).OrderBy(x => x.Priority).ToList();
+
         if (productAndCategoryDto.ParentId.HasValue && productAndCategoryDto.ParentId.Value > 0)
         {
             var parent = (await _productAndCategoryRepository.GetQueryableAsync())
@@ -82,6 +90,14 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
                     throw new UserFriendlyException("برای دسته بندی سطح بالایی قبلا زیر سطح از نوع محصول تعریف شده است");
             }
             productAndCategoryDto.LevelId = parent.LevelId + 1;
+            var parentPriority = productLevelQuery.FirstOrDefault(x => x.Id == parent.ProductLevelId).Priority;
+            var currentProductlevel = productLevelQuery.FirstOrDefault(x => x.Priority == parentPriority + 1);
+            var lastProductlevelId= productLevelQuery.Last().Id;
+            if (currentProductlevel==null)
+            {
+                throw new UserFriendlyException("دسته بندی سطح آخر یافت نشد");
+            }
+            productAndCategoryDto.ProductLevelId = currentProductlevel.Id;
         }
         else
             productAndCategoryDto.LevelId = 1;
@@ -103,6 +119,11 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
             ? productAndCategoryDto.ParentId.Value
             : null;
         productAndCategoryDto.Active = true;
+
+        var productLevelId = productLevelQuery.FirstOrDefault().Id;
+        productAndCategoryDto.ProductLevelId = productLevelId;
+
+
         var entity = await _productAndCategoryRepository.InsertAsync(
             ObjectMapper.Map<ProductAndCategoryDto, ProductAndCategory>(productAndCategoryDto));
         return ObjectMapper.Map<ProductAndCategory, ProductAndCategoryDto>(entity);
@@ -176,7 +197,7 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
 
         productAndCategory.Active = productAndCategoryDto.Active;
         productAndCategory.Title = productAndCategoryDto.Title;
-        var entity =  await _productAndCategoryRepository.UpdateAsync(productAndCategory);
+        var entity = await _productAndCategoryRepository.UpdateAsync(productAndCategory);
         return ObjectMapper.Map<ProductAndCategory, ProductAndCategoryDto>(entity);
     }
 }
