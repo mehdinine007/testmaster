@@ -34,8 +34,8 @@ public class ProductAndCategoryController : AbpController //, IProductAndCategor
         => await _productAndCategoryService.GetById(id);
 
     [HttpPost]
-    public async Task<ProductAndCategoryDto> Insert([FromBody] ProductAndCategoryDto productAndCategoryDto)
-        => await _productAndCategoryService.Insert(productAndCategoryDto);
+    public async Task<ProductAndCategoryDto> Insert([FromBody] ProductAndCategoryCreateDto productAndCategoryCreateDto)
+        => await _productAndCategoryService.Insert(productAndCategoryCreateDto);
 
     [HttpPost]
     public async Task<bool> UploadFile([FromForm] UploadFileDto uploadFileDto)
@@ -50,6 +50,6 @@ public class ProductAndCategoryController : AbpController //, IProductAndCategor
         => await _productAndCategoryService.GetList(input);
 
     [HttpPut]
-    public async Task<ProductAndCategoryDto> Update(ProductAndCategoryDto productAndCategoryDto)
-        => await _productAndCategoryService.Update(productAndCategoryDto);
+    public async Task<ProductAndCategoryDto> Update(ProductAndCategoryUpdateDto productAndCategoryUpdateDto)
+        => await _productAndCategoryService.Update(productAndCategoryUpdateDto);
 }

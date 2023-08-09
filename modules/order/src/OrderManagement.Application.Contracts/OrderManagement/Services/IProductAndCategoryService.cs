@@ -6,7 +6,7 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Services
     {
         Task<ProductAndCategoryDto> GetById(int id);
 
-        Task<ProductAndCategoryDto> Insert(ProductAndCategoryDto productAndCategoryDto);
+        Task<ProductAndCategoryDto> Insert(ProductAndCategoryCreateDto productAndCategoryCreateDto);
 
         Task Delete(int id);
 
@@ -16,6 +16,6 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Services
 
         Task<List<ProductAndCategoryWithChildDto>> GetList(ProductAndCategoryGetListQueryDto input);
 
-        Task<ProductAndCategoryDto> Update(ProductAndCategoryDto productAndCategoryDto);
+        Task<ProductAndCategoryDto> Update(ProductAndCategoryUpdateDto productAndCategoryUpdateDto);
     }
 }
