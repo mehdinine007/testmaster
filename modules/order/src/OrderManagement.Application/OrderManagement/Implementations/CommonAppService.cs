@@ -550,7 +550,7 @@ public class CommonAppService : ApplicationService, ICommonAppService
             throw new UserFriendlyException("خطا در استعلام سفارش. کدملی صحیح نمیباشد");
 
         if (string.IsNullOrWhiteSpace(accessToken))
-            accessToken = await GetIkcoAccessTokenAsync(false);
+            accessToken = await GetIkcoAccessTokenAsync();
 
         using var client = new HttpClient();
         client.DefaultRequestHeaders.Add("Authorization", "Bearer " + accessToken);
@@ -564,8 +564,7 @@ public class CommonAppService : ApplicationService, ICommonAppService
     }
 
     public async Task<string> GetIkcoAccessTokenAsync()
-    {
-        var 
+    { 
         using var client = new HttpClient();
         //var loginModel = _configuration.GetValue<IkcoOrderInquiryProfile>(nameof(IkcoOrderInquiryProfile));
         IkcoOrderInquiryProfile loginModel = new();

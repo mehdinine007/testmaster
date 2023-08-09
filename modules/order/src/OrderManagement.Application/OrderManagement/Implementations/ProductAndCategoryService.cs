@@ -12,8 +12,7 @@ using Core.Utility.Tools;
 using OrderManagement.Application.Contracts.OrderManagement;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
-using static Nest.JoinField;
-using System.ComponentModel.DataAnnotations;
+using OrderManagement.Application.Contracts.Services;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -23,17 +22,20 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
     private readonly IAttachmentService _attachmentService;
     private readonly IProductPropertyService _productPropertyService;
     private readonly IRepository<ProductLevel, int> _productLevelRepository;
+    private readonly ICommonAppService _commonAppService;
 
     public ProductAndCategoryService(IRepository<ProductAndCategory, int> productAndCategoryRepository,
                                      IAttachmentService attachmentService,
                                      IProductPropertyService productPropertyService,
-                                     IRepository<ProductLevel, int> productLevelRepository
+                                     IRepository<ProductLevel, int> productLevelRepository,
+                                     ICommonAppService commonAppService
         )
     {
         _productAndCategoryRepository = productAndCategoryRepository;
         _attachmentService = attachmentService;
         _productPropertyService = productPropertyService;
         _productLevelRepository = productLevelRepository;
+        _commonAppService = commonAppService;
     }
 
     public async Task Delete(int id)
@@ -52,7 +54,10 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
 
     public async Task<ProductAndCategoryDto> GetById(int id)
     {
-        var productCategory = (await _productAndCategoryRepository.GetQueryableAsync())
+        var query = await _productAndCategoryRepository.GetQueryableAsync();
+        if (!_commonAppService.IsInRole("Admin"))
+            query = query.Where(x => x.Active);
+        var productCategory = (query)
             .FirstOrDefault(x => x.Id == id) ??
             throw new UserFriendlyException("محصول یا دسته بندی مورد نطر پیدا نشد");
         var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, new List<int>() { id });
@@ -92,8 +97,8 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
             productAndCategoryDto.LevelId = parent.LevelId + 1;
             var parentPriority = productLevelQuery.FirstOrDefault(x => x.Id == parent.ProductLevelId).Priority;
             var currentProductlevel = productLevelQuery.FirstOrDefault(x => x.Priority == parentPriority + 1);
-            var lastProductlevelId= productLevelQuery.Last().Id;
-            if (currentProductlevel==null)
+            var lastProductlevelId = productLevelQuery.Last().Id;
+            if (currentProductlevel == null)
             {
                 throw new UserFriendlyException("دسته بندی سطح آخر یافت نشد");
             }
@@ -138,6 +143,9 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
     public async Task<CustomPagedResultDto<ProductAndCategoryDto>> GetListWithPagination(ProductAndCategoryQueryDto input)
     {
         var productCategoryQuery = await _productAndCategoryRepository.WithDetailsAsync(x => x.Childrens);
+        if (!_commonAppService.IsInRole("Admin"))
+            productCategoryQuery = productCategoryQuery.Where(x => x.Active);
+
         productCategoryQuery = productCategoryQuery.AsSingleQuery();
         productCategoryQuery = productCategoryQuery.Where(x => x.ParentId == input.ParentId);
 
@@ -170,6 +178,8 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
     {
         List<ProductAndCategory> ls = new();
         var productAndCategoryQuery = await _productAndCategoryRepository.GetQueryableAsync();
+        if (!_commonAppService.IsInRole("Admin"))
+            productAndCategoryQuery = productAndCategoryQuery.Where(x => x.Active);
         switch (input.Type)
         {
             case ProductAndCategoryType.Category:
