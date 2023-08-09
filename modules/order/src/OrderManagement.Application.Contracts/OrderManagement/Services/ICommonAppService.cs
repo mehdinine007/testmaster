@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
-using Volo.Abp.Application.Services;
+﻿using Volo.Abp.Application.Services;
 
 namespace OrderManagement.Application.Contracts.Services
 {
@@ -24,6 +20,9 @@ namespace OrderManagement.Application.Contracts.Services
         string GetIncomigToken();
         Task<bool> SetOrderStep(OrderStepEnum orderStep, long? userId = null);
         Task<bool> ValidateOrderStep(OrderStepEnum orderStep);
+        Task<IkcoApiResult<IkcoInquiry[]>> OrderStatusInquiryAsync(string nationalCode, int orderId, string accessToken);
+        Task<string> GetIkcoAccessTokenAsync(bool useCache = true);
 
+        Task<BahmanLoginResult> GetBahmanAccessToken(bool useCache = true);
     }
 }

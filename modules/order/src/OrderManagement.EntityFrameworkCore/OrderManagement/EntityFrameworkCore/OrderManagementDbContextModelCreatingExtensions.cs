@@ -319,8 +319,6 @@ public static class OrderManagementDbContextModelCreatingExtensions
                 .HasMaxLength(250);
         });
 
-
-
         builder.Entity<ProductAndCategoryType_ReadOnly>(entity =>
         {
             entity.ToTable(nameof(ProductAndCategoryType_ReadOnly));
@@ -333,6 +331,15 @@ public static class OrderManagementDbContextModelCreatingExtensions
             entity.HasOne<ProductLevel>(x => x.ProductLevel)
                 .WithMany(x => x.ProductAndCategories)
                 .HasForeignKey(x => x.ProductLevelId);
+        });
+
+        builder.Entity<OrderStatusInquiry>(entity =>
+        {
+            entity.ToTable(nameof(OrderStatusInquiry));
+
+            entity.HasOne<ProductAndCategory>(x => x.CompanyCategory)
+                .WithMany(x => x.OrderStatusInquiries)
+                .HasForeignKey(x => x.CompanyId);
         });
     }
 }
