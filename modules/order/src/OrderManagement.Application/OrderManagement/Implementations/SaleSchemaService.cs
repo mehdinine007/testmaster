@@ -8,6 +8,7 @@ using OrderManagement.Domain.Shared;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
@@ -28,6 +29,11 @@ public class SaleSchemaService : ApplicationService, ISaleSchemaService
 
     public async Task<bool> Delete(int id)
     {
+      var saleSchema= (await _saleSchemaRepository.GetQueryableAsync()).AsNoTracking().FirstOrDefault(x => x.Id == id);
+        if (saleSchema is null)
+        {
+            throw new UserFriendlyException("شناسه وارد شده معتبر نمیباشد.");
+        }
         await _saleSchemaRepository.DeleteAsync(x => x.Id == id);
         return true;
     }
@@ -71,6 +77,11 @@ public class SaleSchemaService : ApplicationService, ISaleSchemaService
 
     public async Task<int> Update(CreateSaleSchemaDto saleSchemaDto)
     {
+        var getSaleSchema =(await _saleSchemaRepository.GetQueryableAsync()).AsNoTracking().FirstOrDefault(x=>x.Id== saleSchemaDto.Id);
+        if (getSaleSchema is null)
+        {
+            throw new UserFriendlyException("شناسه وارد شده معتبر نمیباشد.");
+        }
         var saleSchema = ObjectMapper.Map<CreateSaleSchemaDto, SaleSchema>(saleSchemaDto);
         await _saleSchemaRepository.AttachAsync(saleSchema, t => t.Title, d => d.Description, s => s.SaleStatus);
         return saleSchema.Id;
