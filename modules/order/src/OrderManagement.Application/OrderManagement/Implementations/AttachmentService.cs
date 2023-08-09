@@ -69,6 +69,17 @@ namespace OrderManagement.Application.OrderManagement.Implementations
 
         public async Task<bool> UploadFile(AttachmentEntityEnum entity, UploadFileDto uploadFile)
         {
+            if (uploadFile.Id<=0)
+            {
+                throw new UserFriendlyException("شناسه وارد شده معتبر نمیباشد.");
+            }
+
+            if (uploadFile.File is null)
+            {
+                throw new UserFriendlyException("پرکردن فایل ضروری میباشد");
+            }
+
+            
             var attachDto = new AttachFileDto()
             {
                 Entity = entity,
