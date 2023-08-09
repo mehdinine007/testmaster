@@ -19,5 +19,6 @@ namespace OrderManagement.Application.Contracts
         public IFormFile File { get; set; }
         public string Description { get; set; }
         public List<string> Content { get; set; }
+        public int Priority { get; set; }
     }
 }

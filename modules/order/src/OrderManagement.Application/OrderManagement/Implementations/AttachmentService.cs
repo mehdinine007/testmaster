@@ -78,7 +78,8 @@ namespace OrderManagement.Application.OrderManagement.Implementations
                 Description = uploadFile.Description,
                 Title = uploadFile.Title,
                 Content = uploadFile.Content,
-                Location = uploadFile.Location
+                Location = uploadFile.Location,
+                Priority = uploadFile.Priority
             };
             bool hasAdd = attachDto.Id is null;
             if (hasAdd)
