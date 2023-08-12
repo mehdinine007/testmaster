@@ -15,6 +15,8 @@ namespace OrderManagement.Domain.OrderManagement
 
         public string ClientNationalCode { get; set; }
 
+        public  OrderDeliveryStatusType OrderDeliveryStatus { get; set; }
+
         public virtual ProductAndCategory CompanyCategory { get; protected set; }
     }
 }
