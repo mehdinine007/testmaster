@@ -69,7 +69,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
 
         public async Task<bool> UploadFile(AttachmentEntityEnum entity, UploadFileDto uploadFile)
         {
-            if (uploadFile.Id<=0)
+            if (uploadFile.Id <= 0)
             {
                 throw new UserFriendlyException("شناسه وارد شده معتبر نمیباشد.");
             }
@@ -129,6 +129,19 @@ namespace OrderManagement.Application.OrderManagement.Implementations
 
             var attachments = iqAttachment.ToList();
             return ObjectMapper.Map<List<Attachment>, List<AttachmentDto>>(attachments);
+        }
+
+        public async Task<bool> DeleteFile(Guid Id)
+        {
+            var attachment = await _attachementRepository.FirstOrDefaultAsync(x => x.Id == Id);
+            if (attachment == null)
+            {
+                throw new UserFriendlyException("شناسه وارد شده معتبرنمیباشد.");
+            }
+            await _attachementRepository.DeleteAsync(x => x.Id == Id);
+            var filePath = _configuration.GetSection("Attachment:UploadFilePath").Value + "\\" + attachment.Id + "." + attachment.FileExtension;
+            File.Delete(Path.Combine(filePath));
+            return true;
         }
     }
 }

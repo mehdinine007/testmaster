@@ -13,6 +13,7 @@ namespace OrderManagement.Application.Contracts
     {
         Task<List<AttachmentDto>> GetList(AttachmentEntityEnum entity,List<int> idList,AttachmentEntityTypeEnum? entityType = null);
         Task<bool> UploadFile(AttachmentEntityEnum entity, UploadFileDto uploadFile);
+        Task<bool> DeleteFile(Guid Id);
 
     }
 }

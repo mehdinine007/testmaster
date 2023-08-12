@@ -28,6 +28,10 @@ public class SaleSchemaController : Controller, ISaleSchemaService
     [HttpDelete]
     public Task<bool> Delete(int id)
     => _saleSchemaService.Delete(id);
+    [HttpDelete]
+    public Task<bool> DeLeteFile(Guid id)
+    =>_saleSchemaService.DeLeteFile(id);
+
     [HttpGet]
     public Task<List<SaleSchemaDto>> GetAllSaleSchema()
     => _saleSchemaService.GetAllSaleSchema();

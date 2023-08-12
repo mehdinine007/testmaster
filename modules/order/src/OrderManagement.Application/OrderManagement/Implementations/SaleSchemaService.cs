@@ -5,6 +5,7 @@ using OrderManagement.Application.Contracts.OrderManagement;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
 using OrderManagement.Domain;
 using OrderManagement.Domain.Shared;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -92,5 +93,14 @@ public class SaleSchemaService : ApplicationService, ISaleSchemaService
         await _attachmentService.UploadFile(AttachmentEntityEnum.SaleSchema, uploadFile);
         return true;
     }
+
+
+    public async Task<bool> DeLeteFile(Guid id)
+    {
+        await _attachmentService.DeleteFile(id);
+        return true;
+    }
+
+
 
 }
