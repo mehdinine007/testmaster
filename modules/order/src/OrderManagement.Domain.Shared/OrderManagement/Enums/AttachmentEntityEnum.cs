@@ -1,4 +1,6 @@
-﻿namespace OrderManagement.Domain.Shared
+﻿using Nest;
+
+namespace OrderManagement.Domain.Shared
 {
     public enum AttachmentEntityEnum
     {

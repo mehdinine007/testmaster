@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace OrderManagement.Domain
+namespace OrderManagement.Domain.Shared
 {
     public enum OrderDeliveryStatusType
     {
@@ -12,3 +12,5 @@ namespace OrderManagement.Domain
         [Display(Name = "تکمیل وجه")] ReceivingAmountCompleted = 6,
     }
 }
+
+

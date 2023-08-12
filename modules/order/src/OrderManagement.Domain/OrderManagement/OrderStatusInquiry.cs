@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OrderManagement.Domain.Shared;
+using System;
 using Volo.Abp.Domain.Entities.Auditing;
 
 namespace OrderManagement.Domain.OrderManagement

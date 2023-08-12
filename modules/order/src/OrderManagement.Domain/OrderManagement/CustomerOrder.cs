@@ -24,5 +24,7 @@ namespace OrderManagement.Domain
         public int AgencyId { get; set; }
         public int? PaymentId { get; set; }
         public int PaymentSecret { get; set; }
+        public OrderDeliveryStatusType? OrderDeliveryStatus { get; set; }
+        public string OrderDeliveryStatusDesc { get; set; }
     }
 }

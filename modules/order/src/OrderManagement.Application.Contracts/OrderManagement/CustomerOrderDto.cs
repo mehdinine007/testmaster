@@ -18,5 +18,7 @@ namespace OrderManagement.Application.Contracts
         public string ChassiNo { get; set; }
         public string Vehicle { get; set; }
         public int PaymentSecret { get; set; }
+        public OrderDeliveryStatusType? OrderDeliveryStatus { get; set; }
+        public string OrderDeliveryStatusDesc { get; set; }
     }
 }
