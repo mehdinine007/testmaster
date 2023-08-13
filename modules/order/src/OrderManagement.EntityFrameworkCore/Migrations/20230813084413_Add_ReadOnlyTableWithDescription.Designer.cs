@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OrderManagement.EfCore;
 using Volo.Abp.EntityFrameworkCore;
@@ -12,9 +13,11 @@ using Volo.Abp.EntityFrameworkCore;
 namespace OrderManagement.EfCore.Migrations
 {
     [DbContext(typeof(OrderManagementDbContext))]
-    partial class OrderManagementDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230813084413_Add_ReadOnlyTableWithDescription")]
+    partial class AddReadOnlyTableWithDescription
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1026,9 +1029,6 @@ namespace OrderManagement.EfCore.Migrations
                     b.Property<int>("PaymentSecret")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("PrioritizationDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<int?>("PriorityId")
                         .HasColumnType("int");
 
@@ -1044,18 +1044,12 @@ namespace OrderManagement.EfCore.Migrations
                     b.Property<int>("SaleId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("SendToManufacturer")
-                        .HasColumnType("datetime2");
-
                     b.Property<long>("UserId")
                         .HasColumnType("bigint");
 
                     b.Property<string>("Vehicle")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
-
-                    b.Property<DateTime?>("VehicleSelectDate")
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("Vin")
                         .HasMaxLength(50)

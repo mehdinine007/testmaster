@@ -47,5 +47,18 @@ namespace Esale.Core.Utility.Tools
             return attr.Name;
         }
 
+        public static string GetDisplayDescription(this Enum enumVal)
+        {
+            if (enumVal == null)
+                return string.Empty;
+            var type = enumVal.GetType();
+            var memInfo = type.GetMember(enumVal.ToString());
+            var attributes = memInfo[0].GetCustomAttributes(typeof(DisplayAttribute), false);
+            var attr = attributes.Length > 0 ? (DisplayAttribute)attributes[0] : null;
+            if (attr == null)
+                return enumVal.ToString();
+            return attr.Description;
+        }
+
     }
 }

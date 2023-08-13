@@ -33,12 +33,11 @@ public class CommonAppService : ApplicationService, ICommonAppService
     private IConfiguration _configuration { get; set; }
     private readonly IRepository<Logs, long> _logsRespository;
     private readonly IRepository<UserRejectionAdvocacy, int> _userRejectionAdcocacyRepository;
-    private IHttpContextAccessor _httpContextAccessor;
+    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IRepository<ExternalApiLogResult, int> _externalApiLogResultRepository;
     private readonly IRepository<ExternalApiResponsLog, int> _externalApiResponsLogRepository;
     private readonly IHttpContextAccessor _contextAccessor;
     private readonly IHybridCachingProvider _hybridCachingProvider;
-    private readonly IOrderStatusInquiryService _orderStatusInquiryService;
 
     public CommonAppService(IDistributedCache distributedCache,
                             IConfiguration configuration,
@@ -48,7 +47,7 @@ public class CommonAppService : ApplicationService, ICommonAppService
                             IRepository<ExternalApiLogResult, int> externalApiLogResultRepository,
                             IRepository<ExternalApiResponsLog, int> externalApiResponsLogRepositor,
                             IHttpContextAccessor contextAccessor,
-                            IOrderStatusInquiryService orderStatusInquiryService
+                            IHybridCachingProvider hybridCachingProvider
                             )
     {
         _distributedCache = distributedCache;
@@ -59,7 +58,7 @@ public class CommonAppService : ApplicationService, ICommonAppService
         _externalApiLogResultRepository = externalApiLogResultRepository;
         _externalApiResponsLogRepository = externalApiResponsLogRepositor;
         _contextAccessor = contextAccessor;
-        _orderStatusInquiryService = orderStatusInquiryService;
+        _hybridCachingProvider = hybridCachingProvider;
     }
 
     //private async Task<AuthtenticateResult> AuthenticateBank()
@@ -556,8 +555,9 @@ public class CommonAppService : ApplicationService, ICommonAppService
         using var client = new HttpClient();
         client.DefaultRequestHeaders.Add("Authorization", "Bearer " + accessToken);
         var serviceRequest = await client.GetAsync(string.Format(_configuration.GetValue<string>("IkcoOrderInquiryAddresses:InquiryAddress"), nationalCode, orderId));
-        if(serviceRequest.StatusCode == HttpStatusCode.Unauthorized)
+        if (serviceRequest.StatusCode == HttpStatusCode.Unauthorized)
         {
+            await _hybridCachingProvider.RemoveAsync(RedisConstants.IkcoBearerToken);
             accessToken = await GetIkcoAccessTokenAsync();
             serviceRequest = await client.GetAsync(string.Format(_configuration.GetValue<string>("IkcoOrderInquiryAddresses:InquiryAddress"), nationalCode, orderId));
         }
@@ -570,7 +570,11 @@ public class CommonAppService : ApplicationService, ICommonAppService
     }
 
     public async Task<string> GetIkcoAccessTokenAsync()
-    { 
+    {
+        var cachedAccessToken = await _hybridCachingProvider.GetAsync<string>(RedisConstants.IkcoBearerToken);
+        if (cachedAccessToken.HasValue)
+            return cachedAccessToken.Value;
+
         using var client = new HttpClient();
         //var loginModel = _configuration.GetValue<IkcoOrderInquiryProfile>(nameof(IkcoOrderInquiryProfile));
         IkcoOrderInquiryProfile loginModel = new();
