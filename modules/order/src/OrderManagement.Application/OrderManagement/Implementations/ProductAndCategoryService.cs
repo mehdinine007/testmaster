@@ -14,6 +14,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using OrderManagement.Application.Contracts.Services;
 
+
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
 public class ProductAndCategoryService : ApplicationService, IProductAndCategoryService
@@ -213,5 +214,30 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
         productAndCategory.Title = productAndCategoryUpdateDto.Title;
         var entity = await _productAndCategoryRepository.UpdateAsync(productAndCategory);
         return ObjectMapper.Map<ProductAndCategory, ProductAndCategoryDto>(entity);
+    }
+
+    public async Task<List<ProductAndSaleDetailListDto>> GetProductAndSaleDetailList(string nodePath)
+    {
+        List<ProductAndCategory> ProductList = new();
+        var currentTime = DateTime.Now;
+        var productQuery = await _productAndCategoryRepository.GetQueryableAsync();
+        productQuery = productQuery.Where(x => x.Active && x.Type== ProductAndCategoryType.Product).Include(x => x.SaleDetails.Where(x => x.SalePlanStartDate <= currentTime && currentTime <= x.SalePlanEndDate && x.Visible));
+        var product = productQuery
+                  .Where(x => EF.Functions.Like(x.Code, nodePath + "%"))
+                  .ToList();
+        ProductList = string.IsNullOrWhiteSpace(nodePath)
+            ? product.ToList()
+            : product.Where(x => x.Code == nodePath).ToList();
+        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, ProductList.Select(x => x.Id).ToList());
+        var productAndSaleDetailListDto = ObjectMapper.Map<List<ProductAndCategory>, List<ProductAndSaleDetailListDto>>(ProductList);
+        productAndSaleDetailListDto.ForEach(x =>
+        {
+            var attachment = attachments.Where(y => y.EntityId == x.Id).ToList();
+            x.Attachments = ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(attachment);
+        });
+
+     
+        return productAndSaleDetailListDto;
+
     }
 }
