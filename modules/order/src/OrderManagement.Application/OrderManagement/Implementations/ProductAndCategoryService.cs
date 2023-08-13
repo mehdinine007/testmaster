@@ -13,6 +13,7 @@ using OrderManagement.Application.Contracts.OrderManagement;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using OrderManagement.Application.Contracts.Services;
+using Nest;
 
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
@@ -185,6 +186,7 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
         var productAndCategoryQuery = await _productAndCategoryRepository.GetQueryableAsync();
         if (!_commonAppService.IsInRole("Admin"))
             productAndCategoryQuery = productAndCategoryQuery.Where(x => x.Active);
+        var attachments = new List<AttachmentDto>();
         switch (input.Type)
         {
             case ProductAndCategoryType.Category:
@@ -192,19 +194,36 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
                     .Include(x => x.Childrens.Where(y => y.Type == ProductAndCategoryType.Category))
                     .Where(x => EF.Functions.Like(x.Code, input.NodePath + "%") && x.Type == ProductAndCategoryType.Category)
                     .ToList();
+                attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, parent.Select(x => x.Id).ToList());
                 ls = string.IsNullOrWhiteSpace(input.NodePath)
-                    ? parent.ToList()
+                    ? parent.Where(x => x.ParentId == null).ToList()
                     : parent.Where(x => x.Code == input.NodePath).ToList();
                 break;
             case ProductAndCategoryType.Product:
                 if (string.IsNullOrWhiteSpace(input.NodePath))
                     throw new UserFriendlyException("مسیر نود خالی است");
                 ls = productAndCategoryQuery.Where(x => EF.Functions.Like(x.Code, input.NodePath + "%") && x.Type == ProductAndCategoryType.Product).ToList();
+                attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, ls.Select(x => x.Id).ToList());
                 break;
         }
-        return ObjectMapper.Map<List<ProductAndCategory>, List<ProductAndCategoryWithChildDto>>(ls);
+        var productAndCategories = ObjectMapper.Map<List<ProductAndCategory>, List<ProductAndCategoryWithChildDto>>(ls);
+        productAndCategories = await FillAttachmentAndProperty(productAndCategories, attachments);
+        return productAndCategories;
     }
 
+    private async Task<List<ProductAndCategoryWithChildDto>> FillAttachmentAndProperty(List<ProductAndCategoryWithChildDto> productAndCategories, List<AttachmentDto> attachments)
+    {
+        productAndCategories.ForEach(async x =>
+        {
+            var pacAttachments = attachments.Where(y => y.EntityId == x.Id).ToList();
+            x.Attachments = ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(pacAttachments);
+            if (x.Type == ProductAndCategoryType.Product)
+                x.PropertyCategories = await _productPropertyService.GetByProductId(x.Id);
+            if (x.Childrens != null && x.Childrens.Count > 0)
+                x.Childrens = await FillAttachmentAndProperty(x.Childrens.ToList(), attachments);
+        });
+        return productAndCategories;
+    }
     public async Task<ProductAndCategoryDto> Update(ProductAndCategoryUpdateDto productAndCategoryUpdateDto)
     {
         var productAndCategory = (await _productAndCategoryRepository.GetQueryableAsync()).FirstOrDefault(x => x.Id == productAndCategoryUpdateDto.Id)
@@ -237,7 +256,7 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
             x.Attachments = ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(attachment);
         });
 
-     
+
         return productAndSaleDetailListDto;
 
     }

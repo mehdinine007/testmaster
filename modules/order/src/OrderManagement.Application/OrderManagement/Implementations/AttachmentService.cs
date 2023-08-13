@@ -138,7 +138,9 @@ namespace OrderManagement.Application.OrderManagement.Implementations
                 iqAttachment = iqAttachment
                     .Where(x => x.Entity == entity && x.EntityType == entityType && entityIds.Contains(x.EntityId));
 
-            var attachments = iqAttachment.ToList();
+            var attachments = iqAttachment
+                .OrderBy(x=> x.Priority)
+                .ToList();
             return ObjectMapper.Map<List<Attachment>, List<AttachmentDto>>(attachments);
         }
 
