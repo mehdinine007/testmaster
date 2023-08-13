@@ -50,6 +50,7 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
                 throw new UserFriendlyException("این دسته بندی در حال استفاده است");
         }
         await _productAndCategoryRepository.DeleteAsync(id);
+        await _attachmentService.DeleteByEntityId(AttachmentEntityEnum.ProductAndCategory, id);
     }
 
     public async Task<ProductAndCategoryDto> GetById(int id)

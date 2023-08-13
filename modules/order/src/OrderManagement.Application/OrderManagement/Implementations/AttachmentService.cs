@@ -30,13 +30,16 @@ namespace OrderManagement.Application.OrderManagement.Implementations
         private async Task<Guid> Add(Attachment attachmentDto)
         {
             var iqAttachment = await _attachementRepository.GetQueryableAsync();
-            var attachment = iqAttachment
-                .Where(x => x.Entity == attachmentDto.Entity && x.EntityId == attachmentDto.EntityId && x.EntityType == attachmentDto.EntityType)
-                .ToList();
-            var _priroity = 1;
-            if (attachment != null && attachment.Count > 1)
-                _priroity = attachment.Max(x => x.Priority) + 1;
-            attachmentDto.Priority = _priroity;
+            if (attachmentDto.Priority == 0)
+            {
+                var attachment = iqAttachment
+                    .Where(x => x.Entity == attachmentDto.Entity && x.EntityId == attachmentDto.EntityId && x.EntityType == attachmentDto.EntityType)
+                    .ToList();
+                var _priroity = 1;
+                if (attachment != null && attachment.Count > 1)
+                    _priroity = attachment.Max(x => x.Priority) + 1;
+                attachmentDto.Priority = _priroity;
+            }
             await _attachementRepository.InsertAsync(attachmentDto, autoSave: true);
             return attachmentDto.Id;
         }
@@ -45,13 +48,19 @@ namespace OrderManagement.Application.OrderManagement.Implementations
         {
             var attachment = await Validation(attachmentDto.Id, attachmentDto);
             attachment.Title = attachmentDto.Title;
+            attachment.Priority = attachmentDto.Priority;
+            attachment.Location = attachmentDto.Location;
+            attachment.Content = attachmentDto.Content;
+            attachment.Description = attachmentDto.Description;
             await _attachementRepository.UpdateAsync(attachment, autoSave: true);
             return attachment.Id;
         }
-        private async Task<bool> Delete(Guid id)
+        public async Task<bool> DeleteById(Guid id)
         {
-            await Validation(id, null);
+            var attachment = await Validation(id, null);
             await _attachementRepository.DeleteAsync(x => x.Id == id);
+            var filePath = _configuration.GetSection("Attachment:UploadFilePath").Value + "\\" + attachment.Id + "." + attachment.FileExtension;
+            File.Delete(Path.Combine(filePath));
             return true;
         }
         private async Task<Attachment> Validation(Guid id, Attachment attachmentDto)
@@ -71,7 +80,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
         {
             if (uploadFile.Id <= 0)
             {
-                throw new UserFriendlyException("شناسه وارد شده معتبر نمیباشد.");
+                throw new UserFriendlyException(OrderConstant.AttachmentEntityIdNotFound, OrderConstant.AttachmentEntityIdNotFoundId);
             }
             var attachDto = new AttachFileDto()
             {
@@ -110,6 +119,8 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             attachment.FileExtension = fileExtention.Replace(".", "");
             string fileName = attachDto.Id.ToString() + "." + attachment.FileExtension;
             string filePath = Path.Combine(basePath, fileName);
+            if (File.Exists(filePath))
+                File.Delete(filePath);
             using (Stream stream = new FileStream(filePath, FileMode.Create))
             {
                 attachDto.File.CopyTo(stream);
@@ -131,17 +142,19 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             return ObjectMapper.Map<List<Attachment>, List<AttachmentDto>>(attachments);
         }
 
-        public async Task<bool> DeleteFile(Guid Id)
+        public async Task<bool> DeleteByEntityId(AttachmentEntityEnum entity, int id)
         {
-            var attachment = await _attachementRepository.FirstOrDefaultAsync(x => x.Id == Id);
-            if (attachment == null)
+            var attachments = (await _attachementRepository.GetQueryableAsync())
+                 .Where(x => x.Entity == entity && x.EntityId == id)
+                 .ToList();
+            if (attachments == null || attachments.Count == 0)
+                return true;
+            foreach (var attachment in attachments)
             {
-                throw new UserFriendlyException("شناسه وارد شده معتبرنمیباشد.");
+                await DeleteById(attachment.Id);
             }
-            await _attachementRepository.DeleteAsync(x => x.Id == Id);
-            var filePath = _configuration.GetSection("Attachment:UploadFilePath").Value + "\\" + attachment.Id + "." + attachment.FileExtension;
-            File.Delete(Path.Combine(filePath));
             return true;
         }
+
     }
 }

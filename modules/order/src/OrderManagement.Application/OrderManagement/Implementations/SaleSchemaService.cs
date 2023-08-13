@@ -36,6 +36,7 @@ public class SaleSchemaService : ApplicationService, ISaleSchemaService
             throw new UserFriendlyException("شناسه وارد شده معتبر نمیباشد.");
         }
         await _saleSchemaRepository.DeleteAsync(x => x.Id == id);
+        await _attachmentService.DeleteByEntityId(AttachmentEntityEnum.SaleSchema, id);
         return true;
     }
 
@@ -94,12 +95,6 @@ public class SaleSchemaService : ApplicationService, ISaleSchemaService
         return true;
     }
 
-
-    public async Task<bool> DeLeteFile(Guid id)
-    {
-        await _attachmentService.DeleteFile(id);
-        return true;
-    }
 
 
 
