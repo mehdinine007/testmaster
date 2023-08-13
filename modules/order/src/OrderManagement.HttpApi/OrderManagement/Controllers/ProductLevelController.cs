@@ -28,10 +28,13 @@ namespace OrderManagement.HttpApi.OrderManagement.Controllers
         public Task<List<ProductLevelDto>> GetList()
         =>_productLevelService.GetList();
         [HttpPost]
-        public Task<int> Save(ProductLevelDto productLevelDto)
-       => _productLevelService.Save(productLevelDto);
+        public Task<ProductLevelDto> Add(ProductLevelDto productLevelDto)
+       => _productLevelService.Add(productLevelDto);
         [HttpPut]
-        public Task<int> Update(ProductLevelDto productLevelDto)
-        =>_productLevelService.Update(productLevelDto); 
+        public Task<ProductLevelDto> Update(ProductLevelDto productLevelDto)
+        =>_productLevelService.Update(productLevelDto);
+        [HttpGet]
+        public Task<ProductLevelDto> GetById(int id)
+        =>_productLevelService.GetById(id);
     }
 }
