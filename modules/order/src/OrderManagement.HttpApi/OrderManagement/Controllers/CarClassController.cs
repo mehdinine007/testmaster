@@ -26,7 +26,7 @@ namespace OrderManagement.HttpApi.OrderManagement.Controllers
         [HttpDelete]
         public Task<bool> Delete(int id)
         =>_carClassService.Delete(id);
-        [HttpPost]
+        [HttpGet]
         public Task<List<CarClassDto>> GetList(AttachmentEntityTypeEnum? attachmentType)
         =>_carClassService.GetList(attachmentType);
         [HttpPost]
@@ -38,7 +38,7 @@ namespace OrderManagement.HttpApi.OrderManagement.Controllers
         [HttpPost]
         public Task<bool> UploadFile([FromForm]UploadFileDto uploadFile)
        => _carClassService.UploadFile(uploadFile);
-        [HttpGet]
+        [HttpPost]
         public Task<CarClassDto> GetById(CarClassQueryDto carClassQueryDto)
         =>_carClassService.GetById(carClassQueryDto);
     }
