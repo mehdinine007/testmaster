@@ -62,6 +62,9 @@ namespace OrderManagement.Application.Contracts
         public static string ProductLevelNotFound = "سطح بندی محصول وجود ندارد";
         public static string ProductLevelNotFoundId = "4004";
 
+        public static string CarClassNotFound = "کلاس  خودرو وجود ندارد";
+        public static string CarClassNotFoundId = "4005";
+
 
     }
 }

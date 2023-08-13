@@ -128,6 +128,7 @@ namespace OrderManagement
             CreateMap<SaleDetail, SaleDetailListDto>()
                 .ForMember(x => x.EsaleTypeName, opt => opt.MapFrom(y => y.ESaleType.SaleTypeName))
                 .ReverseMap();
+            CreateMap<CarClass, CarClassDto>().ReverseMap();
 
         }
     }
