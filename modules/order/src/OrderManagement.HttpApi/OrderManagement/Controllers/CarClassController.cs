@@ -9,6 +9,7 @@ using Volo.Abp;
 using Microsoft.AspNetCore.Mvc;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
 using OrderManagement.Application.Contracts.OrderManagement;
+using OrderManagement.Domain.Shared;
 
 namespace OrderManagement.HttpApi.OrderManagement.Controllers
 {
@@ -26,13 +27,19 @@ namespace OrderManagement.HttpApi.OrderManagement.Controllers
         public Task<bool> Delete(int id)
         =>_carClassService.Delete(id);
         [HttpPost]
-        public Task<List<CarClassDto>> GetCarClass()
-        =>_carClassService.GetCarClass();
+        public Task<List<CarClassDto>> GetList(AttachmentEntityTypeEnum? attachmentType)
+        =>_carClassService.GetList(attachmentType);
         [HttpPost]
-        public Task<CarClassDto> Save(CarClassDto carClassDto)
-      =>_carClassService.Save(carClassDto);
+        public Task<CarClassDto> Add(CarClassDto carClassDto)
+      =>_carClassService.Add(carClassDto);
         [HttpPut]
         public Task<CarClassDto> Update(CarClassDto carClassDto)
        =>_carClassService.Update(carClassDto);
+        [HttpPost]
+        public Task<bool> UploadFile([FromForm]UploadFileDto uploadFile)
+       => _carClassService.UploadFile(uploadFile);
+        [HttpGet]
+        public Task<CarClassDto> GetById(CarClassQueryDto carClassQueryDto)
+        =>_carClassService.GetById(carClassQueryDto);
     }
 }
