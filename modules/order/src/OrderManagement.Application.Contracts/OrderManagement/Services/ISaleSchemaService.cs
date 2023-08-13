@@ -12,8 +12,8 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Services
     public interface ISaleSchemaService: IApplicationService
     {
         Task<List<SaleSchemaDto>> GetAllSaleSchema();
-        Task<PagedResultDto<SaleSchemaDto>> GetSaleSchema(SaleSchemaGetListDto input);
-        Task<int> Save(CreateSaleSchemaDto saleSchemaDto);
+        Task<PagedResultDto<SaleSchemaDto>> GetList(SaleSchemaGetListDto input);
+        Task<int> Add(CreateSaleSchemaDto saleSchemaDto);
         Task<int> Update(CreateSaleSchemaDto saleSchemaDto);
         Task<bool> Delete(int id);
         Task<bool> UploadFile(UploadFileDto uploadFile);

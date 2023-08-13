@@ -240,7 +240,9 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
         List<ProductAndCategory> ProductList = new();
         var currentTime = DateTime.Now;
         var productQuery = await _productAndCategoryRepository.GetQueryableAsync();
-        productQuery = productQuery.Where(x => x.Active && x.Type == ProductAndCategoryType.Product).Include(x => x.SaleDetails.Where(x => x.SalePlanStartDate <= currentTime && currentTime <= x.SalePlanEndDate && x.Visible))
+        productQuery = productQuery
+            .Where(x => x.Active && x.Type == ProductAndCategoryType.Product)
+            .Include(x => x.SaleDetails.Where(x => x.SalePlanStartDate <= currentTime && currentTime <= x.SalePlanEndDate && x.Visible))
             .ThenInclude(y => y.ESaleType);
         var product = productQuery
                   .Where(x => EF.Functions.Like(x.Code, nodePath + "%"))
