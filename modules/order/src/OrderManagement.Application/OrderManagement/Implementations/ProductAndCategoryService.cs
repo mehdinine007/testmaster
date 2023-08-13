@@ -73,7 +73,7 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
 
     public async Task<ProductAndCategoryDto> Insert(ProductAndCategoryCreateDto productAndCategoryCreateDto)
     {
-        var productLevelQuery = await _productLevelRepository.GetQueryableAsync();
+        var productLevelQuery = (await _productLevelRepository.GetQueryableAsync()).OrderBy(x=>x.Priority);
 
         if (productAndCategoryCreateDto.ParentId.HasValue && productAndCategoryCreateDto.ParentId.Value > 0)
         {
@@ -99,11 +99,10 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
             }
             productAndCategoryCreateDto.LevelId = parent.LevelId + 1;
             var parentPriority = productLevelQuery.FirstOrDefault(x => x.Id == parent.ProductLevelId).Priority;
-            var currentProductlevel = productLevelQuery.FirstOrDefault(x => x.Priority == parentPriority + 1);
-            var lastPriority = productLevelQuery.Max(x => x.Priority);
-            if (currentProductlevel == null || currentProductlevel.Priority > lastPriority)
+            var currentProductlevel = productLevelQuery.Where(x => x.Priority > parentPriority).FirstOrDefault();
+            if (currentProductlevel == null)
             {
-                throw new UserFriendlyException("دسته بندی سطح آخر یافت نشد");
+                throw new UserFriendlyException(OrderConstant.LastProductLevel, OrderConstant.LastProductLevelId);
             }
             productAndCategoryCreateDto.ProductLevelId = currentProductlevel.Id;
         }
@@ -241,7 +240,8 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
         List<ProductAndCategory> ProductList = new();
         var currentTime = DateTime.Now;
         var productQuery = await _productAndCategoryRepository.GetQueryableAsync();
-        productQuery = productQuery.Where(x => x.Active && x.Type == ProductAndCategoryType.Product).Include(x => x.SaleDetails.Where(x => x.SalePlanStartDate <= currentTime && currentTime <= x.SalePlanEndDate && x.Visible));
+        productQuery = productQuery.Where(x => x.Active && x.Type == ProductAndCategoryType.Product).Include(x => x.SaleDetails.Where(x => x.SalePlanStartDate <= currentTime && currentTime <= x.SalePlanEndDate && x.Visible))
+            .ThenInclude(y => y.ESaleType);
         var product = productQuery
                   .Where(x => EF.Functions.Like(x.Code, nodePath + "%"))
                   .ToList();

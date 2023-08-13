@@ -35,6 +35,7 @@ namespace OrderManagement.Application.Contracts
 
         public static string AttachmentNotFound = "ضمیمه وجود ندارد";
         public static string AttachmentNotFoundId = "2001";
+
         public static string FileUploadNotFound = "فایل نامعتبر";
         public static string FileUploadNotFoundId = "2002";
         public static string FileUploadNotExtention = "پسوند نامعتبر فایل";
@@ -48,5 +49,22 @@ namespace OrderManagement.Application.Contracts
 
         public static string SiteStuctureNotFound = "ساختار سایت وجود ندارد";
         public static string SiteStuctureNotFoundId = "3001";
+
+        public static string LastProductLevel = "سطح آخر دسنه بسندی میباشد";
+        public static string LastProductLevelId = "4001";
+
+        public static string DuplicatePriority = "شماره اولویت بندی تکراری میباشد";
+        public static string DuplicatePriorityId = "4002";
+
+        public static string InCorrectPriorityNumber = "شماره اولویت بندی باید بزرگترازصفرباشد";
+        public static string InCorrectPriorityNumberId = "4003";
+
+        public static string ProductLevelNotFound = "سطح بندی محصول وجود ندارد";
+        public static string ProductLevelNotFoundId = "4004";
+
+        public static string CarClassNotFound = "کلاس  خودرو وجود ندارد";
+        public static string CarClassNotFoundId = "4005";
+
+
     }
 }

@@ -331,7 +331,19 @@ public static class OrderManagementDbContextModelCreatingExtensions
             entity.HasOne<ProductLevel>(x => x.ProductLevel)
                 .WithMany(x => x.ProductAndCategories)
                 .HasForeignKey(x => x.ProductLevelId);
+            entity.HasOne<CarClass>(x => x.CarClass)
+                .WithMany(x => x.ProductAndCategories)
+                .HasForeignKey(x => x.CarClassId);
         });
+
+        builder.Entity<ProductLevel>(entity =>
+        {
+            entity.ToTable(nameof(ProductLevel))
+             .HasIndex(u => u.Priority)
+             .IsUnique();
+        });
+
+
 
         builder.Entity<OrderStatusInquiry>(entity =>
         {
