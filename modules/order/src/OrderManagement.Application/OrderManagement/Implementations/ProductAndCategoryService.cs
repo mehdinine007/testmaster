@@ -13,6 +13,7 @@ using OrderManagement.Application.Contracts.OrderManagement;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using OrderManagement.Application.Contracts.Services;
+using Nest;
 
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
@@ -51,6 +52,7 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
                 throw new UserFriendlyException("این دسته بندی در حال استفاده است");
         }
         await _productAndCategoryRepository.DeleteAsync(id);
+        await _attachmentService.DeleteByEntityId(AttachmentEntityEnum.ProductAndCategory, id);
     }
 
     public async Task<ProductAndCategoryDto> GetById(int id)
@@ -71,7 +73,7 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
 
     public async Task<ProductAndCategoryDto> Insert(ProductAndCategoryCreateDto productAndCategoryCreateDto)
     {
-        var productLevelQuery = await _productLevelRepository.GetQueryableAsync();
+        var productLevelQuery = (await _productLevelRepository.GetQueryableAsync()).OrderBy(x=>x.Priority);
 
         if (productAndCategoryCreateDto.ParentId.HasValue && productAndCategoryCreateDto.ParentId.Value > 0)
         {
@@ -97,11 +99,10 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
             }
             productAndCategoryCreateDto.LevelId = parent.LevelId + 1;
             var parentPriority = productLevelQuery.FirstOrDefault(x => x.Id == parent.ProductLevelId).Priority;
-            var currentProductlevel = productLevelQuery.FirstOrDefault(x => x.Priority == parentPriority + 1);
-            var lastPriority = productLevelQuery.Max(x => x.Priority);
-            if (currentProductlevel == null || currentProductlevel.Priority > lastPriority)
+            var currentProductlevel = productLevelQuery.Where(x => x.Priority > parentPriority).FirstOrDefault();
+            if (currentProductlevel == null)
             {
-                throw new UserFriendlyException("دسته بندی سطح آخر یافت نشد");
+                throw new UserFriendlyException(OrderConstant.LastProductLevel, OrderConstant.LastProductLevelId);
             }
             productAndCategoryCreateDto.ProductLevelId = currentProductlevel.Id;
         }
@@ -185,6 +186,7 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
         var productAndCategoryQuery = await _productAndCategoryRepository.GetQueryableAsync();
         if (!_commonAppService.IsInRole("Admin"))
             productAndCategoryQuery = productAndCategoryQuery.Where(x => x.Active);
+        var attachments = new List<AttachmentDto>();
         switch (input.Type)
         {
             case ProductAndCategoryType.Category:
@@ -192,19 +194,36 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
                     .Include(x => x.Childrens.Where(y => y.Type == ProductAndCategoryType.Category))
                     .Where(x => EF.Functions.Like(x.Code, input.NodePath + "%") && x.Type == ProductAndCategoryType.Category)
                     .ToList();
+                attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, parent.Select(x => x.Id).ToList());
                 ls = string.IsNullOrWhiteSpace(input.NodePath)
-                    ? parent.ToList()
+                    ? parent.Where(x => x.ParentId == null).ToList()
                     : parent.Where(x => x.Code == input.NodePath).ToList();
                 break;
             case ProductAndCategoryType.Product:
                 if (string.IsNullOrWhiteSpace(input.NodePath))
                     throw new UserFriendlyException("مسیر نود خالی است");
                 ls = productAndCategoryQuery.Where(x => EF.Functions.Like(x.Code, input.NodePath + "%") && x.Type == ProductAndCategoryType.Product).ToList();
+                attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, ls.Select(x => x.Id).ToList());
                 break;
         }
-        return ObjectMapper.Map<List<ProductAndCategory>, List<ProductAndCategoryWithChildDto>>(ls);
+        var productAndCategories = ObjectMapper.Map<List<ProductAndCategory>, List<ProductAndCategoryWithChildDto>>(ls);
+        productAndCategories = await FillAttachmentAndProperty(productAndCategories, attachments);
+        return productAndCategories;
     }
 
+    private async Task<List<ProductAndCategoryWithChildDto>> FillAttachmentAndProperty(List<ProductAndCategoryWithChildDto> productAndCategories, List<AttachmentDto> attachments)
+    {
+        productAndCategories.ForEach(async x =>
+        {
+            var pacAttachments = attachments.Where(y => y.EntityId == x.Id).ToList();
+            x.Attachments = ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(pacAttachments);
+            if (x.Type == ProductAndCategoryType.Product)
+                x.PropertyCategories = await _productPropertyService.GetByProductId(x.Id);
+            if (x.Childrens != null && x.Childrens.Count > 0)
+                x.Childrens = await FillAttachmentAndProperty(x.Childrens.ToList(), attachments);
+        });
+        return productAndCategories;
+    }
     public async Task<ProductAndCategoryDto> Update(ProductAndCategoryUpdateDto productAndCategoryUpdateDto)
     {
         var productAndCategory = (await _productAndCategoryRepository.GetQueryableAsync()).FirstOrDefault(x => x.Id == productAndCategoryUpdateDto.Id)
@@ -221,7 +240,10 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
         List<ProductAndCategory> ProductList = new();
         var currentTime = DateTime.Now;
         var productQuery = await _productAndCategoryRepository.GetQueryableAsync();
-        productQuery = productQuery.Where(x => x.Active && x.Type== ProductAndCategoryType.Product).Include(x => x.SaleDetails.Where(x => x.SalePlanStartDate <= currentTime && currentTime <= x.SalePlanEndDate && x.Visible));
+        productQuery = productQuery
+            .Where(x => x.Active && x.Type == ProductAndCategoryType.Product)
+            .Include(x => x.SaleDetails.Where(x => x.SalePlanStartDate <= currentTime && currentTime <= x.SalePlanEndDate && x.Visible))
+            .ThenInclude(y => y.ESaleType);
         var product = productQuery
                   .Where(x => EF.Functions.Like(x.Code, nodePath + "%"))
                   .ToList();
@@ -236,7 +258,7 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
             x.Attachments = ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(attachment);
         });
 
-     
+
         return productAndSaleDetailListDto;
 
     }

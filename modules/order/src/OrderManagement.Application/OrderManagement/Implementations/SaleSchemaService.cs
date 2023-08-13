@@ -36,6 +36,7 @@ public class SaleSchemaService : ApplicationService, ISaleSchemaService
             throw new UserFriendlyException("شناسه وارد شده معتبر نمیباشد.");
         }
         await _saleSchemaRepository.DeleteAsync(x => x.Id == id);
+        await _attachmentService.DeleteByEntityId(AttachmentEntityEnum.SaleSchema, id);
         return true;
     }
 
@@ -46,7 +47,7 @@ public class SaleSchemaService : ApplicationService, ISaleSchemaService
         return saleSchemaDto;
     }
 
-    public async Task<PagedResultDto<SaleSchemaDto>> GetSaleSchema(SaleSchemaGetListDto input)
+    public async Task<PagedResultDto<SaleSchemaDto>> GetList(SaleSchemaGetListDto input)
     {
         var count = _saleSchemaRepository.WithDetails().Count();
         var saleSchemaResult = await _saleSchemaRepository.GetQueryableAsync();
@@ -69,7 +70,7 @@ public class SaleSchemaService : ApplicationService, ISaleSchemaService
 
     }
     [UnitOfWork]
-    public async Task<int> Save(CreateSaleSchemaDto saleSchemaDto)
+    public async Task<int> Add(CreateSaleSchemaDto saleSchemaDto)
     {
         var saleSchema = ObjectMapper.Map<CreateSaleSchemaDto, SaleSchema>(saleSchemaDto);
         await _saleSchemaRepository.InsertAsync(saleSchema, autoSave: true);
@@ -94,12 +95,6 @@ public class SaleSchemaService : ApplicationService, ISaleSchemaService
         return true;
     }
 
-
-    public async Task<bool> DeLeteFile(Guid id)
-    {
-        await _attachmentService.DeleteFile(id);
-        return true;
-    }
 
 
 

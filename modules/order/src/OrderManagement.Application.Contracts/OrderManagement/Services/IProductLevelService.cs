@@ -11,8 +11,9 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Services
     public interface IProductLevelService: IApplicationService
     {
         Task<List<ProductLevelDto>> GetList();
-        Task<int> Save(ProductLevelDto productLevelDto);
-        Task<int> Update(ProductLevelDto productLevelDto);
+        Task<ProductLevelDto> GetById(int id);
+        Task<ProductLevelDto> Add(ProductLevelDto productLevelDto);
+        Task<ProductLevelDto> Update(ProductLevelDto productLevelDto);
         Task<bool> Delete(int id);
     }
 }

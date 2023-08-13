@@ -4,12 +4,18 @@ namespace OrderManagement.Domain.Shared
 {
     public enum OrderDeliveryStatusType
     {
-        [Display(Name = "ثبت سفارش")] OrderRegistered = 1,
-        [Display(Name = "الویت بندی")] Prioritization = 2,
-        [Display(Name = "تعیین خودرو")] ProductDetermination = 3,
-        [Display(Name = "ارسال به خودرو ساز")] SendingToManufaturer = 4,
-        [Display(Name = "دریافت ردیف قرارداد")] ReceivingContractRowId = 5,
-        [Display(Name = "تکمیل وجه")] ReceivingAmountCompleted = 6,
+        [Display(Name = "ثبت سفارش", Description = "لورم اپیسوم")]
+        OrderRegistered = 1,
+        [Display(Name = "الویت بندی", Description = "لورم اپیسوم")]
+        Prioritization = 2,
+        [Display(Name = "تعیین خودرو", Description = "لورم اپیسوم")]
+        ProductDetermination = 3,
+        [Display(Name = "ارسال به خودرو ساز", Description = "لورم اپیسوم")]
+        SendingToManufaturer = 4,
+        [Display(Name = "دریافت ردیف قرارداد", Description = "لورم اپیسوم")]
+        ReceivingContractRowId = 5,
+        [Display(Name = "تکمیل وجه", Description = "لورم اپیسوم")]
+        ReceivingAmountCompleted = 6,
     }
 }
 

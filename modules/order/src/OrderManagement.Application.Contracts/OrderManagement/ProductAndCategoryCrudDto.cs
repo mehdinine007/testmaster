@@ -19,5 +19,6 @@ namespace OrderManagement.Application.Contracts
         public bool Active { get; set; }
 
         public int ProductLevelId { get; set; }
+        public int? CarClassId { get; set; }
     }
 }

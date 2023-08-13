@@ -63,7 +63,11 @@ namespace OrderManagement.Domain.OrderManagement
         public int ProductLevelId { get; set; }
         public virtual ProductLevel ProductLevel { get; protected set; }
 
+        [ForeignKey("CarClass")]
+        public int? CarClassId { get; set; }
+        public virtual CarClass CarClass { get; protected set; }
 
+   
         public virtual ICollection<SaleDetail> SaleDetails { get; set; }
 
     }
