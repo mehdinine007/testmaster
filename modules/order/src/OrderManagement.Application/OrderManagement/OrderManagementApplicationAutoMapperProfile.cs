@@ -81,7 +81,7 @@ namespace OrderManagement
                 .ReverseMap();
 
             CreateMap<Property, PropertyDto>()
-                .ForMember(x=> x.TypeTitle, c => c.MapFrom(m => m.Type != 0 ? EnumHelper.GetDescription(m.Type) : ""))
+                .ForMember(x => x.TypeTitle, c => c.MapFrom(m => m.Type != 0 ? EnumHelper.GetDescription(m.Type) : ""))
                 .ReverseMap();
             CreateMap<PropertyCategory, PropertyCategoryDto>()
                 .ReverseMap();
@@ -114,7 +114,7 @@ namespace OrderManagement
                 .ReverseMap()
                 .IgnoreFullAuditedObjectProperties();
             CreateMap<ProductAndCategory, ProductAndCategoryWithChildDto>();
-                //.ForMember(x => x.ProductAndCategoryWithChilds)
+            //.ForMember(x => x.ProductAndCategoryWithChilds)
 
 
             CreateMap<ProductAndCategory, ProductAndCategoryViewModel>().ReverseMap();
@@ -125,7 +125,9 @@ namespace OrderManagement
             CreateMap<CreateSaleSchemaDto, SaleSchema>().ReverseMap();
             CreateMap<ProductAndCategoryCreateDto, ProductAndCategory>();
             CreateMap<ProductAndCategory, ProductAndSaleDetailListDto>().ReverseMap();
-            CreateMap<SaleDetail, SaleDetailListDto>().ReverseMap();
+            CreateMap<SaleDetail, SaleDetailListDto>()
+                .ForMember(x => x.EsaleTypeName, opt => opt.MapFrom(y => y.ESaleType.SaleTypeName))
+                .ReverseMap();
 
         }
     }
