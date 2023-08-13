@@ -32,7 +32,7 @@ namespace OrderManagement.Application.Contracts.OrderManagement
         public double RefuseProfitPercentage { get; set; }
 
         public int EsaleTypeId { get; set; }
-
+        public string EsaleTypeName { get; set; }
         public string EsaleName { get; set; }
 
         public decimal CarFee { get; set; }
