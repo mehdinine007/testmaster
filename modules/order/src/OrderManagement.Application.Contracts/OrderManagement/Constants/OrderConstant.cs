@@ -53,6 +53,15 @@ namespace OrderManagement.Application.Contracts
         public static string LastProductLevel = "سطح آخر دسنه بسندی میباشد";
         public static string LastProductLevelId = "4001";
 
+        public static string DuplicatePriority = "شماره اولویت بندی تکراری میباشد";
+        public static string DuplicatePriorityId = "4002";
+
+        public static string InCorrectPriorityNumber = "شماره اولویت بندی باید بزرگترازصفرباشد";
+        public static string InCorrectPriorityNumberId = "4003";
+
+        public static string ProductLevelNotFound = "سطح بندی محصول وجود ندارد";
+        public static string ProductLevelNotFoundId = "4004";
+
 
     }
 }

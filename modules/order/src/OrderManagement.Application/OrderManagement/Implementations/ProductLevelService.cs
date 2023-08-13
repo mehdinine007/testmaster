@@ -1,5 +1,6 @@
 ﻿using Esale.Core.DataAccess;
 using Microsoft.EntityFrameworkCore;
+using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.OrderManagement;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
 using OrderManagement.Domain.OrderManagement;
@@ -40,6 +41,16 @@ namespace OrderManagement.Application.OrderManagement.Implementations
 
         public async Task<int> Save(ProductLevelDto productLevelDto)
         {
+            var productLevelQuery = await _productLevelRepository.GetQueryableAsync();
+            var getProductLevel = productLevelQuery.FirstOrDefault(x => x.Priority == productLevelDto.Priority);
+            if (getProductLevel != null)
+            {
+                throw new UserFriendlyException(OrderConstant.DuplicatePriority, OrderConstant.DuplicatePriorityId);
+            }
+            if (productLevelDto.Priority <= 0)
+            {
+                throw new UserFriendlyException(OrderConstant.InCorrectPriorityNumber, OrderConstant.InCorrectPriorityNumberId);
+            }
             var productLevel = ObjectMapper.Map<ProductLevelDto, ProductLevel>(productLevelDto);
             await _productLevelRepository.InsertAsync(productLevel, autoSave: true);
             return productLevel.Id;
@@ -47,11 +58,26 @@ namespace OrderManagement.Application.OrderManagement.Implementations
 
         public async Task<int> Update(ProductLevelDto productLevelDto)
         {
-            var result = await _productLevelRepository.WithDetails().AsNoTracking().FirstOrDefaultAsync(x => x.Id == productLevelDto.Id);
+            var productLevelQuery = await _productLevelRepository.GetQueryableAsync();
+
+            var result =  productLevelQuery.AsNoTracking().FirstOrDefault(x => x.Id == productLevelDto.Id);
             if (result == null)
             {
-                throw new UserFriendlyException("رکوردی برای ویرایش وجود ندارد");
+                throw new UserFriendlyException(OrderConstant.ProductLevelNotFound, OrderConstant.ProductLevelNotFoundId);
             }
+
+          
+            var getProductLevel = productLevelQuery.FirstOrDefault(x => x.Priority == productLevelDto.Priority);
+            if (getProductLevel != null)
+            {
+                throw new UserFriendlyException(OrderConstant.DuplicatePriority, OrderConstant.DuplicatePriorityId);
+            }
+            if (productLevelDto.Priority <= 0)
+            {
+                throw new UserFriendlyException(OrderConstant.InCorrectPriorityNumber, OrderConstant.InCorrectPriorityNumberId);
+            }
+
+
             var productLevel = ObjectMapper.Map<ProductLevelDto, ProductLevel>(productLevelDto);
 
             await _productLevelRepository.AttachAsync(productLevel, c => c.Title, c => c.Priority);
