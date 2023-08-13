@@ -8,6 +8,7 @@ using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.OrderManagement;
 using Volo.Abp.AspNetCore.Mvc;
 using System.Collections.Generic;
+using Nest;
 
 namespace OrderManagement.HttpApi.OrderManagement.Controllers;
 
@@ -52,4 +53,8 @@ public class ProductAndCategoryController : AbpController //, IProductAndCategor
     [HttpPut]
     public async Task<ProductAndCategoryDto> Update(ProductAndCategoryUpdateDto productAndCategoryUpdateDto)
         => await _productAndCategoryService.Update(productAndCategoryUpdateDto);
+
+    [HttpPost]
+    public async Task<List<ProductAndSaleDetailListDto>> GetProductAndSaleDetailList(string nodePath)
+        => await _productAndCategoryService.GetProductAndSaleDetailList(nodePath);
 }
