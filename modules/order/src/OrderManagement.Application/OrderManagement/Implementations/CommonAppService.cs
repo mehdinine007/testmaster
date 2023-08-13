@@ -14,6 +14,7 @@ using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Claims;
@@ -544,7 +545,7 @@ public class CommonAppService : ApplicationService, ICommonAppService
         return JsonConvert.DeserializeObject<OrderStepDto>(getOrderStep);
     }
 
-    public async Task<IkcoApiResult<IkcoInquiry[]>> OrderStatusInquiryAsync(string nationalCode, int orderId, string accessToken)
+    public async Task<IkcoApiResult<IkcoInquiry[]>> IkcoOrderStatusInquiryAsync(string nationalCode, int orderId, string accessToken)
     {
         if (string.IsNullOrWhiteSpace(nationalCode) || nationalCode.AsParallel().Any(x => !char.IsDigit(x)))
             throw new UserFriendlyException("خطا در استعلام سفارش. کدملی صحیح نمیباشد");
@@ -555,6 +556,11 @@ public class CommonAppService : ApplicationService, ICommonAppService
         using var client = new HttpClient();
         client.DefaultRequestHeaders.Add("Authorization", "Bearer " + accessToken);
         var serviceRequest = await client.GetAsync(string.Format(_configuration.GetValue<string>("IkcoOrderInquiryAddresses:InquiryAddress"), nationalCode, orderId));
+        if(serviceRequest.StatusCode == HttpStatusCode.Unauthorized)
+        {
+            accessToken = await GetIkcoAccessTokenAsync();
+            serviceRequest = await client.GetAsync(string.Format(_configuration.GetValue<string>("IkcoOrderInquiryAddresses:InquiryAddress"), nationalCode, orderId));
+        }
         if (!serviceRequest.IsSuccessStatusCode)
             throw new UserFriendlyException("خطا در استعلام سفارش");
 

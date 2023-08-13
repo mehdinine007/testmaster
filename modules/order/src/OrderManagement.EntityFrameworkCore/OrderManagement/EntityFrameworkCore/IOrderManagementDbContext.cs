@@ -81,5 +81,7 @@ namespace OrderManagement.EfCore
 
 
         DbSet<OrderStatusInquiry> OrderStatusInquiry { get; set; }
+
+        DbSet<OrderDeliveryStatusTypeReadOnly> OrderDeliveryStatusTypeReadOnly { get; set; }
     }
 }

@@ -341,5 +341,11 @@ public static class OrderManagementDbContextModelCreatingExtensions
                 .WithMany(x => x.OrderStatusInquiries)
                 .HasForeignKey(x => x.CompanyId);
         });
+
+        builder.Entity<OrderDeliveryStatusTypeReadOnly>(entity =>
+        {
+            entity.ToTable(nameof(OrderDeliveryStatusTypeReadOnly));
+            entity.AddEnumChangeTracker<OrderDeliveryStatusTypeReadOnly, OrderDeliveryStatusType>();
+        });
     }
 }

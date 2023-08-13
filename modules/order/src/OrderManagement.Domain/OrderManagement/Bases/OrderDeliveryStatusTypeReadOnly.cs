@@ -2,7 +2,7 @@
 
 namespace OrderManagement.Domain.Bases;
 
-public class OrderStatusTypeReadOnly : BaseReadOnlyTable
+public class OrderDeliveryStatusTypeReadOnly : BaseReadOnlyTable
 {
 
 }

@@ -1,9 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
-using OrderManagement.Application.Contracts;
+﻿using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
+using OrderManagement.Domain;
 using OrderManagement.Domain.OrderManagement;
 using System.Linq;
 using System.Threading.Tasks;
+using Volo.Abp;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
 
@@ -12,8 +13,11 @@ namespace OrderManagement.Application.OrderManagement.Implementations;
 public class OrderStatusInquiryService : ApplicationService, IOrderStatusInquiryService
 {
     private readonly IRepository<OrderStatusInquiry, long> _orderStatusInquiryRepository;
+    private readonly IRepository<CustomerOrder, int> _customerOrderRepository;
 
-    public OrderStatusInquiryService(IRepository<OrderStatusInquiry, long> orderStatusInquiryRepository)
+    public OrderStatusInquiryService(IRepository<OrderStatusInquiry, long> orderStatusInquiryRepository,
+                                     IRepository<CustomerOrder, int> _customerOrderRepository
+        )
     {
         _orderStatusInquiryRepository = orderStatusInquiryRepository;
     }
@@ -27,9 +31,10 @@ public class OrderStatusInquiryService : ApplicationService, IOrderStatusInquiry
 
     public async Task<OrderStatusInquiryDto> Insert(OrderStatusInquiryDto orderStatusInquiryDto)
     {
-        var entity = await _orderStatusInquiryRepository.InsertAsync(
-                    ObjectMapper.Map<OrderStatusInquiryDto, OrderStatusInquiry>(orderStatusInquiryDto));
+        var order = (await _customerOrderRepository.GetQueryableAsync())
+            .FirstOrDefault(x => x.Id == orderStatusInquiryDto.OrderId)
+            ?? throw new UserFriendlyException("سفارش یافت نشد");
 
-        return ObjectMapper.Map<OrderStatusInquiry, OrderStatusInquiryDto>(entity);
+        throw new System.NotImplementedException();
     }
 }
