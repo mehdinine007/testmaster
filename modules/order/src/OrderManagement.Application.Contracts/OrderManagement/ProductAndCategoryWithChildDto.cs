@@ -19,6 +19,8 @@ namespace OrderManagement.Application.Contracts
         public bool HasChild { get; set; }
 
         public bool Active { get; set; }
+        public List<AttachmentViewModel> Attachments { get; set; }
+        public List<PropertyCategoryDto> PropertyCategories { get; set; }
 
         public virtual ICollection<ProductAndCategoryWithChildDto> Childrens { get; set; }
     }
