@@ -26,5 +26,9 @@ namespace OrderManagement.Domain
         public int PaymentSecret { get; set; }
         public OrderDeliveryStatusType? OrderDeliveryStatus { get; set; }
         public string OrderDeliveryStatusDesc { get; set; }
+        public DateTime? PrioritizationDate { get; set; }
+        public DateTime? VehicleSelectDate { get; set; }
+        public DateTime? SendToManufacturerDate { get; set; }
+        public DateTime? OrderRejectionDate { get; set; }
     }
 }

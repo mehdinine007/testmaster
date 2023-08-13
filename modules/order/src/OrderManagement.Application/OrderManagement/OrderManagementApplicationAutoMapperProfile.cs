@@ -4,15 +4,11 @@ using Newtonsoft.Json;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.OrderManagement;
 using OrderManagement.Application.Contracts.OrderManagement.Models;
-using OrderManagement.Application.Helpers;
-using OrderManagement.Application.OrderManagement.Implementations;
 using OrderManagement.Domain;
 using OrderManagement.Domain.OrderManagement;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using Volo.Abp.AutoMapper;
-using Volo.Abp.ObjectMapping;
 
 namespace OrderManagement
 {
@@ -120,6 +116,12 @@ namespace OrderManagement
             CreateMap<ProductAndCategory, ProductAndCategoryViewModel>().ReverseMap();
             CreateMap<ProductLevel, ProductLevelDto>().ReverseMap();
             CreateMap<OrderStatusInquiry, OrderStatusInquiryDto>()
+                .ReverseMap()
+                .IgnoreFullAuditedObjectProperties();
+            CreateMap<OrderStatusInquiry, OrderStatusInquiryResultDto>()
+                .ForMember(x => x.OrderDeliveryStatusDescription, opt => opt.Ignore())
+                .ForMember(x => x.AvailableDeliveryStatusList, opt => opt.Ignore())
+                .ForMember(x => x.RejectionDate, opt => opt.Ignore())
                 .ReverseMap()
                 .IgnoreFullAuditedObjectProperties();
             CreateMap<CreateSaleSchemaDto, SaleSchema>().ReverseMap();
