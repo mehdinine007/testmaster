@@ -52,6 +52,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
         {
             await Validation(id, null);
             await _siteStructureRepository.DeleteAsync(x => x.Id == id);
+            await _attachmentService.DeleteByEntityId(AttachmentEntityEnum.SiteStructure, id);
             return true;
         }
 

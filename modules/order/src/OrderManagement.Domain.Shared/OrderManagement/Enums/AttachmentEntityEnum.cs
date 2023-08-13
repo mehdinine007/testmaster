@@ -7,7 +7,8 @@ namespace OrderManagement.Domain.Shared
         None = 0,
         ProductAndCategory = 1,
         SaleSchema = 2,
-        SiteStructure = 3
+        SiteStructure = 3,
+        CarClass=4
 
     }
 }

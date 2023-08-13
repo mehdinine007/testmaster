@@ -126,6 +126,11 @@ namespace OrderManagement
                 .IgnoreFullAuditedObjectProperties();
             CreateMap<CreateSaleSchemaDto, SaleSchema>().ReverseMap();
             CreateMap<ProductAndCategoryCreateDto, ProductAndCategory>();
+            CreateMap<ProductAndCategory, ProductAndSaleDetailListDto>().ReverseMap();
+            CreateMap<SaleDetail, SaleDetailListDto>()
+                .ForMember(x => x.EsaleTypeName, opt => opt.MapFrom(y => y.ESaleType.SaleTypeName))
+                .ReverseMap();
+            CreateMap<CarClass, CarClassDto>().ReverseMap();
 
         }
     }

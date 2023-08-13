@@ -1,9 +1,15 @@
 ﻿using OrderManagement.Domain.Shared;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace OrderManagement.Application.Contracts
+namespace OrderManagement.Application.Contracts.OrderManagement
 {
-    public class ProductAndCategoryWithChildDto
+    public class ProductAndSaleDetailListDto
     {
+
         public int Id { get; set; }
 
         public string Code { get; set; }
@@ -19,9 +25,11 @@ namespace OrderManagement.Application.Contracts
         public bool HasChild { get; set; }
 
         public bool Active { get; set; }
-        public List<AttachmentViewModel> Attachments { get; set; }
-        public List<PropertyCategoryDto> PropertyCategories { get; set; }
 
         public virtual ICollection<ProductAndCategoryWithChildDto> Childrens { get; set; }
+        public List<AttachmentViewModel> Attachments { get; set; }
+        public List<SaleDetailListDto> SaleDetails { get; set; }
+
+
     }
 }
