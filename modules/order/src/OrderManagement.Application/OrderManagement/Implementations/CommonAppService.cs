@@ -476,14 +476,14 @@ public class CommonAppService : ApplicationService, ICommonAppService
         return userIdStr;
     }
 
-    public long GetUserId()
+    public Guid GetUserId()
     {
-        var userIdStr = _httpContextAccessor.HttpContext.User.Claims.SingleOrDefault(x => x.Type.Equals("UserIdLong"))?.Value ?? string.Empty;
+        var userIdStr = _httpContextAccessor.HttpContext.User.Claims.SingleOrDefault(x => x.Type.Equals("UBP"))?.Value ?? string.Empty;
         if (string.IsNullOrWhiteSpace(userIdStr))
             throw new UserFriendlyException("لطفا لاگین کنید");
 
-        long.TryParse(userIdStr, out var userId);
-        return userId;
+
+        return new Guid(userIdStr);
     }
 
     public string GetIncomigToken()
@@ -491,7 +491,7 @@ public class CommonAppService : ApplicationService, ICommonAppService
         ? token
         : throw new UserFriendlyException("لطفا مجددا لاگین کنید");
 
-    public async Task<bool> SetOrderStep(OrderStepEnum orderStep, long? userId = null)
+    public async Task<bool> SetOrderStep(OrderStepEnum orderStep, Guid? userId = null)
     {
         if (userId == null)
             userId = GetUserId();
@@ -532,7 +532,7 @@ public class CommonAppService : ApplicationService, ICommonAppService
         return true;
     }
 
-    private async Task<OrderStepDto> GetOrderStep(long? userId = null)
+    private async Task<OrderStepDto> GetOrderStep(Guid? userId = null)
     {
         if (userId == null)
             userId = GetUserId();

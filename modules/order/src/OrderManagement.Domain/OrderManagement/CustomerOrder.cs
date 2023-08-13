@@ -7,7 +7,8 @@ namespace OrderManagement.Domain
     public class CustomerOrder : FullAuditedEntity<int>
     {
         public int SaleDetailId { get; set; }
-        public long UserId { get; set; }
+        public long OldUserId { get; set; }
+        public Guid UserId { get; set; }
         public int SaleId { get; set; }
         public PriorityEnum? PriorityId { get; set; }
         public OrderStatusType OrderStatus { get; set; }

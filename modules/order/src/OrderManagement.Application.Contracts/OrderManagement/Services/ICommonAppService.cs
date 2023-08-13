@@ -15,10 +15,10 @@ namespace OrderManagement.Application.Contracts.Services
         Task ValidateCustomerPhoneNumber(List<UserOrderMobileDto> userOrders, CancellationToken cancellationToken);
         string GetNationalCode();
         //Task<string> GetRole();
-        long GetUserId();
+        Guid GetUserId();
         string GetUserUBPId();
         string GetIncomigToken();
-        Task<bool> SetOrderStep(OrderStepEnum orderStep, long? userId = null);
+        Task<bool> SetOrderStep(OrderStepEnum orderStep, Guid? userId = null);
         Task<bool> ValidateOrderStep(OrderStepEnum orderStep);
         Task<IkcoApiResult<IkcoInquiry[]>> IkcoOrderStatusInquiryAsync(string nationalCode, int orderId, string accessToken);
         Task<string> GetIkcoAccessTokenAsync();

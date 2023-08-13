@@ -9,7 +9,7 @@ namespace OrderManagement.Application.Contracts
         public DateTime CarDeliverDate { get; set; }
 
         public string SaleDescription { get; set; }
-        public long UserId { get; set; }
+        public Guid UserId { get; set; }
 
         public string OrderstatusTitle { get; set; }
 
