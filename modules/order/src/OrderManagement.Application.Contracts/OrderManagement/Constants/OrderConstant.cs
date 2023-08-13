@@ -44,6 +44,8 @@ namespace OrderManagement.Application.Contracts
         public static string FileUploadNotPathNotExistsId = "2004";
         public static string FileUploadCopyError = "خطا در انتقال فایل به سرور";
         public static string FileUploadCopyErrorId = "2004";
+        public static string AttachmentEntityIdNotFound = "شناسه فایل نامعتبر می باشد";
+        public static string AttachmentEntityIdNotFoundId = "2005";
 
         public static string SiteStuctureNotFound = "ساختار سایت وجود ندارد";
         public static string SiteStuctureNotFoundId = "3001";
