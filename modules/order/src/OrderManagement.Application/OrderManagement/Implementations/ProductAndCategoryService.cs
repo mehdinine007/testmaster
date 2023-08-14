@@ -73,7 +73,29 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
 
     public async Task<ProductAndCategoryDto> Insert(ProductAndCategoryCreateDto productAndCategoryCreateDto)
     {
-        var productLevelQuery = (await _productLevelRepository.GetQueryableAsync()).OrderBy(x=>x.Priority);
+        var productLevelQuery = (await _productLevelRepository.GetQueryableAsync()).OrderBy(x => x.Priority);
+
+        if (productAndCategoryCreateDto.Priority == 0)
+        {
+            var lastPriority = (await _productAndCategoryRepository.GetQueryableAsync()).OrderByDescending(x => x.Priority)
+                          .FirstOrDefault(x => x.ParentId == productAndCategoryCreateDto.ParentId);
+            if (lastPriority == null)
+            {
+                productAndCategoryCreateDto.Priority = 1;
+            }
+            else
+                productAndCategoryCreateDto.Priority = lastPriority.Priority + 1;
+
+        }
+        else
+        {
+            var duplicatePriority = (await _productAndCategoryRepository.GetQueryableAsync()).
+                FirstOrDefault(x => x.ParentId == productAndCategoryCreateDto.ParentId && x.Priority == productAndCategoryCreateDto.Priority);
+            if (duplicatePriority != null)
+            {
+                throw new UserFriendlyException(OrderConstant.DuplicatePriority, OrderConstant.DuplicatePriorityId);
+            }
+        }
 
         if (productAndCategoryCreateDto.ParentId.HasValue && productAndCategoryCreateDto.ParentId.Value > 0)
         {

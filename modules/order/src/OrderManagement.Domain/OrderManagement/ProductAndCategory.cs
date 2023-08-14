@@ -66,9 +66,10 @@ namespace OrderManagement.Domain.OrderManagement
         [ForeignKey("CarClass")]
         public int? CarClassId { get; set; }
         public virtual CarClass CarClass { get; protected set; }
-
-   
+        public int Priority { get; set; }
         public virtual ICollection<SaleDetail> SaleDetails { get; set; }
+
+
 
     }
 }

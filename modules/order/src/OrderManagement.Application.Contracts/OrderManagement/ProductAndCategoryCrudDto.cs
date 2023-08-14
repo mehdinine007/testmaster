@@ -20,5 +20,6 @@ namespace OrderManagement.Application.Contracts
 
         public int ProductLevelId { get; set; }
         public int? CarClassId { get; set; }
+        public int Priority { get; set; }
     }
 }
