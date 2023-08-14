@@ -10,6 +10,6 @@ namespace OrderManagement.Domain.OrderManagement
     public class CarClass: FullAuditedEntity<int>
     {
         public string  Title { get; set; }
-        public virtual ICollection<ProductAndCategory> ProductAndCategories { get; set; }
+       
     }
 }
