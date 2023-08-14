@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using OrderManagement.Domain.Shared.OrderManagement.Enums;
+using OrderManagement.Domain.Shared;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -16,6 +16,7 @@ namespace OrderManagement.Domain
         [Column(TypeName = "nvarchar(100)")]
         public string Title { get; set; }
         public SiteStructureTypeEnum Type { get; set; }
+        public string Content { get; set; }
         public string Description { get; set; }
     }
 }

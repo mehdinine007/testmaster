@@ -204,6 +204,9 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
                 ls = string.IsNullOrWhiteSpace(input.NodePath)
                     ? parent.Where(x => x.ParentId == null).ToList()
                     : parent.Where(x => x.Code == input.NodePath).ToList();
+                if (input.ProductLevelId != null && input.ProductLevelId > 0)
+                    ls = ls.Where(x => x.ProductLevelId == input.ProductLevelId)
+                        .ToList();
                 break;
             case ProductAndCategoryType.Product:
                 if (string.IsNullOrWhiteSpace(input.NodePath))
