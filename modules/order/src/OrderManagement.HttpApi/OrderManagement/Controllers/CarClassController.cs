@@ -30,10 +30,10 @@ namespace OrderManagement.HttpApi.OrderManagement.Controllers
         public Task<List<CarClassDto>> GetList(AttachmentEntityTypeEnum? attachmentType)
         =>_carClassService.GetList(attachmentType);
         [HttpPost]
-        public Task<CarClassDto> Add(CarClassDto carClassDto)
+        public Task<CarClassDto> Add(CarClassCreateDto carClassDto)
       =>_carClassService.Add(carClassDto);
         [HttpPut]
-        public Task<CarClassDto> Update(CarClassDto carClassDto)
+        public Task<CarClassDto> Update(CarClassCreateDto carClassDto)
        =>_carClassService.Update(carClassDto);
         [HttpPost]
         public Task<bool> UploadFile([FromForm]UploadFileDto uploadFile)

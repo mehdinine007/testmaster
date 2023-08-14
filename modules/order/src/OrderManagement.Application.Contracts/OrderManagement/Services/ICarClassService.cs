@@ -13,8 +13,8 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Services
     {
         Task<List<CarClassDto>> GetList(AttachmentEntityTypeEnum? attachmentType);
         Task<CarClassDto> GetById(CarClassQueryDto carClassQueryDto);
-        Task<CarClassDto> Add(CarClassDto carClassDto);
-        Task<CarClassDto> Update(CarClassDto carClassDto);
+        Task<CarClassDto> Add(CarClassCreateDto carClassDto);
+        Task<CarClassDto> Update(CarClassCreateDto carClassDto);
         Task<bool> Delete(int id);
         Task<bool> UploadFile(UploadFileDto uploadFile);
     }
