@@ -14,7 +14,10 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using OrderManagement.Application.Contracts.Services;
 using Nest;
-
+using OrderManagement.Domain;
+using MongoDB.Bson;
+using MongoDB.Driver;
+using MongoDB.Bson.Serialization;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -25,19 +28,22 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
     private readonly IProductPropertyService _productPropertyService;
     private readonly IRepository<ProductLevel, int> _productLevelRepository;
     private readonly ICommonAppService _commonAppService;
+    private readonly IRepository<ProductProperty, ObjectId> _productPropertyRepository;
 
     public ProductAndCategoryService(IRepository<ProductAndCategory, int> productAndCategoryRepository,
                                      IAttachmentService attachmentService,
                                      IProductPropertyService productPropertyService,
                                      IRepository<ProductLevel, int> productLevelRepository,
                                      ICommonAppService commonAppService
-        )
+,
+                                     IRepository<ProductProperty, ObjectId> productPropertyRepository)
     {
         _productAndCategoryRepository = productAndCategoryRepository;
         _attachmentService = attachmentService;
         _productPropertyService = productPropertyService;
         _productLevelRepository = productLevelRepository;
         _commonAppService = commonAppService;
+        _productPropertyRepository = productPropertyRepository;
     }
 
     public async Task Delete(int id)
@@ -73,7 +79,7 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
 
     public async Task<ProductAndCategoryDto> Insert(ProductAndCategoryCreateDto productAndCategoryCreateDto)
     {
-        var productLevelQuery = (await _productLevelRepository.GetQueryableAsync()).OrderBy(x=>x.Priority);
+        var productLevelQuery = (await _productLevelRepository.GetQueryableAsync()).OrderBy(x => x.Priority);
 
         if (productAndCategoryCreateDto.ParentId.HasValue && productAndCategoryCreateDto.ParentId.Value > 0)
         {
@@ -203,6 +209,39 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
                 if (string.IsNullOrWhiteSpace(input.NodePath))
                     throw new UserFriendlyException("مسیر نود خالی است");
                 ls = productAndCategoryQuery.Where(x => EF.Functions.Like(x.Code, input.NodePath + "%") && x.Type == ProductAndCategoryType.Product).ToList();
+                if (input.PropertyFilters != null && input.PropertyFilters.Count > 0)
+                {
+                    IMongoCollection<ProductProperty> productPropertyCollection = await _productPropertyRepository.GetCollectionAsync();
+                    var productPropertyFilter = productPropertyCollection
+                        .Aggregate()
+                        .Unwind(x => x.PropertyCategories)
+                        .Unwind(x => x["PropertyCategories.Properties"]);
+                    foreach (var filter in input.PropertyFilters)
+                    {
+                        if (filter.Operator == OperatorFilterEnum.Equal)
+                            productPropertyFilter = productPropertyFilter
+                                .Match(x => x["PropertyCategories.Properties.Key"] == filter.Key && x["PropertyCategories.Properties.Value"] == filter.Value);
+                        if (filter.Operator == OperatorFilterEnum.EqualOpposite)
+                            productPropertyFilter = productPropertyFilter
+                                .Match(x => x["PropertyCategories.Properties.Key"] == filter.Key && x["PropertyCategories.Properties.Value"] != filter.Value);
+                        if (filter.Operator == OperatorFilterEnum.Bigger)
+                            productPropertyFilter = productPropertyFilter
+                                .Match(x => x["PropertyCategories.Properties.Key"] == filter.Key && x["PropertyCategories.Properties.Value"] > filter.Value);
+                        if (filter.Operator == OperatorFilterEnum.Smaller)
+                            productPropertyFilter = productPropertyFilter
+                                .Match(x => x["PropertyCategories.Properties.Key"] == filter.Key && x["PropertyCategories.Properties.Value"] < filter.Value);
+                    }
+                    var productProperties = productPropertyFilter.ToList();
+                    if (productProperties != null && productProperties.Count > 0)
+                    {
+                        var products = BsonSerializer.Deserialize<List<Dictionary<string, object>>>(productProperties.ToJson())
+                            .Select(x => x["ProductId"])
+                            .ToList();
+                        ls = ls.Where(x => products.Any(p => (int)p == x.Id))
+                            .ToList();
+                    }
+
+                }
                 attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, ls.Select(x => x.Id).ToList());
                 break;
         }

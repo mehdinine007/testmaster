@@ -13,5 +13,6 @@ namespace OrderManagement.Application.Contracts
         public string Title { get; set; }
         public List<PropertyDto> Properties { get; set; }
         public int Priority { get; set; }
+        public bool Display { get; set; } = true;
     }
 }
