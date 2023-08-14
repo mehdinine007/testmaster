@@ -12,7 +12,7 @@ namespace OrderManagement.Domain
 {
     public class SiteStructure : FullAuditedEntity<int>
     {
-        public int Code { get; set; }
+        public int Priority { get; set; }
         [Column(TypeName = "nvarchar(100)")]
         public string Title { get; set; }
         public SiteStructureTypeEnum Type { get; set; }

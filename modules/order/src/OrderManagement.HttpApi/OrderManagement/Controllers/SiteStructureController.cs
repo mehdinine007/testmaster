@@ -12,6 +12,7 @@ using Volo.Abp.Application.Dtos;
 using Esale.Share.Authorize;
 using Microsoft.AspNetCore.Http;
 using OrderManagement.Domain.Shared;
+using OrderManagement.Application.Contracts;
 
 namespace OrderManagement.HttpApi.OrderManagement.Controllers;
 
@@ -29,9 +30,6 @@ public class SiteStructureController : Controller
     public Task<SiteStructureDto> GetById(int id)
     => _siteStructureService.GetById(id);
 
-    [HttpGet]
-    public Task<SiteStructureDto> GetByCode(int code)
-    => _siteStructureService.GetByCode(code);
 
     [HttpGet]
     public Task<List<SiteStructureDto>> GetList(AttachmentEntityTypeEnum? AttachmentType)
