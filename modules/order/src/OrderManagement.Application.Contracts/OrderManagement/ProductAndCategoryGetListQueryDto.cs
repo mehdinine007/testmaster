@@ -1,11 +1,12 @@
 ﻿using OrderManagement.Domain.Shared;
 
-namespace OrderManagement.Application.Contracts.OrderManagement
+namespace OrderManagement.Application.Contracts
 {
     public class ProductAndCategoryGetListQueryDto
     {
         public ProductAndCategoryType Type { get; set; }
-
         public string NodePath { get; set; }
+        public List<PropertyFilter> PropertyFilters { get; set; }
     }
+
 }

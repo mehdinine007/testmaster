@@ -62,6 +62,7 @@ public class OrderStatusInquiryService : ApplicationService, IOrderStatusInquiry
             .Include(x => x.SaleDetail)
             .FirstOrDefault(x => x.Id == orderStatusInquiryCommitDto.OrderId && x.UserId == userId)
             ?? throw new UserFriendlyException("سفارش یافت نشد");
+        var nationalCode = _commonAppService.GetNationalCode();
         var availableDeliveryStatusList = orderDeliveries.OrderBy(x => x.Code).Select(x =>
         {
             OrderDeliveryStatusViewModel statusModel = new()
@@ -80,6 +81,20 @@ public class OrderStatusInquiryService : ApplicationService, IOrderStatusInquiry
             };
             return statusModel;
         }).ToList();
+        var result = new OrderStatusInquiryResultDto();
+        var userRejectionAdvocacy = (await _userRejectionAdvocacyRepository.GetQueryableAsync())
+            .Select(x => new
+            {
+                x.SaleId,
+                x.NationalCode,
+                x.CreationTime
+            })
+            .FirstOrDefault(x => x.SaleId == order.SaleId && x.NationalCode == nationalCode);
+        if (userRejectionAdvocacy != null)
+        {
+            result.UserRejectionAdvocacyDate = userRejectionAdvocacy.CreationTime;
+        }
+        result.AvailableDeliveryStatusList = availableDeliveryStatusList;
         var product = (await _productAndCategoryRepository.GetQueryableAsync())
             .Select(x => new
             {
@@ -97,14 +112,13 @@ public class OrderStatusInquiryService : ApplicationService, IOrderStatusInquiry
             var dateDiff = lastLogSubmitDate.Subtract(DateTime.Now);
             if (dateDiff.Days <= 0)
             {
-                var oldResult = ObjectMapper.Map<OrderStatusInquiry, OrderStatusInquiryResultDto>(orderLastLog);
-                oldResult.OrderDeliveryStatusDescription = (await _orderDeliveryStatusTypeRepository.GetQueryableAsync())
-                    .FirstOrDefault(x => x.Code == (int)oldResult.OrderDeliveryStatus).Description;
-                oldResult.AvailableDeliveryStatusList = availableDeliveryStatusList;
-                return oldResult;
+                result = ObjectMapper.Map<OrderStatusInquiry, OrderStatusInquiryResultDto>(orderLastLog, result);
+                result.OrderDeliveryStatusDescription = (await _orderDeliveryStatusTypeRepository.GetQueryableAsync())
+                    .FirstOrDefault(x => x.Code == (int)result.OrderDeliveryStatus).Description;
+                result.AvailableDeliveryStatusList = availableDeliveryStatusList;
+                return result;
             }
         }
-        var nationalCode = _commonAppService.GetNationalCode();
         var companyAccessToken = await _commonAppService.GetIkcoAccessTokenAsync();
         var inquiryFromCompany = await _commonAppService.IkcoOrderStatusInquiryAsync(nationalCode, orderStatusInquiryCommitDto.OrderId, companyAccessToken);
         if (!inquiryFromCompany.Succeeded)
@@ -152,7 +166,7 @@ public class OrderStatusInquiryService : ApplicationService, IOrderStatusInquiry
         });
         order.OrderDeliveryStatusDesc = serializedInquiryResponse;
         await _customerOrderRepository.AttachAsync(order, x => x.OrderDeliveryStatusDesc, x => x.OrderDeliveryStatus);
-        var result = ObjectMapper.Map<OrderStatusInquiry, OrderStatusInquiryResultDto>(orderLog);
+        result = ObjectMapper.Map<OrderStatusInquiry, OrderStatusInquiryResultDto>(orderLog, result);
         var orderDeliveryStatusDescription = (await _orderDeliveryStatusTypeRepository.GetQueryableAsync())
             .FirstOrDefault(x => x.Code == (int)result.OrderDeliveryStatus);
         result.OrderDeliveryStatusDescription = orderDeliveryStatusDescription.Description;

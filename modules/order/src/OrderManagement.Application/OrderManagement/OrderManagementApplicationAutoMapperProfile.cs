@@ -121,9 +121,7 @@ namespace OrderManagement
             CreateMap<OrderStatusInquiry, OrderStatusInquiryResultDto>()
                 .ForMember(x => x.OrderDeliveryStatusDescription, opt => opt.Ignore())
                 .ForMember(x => x.AvailableDeliveryStatusList, opt => opt.Ignore())
-                .ForMember(x => x.RejectionDate, opt => opt.Ignore())
-                .ReverseMap()
-                .IgnoreFullAuditedObjectProperties();
+                .ForMember(x => x.RejectionDate, opt => opt.Ignore());
             CreateMap<CreateSaleSchemaDto, SaleSchema>().ReverseMap();
             CreateMap<ProductAndCategoryCreateDto, ProductAndCategory>();
             CreateMap<ProductAndCategory, ProductAndSaleDetailListDto>().ReverseMap();

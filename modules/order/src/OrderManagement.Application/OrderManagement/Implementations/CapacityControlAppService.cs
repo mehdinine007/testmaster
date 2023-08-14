@@ -23,6 +23,10 @@ using Volo.Abp.Features;
 using OrderManagement.Domain.Shared;
 using Volo.Abp.ObjectMapping;
 using MongoDB.Driver;
+using OrderManagement.Domain.OrderManagement;
+using Newtonsoft.Json;
+using MongoDB.Bson.Serialization;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace OrderManagement.Application.OrderManagement;
 
@@ -35,8 +39,9 @@ public class CapacityControlAppService : ApplicationService, ICapacityControlApp
     private readonly ICacheManager _cacheManager;
     private readonly IRepository<PropertyCategory, ObjectId> _propertyDefinitionRepository;
     private readonly IRepository<ProductProperty, ObjectId> _productPropertyRepository;
+    private readonly IRepository<ProductAndCategory, int> _productAndCategoryRepository;
     private IConfiguration _configuration { get; set; }
-    public CapacityControlAppService(IConfiguration configuration, IEsaleGrpcClient grpcClient, IAgencySaleDetailService agencySaleDetailService, ISaleDetailService saleDetailService, ICommonAppService commonAppService, ICacheManager cacheManager, IRepository<PropertyCategory, ObjectId> propertyDefinitionRepository, IRepository<ProductProperty, ObjectId> productPropertyRepository)
+    public CapacityControlAppService(IConfiguration configuration, IEsaleGrpcClient grpcClient, IAgencySaleDetailService agencySaleDetailService, ISaleDetailService saleDetailService, ICommonAppService commonAppService, ICacheManager cacheManager, IRepository<PropertyCategory, ObjectId> propertyDefinitionRepository, IRepository<ProductProperty, ObjectId> productPropertyRepository, IRepository<ProductAndCategory, int> productAndCategoryRepository)
     {
         _configuration = configuration;
         _grpcClient = grpcClient;
@@ -46,6 +51,7 @@ public class CapacityControlAppService : ApplicationService, ICapacityControlApp
         _cacheManager = cacheManager;
         _propertyDefinitionRepository = propertyDefinitionRepository;
         _productPropertyRepository = productPropertyRepository;
+        _productAndCategoryRepository = productAndCategoryRepository;
     }
     public async Task<IResult> SaleDetail()
     {
@@ -107,148 +113,204 @@ public class CapacityControlAppService : ApplicationService, ICapacityControlApp
 
     public async Task GrpcPaymentTest()
     {
-        //var propertydto = new PropertyCategoryDto()
-        //{
-        //    Title = "مشخصات فنی",
-        //    Properties = new List<PropertyDto>()
-        //    {
-        //        new PropertyDto()
-        //        {
-        //            Id = ObjectId.GenerateNewId(),
-        //            Tilte = "سرعت",
-        //            Type = PropertyTypeEnum.Text
-        //        },
-        //        new PropertyDto()
-        //        {
-        //            Id = ObjectId.GenerateNewId(),
-        //            Tilte = "موتور",
-        //            Type = PropertyTypeEnum.DropDown,
-        //            DropDownItems = new List<DropDownItemDto>()
-        //            {
-        //                new DropDownItemDto()
-        //                {
-        //                    Title = "موتور 1",
-        //                    Value = 1
-        //                },
-        //                new DropDownItemDto()
-        //                {
-        //                    Title = "موتور 2",
-        //                    Value = 2
-        //                }
-        //            }
-        //        }
-        //    }
-        //};
-        //await _propertyDefinitionRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto, PropertyCategory>(propertydto));
-        //propertydto = new PropertyCategoryDto()
-        //{
-        //    Title = "مشخصات ظاهری",
-        //    Properties = new List<PropertyDto>()
-        //    {
-        //        new PropertyDto()
-        //        {
-        //            Id = ObjectId.GenerateNewId(),
-        //            Tilte = "رنگ بدنه",
-        //            Type = PropertyTypeEnum.Text
-        //        },
-        //        new PropertyDto()
-        //        {
-        //            Id = ObjectId.GenerateNewId(),
-        //            Tilte = "جنس لاستیک",
-        //            Type = PropertyTypeEnum.Text,
-        //        },
-        //        new PropertyDto()
-        //        {
-        //            Id = ObjectId.GenerateNewId(),
-        //            Tilte = "سپر عقب",
-        //            Type = PropertyTypeEnum.Text,
-        //        },
-        //    }
-        //};
-        //await _propertyDefinitionRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto, PropertyCategory>(propertydto));
+        var propertydto = new PropertyCategoryDto()
+        {
+            Title = "مشخصات اصلی",
+            Display = false,
+            Properties = new List<PropertyDto>()
+            {
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Tilte = "امتیاز خودرو",
+                    Key = "score", 
+                    Type = PropertyTypeEnum.Number,
+                    Value = "0",
+                },
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Tilte = "استاندارد 85 گانه",
+                    Key = "standard85",
+                    Type = PropertyTypeEnum.Boolean,
+                    Value = "false"
+                },
+            }
+        };
+        await _propertyDefinitionRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto, PropertyCategory>(propertydto));
+        propertydto = new PropertyCategoryDto()
+        {
+            Title = "مشخصات فنی",
+            Properties = new List<PropertyDto>()
+            {
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Tilte = "سرعت",
+                    Key = "speed",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "120 کیلومتر برساعت"
+                },
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Tilte = "موتور",
+                    Key = "engine",
+                    Type = PropertyTypeEnum.DropDown,
+                    Value = "موتور بی کیفیت",
+                    DropDownItems = new List<DropDownItemDto>()
+                    {
+                        new DropDownItemDto()
+                        {
+                            Title = "موتور 1",
+                            Value = 1
+                        },
+                        new DropDownItemDto()
+                        {
+                            Title = "موتور 2",
+                            Value = 2
+                        }
+                    }
+                }
+            }
+        };
+        await _propertyDefinitionRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto, PropertyCategory>(propertydto));
+        propertydto = new PropertyCategoryDto()
+        {
+            Title = "مشخصات ظاهری",
+            Properties = new List<PropertyDto>()
+            {
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Tilte = "رنگ بدنه",
+                    Key = "bodycolor",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "سفید",
+                },
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Tilte = "جنس لاستیک",
+                    Key = "cartire",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "بارز",
+                },
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Tilte = "سپر عقب",
+                    Key = "rearbumper",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "رنگ شده",
+                },
+            }
+        };
+        await _propertyDefinitionRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto, PropertyCategory>(propertydto));
+        var propertyQuery = await _propertyDefinitionRepository.GetQueryableAsync();
+        var property = propertyQuery.ToList();
+        var products = (await _productAndCategoryRepository.GetQueryableAsync()).Where(x => x.Type == ProductAndCategoryType.Product).ToList();
+        products.ForEach(async x =>
+        {
+            var productpropertydto = new ProductPropertyDto()
+            {
+                ProductId = x.Id,
+                PropertyCategories = ObjectMapper.Map<List<PropertyCategory>, List<PropertyCategoryDto>>(property)
+            };
+            await _productPropertyRepository.InsertAsync(ObjectMapper.Map<ProductPropertyDto, ProductProperty>(productpropertydto));
+        });
+
+
+
+
+
         IMongoCollection<ProductProperty> productFeatureCollection = await _productPropertyRepository.GetCollectionAsync();
-       // IAggregateFluent<ProductProperty> productFeatureAggregate = await _productPropertyRepository.GetAggregateAsync();
-        var x = productFeatureCollection.Aggregate().Unwind(x => x.PropertyCategories).Unwind(x => x["PropertyCategories.Properties"]).Match(x => x["PropertyCategories.Properties.Type"] == 999).ToList();
-        var filter = new BsonDocument( );
+        // IAggregateFluent<ProductProperty> productFeatureAggregate = await _productPropertyRepository.GetAggregateAsync();
+        var x = productFeatureCollection.Aggregate().Unwind(x => x.PropertyCategories).Unwind(x => x["PropertyCategories.Properties"]).Match(x => x["PropertyCategories.Properties."] == 1).ToList();
+        //var bsonObject = x.ToBsonDocument();
+        var kvp = BsonSerializer.Deserialize<List<Dictionary<string,object>>>(x.ToJson());
+        var aa = kvp.Select(x => x["ProductId"]).ToList();
 
-        var update = Builders<ProductProperty>.Update.Set("PropertyCategories.$[].Properties.$[j].Type", 100);
+//        var filter = new BsonDocument( );
 
-        var arrayFilters = new List<ArrayFilterDefinition>
-{
-    new BsonDocumentArrayFilterDefinition<ProductProperty>(new BsonDocument("j.Type", 1))
-};
-        var updateOptions = new UpdateOptions { ArrayFilters = arrayFilters };
-        var xx =  productFeatureCollection.UpdateMany(filter,
-         update, updateOptions);
+//        var update = Builders<ProductProperty>.Update.Set("PropertyCategories.$[].Properties.$[j].Type", 100);
+
+//        var arrayFilters = new List<ArrayFilterDefinition>
+//{
+//    new BsonDocumentArrayFilterDefinition<ProductProperty>(new BsonDocument("j.Type", 1))
+//};
+//        var updateOptions = new UpdateOptions { ArrayFilters = arrayFilters };
+//        var xx =  productFeatureCollection.UpdateMany(filter,
+//         update, updateOptions);
 
         ////FilterDefinition<ProductFeature> matchFilter = Builders<ProductFeature>.Filter.ElemMatch<ProductFeature>("ProductFeature", Builders<ProductFeature>.Filter.Eq("FeatureValues.ProductId", 1));
         //var filter = Builders<PropertyDefinition>.Filter.Where(e => e.FeatureValues.Any(x=> x.ProductId == 2));
         //var a = productFeatureAggregate.Match(filter).ToList();
-        var propertyQuery = await _propertyDefinitionRepository.GetQueryableAsync();
-        var property = propertyQuery.ToList().Take(1).ToList();
-        property.ForEach(x =>
-        {
-            x.Priority = 1;
-            int i = 0;
-            int v = 100;
-            x.Properties.ForEach(p =>
-            {
-                i += 1;
-                v += 1;
-                p.Priority = i;
-                p.Value = v.ToString();
-            });
-        });
-        var productpropertydto = new ProductPropertyDto()
-        {
-            ProductId = 42,
-            PropertyCategories = ObjectMapper.Map<List<PropertyCategory>, List<PropertyCategoryDto>>(property)
-        };
-        await _productPropertyRepository.InsertAsync(ObjectMapper.Map<ProductPropertyDto, ProductProperty>(productpropertydto));
-        property = propertyQuery.ToList().ToList();
-        property.ForEach(x =>
-        {
-            x.Priority = 1;
-            int i = 0;
-            int v = 100;
-            x.Properties.ForEach(p =>
-            {
-                i += 1;
-                v += 1;
-                p.Priority = i;
-                p.Value = v.ToString();
-            });
-        });
-        productpropertydto = new ProductPropertyDto()
-        {
-            ProductId = 43,
-            PropertyCategories = ObjectMapper.Map<List<PropertyCategory>, List<PropertyCategoryDto>>(property)
-        };
-        await _productPropertyRepository.InsertAsync(ObjectMapper.Map<ProductPropertyDto, ProductProperty>(productpropertydto));
-        property = propertyQuery.ToList().ToList().Take(1).ToList();
-        property.ForEach(x =>
-        {
-            x.Priority = 1;
-            int i = 0;
-            int v = 100;
-            x.Properties.ForEach(p =>
-            {
-                i += 1;
-                v += 1;
-                p.Priority = i;
-                p.Value = v.ToString();
-            });
-        });
-        productpropertydto = new ProductPropertyDto()
-        {
-            ProductId = 44,
-            PropertyCategories = ObjectMapper.Map<List<PropertyCategory>, List<PropertyCategoryDto>>(property)
-        };
-        await _productPropertyRepository.InsertAsync(ObjectMapper.Map<ProductPropertyDto, ProductProperty>(productpropertydto));
+        //var propertyQuery = await _propertyDefinitionRepository.GetQueryableAsync();
+        //var property = propertyQuery.ToList();
+        //property.ForEach(x =>
+        //{
+        //    x.Priority = 1;
+        //    int i = 0;
+        //    int v = 100;
+        //    x.Properties.ForEach(p =>
+        //    {
+        //        i += 1;
+        //        v += 1;
+        //        p.Priority = i;
+        //        p.Value = v.ToString();
+        //    });
+        //});
+        //var productpropertydto = new ProductPropertyDto()
+        //{
+        //    ProductId = 42,
+        //    PropertyCategories = ObjectMapper.Map<List<PropertyCategory>, List<PropertyCategoryDto>>(property)
+        //};
+        //await _productPropertyRepository.InsertAsync(ObjectMapper.Map<ProductPropertyDto, ProductProperty>(productpropertydto));
+        //property = propertyQuery.ToList().ToList();
+        //property.ForEach(x =>
+        //{
+        //    x.Priority = 1;
+        //    int i = 0;
+        //    int v = 100;
+        //    x.Properties.ForEach(p =>
+        //    {
+        //        i += 1;
+        //        v += 1;
+        //        p.Priority = i;
+        //        p.Value = v.ToString();
+        //    });
+        //});
+        //productpropertydto = new ProductPropertyDto()
+        //{
+        //    ProductId = 43,
+        //    PropertyCategories = ObjectMapper.Map<List<PropertyCategory>, List<PropertyCategoryDto>>(property)
+        //};
+        //await _productPropertyRepository.InsertAsync(ObjectMapper.Map<ProductPropertyDto, ProductProperty>(productpropertydto));
+        //property = propertyQuery.ToList().ToList().Take(1).ToList();
+        //property.ForEach(x =>
+        //{
+        //    x.Priority = 1;
+        //    int i = 0;
+        //    int v = 100;
+        //    x.Properties.ForEach(p =>
+        //    {
+        //        i += 1;
+        //        v += 1;
+        //        p.Priority = i;
+        //        p.Value = v.ToString();
+        //    });
+        //});
+        //productpropertydto = new ProductPropertyDto()
+        //{
+        //    ProductId = 44,
+        //    PropertyCategories = ObjectMapper.Map<List<PropertyCategory>, List<PropertyCategoryDto>>(property)
+        //};
+        //await _productPropertyRepository.InsertAsync(ObjectMapper.Map<ProductPropertyDto, ProductProperty>(productpropertydto));
 
         var productQuery = await _productPropertyRepository.GetQueryableAsync();
         var getproduct = productQuery.ToList();
-        var products = ObjectMapper.Map<List<ProductProperty>, List<ProductPropertyDto>>(getproduct.ToList());
+        //var products = ObjectMapper.Map<List<ProductProperty>, List<ProductPropertyDto>>(getproduct.ToList());
         //var redis = await _redisCacheManager.ScanKeysAsync("n:CapacityControl:*");
         //var redis = _redisCacheManager.RemoveAllAsync("n:CapacityControl:*");
         //var payment = await _grpcClient.RetryForVerify();
