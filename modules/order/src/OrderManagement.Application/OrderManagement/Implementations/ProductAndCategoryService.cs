@@ -307,7 +307,9 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
         productQuery = productQuery
             .Where(x => x.Active && x.Type == ProductAndCategoryType.Product)
             .Include(x => x.SaleDetails.Where(x => x.SalePlanStartDate <= currentTime && currentTime <= x.SalePlanEndDate && x.Visible))
-            .ThenInclude(y => y.ESaleType);
+             .ThenInclude(y => y.ESaleType)
+            .Include(x => x.ProductLevel);
+           
         var product = productQuery
                   .Where(x => EF.Functions.Like(x.Code, nodePath + "%"))
                   .ToList();
