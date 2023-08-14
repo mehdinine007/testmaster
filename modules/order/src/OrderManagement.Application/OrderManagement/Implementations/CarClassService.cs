@@ -76,14 +76,15 @@ namespace OrderManagement.Application.OrderManagement.Implementations
 
         public async Task<CarClassDto> GetById(CarClassQueryDto carClassQueryDto)
         {
-            var entity = await _carClassRepository.WithDetails().AsNoTracking().FirstOrDefaultAsync(x => x.Id == carClassQueryDto.Id);
-            if (entity == null)
+            var carClass = (await _carClassRepository.GetQueryableAsync())
+               .FirstOrDefault(x => x.Id == carClassQueryDto.Id);
+            if (carClass == null)
             {
                 throw new UserFriendlyException(OrderConstant.CarClassNotFound, OrderConstant.CarClassNotFoundId);
             }
-            var attachments = await _attachmentService.GetList(AttachmentEntityEnum.CarClass, new List<int> { entity.Id }, carClassQueryDto.AttachmentType);
+            var attachments = await _attachmentService.GetList(AttachmentEntityEnum.CarClass, new List<int> { carClass.Id }, carClassQueryDto.AttachmentType);
 
-           var carClassDto= ObjectMapper.Map<CarClass, CarClassDto>(entity);
+           var carClassDto= ObjectMapper.Map<CarClass, CarClassDto>(carClass);
             carClassDto.Attachments = ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(attachments);
             return carClassDto;
         }

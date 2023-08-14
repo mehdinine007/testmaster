@@ -7,7 +7,7 @@ namespace OrderManagement.Application.Contracts
     {
         public int Id { get; set; }
         public int SaleDetailId { get; set; }
-        public long UserId { get; set; }
+        public Guid UserId { get; set; }
         public PriorityEnum? PriorityId { get; set; }
         public int OrderStatus { get; set; }
         public int SaleId { get; set; }

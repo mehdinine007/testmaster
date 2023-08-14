@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.OrderManagement;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
+using OrderManagement.Domain;
 using OrderManagement.Domain.OrderManagement;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Services;
+using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.ObjectMapping;
 
@@ -39,7 +41,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             return productLevelsDto;
         }
 
-        public async Task<int> Save(ProductLevelDto productLevelDto)
+        public async Task<ProductLevelDto> Add(ProductLevelDto productLevelDto)
         {
             var productLevelQuery = await _productLevelRepository.GetQueryableAsync();
             var getProductLevel = productLevelQuery.FirstOrDefault(x => x.Priority == productLevelDto.Priority);
@@ -52,11 +54,11 @@ namespace OrderManagement.Application.OrderManagement.Implementations
                 throw new UserFriendlyException(OrderConstant.InCorrectPriorityNumber, OrderConstant.InCorrectPriorityNumberId);
             }
             var productLevel = ObjectMapper.Map<ProductLevelDto, ProductLevel>(productLevelDto);
-            await _productLevelRepository.InsertAsync(productLevel, autoSave: true);
-            return productLevel.Id;
+          var entity= await _productLevelRepository.InsertAsync(productLevel, autoSave: true);
+            return ObjectMapper.Map<ProductLevel, ProductLevelDto>(entity);
         }
 
-        public async Task<int> Update(ProductLevelDto productLevelDto)
+        public async Task<ProductLevelDto> Update(ProductLevelDto productLevelDto)
         {
             var productLevelQuery = await _productLevelRepository.GetQueryableAsync();
 
@@ -80,9 +82,16 @@ namespace OrderManagement.Application.OrderManagement.Implementations
 
             var productLevel = ObjectMapper.Map<ProductLevelDto, ProductLevel>(productLevelDto);
 
-            await _productLevelRepository.AttachAsync(productLevel, c => c.Title, c => c.Priority);
+           var entity= await _productLevelRepository.AttachAsync(productLevel, c => c.Title, c => c.Priority);
 
-            return productLevel.Id;
+            return ObjectMapper.Map<ProductLevel, ProductLevelDto>(entity);
         }
+        public async Task<ProductLevelDto> GetById(int id)
+        {
+            var productLevel = (await _productLevelRepository.GetQueryableAsync())
+                .FirstOrDefault(x => x.Id == id);
+            return ObjectMapper.Map<ProductLevel, ProductLevelDto>(productLevel);
+        }
+
     }
 }

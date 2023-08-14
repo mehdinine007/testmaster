@@ -7,7 +7,8 @@ namespace OrderManagement.Domain
     public class CustomerOrder : FullAuditedEntity<int>
     {
         public int SaleDetailId { get; set; }
-        public long UserId { get; set; }
+        public long OldUserId { get; set; }
+        public Guid UserId { get; set; }
         public int SaleId { get; set; }
         public PriorityEnum? PriorityId { get; set; }
         public OrderStatusType OrderStatus { get; set; }
@@ -26,5 +27,9 @@ namespace OrderManagement.Domain
         public int PaymentSecret { get; set; }
         public OrderDeliveryStatusType? OrderDeliveryStatus { get; set; }
         public string OrderDeliveryStatusDesc { get; set; }
+        public DateTime? PrioritizationDate { get; set; }
+        public DateTime? VehicleSelectDate { get; set; }
+        public DateTime? SendToManufacturerDate { get; set; }
+        public DateTime? OrderRejectionDate { get; set; }
     }
 }

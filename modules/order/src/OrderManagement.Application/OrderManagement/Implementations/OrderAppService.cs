@@ -573,7 +573,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         //}
         {
             customerOrder.SaleDetailId = SaleDetailDto.Id;
-            customerOrder.UserId = (int)userId;
+            customerOrder.UserId = userId;
             customerOrder.PriorityId = (PriorityEnum)commitOrderDto.PriorityId;
             customerOrder.Vin = commitOrderDto.Vin;
             customerOrder.ChassiNo = commitOrderDto.ChassiNo;
@@ -1190,7 +1190,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             };
         }
     }
-    private async Task NotVerifyActions(long UserId, int OrderId)
+    private async Task NotVerifyActions(Guid UserId, int OrderId)
     {
         //await _redisCacheManager.RemoveAllAsync(RedisConstants.CommitOrderPrefix + UserId.ToString() + "_*");
         await _cacheManager.RemoveWithPrefixKeyAsync(RedisConstants.CommitOrderPrefix + UserId.ToString());

@@ -64,6 +64,10 @@ namespace Esale.Core.DataAccess
                 .Select(x => new Tuple<int, string, string>(Convert.ToInt32(x), x.ToString(), x.GetDisplayName()))
                 .OrderBy(x => x.Item1)
                 .ToList();
+            entityTypeBuilder.Property(x => x.Title)
+                .HasMaxLength(250);
+            entityTypeBuilder.Property(x => x.Title_En)
+                .HasMaxLength(250);
             var recordsToInsert = new List<TEntity>(enumDatas.Capacity);
             for (var i = 0; i < enumDatas.Count; i++)
             {
@@ -74,6 +78,38 @@ namespace Esale.Core.DataAccess
                     Id = i + 1,
                     Title = record.Item3,
                     Title_En = record.Item2,
+                });
+            }
+            entityTypeBuilder.HasData(recordsToInsert);
+        }
+
+        public static void AddFullEnumChangeTracker<TEntity, TEnum>(this EntityTypeBuilder<TEntity> entityTypeBuilder)
+            where TEntity : ReadOnlyTableWithDescription, new()
+            where TEnum : struct, Enum
+        {
+            // Add control to ensure enum inherited from int32
+            var enumDatas = Enum.GetValues<TEnum>()
+                .Cast<TEnum>()
+                .Select(x => new Tuple<int, string, string,string>(Convert.ToInt32(x), x.ToString(), x.GetDisplayName(),x.GetDisplayDescription()))
+                .OrderBy(x => x.Item1)
+                .ToList();
+            entityTypeBuilder.Property(x => x.Title)
+                .HasMaxLength(250);
+            entityTypeBuilder.Property(x => x.Title_En)
+                .HasMaxLength(250);
+            entityTypeBuilder.Property(x => x.Description)
+                .HasMaxLength(500);
+            var recordsToInsert = new List<TEntity>(enumDatas.Capacity);
+            for (var i = 0; i < enumDatas.Count; i++)
+            {
+                var record = enumDatas[i];
+                recordsToInsert.Add(new TEntity
+                {
+                    Code = record.Item1,
+                    Id = i + 1,
+                    Title = record.Item3,
+                    Title_En = record.Item2,
+                    Description = record.Item4
                 });
             }
             entityTypeBuilder.HasData(recordsToInsert);

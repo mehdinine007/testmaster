@@ -29,7 +29,7 @@ public class EsaleGrpcClient : ApplicationService, IEsaleGrpcClient
         _logsRepository = logsRepository;
     }
 
-    public async Task<UserDto> GetUserById(long userId)
+    public async Task<UserDto> GetUserById(Guid userId)
     {
         AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2Support", true);
         AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
@@ -38,7 +38,7 @@ public class EsaleGrpcClient : ApplicationService, IEsaleGrpcClient
         var channel = GrpcChannel.ForAddress(_configuration.GetValue<string>("Esale:GrpcAddress"), new GrpcChannelOptions { HttpHandler = httpHandler });
         var client = new UserServiceGrpc.UserServiceGrpcClient(channel);
 
-        var user = client.GetUserById(new GetUserModel() { UserId = userId });
+        var user = client.GetUserById(new GetUserModel() { UserId = userId.ToString() });
         if (user.BankId == 0)
             return null;
         return new UserDto
