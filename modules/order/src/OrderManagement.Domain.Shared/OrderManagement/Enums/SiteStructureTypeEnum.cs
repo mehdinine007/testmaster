@@ -5,11 +5,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OrderManagement.Domain.Shared.OrderManagement.Enums
+namespace OrderManagement.Domain.Shared
 {
     public enum SiteStructureTypeEnum
     {
-        [EnumProperty(Description = "صفحه")]
-        Page = 1
+        [EnumProperty(Description = "اسلایدر")]
+        Slider = 1,
+        [EnumProperty(Description = "محصولات")]
+        ProductCarousel = 2,
+        [EnumProperty(Description = "کلاس خودرو")]
+        CarClassCarousel = 3,
     }
 }
