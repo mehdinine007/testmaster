@@ -129,6 +129,7 @@ namespace OrderManagement
                 .ForMember(x => x.EsaleTypeName, opt => opt.MapFrom(y => y.ESaleType.SaleTypeName))
                 .ReverseMap();
             CreateMap<CarClass, CarClassDto>().ReverseMap();
+            CreateMap<CarClass, CarClassCreateDto>().ReverseMap();
 
         }
     }
