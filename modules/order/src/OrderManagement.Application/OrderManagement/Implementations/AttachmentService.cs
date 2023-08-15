@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.OrderManagement;
 using OrderManagement.Domain.OrderManagement;
@@ -40,6 +41,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
                     _priroity = attachment.Max(x => x.Priority) + 1;
                 attachmentDto.Priority = _priroity;
             }
+
             await _attachementRepository.InsertAsync(attachmentDto, autoSave: true);
             return attachmentDto.Id;
         }
@@ -117,6 +119,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
                 throw new UserFriendlyException(OrderConstant.FileUploadNotPathNotExists, OrderConstant.FileUploadNotPathNotExistsId);
             var attachment = ObjectMapper.Map<AttachFileDto, Attachment>(attachDto);
             attachment.FileExtension = fileExtention.Replace(".", "");
+            attachment.Content = JsonConvert.SerializeObject(attachDto.Content);
             string fileName = attachDto.Id.ToString() + "." + attachment.FileExtension;
             string filePath = Path.Combine(basePath, fileName);
             if (File.Exists(filePath))
