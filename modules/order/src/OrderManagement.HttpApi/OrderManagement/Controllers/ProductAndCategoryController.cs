@@ -55,6 +55,6 @@ public class ProductAndCategoryController : AbpController //, IProductAndCategor
         => await _productAndCategoryService.Update(productAndCategoryUpdateDto);
 
     [HttpPost]
-    public async Task<List<ProductAndSaleDetailListDto>> GetProductAndSaleDetailList(string nodePath)
-        => await _productAndCategoryService.GetProductAndSaleDetailList(nodePath);
+    public async Task<List<ProductAndCategoryWithChildDto>> GetProductAndSaleDetailList(ProductAndSaleDetailGetListQueryDto input)
+        => await _productAndCategoryService.GetProductAndSaleDetailList(input);
 }

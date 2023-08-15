@@ -18,6 +18,7 @@ using OrderManagement.Domain;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Bson.Serialization;
+using System.ComponentModel;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -79,6 +80,9 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
 
     public async Task<ProductAndCategoryDto> Insert(ProductAndCategoryCreateDto productAndCategoryCreateDto)
     {
+        var levelId = 0;
+        var productLevelId = 0;
+        var code = "";
         var productLevelQuery = (await _productLevelRepository.GetQueryableAsync()).OrderBy(x => x.Priority);
 
         if (productAndCategoryCreateDto.Priority == 0)
@@ -125,20 +129,19 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
                 if (parentFirstProductChild != null)
                     throw new UserFriendlyException("برای دسته بندی سطح بالایی قبلا زیر سطح از نوع محصول تعریف شده است");
             }
-            productAndCategoryCreateDto.LevelId = parent.LevelId + 1;
+            levelId = parent.LevelId + 1;
             var parentPriority = productLevelQuery.FirstOrDefault(x => x.Id == parent.ProductLevelId).Priority;
             var currentProductlevel = productLevelQuery.Where(x => x.Priority > parentPriority).FirstOrDefault();
             if (currentProductlevel == null)
             {
                 throw new UserFriendlyException(OrderConstant.LastProductLevel, OrderConstant.LastProductLevelId);
             }
-            productAndCategoryCreateDto.ProductLevelId = currentProductlevel.Id;
+            productLevelId = currentProductlevel.Id;
         }
         else
         {
-            productAndCategoryCreateDto.LevelId = 1;
-            var productLevelId = productLevelQuery.FirstOrDefault().Id;
-            productAndCategoryCreateDto.ProductLevelId = productLevelId;
+            levelId = 1;
+            productLevelId = productLevelQuery.FirstOrDefault().Id;
         }
 
         var _parentCode = "";
@@ -154,17 +157,16 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
             _maxCode = (Convert.ToInt32(_maxCode.Substring(_maxCode.Length - codeLength)) + 1).ToString();
         else _maxCode = "1";
         _maxCode = _parentCode + StringHelper.Repeat(_maxCode, codeLength);
-        productAndCategoryCreateDto.Code = _maxCode;
+        code = _maxCode;
         productAndCategoryCreateDto.ParentId = productAndCategoryCreateDto.ParentId.HasValue && productAndCategoryCreateDto.ParentId.Value > 0
             ? productAndCategoryCreateDto.ParentId.Value
             : null;
         productAndCategoryCreateDto.Active = true;
-
-
-
-
-        var entity = await _productAndCategoryRepository.InsertAsync(
-            ObjectMapper.Map<ProductAndCategoryCreateDto, ProductAndCategory>(productAndCategoryCreateDto));
+        var productAndCategory = ObjectMapper.Map<ProductAndCategoryCreateDto, ProductAndCategory>(productAndCategoryCreateDto);
+        productAndCategory.LevelId = levelId;
+        productAndCategory.ProductLevelId = productLevelId;
+        productAndCategory.Code = code;
+        var entity = await _productAndCategoryRepository.InsertAsync(productAndCategory,autoSave:true);
         return ObjectMapper.Map<ProductAndCategory, ProductAndCategoryDto>(entity);
     }
 
@@ -231,60 +233,29 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
                         .ToList();
                 break;
             case ProductAndCategoryType.Product:
-                if (string.IsNullOrWhiteSpace(input.NodePath))
-                    throw new UserFriendlyException("مسیر نود خالی است");
                 ls = productAndCategoryQuery.Where(x => EF.Functions.Like(x.Code, input.NodePath + "%") && x.Type == ProductAndCategoryType.Product).ToList();
                 if (input.PropertyFilters != null && input.PropertyFilters.Count > 0)
                 {
-                    IMongoCollection<ProductProperty> productPropertyCollection = await _productPropertyRepository.GetCollectionAsync();
-                    var productPropertyFilter = productPropertyCollection
-                        .Aggregate()
-                        .Unwind(x => x.PropertyCategories)
-                        .Unwind(x => x["PropertyCategories.Properties"]);
-                    foreach (var filter in input.PropertyFilters)
-                    {
-                        if (filter.Operator == OperatorFilterEnum.Equal)
-                            productPropertyFilter = productPropertyFilter
-                                .Match(x => x["PropertyCategories.Properties.Key"] == filter.Key && x["PropertyCategories.Properties.Value"] == filter.Value);
-                        if (filter.Operator == OperatorFilterEnum.EqualOpposite)
-                            productPropertyFilter = productPropertyFilter
-                                .Match(x => x["PropertyCategories.Properties.Key"] == filter.Key && x["PropertyCategories.Properties.Value"] != filter.Value);
-                        if (filter.Operator == OperatorFilterEnum.Bigger)
-                            productPropertyFilter = productPropertyFilter
-                                .Match(x => x["PropertyCategories.Properties.Key"] == filter.Key && x["PropertyCategories.Properties.Value"] > filter.Value);
-                        if (filter.Operator == OperatorFilterEnum.Smaller)
-                            productPropertyFilter = productPropertyFilter
-                                .Match(x => x["PropertyCategories.Properties.Key"] == filter.Key && x["PropertyCategories.Properties.Value"] < filter.Value);
-                    }
-                    var productProperties = productPropertyFilter.ToList();
-                    if (productProperties != null && productProperties.Count > 0)
-                    {
-                        var products = BsonSerializer.Deserialize<List<Dictionary<string, object>>>(productProperties.ToJson())
-                            .Select(x => x["ProductId"])
-                            .ToList();
-                        ls = ls.Where(x => products.Any(p => (int)p == x.Id))
-                            .ToList();
-                    }
-
+                     ls = await GetProductFilter(input.PropertyFilters, ls);
                 }
-                attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, ls.Select(x => x.Id).ToList());
+                attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, ls.Select(x => x.Id).ToList(), input.attachmentType);
                 break;
         }
         var productAndCategories = ObjectMapper.Map<List<ProductAndCategory>, List<ProductAndCategoryWithChildDto>>(ls);
-        productAndCategories = await FillAttachmentAndProperty(productAndCategories, attachments);
+        productAndCategories = await FillAttachmentAndProperty(productAndCategories, attachments,input.HasProperty);
         return productAndCategories;
     }
 
-    private async Task<List<ProductAndCategoryWithChildDto>> FillAttachmentAndProperty(List<ProductAndCategoryWithChildDto> productAndCategories, List<AttachmentDto> attachments)
+    private async Task<List<ProductAndCategoryWithChildDto>> FillAttachmentAndProperty(List<ProductAndCategoryWithChildDto> productAndCategories, List<AttachmentDto> attachments,bool hasProperty)
     {
         productAndCategories.ForEach(async x =>
         {
             var pacAttachments = attachments.Where(y => y.EntityId == x.Id).ToList();
             x.Attachments = ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(pacAttachments);
-            if (x.Type == ProductAndCategoryType.Product)
+            if (x.Type == ProductAndCategoryType.Product && hasProperty )
                 x.PropertyCategories = await _productPropertyService.GetByProductId(x.Id);
             if (x.Childrens != null && x.Childrens.Count > 0)
-                x.Childrens = await FillAttachmentAndProperty(x.Childrens.ToList(), attachments);
+                x.Childrens = await FillAttachmentAndProperty(x.Childrens.ToList(), attachments,hasProperty);
         });
         return productAndCategories;
     }
@@ -299,7 +270,7 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
         return ObjectMapper.Map<ProductAndCategory, ProductAndCategoryDto>(entity);
     }
 
-    public async Task<List<ProductAndSaleDetailListDto>> GetProductAndSaleDetailList(string nodePath)
+    public async Task<List<ProductAndCategoryWithChildDto>> GetProductAndSaleDetailList(ProductAndSaleDetailGetListQueryDto input)
     {
         List<ProductAndCategory> ProductList = new();
         var currentTime = DateTime.Now;
@@ -309,23 +280,59 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
             .Include(x => x.SaleDetails.Where(x => x.SalePlanStartDate <= currentTime && currentTime <= x.SalePlanEndDate && x.Visible))
              .ThenInclude(y => y.ESaleType)
             .Include(x => x.ProductLevel);
-           
-        var product = productQuery
-                  .Where(x => EF.Functions.Like(x.Code, nodePath + "%"))
-                  .ToList();
-        ProductList = string.IsNullOrWhiteSpace(nodePath)
-            ? product.ToList()
-            : product.Where(x => x.Code == nodePath).ToList();
-        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, ProductList.Select(x => x.Id).ToList());
-        var productAndSaleDetailListDto = ObjectMapper.Map<List<ProductAndCategory>, List<ProductAndSaleDetailListDto>>(ProductList);
-        productAndSaleDetailListDto.ForEach(x =>
-        {
-            var attachment = attachments.Where(y => y.EntityId == x.Id).ToList();
-            x.Attachments = ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(attachment);
-        });
 
+        var product = productQuery
+                  .Where(x => EF.Functions.Like(x.Code, input.NodePath + "%"))
+                  .ToList();
+        ProductList = string.IsNullOrWhiteSpace(input.NodePath)
+            ? product.ToList()
+            : product.Where(x => x.Code == input.NodePath).ToList();
+        if (input.PropertyFilters != null && input.PropertyFilters.Count > 0)
+        {
+             ProductList = await GetProductFilter(input.PropertyFilters, ProductList);
+        }
+        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, ProductList.Select(x => x.Id).ToList(), input.attachmentType);
+
+        var productAndSaleDetailListDto = ObjectMapper.Map<List<ProductAndCategory>, List<ProductAndCategoryWithChildDto>>(ProductList);
+
+        productAndSaleDetailListDto = await FillAttachmentAndProperty(productAndSaleDetailListDto, attachments, input.HasProperty);
 
         return productAndSaleDetailListDto;
 
+    }
+
+    private async Task<List<ProductAndCategory>> GetProductFilter(List<PropertyFilter> input,List<ProductAndCategory> ls)
+    {
+        List<Object> products = new List<object>();
+        List<ProductAndCategory> productAndCategoryList = new List<ProductAndCategory>();
+            IMongoCollection<ProductProperty> productPropertyCollection = await _productPropertyRepository.GetCollectionAsync();
+            var productPropertyFilter = productPropertyCollection
+                .Aggregate()
+                .Unwind(x => x.PropertyCategories)
+                .Unwind(x => x["PropertyCategories.Properties"]);
+            foreach (var filter in input)
+            {
+                if (filter.Operator == OperatorFilterEnum.Equal)
+                    productPropertyFilter = productPropertyFilter
+                        .Match(x => x["PropertyCategories.Properties.Key"] == filter.Key && x["PropertyCategories.Properties.Value"] == filter.Value);
+                if (filter.Operator == OperatorFilterEnum.EqualOpposite)
+                    productPropertyFilter = productPropertyFilter
+                        .Match(x => x["PropertyCategories.Properties.Key"] == filter.Key && x["PropertyCategories.Properties.Value"] != filter.Value);
+                if (filter.Operator == OperatorFilterEnum.Bigger)
+                    productPropertyFilter = productPropertyFilter
+                        .Match(x => x["PropertyCategories.Properties.Key"] == filter.Key && x["PropertyCategories.Properties.Value"] > filter.Value);
+                if (filter.Operator == OperatorFilterEnum.Smaller)
+                    productPropertyFilter = productPropertyFilter
+                        .Match(x => x["PropertyCategories.Properties.Key"] == filter.Key && x["PropertyCategories.Properties.Value"] < filter.Value);
+            }
+            var productProperties = productPropertyFilter.ToList();
+            if (productProperties != null && productProperties.Count > 0)
+            {
+                products = BsonSerializer.Deserialize<List<Dictionary<string, object>>>(productProperties.ToJson())
+                   .Select(x => x["ProductId"])
+                   .ToList();
+            productAndCategoryList = ls.Where(x => products.Any(p => (int)p == x.Id)).ToList();
+        }
+        return productAndCategoryList;
     }
 }

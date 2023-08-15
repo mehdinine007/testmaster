@@ -8,6 +8,9 @@ namespace OrderManagement.Application.Contracts
         public string NodePath { get; set; }
         public int? ProductLevelId { get; set; }
         public List<PropertyFilter> PropertyFilters { get; set; }
+        public  AttachmentEntityTypeEnum? attachmentType { get; set; }
+        public bool HasProperty { get; set; }
+
     }
 
 }

@@ -1,4 +1,5 @@
-﻿using OrderManagement.Domain.Shared;
+﻿using OrderManagement.Application.Contracts.OrderManagement;
+using OrderManagement.Domain.Shared;
 
 namespace OrderManagement.Application.Contracts
 {
@@ -23,5 +24,7 @@ namespace OrderManagement.Application.Contracts
         public List<PropertyCategoryDto> PropertyCategories { get; set; }
 
         public virtual ICollection<ProductAndCategoryWithChildDto> Childrens { get; set; }
+        public List<SaleDetailListDto> SaleDetails { get; set; }
+        public ProductLevelDto ProductLevel { get; protected set; }
     }
 }
