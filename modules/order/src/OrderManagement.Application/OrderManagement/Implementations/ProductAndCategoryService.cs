@@ -170,7 +170,7 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
         return ObjectMapper.Map<ProductAndCategory, ProductAndCategoryDto>(entity);
     }
 
-    public async Task<bool> UploadFile(UploadFileDto uploadFileDto)
+    public async Task<Guid> UploadFile(UploadFileDto uploadFileDto)
     {
         var attachmentStatus = await _attachmentService.UploadFile(AttachmentEntityEnum.ProductAndCategory, uploadFileDto);
         return attachmentStatus;

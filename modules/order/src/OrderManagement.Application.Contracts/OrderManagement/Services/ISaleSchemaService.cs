@@ -16,6 +16,6 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Services
         Task<int> Add(CreateSaleSchemaDto saleSchemaDto);
         Task<int> Update(CreateSaleSchemaDto saleSchemaDto);
         Task<bool> Delete(int id);
-        Task<bool> UploadFile(UploadFileDto uploadFile);
+        Task<Guid> UploadFile(UploadFileDto uploadFile);
     }
 }

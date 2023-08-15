@@ -89,10 +89,9 @@ public class SaleSchemaService : ApplicationService, ISaleSchemaService
         return saleSchema.Id;
     }
 
-    public async Task<bool> UploadFile(UploadFileDto uploadFile)
+    public async Task<Guid> UploadFile(UploadFileDto uploadFile)
     {
-        await _attachmentService.UploadFile(AttachmentEntityEnum.SaleSchema, uploadFile);
-        return true;
+        return await _attachmentService.UploadFile(AttachmentEntityEnum.SaleSchema, uploadFile);
     }
 
 

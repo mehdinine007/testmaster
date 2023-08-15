@@ -68,10 +68,9 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             return ObjectMapper.Map<CarClass, CarClassDto>(entity);
         }
 
-        public async Task<bool> UploadFile(UploadFileDto uploadFile)
+        public async Task<Guid> UploadFile(UploadFileDto uploadFile)
         {
-            await _attachmentService.UploadFile(AttachmentEntityEnum.CarClass, uploadFile);
-            return true;
+            return await _attachmentService.UploadFile(AttachmentEntityEnum.CarClass, uploadFile);
         }
 
         public async Task<CarClassDto> GetById(CarClassQueryDto carClassQueryDto)

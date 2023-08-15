@@ -16,6 +16,6 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Services
         Task<CarClassDto> Add(CarClassCreateDto carClassDto);
         Task<CarClassDto> Update(CarClassCreateDto carClassDto);
         Task<bool> Delete(int id);
-        Task<bool> UploadFile(UploadFileDto uploadFile);
+        Task<Guid> UploadFile(UploadFileDto uploadFile);
     }
 }
