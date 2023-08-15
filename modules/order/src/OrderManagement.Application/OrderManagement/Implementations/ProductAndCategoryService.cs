@@ -215,7 +215,7 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
         List<ProductAndCategory> ls = new();
         var productAndCategoryQuery = await _productAndCategoryRepository.GetQueryableAsync();
         if (!_commonAppService.IsInRole("Admin"))
-            productAndCategoryQuery = productAndCategoryQuery.Where(x => x.Active);
+            productAndCategoryQuery = productAndCategoryQuery.Include(x=>x.ProductLevel).Where(x => x.Active);
         var attachments = new List<AttachmentDto>();
         switch (input.Type)
         {
@@ -224,7 +224,7 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
                     .Include(x => x.Childrens.Where(y => y.Type == ProductAndCategoryType.Category))
                     .Where(x => EF.Functions.Like(x.Code, input.NodePath + "%") && x.Type == ProductAndCategoryType.Category)
                     .ToList();
-                attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, parent.Select(x => x.Id).ToList());
+                attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, parent.Select(x => x.Id).ToList(), input.attachmentType);
                 ls = string.IsNullOrWhiteSpace(input.NodePath)
                     ? parent.Where(x => x.ParentId == null).ToList()
                     : parent.Where(x => x.Code == input.NodePath).ToList();
