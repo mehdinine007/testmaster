@@ -61,6 +61,8 @@ namespace OrderManagement
                 .ReverseMap();
             CreateMap<Attachment, AttachFileDto>()
                 .ReverseMap();
+            CreateMap<Attachment, AttachmentUpdateDto>()
+                .ReverseMap();
             CreateMap<AttachmentDto, AttachmentViewModel>()
                 .ForMember(x => x.FileName, c => c.MapFrom(m => m.Id + "." + m.FileExtension))
                 .ForMember(x => x.Type, c => c.MapFrom(m => m.EntityType))

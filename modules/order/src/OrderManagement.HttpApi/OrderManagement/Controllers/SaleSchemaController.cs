@@ -42,6 +42,6 @@ public class SaleSchemaController : Controller, ISaleSchemaService
     public Task<int> Update(CreateSaleSchemaDto saleSchemaDto)
     => _saleSchemaService.Update(saleSchemaDto);
     [HttpPost]
-    public Task<bool> UploadFile([FromForm]UploadFileDto uploadFile)
+    public Task<Guid> UploadFile([FromForm]UploadFileDto uploadFile)
    => _saleSchemaService.UploadFile(uploadFile);
 }
