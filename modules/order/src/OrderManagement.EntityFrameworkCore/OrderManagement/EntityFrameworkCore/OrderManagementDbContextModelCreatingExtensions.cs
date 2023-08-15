@@ -333,12 +333,7 @@ public static class OrderManagementDbContextModelCreatingExtensions
                 .HasForeignKey(x => x.ProductLevelId);
         });
 
-        builder.Entity<ProductLevel>(entity =>
-        {
-            entity.ToTable(nameof(ProductLevel))
-             .HasIndex(u => u.Priority)
-             .IsUnique();
-        });
+      
 
 
 
