@@ -86,13 +86,24 @@ namespace OrderManagement.EfCore
 
         public DbSet<ProductAndCategory> ProductAndCategory { get; set; }
 
-        public DbSet<ProductAndCategoryType_ReadOnly> ProductAndCategoryType_ReadOnly { get ; set ; }
+        public DbSet<ProductAndCategoryType_ReadOnly> ProductAndCategoryType_ReadOnly { get; set; }
         public DbSet<ProductLevel> ProductLevel { get; set; }
 
         public DbSet<OrderStatusInquiry> OrderStatusInquiry { get; set; }
 
         public DbSet<OrderDeliveryStatusTypeReadOnly> OrderDeliveryStatusTypeReadOnly { get; set; }
+
         public DbSet<CarClass> CarClass { get; set; }
+
+        public DbSet<Questionnaire> Questionnaire { get; set; }
+
+        public DbSet<Question> Question { get; set; }
+
+        public DbSet<QuestionAnswer> QuestionAnswer { get; set; }
+
+        public DbSet<SubmittedAnswer> SubmittedAnswer { get; set; }
+
+        public DbSet<QuestionTypeReadOnly> QuestionTypeReadOnly { get; set; }
 
         public OrderManagementDbContext(DbContextOptions<OrderManagementDbContext> options)
             : base(options)

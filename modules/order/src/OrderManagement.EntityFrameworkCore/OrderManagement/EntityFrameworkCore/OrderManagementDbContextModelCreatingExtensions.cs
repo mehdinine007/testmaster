@@ -7,6 +7,7 @@ using Volo.Abp.EntityFrameworkCore.Modeling;
 using OrderManagement.Domain.OrderManagement;
 using Esale.Core.DataAccess;
 using OrderManagement.Domain.Shared;
+using Nest;
 
 namespace OrderManagement.EfCore;
 
@@ -333,7 +334,7 @@ public static class OrderManagementDbContextModelCreatingExtensions
                 .HasForeignKey(x => x.ProductLevelId);
         });
 
-      
+
 
 
 
@@ -350,6 +351,67 @@ public static class OrderManagementDbContextModelCreatingExtensions
         {
             entity.ToTable(nameof(OrderDeliveryStatusTypeReadOnly));
             entity.AddFullEnumChangeTracker<OrderDeliveryStatusTypeReadOnly, OrderDeliveryStatusType>();
+        });
+
+        builder.Entity<Questionnaire>(entity =>
+        {
+            entity.ToTable(nameof(Questionnaire));
+
+            entity.Property(x => x.Title)
+                .HasMaxLength(50);
+            entity.Property(x => x.Description)
+                .HasMaxLength(250);
+        });
+
+        builder.Entity<QuestionTypeReadOnly>(entity =>
+        {
+            entity.ToTable(nameof(QuestionTypeReadOnly));
+            entity.AddEnumChangeTracker<QuestionTypeReadOnly, QuestionType>();
+        });
+
+        builder.Entity<Question>(entity =>
+        {
+            entity.ToTable(nameof(Question));
+
+            entity.HasOne<Questionnaire>(x => x.Questionnaire)
+                .WithMany(x => x.Questions)
+                .HasForeignKey(x => x.QuestionnaireId);
+            entity.Property(x => x.Title)
+                .HasMaxLength(50);
+        });
+
+        builder.Entity<QuestionAnswer>(entity =>
+        {
+            entity.ToTable(nameof(QuestionAnswer));
+
+            entity.HasOne<Question>(x => x.Question)
+                .WithMany(x => x.Answers)
+                .HasForeignKey(x => x.QuestionId);
+
+            entity.HasOne<Questionnaire>(x => x.Questionnaire)
+                .WithMany(x => x.Answers)
+                .HasForeignKey(x => x.QuestionnaireId);
+            entity.Property(x => x.Description)
+            .IsRequired().HasMaxLength(250);
+            entity.Property(x => x.Hint)
+            .IsRequired().HasMaxLength(250);
+            entity.Property(x => x.CustomValue)
+            .IsRequired().HasMaxLength(250);
+        });
+
+        builder.Entity<SubmittedAnswer>(entity =>
+        {
+            entity.ToTable(nameof(SubmittedAnswer));
+
+            entity.HasOne<Question>(x => x.Question)
+                .WithMany(x => x.SubmittedAnswers)
+                .HasForeignKey(x => x.QuestionId);
+
+            entity.HasOne<QuestionAnswer>(x => x.QuestionAnswer)
+                .WithMany(x => x.SubmittedAnswers)
+                .HasForeignKey(x => x.QuestionAnswerId);
+            entity.Property(x => x.CustomAnswerValue)
+                .HasMaxLength(250);
         });
     }
 }

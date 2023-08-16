@@ -1,6 +1,4 @@
-﻿using Nest;
-
-namespace OrderManagement.Domain.Shared
+﻿namespace OrderManagement.Domain.Shared
 {
     public enum AttachmentEntityEnum
     {
@@ -8,7 +6,7 @@ namespace OrderManagement.Domain.Shared
         ProductAndCategory = 1,
         SaleSchema = 2,
         SiteStructure = 3,
-        CarClass=4
+        CarClass = 4
 
     }
 }
