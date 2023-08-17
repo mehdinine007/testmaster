@@ -14,7 +14,7 @@ namespace OrderManagement.HttpApi.OrderManagement.Controllers;
 [RemoteService]
 [Route("api/services/app/Questionnaire/[action]")]
 [UserAuthorization]
-public class QuestionnaireController : Controller, IQuestionnaireService
+public class QuestionnaireController : Controller //, IQuestionnaireService
 {
     private readonly IQuestionnaireService _questionnaireService;
 
@@ -28,6 +28,9 @@ public class QuestionnaireController : Controller, IQuestionnaireService
         => await _questionnaireService.LoadQuestionnaireTree(questionnaireId);
 
     [HttpPost]
-    public async Task SubmitAnswer(List<SubmitAnswerDto> submitAnswerDtos)
-        => await _questionnaireService.SubmitAnswer(submitAnswerDtos);
+    public async Task<bool> SubmitAnswer(SubmitAnswerTreeDto submitAnswerTreeDto)
+    {
+        await _questionnaireService.SubmitAnswer(submitAnswerTreeDto);
+        return true;
+    }
 }

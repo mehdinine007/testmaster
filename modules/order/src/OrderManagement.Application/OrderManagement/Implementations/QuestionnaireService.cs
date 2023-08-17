@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Server.IIS.Core;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.Dtos;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
@@ -66,8 +65,69 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
         return resultDto;
     }
 
-    public Task SubmitAnswer(List<SubmitAnswerDto> submitAnswerDtos)
+    public async Task SubmitAnswer(SubmitAnswerTreeDto submitAnswerTreeDto)
     {
-        throw new System.NotImplementedException();
+        var questionnaire = await LoadQuestionnaireTree(submitAnswerTreeDto.QuestionnaireId);
+        var currentUserUserId = _commonAppService.GetUserId();
+        //check quesionnaire has not beeing completed by user
+        var answerSubmitted = questionnaire.Questions.Any(x => x.SubmittedAnswers.Any());
+        if (answerSubmitted)
+            throw new UserFriendlyException("این پرسشنامه قبلا توسط شما تکمیل شده است");
+
+        //check all available questions in questionnaire being completed
+        var questionIds = questionnaire.Questions.Select(x => x.Id).ToList();
+        var missedQuestionExists = submitAnswerTreeDto.SubmitAnswerDto.Any(x => !questionIds.Any(y => y == x.QuestionId));
+        if (missedQuestionExists)
+            throw new UserFriendlyException("لطفا به تمام سوالات پاسخ دهید");
+
+        //submit answer base on question type
+        var qeustionAnswers = questionnaire.Questions.SelectMany(x => x.Answers).ToList();
+        List<SubmittedAnswer> submitAnswerList = new(questionIds.Count);
+        submitAnswerTreeDto.SubmitAnswerDto.ForEach(x =>
+        {
+            var question = questionnaire.Questions.First(y => y.Id == x.QuestionId);
+            switch (question.QuestionType)
+            {
+                case QuestionType.Optional:
+                case QuestionType.Range:
+                    if (!question.Answers.Any(y => y.Id == x.QuestionAnswerId))
+                        throw new UserFriendlyException($"پاسخ انتخاب شده مربوط به این سوال نمیباشد : {question.Title}");
+                    if (submitAnswerList.Any(y => y.QuestionId == x.QuestionId))
+                        throw new UserFriendlyException($"لطفا برای این سوال یک گزینه را انتخاب کنید : {question.Title}");
+                    submitAnswerList.Add(new SubmittedAnswer()
+                    {
+                        UserId = currentUserUserId,
+                        QuestionId = x.QuestionId,
+                        QuestionAnswerId = x.QuestionAnswerId
+                    });
+                    break;
+                case QuestionType.MultiSelectOptional:
+                    var answerIds = x.CustomAnswerValue.Split(',').Select(y => int.Parse(y)).ToList();
+                    if (!question.Answers.Any(questionAnswer => !answerIds.Any(incomigAnswerId => incomigAnswerId == questionAnswer.Id)))
+                        throw new UserFriendlyException($"پاسخ انتخاب شده مربوط به این سوال نمیباشد : {question.Title}");
+                    var selectedAnswers = question.Answers.Where(y => answerIds.Any(z => z == y.Id)).ToList();
+                    submitAnswerList.AddRange(selectedAnswers.Select(y => new SubmittedAnswer()
+                    {
+                        QuestionAnswerId = y.Id,
+                        QuestionId = x.QuestionId,
+                        UserId = currentUserUserId
+                    }).ToList());
+                    break;
+                case QuestionType.Descriptional:
+                    if (submitAnswerList.Any(y => y.QuestionId == x.QuestionId))
+                        throw new UserFriendlyException("لطفا به سوالات تشریحی بیش از یک پاسخ ندهید");
+                    submitAnswerList.Add(new SubmittedAnswer
+                    {
+                        CustomAnswerValue = x.CustomAnswerValue,
+                        QuestionId = x.QuestionId,
+                        UserId = currentUserUserId
+                    });
+                    break;
+                default:
+                    break;
+            }
+        });
+        //add to database
+        await _submittedAnswerRepository.InsertManyAsync(submitAnswerList);
     }
 }
