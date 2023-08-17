@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿#nullable disable
+using System.Collections.Generic;
 using Volo.Abp.Domain.Entities.Auditing;
 
 namespace OrderManagement.Domain;

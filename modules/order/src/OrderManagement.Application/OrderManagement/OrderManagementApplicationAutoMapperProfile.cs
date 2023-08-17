@@ -132,7 +132,10 @@ namespace OrderManagement
                 .ReverseMap();
             CreateMap<CarClass, CarClassDto>().ReverseMap();
             CreateMap<CarClass, CarClassCreateDto>().ReverseMap();
-
+            CreateMap<Questionnaire, QuestionnaireTreeDto>();
+            CreateMap<Question, FullQuestionDto>();
+            CreateMap<QuestionAnswer, QuestionAnswerDto>();
+            CreateMap<SubmittedAnswer, SubmittedAnswerDto>();
         }
     }
 }

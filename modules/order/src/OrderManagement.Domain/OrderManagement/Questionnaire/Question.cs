@@ -29,4 +29,11 @@ public class Question : FullAuditedEntity<int>
         get => _submittedAnswers ?? (_submittedAnswers = new List<SubmittedAnswer>());
         protected set => _submittedAnswers = value;
     }
+
+    public Question()
+    {
+        Answers = new HashSet<QuestionAnswer>();
+        SubmittedAnswers = new HashSet<SubmittedAnswer>();
+    }
+
 }

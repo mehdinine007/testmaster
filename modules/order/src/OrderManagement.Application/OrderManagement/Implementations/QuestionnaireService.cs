@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Server.IIS.Core;
+using Microsoft.EntityFrameworkCore;
+using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.Dtos;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
 using OrderManagement.Application.Contracts.Services;
@@ -18,15 +20,18 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
     private readonly IRepository<Questionnaire, int> _questionnaireRepository;
     private readonly IBaseInformationService _baseInformationService;
     private readonly ICommonAppService _commonAppService;
+    private readonly IRepository<SubmittedAnswer, long> _submittedAnswerRepository;
 
     public QuestionnaireService(IRepository<Questionnaire, int> questionnaireRepository,
                                 IBaseInformationService baseInformationService,
-                                ICommonAppService commonAppService
+                                ICommonAppService commonAppService,
+                                IRepository<SubmittedAnswer, long> submittedAnswerRepository
         )
     {
         _questionnaireRepository = questionnaireRepository;
         _baseInformationService = baseInformationService;
         _commonAppService = commonAppService;
+        _submittedAnswerRepository = submittedAnswerRepository;
     }
 
     public async Task<QuestionnaireTreeDto> LoadQuestionnaireTree(int questionnaireId)
@@ -51,11 +56,14 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
         var questionnaireQuery = await _questionnaireRepository.GetQueryableAsync();
         questionnaireQuery = questionnaireQuery.Include(x => x.Questions)
             .ThenInclude(x => x.Answers);
-        //questionnaireQuery = questionnaireQuery.Include(x => x.Questions)
-        //    .ThenInclude(x => x.SubmittedAnswers);
-        var qeustionnaireQueryResult = questionnaireQuery.FirstOrDefault(x => x.Id == questionnaireId);
-        //var submittedAnswers = await 
-        throw new System.NotImplementedException();
+        questionnaireQuery = questionnaireQuery.Include(x => x.Questions)
+            .ThenInclude(x => x.SubmittedAnswers);
+
+        var questionnaireResult = questionnaireQuery.FirstOrDefault(x => x.Id == questionnaireId)
+            ?? throw new UserFriendlyException("پرسشنامه مورد نظر یافت نشد");
+        var resultDto = ObjectMapper.Map<Questionnaire, QuestionnaireTreeDto>(questionnaireResult);
+
+        return resultDto;
     }
 
     public Task SubmitAnswer(List<SubmitAnswerDto> submitAnswerDtos)

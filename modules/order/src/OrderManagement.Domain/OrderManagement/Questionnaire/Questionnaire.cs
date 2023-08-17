@@ -26,4 +26,9 @@ public class Questionnaire : FullAuditedEntity<int>
         get => _answers ?? (_answers = new List<QuestionAnswer>());
         protected set => _answers = value;
     }
+
+    public Questionnaire()
+    {
+        Questions = new HashSet<Question>();
+    }
 }

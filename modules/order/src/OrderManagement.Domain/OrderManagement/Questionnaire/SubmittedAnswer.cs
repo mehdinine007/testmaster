@@ -7,9 +7,9 @@ public class SubmittedAnswer : FullAuditedEntity<long>
 {
     public virtual Question Question { get; protected set; }
 
-    public int QuestionId { get; set; }
-
     public virtual QuestionAnswer QuestionAnswer { get; set; }
+
+    public int QuestionId { get; set; }
 
     public long? QuestionAnswerId { get; set; }
 
