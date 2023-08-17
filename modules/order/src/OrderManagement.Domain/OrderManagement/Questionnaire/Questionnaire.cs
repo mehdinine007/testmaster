@@ -13,6 +13,8 @@ public class Questionnaire : FullAuditedEntity<int>
 
     public string Description { get; set; }
 
+    public int? WhitListRequirement { get; set; }
+
     public virtual ICollection<Question> Questions
     {
         get => _questions ?? (_questions = new List<Question>());
