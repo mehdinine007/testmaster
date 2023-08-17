@@ -100,7 +100,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             {
                 var attachmentPriority = (await _attachementRepository.GetQueryableAsync())
                     .FirstOrDefault(x => x.Id != id && x.Entity == attachmentDto.Entity && x.EntityId == attachmentDto.EntityId && x.EntityType == attachmentDto.EntityType);
-                if (attachmentPriority != null)
+                if (attachmentPriority != null && attachmentDto.EntityType != AttachmentEntityTypeEnum.Gallery)
                 {
                     throw new UserFriendlyException(OrderConstant.AttachmentDuplicate, OrderConstant.AttachmentDuplicateId);
                 }
@@ -173,7 +173,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
                     .Where(x => x.Entity == entity && x.EntityType == entityType && entityIds.Contains(x.EntityId));
 
             var attachments = iqAttachment
-                .OrderBy(x=> x.Priority)
+                .OrderBy(x => x.Priority)
                 .ToList();
             return ObjectMapper.Map<List<Attachment>, List<AttachmentDto>>(attachments);
         }
