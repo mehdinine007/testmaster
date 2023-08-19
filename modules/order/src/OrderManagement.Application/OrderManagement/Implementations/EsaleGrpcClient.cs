@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Domain.Entities;
 using OrderManagement.Application.TestService;
+using System.Net.Http;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -30,10 +31,12 @@ public class EsaleGrpcClient : ApplicationService, IEsaleGrpcClient
         string host = _configuration.GetValue<string>("Esale:GrpcAddress");
         int Random = int.Parse(_configuration.GetValue<string>("GrpcRandomPorts"));
         Random rnd = new Random();
+        var httpHandler = new HttpClientHandler();
+        httpHandler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
 
         int port = int.Parse(_configuration.GetValue<string>("Esale:GrpcPort")) + rnd.Next(Random);
         host = host + ":" + port + "/";
-        var channel = GrpcChannel.ForAddress(host);
+        var channel = GrpcChannel.ForAddress(host, new GrpcChannelOptions { HttpHandler = httpHandler });
 
         var client = new UserServiceGrpc.UserServiceGrpcClient(channel);
 
@@ -62,10 +65,12 @@ public class EsaleGrpcClient : ApplicationService, IEsaleGrpcClient
         string host = _configuration.GetValue<string>("Esale:GrpcAddress");
         int Random = int.Parse(_configuration.GetValue<string>("GrpcRandomPorts"));
         Random rnd = new Random();
-        
+        var httpHandler = new HttpClientHandler();
+        httpHandler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+
         int port = int.Parse(_configuration.GetValue<string>("Esale:GrpcPort")) + rnd.Next(Random);
         host = host + ":" + port + "/";
-        var channel = GrpcChannel.ForAddress(host);
+        var channel = GrpcChannel.ForAddress(host, new GrpcChannelOptions { HttpHandler = httpHandler });
         var client = new UserServiceGrpc.UserServiceGrpcClient(channel);
 
         var userAdvocacy = await client.GetUserAdvocacyAsync(new UserAdvocacyRequest()
