@@ -708,8 +708,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
         if (customerOrder == null)
             throw new UserFriendlyException("شماره سفارش صحیح نمی باشد");
 
-        if (!(customerOrder.OrderStatus == OrderStatusType.RecentlyAdded))
-            throw new UserFriendlyException("امکان انصراف وجود ندارد");
+        //if (!(customerOrder.OrderStatus == OrderStatusType.RecentlyAdded))
+        //    throw new UserFriendlyException("امکان انصراف وجود ندارد");
 
         if (customerOrder.UserId != userId)
             throw new UserFriendlyException("شماره سفارش صحیح نمی باشد");
