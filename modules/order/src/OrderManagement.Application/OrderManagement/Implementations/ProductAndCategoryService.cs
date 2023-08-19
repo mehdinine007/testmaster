@@ -282,8 +282,7 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
             .Include(x => x.ProductLevel);
 
         var product = productQuery
-                  .Where(x => EF.Functions.Like(x.Code, input.NodePath + "%"))
-                  .ToList();
+                  .Where(x => EF.Functions.Like(x.Code, input.NodePath + "%"));
         ProductList = string.IsNullOrWhiteSpace(input.NodePath)
             ? product.ToList()
             : product.Where(x => x.Code == input.NodePath).ToList();
