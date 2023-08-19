@@ -267,22 +267,20 @@ public class OrderAppService : ApplicationService, IOrderAppService
         await _commonAppService.IsUserRejected(); //if user reject from advocacy
                                                   //_baseInformationAppService.CheckBlackList(SaleDetailDto.EsaleTypeId); //if user not exsist in blacklist
         await CheckAdvocacy(nationalCode,SaleDetailDto.ESaleTypeId); //if hesab vekalati darad
-        Console.WriteLine("beforewhitelist");
         _baseInformationAppService.CheckWhiteList(WhiteListEnumType.WhiteListOrder);
-        Console.WriteLine("afterwhitelist");
 
         var orderQuery = await _commitOrderRepository.GetQueryableAsync();
         var userId = _commonAppService.GetUserId();
         ///////////////////////////////agar order 1403 barandeh dasht natone sefaresh bezaneh
-        //var activeSuccessfulOrderExists = orderQuery
-        //    .AsNoTracking()
-        //    .Select(x => new { x.UserId, x.OrderStatus })
-        //    .FirstOrDefault(
-        //        y => y.UserId == userId &&
-        //     y.OrderStatus == OrderStatusType.Winner
-        // );
-        //if (activeSuccessfulOrderExists != null)
-        //    throw new UserFriendlyException("جهت ثبت سفارش جدید لطفا ابتدا از جزئیات سفارش، سفارش قبلی خود که موعد تحویل آن در سال 1403 می باشد را لغو نمایید .");
+        var CustomerOrderWinner = orderQuery
+             .AsNoTracking()
+             .Select(x => new { x.UserId, x.OrderStatus })
+             .FirstOrDefault(
+                 y => y.UserId == userId &&
+              y.OrderStatus == OrderStatusType.Winner
+          );
+        if (CustomerOrderWinner != null)
+            throw new UserFriendlyException("جهت ثبت سفارش جدید لطفا ابتدا از جزئیات سفارش، سفارش قبلی خود که موعد تحویل آن در سال 1403 می باشد را لغو نمایید .");
         ///////////////////////////////check entekhab yek no tarh////////////
         string EsaleTypeId = await _distributedCache.GetStringAsync(userId.ToString());
         if (!string.IsNullOrEmpty(EsaleTypeId))
@@ -314,7 +312,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
             }
 
         }
-        Console.WriteLine("aftercachecchek");
 
 
 
@@ -496,7 +493,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
 
 
-        Console.WriteLine("beforeasli");
 
 
         CustomerOrder customerOrder = new CustomerOrder();
@@ -511,7 +507,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
         customerOrder.SaleId = SaleDetailDto.SaleId;
         await _commitOrderRepository.InsertAsync(customerOrder);
         await CurrentUnitOfWork.SaveChangesAsync();
-        Console.WriteLine("afterasli");
 
         //unitOfWork.Complete();
         //}
@@ -685,7 +680,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     x.DeliveryDate = null;
             }
 
-            if (x.OrderStatusCode == 10 && (x.SalePlanEndDate >= DateTime.Now)) // OrderStatusType.RecentlyAdded
+            // if (x.OrderStatusCode == 10 && (x.SalePlanEndDate >= DateTime.Now)) // OrderStatusType.RecentlyAdded
+            if ((x.OrderStatusCode == 40 && x.SaleId == 3 && !string.IsNullOrEmpty(x.DeliveryDateDescription) && x.DeliveryDateDescription.Contains("1403")) || (x.OrderStatusCode == 10 && x.SaleId == 4)) // OrderStatusType.RecentlyAdded
                 x.Cancelable = true;
             else
                 x.Cancelable = false;
@@ -729,7 +725,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
         }
         else
         {
-            Console.WriteLine("nohi:" + DateTime.Now);
             var saleDetail = _saleDetailRepository.WithDetails().FirstOrDefault(x => x.Id == customerOrder.SaleDetailId)
                 ?? throw new UserFriendlyException("جزئیات برنامه فروش یافت نشد");
             saleDetailOrderDto = ObjectMapper.Map<SaleDetail, SaleDetailOrderDto>(saleDetail);
@@ -742,7 +737,11 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 });
 
         }
-         CheckSaleDetailValidation(saleDetailOrderDto);
+        if (!((customerOrder.OrderStatus == OrderStatusType.Winner && saleDetailOrderDto.SaleId == 3 && !string.IsNullOrEmpty(customerOrder.DeliveryDateDescription) && customerOrder.DeliveryDateDescription.Contains("1403")) || (customerOrder.OrderStatus == OrderStatusType.RecentlyAdded && saleDetailOrderDto.SaleId == 4))) // OrderStatusType.RecentlyAdded
+        {
+            throw new UserFriendlyException("امکان انصراف وجود ندارد");
+        }
+      //  CheckSaleDetailValidation(saleDetailOrderDto);
         _baseInformationAppService.CheckWhiteList(WhiteListEnumType.WhilteListEnseraf);
 
         //var currentTime = DateTime.Now;
