@@ -32,8 +32,8 @@ public class SiteStructureController : Controller
 
 
     [HttpGet]
-    public Task<List<SiteStructureDto>> GetList(AttachmentEntityTypeEnum? AttachmentType)
-    => _siteStructureService.GetList(AttachmentType);
+    public Task<List<SiteStructureDto>> GetList(SiteStructureQueryDto siteStructureQuery)
+    => _siteStructureService.GetList(siteStructureQuery);
     
 
     [HttpPost]
