@@ -281,11 +281,11 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
              .ThenInclude(y => y.ESaleType)
             .Include(x => x.ProductLevel);
 
-        var product = productQuery
-                  .Where(x => EF.Functions.Like(x.Code, input.NodePath + "%"));
+        //var product = productQuery
+        //          .Where(x => EF.Functions.Like(x.Code, input.NodePath + "%"));
         ProductList = string.IsNullOrWhiteSpace(input.NodePath)
-            ? product.ToList()
-            : product.Where(x => x.Code == input.NodePath).ToList();
+            ? productQuery.ToList()
+            : productQuery.Where(x => EF.Functions.Like(x.Code, input.NodePath + "%")).ToList();
         if (input.PropertyFilters != null && input.PropertyFilters.Count > 0)
         {
              ProductList = await GetProductFilter(input.PropertyFilters, ProductList);
