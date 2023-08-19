@@ -56,7 +56,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             await UpdateAttachment(attachment);
             if (attachmentDto.File != null)
             {
-                attachment = CopyFile(ObjectMapper.Map<Attachment, AttachFileDto>(attachment));
+                attachment = CopyFile(ObjectMapper.Map<AttachmentUpdateDto, AttachFileDto>(attachmentDto));
             }
             return attachment.Id;
         }

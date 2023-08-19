@@ -136,6 +136,8 @@ namespace OrderManagement
             CreateMap<Question, FullQuestionDto>();
             CreateMap<QuestionAnswer, QuestionAnswerDto>();
             CreateMap<SubmittedAnswer, SubmittedAnswerDto>();
+            CreateMap<AttachFileDto, AttachmentUpdateDto>()
+              .ReverseMap();
         }
     }
 }
