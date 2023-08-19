@@ -39,5 +39,6 @@ namespace OrderManagement.Application.Contracts
         public bool Cancelable { get; set; }
         public int ESaleTypeId { get; set; }
         public DateTime? SalePlanEndDate { get; set; }
+        public int SaleId { get; set; }
     }
 }

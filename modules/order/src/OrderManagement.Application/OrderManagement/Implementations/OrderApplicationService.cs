@@ -645,7 +645,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 x.DeliveryDateDescription,
                 x.OrderRejectionStatus,
                 y.ESaleTypeId,
-                y.SalePlanEndDate
+                y.SalePlanEndDate,
+                y.SaleId
               
             }).Where(x => x.UserId == userId)
             .Select(x => new CustomerOrder_OrderDetailDto
@@ -665,7 +666,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 DeliveryDate = x.DeliveryDate,
                 OrderRejectionCode = x.OrderRejectionStatus.HasValue ? (int)x.OrderRejectionStatus : null,
                 ESaleTypeId = x.ESaleTypeId,
-                SalePlanEndDate = x.SalePlanEndDate
+                SalePlanEndDate = x.SalePlanEndDate,
+                SaleId = x.SaleId
             }).ToList();
         var cancleableDate = _configuration.GetValue<string>("CancelableDate");
         customerOrders.ForEach(x =>
