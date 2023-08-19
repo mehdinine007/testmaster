@@ -91,10 +91,16 @@ namespace OrderManagement.Application.OrderManagement.Implementations
                 {
                     throw new UserFriendlyException(OrderConstant.AttachmentNotFound, OrderConstant.AttachmentNotFoundId);
                 }
-                if (attachmentDto != null && attachmentDto.Priority <= 0)
-                    throw new UserFriendlyException(OrderConstant.AttachmentPriorityIsEmpty, OrderConstant.AttachmentPriorityIsEmptyId);
-                attachmentDto.Entity = attachment.Entity;
-                attachmentDto.EntityId = attachment.EntityId;
+                if (attachmentDto != null)
+                {
+                    if (attachmentDto.Priority <= 0)
+                    {
+                        throw new UserFriendlyException(OrderConstant.AttachmentPriorityIsEmpty, OrderConstant.AttachmentPriorityIsEmptyId);
+                    }
+                    attachmentDto.Entity = attachment.Entity;
+                    attachmentDto.EntityId = attachment.EntityId;
+                }
+
             }
             if (attachmentDto != null)
             {
