@@ -63,6 +63,7 @@ public class OrderStatusInquiryService : ApplicationService, IOrderStatusInquiry
             .FirstOrDefault(x => x.Id == orderStatusInquiryCommitDto.OrderId && x.UserId == userId)
             ?? throw new UserFriendlyException("سفارش یافت نشد");
         var nationalCode = _commonAppService.GetNationalCode();
+        nationalCode = "5580099126"; //جهت دمو - 498729
         var availableDeliveryStatusList = orderDeliveries.OrderBy(x => x.Code).Select(x =>
         {
             OrderDeliveryStatusViewModel statusModel = new()

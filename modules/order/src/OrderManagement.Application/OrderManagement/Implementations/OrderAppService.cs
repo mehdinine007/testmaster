@@ -526,7 +526,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         }
         ////////////////////////
-        var customer = await _esaleGrpcClient.GetUserById(_commonAppService.GetUserId());
+        var customer = await _esaleGrpcClient.GetUserByUBPId(_commonAppService.GetUserId().ToString());
         if (!customer.NationalCode.Equals(nationalCode))
         {
 
@@ -556,12 +556,17 @@ public class OrderAppService : ApplicationService, IOrderAppService
         //    await CurrentUnitOfWork.SaveChangesAsync();
         //}
         // else
-        IResult agencyCapacityControl = null;
-        // try
-        // {
-        agencyCapacityControl = await _capacityControlAppService.Validation(SaleDetailDto.Id, commitOrderDto.AgencyId);
-        if (!agencyCapacityControl.Succsess)
-            throw new UserFriendlyException(agencyCapacityControl.Message);
+        if (paymentMethodGranted)
+        {
+            // try
+            // {
+            IResult agencyCapacityControl = null;
+
+            agencyCapacityControl = await _capacityControlAppService.Validation(SaleDetailDto.Id, commitOrderDto.AgencyId);
+            if (!agencyCapacityControl.Succsess)
+                throw new UserFriendlyException(agencyCapacityControl.Message);
+        }
+     
         //  }
         //catch (Exception ex)
         //{
@@ -612,29 +617,33 @@ public class OrderAppService : ApplicationService, IOrderAppService
         //        x.OrderStatus
         //    }).FirstOrDefault(x => x.Id == customerOrderId && x.OrderStatus == OrderStatusType.RecentlyAdded)
         //?? throw new EntityNotFoundException(typeof(CustomerOrder));
-
-        var handShakeResponse = await _ipgServiceProvider.HandShakeWithPsp(new PspHandShakeRequest()
+        if (paymentMethodGranted)
         {
-            CallBackUrl = _configuration.GetValue<string>("CallBackUrl"),
-            Amount = (long)SaleDetailDto.CarFee,
-            Mobile = customer.MobileNumber,
-            AdditionalData = customerOrder.PaymentSecret.ToString(),
-            NationalCode = nationalCode,
-            PspAccountId = commitOrderDto.PspAccountId.Value,
-            FilterParam1 = customerOrder.SaleDetailId,
-            FilterParam2 = customerOrder.AgencyId,
-            FilterParam3 = customerOrder.Id
-        });
-        if (handShakeResponse == null)
-        {
-            customerOrder.OrderStatus = OrderStatusType.PaymentNotVerified;
-            await _commitOrderRepository.UpdateAsync(customerOrder);
+            var handShakeResponse = await _ipgServiceProvider.HandShakeWithPsp(new PspHandShakeRequest()
+            {
+                CallBackUrl = _configuration.GetValue<string>("CallBackUrl"),
+                Amount = (long)SaleDetailDto.CarFee,
+                Mobile = customer.MobileNumber,
+                AdditionalData = customerOrder.PaymentSecret.ToString(),
+                NationalCode = nationalCode,
+                PspAccountId = commitOrderDto.PspAccountId.Value,
+                FilterParam1 = customerOrder.SaleDetailId,
+                FilterParam2 = customerOrder.AgencyId,
+                FilterParam3 = customerOrder.Id
+            });
+            if (handShakeResponse == null)
+            {
+                customerOrder.OrderStatus = OrderStatusType.PaymentNotVerified;
+                await _commitOrderRepository.UpdateAsync(customerOrder);
+                await CurrentUnitOfWork.SaveChangesAsync();
+                throw new UserFriendlyException("در حال حاظر پرداخت از طریق این درگاه امکان پذیر نمی باشد");
+            }
+            customerOrder.PaymentId = handShakeResponse.Result.PaymentId;
+            await _commitOrderRepository.UpdateAsync(customerOrder, autoSave: true);
             await CurrentUnitOfWork.SaveChangesAsync();
-            throw new UserFriendlyException("در حال حاظر پرداخت از طریق این درگاه امکان پذیر نمی باشد");
+
         }
-        customerOrder.PaymentId = handShakeResponse.Result.PaymentId;
-        await _commitOrderRepository.UpdateAsync(customerOrder, autoSave: true);
-        await CurrentUnitOfWork.SaveChangesAsync();
+          
         //await _distributedCache.SetStringAsync(
         // userId.ToString() + "_" +
         //    commitOrderDto.SaleDetailUId.ToString()
@@ -713,14 +722,14 @@ public class OrderAppService : ApplicationService, IOrderAppService
         return new CommitOrderResultDto()
         {
             PaymentGranted = paymentMethodGranted,
-            UId = commitOrderDto.SaleDetailUId,
-            PaymentMethodConigurations = paymentMethodGranted ? new()
-            {
-                Message = handShakeResponse.Result.Message,
-                StatusCode = handShakeResponse.Result.StatusCode,
-                Token = handShakeResponse.Result.Token,
-                HtmlContent = handShakeResponse.Result.HtmlContent
-            } : new()
+            //UId = commitOrderDto.SaleDetailUId,
+            //PaymentMethodConigurations = paymentMethodGranted ? new()
+            //{
+            //    Message = handShakeResponse.Result.Message,
+            //    StatusCode = handShakeResponse.Result.StatusCode,
+            //    Token = handShakeResponse.Result.Token,
+            //    HtmlContent = handShakeResponse.Result.HtmlContent
+            //} : new()
         };
     }
 

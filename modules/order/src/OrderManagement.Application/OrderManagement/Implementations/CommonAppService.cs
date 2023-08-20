@@ -492,42 +492,42 @@ public class CommonAppService : ApplicationService, ICommonAppService
 
     public async Task<bool> SetOrderStep(OrderStepEnum orderStep, Guid? userId = null)
     {
-        if (userId == null)
-            userId = GetUserId();
-        var orderStepDto = new OrderStepDto();
-        if (orderStep == OrderStepEnum.Start)
-        {
-            orderStepDto.StartTime = DateTime.Now;
-        }
-        else
-        {
-            orderStepDto = await GetOrderStep(userId);
-        }
-        orderStepDto.Step = orderStep;
-        string cacheKey = string.Format(RedisConstants.OrderStepCacheKey, userId.ToString());
-        await _distributedCache.SetStringAsync(cacheKey, JsonConvert.SerializeObject(orderStepDto),
-            new DistributedCacheEntryOptions()
-            {
-                AbsoluteExpiration = new DateTimeOffset(DateTime.Now.AddSeconds(int.Parse(_configuration.GetSection("OrderStepTTL").Value)))
-            });
+        //if (userId == null)
+        //    userId = GetUserId();
+        //var orderStepDto = new OrderStepDto();
+        //if (orderStep == OrderStepEnum.Start)
+        //{
+        //    orderStepDto.StartTime = DateTime.Now;
+        //}
+        //else
+        //{
+        //    orderStepDto = await GetOrderStep(userId);
+        //}
+        //orderStepDto.Step = orderStep;
+        //string cacheKey = string.Format(RedisConstants.OrderStepCacheKey, userId.ToString());
+        //await _distributedCache.SetStringAsync(cacheKey, JsonConvert.SerializeObject(orderStepDto),
+        //    new DistributedCacheEntryOptions()
+        //    {
+        //        AbsoluteExpiration = new DateTimeOffset(DateTime.Now.AddSeconds(int.Parse(_configuration.GetSection("OrderStepTTL").Value)))
+        //    });
         return true;
     }
 
     public async Task<bool> ValidateOrderStep(OrderStepEnum orderStep)
     {
-        var orderStepDto = await GetOrderStep();
-        var orderSteps = new List<OrderStepEnum>();
-        if (!bool.Parse(_configuration.GetSection("PaymentMethodGranted").Value))
-            orderSteps = OrderConstant.OrderStepWithoutPayment;
-        else
-            orderSteps = OrderConstant.OrderStepWithPayment;
-        var beforeStep = orderSteps
-            .OrderByDescending(x => (int)x)
-            .FirstOrDefault(x => (int)x < (int)orderStep);
-        if (beforeStep == null || beforeStep != orderStepDto.Step)
-        {
-            throw new UserFriendlyException(OrderConstant.NoValidFlowOrderStep, OrderConstant.NoValidFlowOrderStepId);
-        }
+        //var orderStepDto = await GetOrderStep();
+        //var orderSteps = new List<OrderStepEnum>();
+        //if (!bool.Parse(_configuration.GetSection("PaymentMethodGranted").Value))
+        //    orderSteps = OrderConstant.OrderStepWithoutPayment;
+        //else
+        //    orderSteps = OrderConstant.OrderStepWithPayment;
+        //var beforeStep = orderSteps
+        //    .OrderByDescending(x => (int)x)
+        //    .FirstOrDefault(x => (int)x < (int)orderStep);
+        //if (beforeStep == null || beforeStep != orderStepDto.Step)
+        //{
+        //    throw new UserFriendlyException(OrderConstant.NoValidFlowOrderStep, OrderConstant.NoValidFlowOrderStepId);
+        //}
         return true;
     }
 
