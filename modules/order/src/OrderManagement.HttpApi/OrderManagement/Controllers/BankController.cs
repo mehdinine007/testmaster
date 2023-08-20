@@ -11,6 +11,7 @@ using OrderManagement.Application.Contracts.Services;
 using OrderManagement.Application.OrderManagement.Implementations;
 using OrderManagement.Application.Contracts.OrderManagement;
 using OrderManagement.Application.Contracts;
+using OrderManagement.Domain.Shared;
 
 namespace OrderManagement.HttpApi.OrderManagement.Controllers
 {
@@ -30,8 +31,8 @@ namespace OrderManagement.HttpApi.OrderManagement.Controllers
 
 
         [HttpGet]
-        public Task<List<BankDto>> GetList()
-        => _bankAppService.GetList();
+        public Task<List<BankDto>> GetList(AttachmentEntityTypeEnum? attachmentType)
+        => _bankAppService.GetList(attachmentType);
 
 
         [HttpPost]

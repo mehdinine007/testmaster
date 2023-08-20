@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.OrderManagement;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
+using OrderManagement.Application.Contracts.Services;
 using OrderManagement.Domain;
 using OrderManagement.Domain.OrderManagement;
 using OrderManagement.Domain.Shared;
@@ -25,16 +26,16 @@ namespace OrderManagement.Application.OrderManagement.Implementations
         private readonly ICarClassService _carClassService;
         private readonly IProductAndCategoryService _productAndCategoryService;
         private readonly IRepository<ESaleType, int> _eSaleTypeRepository;
-        private readonly IRepository<Bank, int> _bankRepository;
+        private readonly IBankAppService _bankAppServiceService;
         public SiteStructureService(IRepository<SiteStructure, int> siteStructureRepository, IAttachmentService attachmentService, ICarClassService carClassService, IProductAndCategoryService productAndCategoryService
-            , IRepository<ESaleType, int> eSaleTypeRepository, IRepository<Bank, int> bankRepository)
+            , IRepository<ESaleType, int> eSaleTypeRepository, IBankAppService bankAppServiceService)
         {
             _siteStructureRepository = siteStructureRepository;
             _attachmentService = attachmentService;
             _carClassService = carClassService;
             _productAndCategoryService = productAndCategoryService;
             _eSaleTypeRepository = eSaleTypeRepository;
-            _bankRepository = bankRepository;   
+            _bankAppServiceService = bankAppServiceService;   
         }
         public async Task<SiteStructureDto> Add(SiteStructureAddOrUpdateDto siteStructureDto)
         {
@@ -135,11 +136,12 @@ namespace OrderManagement.Application.OrderManagement.Implementations
                 if (x.Type == SiteStructureTypeEnum.Bank)
 
                 {
-                    var banks = (await _bankRepository.GetQueryableAsync()).ToList();
+                    var banks = await _bankAppServiceService.GetList(siteStructureQuery.AttachmentType);
                     x.CarouselData = banks.Select(x => new CarouselData()
                     {
                         Id = x.Id,
                         Title = x.Title,
+                        Attachments=x.Attachments
                      
                     }).ToList();
                 }

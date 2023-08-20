@@ -1,4 +1,5 @@
 ﻿using OrderManagement.Application.Contracts.OrderManagement;
+using OrderManagement.Domain.Shared;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Services;
@@ -10,7 +11,7 @@ namespace OrderManagement.Application.Contracts.Services
         Task<BankDto> GetById(int id);
         Task<BankDto> Add(BankDto bankDto);
         Task<BankDto> Update(BankDto bankDto);
-        Task<List<BankDto>> GetList();
+        Task<List<BankDto>> GetList(AttachmentEntityTypeEnum? attachmentType);
         Task<bool> Delete(int id);
         Task<bool> UploadFile(UploadFileDto uploadFile);
         Task SaveAdvocacyUsersFromBank(List<AdvocacyUsersFromBankDto> advocacyUsersFromBankDto);

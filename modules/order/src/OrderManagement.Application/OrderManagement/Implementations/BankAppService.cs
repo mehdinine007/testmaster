@@ -18,6 +18,7 @@ using Esale.Core.DataAccess;
 using MongoDB.Driver;
 using Microsoft.EntityFrameworkCore;
 
+
 namespace OrderManagement.Application.OrderManagement.Implementations
 {
     public class BankAppService : ApplicationService, IBankAppService
@@ -30,10 +31,17 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             _bankRepository = bankRepository;
             _attachmentService = attachmentService;
         }
-        public async Task<List<BankDto>> GetList()
+        public async Task<List<BankDto>> GetList(AttachmentEntityTypeEnum? attachmentType)
         {
             var banks = (await _bankRepository.GetQueryableAsync()).ToList();
+            var attachments = await _attachmentService.GetList(AttachmentEntityEnum.Bank, banks.Select(x => x.Id).ToList(), attachmentType);
             var banksDto = ObjectMapper.Map<List<Bank>, List<BankDto>>(banks);
+            banksDto.ForEach(x =>
+            {
+                var attachment = attachments.Where(y => y.EntityId == x.Id).ToList();
+                x.Attachments = ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(attachment);
+            });
+           
             return banksDto;
         }
         public async Task<BankDto> Add(BankDto bankDto)
