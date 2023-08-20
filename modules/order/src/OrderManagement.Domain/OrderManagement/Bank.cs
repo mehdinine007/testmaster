@@ -8,6 +8,8 @@ namespace OrderManagement.Domain
         private ICollection<AdvocacyUsersFromBank> _advocacyUsersFromBanks;
 
         public string Title { get; set; }
+        public string PhoneNumber { get; set; }
+        public string Url { get; set; }
         public int? LogoId { get; set; }
         public virtual ICollection<AdvocacyUsersFromBank> AdvocacyUsersFromBank 
         {

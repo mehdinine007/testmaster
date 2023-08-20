@@ -69,6 +69,8 @@ namespace OrderManagement.Application.Contracts
 
         public static string CarClassNotFound = "کلاس  خودرو وجود ندارد";
         public static string CarClassNotFoundId = "4005";
+        public static string BankNotFound = "بانک وجود ندارد";
+        public static string BankNotFoundId = "4006";
 
 
     }

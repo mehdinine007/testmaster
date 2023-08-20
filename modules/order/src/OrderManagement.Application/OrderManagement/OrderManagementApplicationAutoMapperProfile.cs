@@ -138,6 +138,8 @@ namespace OrderManagement
             CreateMap<SubmittedAnswer, SubmittedAnswerDto>();
             CreateMap<AttachFileDto, AttachmentUpdateDto>()
               .ReverseMap();
+            CreateMap<BankDto, Bank>()
+              .ReverseMap();
         }
     }
 }
