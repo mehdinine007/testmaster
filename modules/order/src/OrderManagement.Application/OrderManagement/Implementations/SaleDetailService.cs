@@ -37,7 +37,7 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
     private readonly IHybridCachingProvider _hybridCache;
     private readonly ICacheManager _cacheManager;
     private readonly IAttachmentService _attachmentService;
-
+    private readonly IRepository<ProductLevel, int> _productLevelRepository;
     public SaleDetailService(IRepository<SaleDetail> saleDetailRepository,
                              IRepository<ESaleType> eSaleTypeRepository,
                              IRepository<SaleDetailCarColor> saleDetailCarColor,
@@ -45,7 +45,7 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
                              IRepository<SaleDetailCarColor, int> saleDetailColorRepository,
                              IHttpContextAccessor contextAccessor,
                              ICommonAppService commonAppService, IHybridCachingProvider hybridCache, ICacheManager cacheManager,
-                            IAttachmentService attachmentService)
+                            IAttachmentService attachmentService, IRepository<ProductLevel, int> productLevelRepository)
     {
         _saleDetailRepository = saleDetailRepository;
         _eSaleTypeRepository = eSaleTypeRepository;
@@ -57,6 +57,7 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
         _hybridCache = hybridCache;
         _cacheManager = cacheManager;
         _attachmentService = attachmentService;
+        _productLevelRepository=productLevelRepository;
     }
 
 
@@ -160,11 +161,18 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
     [UnitOfWork(isTransactional: false)]
     public async Task<int> Save(CreateSaleDetailDto createSaleDetailDto)
     {
+
         if (createSaleDetailDto.SalePlanEndDate < createSaleDetailDto.SalePlanStartDate)
         {
             throw new UserFriendlyException("تاریخ پایان بایدبزرگتراز تاریخ شروع باشد.");
         }
        
+
+       var productLevel= (await _productLevelRepository.GetQueryableAsync()).FirstOrDefault(x=>x.Id== createSaleDetailDto.ProductId);
+        if (productLevel == null)
+        {
+            throw new UserFriendlyException(OrderConstant.ProductLevelNotFound, OrderConstant.ProductLevelNotFoundId);
+        }
         var esalType = await _eSaleTypeRepository.FirstOrDefaultAsync(x => x.Id == createSaleDetailDto.EsaleTypeId);
         if (esalType == null)
         {

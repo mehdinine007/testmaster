@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OrderManagement.EfCore;
 using Volo.Abp.EntityFrameworkCore;
@@ -12,9 +13,11 @@ using Volo.Abp.EntityFrameworkCore;
 namespace OrderManagement.EfCore.Migrations
 {
     [DbContext(typeof(OrderManagementDbContext))]
-    partial class OrderManagementDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230820074621_addannouncement")]
+    partial class addannouncement
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -355,13 +358,7 @@ namespace OrderManagement.EfCore.Migrations
                     b.Property<int?>("LogoId")
                         .HasColumnType("int");
 
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Title")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Url")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -1644,6 +1641,9 @@ namespace OrderManagement.EfCore.Migrations
                     b.Property<bool>("Active")
                         .HasColumnType("bit");
 
+                    b.Property<int?>("CarClassId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Code")
                         .HasMaxLength(250)
                         .HasColumnType("nvarchar(250)");
@@ -1684,9 +1684,6 @@ namespace OrderManagement.EfCore.Migrations
                     b.Property<int?>("ParentId")
                         .HasColumnType("int");
 
-                    b.Property<int>("Priority")
-                        .HasColumnType("int");
-
                     b.Property<int>("ProductLevelId")
                         .HasColumnType("int");
 
@@ -1698,6 +1695,8 @@ namespace OrderManagement.EfCore.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CarClassId");
 
                     b.HasIndex("ParentId");
 
@@ -1794,7 +1793,10 @@ namespace OrderManagement.EfCore.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ProductLevel");
+                    b.HasIndex("Priority")
+                        .IsUnique();
+
+                    b.ToTable("ProductLevel", (string)null);
                 });
 
             modelBuilder.Entity("OrderManagement.Domain.OrderManagement.SaleDetailCarColor", b =>
@@ -1918,242 +1920,6 @@ namespace OrderManagement.EfCore.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Province", "aucbase");
-                });
-
-            modelBuilder.Entity("OrderManagement.Domain.Question", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("CreationTime");
-
-                    b.Property<Guid?>("CreatorId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("CreatorId");
-
-                    b.Property<Guid?>("DeleterId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("DeleterId");
-
-                    b.Property<DateTime?>("DeletionTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("DeletionTime");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false)
-                        .HasColumnName("IsDeleted");
-
-                    b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("LastModificationTime");
-
-                    b.Property<Guid?>("LastModifierId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("LastModifierId");
-
-                    b.Property<int>("QuestionType")
-                        .HasColumnType("int");
-
-                    b.Property<int>("QuestionnaireId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Title")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("QuestionnaireId");
-
-                    b.ToTable("Question", (string)null);
-                });
-
-            modelBuilder.Entity("OrderManagement.Domain.QuestionAnswer", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
-
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("CreationTime");
-
-                    b.Property<Guid?>("CreatorId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("CreatorId");
-
-                    b.Property<string>("CustomValue")
-                        .IsRequired()
-                        .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)");
-
-                    b.Property<Guid?>("DeleterId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("DeleterId");
-
-                    b.Property<DateTime?>("DeletionTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("DeletionTime");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)");
-
-                    b.Property<string>("Hint")
-                        .IsRequired()
-                        .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false)
-                        .HasColumnName("IsDeleted");
-
-                    b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("LastModificationTime");
-
-                    b.Property<Guid?>("LastModifierId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("LastModifierId");
-
-                    b.Property<int>("QuestionId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("QuestionnaireId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Value")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("QuestionId");
-
-                    b.HasIndex("QuestionnaireId");
-
-                    b.ToTable("QuestionAnswer", (string)null);
-                });
-
-            modelBuilder.Entity("OrderManagement.Domain.QuestionTypeReadOnly", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("Code")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)");
-
-                    b.Property<string>("Title_En")
-                        .IsRequired()
-                        .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("QuestionTypeReadOnly", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Code = 1,
-                            Title = "تشریحی",
-                            TitleEn = "Descriptional"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Code = 2,
-                            Title = "گزینه ای",
-                            TitleEn = "Optional"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Code = 3,
-                            Title = "بازه",
-                            TitleEn = "Range"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Code = 4,
-                            Title = "چند گزینه ای",
-                            TitleEn = "MultiSelectOptional"
-                        });
-                });
-
-            modelBuilder.Entity("OrderManagement.Domain.Questionnaire", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("CreationTime");
-
-                    b.Property<Guid?>("CreatorId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("CreatorId");
-
-                    b.Property<Guid?>("DeleterId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("DeleterId");
-
-                    b.Property<DateTime?>("DeletionTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("DeletionTime");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false)
-                        .HasColumnName("IsDeleted");
-
-                    b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("LastModificationTime");
-
-                    b.Property<Guid?>("LastModifierId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("LastModifierId");
-
-                    b.Property<string>("Title")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<int?>("WhitListRequirement")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Questionnaire", (string)null);
                 });
 
             modelBuilder.Entity("OrderManagement.Domain.SaleDetail", b =>
@@ -2454,8 +2220,8 @@ namespace OrderManagement.EfCore.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Content")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Code")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2")
@@ -2490,12 +2256,6 @@ namespace OrderManagement.EfCore.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("LastModifierId");
 
-                    b.Property<int?>("Location")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Priority")
-                        .HasColumnType("int");
-
                     b.Property<string>("Title")
                         .HasColumnType("nvarchar(100)");
 
@@ -2505,66 +2265,6 @@ namespace OrderManagement.EfCore.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("SiteStructures");
-                });
-
-            modelBuilder.Entity("OrderManagement.Domain.SubmittedAnswer", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
-
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("CreationTime");
-
-                    b.Property<Guid?>("CreatorId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("CreatorId");
-
-                    b.Property<string>("CustomAnswerValue")
-                        .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)");
-
-                    b.Property<Guid?>("DeleterId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("DeleterId");
-
-                    b.Property<DateTime?>("DeletionTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("DeletionTime");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false)
-                        .HasColumnName("IsDeleted");
-
-                    b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("LastModificationTime");
-
-                    b.Property<Guid?>("LastModifierId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("LastModifierId");
-
-                    b.Property<long?>("QuestionAnswerId")
-                        .HasColumnType("bigint");
-
-                    b.Property<int>("QuestionId")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("QuestionAnswerId");
-
-                    b.HasIndex("QuestionId");
-
-                    b.ToTable("SubmittedAnswer", (string)null);
                 });
 
             modelBuilder.Entity("OrderManagement.Domain.UserRejectionAdvocacy", b =>
@@ -3235,6 +2935,10 @@ namespace OrderManagement.EfCore.Migrations
 
             modelBuilder.Entity("OrderManagement.Domain.OrderManagement.ProductAndCategory", b =>
                 {
+                    b.HasOne("OrderManagement.Domain.OrderManagement.CarClass", "CarClass")
+                        .WithMany("ProductAndCategories")
+                        .HasForeignKey("CarClassId");
+
                     b.HasOne("OrderManagement.Domain.OrderManagement.ProductAndCategory", "Parent")
                         .WithMany("Childrens")
                         .HasForeignKey("ParentId")
@@ -3245,6 +2949,8 @@ namespace OrderManagement.EfCore.Migrations
                         .HasForeignKey("ProductLevelId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("CarClass");
 
                     b.Navigation("Parent");
 
@@ -3268,34 +2974,6 @@ namespace OrderManagement.EfCore.Migrations
                     b.Navigation("Color");
 
                     b.Navigation("SaleDetail");
-                });
-
-            modelBuilder.Entity("OrderManagement.Domain.Question", b =>
-                {
-                    b.HasOne("OrderManagement.Domain.Questionnaire", "Questionnaire")
-                        .WithMany("Questions")
-                        .HasForeignKey("QuestionnaireId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Questionnaire");
-                });
-
-            modelBuilder.Entity("OrderManagement.Domain.QuestionAnswer", b =>
-                {
-                    b.HasOne("OrderManagement.Domain.Question", "Question")
-                        .WithMany("Answers")
-                        .HasForeignKey("QuestionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("OrderManagement.Domain.Questionnaire", "Questionnaire")
-                        .WithMany("Answers")
-                        .HasForeignKey("QuestionnaireId");
-
-                    b.Navigation("Question");
-
-                    b.Navigation("Questionnaire");
                 });
 
             modelBuilder.Entity("OrderManagement.Domain.SaleDetail", b =>
@@ -3370,23 +3048,6 @@ namespace OrderManagement.EfCore.Migrations
                     b.Navigation("Season");
 
                     b.Navigation("Year");
-                });
-
-            modelBuilder.Entity("OrderManagement.Domain.SubmittedAnswer", b =>
-                {
-                    b.HasOne("OrderManagement.Domain.QuestionAnswer", "QuestionAnswer")
-                        .WithMany("SubmittedAnswers")
-                        .HasForeignKey("QuestionAnswerId");
-
-                    b.HasOne("OrderManagement.Domain.Question", "Question")
-                        .WithMany("SubmittedAnswers")
-                        .HasForeignKey("QuestionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Question");
-
-                    b.Navigation("QuestionAnswer");
                 });
 
             modelBuilder.Entity("OrderManagement.Domain.UserRejectionFromBank", b =>
@@ -3481,6 +3142,11 @@ namespace OrderManagement.EfCore.Migrations
                     b.Navigation("CompanyLogoInPage");
                 });
 
+            modelBuilder.Entity("OrderManagement.Domain.OrderManagement.CarClass", b =>
+                {
+                    b.Navigation("ProductAndCategories");
+                });
+
             modelBuilder.Entity("OrderManagement.Domain.OrderManagement.Color", b =>
                 {
                     b.Navigation("SaleDetailCarColor");
@@ -3509,25 +3175,6 @@ namespace OrderManagement.EfCore.Migrations
                     b.Navigation("Agencies");
 
                     b.Navigation("ProvinceCities");
-                });
-
-            modelBuilder.Entity("OrderManagement.Domain.Question", b =>
-                {
-                    b.Navigation("Answers");
-
-                    b.Navigation("SubmittedAnswers");
-                });
-
-            modelBuilder.Entity("OrderManagement.Domain.QuestionAnswer", b =>
-                {
-                    b.Navigation("SubmittedAnswers");
-                });
-
-            modelBuilder.Entity("OrderManagement.Domain.Questionnaire", b =>
-                {
-                    b.Navigation("Answers");
-
-                    b.Navigation("Questions");
                 });
 
             modelBuilder.Entity("OrderManagement.Domain.SaleDetail", b =>

@@ -413,5 +413,9 @@ public static class OrderManagementDbContextModelCreatingExtensions
             entity.Property(x => x.CustomAnswerValue)
                 .HasMaxLength(250);
         });
+
+        builder.Entity<Announcement>(
+            entity => entity.ToTable(nameof(Announcement))
+            );
     }
 }

@@ -3,7 +3,9 @@ using Newtonsoft.Json;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.OrderManagement;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
+using OrderManagement.Application.Contracts.Services;
 using OrderManagement.Domain;
+using OrderManagement.Domain.OrderManagement;
 using OrderManagement.Domain.Shared;
 using System;
 using System.Collections.Generic;
@@ -23,12 +25,17 @@ namespace OrderManagement.Application.OrderManagement.Implementations
         private readonly IAttachmentService _attachmentService;
         private readonly ICarClassService _carClassService;
         private readonly IProductAndCategoryService _productAndCategoryService;
-        public SiteStructureService(IRepository<SiteStructure, int> siteStructureRepository, IAttachmentService attachmentService, ICarClassService carClassService, IProductAndCategoryService productAndCategoryService)
+        private readonly IRepository<ESaleType, int> _eSaleTypeRepository;
+        private readonly IBankAppService _bankAppServiceService;
+        public SiteStructureService(IRepository<SiteStructure, int> siteStructureRepository, IAttachmentService attachmentService, ICarClassService carClassService, IProductAndCategoryService productAndCategoryService
+            , IRepository<ESaleType, int> eSaleTypeRepository, IBankAppService bankAppServiceService)
         {
             _siteStructureRepository = siteStructureRepository;
             _attachmentService = attachmentService;
             _carClassService = carClassService;
             _productAndCategoryService = productAndCategoryService;
+            _eSaleTypeRepository = eSaleTypeRepository;
+            _bankAppServiceService = bankAppServiceService;   
         }
         public async Task<SiteStructureDto> Add(SiteStructureAddOrUpdateDto siteStructureDto)
         {
@@ -83,12 +90,13 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             return ObjectMapper.Map<SiteStructure, SiteStructureDto>(siteStructure);
         }
 
-        public async Task<List<SiteStructureDto>> GetList(AttachmentEntityTypeEnum? attachmentType)
+        public async Task<List<SiteStructureDto>> GetList(SiteStructureQueryDto siteStructureQuery)
         {
             var getSiteStructures = (await _siteStructureRepository.GetQueryableAsync())
+                .Where(x=>x.Location== siteStructureQuery.Location)
                 .OrderBy(x=> x.Priority)
                 .ToList();
-            var attachments = await _attachmentService.GetList(AttachmentEntityEnum.SiteStructure, getSiteStructures.Select(x => x.Id).ToList(), attachmentType);
+            var attachments = await _attachmentService.GetList(AttachmentEntityEnum.SiteStructure, getSiteStructures.Select(x => x.Id).ToList(), siteStructureQuery.AttachmentType);
             var siteStructures = ObjectMapper.Map<List<SiteStructure>, List<SiteStructureDto>>(getSiteStructures);
             siteStructures.ForEach(async x =>
             {
@@ -107,12 +115,34 @@ namespace OrderManagement.Application.OrderManagement.Implementations
                 }
                 if (x.Type == SiteStructureTypeEnum.CarClassCarousel)
                 {
-                    var carclass = await _carClassService.GetList(attachmentType);
+                    var carclass = await _carClassService.GetList(siteStructureQuery.AttachmentType);
                     x.CarouselData = carclass.Select(x => new CarouselData()
                     {
                         Id = x.Id,
                         Title = x.Title,
                         Attachments = x.Attachments
+                    }).ToList();
+                }
+                if (x.Type == SiteStructureTypeEnum.EsaleType)
+
+                {
+                    var eslaType = (await _eSaleTypeRepository.GetQueryableAsync()).ToList();
+                    x.CarouselData = eslaType.Select(x => new CarouselData()
+                    {
+                        Id = x.Id,
+                        Title = x.SaleTypeName,
+                    }).ToList();
+                }
+                if (x.Type == SiteStructureTypeEnum.Bank)
+
+                {
+                    var banks = await _bankAppServiceService.GetList(siteStructureQuery.AttachmentType);
+                    x.CarouselData = banks.Select(x => new CarouselData()
+                    {
+                        Id = x.Id,
+                        Title = x.Title,
+                        Attachments=x.Attachments
+                     
                     }).ToList();
                 }
                 x.Content = null;
