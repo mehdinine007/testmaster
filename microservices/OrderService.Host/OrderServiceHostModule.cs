@@ -31,6 +31,7 @@ using EasyCaching.Host.Extensions;
 using Volo.Abp.MongoDB;
 using Microsoft.EntityFrameworkCore;
 using OrderManagement.EfCore.MongoDb;
+using OrderService.Host.Infrastructures.Hangfire;
 
 namespace OrderService.Host
 {
@@ -173,10 +174,7 @@ namespace OrderService.Host
 
             app.UseAuditing();
             app.UseHangfireDashboard();
-            app.UseHangfireDashboard("/hangfire", new DashboardOptions
-            {
-                AsyncAuthorization = new[] { new AbpHangfireAuthorizationFilter() }
-            });
+            app.UseHangfireDashboard("/hangfire");
             app.UseConfiguredEndpoints();
             //TODO: Problem on a clustered environment
             AsyncHelper.RunSync(async () =>

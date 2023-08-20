@@ -94,5 +94,6 @@ namespace OrderManagement.EfCore
         DbSet<SubmittedAnswer> SubmittedAnswer { get; set; }
 
         DbSet<QuestionTypeReadOnly> QuestionTypeReadOnly { get; set; }
+        DbSet<Announcement> Announcement { get; set; }
     }
 }
