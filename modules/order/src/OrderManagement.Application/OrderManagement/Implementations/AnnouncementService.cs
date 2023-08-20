@@ -100,7 +100,8 @@ public class AnnouncementService : ApplicationService, IAnnouncementService
             throw new UserFriendlyException("شناسه وارد شده معتبر نمیباشد.");
         }
         var announcement = ObjectMapper.Map<CreateAnnouncementDto, Announcement>(announcementDto);
-        await _announcementRepository.AttachAsync(announcement, t => t.Title, d => d.Description, s => s.Notice, c => c.Content);
+        await _announcementRepository.AttachAsync(announcement, 
+            t => t.Title, d => d.Description, s => s.Notice, c => c.Content, f=> f.FromDate, z => z.ToDate, o => o.ToDate, u => u.Date);
         return announcement.Id;
     }
 
