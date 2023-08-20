@@ -63,9 +63,11 @@ namespace OrderManagement.Application.OrderManagement.Implementations
         }
         public async Task<BankDto> GetById(int id)
         {
-            var bank = (await _bankRepository.GetQueryableAsync())
-                .FirstOrDefault(x => x.Id == id);
-            return ObjectMapper.Map<Bank, BankDto>(bank);
+            var bank = await Validation(id, null);
+            var attachments = await _attachmentService.GetList(AttachmentEntityEnum.Bank, new List<int>() { id });
+            var bankDto= ObjectMapper.Map<Bank, BankDto>(bank);
+            bankDto.Attachments= ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(attachments);
+            return bankDto;
         }
         public async Task<bool> Delete(int id)
         {
@@ -88,6 +90,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
 
         public async Task<bool> UploadFile(UploadFileDto uploadFile)
         {
+            var bank = await Validation(uploadFile.Id, null);
             await _attachmentService.UploadFile(AttachmentEntityEnum.Bank, uploadFile);
             return true;
         }
