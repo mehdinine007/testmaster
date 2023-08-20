@@ -10,9 +10,10 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Services
 {
     public interface IAnnouncementService: IApplicationService
     {
+//        Task<AnnouncementDto> GetById(int id);
         Task<List<AnnouncementDto>> GetAllAnnouncement();
-        Task<PagedResultDto<AnnouncementDto>> GetList(AnnouncementGetListDto input);
-        Task<int> Add(CreateAnnouncementDto announcementDto);
+        Task<PagedResultDto<AnnouncementDto>> GetPagination(AnnouncementGetListDto input);
+        Task<int> Insert(CreateAnnouncementDto announcementDto);
         Task<int> Update(CreateAnnouncementDto announcementDto);
         Task<bool> Delete(int id);
         Task<bool> UploadFile(UploadFileDto uploadFile);

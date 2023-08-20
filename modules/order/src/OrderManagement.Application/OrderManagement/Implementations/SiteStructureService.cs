@@ -27,8 +27,9 @@ namespace OrderManagement.Application.OrderManagement.Implementations
         private readonly IProductAndCategoryService _productAndCategoryService;
         private readonly IRepository<ESaleType, int> _eSaleTypeRepository;
         private readonly IBankAppService _bankAppServiceService;
+        private readonly IAnnouncementService _announcementService;
         public SiteStructureService(IRepository<SiteStructure, int> siteStructureRepository, IAttachmentService attachmentService, ICarClassService carClassService, IProductAndCategoryService productAndCategoryService
-            , IRepository<ESaleType, int> eSaleTypeRepository, IBankAppService bankAppServiceService)
+            , IRepository<ESaleType, int> eSaleTypeRepository, IBankAppService bankAppServiceService , IAnnouncementService announcementService)
         {
             _siteStructureRepository = siteStructureRepository;
             _attachmentService = attachmentService;
@@ -36,6 +37,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             _productAndCategoryService = productAndCategoryService;
             _eSaleTypeRepository = eSaleTypeRepository;
             _bankAppServiceService = bankAppServiceService;
+            _announcementService = announcementService;
         }
         public async Task<SiteStructureDto> Add(SiteStructureAddOrUpdateDto siteStructureDto)
         {
@@ -147,6 +149,17 @@ namespace OrderManagement.Application.OrderManagement.Implementations
 
                     }).ToList();
                 }
+                //if(x.Type == SiteStructureTypeEnum.Announcement)
+                //{
+                //    var announcement = await _announcementService.GetPagination(siteStructureQuery.AttachmentType);
+                //    x.CarouselData = announcement.Select(x => new CarouselData()
+                //    { 
+                //        Id = x.Id,
+                //        Title = x.Tittle,
+
+                //    })
+                //}
+
                 x.Content = null;
             });
             return siteStructures;

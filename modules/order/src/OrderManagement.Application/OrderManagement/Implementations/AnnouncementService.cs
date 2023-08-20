@@ -48,7 +48,7 @@ public class AnnouncementService : ApplicationService, IAnnouncementService
         return announcementDto;
     }
 
-    public async Task<PagedResultDto<AnnouncementDto>> GetList(AnnouncementGetListDto input)
+    public async Task<PagedResultDto<AnnouncementDto>> GetPagination(AnnouncementGetListDto input)
     {
         var count = _announcementRepository.WithDetails().Count();
         var announcementResult = await _announcementRepository.GetQueryableAsync();
@@ -57,7 +57,7 @@ public class AnnouncementService : ApplicationService, IAnnouncementService
             .AsNoTracking()
             .ToList();
         var attachments = await _attachmentService.GetList(AttachmentEntityEnum.Announcement, announcementList.Select(x => x.Id).ToList(), input.AttachmentType);
-       
+
         var announcement = ObjectMapper.Map<List<Announcement>, List<AnnouncementDto>>(announcementList);
         announcement.ForEach(x =>
         {
@@ -71,12 +71,25 @@ public class AnnouncementService : ApplicationService, IAnnouncementService
         };
 
     }
+    //public async Task<List<AnnouncementDto>> GetList(AttachmentEntityTypeEnum? attachmentType)
+    //{
+    //    var attachments = await _attachmentService.GetList(AttachmentEntityEnum.Announcement, announcementList.Select(x => x.Id).ToList(), input.AttachmentType);
+
+    //    var announcement = ObjectMapper.Map<List<Announcement>, List<AnnouncementDto>>(announcementList);
+    //    announcement.ForEach(x =>
+    //    {
+    //        var attachment = attachments.Where(y => y.EntityId == x.Id).ToList();
+    //        x.Attachments = ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(attachment);
+    //    });
+    //    return announcement;
+    //}
     [UnitOfWork]
-    public async Task<int> Add(CreateAnnouncementDto announcementDto)
+    public async Task<int> Insert(CreateAnnouncementDto announcementDto)
     {
         var announcement = ObjectMapper.Map<CreateAnnouncementDto, Announcement>(announcementDto);
         await _announcementRepository.InsertAsync(announcement, autoSave: true);
         return announcement.Id;
+
     }
 
     public async Task<int> Update(CreateAnnouncementDto announcementDto)
@@ -97,7 +110,11 @@ public class AnnouncementService : ApplicationService, IAnnouncementService
         return true;
     }
 
-
-
+    public async Task<AnnouncementDto> GetById(int id)
+    {
+        var announcement = (await _announcementRepository.GetQueryableAsync()).AsNoTracking()
+            .FirstOrDefault(x => x.Id == id);
+        return ObjectMapper.Map<Announcement, AnnouncementDto>(announcement);
+    }
 
 }
