@@ -204,11 +204,11 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
     public async Task RegistrationValidation()
     {
         UserMongo user = new UserMongo();
-       
+
         await _userMongo.InsertAsync(user);
         var x = await _userMongo.ToListAsync();
 
-        
+
         //await _commonAppService.ValidateVisualizeCaptcha(new CommonService.Dto.VisualCaptchaInput(input.CK, input.CIT));
 
         //// await _commonAppService.ValidateVisualizeCaptcha(new CommonService.Dto.VisualCaptchaInput(input.CT,input.CK, input.CIT));
@@ -295,7 +295,7 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
 
     public List<CompanyDto> GetCompanies()
     {
-    var companiesQuery = _companyRepository.WithDetails(x => x.GalleryLogo, x => x.GalleryBanner, x => x.GalleryLogoInPage);
+        var companiesQuery = _companyRepository.WithDetails(x => x.GalleryLogo, x => x.GalleryBanner, x => x.GalleryLogoInPage);
         var companies = companiesQuery.Where(x => x.Visible).ToList();
         return ObjectMapper.Map<List<Company>, List<CompanyDto>>(companies, new List<CompanyDto>());
     }
@@ -333,7 +333,7 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
         var agencySaleDetailIds = await _cacheManager.GetAsync<List<int>>(cacheKey, RedisConstants.AgencyPrefix, new CacheOptions()
         {
             Provider = CacheProviderEnum.Hybrid
-        });
+        }) ?? new List<int>();
         if (agencySaleDetailIds?.Count == 0)
         {
             var saleDetail = await _saleDetailRepository.FirstOrDefaultAsync(x => x.UID == saleDetailUid)
@@ -373,7 +373,7 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
     public async Task ClearCache(string prefix)
     {
         var cacheKeyPrefix = string.IsNullOrWhiteSpace(prefix) ? "**" : prefix;
-        await _cacheManager.RemoveByPrefixAsync(prefix,new CacheOptions()
+        await _cacheManager.RemoveByPrefixAsync(prefix, new CacheOptions()
         {
             Provider = CacheProviderEnum.Hybrid
         });
