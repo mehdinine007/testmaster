@@ -138,7 +138,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
                 if (x.Type == SiteStructureTypeEnum.Bank)
 
                 {
-                    var banks = await _bankAppServiceService.GetList(siteStructureQuery.AttachmentType);
+                    var banks = await _bankAppServiceService.GetList(AttachmentEntityTypeEnum.Logo);
                     x.CarouselData = banks.Select(x => new CarouselData()
                     {
                         Id = x.Id,

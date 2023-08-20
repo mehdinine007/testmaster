@@ -44,27 +44,30 @@ namespace OrderManagement.Application.OrderManagement.Implementations
            
             return banksDto;
         }
-        public async Task<BankDto> Add(BankDto bankDto)
+        public async Task<BankDto> Add(BankCreateOrUpdateDto bankCreateOrUpdateDto)
         {
-            var bank = ObjectMapper.Map<BankDto, Bank>(bankDto);
+            var bank = ObjectMapper.Map<BankCreateOrUpdateDto, Bank>(bankCreateOrUpdateDto);
             var entity = await _bankRepository.InsertAsync(bank, autoSave: true);
             return ObjectMapper.Map<Bank, BankDto>(entity);
         }
 
-        public async Task<BankDto> Update(BankDto bankDto)
+        public async Task<BankDto> Update(BankCreateOrUpdateDto bankCreateOrUpdateDto)
         {
-            var siteStructure = await Validation(bankDto.Id, bankDto);
-            var bank = ObjectMapper.Map<BankDto, Bank>(bankDto);
-
-            var entity = await _bankRepository.AttachAsync(bank, c => c.Title, c => c.PhoneNumber, u => u.Url);
-
-            return ObjectMapper.Map<Bank, BankDto>(entity);
+            var bank = await Validation(bankCreateOrUpdateDto.Id, bankCreateOrUpdateDto);
+            bank.Title= bankCreateOrUpdateDto.Title;
+            bank.PhoneNumber= bankCreateOrUpdateDto.PhoneNumber;
+            bank.Url= bankCreateOrUpdateDto.Url;
+            await _bankRepository.UpdateAsync(bank, autoSave: true);
+            return await GetById(bank.Id);
+            
         }
         public async Task<BankDto> GetById(int id)
         {
-            var bank = (await _bankRepository.GetQueryableAsync())
-                .FirstOrDefault(x => x.Id == id);
-            return ObjectMapper.Map<Bank, BankDto>(bank);
+            var bank = await Validation(id, null);
+            var attachments = await _attachmentService.GetList(AttachmentEntityEnum.Bank, new List<int>() { id });
+            var bankDto= ObjectMapper.Map<Bank, BankDto>(bank);
+            bankDto.Attachments= ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(attachments);
+            return bankDto;
         }
         public async Task<bool> Delete(int id)
         {
@@ -74,7 +77,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             return true;
         }
 
-        private async Task<Bank> Validation(int id, BankDto bankDto)
+        private async Task<Bank> Validation(int id, BankCreateOrUpdateDto bankCreateOrUpdateDto)
         {
             var bank = (await _bankRepository.GetQueryableAsync()).AsNoTracking()
                 .FirstOrDefault(x => x.Id == id);
@@ -87,6 +90,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
 
         public async Task<bool> UploadFile(UploadFileDto uploadFile)
         {
+            var bank = await Validation(uploadFile.Id, null);
             await _attachmentService.UploadFile(AttachmentEntityEnum.Bank, uploadFile);
             return true;
         }

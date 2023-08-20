@@ -145,6 +145,11 @@ namespace OrderManagement
                 .IgnoreFullAuditedObjectProperties();
             CreateMap<CreateAnnouncementDto, Announcement>();
               
+       
+            CreateMap<Bank, BankCreateOrUpdateDto>().ReverseMap();
+
+            
+
         }
     }
 }
