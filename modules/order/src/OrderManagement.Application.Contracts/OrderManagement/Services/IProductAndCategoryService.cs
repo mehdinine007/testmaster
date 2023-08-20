@@ -19,5 +19,7 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Services
         Task<ProductAndCategoryDto> Update(ProductAndCategoryUpdateDto productAndCategoryUpdateDto);
 
         Task<List<ProductAndCategoryWithChildDto>> GetProductAndSaleDetailList(ProductAndSaleDetailGetListQueryDto input);
+
+        Task<List<FilterParamDto>> GetFilterParamList();
     }
 }

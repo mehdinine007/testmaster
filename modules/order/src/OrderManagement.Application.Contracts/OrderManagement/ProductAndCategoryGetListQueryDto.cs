@@ -7,7 +7,7 @@ namespace OrderManagement.Application.Contracts
         public ProductAndCategoryType Type { get; set; }
         public string NodePath { get; set; }
         public int? ProductLevelId { get; set; }
-        public List<PropertyFilter> PropertyFilters { get; set; }
+        public List<AdvancedSearchDto> AdvancedSearch { get; set; }
         public  AttachmentEntityTypeEnum? attachmentType { get; set; }
         public bool HasProperty { get; set; }
 

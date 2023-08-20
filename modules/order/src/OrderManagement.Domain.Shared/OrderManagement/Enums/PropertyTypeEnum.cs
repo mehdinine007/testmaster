@@ -16,6 +16,8 @@ namespace OrderManagement.Domain.Shared
         [EnumProperty(Description = "منطقی")]
         Boolean = 3,
         [EnumProperty(Description = "لیستی")]
-        DropDown = 4
+        DropDown = 4,
+        [EnumProperty(Description = "کدینگ")]
+        Coding = 5
     }
 }

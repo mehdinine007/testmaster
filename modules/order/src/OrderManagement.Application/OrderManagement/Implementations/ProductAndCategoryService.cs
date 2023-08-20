@@ -234,9 +234,9 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
                 break;
             case ProductAndCategoryType.Product:
                 ls = productAndCategoryQuery.Where(x => EF.Functions.Like(x.Code, input.NodePath + "%") && x.Type == ProductAndCategoryType.Product).ToList();
-                if (input.PropertyFilters != null && input.PropertyFilters.Count > 0)
+                if (input.AdvancedSearch != null && input.AdvancedSearch.Count > 0)
                 {
-                     ls = await GetProductFilter(input.PropertyFilters, ls);
+                     ls = await GetProductFilter(input.AdvancedSearch, ls);
                 }
                 attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, ls.Select(x => x.Id).ToList(), input.attachmentType);
                 break;
@@ -277,7 +277,7 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
         var productQuery = await _productAndCategoryRepository.GetQueryableAsync();
         productQuery = productQuery
             .Where(x => x.Active && x.Type == ProductAndCategoryType.Product)
-            .Include(x => x.SaleDetails.Where(x => x.SalePlanStartDate <= currentTime && currentTime <= x.SalePlanEndDate && x.Visible))
+            .Include(x => x.SaleDetails.Where(x => x.SalePlanStartDate <= currentTime && currentTime <= x.SalePlanEndDate && x.Visible && (input.ESaleTypeId == null || x.ESaleTypeId == input.ESaleTypeId)))
              .ThenInclude(y => y.ESaleType)
             .Include(x => x.ProductLevel);
 
@@ -286,9 +286,13 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
         ProductList = string.IsNullOrWhiteSpace(input.NodePath)
             ? productQuery.ToList()
             : productQuery.Where(x => EF.Functions.Like(x.Code, input.NodePath + "%")).ToList();
-        if (input.PropertyFilters != null && input.PropertyFilters.Count > 0)
-        {
-             ProductList = await GetProductFilter(input.PropertyFilters, ProductList);
+        if (input.ESaleTypeId != null)
+            ProductList = ProductList
+                .Where(x => x.SaleDetails != null && x.SaleDetails.Count > 0)
+                .ToList();
+        if (input.AdvancedSearch != null && input.AdvancedSearch.Count > 0)
+        {   
+             ProductList = await GetProductFilter(input.AdvancedSearch, ProductList);
         }
         var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, ProductList.Select(x => x.Id).ToList(), input.attachmentType);
 
@@ -300,7 +304,7 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
 
     }
 
-    private async Task<List<ProductAndCategory>> GetProductFilter(List<PropertyFilter> input,List<ProductAndCategory> ls)
+    private async Task<List<ProductAndCategory>> GetProductFilter(List<AdvancedSearchDto> input,List<ProductAndCategory> ls)
     {
         List<Object> products = new List<object>();
         List<ProductAndCategory> productAndCategoryList = new List<ProductAndCategory>();
@@ -333,5 +337,10 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
             productAndCategoryList = ls.Where(x => products.Any(p => (int)p == x.Id)).ToList();
         }
         return productAndCategoryList;
+    }
+
+    public async Task<List<FilterParamDto>> GetFilterParamList()
+    {
+        throw new NotImplementedException();
     }
 }

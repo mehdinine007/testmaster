@@ -16,6 +16,7 @@ namespace OrderManagement.Application.Contracts
         public PropertyTypeEnum Type { get; set; }
         public string TypeTitle { get; set; }
         public string Value { get; set; }
+        public CodingTypeEnum? CodingType { get; set; }
         public int Priority { get; set; }
         public List<DropDownItemDto> DropDownItems { get; set; }
     }

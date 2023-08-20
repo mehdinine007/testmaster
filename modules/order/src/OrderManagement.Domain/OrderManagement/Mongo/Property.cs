@@ -17,6 +17,7 @@ namespace OrderManagement.Domain
         public PropertyTypeEnum Type { get; set; }
         public string Value { get; set; }
         public int Priority { get; set; }
+        public CodingTypeEnum CodingType { get; set; }
         public List<DropDownItem> DropDownItems { get; set; }
     }
 

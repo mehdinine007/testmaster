@@ -10,8 +10,9 @@ namespace OrderManagement.Application.Contracts.OrderManagement
     public class ProductAndSaleDetailGetListQueryDto
     {
         public string NodePath { get; set; }
-        public List<PropertyFilter> PropertyFilters { get; set; }
+        public List<AdvancedSearchDto> AdvancedSearch { get; set; }
         public AttachmentEntityTypeEnum? attachmentType { get; set; }
         public bool HasProperty { get; set; }
+        public int? ESaleTypeId { get; set; }
     }
 }

@@ -135,6 +135,23 @@ public class CapacityControlAppService : ApplicationService, ICapacityControlApp
                     Type = PropertyTypeEnum.Boolean,
                     Value = "false"
                 },
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Tilte = "مورد علاقه",
+                    Key = "isfavorite",
+                    Type = PropertyTypeEnum.Boolean,
+                    Value = "false"
+                },
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Tilte = "کلاس خودرو",
+                    Key = "carclass",
+                    Type = PropertyTypeEnum.Coding,
+                    CodingType = CodingTypeEnum.CarClass,
+                    Value = "0",
+                },
             }
         };
         await _propertyDefinitionRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto, PropertyCategory>(propertydto));
