@@ -19,5 +19,7 @@ namespace OrderManagement.Domain.Shared
         EsaleType = 4,
         [EnumProperty(Description = "بانک")]
         Bank = 5,
+        [EnumProperty(Description = "اطلاعیه")]
+        Announcement = 6,
     }
 }
