@@ -28,5 +28,6 @@ namespace OrderManagement.Application.Contracts
         public string Code { get; set; }
         public string Title { get; set; }
         public List<AttachmentViewModel> Attachments { get; set; }
+       public Dictionary<string, object> AdditionalFields { get; set; }
     } 
 }
