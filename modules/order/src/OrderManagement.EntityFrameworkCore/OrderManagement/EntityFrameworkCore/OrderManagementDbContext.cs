@@ -93,6 +93,8 @@ namespace OrderManagement.EfCore
 
         public DbSet<OrderDeliveryStatusTypeReadOnly> OrderDeliveryStatusTypeReadOnly { get; set; }
         public DbSet<CarClass> CarClass { get; set; }
+        public DbSet<Announcement> Announcement { get; set; }
+
 
         public OrderManagementDbContext(DbContextOptions<OrderManagementDbContext> options)
             : base(options)

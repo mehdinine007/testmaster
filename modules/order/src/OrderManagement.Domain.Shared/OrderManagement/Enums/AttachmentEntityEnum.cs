@@ -8,8 +8,8 @@ namespace OrderManagement.Domain.Shared
         ProductAndCategory = 1,
         SaleSchema = 2,
         SiteStructure = 3,
-        CarClass=4
-
+        CarClass=4,
+        Announcement = 5
     }
 }
 

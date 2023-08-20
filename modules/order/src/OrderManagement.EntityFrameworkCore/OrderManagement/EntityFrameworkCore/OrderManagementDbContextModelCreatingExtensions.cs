@@ -359,5 +359,9 @@ public static class OrderManagementDbContextModelCreatingExtensions
             entity.ToTable(nameof(OrderDeliveryStatusTypeReadOnly));
             entity.AddFullEnumChangeTracker<OrderDeliveryStatusTypeReadOnly, OrderDeliveryStatusType>();
         });
+
+        builder.Entity<Announcement>(
+            entity => entity.ToTable(nameof(Announcement))
+            );
     }
 }

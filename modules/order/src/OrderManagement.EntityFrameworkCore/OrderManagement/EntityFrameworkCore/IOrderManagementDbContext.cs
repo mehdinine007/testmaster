@@ -84,5 +84,6 @@ namespace OrderManagement.EfCore
 
         DbSet<OrderDeliveryStatusTypeReadOnly> OrderDeliveryStatusTypeReadOnly { get; set; }
         DbSet<CarClass> CarClass { get; set; }
+        DbSet<Announcement> Announcement { get; set; }
     }
 }
