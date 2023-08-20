@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using Volo.Abp.Domain.Entities;
+using Volo.Abp.Domain.Entities.Auditing;
 
 namespace OrderManagement.Domain
 {
-    public class Bank : Entity<int>
+    public class Bank : FullAuditedEntity<int>
     {
         private ICollection<AdvocacyUsersFromBank> _advocacyUsersFromBanks;
 

@@ -54,9 +54,12 @@ namespace OrderManagement.Application.OrderManagement.Implementations
         public async Task<BankDto> Update(BankCreateOrUpdateDto bankCreateOrUpdateDto)
         {
             var bank = await Validation(bankCreateOrUpdateDto.Id, bankCreateOrUpdateDto);
-            var entity = await _bankRepository.AttachAsync(bank, c => c.Title, c => c.PhoneNumber, u => u.Url);
-
-            return ObjectMapper.Map<Bank, BankDto>(entity);
+            bank.Title= bankCreateOrUpdateDto.Title;
+            bank.PhoneNumber= bankCreateOrUpdateDto.PhoneNumber;
+            bank.Url= bankCreateOrUpdateDto.Url;
+            await _bankRepository.UpdateAsync(bank, autoSave: true);
+            return await GetById(bank.Id);
+            
         }
         public async Task<BankDto> GetById(int id)
         {
