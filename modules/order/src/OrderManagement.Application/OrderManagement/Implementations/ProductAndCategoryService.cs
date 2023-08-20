@@ -14,7 +14,11 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using OrderManagement.Application.Contracts.Services;
 using Nest;
-
+using OrderManagement.Domain;
+using MongoDB.Bson;
+using MongoDB.Driver;
+using MongoDB.Bson.Serialization;
+using System.ComponentModel;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -25,19 +29,22 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
     private readonly IProductPropertyService _productPropertyService;
     private readonly IRepository<ProductLevel, int> _productLevelRepository;
     private readonly ICommonAppService _commonAppService;
+    private readonly IRepository<ProductProperty, ObjectId> _productPropertyRepository;
 
     public ProductAndCategoryService(IRepository<ProductAndCategory, int> productAndCategoryRepository,
                                      IAttachmentService attachmentService,
                                      IProductPropertyService productPropertyService,
                                      IRepository<ProductLevel, int> productLevelRepository,
                                      ICommonAppService commonAppService
-        )
+,
+                                     IRepository<ProductProperty, ObjectId> productPropertyRepository)
     {
         _productAndCategoryRepository = productAndCategoryRepository;
         _attachmentService = attachmentService;
         _productPropertyService = productPropertyService;
         _productLevelRepository = productLevelRepository;
         _commonAppService = commonAppService;
+        _productPropertyRepository = productPropertyRepository;
     }
 
     public async Task Delete(int id)
@@ -73,7 +80,32 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
 
     public async Task<ProductAndCategoryDto> Insert(ProductAndCategoryCreateDto productAndCategoryCreateDto)
     {
-        var productLevelQuery = (await _productLevelRepository.GetQueryableAsync()).OrderBy(x=>x.Priority);
+        var levelId = 0;
+        var productLevelId = 0;
+        var code = "";
+        var productLevelQuery = (await _productLevelRepository.GetQueryableAsync()).OrderBy(x => x.Priority);
+
+        if (productAndCategoryCreateDto.Priority == 0)
+        {
+            var lastPriority = (await _productAndCategoryRepository.GetQueryableAsync()).OrderByDescending(x => x.Priority)
+                          .FirstOrDefault(x => x.ParentId == productAndCategoryCreateDto.ParentId);
+            if (lastPriority == null)
+            {
+                productAndCategoryCreateDto.Priority = 1;
+            }
+            else
+                productAndCategoryCreateDto.Priority = lastPriority.Priority + 1;
+
+        }
+        else
+        {
+            var duplicatePriority = (await _productAndCategoryRepository.GetQueryableAsync()).
+                FirstOrDefault(x => x.ParentId == productAndCategoryCreateDto.ParentId && x.Priority == productAndCategoryCreateDto.Priority);
+            if (duplicatePriority != null)
+            {
+                throw new UserFriendlyException(OrderConstant.DuplicatePriority, OrderConstant.DuplicatePriorityId);
+            }
+        }
 
         if (productAndCategoryCreateDto.ParentId.HasValue && productAndCategoryCreateDto.ParentId.Value > 0)
         {
@@ -97,20 +129,19 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
                 if (parentFirstProductChild != null)
                     throw new UserFriendlyException("برای دسته بندی سطح بالایی قبلا زیر سطح از نوع محصول تعریف شده است");
             }
-            productAndCategoryCreateDto.LevelId = parent.LevelId + 1;
+            levelId = parent.LevelId + 1;
             var parentPriority = productLevelQuery.FirstOrDefault(x => x.Id == parent.ProductLevelId).Priority;
             var currentProductlevel = productLevelQuery.Where(x => x.Priority > parentPriority).FirstOrDefault();
             if (currentProductlevel == null)
             {
                 throw new UserFriendlyException(OrderConstant.LastProductLevel, OrderConstant.LastProductLevelId);
             }
-            productAndCategoryCreateDto.ProductLevelId = currentProductlevel.Id;
+            productLevelId = currentProductlevel.Id;
         }
         else
         {
-            productAndCategoryCreateDto.LevelId = 1;
-            var productLevelId = productLevelQuery.FirstOrDefault().Id;
-            productAndCategoryCreateDto.ProductLevelId = productLevelId;
+            levelId = 1;
+            productLevelId = productLevelQuery.FirstOrDefault().Id;
         }
 
         var _parentCode = "";
@@ -126,21 +157,20 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
             _maxCode = (Convert.ToInt32(_maxCode.Substring(_maxCode.Length - codeLength)) + 1).ToString();
         else _maxCode = "1";
         _maxCode = _parentCode + StringHelper.Repeat(_maxCode, codeLength);
-        productAndCategoryCreateDto.Code = _maxCode;
+        code = _maxCode;
         productAndCategoryCreateDto.ParentId = productAndCategoryCreateDto.ParentId.HasValue && productAndCategoryCreateDto.ParentId.Value > 0
             ? productAndCategoryCreateDto.ParentId.Value
             : null;
         productAndCategoryCreateDto.Active = true;
-
-
-
-
-        var entity = await _productAndCategoryRepository.InsertAsync(
-            ObjectMapper.Map<ProductAndCategoryCreateDto, ProductAndCategory>(productAndCategoryCreateDto));
+        var productAndCategory = ObjectMapper.Map<ProductAndCategoryCreateDto, ProductAndCategory>(productAndCategoryCreateDto);
+        productAndCategory.LevelId = levelId;
+        productAndCategory.ProductLevelId = productLevelId;
+        productAndCategory.Code = code;
+        var entity = await _productAndCategoryRepository.InsertAsync(productAndCategory,autoSave:true);
         return ObjectMapper.Map<ProductAndCategory, ProductAndCategoryDto>(entity);
     }
 
-    public async Task<bool> UploadFile(UploadFileDto uploadFileDto)
+    public async Task<Guid> UploadFile(UploadFileDto uploadFileDto)
     {
         var attachmentStatus = await _attachmentService.UploadFile(AttachmentEntityEnum.ProductAndCategory, uploadFileDto);
         return attachmentStatus;
@@ -185,7 +215,7 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
         List<ProductAndCategory> ls = new();
         var productAndCategoryQuery = await _productAndCategoryRepository.GetQueryableAsync();
         if (!_commonAppService.IsInRole("Admin"))
-            productAndCategoryQuery = productAndCategoryQuery.Where(x => x.Active);
+            productAndCategoryQuery = productAndCategoryQuery.Include(x=>x.ProductLevel).Where(x => x.Active);
         var attachments = new List<AttachmentDto>();
         switch (input.Type)
         {
@@ -194,33 +224,38 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
                     .Include(x => x.Childrens.Where(y => y.Type == ProductAndCategoryType.Category))
                     .Where(x => EF.Functions.Like(x.Code, input.NodePath + "%") && x.Type == ProductAndCategoryType.Category)
                     .ToList();
-                attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, parent.Select(x => x.Id).ToList());
+                attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, parent.Select(x => x.Id).ToList(), input.attachmentType);
                 ls = string.IsNullOrWhiteSpace(input.NodePath)
                     ? parent.Where(x => x.ParentId == null).ToList()
                     : parent.Where(x => x.Code == input.NodePath).ToList();
+                if (input.ProductLevelId != null && input.ProductLevelId > 0)
+                    ls = ls.Where(x => x.ProductLevelId == input.ProductLevelId)
+                        .ToList();
                 break;
             case ProductAndCategoryType.Product:
-                if (string.IsNullOrWhiteSpace(input.NodePath))
-                    throw new UserFriendlyException("مسیر نود خالی است");
                 ls = productAndCategoryQuery.Where(x => EF.Functions.Like(x.Code, input.NodePath + "%") && x.Type == ProductAndCategoryType.Product).ToList();
-                attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, ls.Select(x => x.Id).ToList());
+                if (input.PropertyFilters != null && input.PropertyFilters.Count > 0)
+                {
+                     ls = await GetProductFilter(input.PropertyFilters, ls);
+                }
+                attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, ls.Select(x => x.Id).ToList(), input.attachmentType);
                 break;
         }
         var productAndCategories = ObjectMapper.Map<List<ProductAndCategory>, List<ProductAndCategoryWithChildDto>>(ls);
-        productAndCategories = await FillAttachmentAndProperty(productAndCategories, attachments);
+        productAndCategories = await FillAttachmentAndProperty(productAndCategories, attachments,input.HasProperty);
         return productAndCategories;
     }
 
-    private async Task<List<ProductAndCategoryWithChildDto>> FillAttachmentAndProperty(List<ProductAndCategoryWithChildDto> productAndCategories, List<AttachmentDto> attachments)
+    private async Task<List<ProductAndCategoryWithChildDto>> FillAttachmentAndProperty(List<ProductAndCategoryWithChildDto> productAndCategories, List<AttachmentDto> attachments,bool hasProperty)
     {
         productAndCategories.ForEach(async x =>
         {
             var pacAttachments = attachments.Where(y => y.EntityId == x.Id).ToList();
             x.Attachments = ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(pacAttachments);
-            if (x.Type == ProductAndCategoryType.Product)
+            if (x.Type == ProductAndCategoryType.Product && hasProperty )
                 x.PropertyCategories = await _productPropertyService.GetByProductId(x.Id);
             if (x.Childrens != null && x.Childrens.Count > 0)
-                x.Childrens = await FillAttachmentAndProperty(x.Childrens.ToList(), attachments);
+                x.Childrens = await FillAttachmentAndProperty(x.Childrens.ToList(), attachments,hasProperty);
         });
         return productAndCategories;
     }
@@ -235,7 +270,7 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
         return ObjectMapper.Map<ProductAndCategory, ProductAndCategoryDto>(entity);
     }
 
-    public async Task<List<ProductAndSaleDetailListDto>> GetProductAndSaleDetailList(string nodePath)
+    public async Task<List<ProductAndCategoryWithChildDto>> GetProductAndSaleDetailList(ProductAndSaleDetailGetListQueryDto input)
     {
         List<ProductAndCategory> ProductList = new();
         var currentTime = DateTime.Now;
@@ -243,23 +278,60 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
         productQuery = productQuery
             .Where(x => x.Active && x.Type == ProductAndCategoryType.Product)
             .Include(x => x.SaleDetails.Where(x => x.SalePlanStartDate <= currentTime && currentTime <= x.SalePlanEndDate && x.Visible))
-            .ThenInclude(y => y.ESaleType);
-        var product = productQuery
-                  .Where(x => EF.Functions.Like(x.Code, nodePath + "%"))
-                  .ToList();
-        ProductList = string.IsNullOrWhiteSpace(nodePath)
-            ? product.ToList()
-            : product.Where(x => x.Code == nodePath).ToList();
-        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, ProductList.Select(x => x.Id).ToList());
-        var productAndSaleDetailListDto = ObjectMapper.Map<List<ProductAndCategory>, List<ProductAndSaleDetailListDto>>(ProductList);
-        productAndSaleDetailListDto.ForEach(x =>
-        {
-            var attachment = attachments.Where(y => y.EntityId == x.Id).ToList();
-            x.Attachments = ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(attachment);
-        });
+             .ThenInclude(y => y.ESaleType)
+            .Include(x => x.ProductLevel);
 
+        //var product = productQuery
+        //          .Where(x => EF.Functions.Like(x.Code, input.NodePath + "%"));
+        ProductList = string.IsNullOrWhiteSpace(input.NodePath)
+            ? productQuery.ToList()
+            : productQuery.Where(x => EF.Functions.Like(x.Code, input.NodePath + "%")).ToList();
+        if (input.PropertyFilters != null && input.PropertyFilters.Count > 0)
+        {
+             ProductList = await GetProductFilter(input.PropertyFilters, ProductList);
+        }
+        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, ProductList.Select(x => x.Id).ToList(), input.attachmentType);
+
+        var productAndSaleDetailListDto = ObjectMapper.Map<List<ProductAndCategory>, List<ProductAndCategoryWithChildDto>>(ProductList);
+
+        productAndSaleDetailListDto = await FillAttachmentAndProperty(productAndSaleDetailListDto, attachments, input.HasProperty);
 
         return productAndSaleDetailListDto;
 
+    }
+
+    private async Task<List<ProductAndCategory>> GetProductFilter(List<PropertyFilter> input,List<ProductAndCategory> ls)
+    {
+        List<Object> products = new List<object>();
+        List<ProductAndCategory> productAndCategoryList = new List<ProductAndCategory>();
+            IMongoCollection<ProductProperty> productPropertyCollection = await _productPropertyRepository.GetCollectionAsync();
+            var productPropertyFilter = productPropertyCollection
+                .Aggregate()
+                .Unwind(x => x.PropertyCategories)
+                .Unwind(x => x["PropertyCategories.Properties"]);
+            foreach (var filter in input)
+            {
+                if (filter.Operator == OperatorFilterEnum.Equal)
+                    productPropertyFilter = productPropertyFilter
+                        .Match(x => x["PropertyCategories.Properties.Key"] == filter.Key && x["PropertyCategories.Properties.Value"] == filter.Value);
+                if (filter.Operator == OperatorFilterEnum.EqualOpposite)
+                    productPropertyFilter = productPropertyFilter
+                        .Match(x => x["PropertyCategories.Properties.Key"] == filter.Key && x["PropertyCategories.Properties.Value"] != filter.Value);
+                if (filter.Operator == OperatorFilterEnum.Bigger)
+                    productPropertyFilter = productPropertyFilter
+                        .Match(x => x["PropertyCategories.Properties.Key"] == filter.Key && x["PropertyCategories.Properties.Value"] > filter.Value);
+                if (filter.Operator == OperatorFilterEnum.Smaller)
+                    productPropertyFilter = productPropertyFilter
+                        .Match(x => x["PropertyCategories.Properties.Key"] == filter.Key && x["PropertyCategories.Properties.Value"] < filter.Value);
+            }
+            var productProperties = productPropertyFilter.ToList();
+            if (productProperties != null && productProperties.Count > 0)
+            {
+                products = BsonSerializer.Deserialize<List<Dictionary<string, object>>>(productProperties.ToJson())
+                   .Select(x => x["ProductId"])
+                   .ToList();
+            productAndCategoryList = ls.Where(x => products.Any(p => (int)p == x.Id)).ToList();
+        }
+        return productAndCategoryList;
     }
 }

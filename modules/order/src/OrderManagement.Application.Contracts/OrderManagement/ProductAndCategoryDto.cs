@@ -1,4 +1,5 @@
-﻿using OrderManagement.Domain.Shared;
+﻿using OrderManagement.Application.Contracts.OrderManagement;
+using OrderManagement.Domain.Shared;
 
 namespace OrderManagement.Application.Contracts
 {
@@ -22,6 +23,6 @@ namespace OrderManagement.Application.Contracts
 
         public List<AttachmentViewModel> Attachments { get; set; }
         public List<PropertyCategoryDto> PropertyCategories { get; set; }
-        public int ProductLevelId { get; set; }
+        public ProductLevelDto ProductLevel { get; protected set; }
     }
 }

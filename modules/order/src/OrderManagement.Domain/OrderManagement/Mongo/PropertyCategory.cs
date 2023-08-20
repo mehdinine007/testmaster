@@ -16,5 +16,6 @@ namespace OrderManagement.Domain
         public string Title { get; set; }
         public List<Property> Properties { get; set; }
         public int Priority { get; set; }
+        public bool Display { get; set; } = true;
     }
 }

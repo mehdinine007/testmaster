@@ -10,7 +10,7 @@ namespace OrderManagement.HttpApi.OrderManagement.Controllers;
 
 [DisableAuditing]
 [RemoteService]
-[Route("api/services/app/AgencyService/[action]")]
+[Route("api/services/app/OrderStatusInquiry/[action]")]
 [UserAuthorization]
 public class OrderStatusInquiryController : Controller // , IOrderStatusInquiryService
 {

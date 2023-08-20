@@ -1,12 +1,20 @@
-﻿namespace OrderManagement.Application.Contracts
+﻿using OrderManagement.Domain.Shared;
+
+namespace OrderManagement.Application.Contracts
 {
-    public class OrderStatusInquiryResultDto : OrderStatusInquiryDto
+    public class OrderStatusInquiryResultDto
     {
+        public int CompanyId { get; set; }
+
+        public OrderDeliveryStatusType? OrderDeliveryStatus { get; set; }
+
         public string OrderDeliveryStatusDescription { get; set; }
 
         public List<OrderDeliveryStatusViewModel> AvailableDeliveryStatusList { get; set; }
 
-        public DateTime RejectionDate { get; set; }
+        public DateTime? RejectionDate { get; set; }
+
+        public DateTime? UserRejectionAdvocacyDate { get; set; }
     }
 
     public class OrderDeliveryStatusViewModel

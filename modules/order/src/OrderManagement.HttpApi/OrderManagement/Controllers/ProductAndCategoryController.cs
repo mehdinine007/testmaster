@@ -9,6 +9,7 @@ using OrderManagement.Application.Contracts.OrderManagement;
 using Volo.Abp.AspNetCore.Mvc;
 using System.Collections.Generic;
 using Nest;
+using System;
 
 namespace OrderManagement.HttpApi.OrderManagement.Controllers;
 
@@ -39,7 +40,7 @@ public class ProductAndCategoryController : AbpController //, IProductAndCategor
         => await _productAndCategoryService.Insert(productAndCategoryCreateDto);
 
     [HttpPost]
-    public async Task<bool> UploadFile([FromForm] UploadFileDto uploadFileDto)
+    public async Task<Guid> UploadFile([FromForm] UploadFileDto uploadFileDto)
         => await _productAndCategoryService.UploadFile(uploadFileDto);
 
     [HttpPost]
@@ -55,6 +56,6 @@ public class ProductAndCategoryController : AbpController //, IProductAndCategor
         => await _productAndCategoryService.Update(productAndCategoryUpdateDto);
 
     [HttpPost]
-    public async Task<List<ProductAndSaleDetailListDto>> GetProductAndSaleDetailList(string nodePath)
-        => await _productAndCategoryService.GetProductAndSaleDetailList(nodePath);
+    public async Task<List<ProductAndCategoryWithChildDto>> GetProductAndSaleDetailList(ProductAndSaleDetailGetListQueryDto input)
+        => await _productAndCategoryService.GetProductAndSaleDetailList(input);
 }

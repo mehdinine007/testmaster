@@ -1,5 +1,4 @@
-﻿using AutoMapper.Internal.Mappers;
-using EasyCaching.Core;
+﻿using EasyCaching.Core;
 using Esale.Core.Caching;
 using Microsoft.EntityFrameworkCore;
 using OrderManagement.Application.Contracts.OrderManagement;
@@ -8,13 +7,11 @@ using OrderManagement.Application.OrderManagement.Constants;
 using OrderManagement.Domain;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
-using Volo.Abp.ObjectMapping;
 using Volo.Abp.Uow;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;

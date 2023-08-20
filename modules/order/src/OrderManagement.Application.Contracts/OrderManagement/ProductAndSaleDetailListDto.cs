@@ -29,6 +29,8 @@ namespace OrderManagement.Application.Contracts.OrderManagement
         public virtual ICollection<ProductAndCategoryWithChildDto> Childrens { get; set; }
         public List<AttachmentViewModel> Attachments { get; set; }
         public List<SaleDetailListDto> SaleDetails { get; set; }
+        public  ProductLevelDto ProductLevel { get; protected set; }
+
 
 
     }

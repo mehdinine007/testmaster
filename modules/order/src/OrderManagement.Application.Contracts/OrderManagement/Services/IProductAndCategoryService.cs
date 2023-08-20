@@ -10,7 +10,7 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Services
 
         Task Delete(int id);
 
-        Task<bool> UploadFile(UploadFileDto uploadFileDto);
+        Task<Guid> UploadFile(UploadFileDto uploadFileDto);
 
         Task<CustomPagedResultDto<ProductAndCategoryDto>> GetListWithPagination(ProductAndCategoryQueryDto input);
 
@@ -18,6 +18,6 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Services
 
         Task<ProductAndCategoryDto> Update(ProductAndCategoryUpdateDto productAndCategoryUpdateDto);
 
-        Task<List<ProductAndSaleDetailListDto>> GetProductAndSaleDetailList(string nodePath);
+        Task<List<ProductAndCategoryWithChildDto>> GetProductAndSaleDetailList(ProductAndSaleDetailGetListQueryDto input);
     }
 }

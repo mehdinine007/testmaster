@@ -3,6 +3,8 @@ using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using Volo.Abp.Domain.Entities.Auditing;
+using OrderManagement.Domain.Shared;
+using System.Collections.Generic;
 
 namespace OrderManagement.Domain
 {

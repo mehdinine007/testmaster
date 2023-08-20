@@ -69,7 +69,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             }
 
           
-            var getProductLevel = productLevelQuery.FirstOrDefault(x => x.Priority == productLevelDto.Priority);
+            var getProductLevel = productLevelQuery.FirstOrDefault(x => x.Id != productLevelDto.Id &&  x.Priority == productLevelDto.Priority);
             if (getProductLevel != null)
             {
                 throw new UserFriendlyException(OrderConstant.DuplicatePriority, OrderConstant.DuplicatePriorityId);

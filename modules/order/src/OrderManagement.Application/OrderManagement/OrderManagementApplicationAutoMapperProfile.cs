@@ -61,6 +61,8 @@ namespace OrderManagement
                 .ReverseMap();
             CreateMap<Attachment, AttachFileDto>()
                 .ReverseMap();
+            CreateMap<Attachment, AttachmentUpdateDto>()
+                .ReverseMap();
             CreateMap<AttachmentDto, AttachmentViewModel>()
                 .ForMember(x => x.FileName, c => c.MapFrom(m => m.Id + "." + m.FileExtension))
                 .ForMember(x => x.Type, c => c.MapFrom(m => m.EntityType))
@@ -121,9 +123,7 @@ namespace OrderManagement
             CreateMap<OrderStatusInquiry, OrderStatusInquiryResultDto>()
                 .ForMember(x => x.OrderDeliveryStatusDescription, opt => opt.Ignore())
                 .ForMember(x => x.AvailableDeliveryStatusList, opt => opt.Ignore())
-                .ForMember(x => x.RejectionDate, opt => opt.Ignore())
-                .ReverseMap()
-                .IgnoreFullAuditedObjectProperties();
+                .ForMember(x => x.RejectionDate, opt => opt.Ignore());
             CreateMap<CreateSaleSchemaDto, SaleSchema>().ReverseMap();
             CreateMap<ProductAndCategoryCreateDto, ProductAndCategory>();
             CreateMap<ProductAndCategory, ProductAndSaleDetailListDto>().ReverseMap();
@@ -131,6 +131,15 @@ namespace OrderManagement
                 .ForMember(x => x.EsaleTypeName, opt => opt.MapFrom(y => y.ESaleType.SaleTypeName))
                 .ReverseMap();
             CreateMap<CarClass, CarClassDto>().ReverseMap();
+            CreateMap<CarClass, CarClassCreateDto>().ReverseMap();
+            CreateMap<Questionnaire, QuestionnaireTreeDto>();
+            CreateMap<Question, FullQuestionDto>();
+            CreateMap<QuestionAnswer, QuestionAnswerDto>();
+            CreateMap<SubmittedAnswer, SubmittedAnswerDto>();
+            CreateMap<AttachFileDto, AttachmentUpdateDto>()
+              .ReverseMap();
+            CreateMap<BankDto, Bank>()
+              .ReverseMap();
             CreateMap<Announcement, AnnouncementDto>().ReverseMap();
 
         }

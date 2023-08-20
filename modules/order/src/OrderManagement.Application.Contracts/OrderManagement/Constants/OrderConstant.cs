@@ -35,7 +35,6 @@ namespace OrderManagement.Application.Contracts
 
         public static string AttachmentNotFound = "ضمیمه وجود ندارد";
         public static string AttachmentNotFoundId = "2001";
-
         public static string FileUploadNotFound = "فایل نامعتبر";
         public static string FileUploadNotFoundId = "2002";
         public static string FileUploadNotExtention = "پسوند نامعتبر فایل";
@@ -46,6 +45,12 @@ namespace OrderManagement.Application.Contracts
         public static string FileUploadCopyErrorId = "2004";
         public static string AttachmentEntityIdNotFound = "شناسه فایل نامعتبر می باشد";
         public static string AttachmentEntityIdNotFoundId = "2005";
+        public static string AttachmentPriorityIsEmpty = "ترتیب نمایش خالی است";
+        public static string AttachmentPriorityIsEmptyId = "2006";
+        public static string AttachmentPriorityDuplicate = "ترتیب نمایش تکراری است";
+        public static string AttachmentPriorityDuplicateId = "2007";
+        public static string AttachmentDuplicate = "ضمیمه وارد شده قبلا ایجاد شده";
+        public static string AttachmentDuplicateId = "2008";
 
         public static string SiteStuctureNotFound = "ساختار سایت وجود ندارد";
         public static string SiteStuctureNotFoundId = "3001";
@@ -64,6 +69,8 @@ namespace OrderManagement.Application.Contracts
 
         public static string CarClassNotFound = "کلاس  خودرو وجود ندارد";
         public static string CarClassNotFoundId = "4005";
+        public static string BankNotFound = "بانک وجود ندارد";
+        public static string BankNotFoundId = "4006";
 
 
     }

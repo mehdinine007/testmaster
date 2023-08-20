@@ -1,0 +1,20 @@
+﻿#nullable disable
+namespace OrderManagement.Application.Contracts.Dtos
+{
+    public class SubmitAnswerTreeDto
+    {
+        public int QuestionnaireId { get; set; }
+
+        public List<SubmitAnswerDto> SubmitAnswerDto { get; set; }
+
+    }
+
+    public class SubmitAnswerDto
+    {
+        public int QuestionId { get; set; }
+
+        public long? QuestionAnswerId { get; set; }
+
+        public string CustomAnswerValue { get; set; }
+    }
+}

@@ -47,31 +47,30 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             return carClassDto;
         }
 
-        public async Task<CarClassDto> Add(CarClassDto carClassDto)
+        public async Task<CarClassDto> Add(CarClassCreateDto carClassDto)
         {
-            var carClass = ObjectMapper.Map<CarClassDto, CarClass>(carClassDto);
+            var carClass = ObjectMapper.Map<CarClassCreateDto, CarClass>(carClassDto);
             var entity= await _carClassRepository.InsertAsync(carClass, autoSave: true);
             return ObjectMapper.Map<CarClass, CarClassDto>(entity);
         }
 
-        public async Task<CarClassDto> Update(CarClassDto carClassDto)
+        public async Task<CarClassDto> Update(CarClassCreateDto carClassDto)
         {
             var result = await _carClassRepository.WithDetails().AsNoTracking().FirstOrDefaultAsync(x => x.Id == carClassDto.Id);
             if (result == null)
             {
                 throw new UserFriendlyException(OrderConstant.CarClassNotFound, OrderConstant.CarClassNotFoundId);
             }
-            var carClass = ObjectMapper.Map<CarClassDto, CarClass>(carClassDto);
+            var carClass = ObjectMapper.Map<CarClassCreateDto, CarClass>(carClassDto);
 
             var entity= await _carClassRepository.AttachAsync(carClass, c => c.Title);
 
             return ObjectMapper.Map<CarClass, CarClassDto>(entity);
         }
 
-        public async Task<bool> UploadFile(UploadFileDto uploadFile)
+        public async Task<Guid> UploadFile(UploadFileDto uploadFile)
         {
-            await _attachmentService.UploadFile(AttachmentEntityEnum.CarClass, uploadFile);
-            return true;
+            return await _attachmentService.UploadFile(AttachmentEntityEnum.CarClass, uploadFile);
         }
 
         public async Task<CarClassDto> GetById(CarClassQueryDto carClassQueryDto)
