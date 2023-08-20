@@ -30,15 +30,19 @@ public class AnnouncementController : Controller, IAnnouncementService
     public Task<bool> Delete(int id)
     => _announcementService.Delete(id);
 
+    //[HttpGet]
+    //public async Task<AnnouncementDto> GetById(int id)
+    //    => await _announcementService.GetById(id);
+
     [HttpGet]
     public Task<List<AnnouncementDto>> GetAllAnnouncement()
     => _announcementService.GetAllAnnouncement();
     [HttpGet]
-    public Task<PagedResultDto<AnnouncementDto>> GetList(AnnouncementGetListDto input)
-    => _announcementService.GetList(input);
+    public Task<PagedResultDto<AnnouncementDto>> GetPagination(AnnouncementGetListDto input)
+    => _announcementService.GetPagination(input);
     [HttpPost]
-    public Task<int> Add(CreateAnnouncementDto announcementDto)
-    => _announcementService.Add(announcementDto);
+    public Task<int> Insert(CreateAnnouncementDto announcementDto)
+    => _announcementService.Insert(announcementDto);
     [HttpPut]
     public Task<int> Update(CreateAnnouncementDto announcementDto)
     => _announcementService.Update(announcementDto);
