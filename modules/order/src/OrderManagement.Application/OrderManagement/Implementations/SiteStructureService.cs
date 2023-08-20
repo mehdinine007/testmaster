@@ -35,7 +35,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             _carClassService = carClassService;
             _productAndCategoryService = productAndCategoryService;
             _eSaleTypeRepository = eSaleTypeRepository;
-            _bankAppServiceService = bankAppServiceService;   
+            _bankAppServiceService = bankAppServiceService;
         }
         public async Task<SiteStructureDto> Add(SiteStructureAddOrUpdateDto siteStructureDto)
         {
@@ -83,7 +83,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             return siteStructure;
         }
 
-        public  async Task<SiteStructureDto> GetById(int id)
+        public async Task<SiteStructureDto> GetById(int id)
         {
             var siteStructure = (await _siteStructureRepository.GetQueryableAsync())
                 .FirstOrDefault(x => x.Id == id);
@@ -93,8 +93,8 @@ namespace OrderManagement.Application.OrderManagement.Implementations
         public async Task<List<SiteStructureDto>> GetList(SiteStructureQueryDto siteStructureQuery)
         {
             var getSiteStructures = (await _siteStructureRepository.GetQueryableAsync())
-                .Where(x=>x.Location== siteStructureQuery.Location)
-                .OrderBy(x=> x.Priority)
+                .Where(x => x.Location == siteStructureQuery.Location)
+                .OrderBy(x => x.Priority)
                 .ToList();
             var attachments = await _attachmentService.GetList(AttachmentEntityEnum.SiteStructure, getSiteStructures.Select(x => x.Id).ToList(), siteStructureQuery.AttachmentType);
             var siteStructures = ObjectMapper.Map<List<SiteStructure>, List<SiteStructureDto>>(getSiteStructures);
@@ -141,8 +141,10 @@ namespace OrderManagement.Application.OrderManagement.Implementations
                     {
                         Id = x.Id,
                         Title = x.Title,
-                        Attachments=x.Attachments
-                     
+                        AdditionalFields = new Dictionary<string, object> { { "PhoneNumber", x.PhoneNumber }, { "Url", x.Url } },
+                        Attachments = x.Attachments,
+                        
+
                     }).ToList();
                 }
                 x.Content = null;
