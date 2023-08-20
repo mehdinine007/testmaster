@@ -25,13 +25,16 @@ namespace OrderManagement.Application.OrderManagement.Implementations
         private readonly ICarClassService _carClassService;
         private readonly IProductAndCategoryService _productAndCategoryService;
         private readonly IRepository<ESaleType, int> _eSaleTypeRepository;
-        public SiteStructureService(IRepository<SiteStructure, int> siteStructureRepository, IAttachmentService attachmentService, ICarClassService carClassService, IProductAndCategoryService productAndCategoryService, IRepository<ESaleType, int> eSaleTypeRepository)
+        private readonly IRepository<Bank, int> _bankRepository;
+        public SiteStructureService(IRepository<SiteStructure, int> siteStructureRepository, IAttachmentService attachmentService, ICarClassService carClassService, IProductAndCategoryService productAndCategoryService
+            , IRepository<ESaleType, int> eSaleTypeRepository, IRepository<Bank, int> bankRepository)
         {
             _siteStructureRepository = siteStructureRepository;
             _attachmentService = attachmentService;
             _carClassService = carClassService;
             _productAndCategoryService = productAndCategoryService;
             _eSaleTypeRepository = eSaleTypeRepository;
+            _bankRepository = bankRepository;   
         }
         public async Task<SiteStructureDto> Add(SiteStructureAddOrUpdateDto siteStructureDto)
         {
@@ -127,6 +130,17 @@ namespace OrderManagement.Application.OrderManagement.Implementations
                     {
                         Id = x.Id,
                         Title = x.SaleTypeName,
+                    }).ToList();
+                }
+                if (x.Type == SiteStructureTypeEnum.Bank)
+
+                {
+                    var banks = (await _bankRepository.GetQueryableAsync()).ToList();
+                    x.CarouselData = banks.Select(x => new CarouselData()
+                    {
+                        Id = x.Id,
+                        Title = x.Title,
+                     
                     }).ToList();
                 }
                 x.Content = null;

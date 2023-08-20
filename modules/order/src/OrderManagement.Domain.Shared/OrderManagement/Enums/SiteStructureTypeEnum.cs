@@ -17,5 +17,7 @@ namespace OrderManagement.Domain.Shared
         CarClassCarousel = 3,
         [EnumProperty(Description = "نوع طرح")]
         EsaleType = 4,
+        [EnumProperty(Description = "بانک")]
+        Bank = 5,
     }
 }
