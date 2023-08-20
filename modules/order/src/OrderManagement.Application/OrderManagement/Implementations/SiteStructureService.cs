@@ -149,16 +149,17 @@ namespace OrderManagement.Application.OrderManagement.Implementations
 
                     }).ToList();
                 }
-                //if(x.Type == SiteStructureTypeEnum.Announcement)
-                //{
-                //    var announcement = await _announcementService.GetPagination(siteStructureQuery.AttachmentType);
-                //    x.CarouselData = announcement.Select(x => new CarouselData()
-                //    { 
-                //        Id = x.Id,
-                //        Title = x.Tittle,
-
-                //    })
-                //}
+                if (x.Type == SiteStructureTypeEnum.Announcement)
+                {
+                    var announcement = await _announcementService.GetPagination(JsonConvert.DeserializeObject<AnnouncementGetListDto>(x.Content));
+                    x.CarouselData = announcement.Items.Select(x => new CarouselData()
+                    {
+                        Id = x.Id,
+                        Title = x.Title,
+                        Attachments = x.Attachments,
+                        AdditionalFields = new Dictionary<string, object> { { "id", x.Id }, { "date", x.Date },{ "notice", x.Notice},{ "description",x.Description } },
+                    }).ToList();
+                };
 
                 x.Content = null;
             });
