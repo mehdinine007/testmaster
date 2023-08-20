@@ -9,8 +9,8 @@ namespace OrderManagement.Application.Contracts.Services
     public interface IBankAppService : IApplicationService
     {
         Task<BankDto> GetById(int id);
-        Task<BankDto> Add(BankDto bankDto);
-        Task<BankDto> Update(BankDto bankDto);
+        Task<BankDto> Add(BankCreateOrUpdateDto bankCreateOrUpdateDto);
+        Task<BankDto> Update(BankCreateOrUpdateDto bankCreateOrUpdateDto);
         Task<List<BankDto>> GetList(AttachmentEntityTypeEnum? attachmentType);
         Task<bool> Delete(int id);
         Task<bool> UploadFile(UploadFileDto uploadFile);

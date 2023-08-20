@@ -44,18 +44,16 @@ namespace OrderManagement.Application.OrderManagement.Implementations
            
             return banksDto;
         }
-        public async Task<BankDto> Add(BankDto bankDto)
+        public async Task<BankDto> Add(BankCreateOrUpdateDto bankCreateOrUpdateDto)
         {
-            var bank = ObjectMapper.Map<BankDto, Bank>(bankDto);
+            var bank = ObjectMapper.Map<BankCreateOrUpdateDto, Bank>(bankCreateOrUpdateDto);
             var entity = await _bankRepository.InsertAsync(bank, autoSave: true);
             return ObjectMapper.Map<Bank, BankDto>(entity);
         }
 
-        public async Task<BankDto> Update(BankDto bankDto)
+        public async Task<BankDto> Update(BankCreateOrUpdateDto bankCreateOrUpdateDto)
         {
-            var siteStructure = await Validation(bankDto.Id, bankDto);
-            var bank = ObjectMapper.Map<BankDto, Bank>(bankDto);
-
+            var bank = await Validation(bankCreateOrUpdateDto.Id, bankCreateOrUpdateDto);
             var entity = await _bankRepository.AttachAsync(bank, c => c.Title, c => c.PhoneNumber, u => u.Url);
 
             return ObjectMapper.Map<Bank, BankDto>(entity);
@@ -74,7 +72,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             return true;
         }
 
-        private async Task<Bank> Validation(int id, BankDto bankDto)
+        private async Task<Bank> Validation(int id, BankCreateOrUpdateDto bankCreateOrUpdateDto)
         {
             var bank = (await _bankRepository.GetQueryableAsync()).AsNoTracking()
                 .FirstOrDefault(x => x.Id == id);

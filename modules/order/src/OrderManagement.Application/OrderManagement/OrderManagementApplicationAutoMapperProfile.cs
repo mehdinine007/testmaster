@@ -141,6 +141,9 @@ namespace OrderManagement
             CreateMap<BankDto, Bank>()
               .ReverseMap();
             CreateMap<Announcement, AnnouncementDto>().ReverseMap();
+            CreateMap<Bank, BankCreateOrUpdateDto>().ReverseMap();
+
+            
 
         }
     }

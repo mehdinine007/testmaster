@@ -36,12 +36,12 @@ namespace OrderManagement.HttpApi.OrderManagement.Controllers
 
 
         [HttpPost]
-        public Task<BankDto> Add(BankDto bankDto)
-        => _bankAppService.Add(bankDto);
+        public Task<BankDto> Add(BankCreateOrUpdateDto bankCreateOrUpdateDto)
+        => _bankAppService.Add(bankCreateOrUpdateDto);
 
         [HttpPut]
-        public Task<BankDto> Update(BankDto bankDto)
-        => _bankAppService.Update(bankDto);
+        public Task<BankDto> Update(BankCreateOrUpdateDto bankCreateOrUpdateDto)
+        => _bankAppService.Update(bankCreateOrUpdateDto);
 
         [HttpDelete]
         public Task<bool> Delete(int id)
