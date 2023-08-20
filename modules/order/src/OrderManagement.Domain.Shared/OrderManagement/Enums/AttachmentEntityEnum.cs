@@ -7,9 +7,8 @@
         SaleSchema = 2,
         SiteStructure = 3,
         CarClass=4,
-        Announcement = 5
-        CarClass = 4,
-        Bank = 5
+        Bank = 5,
+        Announcement = 6,
 
     }
 }
