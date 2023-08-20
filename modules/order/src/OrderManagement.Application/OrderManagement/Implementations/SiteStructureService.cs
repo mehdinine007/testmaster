@@ -156,8 +156,8 @@ namespace OrderManagement.Application.OrderManagement.Implementations
                     {
                         Id = x.Id,
                         Title = x.Title,
-                        Attachments = x.Attachments
-
+                        Attachments = x.Attachments,
+                        AdditionalFields = new Dictionary<string, object> { { "id", x.Id }, { "date", x.Date },{ "notice", x.Notice},{ "description",x.Description } },
                     }).ToList();
                 };
 
