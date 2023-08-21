@@ -12,5 +12,7 @@ namespace OrderManagement.Application.Contracts.OrderManagement
         public string EsaleTypeName { get; set; }
         public decimal CarFee { get; set; }
         public decimal MinimumAmountOfProxyDeposit { get; set; }
+        public Guid UID { get; set; }
+
     }
 }
