@@ -52,6 +52,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
         public async Task<Guid> Update(AttachmentUpdateDto attachmentDto)
         {
             var attachment = ObjectMapper.Map<AttachmentUpdateDto, Attachment>(attachmentDto);
+            attachment.EntityType = attachmentDto.Type;
             attachment.Content = JsonConvert.SerializeObject(attachmentDto.Content);
             await UpdateAttachment(attachment);
             if (attachmentDto.File != null)
