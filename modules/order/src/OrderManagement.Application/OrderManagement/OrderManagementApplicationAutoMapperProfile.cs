@@ -78,6 +78,11 @@ namespace OrderManagement
             CreateMap<SiteStructure, SiteStructureAddOrUpdateDto>()
                 .ReverseMap();
 
+            CreateMap<ChartStructure, ChartStructureDto>()
+                .ForMember(x => x.Categories, c => c.MapFrom(m => !string.IsNullOrEmpty(m.Categories) ? JsonConvert.DeserializeObject<List<string>>(m.Categories) : null))
+                .ForMember(x => x.Series, c => c.MapFrom(m => !string.IsNullOrEmpty(m.Series) ? JsonConvert.DeserializeObject<List<ChartSeriesData>>(m.Series) : null))
+                .ReverseMap();
+
             CreateMap<Property, PropertyDto>()
                 .ForMember(x => x.TypeTitle, c => c.MapFrom(m => m.Type != 0 ? EnumHelper.GetDescription(m.Type) : ""))
                 .ReverseMap();
