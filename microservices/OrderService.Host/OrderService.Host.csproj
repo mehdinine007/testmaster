@@ -46,14 +46,14 @@
     </ItemGroup>
 
     <ItemGroup>
+        <Compile Remove="%2a%2a\**" />
         <Compile Remove="Logs\**" />
+        <Content Remove="%2a%2a\**" />
         <Content Remove="Logs\**" />
+        <EmbeddedResource Remove="%2a%2a\**" />
         <EmbeddedResource Remove="Logs\**" />
+        <None Remove="%2a%2a\**" />
         <None Remove="Logs\**" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Infrastructures\Filters\" />
     </ItemGroup>
 
     <ItemGroup>

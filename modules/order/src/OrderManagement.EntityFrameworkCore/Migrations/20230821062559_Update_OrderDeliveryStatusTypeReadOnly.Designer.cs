@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OrderManagement.EfCore;
 using Volo.Abp.EntityFrameworkCore;
@@ -12,9 +13,11 @@ using Volo.Abp.EntityFrameworkCore;
 namespace OrderManagement.EfCore.Migrations
 {
     [DbContext(typeof(OrderManagementDbContext))]
-    partial class OrderManagementDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230821062559_Update_OrderDeliveryStatusTypeReadOnly")]
+    partial class UpdateOrderDeliveryStatusTypeReadOnly
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1688,9 +1691,6 @@ namespace OrderManagement.EfCore.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("DeletionTime");
 
-                    b.Property<decimal?>("FullAmountPaid")
-                        .HasColumnType("decimal(18,4)");
-
                     b.Property<string>("InquiryFullResponse")
                         .HasColumnType("nvarchar(max)");
 
@@ -1712,9 +1712,6 @@ namespace OrderManagement.EfCore.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("OrderId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("RowContractId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("SubmitDate")
