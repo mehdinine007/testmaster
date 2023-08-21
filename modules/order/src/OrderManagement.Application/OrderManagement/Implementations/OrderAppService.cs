@@ -588,6 +588,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             customerOrder.SaleId = SaleDetailDto.SaleId;
             customerOrder.AgencyId = commitOrderDto.AgencyId;
             customerOrder.PaymentSecret = _randomGenerator.GetUniqueInt();
+            customerOrder.OrderDeliveryStatus = OrderDeliveryStatusType.OrderRegistered;
             await _commitOrderRepository.InsertAsync(customerOrder);
             await CurrentUnitOfWork.SaveChangesAsync();
         }

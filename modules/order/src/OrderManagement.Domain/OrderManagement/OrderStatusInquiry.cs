@@ -16,6 +16,10 @@ namespace OrderManagement.Domain.OrderManagement
 
         public string ClientNationalCode { get; set; }
 
+        public int RowContractId { get; set; }
+
+        public decimal? FullAmountPaid { get; set; }
+
         public  OrderDeliveryStatusType? OrderDeliveryStatus { get; set; }
 
         public virtual ProductAndCategory CompanyCategory { get; protected set; }

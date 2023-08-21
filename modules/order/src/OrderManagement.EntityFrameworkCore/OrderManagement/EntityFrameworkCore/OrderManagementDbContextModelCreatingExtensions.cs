@@ -345,6 +345,8 @@ public static class OrderManagementDbContextModelCreatingExtensions
             entity.HasOne<ProductAndCategory>(x => x.CompanyCategory)
                 .WithMany(x => x.OrderStatusInquiries)
                 .HasForeignKey(x => x.CompanyId);
+            entity.Property(x => x.FullAmountPaid)
+                .HasColumnType("decimal(18,4)");
         });
 
         builder.Entity<OrderDeliveryStatusTypeReadOnly>(entity =>
