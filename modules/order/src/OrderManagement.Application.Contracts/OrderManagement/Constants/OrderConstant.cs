@@ -72,6 +72,9 @@ namespace OrderManagement.Application.Contracts
         public static string BankNotFound = "بانک وجود ندارد";
         public static string BankNotFoundId = "4006";
 
+        public static string ChartStructureNotFound = "آمار وجود ندارد";
+        public static string ChartStructureNotFoundId = "4007";
+
 
     }
 }
