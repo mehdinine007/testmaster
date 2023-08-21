@@ -71,9 +71,7 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
             .FirstOrDefault(x => x.Id == id) ??
             throw new UserFriendlyException("محصول یا دسته بندی مورد نطر پیدا نشد");
         var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, new List<int>() { id });
-        var propertyCategories = await _productPropertyService.GetByProductId(id);
         var productResult = ObjectMapper.Map<ProductAndCategory, ProductAndCategoryWithChildDto>(productCategory);
-        productResult.PropertyCategories = propertyCategories;
         var productAndCategoryList = await FillAttachmentAndProperty(new List<ProductAndCategoryWithChildDto>() { productResult }, attachments, hasProperty);
         return productResult;
     }
