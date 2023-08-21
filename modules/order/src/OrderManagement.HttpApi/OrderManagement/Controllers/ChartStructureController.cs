@@ -37,4 +37,17 @@ public class ChartStructureController : Controller
     [HttpGet]
     public Task<ChartStructureDto> GetById(int id)
     => _chartStructureService.GetById(id);
+
+    [HttpPost]
+    public Task<ChartStructureDto> Add(ChartStructureCreateOrUpdateDto chartStructureCreateOrUpdateDto)
+    => _chartStructureService.Add(chartStructureCreateOrUpdateDto);
+    [HttpPost]
+    public Task<ChartStructureDto> Update(ChartStructureCreateOrUpdateDto chartStructureCreateOrUpdateDto)
+         => _chartStructureService.Update(chartStructureCreateOrUpdateDto);
+
+    [HttpDelete]
+    public  Task<bool> Delete(int id)
+         => _chartStructureService.Delete(id);
+
+
 }

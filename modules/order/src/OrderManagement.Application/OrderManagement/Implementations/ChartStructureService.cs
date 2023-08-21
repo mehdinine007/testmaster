@@ -1,5 +1,6 @@
 ﻿using MongoDB.Driver;
 using Nest;
+using Newtonsoft.Json;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.OrderManagement;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
@@ -69,5 +70,31 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             return chartStructureDto;
         }
 
+        public async Task<ChartStructureDto> Add(ChartStructureCreateOrUpdateDto chartStructureCreateOrUpdateDto)
+        {
+            var chartStructure = ObjectMapper.Map<ChartStructureCreateOrUpdateDto, ChartStructure>(chartStructureCreateOrUpdateDto);
+             chartStructure = await _chartStructureRepository.InsertAsync(chartStructure, autoSave: true);
+            return await GetById(chartStructure.Id);
+        }
+
+        public async Task<ChartStructureDto> Update(ChartStructureCreateOrUpdateDto chartStructureCreateOrUpdateDto)
+        {
+            var chartStructure = await Validation(chartStructureCreateOrUpdateDto.Id);
+            chartStructure.Title = chartStructureCreateOrUpdateDto.Title;
+            chartStructure.Series = JsonConvert.SerializeObject(chartStructureCreateOrUpdateDto.Series);
+            chartStructure.Categories = JsonConvert.SerializeObject(chartStructureCreateOrUpdateDto.Categories);
+            chartStructure.Type = chartStructureCreateOrUpdateDto.Type;
+            chartStructure.Priority = chartStructureCreateOrUpdateDto.Priority;
+            await _chartStructureRepository.UpdateAsync(chartStructure, autoSave: true);
+            return await GetById(chartStructure.Id);
+        }
+
+        public async Task<bool> Delete(int id)
+        {
+            await Validation(id);
+            await _chartStructureRepository.DeleteAsync(x => x.Id == id);
+            await _attachmentService.DeleteByEntityId(AttachmentEntityEnum.ChartStructure, id);
+            return true;
+        }
     }
 }

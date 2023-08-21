@@ -13,5 +13,8 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Services
         Task<List<ChartStructureDto>> GetList(AttachmentEntityTypeEnum? attachmentType);
         Task<bool> UploadFile(UploadFileDto uploadFile);
         Task<ChartStructureDto> GetById(int id);
+        Task<ChartStructureDto> Add(ChartStructureCreateOrUpdateDto chartStructureCreateOrUpdateDto);
+        Task<ChartStructureDto> Update(ChartStructureCreateOrUpdateDto chartStructureCreateOrUpdateDto);
+        Task<bool> Delete(int id);
     }
 }

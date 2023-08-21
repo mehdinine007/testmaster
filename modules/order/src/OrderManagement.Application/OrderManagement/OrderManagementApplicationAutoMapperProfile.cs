@@ -6,6 +6,7 @@ using OrderManagement.Application.Contracts.OrderManagement;
 using OrderManagement.Application.Contracts.OrderManagement.Models;
 using OrderManagement.Domain;
 using OrderManagement.Domain.OrderManagement;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Volo.Abp.AutoMapper;
@@ -83,6 +84,11 @@ namespace OrderManagement
                 .ForMember(x => x.Series, c => c.MapFrom(m => !string.IsNullOrEmpty(m.Series) ? JsonConvert.DeserializeObject<List<ChartSeriesData>>(m.Series) : null))
                 .ForMember(x => x.TypeTitle, c => c.MapFrom(m => m.Type != 0 ? EnumHelper.GetDescription(m.Type) : ""))
                 .ReverseMap();
+            CreateMap<ChartStructure, ChartStructureCreateOrUpdateDto>()
+                .ReverseMap()
+                .ForMember(x => x.Categories, c => c.MapFrom(m => JsonConvert.SerializeObject(m.Categories)))
+                .ForMember(x => x.Series, c => c.MapFrom(m =>  JsonConvert.SerializeObject(m.Series)));
+                
 
             CreateMap<Property, PropertyDto>()
                 .ForMember(x => x.TypeTitle, c => c.MapFrom(m => m.Type != 0 ? EnumHelper.GetDescription(m.Type) : ""))
@@ -150,11 +156,11 @@ namespace OrderManagement
                 .ReverseMap()
                 .IgnoreFullAuditedObjectProperties();
             CreateMap<CreateAnnouncementDto, Announcement>();
-              
-       
+
+
             CreateMap<Bank, BankCreateOrUpdateDto>().ReverseMap();
 
-            
+
 
         }
     }
