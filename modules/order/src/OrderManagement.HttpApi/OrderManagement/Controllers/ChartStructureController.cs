@@ -28,7 +28,13 @@ public class ChartStructureController : Controller
 
 
     [HttpGet]
-    public Task<List<ChartStructureDto>> GetList()
-    => _chartStructureService.GetList();
+    public Task<List<ChartStructureDto>> GetList(AttachmentEntityTypeEnum? attachmentType)
+    => _chartStructureService.GetList(attachmentType);
 
+    [HttpPost]
+    public Task<bool> UploadFile([FromForm]UploadFileDto uploadFile)
+    => _chartStructureService.UploadFile(uploadFile);
+    [HttpGet]
+    public Task<ChartStructureDto> GetById(int id)
+    => _chartStructureService.GetById(id);
 }
