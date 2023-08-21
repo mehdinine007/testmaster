@@ -1,10 +1,11 @@
-﻿using Volo.Abp.Application.Services;
+﻿using OrderManagement.Domain.Shared;
+using Volo.Abp.Application.Services;
 
 namespace OrderManagement.Application.Contracts.OrderManagement.Services
 {
     public interface IProductAndCategoryService : IApplicationService
     {
-        Task<ProductAndCategoryDto> GetById(int id);
+        Task<ProductAndCategoryWithChildDto> GetById(int id, AttachmentEntityTypeEnum? attachmentType, bool hasProperty);
 
         Task<ProductAndCategoryDto> Insert(ProductAndCategoryCreateDto productAndCategoryCreateDto);
 

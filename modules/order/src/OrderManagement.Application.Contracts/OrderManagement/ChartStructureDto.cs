@@ -9,12 +9,14 @@ namespace OrderManagement.Application.Contracts.OrderManagement
 {
     public class ChartStructureDto
     {
+        public int Id { get; set; }
         public string Title { get; set; }
         public ChartTypeEnum Type { get; set; }
         public string TypeTitle { get; set; }
         public List<string> Categories { get; set; }
         public List<ChartSeriesData> Series { get; set; }
         public int Priority { get; set; }
+        public List<AttachmentViewModel> Attachments { get; set; }
 
     }
 

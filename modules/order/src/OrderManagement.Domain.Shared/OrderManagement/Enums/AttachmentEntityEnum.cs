@@ -9,6 +9,7 @@
         CarClass=4,
         Bank = 5,
         Announcement = 6,
+        ChartStructure = 7,
 
     }
 }
