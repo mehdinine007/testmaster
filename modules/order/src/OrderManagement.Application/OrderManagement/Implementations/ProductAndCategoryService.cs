@@ -49,7 +49,7 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
 
     public async Task Delete(int id)
     {
-        var productCategory = await GetById(id);
+        var productCategory = await GetById(id,null,false);
         if (productCategory.Type == ProductAndCategoryType.Category)
         {
             var firstDependentCategory = (await _productAndCategoryRepository.GetQueryableAsync())
@@ -62,7 +62,7 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
         await _attachmentService.DeleteByEntityId(AttachmentEntityEnum.ProductAndCategory, id);
     }
 
-    public async Task<ProductAndCategoryDto> GetById(int id)
+    public async Task<ProductAndCategoryWithChildDto> GetById(int id, AttachmentEntityTypeEnum? attachmentType, bool hasProperty)
     {
         var query = await _productAndCategoryRepository.GetQueryableAsync();
         if (!_commonAppService.IsInRole("Admin"))
@@ -72,9 +72,9 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
             throw new UserFriendlyException("محصول یا دسته بندی مورد نطر پیدا نشد");
         var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, new List<int>() { id });
         var propertyCategories = await _productPropertyService.GetByProductId(id);
-        var productResult = ObjectMapper.Map<ProductAndCategory, ProductAndCategoryDto>(productCategory);
-        productResult.Attachments = ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(attachments);
+        var productResult = ObjectMapper.Map<ProductAndCategory, ProductAndCategoryWithChildDto>(productCategory);
         productResult.PropertyCategories = propertyCategories;
+        var productAndCategoryList = await FillAttachmentAndProperty(new List<ProductAndCategoryWithChildDto>() { productResult }, attachments, hasProperty);
         return productResult;
     }
 

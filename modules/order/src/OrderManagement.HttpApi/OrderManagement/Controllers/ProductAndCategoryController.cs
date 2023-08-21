@@ -10,6 +10,7 @@ using Volo.Abp.AspNetCore.Mvc;
 using System.Collections.Generic;
 using Nest;
 using System;
+using OrderManagement.Domain.Shared;
 
 namespace OrderManagement.HttpApi.OrderManagement.Controllers;
 
@@ -32,8 +33,8 @@ public class ProductAndCategoryController : AbpController //, IProductAndCategor
     }
 
     [HttpGet]
-    public async Task<ProductAndCategoryDto> GetById(int id)
-        => await _productAndCategoryService.GetById(id);
+    public async Task<ProductAndCategoryWithChildDto> GetById(int id, AttachmentEntityTypeEnum? attachmentType, bool hasProperty)
+        => await _productAndCategoryService.GetById(id, attachmentType, hasProperty);
 
     [HttpPost]
     public async Task<ProductAndCategoryDto> Insert([FromBody] ProductAndCategoryCreateDto productAndCategoryCreateDto)
