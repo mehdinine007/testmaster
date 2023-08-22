@@ -4,6 +4,7 @@
     {
         WhiteListBeforeLogin = 1,
         WhiteListOrder = 2,
+        WhilteListEnseraf = 3
 
     }
 }

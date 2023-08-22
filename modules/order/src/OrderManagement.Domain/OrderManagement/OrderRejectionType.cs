@@ -3,23 +3,24 @@ using System.Xml.Linq;
 
 namespace OrderManagement.Domain
 {
+    //TODO: Create tables for these tables dynamically
     public enum OrderRejectionType
     {
 
-        [Display(Name ="عدم تطابق کدملی و شماره موبایل")]
+        [Display(Name = "عدم تطابق کدملی و شماره موبایل")]
         PhoneNumberAndNationalCodeConflict = 1,
 
-        [Display(Name ="نداشتن گواهی نامه معتبر")]
+        [Display(Name = "نداشتن گواهی نامه معتبر")]
         DoesntHadQualifiedDrivingLicense = 2,
 
-        [Display(Name ="دارای پلاک فعال")]
+        [Display(Name = "دارای پلاک فعال")]
         ActivePlaqueDetected = 3,
 
         [Display(Name = "ثبت سفارش در سامانه خودروهای وارداتی")]
         OrderRegisteredInInternalVehicleSite = 4,
 
-        [Display(Name ="لیست خرید خودروساز (سایپا)")]
-        SaipaVehicleManufactureList= 5,
+        [Display(Name = "لیست خرید خودروساز (سایپا)")]
+        SaipaVehicleManufactureList = 5,
 
         [Display(Name = "لیست خرید خودروساز (ایران خودرو)")]
         IkcoVehicleManufactureList = 6,
@@ -46,7 +47,7 @@ namespace OrderManagement.Domain
         MvmVehicleManufactureList = 13,
         [Display(Name = "عدم احراز در طرح جوانی توسط ثبت احول")]
         YoungPlan = 14,
-        [Display(Name = "عدم احراض خودرو فرسوده")]
+        [Display(Name = "عدم احراز خودرو فرسوده")]
         OldPlan = 15
     }
 }

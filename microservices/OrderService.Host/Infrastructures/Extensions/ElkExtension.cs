@@ -14,7 +14,7 @@ namespace OrderService.Host.Infrastructures.Extensions
     {
         public static IServiceCollection ElkNest(this IServiceCollection services, IConfiguration configuration, string IndexName)
         {
-            var pool = new SingleNodeConnectionPool(new Uri("http://localhost:9200"));
+            var pool = new SingleNodeConnectionPool(new Uri(configuration["ElasticSearch:Url"]));
             var settings = new ConnectionSettings(pool).
                 DisableDirectStreaming().
                 // DefaultIndex($"{IndexName}-{DateTime.UtcNow:yyyy-MM}")
