@@ -13,7 +13,7 @@ namespace OrderManagement.Domain
     {
         public ObjectId Id { get; set; }
         public string Key { get; set; }
-        public string Tilte { get; set; }
+        public string Title { get; set; }
         public PropertyTypeEnum Type { get; set; }
         public string Value { get; set; }
         public int Priority { get; set; }
