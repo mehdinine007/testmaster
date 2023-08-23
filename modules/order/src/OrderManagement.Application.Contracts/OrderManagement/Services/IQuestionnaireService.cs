@@ -8,5 +8,7 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Services
         public Task<QuestionnaireTreeDto> LoadQuestionnaireTree(int questionnaireId);
 
         public Task SubmitAnswer(SubmitAnswerTreeDto submitAnswerTreeDto);
+
+        Task<List<QuestionnaireAnalysisDto>> GetQuestionnaireReport(int questionnaireId);
     }
 }

@@ -28,4 +28,5 @@ public static class RedisConstants
     public const string AgencyPrefix = "n:Agency:";
     public const string SaleDetailAgenciesCacheName = "AgencySaleDetail_{0}";
     public const string IkcoBearerToken = "IkcoBearerToken";
+    public const string QuestionnaireSurveyReport = "n:Questionnaire:{0}";
 }

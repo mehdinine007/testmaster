@@ -9,6 +9,13 @@ namespace OrderManagement.Application.Contracts.Dtos
 
     }
 
+    public class QuestionnaireAnalysisDto
+    {
+        public int QuestionId { get; set; }
+
+        public double Rate { get; set; }
+    }
+
     public class SubmitAnswerDto
     {
         public int QuestionId { get; set; }
