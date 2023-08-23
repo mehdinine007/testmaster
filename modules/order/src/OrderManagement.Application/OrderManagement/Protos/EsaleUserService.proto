@@ -24,6 +24,8 @@ message UserModel{
 
 	sfixed32 BankId = 2;
 
+	sfixed32 GenderCode = 13;
+
 	string AccountNumber = 3;
 
 	string Shaba = 4;

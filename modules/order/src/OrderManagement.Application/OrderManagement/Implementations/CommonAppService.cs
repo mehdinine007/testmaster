@@ -155,21 +155,21 @@ public class CommonAppService : ApplicationService, ICommonAppService
         {
             throw new UserFriendlyException("کد ملی صحیح نمی باشد");
         }
-        object UserRejectFromCache = null;
-        UserRejectionAdvocacy userReject = null;
-        //_cacheManager.GetCache("UserRejection").TryGetValue(Nationalcode, out UserRejectFromCache);
-        UserRejectFromCache = await _distributedCache.GetStringAsync(string.Format(RedisConstants.UserRejectionPrefix, Nationalcode));
-        if (UserRejectFromCache != null && (UserRejectFromCache as string) == "1")
-        {
-            throw new UserFriendlyException("شما انصراف داده اید و امکان ثبت سفارش نمی باشد");
-        }
-        if (UserRejectFromCache != null && (UserRejectFromCache as string) == "0")
-        {
-            return;
-        }
-        string userRejection = "";
+        //object UserRejectFromCache = null;
+        //UserRejectionAdvocacy userReject = null;
+        ////_cacheManager.GetCache("UserRejection").TryGetValue(Nationalcode, out UserRejectFromCache);
+        //UserRejectFromCache = await _distributedCache.GetStringAsync(string.Format(RedisConstants.UserRejectionPrefix, Nationalcode));
+        //if (UserRejectFromCache != null && (UserRejectFromCache as string) == "1")
+        //{
+        //    throw new UserFriendlyException("شما انصراف داده اید و امکان ثبت سفارش نمی باشد");
+        //}
+        //if (UserRejectFromCache != null && (UserRejectFromCache as string) == "0")
+        //{
+        //    return;
+        //}
+        //string userRejection = "";
 
-        userRejection = _userRejectionAdcocacyRepository
+        string userRejection = _userRejectionAdcocacyRepository
        .WithDetails()
        .Select(x => x.NationalCode)
        .FirstOrDefault(x => x == Nationalcode);
@@ -178,20 +178,20 @@ public class CommonAppService : ApplicationService, ICommonAppService
         if (!string.IsNullOrEmpty(userRejection))
         {
             //await _cacheManager.GetCache("UserRejection").SetAsync(Nationalcode, "1");
-            await _distributedCache.SetStringAsync(string.Format(RedisConstants.UserRejectionPrefix, Nationalcode), "1", new DistributedCacheEntryOptions
-            {
-                AbsoluteExpiration = RedisConstants.UserRejectionTimeOffset
-            });
+            //await _distributedCache.SetStringAsync(string.Format(RedisConstants.UserRejectionPrefix, Nationalcode), "1", new DistributedCacheEntryOptions
+            //{
+            //    AbsoluteExpiration = RedisConstants.UserRejectionTimeOffset
+            //});
             throw new UserFriendlyException("شما انصراف داده اید و امکان ثبت سفارش نمی باشد");
         }
-        else
-        {
-            //await _cacheManager.GetCache("UserRejection").SetAsync(Nationalcode, "0");
-            await _distributedCache.SetStringAsync(string.Format(RedisConstants.UserRejectionPrefix, Nationalcode), "0", new DistributedCacheEntryOptions
-            {
-                AbsoluteExpiration = DateTime.Now.AddMinutes(20)
-            });
-        }
+        //else
+        //{
+        //    //await _cacheManager.GetCache("UserRejection").SetAsync(Nationalcode, "0");
+        //    await _distributedCache.SetStringAsync(string.Format(RedisConstants.UserRejectionPrefix, Nationalcode), "0", new DistributedCacheEntryOptions
+        //    {
+        //        AbsoluteExpiration = DateTime.Now.AddMinutes(20)
+        //    });
+        //}
     }
     //public async Task<AdvocacyAcountResult> CheckAccount(string nationalCode, string mobileNo)
     //{
@@ -255,8 +255,7 @@ public class CommonAppService : ApplicationService, ICommonAppService
     public async Task<bool> ValidateSMS(string Mobile, string NationalCode, string UserSMSCode, SMSType sMSType)
     {
         Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
-        object ObjectSMSCode = null;
-        var stringCache = await RedisHelper.Connection.GetDatabase().StringGetAsync(string.Format(RedisConstants.ValidateSmsPrefix, sMSType.ToString() + Mobile + NationalCode));
+        var stringCache = await RedisHelper.Connection.GetDatabase().StringGetAsync(sMSType.ToString() + Mobile + NationalCode);
         if (string.IsNullOrEmpty(stringCache))
         {
             throw new UserFriendlyException("کد پیامک ارسالی صحیح نمی باشد");
@@ -266,24 +265,15 @@ public class CommonAppService : ApplicationService, ICommonAppService
         {
             throw new UserFriendlyException("کد پیامک ارسالی صحیح نمی باشد");
         }
-        if (string.IsNullOrEmpty(smsCodeDto.Payload))
+        if(smsCodeDto.SMSCode != UserSMSCode)
         {
             throw new UserFriendlyException("کد پیامک ارسالی صحیح نمی باشد");
+
         }
-        SMSPayloadDto smsPayLoad = JsonConvert.DeserializeObject<SMSPayloadDto>(smsCodeDto.Payload);
 
 
-        if (string.IsNullOrEmpty(smsPayLoad.SMSCode))
-        {
-            throw new UserFriendlyException("کد پیامک ارسالی صحیح نمی باشد");
-        }
-        else
-        {
-            if (UserSMSCode != smsPayLoad.SMSCode)
-            {
-                throw new UserFriendlyException("کد پیامک ارسالی صحیح نمی باشد");
-            }
-        }
+
+
         return true;
     }
     public async Task ValidateVisualizeCaptcha(VisualCaptchaInput input)

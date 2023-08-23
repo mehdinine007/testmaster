@@ -47,7 +47,7 @@ public class OrderManagementController
     [UserAuthorization]
     public async Task<List<CustomerOrderPriorityUserDto>> GetCustomerInfoPriorityUser()
         => await _orderAppService.GetCustomerInfoPriorityUser();
-    [DisableAuditing]
+    
     [HttpGet]
 
     public Task<List<CustomerOrder_OrderDetailDto>> GetCustomerOrderList(AttachmentEntityTypeEnum attachmentEntityType)
