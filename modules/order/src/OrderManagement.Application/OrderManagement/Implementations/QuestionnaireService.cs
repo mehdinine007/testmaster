@@ -1,6 +1,5 @@
 ﻿using EasyCaching.Core;
 using Microsoft.EntityFrameworkCore;
-using Nest;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.Dtos;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
@@ -69,7 +68,7 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
         questionnaireQuery = questionnaireQuery.Include(x => x.Questions)
             .ThenInclude(x => x.Answers);
         questionnaireQuery = questionnaireQuery.Include(x => x.Questions)
-            .ThenInclude(x => x.SubmittedAnswers);
+            .ThenInclude(x => x.SubmittedAnswers.Where(y => y.UserId == currentUserId));
 
         var questionnaireResult = questionnaireQuery.FirstOrDefault(x => x.Id == questionnaireId)
             ?? throw new UserFriendlyException("پرسشنامه مورد نظر یافت نشد");
