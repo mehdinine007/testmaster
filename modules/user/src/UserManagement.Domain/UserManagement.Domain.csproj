@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+	<PropertyGroup>
+		<RootNamespace>UserManagement.Domain</RootNamespace>
+	</PropertyGroup>
+	
+  <ItemGroup>
+    <ProjectReference Include="..\UserManagement.Domain.Shared\UserManagement.Domain.Shared.csproj" />
+    <ProjectReference Include="..\..\..\..\shared\Esale.Core\Esale.Core.csproj" />
+  </ItemGroup>
+
+</Project>

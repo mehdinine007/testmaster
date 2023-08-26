@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+	<PropertyGroup>
+		<RootNamespace>UserManagement.Application</RootNamespace>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="Volo.Abp.AutoMapper" Version="7.2.1" />
+		<PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="7.0.1" />
+		<PackageReference Include="StackExchange.Redis.Extensions.Newtonsoft" Version="9.1.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
+	</ItemGroup>
+
+</Project>
