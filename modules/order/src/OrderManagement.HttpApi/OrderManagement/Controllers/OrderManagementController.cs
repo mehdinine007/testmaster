@@ -50,15 +50,15 @@ public class OrderManagementController
     
     [HttpGet]
 
-    public Task<List<CustomerOrder_OrderDetailDto>> GetCustomerOrderList(AttachmentEntityTypeEnum attachmentEntityType)
+    public Task<List<CustomerOrder_OrderDetailDto>> GetCustomerOrderList(List<AttachmentEntityTypeEnum> attachmentEntityType)
         => _orderAppService.GetCustomerOrderList(attachmentEntityType);
 
     [RemoteService(IsEnabled = false)]
-    public async Task<CustomerOrder_OrderDetailDto> GetOrderDetailById(int id, AttachmentEntityTypeEnum attachmentEntityType)
+    public async Task<CustomerOrder_OrderDetailDto> GetOrderDetailById(int id, List<AttachmentEntityTypeEnum> attachmentEntityType)
         => await _orderAppService.GetOrderDetailById(id, attachmentEntityType);
 
     [RemoteService(IsEnabled =false)]
-    public async Task<CustomerOrder_OrderDetailDto> GetSaleDetailByUid(Guid saleDetailUid, AttachmentEntityTypeEnum attachmentEntityType)
+    public async Task<CustomerOrder_OrderDetailDto> GetSaleDetailByUid(Guid saleDetailUid, List<AttachmentEntityTypeEnum> attachmentEntityType)
         => await _orderAppService.GetSaleDetailByUid(saleDetailUid, attachmentEntityType);
 
     [DisableAuditing]

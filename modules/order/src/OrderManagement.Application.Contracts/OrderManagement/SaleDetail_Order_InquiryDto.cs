@@ -8,7 +8,7 @@ namespace OrderManagement.Application.Contracts
         public int? OrderId { get; set; }
 
         public Guid? SaleDetailUid { get; set; }
-        public AttachmentEntityTypeEnum AttachmentType { get; set; }
+        public List<AttachmentEntityTypeEnum> AttachmentType { get; set; }
        
     }
 }

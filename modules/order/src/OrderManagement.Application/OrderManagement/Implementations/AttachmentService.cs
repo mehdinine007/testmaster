@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -169,15 +170,17 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             return attachment;
         }
 
-        public async Task<List<AttachmentDto>> GetList(AttachmentEntityEnum entity, List<int> entityIds, AttachmentEntityTypeEnum? entityType = null)
+        public async Task<List<AttachmentDto>> GetList(AttachmentEntityEnum entity, List<int> entityIds, List<AttachmentEntityTypeEnum> entityType )
         {
             var iqAttachment = await _attachementRepository.GetQueryableAsync();
-            if (entityType is null)
+            if (entityType.Count() == 0)
                 iqAttachment = iqAttachment
                     .Where(x => x.Entity == entity && entityIds.Contains(x.EntityId));
             else
                 iqAttachment = iqAttachment
-                    .Where(x => x.Entity == entity && x.EntityType == entityType && entityIds.Contains(x.EntityId));
+                   .Where(x => x.Entity == entity && entityType.Contains(x.EntityType) && entityIds.Contains(x.EntityId));
+            //iqAttachment = iqAttachment
+            //    .Where(x => x.Entity == entity && x.EntityType == entityType && entityIds.Contains(x.EntityId));
 
             var attachments = iqAttachment
                 .OrderBy(x => x.Priority)

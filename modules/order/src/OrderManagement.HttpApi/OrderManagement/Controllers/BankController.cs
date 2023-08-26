@@ -31,7 +31,7 @@ namespace OrderManagement.HttpApi.OrderManagement.Controllers
 
 
         [HttpGet]
-        public Task<List<BankDto>> GetList(AttachmentEntityTypeEnum? attachmentType)
+        public Task<List<BankDto>> GetList(AttachmentEntityTypeEnum attachmentType)
         => _bankAppService.GetList(attachmentType);
 
 

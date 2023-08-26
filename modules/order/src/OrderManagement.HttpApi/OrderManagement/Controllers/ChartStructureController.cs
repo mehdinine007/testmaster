@@ -28,7 +28,7 @@ public class ChartStructureController : Controller
 
 
     [HttpGet]
-    public Task<List<ChartStructureDto>> GetList(AttachmentEntityTypeEnum? attachmentType)
+    public Task<List<ChartStructureDto>> GetList(List<AttachmentEntityTypeEnum> attachmentType)
     => _chartStructureService.GetList(attachmentType);
 
     [HttpPost]

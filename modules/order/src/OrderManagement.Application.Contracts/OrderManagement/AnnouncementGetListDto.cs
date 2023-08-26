@@ -10,6 +10,6 @@ namespace OrderManagement.Application.Contracts.OrderManagement
 {
     public class AnnouncementGetListDto: PagedResultRequestDto
     {
-        public AttachmentEntityTypeEnum? AttachmentType { get; set; }
+        public List<AttachmentEntityTypeEnum>? AttachmentType { get; set; }
     }
 }

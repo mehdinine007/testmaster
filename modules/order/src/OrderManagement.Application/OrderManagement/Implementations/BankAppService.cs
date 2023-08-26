@@ -31,10 +31,10 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             _bankRepository = bankRepository;
             _attachmentService = attachmentService;
         }
-        public async Task<List<BankDto>> GetList(AttachmentEntityTypeEnum? attachmentType)
+        public async Task<List<BankDto>> GetList(AttachmentEntityTypeEnum attachmentType)
         {
             var banks = (await _bankRepository.GetQueryableAsync()).ToList();
-            var attachments = await _attachmentService.GetList(AttachmentEntityEnum.Bank, banks.Select(x => x.Id).ToList(), attachmentType);
+            var attachments = await _attachmentService.GetList(AttachmentEntityEnum.Bank, banks.Select(x => x.Id).ToList(),new List<AttachmentEntityTypeEnum> { attachmentType });
             var banksDto = ObjectMapper.Map<List<Bank>, List<BankDto>>(banks);
             banksDto.ForEach(x =>
             {
@@ -64,7 +64,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
         public async Task<BankDto> GetById(int id)
         {
             var bank = await Validation(id, null);
-            var attachments = await _attachmentService.GetList(AttachmentEntityEnum.Bank, new List<int>() { id });
+            var attachments = await _attachmentService.GetList(AttachmentEntityEnum.Bank, new List<int>() { id },new List<AttachmentEntityTypeEnum>());
             var bankDto= ObjectMapper.Map<Bank, BankDto>(bank);
             bankDto.Attachments= ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(attachments);
             return bankDto;
