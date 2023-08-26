@@ -19,4 +19,7 @@
 		<ProjectReference Include="..\..\..\..\shared\Esale.Core\Esale.Core.csproj" />
 		<ProjectReference Include="..\UserManagement.Domain.Shared\UserManagement.Domain.Shared.csproj" />
 	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="UserManagement\" />
+	</ItemGroup>
 </Project>

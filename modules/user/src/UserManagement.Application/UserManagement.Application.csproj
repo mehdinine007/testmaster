@@ -14,5 +14,9 @@
 		<PackageReference Include="StackExchange.Redis.Extensions.Newtonsoft" Version="9.1.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
 	</ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\UserManagement.Application.Contracts\UserManagement.Application.Contracts.csproj" />
+	  <ProjectReference Include="..\UserManagement.Domain\UserManagement.Domain.csproj" />
+	</ItemGroup>
 
 </Project>

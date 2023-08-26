@@ -1,10 +1,8 @@
 ﻿using OrderManagement.Domain.Shared;
 using OrderManagement.Localization;
 using Volo.Abp.Application;
-using Volo.Abp.Authorization.Permissions;
 using Volo.Abp.Localization;
 using Volo.Abp.Modularity;
-using Volo.Abp.Settings;
 using Volo.Abp.VirtualFileSystem;
 
 namespace OrderManagement.Application.Contracts

@@ -151,6 +151,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UserManagement.HttpApi", "m
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Usermanagement.MongoDb", "modules\user\src\Usermanagement.MongoDb\Usermanagement.MongoDb.csproj", "{7B0E077F-FF54-4252-813F-2BE9E33B5AC1}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UserService.Host", "microservices\UserService.Host\UserService.Host.csproj", "{18CD7D81-5338-4FD2-BFD4-E00A87B5A0CB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -385,6 +387,10 @@ Global
 		{7B0E077F-FF54-4252-813F-2BE9E33B5AC1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7B0E077F-FF54-4252-813F-2BE9E33B5AC1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7B0E077F-FF54-4252-813F-2BE9E33B5AC1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{18CD7D81-5338-4FD2-BFD4-E00A87B5A0CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18CD7D81-5338-4FD2-BFD4-E00A87B5A0CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18CD7D81-5338-4FD2-BFD4-E00A87B5A0CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{18CD7D81-5338-4FD2-BFD4-E00A87B5A0CB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -459,6 +465,7 @@ Global
 		{EEC7DD68-78C2-4F9E-A719-1C94DFF329CF} = {0DED09BF-1657-42AD-9718-86B03CEEC75D}
 		{3CF7B075-4DDC-4F89-B2B9-B4DD545F5F0F} = {0DED09BF-1657-42AD-9718-86B03CEEC75D}
 		{7B0E077F-FF54-4252-813F-2BE9E33B5AC1} = {0DED09BF-1657-42AD-9718-86B03CEEC75D}
+		{18CD7D81-5338-4FD2-BFD4-E00A87B5A0CB} = {3B26D176-390B-4F51-BE52-E9B422C28A88}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {37474F0D-2E52-4D2F-B39B-7FE3FF31B4EC}

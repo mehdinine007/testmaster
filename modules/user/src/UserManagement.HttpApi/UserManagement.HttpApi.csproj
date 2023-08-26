@@ -1,13 +1,12 @@
-<Project Sdk="Microsoft.NET.Sdk">
-
-  <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>disable</Nullable>
-  </PropertyGroup>
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>net7.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>disable</Nullable>
+	</PropertyGroup>
 
 	<PropertyGroup>
-		<RootNamespace>OrderManagement.HttpApi</RootNamespace>
+		<RootNamespace>UserManagement.HttpApi</RootNamespace>
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="Volo.Abp.AspNetCore.Mvc" Version="7.2.1" />
@@ -16,6 +15,10 @@
 	<ItemGroup>
 		<ProjectReference Include="..\..\..\..\shared\Authorization\Authorization.csproj" />
 		<ProjectReference Include="..\UserManagement.Application.Contracts\UserManagement.Application.Contracts.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="UserManagement\Controllers\" />
 	</ItemGroup>
 
 </Project>
