@@ -17,6 +17,7 @@ using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.ObjectMapping;
 
+
 namespace OrderManagement.Application.OrderManagement.Implementations
 {
     public class SiteStructureService : ApplicationService, ISiteStructureService
@@ -168,6 +169,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
 
         public async Task<bool> UploadFile(UploadFileDto uploadFile)
         {
+           await Validation(uploadFile.Id, null);
             await _attachmentService.UploadFile(AttachmentEntityEnum.SiteStructure, uploadFile);
             return true;
         }

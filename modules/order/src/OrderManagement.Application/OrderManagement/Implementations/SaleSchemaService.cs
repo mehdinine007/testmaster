@@ -4,6 +4,7 @@ using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.OrderManagement;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
 using OrderManagement.Domain;
+using OrderManagement.Domain.OrderManagement;
 using OrderManagement.Domain.Shared;
 using System;
 using System.Collections.Generic;
@@ -91,10 +92,20 @@ public class SaleSchemaService : ApplicationService, ISaleSchemaService
 
     public async Task<Guid> UploadFile(UploadFileDto uploadFile)
     {
+       await Validation(uploadFile.Id, null);
         return await _attachmentService.UploadFile(AttachmentEntityEnum.SaleSchema, uploadFile);
     }
 
-
+    private async Task<SaleSchema> Validation(int id, SaleSchemaDto saleSchemaDto)
+    {
+        var saleSchema = (await _saleSchemaRepository.GetQueryableAsync())
+            .FirstOrDefault(x => x.Id == id);
+        if (saleSchema is null)
+        {
+            throw new UserFriendlyException(OrderConstant.SaleSchemaNotFound, OrderConstant.SaleSchemaFoundId);
+        }
+        return saleSchema;
+    }
 
 
 }

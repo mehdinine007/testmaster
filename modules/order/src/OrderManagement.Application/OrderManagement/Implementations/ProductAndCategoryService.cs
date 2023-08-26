@@ -20,6 +20,7 @@ using MongoDB.Driver;
 using MongoDB.Bson.Serialization;
 using System.ComponentModel;
 
+
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
 public class ProductAndCategoryService : ApplicationService, IProductAndCategoryService
@@ -170,6 +171,7 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
 
     public async Task<Guid> UploadFile(UploadFileDto uploadFileDto)
     {
+        await Validation(uploadFileDto.Id, null);
         var attachmentStatus = await _attachmentService.UploadFile(AttachmentEntityEnum.ProductAndCategory, uploadFileDto);
         return attachmentStatus;
     }
@@ -341,4 +343,17 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
     {
         throw new NotImplementedException();
     }
+
+    private async Task<ProductAndCategory> Validation(int id, ProductAndCategoryDto productAndCategoryDto)
+    {
+        var productAndCategory = (await _productAndCategoryRepository.GetQueryableAsync())
+            .FirstOrDefault(x => x.Id == id);
+        if (productAndCategory is null)
+        {
+            throw new UserFriendlyException(OrderConstant.ProductAndCategoryNotFound, OrderConstant.ProductAndCategoryFoundId);
+        }
+        return productAndCategory;
+    }
+
+
 }
