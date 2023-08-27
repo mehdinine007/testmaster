@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\WorkFlowManagement.Application.Contracts\WorkFlowManagement.Application.Contracts.csproj" />
+    <ProjectReference Include="..\WorkFlowManagement.Application\WorkFlowManagement.Application.csproj" />
   </ItemGroup>
 
   <ItemGroup>
