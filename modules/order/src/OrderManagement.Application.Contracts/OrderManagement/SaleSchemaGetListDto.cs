@@ -8,7 +8,7 @@ using Volo.Abp.Application.Dtos;
 
 namespace OrderManagement.Application.Contracts.OrderManagement
 {
-    public class SaleSchemaGetListDto: PagedResultRequestDto
+    public class SaleSchemaGetListDto
     {
         public AttachmentEntityTypeEnum? AttachmentType { get; set; }
 

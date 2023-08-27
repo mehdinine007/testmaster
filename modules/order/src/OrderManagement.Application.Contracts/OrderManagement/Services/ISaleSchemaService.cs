@@ -11,11 +11,11 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Services
 {
     public interface ISaleSchemaService: IApplicationService
     {
-        Task<List<SaleSchemaDto>> GetAllSaleSchema();
-        Task<PagedResultDto<SaleSchemaDto>> GetList(SaleSchemaGetListDto input);
-        Task<int> Add(CreateSaleSchemaDto saleSchemaDto);
-        Task<int> Update(CreateSaleSchemaDto saleSchemaDto);
+        Task<List<SaleSchemaDto>> GetList(AttachmentEntityTypeEnum? attachmentType);
+        Task<SaleSchemaDto> Add(CreateSaleSchemaDto saleSchemaDto);
+        Task<SaleSchemaDto> Update(CreateSaleSchemaDto saleSchemaDto);
         Task<bool> Delete(int id);
-        Task<Guid> UploadFile(UploadFileDto uploadFile);
+        Task<SaleSchemaDto> GetById(int id);
+        Task<bool> UploadFile(UploadFileDto uploadFile);
     }
 }
