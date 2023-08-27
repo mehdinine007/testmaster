@@ -11,7 +11,7 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Services
 {
     public interface ISaleSchemaService: IApplicationService
     {
-        Task<List<SaleSchemaDto>> GetList(AttachmentEntityTypeEnum? attachmentType);
+        Task<List<SaleSchemaDto>> GetList(AttachmentEntityTypeEnum attachmentType);
         Task<SaleSchemaDto> Add(CreateSaleSchemaDto saleSchemaDto);
         Task<SaleSchemaDto> Update(CreateSaleSchemaDto saleSchemaDto);
         Task<bool> Delete(int id);

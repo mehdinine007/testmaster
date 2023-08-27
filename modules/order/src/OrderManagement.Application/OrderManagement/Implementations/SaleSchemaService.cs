@@ -40,11 +40,11 @@ public class SaleSchemaService : ApplicationService, ISaleSchemaService
 
 
 
-    public async Task<List<SaleSchemaDto>> GetList(AttachmentEntityTypeEnum? attachmentType)
+    public async Task<List<SaleSchemaDto>> GetList(AttachmentEntityTypeEnum attachmentType)
     {
         var count = _saleSchemaRepository.WithDetails().Count();
         var saleSchemas = (await _saleSchemaRepository.GetQueryableAsync()).ToList();
-        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.SaleSchema, saleSchemas.Select(x => x.Id).ToList(), attachmentType);
+        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.SaleSchema, saleSchemas.Select(x => x.Id).ToList(), new List<AttachmentEntityTypeEnum> { attachmentType });
         var saleSchemaDto = ObjectMapper.Map<List<SaleSchema>, List<SaleSchemaDto>>(saleSchemas);
         saleSchemaDto.ForEach(x =>
         {
@@ -74,7 +74,7 @@ public class SaleSchemaService : ApplicationService, ISaleSchemaService
             .FirstOrDefault(x => x.Id == id);
         var saleSchemaDto = ObjectMapper.Map<SaleSchema, SaleSchemaDto>(saleSchema);
 
-        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.SaleSchema, new List<int>() { id });
+        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.SaleSchema, new List<int>() { id }, new List<AttachmentEntityTypeEnum>());
         ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(attachments);
         saleSchemaDto.Attachments = ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(attachments);
         return saleSchemaDto;

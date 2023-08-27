@@ -32,7 +32,7 @@ public class SaleSchemaController : Controller
 
     
     [HttpGet]
-    public Task<List<SaleSchemaDto>> GetList(AttachmentEntityTypeEnum? attachmentType)
+    public Task<List<SaleSchemaDto>> GetList(AttachmentEntityTypeEnum attachmentType)
     => _saleSchemaService.GetList(attachmentType);
     [HttpPost]
     public Task<SaleSchemaDto> Add(CreateSaleSchemaDto saleSchemaDto)
