@@ -4,6 +4,7 @@ using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.OrderManagement;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
 using OrderManagement.Domain;
+using OrderManagement.Domain.OrderManagement;
 using OrderManagement.Domain.Shared;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,7 @@ using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.ObjectMapping;
 using Volo.Abp.Uow;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Model;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -30,71 +32,73 @@ public class SaleSchemaService : ApplicationService, ISaleSchemaService
 
     public async Task<bool> Delete(int id)
     {
-      var saleSchema= (await _saleSchemaRepository.GetQueryableAsync()).AsNoTracking().FirstOrDefault(x => x.Id == id);
-        if (saleSchema is null)
-        {
-            throw new UserFriendlyException("شناسه وارد شده معتبر نمیباشد.");
-        }
+        await Validation(id, null);
         await _saleSchemaRepository.DeleteAsync(x => x.Id == id);
         await _attachmentService.DeleteByEntityId(AttachmentEntityEnum.SaleSchema, id);
         return true;
     }
 
-    public async Task<List<SaleSchemaDto>> GetAllSaleSchema()
-    {
-        var saleSchema = await _saleSchemaRepository.GetListAsync();
-        var saleSchemaDto = ObjectMapper.Map<List<SaleSchema>, List<SaleSchemaDto>>(saleSchema);
-        return saleSchemaDto;
-    }
 
-    public async Task<PagedResultDto<SaleSchemaDto>> GetList(SaleSchemaGetListDto input)
+
+    public async Task<List<SaleSchemaDto>> GetList(AttachmentEntityTypeEnum? attachmentType)
     {
         var count = _saleSchemaRepository.WithDetails().Count();
-        var saleSchemaResult = await _saleSchemaRepository.GetQueryableAsync();
-        var saleSchemaList = saleSchemaResult
-            .Skip(input.SkipCount * input.MaxResultCount).Take(input.MaxResultCount)
-            .AsNoTracking()
-            .ToList();
-        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.SaleSchema, saleSchemaList.Select(x => x.Id).ToList(), input.AttachmentType);
-        var saleSchema = ObjectMapper.Map<List<SaleSchema>, List<SaleSchemaDto>>(saleSchemaList);
-        saleSchema.ForEach(x =>
+        var saleSchemas = (await _saleSchemaRepository.GetQueryableAsync()).ToList();
+        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.SaleSchema, saleSchemas.Select(x => x.Id).ToList(), attachmentType);
+        var saleSchemaDto = ObjectMapper.Map<List<SaleSchema>, List<SaleSchemaDto>>(saleSchemas);
+        saleSchemaDto.ForEach(x =>
         {
             var attachment = attachments.Where(y => y.EntityId == x.Id).ToList();
             x.Attachments = ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(attachment);
         });
-        return new PagedResultDto<SaleSchemaDto>
-        {
-            TotalCount = count,
-            Items = saleSchema
-        };
-
+        return saleSchemaDto;
     }
-    [UnitOfWork]
-    public async Task<int> Add(CreateSaleSchemaDto saleSchemaDto)
+    public async Task<SaleSchemaDto> Add(CreateSaleSchemaDto saleSchemaDto)
     {
         var saleSchema = ObjectMapper.Map<CreateSaleSchemaDto, SaleSchema>(saleSchemaDto);
-        await _saleSchemaRepository.InsertAsync(saleSchema, autoSave: true);
-        return saleSchema.Id;
+        var entity = await _saleSchemaRepository.InsertAsync(saleSchema, autoSave: true);
+        return ObjectMapper.Map<SaleSchema, SaleSchemaDto>(entity);
     }
 
-    public async Task<int> Update(CreateSaleSchemaDto saleSchemaDto)
+    public async Task<SaleSchemaDto> Update(CreateSaleSchemaDto saleSchemaDto)
     {
-        var getSaleSchema =(await _saleSchemaRepository.GetQueryableAsync()).AsNoTracking().FirstOrDefault(x=>x.Id== saleSchemaDto.Id);
-        if (getSaleSchema is null)
-        {
-            throw new UserFriendlyException("شناسه وارد شده معتبر نمیباشد.");
-        }
+        await Validation(saleSchemaDto.Id, null);
         var saleSchema = ObjectMapper.Map<CreateSaleSchemaDto, SaleSchema>(saleSchemaDto);
         await _saleSchemaRepository.AttachAsync(saleSchema, t => t.Title, d => d.Description, s => s.SaleStatus);
-        return saleSchema.Id;
+        return await GetById(saleSchemaDto.Id);
     }
 
-    public async Task<Guid> UploadFile(UploadFileDto uploadFile)
+    public async Task<SaleSchemaDto> GetById(int id)
     {
-        return await _attachmentService.UploadFile(AttachmentEntityEnum.SaleSchema, uploadFile);
+        var saleSchema = (await _saleSchemaRepository.GetQueryableAsync())
+            .FirstOrDefault(x => x.Id == id);
+        var saleSchemaDto = ObjectMapper.Map<SaleSchema, SaleSchemaDto>(saleSchema);
+
+        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.SaleSchema, new List<int>() { id });
+        ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(attachments);
+        saleSchemaDto.Attachments = ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(attachments);
+        return saleSchemaDto;
+
     }
 
 
+    public async Task<bool> UploadFile(UploadFileDto uploadFile)
+    {
+        await Validation(uploadFile.Id, null);
+        await _attachmentService.UploadFile(AttachmentEntityEnum.SaleSchema, uploadFile);
+        return true;
+    }
+
+    private async Task<SaleSchema> Validation(int id, SaleSchemaDto saleSchemaDto)
+    {
+        var saleSchema = (await _saleSchemaRepository.GetQueryableAsync()).AsNoTracking()
+            .FirstOrDefault(x => x.Id == id);
+        if (saleSchema is null)
+        {
+            throw new UserFriendlyException(OrderConstant.SaleSchemaNotFound, OrderConstant.SaleSchemaFoundId);
+        }
+        return saleSchema;
+    }
 
 
 }

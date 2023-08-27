@@ -70,6 +70,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
 
         public async Task<Guid> UploadFile(UploadFileDto uploadFile)
         {
+            await Validation(uploadFile.Id,null);
             return await _attachmentService.UploadFile(AttachmentEntityEnum.CarClass, uploadFile);
         }
 
@@ -86,6 +87,17 @@ namespace OrderManagement.Application.OrderManagement.Implementations
            var carClassDto= ObjectMapper.Map<CarClass, CarClassDto>(carClass);
             carClassDto.Attachments = ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(attachments);
             return carClassDto;
+        }
+
+        private async Task<CarClass> Validation(int id, CarClassDto announcementDto)
+        {
+            var carClass = (await _carClassRepository.GetQueryableAsync())
+                .FirstOrDefault(x => x.Id == id);
+            if (carClass is null)
+            {
+                throw new UserFriendlyException(OrderConstant.CarClassNotFound, OrderConstant.CarClassNotFoundId);
+            }
+            return carClass;
         }
     }
 }
