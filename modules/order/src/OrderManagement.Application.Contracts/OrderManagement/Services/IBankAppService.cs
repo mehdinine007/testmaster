@@ -11,7 +11,7 @@ namespace OrderManagement.Application.Contracts.Services
         Task<BankDto> GetById(int id);
         Task<BankDto> Add(BankCreateOrUpdateDto bankCreateOrUpdateDto);
         Task<BankDto> Update(BankCreateOrUpdateDto bankCreateOrUpdateDto);
-        Task<List<BankDto>> GetList(AttachmentEntityTypeEnum? attachmentType);
+        Task<List<BankDto>> GetList(AttachmentEntityTypeEnum attachmentType);
         Task<bool> Delete(int id);
         Task<bool> UploadFile(UploadFileDto uploadFile);
         Task SaveAdvocacyUsersFromBank(List<AdvocacyUsersFromBankDto> advocacyUsersFromBankDto);

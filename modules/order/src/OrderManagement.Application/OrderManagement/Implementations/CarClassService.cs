@@ -33,7 +33,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             return true;
         }
 
-        public async Task<List<CarClassDto>> GetList(AttachmentEntityTypeEnum? attachmentType)
+        public async Task<List<CarClassDto>> GetList(List<AttachmentEntityTypeEnum> attachmentType)
         {
             var carClassesQuery = await _carClassRepository.GetQueryableAsync();
             var carClasses = carClassesQuery.ToList();

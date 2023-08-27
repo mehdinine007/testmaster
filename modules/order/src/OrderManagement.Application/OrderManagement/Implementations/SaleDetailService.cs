@@ -130,7 +130,7 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
             ProductId = x.ProductId,
             Product = ObjectMapper.Map<ProductAndCategory, ProductAndCategoryViewModel>(x.Product)
     }).ToList();
-        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, queryResult.Select(x => x.ProductId).ToList());
+        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, queryResult.Select(x => x.ProductId).ToList(),new List<AttachmentEntityTypeEnum>());
         var saleDetailIds = queryResult.Select(x => x.Id).ToList();
         var saleDetailColors = (await _saleDetailColorRepository.GetQueryableAsync()).Where(x => saleDetailIds.Any(y => y == x.SaleDetailId));
         var colorIds = saleDetailColors.Select(x => x.ColorId);

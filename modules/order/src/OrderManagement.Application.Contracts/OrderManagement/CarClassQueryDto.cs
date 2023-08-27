@@ -10,6 +10,6 @@ namespace OrderManagement.Application.Contracts.OrderManagement
     public class CarClassQueryDto
     {
         public int Id { get; set; }
-        public AttachmentEntityTypeEnum? AttachmentType { get; set; }
+        public List<AttachmentEntityTypeEnum> AttachmentType { get; set; }
     }
 }

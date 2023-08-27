@@ -11,7 +11,9 @@ namespace OrderManagement.Application.Contracts
 {
     public interface IAttachmentService : IApplicationService
     {
-        Task<List<AttachmentDto>> GetList(AttachmentEntityEnum entity,List<int> idList,AttachmentEntityTypeEnum? entityType = null);
+        Task<List<AttachmentDto>> GetList(AttachmentEntityEnum entity,List<int> idList, List<AttachmentEntityTypeEnum> entityType);
+        //Task<List<AttachmentDto>> GetList(AttachmentEntityEnum entity, List<int> idList, AttachmentEntityTypeEnum? entityType = null);
+
         Task<Guid> Update(AttachmentUpdateDto attachment);
         Task<Guid> UploadFile(AttachmentEntityEnum entity, UploadFileDto uploadFile);
         Task<bool> DeleteByEntityId(AttachmentEntityEnum entity,int id);

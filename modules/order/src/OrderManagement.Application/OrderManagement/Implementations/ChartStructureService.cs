@@ -29,7 +29,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             _chartStructureRepository = chartStructureRepository;
             _attachmentService = attachmentService;
         }
-        public async Task<List<ChartStructureDto>> GetList(AttachmentEntityTypeEnum? attachmentType)
+        public async Task<List<ChartStructureDto>> GetList(List<AttachmentEntityTypeEnum> attachmentType)
         {
             var chartStructures = (await _chartStructureRepository.GetQueryableAsync())
                 .OrderBy(x => x.Priority)
@@ -64,7 +64,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
         public async Task<ChartStructureDto> GetById(int id)
         {
             var chartStructure = await Validation(id);
-            var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ChartStructure, new List<int>() { id });
+            var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ChartStructure, new List<int>() { id },new List<AttachmentEntityTypeEnum>());
             var chartStructureDto = ObjectMapper.Map<ChartStructure, ChartStructureDto>(chartStructure);
             chartStructureDto.Attachments = ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(attachments);
             return chartStructureDto;
