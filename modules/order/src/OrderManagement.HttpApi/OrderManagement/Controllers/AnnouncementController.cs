@@ -37,7 +37,8 @@ public class AnnouncementController : Controller, IAnnouncementService
     [HttpGet]
     public Task<List<AnnouncementDto>> GetAllAnnouncement()
     => _announcementService.GetAllAnnouncement();
-    [HttpGet]
+
+     [HttpGet]
     public Task<PagedResultDto<AnnouncementDto>> GetPagination(AnnouncementGetListDto input)
     => _announcementService.GetPagination(input);
     [HttpPost]
@@ -47,8 +48,10 @@ public class AnnouncementController : Controller, IAnnouncementService
     public Task<int> Update(CreateAnnouncementDto announcementDto)
     => _announcementService.Update(announcementDto);
     [HttpPost]
-    public Task<bool> UploadFile([FromForm]UploadFileDto uploadFile)
+    public Task<bool> UploadFile([FromForm] UploadFileDto uploadFile)
    => _announcementService.UploadFile(uploadFile);
+    //public Task<AnnouncementDto> GetById(int id)
+    //=> _announcementService.GetById(id);
 
     
 }

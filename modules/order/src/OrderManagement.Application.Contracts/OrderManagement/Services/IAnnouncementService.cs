@@ -17,5 +17,6 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Services
         Task<int> Update(CreateAnnouncementDto announcementDto);
         Task<bool> Delete(int id);
         Task<bool> UploadFile(UploadFileDto uploadFile);
+        //Task<AnnouncementDto> GetById(int id);
     }
 }

@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="PaymentManagement\Protos\GatewayGrpcService.proto" />
+    <None Remove="PaymentManagement\Protos\GatewayGrpcService.proto" GrpcServices="Server"/>
   </ItemGroup>
 
   <ItemGroup>
