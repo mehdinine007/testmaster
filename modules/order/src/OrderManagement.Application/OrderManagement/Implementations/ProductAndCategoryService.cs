@@ -65,6 +65,7 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
 
     public async Task<ProductAndCategoryWithChildDto> GetById(int id , bool hasProperty, List<AttachmentEntityTypeEnum> attachmentType = null)
     {
+        await Validation(id, null);
         var query = await _productAndCategoryRepository.GetQueryableAsync();
         if (!_commonAppService.IsInRole("Admin"))
             query = query.Where(x => x.Active);

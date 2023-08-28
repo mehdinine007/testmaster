@@ -89,7 +89,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
 
         public async Task<SiteStructureDto> GetById(int id, List<AttachmentEntityTypeEnum> attachmentsType = null)
         {
-
+            await Validation(id, null);
             var siteSt = (await _siteStructureRepository.GetQueryableAsync())
                 .FirstOrDefault(x => x.Id == id);
                 var siteStructure = ObjectMapper.Map<SiteStructure, SiteStructureDto>(siteSt);
