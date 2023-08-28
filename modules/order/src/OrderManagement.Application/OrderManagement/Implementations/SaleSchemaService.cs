@@ -70,6 +70,7 @@ public class SaleSchemaService : ApplicationService, ISaleSchemaService
 
     public async Task<SaleSchemaDto> GetById(int id, List<AttachmentEntityTypeEnum> attachmentType = null)
     {
+        await Validation(id, null);
         var saleSchema = (await _saleSchemaRepository.GetQueryableAsync())
             .FirstOrDefault(x => x.Id == id);
         var saleSchemaDto = ObjectMapper.Map<SaleSchema, SaleSchemaDto>(saleSchema);
