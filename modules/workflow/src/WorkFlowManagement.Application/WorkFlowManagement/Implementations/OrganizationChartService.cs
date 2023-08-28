@@ -13,8 +13,10 @@ using WorkFlowManagement.Application.Contracts.WorkFlowManagement.Dtos;
 using Volo.Abp.ObjectMapping;
 using NPOI.SS.Formula.Functions;
 using Core.Utility.Tools;
+using WorkFlowManagement.Application.Contracts.WorkFlowManagement.Constants;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Model;
 
-namespace WorkFlowManagement.Application.OrderManagement.Implementations
+namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
 {
     public class OrganizationChartService : ApplicationService, IOrganizationChartService
     {
@@ -27,18 +29,19 @@ namespace WorkFlowManagement.Application.OrderManagement.Implementations
 
         public async Task<OrganizationChartDto> GetById(int id)
         {
-          var organizationChart=await Validation(id, null);
+            var organizationChart = await Validation(id, null);
             var organizationChartDto = ObjectMapper.Map<OrganizationChart, OrganizationChartDto>(organizationChart);
             return organizationChartDto;
         }
 
         public async Task<OrganizationChartDto> Add(OrganizationChartCreateOrUpdateDto organizationChartCreateOrUpdateDto)
         {
+            await Validation(organizationChartCreateOrUpdateDto.Id, organizationChartCreateOrUpdateDto);
             var _parentCode = "";
             var igResult = await _organizationChartRepository.GetQueryableAsync();
             int codeLength = 4;
             if (organizationChartCreateOrUpdateDto.ParentId.HasValue && organizationChartCreateOrUpdateDto.ParentId.Value > 0)
-            _parentCode = igResult.FirstOrDefault(x => x.Id == organizationChartCreateOrUpdateDto.ParentId).Code;
+                _parentCode = igResult.FirstOrDefault(x => x.Id == organizationChartCreateOrUpdateDto.ParentId).Code;
             var _maxCode = igResult.Where(x => x.ParentId == organizationChartCreateOrUpdateDto.ParentId).Max(x => x.Code);
             if (string.IsNullOrWhiteSpace(_maxCode))
                 _maxCode = "1";
@@ -53,7 +56,7 @@ namespace WorkFlowManagement.Application.OrderManagement.Implementations
 
         public async Task<OrganizationChartDto> Update(OrganizationChartCreateOrUpdateDto organizationChartCreateOrUpdateDto)
         {
-            var OrganizationChart = await Validation(organizationChartCreateOrUpdateDto.Id, null);
+            var OrganizationChart = await Validation(organizationChartCreateOrUpdateDto.Id, organizationChartCreateOrUpdateDto);
             OrganizationChart.Status = organizationChartCreateOrUpdateDto.Status;
             OrganizationChart.Title = organizationChartCreateOrUpdateDto.Title;
             var entity = await _organizationChartRepository.UpdateAsync(OrganizationChart);
@@ -62,7 +65,8 @@ namespace WorkFlowManagement.Application.OrderManagement.Implementations
 
         public async Task<List<OrganizationChartDto>> GetList()
         {
-            var organizationsChart = (await _organizationChartRepository.GetQueryableAsync()).ToList();
+            var organizationsChart = (await _organizationChartRepository.GetQueryableAsync()).Include(x => x.Childrens).ToList();
+
             var organizationsChartDto = ObjectMapper.Map<List<OrganizationChart>, List<OrganizationChartDto>>(organizationsChart);
             return organizationsChartDto;
         }
@@ -74,13 +78,19 @@ namespace WorkFlowManagement.Application.OrderManagement.Implementations
             return true;
         }
 
-        private async Task<OrganizationChart> Validation(int id, OrganizationChartDto organizationChartDto)
+        private async Task<OrganizationChart> Validation(int id, OrganizationChartCreateOrUpdateDto organizationChartDto)
         {
-            var organizationChart = (await _organizationChartRepository.GetQueryableAsync()).AsNoTracking()
-                .FirstOrDefault(x => x.Id == id);
+            var organizationChartQuery = await _organizationChartRepository.GetQueryableAsync();
+            var organizationChart = organizationChartQuery.FirstOrDefault(x => x.Id == id);
+
             if (organizationChart is null)
             {
-                //throw new UserFriendlyException(OrderConstant.ProductAndCategoryNotFound, OrderConstant.ProductAndCategoryFoundId);
+                throw new UserFriendlyException(WorkFlowConstant.OrganizationChartNotFound, WorkFlowConstant.OrganizationChartNotFoundId);
+            }
+            var duplicateTitle = organizationChartQuery.Where(x => x.Title == organizationChartDto.Title && x.ParentId == organizationChartDto.ParentId).FirstOrDefault();
+            if (duplicateTitle is not null)
+            {
+                throw new UserFriendlyException(WorkFlowConstant.OrganizationChartDuplicate, WorkFlowConstant.OrganizationChartDuplicateId);
             }
             return organizationChart;
         }

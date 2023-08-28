@@ -13,6 +13,7 @@ namespace WorkFlowManagement.Application.Contracts.WorkFlowManagement.Dtos
         public bool Status { get; set; }
         public string? Description { get; set; }
         public int? ParentId { get; set; }
-       }
+        public virtual ICollection<OrganizationChartDto> Childrens { get; set; }
+    }
     }
 
