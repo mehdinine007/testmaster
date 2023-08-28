@@ -36,7 +36,7 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
 
         public async Task<OrganizationChartDto> Add(OrganizationChartCreateOrUpdateDto organizationChartCreateOrUpdateDto)
         {
-            await Validation(organizationChartCreateOrUpdateDto.Id, organizationChartCreateOrUpdateDto);
+            await Validation(null, organizationChartCreateOrUpdateDto);
             var _parentCode = "";
             var igResult = await _organizationChartRepository.GetQueryableAsync();
             int codeLength = 5;
@@ -78,20 +78,38 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
             return true;
         }
 
-        private async Task<OrganizationChart> Validation(int id, OrganizationChartCreateOrUpdateDto organizationChartDto)
+        private async Task<OrganizationChart> Validation(int? id, OrganizationChartCreateOrUpdateDto organizationChartDto)
         {
+            var organizationChart = new OrganizationChart();
             var organizationChartQuery = await _organizationChartRepository.GetQueryableAsync();
-            var organizationChart = organizationChartQuery.FirstOrDefault(x => x.Id == id);
-
-            if (organizationChart is null)
+            if (id != null)
             {
-                throw new UserFriendlyException(WorkFlowConstant.OrganizationChartNotFound, WorkFlowConstant.OrganizationChartNotFoundId);
+                organizationChart = organizationChartQuery.FirstOrDefault(x => x.Id == id);
+                if (organizationChart is null)
+                {
+                    throw new UserFriendlyException(WorkFlowConstant.OrganizationChartNotFound, WorkFlowConstant.OrganizationChartNotFoundId);
+                }
             }
+            if (organizationChartDto != null)
+            {
+                if (organizationChartDto.ParentId != null)
+                {
+                    var parent = organizationChartQuery.FirstOrDefault(x => x.Id == organizationChartDto.ParentId);
+                    if (parent is null)
+                    {
+                        throw new UserFriendlyException(WorkFlowConstant.OrganizationChartParentNotFound, WorkFlowConstant.OrganizationChartParentNotFoundId);
+                    }
+                }
+
+            }
+
+
             var duplicateTitle = organizationChartQuery.Where(x => x.Title == organizationChartDto.Title && x.ParentId == organizationChartDto.ParentId).FirstOrDefault();
             if (duplicateTitle is not null)
             {
                 throw new UserFriendlyException(WorkFlowConstant.OrganizationChartDuplicate, WorkFlowConstant.OrganizationChartDuplicateId);
             }
+
             return organizationChart;
         }
     }

@@ -13,6 +13,7 @@ namespace WorkFlowManagement.Application.Contracts.WorkFlowManagement.Constants
         public static string OrganizationChartNotFoundId = "1002";
         public static string OrganizationChartDuplicate = "عنوان جارت سازمان تکراری میباشد";
         public static string OrganizationChartDuplicateId = "1003";
-
+        public static string OrganizationChartParentNotFound = "چارت سازمان سطح بالایی وجود ندارد";
+        public static string OrganizationChartParentNotFoundId= "1004";
     }
 }
