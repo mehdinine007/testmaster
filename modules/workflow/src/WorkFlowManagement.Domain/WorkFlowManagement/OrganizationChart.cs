@@ -10,6 +10,10 @@ namespace WorkFlowManagement.Domain.WorkFlowManagement
 {
     public class OrganizationChart : FullAuditedEntity<int>
     {
+        public OrganizationChart()
+        {
+            Childrens = new HashSet<OrganizationChart>();
+        }
         public string Code { get; set; }
         public string Title { get; set; }
         public bool Status { get; set; }
