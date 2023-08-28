@@ -12,7 +12,7 @@ namespace WorkFlowService.Host.EntityFrameworkCore
             var configuration = BuildConfiguration();
 
             var builder = new DbContextOptionsBuilder<WorkFlowServiceMigrationDbContext>()
-                .UseSqlServer(configuration.GetConnectionString("OrderManagement"));
+                .UseSqlServer(configuration.GetConnectionString("WorkflowManagement"));
 
             return new WorkFlowServiceMigrationDbContext(builder.Options);
         }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore;
+using WorkFlowManagement.EntityFrameworkCore;
 
 namespace WorkFlowService.Host.EntityFrameworkCore
 {
@@ -16,7 +17,7 @@ namespace WorkFlowService.Host.EntityFrameworkCore
         {
             base.OnModelCreating(modelBuilder);
 
-            //modelBuilder.ConfigureOrderManagement();
+            modelBuilder.ConfigureWorkFlowManagement();
         }
     }
 }

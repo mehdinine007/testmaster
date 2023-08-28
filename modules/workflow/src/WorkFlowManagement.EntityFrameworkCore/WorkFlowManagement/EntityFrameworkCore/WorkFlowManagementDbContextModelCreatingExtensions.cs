@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Volo.Abp;
+using WorkFlowManagement.Domain.WorkFlowManagement;
 
 namespace WorkFlowManagement.EntityFrameworkCore
 {
@@ -13,7 +14,23 @@ namespace WorkFlowManagement.EntityFrameworkCore
 
             var options = new WorkFlowManagementModelBuilderConfigurationOptions();
 
-            optionsAction?.Invoke(options);            
+            optionsAction?.Invoke(options);
+
+            builder.Entity<OrganizationChart>(entity =>
+            {
+                entity.ToTable(nameof(OrganizationChart));
+
+                entity.HasOne<OrganizationChart>(x => x.Parent)
+                    .WithMany(x => x.Childrens)
+                    .HasForeignKey(x => x.ParentId)
+                    .OnDelete(DeleteBehavior.ClientCascade);
+
+                entity.Property(x => x.Code)
+                    .HasMaxLength(250);
+
+                entity.Property(x => x.Title)
+                    .HasMaxLength(250);
+            });
         }
     }
 }
