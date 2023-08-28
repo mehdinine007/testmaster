@@ -1,12 +1,82 @@
+using EasyCaching.Host.Extensions;
+using Microsoft.IdentityModel.Logging;
+using Microsoft.OpenApi.Models;
+using UserManagement.Application;
+using UserManagement.EfCore.EntityFrameworkCore;
+using UserManagement.HttpApi.UserManagement;
+using Volo.Abp.AspNetCore.Mvc;
+using Volo.Abp.Auditing;
+using Volo.Abp.AuditLogging.EntityFrameworkCore;
+using Volo.Abp.Autofac;
+using Volo.Abp.EntityFrameworkCore;
+using Volo.Abp.EntityFrameworkCore.SqlServer;
+using Volo.Abp.Modularity;
+using Volo.Abp.TenantManagement.EntityFrameworkCore;
+using Volo.Abp.Uow;
+using UserService.Host.Infrastructures;
+
 namespace UserService.Host;
 
-public class WeatherForecast
+[DependsOn(
+    typeof(AbpAutofacModule),
+    typeof(AbpAspNetCoreMvcModule),
+    typeof(AbpEntityFrameworkCoreSqlServerModule),
+    typeof(AbpAuditLoggingEntityFrameworkCoreModule),
+    typeof(UserManagementApplicationModule),
+    typeof(UserManagementHttpApiModule),
+    typeof(UserManagementEfCoreModule),
+    typeof(AbpTenantManagementEntityFrameworkCoreModule)
+    //typeof(AbpBackgroundJobsHangfireModule)
+    )]
+    
+public class UserServiceHostModule : AbpModule
 {
-    public DateOnly Date { get; set; }
+    public override void ConfigureServices(ServiceConfigurationContext context)
+    {
+        var configuration = context.Services.GetConfiguration();
+        context.Services.Configure<AppSecret>(configuration.GetSection("Authentication:JwtBearer"));
 
-    public int TemperatureC { get; set; }
+        if (configuration.GetValue<bool?>("SwaggerIsEnable") ?? false)
+        {
+            context.Services.AddSwaggerGen(options =>
+            {
+                options.SwaggerDoc("v1", new OpenApiInfo { Title = "User Service API", Version = "v1" });
+                options.DocInclusionPredicate((docName, description) => true);
+                options.CustomSchemaIds(type => type.FullName);
+            });
+        }
 
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+        Configure<AbpDbContextOptions>(options =>
+        {
+            options.UseSqlServer();
+        });
 
-    public string? Summary { get; set; }
+        Configure<AbpUnitOfWorkDefaultOptions>(options =>
+        {
+            options.TransactionBehavior = UnitOfWorkTransactionBehavior.Disabled;
+        });
+
+        context.Services.AddStackExchangeRedisCache(options =>
+        {
+            options.Configuration = configuration["Redis:Configuration"];
+        });
+
+        Configure<AbpAuditingOptions>(options =>
+        {
+            options.IsEnabledForGetRequests = true;
+        });
+
+        using var scope = context.Services.BuildServiceProvider();
+        var service = scope.GetRequiredService<IActionResultWrapperFactory>();
+
+        context.Services.AddControllers(x =>
+        {
+            x.Filters.Add(new EsaleResultFilter(service));
+        });
+        IdentityModelEventSource.ShowPII = true;
+        //ConfigureHangfire(context, configuration);
+
+        context.Services.AddGrpc();
+        context.Services.EasyCaching(configuration, "RedisCache:ConnectionString");
+    }
 }
