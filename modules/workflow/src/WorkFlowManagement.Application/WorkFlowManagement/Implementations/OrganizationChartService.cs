@@ -36,7 +36,7 @@ namespace WorkFlowManagement.Application.OrderManagement.Implementations
         {
             var _parentCode = "";
             var igResult = await _organizationChartRepository.GetQueryableAsync();
-            int codeLength = 4;
+            int codeLength = 5;
             if (organizationChartCreateOrUpdateDto.ParentId.HasValue && organizationChartCreateOrUpdateDto.ParentId.Value > 0)
             _parentCode = igResult.FirstOrDefault(x => x.Id == organizationChartCreateOrUpdateDto.ParentId).Code;
             var _maxCode = igResult.Where(x => x.ParentId == organizationChartCreateOrUpdateDto.ParentId).Max(x => x.Code);
