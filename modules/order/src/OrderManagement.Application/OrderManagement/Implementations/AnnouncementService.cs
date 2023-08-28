@@ -118,6 +118,7 @@ public class AnnouncementService : ApplicationService, IAnnouncementService
 
     public async Task<AnnouncementDto> GetById(int id, List<AttachmentEntityTypeEnum> attachmentType = null)
     {
+        var announc= await Validation(id, null);
         var announcement = (await _announcementRepository.GetQueryableAsync()).AsNoTracking()
             .FirstOrDefault(x => x.Id == id);
         var announcementDto= ObjectMapper.Map<Announcement, AnnouncementDto>(announcement);
