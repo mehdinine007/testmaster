@@ -173,7 +173,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
         public async Task<List<AttachmentDto>> GetList(AttachmentEntityEnum entity, List<int> entityIds, List<AttachmentEntityTypeEnum> entityType=null )
         {
             var iqAttachment = await _attachementRepository.GetQueryableAsync();
-            if (entityType is null && entityType.Count() == 0)
+            if (entityType is null || entityType.Count==0)
                 iqAttachment = iqAttachment
                     .Where(x => x.Entity == entity && entityIds.Contains(x.EntityId));
             else
