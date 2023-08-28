@@ -65,8 +65,7 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
 
         public async Task<List<OrganizationChartDto>> GetList()
         {
-            var organizationsChart = (await _organizationChartRepository.GetQueryableAsync()).Include(x => x.Childrens).ToList();
-
+            var organizationsChart = (await _organizationChartRepository.GetQueryableAsync()).Include(x => x.Childrens).Where(x=>x.ParentId==null).ToList();
             var organizationsChartDto = ObjectMapper.Map<List<OrganizationChart>, List<OrganizationChartDto>>(organizationsChart);
             return organizationsChartDto;
         }
