@@ -15,8 +15,4 @@
     <ProjectReference Include="..\WorkFlowManagement.Application\WorkFlowManagement.Application.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="WorkFlowManagement\Controllers\" />
-  </ItemGroup>
-
 </Project>

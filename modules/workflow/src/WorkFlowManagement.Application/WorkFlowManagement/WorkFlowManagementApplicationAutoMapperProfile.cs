@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using WorkFlowManagement.Application.Contracts.WorkFlowManagement.Dtos;
+using WorkFlowManagement.Domain.WorkFlowManagement;
 
 namespace WorkFlowManagement.Application
 {
@@ -6,6 +8,10 @@ namespace WorkFlowManagement.Application
     {
         public WorkFlowManagementApplicationAutoMapperProfile()
         {
+            CreateMap<OrganizationChart, OrganizationChartDto>()
+               .ReverseMap();
+            CreateMap<OrganizationChart, OrganizationChartCreateOrUpdateDto>()
+             .ReverseMap();
         }
     }
 }

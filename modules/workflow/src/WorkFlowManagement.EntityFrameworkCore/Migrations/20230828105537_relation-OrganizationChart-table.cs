@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace WorkFlowManagement.EntityFrameworkCore.Migrations
 {
     /// <inheritdoc />
-    public partial class addorganizationcharttable : Migration
+    public partial class relationOrganizationCharttable : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -21,7 +21,7 @@ namespace WorkFlowManagement.EntityFrameworkCore.Migrations
                     Title = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true),
                     Status = table.Column<bool>(type: "bit", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ParentId = table.Column<int>(type: "int", nullable: false),
+                    ParentId = table.Column<int>(type: "int", nullable: true),
                     CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),

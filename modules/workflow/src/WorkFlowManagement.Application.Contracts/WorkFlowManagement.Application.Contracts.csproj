@@ -16,8 +16,4 @@
     <ProjectReference Include="..\WorkFlowManagement.Domain.Shared\WorkFlowManagement.Domain.Shared.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="WorkFlowManagement\Dtos\" />
-  </ItemGroup>
-
 </Project>

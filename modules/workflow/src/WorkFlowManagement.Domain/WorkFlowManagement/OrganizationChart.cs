@@ -1,4 +1,5 @@
-﻿using System;
+﻿#nullable disable
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,12 +10,12 @@ namespace WorkFlowManagement.Domain.WorkFlowManagement
 {
     public class OrganizationChart : FullAuditedEntity<int>
     {
-        public string? Code { get; set; }
-        public string? Title { get; set; }
+        public string Code { get; set; }
+        public string Title { get; set; }
         public bool Status { get; set; }
-        public string? Description { get; set; }
+        public string Description { get; set; }
         public int? ParentId { get; set; }
         public virtual OrganizationChart Parent { get; set; }
-        public virtual ICollection<OrganizationChart> Childrens { get;set; }
-        }
-        }
+        public virtual ICollection<OrganizationChart> Childrens { get; set; }
+    }
+}

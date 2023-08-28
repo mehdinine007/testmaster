@@ -13,8 +13,8 @@ using WorkFlowManagement.EntityFrameworkCore;
 namespace WorkFlowManagement.EntityFrameworkCore.Migrations
 {
     [DbContext(typeof(WorkFlowManagementDbContext))]
-    [Migration("20230828045456_add-organizationchart-table")]
-    partial class addorganizationcharttable
+    [Migration("20230828105537_relation-OrganizationChart-table")]
+    partial class relationOrganizationCharttable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -73,7 +73,6 @@ namespace WorkFlowManagement.EntityFrameworkCore.Migrations
                         .HasColumnName("LastModifierId");
 
                     b.Property<int?>("ParentId")
-                        .IsRequired()
                         .HasColumnType("int");
 
                     b.Property<bool>("Status")
@@ -95,8 +94,7 @@ namespace WorkFlowManagement.EntityFrameworkCore.Migrations
                     b.HasOne("WorkFlowManagement.Domain.WorkFlowManagement.OrganizationChart", "Parent")
                         .WithMany("Childrens")
                         .HasForeignKey("ParentId")
-                        .OnDelete(DeleteBehavior.ClientCascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.ClientCascade);
 
                     b.Navigation("Parent");
                 });

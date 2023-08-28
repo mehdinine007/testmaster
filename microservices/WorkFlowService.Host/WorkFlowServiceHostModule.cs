@@ -18,10 +18,7 @@ using Volo.Abp.TenantManagement.EntityFrameworkCore;
 using Volo.Abp.Threading;
 using Volo.Abp.Uow;
 using Microsoft.IdentityModel.Logging;
-using Volo.Abp.BackgroundJobs.Hangfire;
-using Hangfire;
 using Microsoft.Extensions.Configuration;
-using Volo.Abp.Hangfire;
 using EasyCaching.Host.Extensions;
 using Microsoft.EntityFrameworkCore;
 using WorkFlowManagement.Application;
@@ -43,25 +40,24 @@ namespace WorkFlowService.Host
         typeof(WorkFlowManagementHttpApiModule),
         typeof(WorkFlowManagementEntityFrameworkCoreModule),
         //typeof(AbpAspNetCoreMultiTenancyModule),
-        typeof(AbpTenantManagementEntityFrameworkCoreModule),
-        typeof(AbpBackgroundJobsHangfireModule)
+        typeof(AbpTenantManagementEntityFrameworkCoreModule)
+
         )]
     public class WorkFlowServiceHostModule : AbpModule
     {
         public override void ConfigureServices(ServiceConfigurationContext context)
         {
             var configuration = context.Services.GetConfiguration();
-            
-            
-            if (configuration.GetValue<bool?>("SwaggerIsEnable") ?? false)
-            {
+
+
+           
                 context.Services.AddSwaggerGen(options =>
                 {
                     options.SwaggerDoc("v1", new OpenApiInfo { Title = "Order Service API", Version = "v1" });
                     options.DocInclusionPredicate((docName, description) => true);
                     options.CustomSchemaIds(type => type.FullName);
                 });
-            }
+          
 
             Configure<AbpLocalizationOptions>(options =>
             {
@@ -107,9 +103,9 @@ namespace WorkFlowService.Host
 
            
             IdentityModelEventSource.ShowPII = true;
-            ConfigureHangfire(context, configuration);
+            //ConfigureHangfire(context, configuration);
 
-            context.Services.AddGrpc();
+            //context.Services.AddGrpc();
             context.Services.EasyCaching(configuration, "RedisCache:ConnectionString");
             //context.Services.AddMongoDbContext<OrderManagementMongoDbContext>(options =>
             //{
@@ -120,14 +116,14 @@ namespace WorkFlowService.Host
             //context.Services.AddDataProtection()
             //    .PersistKeysToStackExchangeRedis(redis, "MsDemo-DataProtection-Keys");
         }
-        private void ConfigureHangfire(ServiceConfigurationContext context, IConfiguration configuration)
-        {
-            context.Services.AddHangfire(config =>
-            {
-                config.UseSqlServerStorage(configuration.GetConnectionString("OrderHangfire"));
-            });
+        //private void ConfigureHangfire(ServiceConfigurationContext context, IConfiguration configuration)
+        //{
+        //    //context.Services.AddHangfire(config =>
+        //    //{
+        //    //    config.UseSqlServerStorage(configuration.GetConnectionString("OrderHangfire"));
+        //    //});
 
-        }
+        //}
 
         public override void OnApplicationInitialization(ApplicationInitializationContext context)
         {
@@ -138,14 +134,7 @@ namespace WorkFlowService.Host
             app.UseAuthentication();
             app.UseAbpClaimsMap();
 
-            //if (MsDemoConsts.IsMultiTenancyEnabled)
-            //{
-            //    app.UseMultiTenancy();
-            //}
-            //app.UseEndpoints(endpoints =>
-            //{
-            //    endpoints.MapGrpcService<GrpcTestService>();
-            //});
+           
             app.UseAbpRequestLocalization(); //TODO: localization?
             app.UseSwagger();
             app.UseSwaggerUI(options =>
@@ -154,8 +143,6 @@ namespace WorkFlowService.Host
             });
 
             app.UseAuditing();
-            app.UseHangfireDashboard();
-            app.UseHangfireDashboard("/hangfire");
             app.UseConfiguredEndpoints();
             //TODO: Problem on a clustered environment
             AsyncHelper.RunSync(async () =>

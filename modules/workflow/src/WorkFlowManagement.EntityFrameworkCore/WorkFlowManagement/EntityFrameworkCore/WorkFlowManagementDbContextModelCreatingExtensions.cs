@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Volo.Abp;
 using WorkFlowManagement.Domain.WorkFlowManagement;
+using Volo.Abp.EntityFrameworkCore.Modeling;
 
 namespace WorkFlowManagement.EntityFrameworkCore
 {

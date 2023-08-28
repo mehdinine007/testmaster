@@ -30,7 +30,7 @@ public class WorkFlowManagementDomainModule : AbpModule
 
         Configure<AbpExceptionLocalizationOptions>(options =>
         {
-            options.MapCodeNamespace("GatewayManagement", typeof(WorkFlowManagementResource));
+            options.MapCodeNamespace("WorkFlowManagement", typeof(WorkFlowManagementResource));
         });
     }
 }
