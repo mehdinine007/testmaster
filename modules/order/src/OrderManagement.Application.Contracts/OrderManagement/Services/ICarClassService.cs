@@ -11,7 +11,7 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Services
 {
     public interface ICarClassService: IApplicationService
     {
-        Task<List<CarClassDto>> GetList(List<AttachmentEntityTypeEnum> attachmentType);
+        Task<List<CarClassDto>> GetList(List<AttachmentEntityTypeEnum>? attachmentType=null);
         Task<CarClassDto> GetById(CarClassQueryDto carClassQueryDto);
         Task<CarClassDto> Add(CarClassCreateDto carClassDto);
         Task<CarClassDto> Update(CarClassCreateDto carClassDto);

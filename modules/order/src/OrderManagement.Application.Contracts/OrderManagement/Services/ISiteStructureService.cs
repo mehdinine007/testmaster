@@ -10,7 +10,7 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Services
 {
     public interface ISiteStructureService : IApplicationService
     {
-        Task<SiteStructureDto> GetById(int id);
+        Task<SiteStructureDto> GetById(int id,List<AttachmentEntityTypeEnum> attachmentType =null);
         Task<List<SiteStructureDto>> GetList(SiteStructureQueryDto siteStructureQuery);
         Task<SiteStructureDto> Add(SiteStructureAddOrUpdateDto siteStructureDto);
         Task<SiteStructureDto> Update(SiteStructureAddOrUpdateDto siteStructureDto);
