@@ -27,8 +27,8 @@ public class SiteStructureController : Controller
         => _siteStructureService = siteStructureService;
 
     [HttpGet]
-    public Task<SiteStructureDto> GetById(int id)
-    => _siteStructureService.GetById(id);
+    public Task<SiteStructureDto> GetById(int id, List<AttachmentEntityTypeEnum> attachmentType = null)
+    => _siteStructureService.GetById(id, attachmentType);
 
 
     [HttpGet]

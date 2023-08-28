@@ -116,11 +116,16 @@ public class AnnouncementService : ApplicationService, IAnnouncementService
 
 
 
-    public async Task<AnnouncementDto> GetById(int id)
+    public async Task<AnnouncementDto> GetById(int id, List<AttachmentEntityTypeEnum> attachmentType = null)
     {
         var announcement = (await _announcementRepository.GetQueryableAsync()).AsNoTracking()
             .FirstOrDefault(x => x.Id == id);
-        return ObjectMapper.Map<Announcement, AnnouncementDto>(announcement);
+        var announcementDto= ObjectMapper.Map<Announcement, AnnouncementDto>(announcement);
+        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.Announcement, new List<int>() { id }, attachmentType);
+       
+            announcementDto.Attachments = ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(attachments);
+        
+        return announcementDto;
     }
 
 
