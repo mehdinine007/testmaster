@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Domain.Entities.Auditing;
+using WorkFlowManagement.Domain.Shared.WorkFlowManagement.Enums;
 
 namespace WorkFlowManagement.Domain.WorkFlowManagement
 {
@@ -21,5 +22,9 @@ namespace WorkFlowManagement.Domain.WorkFlowManagement
         public int? ParentId { get; set; }
         public virtual OrganizationChart Parent { get; set; }
         public virtual ICollection<OrganizationChart> Childrens { get; set; }
+        public virtual ICollection<OrganizationPosition> OrganizationPositions { get; set; }
+        public OrganizationTypeEnum OrganizationType { get; set; }
+
+
     }
 }

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Volo.Abp.EntityFrameworkCore;
 using WorkFlowManagement.EntityFrameworkCore;
@@ -12,9 +13,11 @@ using WorkFlowManagement.EntityFrameworkCore;
 namespace WorkFlowManagement.EntityFrameworkCore.Migrations
 {
     [DbContext(typeof(WorkFlowManagementDbContext))]
-    partial class WorkFlowManagementDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230829055955_add_organization_table")]
+    partial class addorganizationtable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -69,9 +72,6 @@ namespace WorkFlowManagement.EntityFrameworkCore.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("LastModifierId");
 
-                    b.Property<int>("OrganizationType")
-                        .HasColumnType("int");
-
                     b.Property<int?>("ParentId")
                         .HasColumnType("int");
 
@@ -86,7 +86,7 @@ namespace WorkFlowManagement.EntityFrameworkCore.Migrations
 
                     b.HasIndex("ParentId");
 
-                    b.ToTable("OrganizationCharts", (string)null);
+                    b.ToTable("OrganizationChart", (string)null);
                 });
 
             modelBuilder.Entity("WorkFlowManagement.Domain.WorkFlowManagement.OrganizationPosition", b =>
@@ -144,9 +144,10 @@ namespace WorkFlowManagement.EntityFrameworkCore.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("OrganizationChartId");
+                    b.HasIndex("OrganizationChartId")
+                        .IsUnique();
 
-                    b.ToTable("OrganizationPositions", (string)null);
+                    b.ToTable("OrganizationPosition", (string)null);
                 });
 
             modelBuilder.Entity("WorkFlowManagement.Domain.WorkFlowManagement.OrganizationChart", b =>
@@ -162,8 +163,8 @@ namespace WorkFlowManagement.EntityFrameworkCore.Migrations
             modelBuilder.Entity("WorkFlowManagement.Domain.WorkFlowManagement.OrganizationPosition", b =>
                 {
                     b.HasOne("WorkFlowManagement.Domain.WorkFlowManagement.OrganizationChart", "OrganizationChart")
-                        .WithMany("OrganizationPositions")
-                        .HasForeignKey("OrganizationChartId")
+                        .WithOne("OrganizationPosition")
+                        .HasForeignKey("WorkFlowManagement.Domain.WorkFlowManagement.OrganizationPosition", "OrganizationChartId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -174,7 +175,7 @@ namespace WorkFlowManagement.EntityFrameworkCore.Migrations
                 {
                     b.Navigation("Childrens");
 
-                    b.Navigation("OrganizationPositions");
+                    b.Navigation("OrganizationPosition");
                 });
 #pragma warning restore 612, 618
         }

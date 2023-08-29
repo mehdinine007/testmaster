@@ -19,7 +19,7 @@ namespace WorkFlowManagement.EntityFrameworkCore
 
             builder.Entity<OrganizationChart>(entity =>
             {
-                entity.ToTable(nameof(OrganizationChart));
+                entity.ToTable("OrganizationCharts");
 
                 entity.HasOne<OrganizationChart>(x => x.Parent)
                     .WithMany(x => x.Childrens)
@@ -31,7 +31,20 @@ namespace WorkFlowManagement.EntityFrameworkCore
 
                 entity.Property(x => x.Title)
                     .HasMaxLength(250);
+
+                
+
             });
+
+
+            builder.Entity<OrganizationPosition>(entity =>
+            {
+                entity.ToTable("OrganizationPositions");
+                entity.HasOne<OrganizationChart>(x => x.OrganizationChart)
+                    .WithMany(x => x.OrganizationPositions)
+                    .HasForeignKey(x => x.OrganizationChartId);
+            });
+
         }
     }
 }

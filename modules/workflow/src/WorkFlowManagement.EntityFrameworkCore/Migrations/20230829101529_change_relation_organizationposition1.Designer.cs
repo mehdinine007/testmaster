@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Volo.Abp.EntityFrameworkCore;
 using WorkFlowManagement.EntityFrameworkCore;
@@ -12,9 +13,11 @@ using WorkFlowManagement.EntityFrameworkCore;
 namespace WorkFlowManagement.EntityFrameworkCore.Migrations
 {
     [DbContext(typeof(WorkFlowManagementDbContext))]
-    partial class WorkFlowManagementDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230829101529_change_relation_organizationposition1")]
+    partial class changerelationorganizationposition1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -68,9 +71,6 @@ namespace WorkFlowManagement.EntityFrameworkCore.Migrations
                     b.Property<Guid?>("LastModifierId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("LastModifierId");
-
-                    b.Property<int>("OrganizationType")
-                        .HasColumnType("int");
 
                     b.Property<int?>("ParentId")
                         .HasColumnType("int");
