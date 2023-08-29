@@ -99,15 +99,16 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
                         throw new UserFriendlyException(WorkFlowConstant.OrganizationChartParentNotFound, WorkFlowConstant.OrganizationChartParentNotFoundId);
                     }
                 }
+                var duplicateTitle = organizationChartQuery.Where(x => x.Title == organizationChartDto.Title && x.ParentId == organizationChartDto.ParentId && x.Id != organizationChartDto.Id).FirstOrDefault();
+                if (duplicateTitle is not null)
+                {
+                    throw new UserFriendlyException(WorkFlowConstant.OrganizationChartDuplicate, WorkFlowConstant.OrganizationChartDuplicateId);
+                }
 
             }
 
 
-            var duplicateTitle = organizationChartQuery.Where(x => x.Title == organizationChartDto.Title && x.ParentId == organizationChartDto.ParentId).FirstOrDefault();
-            if (duplicateTitle is not null)
-            {
-                throw new UserFriendlyException(WorkFlowConstant.OrganizationChartDuplicate, WorkFlowConstant.OrganizationChartDuplicateId);
-            }
+            
 
             return organizationChart;
         }
