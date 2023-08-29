@@ -84,7 +84,7 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
             if (organizationPositionCreateOrUpdateDto != null)
             {
 
-                organizationPositionCreateOrUpdateDto.StartDate <= currentTime && currentTime <= organizationPositionCreateOrUpdateDto.EndDate
+               
 
                 var organizationChart = (await _organizationChartRepository.GetQueryableAsync()).FirstOrDefault(x => x.Id == organizationPositionCreateOrUpdateDto.OrganizationChartId);
                 if (organizationChart is null)
