@@ -12,7 +12,8 @@ namespace WorkFlowManagement.EntityFrameworkCore
         public static string TablePrefix { get; set; } = WorkFlowManagementConsts.DefaultDbTablePrefix;
 
         public static string Schema { get; set; } = WorkFlowManagementConsts.DefaultDbSchema;
-        public DbSet<OrganizationChart> OrganizationChart { get; set ; }
+        public DbSet<OrganizationChart> OrganizationCharts { get; set ; }
+        public DbSet<OrganizationPosition> OrganizationPositions { get; set; }
 
         public WorkFlowManagementDbContext(DbContextOptions<WorkFlowManagementDbContext> options)
             : base(options)
