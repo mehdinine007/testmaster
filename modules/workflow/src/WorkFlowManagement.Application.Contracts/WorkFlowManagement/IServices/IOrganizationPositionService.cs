@@ -13,7 +13,7 @@ namespace WorkFlowManagement.Application.Contracts.WorkFlowManagement.IServices
         Task<OrganizationPositionDto> GetById(int id);
         Task<OrganizationPositionDto> Add(OrganizationPositionCreateOrUpdateDto organizationPositionCreateOrUpdateDto);
         Task<OrganizationPositionDto> Update(OrganizationPositionCreateOrUpdateDto organizationPositionCreateOrUpdateDto);
-        Task<List<OrganizationPositionDto>> GetList();
+        Task<List<OrganizationPositionDto>> GetList(int organizationChartId);
         Task<bool> Delete(int id);
 
     }

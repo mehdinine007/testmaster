@@ -10,7 +10,7 @@ namespace WorkFlowManagement.Application
         public WorkFlowManagementApplicationAutoMapperProfile()
         {
             CreateMap<OrganizationChart, OrganizationChartDto>()
-               .ForMember(x => x.OrganizationTypeTitle, c => c.MapFrom(m => m.OrganizationType != 0 ? EnumHelper.GetDescription(m.OrganizationType) : ""));
+               .ForMember(x => x.TypeTitle, c => c.MapFrom(m => m.OrganizationType != 0 ? EnumHelper.GetDescription(m.OrganizationType) : ""));
             CreateMap<OrganizationChart, OrganizationChartCreateOrUpdateDto>()
              .ReverseMap();
 

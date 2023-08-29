@@ -28,8 +28,8 @@ namespace WorkFlowManagement.HttpApi.WorkFlowManagement.Controllers
 
 
         [HttpGet]
-        public Task<List<OrganizationPositionDto>> GetList()
-        => _organizationPositionService.GetList();
+        public Task<List<OrganizationPositionDto>> GetList(int organizationChartId)
+        => _organizationPositionService.GetList(organizationChartId);
 
 
         [HttpPost]

@@ -49,9 +49,9 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
             return organizationPositionDto;
         }
 
-        public async Task<List<OrganizationPositionDto>> GetList()
+        public async Task<List<OrganizationPositionDto>> GetList(int organizationChartId)
         {
-            var organizationPosition = (await _organizationPositionRepository.GetQueryableAsync()).Include(x => x.OrganizationChart).ToList();
+            var organizationPosition = (await _organizationPositionRepository.GetQueryableAsync()).Where(x=>x.OrganizationChartId== organizationChartId).Include(x => x.OrganizationChart).ToList();
             var organizationPositionDto = ObjectMapper.Map<List<OrganizationPosition>, List<OrganizationPositionDto>>(organizationPosition);
             return organizationPositionDto;
         }
@@ -70,6 +70,7 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
 
         private async Task<OrganizationPosition> Validation(int? id, OrganizationPositionCreateOrUpdateDto organizationPositionCreateOrUpdateDto)
         {
+            var currentTime = DateTime.Now;
             var organizationPosition = new OrganizationPosition();
             var organizationPositionQuery = (await _organizationPositionRepository.GetQueryableAsync()).Include(x=>x.OrganizationChart);
             if (id != null)
@@ -82,6 +83,9 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
             }
             if (organizationPositionCreateOrUpdateDto != null)
             {
+
+                organizationPositionCreateOrUpdateDto.StartDate <= currentTime && currentTime <= organizationPositionCreateOrUpdateDto.EndDate
+
                 var organizationChart = (await _organizationChartRepository.GetQueryableAsync()).FirstOrDefault(x => x.Id == organizationPositionCreateOrUpdateDto.OrganizationChartId);
                 if (organizationChart is null)
                 {

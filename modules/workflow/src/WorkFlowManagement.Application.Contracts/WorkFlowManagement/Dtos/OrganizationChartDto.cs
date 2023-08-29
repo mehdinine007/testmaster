@@ -15,7 +15,8 @@ namespace WorkFlowManagement.Application.Contracts.WorkFlowManagement.Dtos
         public string? Description { get; set; }
         public int? ParentId { get; set; }
         public virtual ICollection<OrganizationChartDto> Childrens { get; set; }
-        public string OrganizationTypeTitle { get; set; }
+        public string TypeTitle { get; set; }
+        public OrganizationTypeEnum OrganizationType { get; set; }
 
     }
     }
