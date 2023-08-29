@@ -80,7 +80,7 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
         private async Task<OrganizationChart> Validation(int? id, OrganizationChartCreateOrUpdateDto organizationChartDto)
         {
             var organizationChart = new OrganizationChart();
-            var organizationChartQuery = await _organizationChartRepository.GetQueryableAsync();
+            var organizationChartQuery = (await _organizationChartRepository.GetQueryableAsync()).Include(x=>x.Childrens);
             if (id != null)
             {
                 organizationChart = organizationChartQuery.FirstOrDefault(x => x.Id == id);

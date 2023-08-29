@@ -8,6 +8,7 @@ namespace WorkFlowManagement.EntityFrameworkCore
     [ConnectionStringName("WorkflowManagement")]   
     public interface IWorkFlowManagementDbContext : IEfCoreDbContext
     {
-        DbSet<OrganizationChart> OrganizationChart { get; set; }
+        DbSet<OrganizationChart> OrganizationCharts { get; set; }
+        DbSet<OrganizationPosition> OrganizationPositions { get; set; }
     }
 }

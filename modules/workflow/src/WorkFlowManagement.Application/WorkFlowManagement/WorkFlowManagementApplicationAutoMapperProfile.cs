@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Esale.Core.Utility.Tools;
 using WorkFlowManagement.Application.Contracts.WorkFlowManagement.Dtos;
 using WorkFlowManagement.Domain.WorkFlowManagement;
 
@@ -9,9 +10,14 @@ namespace WorkFlowManagement.Application
         public WorkFlowManagementApplicationAutoMapperProfile()
         {
             CreateMap<OrganizationChart, OrganizationChartDto>()
-               .ReverseMap();
+               .ForMember(x => x.OrganizationTypeTitle, c => c.MapFrom(m => m.OrganizationType != 0 ? EnumHelper.GetDescription(m.OrganizationType) : ""));
             CreateMap<OrganizationChart, OrganizationChartCreateOrUpdateDto>()
              .ReverseMap();
+
+            CreateMap<OrganizationPosition, OrganizationPositionDto>()
+            .ReverseMap();
+            CreateMap<OrganizationPosition,OrganizationPositionCreateOrUpdateDto>()
+          .ReverseMap();
         }
     }
 }
