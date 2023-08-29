@@ -18,6 +18,10 @@ namespace WorkFlowManagement.Application
             .ReverseMap();
             CreateMap<OrganizationPosition,OrganizationPositionCreateOrUpdateDto>()
           .ReverseMap();
+            CreateMap<WorkFlowRole, WorkFlowRoleDto>()
+         .ReverseMap();
+            CreateMap<WorkFlowRole, WorkFlowRoleCreateOrUpdateDto>()
+       .ReverseMap();
         }
     }
 }

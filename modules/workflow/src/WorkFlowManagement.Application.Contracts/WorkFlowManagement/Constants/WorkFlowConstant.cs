@@ -27,5 +27,8 @@ namespace WorkFlowManagement.Application.Contracts.WorkFlowManagement.Constants
 
         public static string InvalidEndDate = "تاریخ پایان نباید از تاریخ شروع کوچکترباشد";
         public static string InvalidEndDateiD = "1007";
+
+        public static string WorkFlowRoleNotFound = "نقش وجود ندارد";
+        public static string WorkFlowRoleNotFoundId = "1008";
     }
 }
