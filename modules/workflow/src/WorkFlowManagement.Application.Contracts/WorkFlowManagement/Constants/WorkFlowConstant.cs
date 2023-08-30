@@ -22,11 +22,8 @@ namespace WorkFlowManagement.Application.Contracts.WorkFlowManagement.Constants
         public static string OrganizationPositionDuplicateNotFound = "پست سازمانی برای کاربردیگری تعریف شده است";
         public static string OrganizationPositionDuplicateNotFoundId = "1006";
 
-        public static string InvalidStartDate = "تاریخ شروع نباید از تاریخ پایان بزرگترباشد";
-        public static string InvalidStartDateId = "1006";
-
-        public static string InvalidEndDate = "تاریخ پایان نباید از تاریخ شروع کوچکترباشد";
-        public static string InvalidEndDateiD = "1007";
+        public static string InvalidEndDate = "تاریخ پایان نباید از تاریخ شروع کوچکتر باشد";
+        public static string InvalidEndDateId = "1007";
 
         public static string WorkFlowRoleNotFound = "نقش وجود ندارد";
         public static string WorkFlowRoleNotFoundId = "1008";
