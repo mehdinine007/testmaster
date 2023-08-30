@@ -27,6 +27,7 @@ using EasyCaching.Host.Extensions;
 using Volo.Abp.MongoDB;
 using Microsoft.EntityFrameworkCore;
 using OrderManagement.EfCore.MongoDb;
+using Esale.Core.Extensions;
 
 namespace OrderService.Host
 {
@@ -111,15 +112,7 @@ namespace OrderService.Host
             {
                 options.Configuration = configuration["RedisCache:ConnectionString"];
             });
-
-            using var scope = context.Services.BuildServiceProvider();
-            var service = scope.GetRequiredService<IActionResultWrapperFactory>();
-
-
-            context.Services.AddControllers(x =>
-            {
-                x.Filters.Add(new EsaleResultFilter(service));
-            });
+            context.Services.AddEsaleResultWrapper();
             IdentityModelEventSource.ShowPII = true;
             ConfigureHangfire(context, configuration);
 

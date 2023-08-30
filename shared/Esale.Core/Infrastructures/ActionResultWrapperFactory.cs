@@ -2,9 +2,9 @@
 using Microsoft.AspNetCore.Mvc.Filters;
 using Volo.Abp;
 
-namespace OrderService.Host.Infrastructures;
+namespace Esale.Core.Infrastructures;
 
-public class AbpActionResultWrapperFactory : IActionResultWrapperFactory
+public class EsaleActionResultWrapperFactory : IActionResultWrapperFactory
 {
     public IActionResultWrapper CreateFor(FilterContext context)
     {

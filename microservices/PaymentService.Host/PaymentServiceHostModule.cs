@@ -31,6 +31,7 @@ using PaymentService.Host.Infrastructures;
 using PaymentManagement.Application.PaymentManagement.Services;
 using Volo.Abp.Uow;
 using Microsoft.EntityFrameworkCore;
+using Esale.Core.Extensions;
 
 namespace PaymentService.Host
 {
@@ -92,12 +93,7 @@ namespace PaymentService.Host
             {
                 options.IsEnabledForGetRequests = true;
             });
-            using var scope = context.Services.BuildServiceProvider();
-            var service = scope.GetRequiredService<IActionResultWrapperFactory>();
-            context.Services.AddControllers(x =>
-            {
-                x.Filters.Add(new EsaleResultFilter(service));
-            });
+            context.Services.AddEsaleResultWrapper();
 
             context.Services.AddCodeFirstGrpc();
 
