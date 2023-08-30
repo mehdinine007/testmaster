@@ -9,11 +9,8 @@ using Volo.Abp.Autofac;
 using Volo.Abp.Data;
 using Volo.Abp.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore.SqlServer;
-using Volo.Abp.EventBus.RabbitMq;
 using Volo.Abp.Localization;
 using Volo.Abp.Modularity;
-//using Volo.Abp.MultiTenancy;
-//using Volo.Abp.SettingManagement.EntityFrameworkCore;
 using Volo.Abp.TenantManagement.EntityFrameworkCore;
 using Volo.Abp.Threading;
 using OrderManagement.Application;
@@ -26,12 +23,11 @@ using Microsoft.IdentityModel.Logging;
 using Volo.Abp.BackgroundJobs.Hangfire;
 using Hangfire;
 using Microsoft.Extensions.Configuration;
-using Volo.Abp.Hangfire;
 using EasyCaching.Host.Extensions;
 using Volo.Abp.MongoDB;
 using Microsoft.EntityFrameworkCore;
 using OrderManagement.EfCore.MongoDb;
-using OrderService.Host.Infrastructures.Hangfire;
+using Esale.Core.Extensions;
 
 namespace OrderService.Host
 {
@@ -116,15 +112,7 @@ namespace OrderService.Host
             {
                 options.Configuration = configuration["RedisCache:ConnectionString"];
             });
-
-            using var scope = context.Services.BuildServiceProvider();
-            var service = scope.GetRequiredService<IActionResultWrapperFactory>();
-
-
-            context.Services.AddControllers(x =>
-            {
-                x.Filters.Add(new EsaleResultFilter(service));
-            });
+            context.Services.AddEsaleResultWrapper();
             IdentityModelEventSource.ShowPII = true;
             ConfigureHangfire(context, configuration);
 

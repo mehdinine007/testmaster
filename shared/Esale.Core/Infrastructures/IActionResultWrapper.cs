@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace PaymentService.Host.Infrastructures;
+namespace Esale.Core.Infrastructures;
 
 public interface IActionResultWrapper
 {

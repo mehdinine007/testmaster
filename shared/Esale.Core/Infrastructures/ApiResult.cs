@@ -1,4 +1,4 @@
-﻿namespace PaymentService.Host.Infrastructures;
+﻿namespace Esale.Core.Infrastructures;
 
 public class ApiResult
 {

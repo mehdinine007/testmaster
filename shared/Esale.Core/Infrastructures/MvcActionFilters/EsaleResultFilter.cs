@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc.Abstractions;
+﻿using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace PaymentService.Host.Infrastructures;
+namespace Esale.Core.Infrastructures.MvcActionFilters;
 
 public class EsaleResultFilter : IResultFilter
 {
@@ -12,14 +12,13 @@ public class EsaleResultFilter : IResultFilter
         _actionResultWrapperFactory = actionResultWrapperFactory;
     }
 
-
-    public virtual void OnResultExecuted(ResultExecutedContext context)
+    public void OnResultExecuted(ResultExecutedContext context)
     {
     }
 
     public void OnResultExecuting(ResultExecutingContext context)
     {
-        if (!context.ActionDescriptor.IsControllerAction())
+        if (!(context.ActionDescriptor is ControllerActionDescriptor))
         {
             return;
         }
