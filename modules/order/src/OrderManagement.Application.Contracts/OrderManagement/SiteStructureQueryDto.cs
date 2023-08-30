@@ -9,7 +9,7 @@ namespace OrderManagement.Application.Contracts.OrderManagement
 {
     public class SiteStructureQueryDto
     {
-        public AttachmentEntityTypeEnum? AttachmentType { get; set; }
+        public List<AttachmentEntityTypeEnum>? AttachmentType { get; set; } = null;
         public int? Location { get; set; }
     }
 }

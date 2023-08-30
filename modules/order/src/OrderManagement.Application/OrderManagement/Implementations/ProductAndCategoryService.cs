@@ -20,6 +20,7 @@ using MongoDB.Driver;
 using MongoDB.Bson.Serialization;
 using System.ComponentModel;
 
+
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
 public class ProductAndCategoryService : ApplicationService, IProductAndCategoryService
@@ -49,7 +50,7 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
 
     public async Task Delete(int id)
     {
-        var productCategory = await GetById(id,null,false);
+        var productCategory = await GetById(id,false, null);
         if (productCategory.Type == ProductAndCategoryType.Category)
         {
             var firstDependentCategory = (await _productAndCategoryRepository.GetQueryableAsync())
@@ -62,15 +63,16 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
         await _attachmentService.DeleteByEntityId(AttachmentEntityEnum.ProductAndCategory, id);
     }
 
-    public async Task<ProductAndCategoryWithChildDto> GetById(int id, AttachmentEntityTypeEnum? attachmentType, bool hasProperty)
+    public async Task<ProductAndCategoryWithChildDto> GetById(int id , bool hasProperty, List<AttachmentEntityTypeEnum> attachmentType = null)
     {
+        await Validation(id, null);
         var query = await _productAndCategoryRepository.GetQueryableAsync();
         if (!_commonAppService.IsInRole("Admin"))
             query = query.Where(x => x.Active);
         var productCategory = query
             .FirstOrDefault(x => x.Id == id) ??
             throw new UserFriendlyException("محصول یا دسته بندی مورد نطر پیدا نشد");
-        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, new List<int>() { id });
+        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, new List<int>() { id },attachmentType);
         var productResult = ObjectMapper.Map<ProductAndCategory, ProductAndCategoryWithChildDto>(productCategory);
         var productAndCategoryList = await FillAttachmentAndProperty(new List<ProductAndCategoryWithChildDto>() { productResult }, attachments, hasProperty);
         return productResult;
@@ -170,6 +172,7 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
 
     public async Task<Guid> UploadFile(UploadFileDto uploadFileDto)
     {
+        await Validation(uploadFileDto.Id, null);
         var attachmentStatus = await _attachmentService.UploadFile(AttachmentEntityEnum.ProductAndCategory, uploadFileDto);
         return attachmentStatus;
     }
@@ -341,4 +344,17 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
     {
         throw new NotImplementedException();
     }
+
+    private async Task<ProductAndCategory> Validation(int id, ProductAndCategoryDto productAndCategoryDto)
+    {
+        var productAndCategory = (await _productAndCategoryRepository.GetQueryableAsync())
+            .FirstOrDefault(x => x.Id == id);
+        if (productAndCategory is null)
+        {
+            throw new UserFriendlyException(OrderConstant.ProductAndCategoryNotFound, OrderConstant.ProductAndCategoryFoundId);
+        }
+        return productAndCategory;
+    }
+
+
 }

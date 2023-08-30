@@ -757,7 +757,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         }
     }
     [UnitOfWork(false, IsolationLevel.ReadUncommitted)]
-    public async Task<List<CustomerOrder_OrderDetailDto>> GetCustomerOrderList(AttachmentEntityTypeEnum attachmentType)
+    public async Task<List<CustomerOrder_OrderDetailDto>> GetCustomerOrderList(List<AttachmentEntityTypeEnum> attachmentType = null)
     {
         if (!_commonAppService.IsInRole("Customer"))
         {
@@ -1313,7 +1313,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         return inquiryResult;
     }
 
-    public async Task<CustomerOrder_OrderDetailDto> GetSaleDetailByUid(Guid saleDetailUid, AttachmentEntityTypeEnum attachmentEntityType)
+    public async Task<CustomerOrder_OrderDetailDto> GetSaleDetailByUid(Guid saleDetailUid, List<AttachmentEntityTypeEnum> attachmentEntityType=null)
     {
         if (!_commonAppService.IsInRole("Customer"))
         {
@@ -1350,7 +1350,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         return saleDetail;
     }
 
-    public async Task<CustomerOrder_OrderDetailDto> GetOrderDetailById(int id, AttachmentEntityTypeEnum attachmentType)
+    public async Task<CustomerOrder_OrderDetailDto> GetOrderDetailById(int id,List<AttachmentEntityTypeEnum> attachmentType=null)
     {
         if (!_commonAppService.IsInRole("Customer"))
         {

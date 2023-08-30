@@ -131,6 +131,26 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GatewayService.Host", "micr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WcfServiceLibrary", "modules\gateway\src\WcfServiceLibrary\WcfServiceLibrary.csproj", "{6CECB870-595A-4F10-A917-1FFB280B0397}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflow", "workflow", "{FBC437B0-FAB5-404D-BF67-D78C24E5AB71}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{3460FAC2-D363-4A29-AF74-BE95A207625C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{7E9FE98B-7882-482C-A26E-B3343ADA0332}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WorkFlowManagement.Application", "modules\workflow\src\WorkFlowManagement.Application\WorkFlowManagement.Application.csproj", "{C71F3302-3221-43B9-87D6-2F12AA13812D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WorkFlowManagement.Application.Contracts", "modules\workflow\src\WorkFlowManagement.Application.Contracts\WorkFlowManagement.Application.Contracts.csproj", "{0235BF77-968B-4815-8130-289860D9D50F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WorkFlowManagement.Domain", "modules\workflow\src\WorkFlowManagement.Domain\WorkFlowManagement.Domain.csproj", "{56A55418-0604-4F2C-AC0B-3ABE6C47CB7A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WorkFlowManagement.Domain.Shared", "modules\workflow\src\WorkFlowManagement.Domain.Shared\WorkFlowManagement.Domain.Shared.csproj", "{53374DB6-C6F7-4401-BCB4-B1979528120B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WorkFlowManagement.EntityFrameworkCore", "modules\workflow\src\WorkFlowManagement.EntityFrameworkCore\WorkFlowManagement.EntityFrameworkCore.csproj", "{9A6907F4-E01E-4EBA-9C84-933F2BB34920}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WorkFlowManagement.HttpApi", "modules\workflow\src\WorkFlowManagement.HttpApi\WorkFlowManagement.HttpApi.csproj", "{CBF5EBA3-C5D9-4F88-87CE-73FAA88D0666}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WorkFlowService.Host", "microservices\WorkFlowService.Host\WorkFlowService.Host.csproj", "{12119A1E-2021-4A47-B860-5C598364F26C}"
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "user", "user", "{83FF5127-8FA6-4209-B4C6-6B019BD14F14}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{0DED09BF-1657-42AD-9718-86B03CEEC75D}"

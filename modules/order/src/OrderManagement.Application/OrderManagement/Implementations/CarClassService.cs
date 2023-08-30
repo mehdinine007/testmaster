@@ -33,7 +33,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             return true;
         }
 
-        public async Task<List<CarClassDto>> GetList(AttachmentEntityTypeEnum? attachmentType)
+        public async Task<List<CarClassDto>> GetList(List<AttachmentEntityTypeEnum> attachmentType=null)
         {
             var carClassesQuery = await _carClassRepository.GetQueryableAsync();
             var carClasses = carClassesQuery.ToList();
@@ -70,6 +70,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
 
         public async Task<Guid> UploadFile(UploadFileDto uploadFile)
         {
+            await Validation(uploadFile.Id,null);
             return await _attachmentService.UploadFile(AttachmentEntityEnum.CarClass, uploadFile);
         }
 
@@ -84,8 +85,20 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             var attachments = await _attachmentService.GetList(AttachmentEntityEnum.CarClass, new List<int> { carClass.Id }, carClassQueryDto.AttachmentType);
 
            var carClassDto= ObjectMapper.Map<CarClass, CarClassDto>(carClass);
+        
             carClassDto.Attachments = ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(attachments);
             return carClassDto;
+        }
+
+        private async Task<CarClass> Validation(int id, CarClassDto announcementDto)
+        {
+            var carClass = (await _carClassRepository.GetQueryableAsync())
+                .FirstOrDefault(x => x.Id == id);
+            if (carClass is null)
+            {
+                throw new UserFriendlyException(OrderConstant.CarClassNotFound, OrderConstant.CarClassNotFoundId);
+            }
+            return carClass;
         }
     }
 }

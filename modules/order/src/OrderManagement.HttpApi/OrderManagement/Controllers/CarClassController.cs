@@ -27,7 +27,7 @@ namespace OrderManagement.HttpApi.OrderManagement.Controllers
         public Task<bool> Delete(int id)
         =>_carClassService.Delete(id);
         [HttpGet]
-        public Task<List<CarClassDto>> GetList(AttachmentEntityTypeEnum? attachmentType)
+        public Task<List<CarClassDto>> GetList(List<AttachmentEntityTypeEnum> attachmentType=null)
         =>_carClassService.GetList(attachmentType);
         [HttpPost]
         public Task<CarClassDto> Add(CarClassCreateDto carClassDto)

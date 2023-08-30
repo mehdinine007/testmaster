@@ -16,6 +16,7 @@ using Volo.Abp.Domain.Repositories;
 using Volo.Abp.ObjectMapping;
 using Volo.Abp.Uow;
 
+
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
 public class AnnouncementService : ApplicationService, IAnnouncementService
@@ -107,15 +108,37 @@ public class AnnouncementService : ApplicationService, IAnnouncementService
 
     public async Task<bool> UploadFile(UploadFileDto uploadFile)
     {
+       var announcement= await Validation(uploadFile.Id, null);
+
         await _attachmentService.UploadFile(AttachmentEntityEnum.Announcement, uploadFile);
         return true;
     }
 
-    public async Task<AnnouncementDto> GetById(int id)
+
+
+    public async Task<AnnouncementDto> GetById(int id, List<AttachmentEntityTypeEnum> attachmentType = null)
     {
+        var announc= await Validation(id, null);
         var announcement = (await _announcementRepository.GetQueryableAsync()).AsNoTracking()
             .FirstOrDefault(x => x.Id == id);
-        return ObjectMapper.Map<Announcement, AnnouncementDto>(announcement);
+        var announcementDto= ObjectMapper.Map<Announcement, AnnouncementDto>(announcement);
+        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.Announcement, new List<int>() { id }, attachmentType);
+       
+            announcementDto.Attachments = ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(attachments);
+        
+        return announcementDto;
+    }
+
+
+    private async Task<Announcement> Validation(int id, AnnouncementDto announcementDto)
+    {
+        var announcement = (await _announcementRepository.GetQueryableAsync())
+            .FirstOrDefault(x => x.Id == id);
+        if (announcement is null)
+        {
+            throw new UserFriendlyException(OrderConstant.AnnouncementNotFound, OrderConstant.AnnouncementFoundId);
+        }
+        return announcement;
     }
 
 }

@@ -28,15 +28,15 @@ public class ChartStructureController : Controller
 
 
     [HttpGet]
-    public Task<List<ChartStructureDto>> GetList(AttachmentEntityTypeEnum? attachmentType)
+    public Task<List<ChartStructureDto>> GetList(List<AttachmentEntityTypeEnum> attachmentType = null)
     => _chartStructureService.GetList(attachmentType);
 
     [HttpPost]
     public Task<bool> UploadFile([FromForm]UploadFileDto uploadFile)
     => _chartStructureService.UploadFile(uploadFile);
     [HttpGet]
-    public Task<ChartStructureDto> GetById(int id)
-    => _chartStructureService.GetById(id);
+    public Task<ChartStructureDto> GetById(int id, List<AttachmentEntityTypeEnum> attachmentType = null)
+    => _chartStructureService.GetById(id, attachmentType);
 
     [HttpPost]
     public Task<ChartStructureDto> Add(ChartStructureCreateOrUpdateDto chartStructureCreateOrUpdateDto)

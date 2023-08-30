@@ -75,6 +75,14 @@ namespace OrderManagement.Application.Contracts
         public static string ChartStructureNotFound = "آمار وجود ندارد";
         public static string ChartStructureNotFoundId = "4007";
 
+        public static string AnnouncementNotFound = "آگهی وجود ندارد";
+        public static string AnnouncementFoundId = "4008";
+
+        public static string ProductAndCategoryNotFound = "دسته بندی یا محصول وجود ندارد";
+        public static string ProductAndCategoryFoundId = "4009";
+
+        public static string SaleSchemaNotFound = "برنامه فروش وجود ندارد";
+        public static string SaleSchemaFoundId = "5001";
 
     }
 }
