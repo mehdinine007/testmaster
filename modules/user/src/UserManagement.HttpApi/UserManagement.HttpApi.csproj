@@ -15,10 +15,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\..\..\..\shared\Authorization\Authorization.csproj" />
 		<ProjectReference Include="..\UserManagement.Application.Contracts\UserManagement.Application.Contracts.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="UserManagement\Controllers\" />
+		<ProjectReference Include="..\UserManagement.Application\UserManagement.Application.csproj" />
 	</ItemGroup>
 
 </Project>
