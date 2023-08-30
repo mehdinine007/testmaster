@@ -1,3 +1,4 @@
+#region NS
 using EasyCaching.Host.Extensions;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.OpenApi.Models;
@@ -14,6 +15,13 @@ using Volo.Abp.Modularity;
 using Volo.Abp.TenantManagement.EntityFrameworkCore;
 using Volo.Abp.Uow;
 using UserService.Host.Infrastructures;
+using Volo.Abp.Threading;
+using Volo.Abp;
+using Volo.Abp.Data;
+using Volo.Abp.BackgroundJobs.Hangfire;
+using Volo.Abp.MongoDB;
+#endregion
+
 
 namespace UserService.Host;
 
@@ -25,8 +33,8 @@ namespace UserService.Host;
     typeof(UserManagementApplicationModule),
     typeof(UserManagementHttpApiModule),
     typeof(UserManagementEfCoreModule),
-    typeof(AbpTenantManagementEntityFrameworkCoreModule)
-    //typeof(AbpBackgroundJobsHangfireModule)
+    typeof(AbpTenantManagementEntityFrameworkCoreModule),
+    typeof(AbpMongoDbModule)
     )]
     
 public class UserServiceHostModule : AbpModule
@@ -78,5 +86,36 @@ public class UserServiceHostModule : AbpModule
 
         context.Services.AddGrpc();
         context.Services.EasyCaching(configuration, "RedisCache:ConnectionString");
+    }
+
+    public override void OnApplicationInitialization(ApplicationInitializationContext context)
+    {
+        var app = context.GetApplicationBuilder();
+        app.UseCorrelationId();
+        app.UseStaticFiles();
+        app.UseRouting();
+        app.UseAuthentication();
+        app.UseAbpClaimsMap();
+
+
+        app.UseAbpRequestLocalization(); //TODO: localization?
+        app.UseSwagger();
+        app.UseSwaggerUI(options =>
+        {
+            options.SwaggerEndpoint("/swagger/v1/swagger.json", "User Service API");
+        });
+
+        app.UseAuditing();
+        app.UseConfiguredEndpoints();
+        //TODO: Problem on a clustered environment
+        AsyncHelper.RunSync(async () =>
+        {
+            using (var scope = context.ServiceProvider.CreateScope())
+            {
+                await scope.ServiceProvider
+                    .GetRequiredService<IDataSeeder>()
+                    .SeedAsync();
+            }
+        });
     }
 }

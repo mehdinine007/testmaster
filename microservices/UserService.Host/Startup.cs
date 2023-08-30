@@ -1,27 +1,23 @@
-﻿using System;
+﻿#region NS
 using Volo.Abp;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using ProductService.Host.Infrastructure.Middlewares;
 using Volo.Abp.Auditing;
-using OrderService.Host.Infrastructures.Middlewares;
-using OrderService.Host.Infrastructures.Extensions;
-using OrderService.Host.Infrastructures.Hangfire.Abstract;
-using OrderService.Host.Infrastructures.Hangfire.Concrete;
+using UserService.Host.Infrastructures.Middlewares;
+using UserService.Host.Infrastructures.Extensions;
 using Esale.Core.IOC;
 using Esale.Core.Caching.Redis;
 using Esale.Core.Caching;
+#endregion
 
-namespace OrderService.Host
+
+namespace UserService.Host
 {
     public class Startup
     {
         public void ConfigureServices(IServiceCollection services)
         {
             var configurations = services.GetConfiguration();
-            services.AddApplication<OrderServiceHostModule>();
+            services.AddApplication<UserServiceHostModule>();
             services.AddStackExchangeRedisCache(options =>
             {
                 options.Configuration = configurations["RedisCache:ConnectionString"];
@@ -36,8 +32,6 @@ namespace OrderService.Host
             }
             services.AddSingleton<ICacheManager, CacheManager>();
             services.AddSingleton<IRedisCacheManager, RedisCacheManager>();
-            services.AddSingleton<ICapacityControlJob, CapacityControlJob>();
-            services.AddSingleton<IIpgJob, IpgJob>();
             ServiceTool.Create(services);
         }
 
