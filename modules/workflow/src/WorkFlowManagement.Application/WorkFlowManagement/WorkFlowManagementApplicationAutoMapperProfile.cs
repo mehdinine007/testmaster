@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using Esale.Core.Utility.Tools;
+using Newtonsoft.Json;
 using WorkFlowManagement.Application.Contracts.WorkFlowManagement.Dtos;
+using WorkFlowManagement.Domain.Shared.WorkFlowManagement.Enums;
 using WorkFlowManagement.Domain.WorkFlowManagement;
 
 namespace WorkFlowManagement.Application
@@ -16,12 +18,17 @@ namespace WorkFlowManagement.Application
 
             CreateMap<OrganizationPosition, OrganizationPositionDto>()
             .ReverseMap();
-            CreateMap<OrganizationPosition,OrganizationPositionCreateOrUpdateDto>()
+            CreateMap<OrganizationPosition, OrganizationPositionCreateOrUpdateDto>()
           .ReverseMap();
             CreateMap<WorkFlowRole, WorkFlowRoleDto>()
-         .ReverseMap();
+                .ForMember(x => x.Security, c => c.MapFrom(m => !string.IsNullOrWhiteSpace(m.Security) ? JsonConvert.DeserializeObject<List<int>>(m.Security) : null))
+         .ReverseMap()
+          .ForMember(x => x.Security, c => c.MapFrom(m => JsonConvert.SerializeObject(m.Security)));
             CreateMap<WorkFlowRole, WorkFlowRoleCreateOrUpdateDto>()
-       .ReverseMap();
+       .ForMember(x => x.Security, c => c.MapFrom(m => !string.IsNullOrWhiteSpace(m.Security) ? JsonConvert.DeserializeObject<List<int>>(m.Security) : null))
+       .ReverseMap()
+         .ForMember(x => x.Security, c => c.MapFrom(m => JsonConvert.SerializeObject(m.Security)));
+        
         }
     }
 }

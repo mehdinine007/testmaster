@@ -1,4 +1,7 @@
-﻿using System;
+﻿using crypto;
+using Google.Protobuf.WellKnownTypes;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,6 +13,7 @@ using Volo.Abp.ObjectMapping;
 using WorkFlowManagement.Application.Contracts.WorkFlowManagement.Constants;
 using WorkFlowManagement.Application.Contracts.WorkFlowManagement.Dtos;
 using WorkFlowManagement.Application.Contracts.WorkFlowManagement.IServices;
+using WorkFlowManagement.Domain.Shared.WorkFlowManagement.Enums;
 using WorkFlowManagement.Domain.WorkFlowManagement;
 
 namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
@@ -57,6 +61,7 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
             var workFlowRole = await Validation(workFlowRoleCreateOrUpdateDto.Id, workFlowRoleCreateOrUpdateDto);
             workFlowRole.Status = workFlowRoleCreateOrUpdateDto.Status;
             workFlowRole.Title = workFlowRoleCreateOrUpdateDto.Title;
+            workFlowRole.Security = JsonConvert.SerializeObject(workFlowRoleCreateOrUpdateDto.Security);
             var entity = await _workFlowRoleRepository.UpdateAsync(workFlowRole);
             return ObjectMapper.Map<WorkFlowRole, WorkFlowRoleDto>(entity);
         }
@@ -64,11 +69,16 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
         private async Task<WorkFlowRole> Validation(int? id, WorkFlowRoleCreateOrUpdateDto workFlowRoleCreateOrUpdateDto)
         {
             var organizationChartQuery = await _workFlowRoleRepository.GetQueryableAsync();
-            var workFlowRole = organizationChartQuery.FirstOrDefault(x => x.Id == id);
-            if (workFlowRole is null)
+            WorkFlowRole workFlowRole = new WorkFlowRole();
+            if (id is not null)
             {
-                throw new UserFriendlyException(WorkFlowConstant.WorkFlowRoleNotFound, WorkFlowConstant.WorkFlowRoleNotFoundId);
+                 workFlowRole = organizationChartQuery.FirstOrDefault(x => x.Id == id);
+                if (workFlowRole is null)
+                {
+                    throw new UserFriendlyException(WorkFlowConstant.WorkFlowRoleNotFound, WorkFlowConstant.WorkFlowRoleNotFoundId);
+                }
             }
+
             return workFlowRole;
         }
     }

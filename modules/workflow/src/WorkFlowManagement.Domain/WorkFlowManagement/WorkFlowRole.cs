@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Domain.Entities.Auditing;
+using WorkFlowManagement.Domain.Shared.WorkFlowManagement.Enums;
 
 namespace WorkFlowManagement.Domain.WorkFlowManagement
 {
@@ -11,5 +12,6 @@ namespace WorkFlowManagement.Domain.WorkFlowManagement
     {
         public string Title { get; set; }
         public bool Status { get; set; }
+        public string Security { get; set; }
     }
 }
