@@ -19,7 +19,7 @@ using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Bson.Serialization;
 using System.ComponentModel;
-
+using Esale.Core.Utility.Tools;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -225,7 +225,7 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
                     .Include(x => x.Childrens.Where(y => y.Type == ProductAndCategoryType.Category))
                     .Where(x => EF.Functions.Like(x.Code, input.NodePath + "%") && x.Type == ProductAndCategoryType.Category)
                     .ToList();
-                attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, parent.Select(x => x.Id).ToList(), input.attachmentType);
+                attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, parent.Select(x => x.Id).ToList(), EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(input.attachmentType));
                 ls = string.IsNullOrWhiteSpace(input.NodePath)
                     ? parent.Where(x => x.ParentId == null).ToList()
                     : parent.Where(x => x.Code == input.NodePath).ToList();
