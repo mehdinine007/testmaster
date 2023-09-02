@@ -2,6 +2,7 @@
 using Volo.Abp;
 using WorkFlowManagement.Domain.WorkFlowManagement;
 using Volo.Abp.EntityFrameworkCore.Modeling;
+using System.Reflection.Emit;
 
 namespace WorkFlowManagement.EntityFrameworkCore
 {
@@ -32,7 +33,7 @@ namespace WorkFlowManagement.EntityFrameworkCore
                 entity.Property(x => x.Title)
                     .HasMaxLength(250);
 
-                
+
 
             });
 
@@ -44,6 +45,26 @@ namespace WorkFlowManagement.EntityFrameworkCore
                     .WithMany(x => x.OrganizationPositions)
                     .HasForeignKey(x => x.OrganizationChartId);
             });
+
+            builder.Entity<WorkFlowRoleChart>(entity =>
+            {
+                entity.ToTable("WorkFlowRoleCharts");
+
+                entity.HasOne<OrganizationChart>(o => o.OrganizationChart)
+                    .WithMany(w => w.WorkFlowRoleCharts)
+                    .HasForeignKey(o => o.OrganizationChartId);
+
+                entity.HasOne<WorkFlowRole>(o => o.WorkFlowRole)
+                 .WithMany(w => w.WorkFlowRoleCharts)
+                 .HasForeignKey(o => o.WorkFlowRoleId);
+
+            });
+
+         
+
+
+
+
 
         }
     }

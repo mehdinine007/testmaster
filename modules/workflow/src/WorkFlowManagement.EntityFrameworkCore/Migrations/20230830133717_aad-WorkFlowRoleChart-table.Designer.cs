@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Volo.Abp.EntityFrameworkCore;
 using WorkFlowManagement.EntityFrameworkCore;
@@ -12,9 +13,11 @@ using WorkFlowManagement.EntityFrameworkCore;
 namespace WorkFlowManagement.EntityFrameworkCore.Migrations
 {
     [DbContext(typeof(WorkFlowManagementDbContext))]
-    partial class WorkFlowManagementDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230830133717_aad-WorkFlowRoleChart-table")]
+    partial class aadWorkFlowRoleCharttable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -247,11 +250,7 @@ namespace WorkFlowManagement.EntityFrameworkCore.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("OrganizationChartId");
-
-                    b.HasIndex("WorkFlowRoleId");
-
-                    b.ToTable("WorkFlowRoleCharts", (string)null);
+                    b.ToTable("WorkFlowRoleCharts");
                 });
 
             modelBuilder.Entity("WorkFlowManagement.Domain.WorkFlowManagement.OrganizationChart", b =>
@@ -275,37 +274,11 @@ namespace WorkFlowManagement.EntityFrameworkCore.Migrations
                     b.Navigation("OrganizationChart");
                 });
 
-            modelBuilder.Entity("WorkFlowManagement.Domain.WorkFlowManagement.WorkFlowRoleChart", b =>
-                {
-                    b.HasOne("WorkFlowManagement.Domain.WorkFlowManagement.OrganizationChart", "OrganizationChart")
-                        .WithMany("WorkFlowRoleCharts")
-                        .HasForeignKey("OrganizationChartId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("WorkFlowManagement.Domain.WorkFlowManagement.WorkFlowRole", "WorkFlowRole")
-                        .WithMany("WorkFlowRoleCharts")
-                        .HasForeignKey("WorkFlowRoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("OrganizationChart");
-
-                    b.Navigation("WorkFlowRole");
-                });
-
             modelBuilder.Entity("WorkFlowManagement.Domain.WorkFlowManagement.OrganizationChart", b =>
                 {
                     b.Navigation("Childrens");
 
                     b.Navigation("OrganizationPositions");
-
-                    b.Navigation("WorkFlowRoleCharts");
-                });
-
-            modelBuilder.Entity("WorkFlowManagement.Domain.WorkFlowManagement.WorkFlowRole", b =>
-                {
-                    b.Navigation("WorkFlowRoleCharts");
                 });
 #pragma warning restore 612, 618
         }

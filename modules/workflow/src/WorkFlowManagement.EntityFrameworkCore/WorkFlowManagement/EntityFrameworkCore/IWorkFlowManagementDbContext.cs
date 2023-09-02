@@ -11,5 +11,6 @@ namespace WorkFlowManagement.EntityFrameworkCore
         DbSet<OrganizationChart> OrganizationCharts { get; set; }
         DbSet<OrganizationPosition> OrganizationPositions { get; set; }
         DbSet<WorkFlowRole> WorkFlowRoles { get; set; }
+        DbSet<WorkFlowRoleChart> WorkFlowRoleCharts { get; set; }
     }
 }

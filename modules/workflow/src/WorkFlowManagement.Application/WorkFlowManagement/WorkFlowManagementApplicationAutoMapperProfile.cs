@@ -28,7 +28,13 @@ namespace WorkFlowManagement.Application
        .ForMember(x => x.Security, c => c.MapFrom(m => !string.IsNullOrWhiteSpace(m.Security) ? JsonConvert.DeserializeObject<List<int>>(m.Security) : null))
        .ReverseMap()
          .ForMember(x => x.Security, c => c.MapFrom(m => JsonConvert.SerializeObject(m.Security)));
-        
+
+            CreateMap<WorkFlowRoleChart, WorkFlowRoleChartCreateOrUpdateDto>()
+            .ReverseMap();
+            CreateMap<WorkFlowRoleChart, WorkFlowRoleChartDto>()
+           .ReverseMap();
+
+
         }
     }
 }

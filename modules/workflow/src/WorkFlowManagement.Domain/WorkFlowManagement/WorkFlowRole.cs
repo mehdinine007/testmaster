@@ -13,5 +13,6 @@ namespace WorkFlowManagement.Domain.WorkFlowManagement
         public string Title { get; set; }
         public bool Status { get; set; }
         public string Security { get; set; }
+        public virtual ICollection<WorkFlowRoleChart> WorkFlowRoleCharts { get; set; }
     }
 }

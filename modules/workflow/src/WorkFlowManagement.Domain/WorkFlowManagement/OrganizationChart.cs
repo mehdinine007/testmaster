@@ -24,6 +24,7 @@ namespace WorkFlowManagement.Domain.WorkFlowManagement
         public virtual ICollection<OrganizationChart> Childrens { get; set; }
         public virtual ICollection<OrganizationPosition> OrganizationPositions { get; set; }
         public OrganizationTypeEnum OrganizationType { get; set; }
+        public virtual ICollection<WorkFlowRoleChart> WorkFlowRoleCharts { get; set; }
 
 
     }
