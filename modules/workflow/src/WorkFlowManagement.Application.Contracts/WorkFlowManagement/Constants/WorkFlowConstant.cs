@@ -27,5 +27,9 @@ namespace WorkFlowManagement.Application.Contracts.WorkFlowManagement.Constants
 
         public static string WorkFlowRoleNotFound = "نقش وجود ندارد";
         public static string WorkFlowRoleNotFoundId = "1008";
+
+
+        public static string SchemeNotFound = "طرح وجود ندارد";
+        public static string SchemeNotFoundId = "1008";
     }
 }

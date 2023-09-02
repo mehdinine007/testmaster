@@ -34,6 +34,11 @@ namespace WorkFlowManagement.Application
             CreateMap<WorkFlowRoleChart, WorkFlowRoleChartDto>()
            .ReverseMap();
 
+            CreateMap<Scheme, SchemeDto>()
+          .ReverseMap();
+            CreateMap<Scheme, SchemeCreateOrUpdateDto>()
+      .ReverseMap();
+
 
         }
     }
