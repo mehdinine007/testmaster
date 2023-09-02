@@ -8,6 +8,7 @@ using Esale.Share.Authorize;
 using Volo.Abp.Auditing;
 using System;
 using OrderManagement.Domain.Shared;
+using Esale.Core.Utility.Tools;
 
 namespace OrderManagement.HttpApi;
 
@@ -50,16 +51,16 @@ public class OrderManagementController
     
     [HttpGet]
 
-    public Task<List<CustomerOrder_OrderDetailDto>> GetCustomerOrderList(List<AttachmentEntityTypeEnum> attachmentEntityType=null)
-        => _orderAppService.GetCustomerOrderList(attachmentEntityType);
+    public Task<List<CustomerOrder_OrderDetailDto>> GetCustomerOrderList(string attachmentEntityType)
+        => _orderAppService.GetCustomerOrderList(EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(attachmentEntityType));
 
     [RemoteService(IsEnabled = false)]
-    public async Task<CustomerOrder_OrderDetailDto> GetOrderDetailById(int id, List<AttachmentEntityTypeEnum> attachmentEntityType = null)
-        => await _orderAppService.GetOrderDetailById(id, attachmentEntityType);
+    public async Task<CustomerOrder_OrderDetailDto> GetOrderDetailById(int id, string attachmentEntityType)
+        => await _orderAppService.GetOrderDetailById(id, EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(attachmentEntityType));
 
     [RemoteService(IsEnabled =false)]
-    public async Task<CustomerOrder_OrderDetailDto> GetSaleDetailByUid(Guid saleDetailUid, List<AttachmentEntityTypeEnum> attachmentEntityType=null)
-        => await _orderAppService.GetSaleDetailByUid(saleDetailUid, attachmentEntityType);
+    public async Task<CustomerOrder_OrderDetailDto> GetSaleDetailByUid(Guid saleDetailUid, string attachmentEntityType)
+        => await _orderAppService.GetSaleDetailByUid(saleDetailUid, EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(attachmentEntityType));
 
     [DisableAuditing]
     [HttpPost]

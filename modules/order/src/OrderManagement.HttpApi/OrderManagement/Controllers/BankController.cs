@@ -12,6 +12,7 @@ using OrderManagement.Application.OrderManagement.Implementations;
 using OrderManagement.Application.Contracts.OrderManagement;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Domain.Shared;
+using Esale.Core.Utility.Tools;
 
 namespace OrderManagement.HttpApi.OrderManagement.Controllers
 {
@@ -26,13 +27,13 @@ namespace OrderManagement.HttpApi.OrderManagement.Controllers
         => _bankAppService = bankAppService;
 
         [HttpGet]
-        public Task<BankDto> GetById(int id, List<AttachmentEntityTypeEnum> attachmentType = null)
-    => _bankAppService.GetById(id, attachmentType);
+        public Task<BankDto> GetById(int id, string attachmentType)
+    => _bankAppService.GetById(id, EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(attachmentType));
 
 
         [HttpGet]
-        public Task<List<BankDto>> GetList(List<AttachmentEntityTypeEnum> attachmentType=null)
-        => _bankAppService.GetList(attachmentType);
+        public Task<List<BankDto>> GetList(string attachmentType)
+        => _bankAppService.GetList(EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(attachmentType));
 
 
         [HttpPost]

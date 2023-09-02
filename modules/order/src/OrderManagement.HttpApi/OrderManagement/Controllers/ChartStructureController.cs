@@ -13,6 +13,7 @@ using Esale.Share.Authorize;
 using Microsoft.AspNetCore.Http;
 using OrderManagement.Domain.Shared;
 using OrderManagement.Application.Contracts;
+using Esale.Core.Utility.Tools;
 
 namespace OrderManagement.HttpApi.OrderManagement.Controllers;
 
@@ -28,15 +29,15 @@ public class ChartStructureController : Controller
 
 
     [HttpGet]
-    public Task<List<ChartStructureDto>> GetList(List<AttachmentEntityTypeEnum> attachmentType = null)
-    => _chartStructureService.GetList(attachmentType);
+    public Task<List<ChartStructureDto>> GetList(string attachmentType)
+    => _chartStructureService.GetList(EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(attachmentType));
 
     [HttpPost]
     public Task<bool> UploadFile([FromForm]UploadFileDto uploadFile)
     => _chartStructureService.UploadFile(uploadFile);
     [HttpGet]
-    public Task<ChartStructureDto> GetById(int id, List<AttachmentEntityTypeEnum> attachmentType = null)
-    => _chartStructureService.GetById(id, attachmentType);
+    public Task<ChartStructureDto> GetById(int id, string attachmentType)
+    => _chartStructureService.GetById(id, EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(attachmentType));
 
     [HttpPost]
     public Task<ChartStructureDto> Add(ChartStructureCreateOrUpdateDto chartStructureCreateOrUpdateDto)
