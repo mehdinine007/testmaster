@@ -39,6 +39,14 @@ namespace WorkFlowManagement.Application
             CreateMap<Scheme, SchemeCreateOrUpdateDto>()
       .ReverseMap();
 
+            CreateMap<Activity, ActivityDto>()
+     .ReverseMap();
+
+            CreateMap<Activity, ActivityCreateOrUpdateDto>()
+               .ReverseMap();
+
+
+
 
         }
     }

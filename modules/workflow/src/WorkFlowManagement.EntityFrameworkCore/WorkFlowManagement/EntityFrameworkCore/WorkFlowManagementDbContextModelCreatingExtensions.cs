@@ -59,9 +59,13 @@ namespace WorkFlowManagement.EntityFrameworkCore
                  .HasForeignKey(o => o.RoleId);
 
             });
-
-         
-
+            builder.Entity<Activity>(entity =>
+            {
+                entity.ToTable("Activities", "Flow");
+                entity.HasOne<Scheme>(x => x.Scheme)
+                    .WithMany(x => x.Activities)
+                    .HasForeignKey(x => x.SchemeId);
+            });
 
 
 

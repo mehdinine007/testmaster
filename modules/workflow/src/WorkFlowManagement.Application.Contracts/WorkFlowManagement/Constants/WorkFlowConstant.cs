@@ -35,6 +35,10 @@ namespace WorkFlowManagement.Application.Contracts.WorkFlowManagement.Constants
         public static string SchemeNotFound = "طرح وجود ندارد";
         public static string SchemeNotFoundId = "2001";
 
-       
+
+        public static string ActivityNotFound = "فعالیت وجود ندارد";
+        public static string ActivityNotFoundId = "2002";
+
+
     }
 }
