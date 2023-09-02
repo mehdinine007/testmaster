@@ -21,7 +21,7 @@ namespace OrderManagement.HttpApi.OrderManagement.Controllers;
 [RemoteService]
 [Route("api/services/app/AnnouncementService/[action]")]
 //[UserAuthorization]
-public class AnnouncementController : Controller, IAnnouncementService
+public class AnnouncementController : Controller
 {
     private readonly IAnnouncementService _announcementService;
     public AnnouncementController(IAnnouncementService announcementService)
