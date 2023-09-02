@@ -13,6 +13,7 @@ using Esale.Share.Authorize;
 using Microsoft.AspNetCore.Http;
 using OrderManagement.Domain;
 using OrderManagement.Domain.Shared;
+using Esale.Core.Utility.Tools;
 
 namespace OrderManagement.HttpApi.OrderManagement.Controllers;
 
@@ -39,8 +40,8 @@ public class AnnouncementController : Controller, IAnnouncementService
     public Task<List<AnnouncementDto>> GetAllAnnouncement()
     => _announcementService.GetAllAnnouncement();
     [HttpGet]
-    public  Task<AnnouncementDto> GetById(int id, List<AttachmentEntityTypeEnum> attachmentType = null)
-        => _announcementService.GetById(id, attachmentType);
+    public  Task<AnnouncementDto> GetById(int id, string attachmentType)
+        => _announcementService.GetById(id, EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(attachmentType));
 
     [HttpGet]
     public Task<PagedResultDto<AnnouncementDto>> GetPagination(AnnouncementGetListDto input)

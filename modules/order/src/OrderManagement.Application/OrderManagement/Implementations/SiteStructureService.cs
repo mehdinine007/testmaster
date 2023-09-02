@@ -1,4 +1,5 @@
-﻿using Nest;
+﻿using Esale.Core.Utility.Tools;
+using Nest;
 using Newtonsoft.Json;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.OrderManagement;
@@ -106,7 +107,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
                 .Where(x => x.Location == siteStructureQuery.Location)
                 .OrderBy(x => x.Priority)
                 .ToList();
-            var attachments = await _attachmentService.GetList(AttachmentEntityEnum.SiteStructure, getSiteStructures.Select(x => x.Id).ToList(), siteStructureQuery.AttachmentType);
+            var attachments = await _attachmentService.GetList(AttachmentEntityEnum.SiteStructure, getSiteStructures.Select(x => x.Id).ToList(), EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(siteStructureQuery.AttachmentType));
             var siteStructures = ObjectMapper.Map<List<SiteStructure>, List<SiteStructureDto>>(getSiteStructures);
             siteStructures.ForEach(async x =>
             {
