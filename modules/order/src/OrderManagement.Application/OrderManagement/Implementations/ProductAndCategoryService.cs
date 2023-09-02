@@ -239,7 +239,7 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
                 {
                      ls = await GetProductFilter(input.AdvancedSearch, ls);
                 }
-                attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, ls.Select(x => x.Id).ToList(), input.attachmentType);
+                attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, ls.Select(x => x.Id).ToList(), EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(input.attachmentType));
                 break;
         }
         var productAndCategories = ObjectMapper.Map<List<ProductAndCategory>, List<ProductAndCategoryWithChildDto>>(ls);

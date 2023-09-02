@@ -126,7 +126,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
                 }
                 if (x.Type == SiteStructureTypeEnum.CarClassCarousel)
                 {
-                    var carclass = await _carClassService.GetList(siteStructureQuery.AttachmentType);
+                    var carclass = await _carClassService.GetList(EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(siteStructureQuery.AttachmentType));
                     x.CarouselData = carclass.Select(x => new CarouselData()
                     {
                         Id = x.Id,
