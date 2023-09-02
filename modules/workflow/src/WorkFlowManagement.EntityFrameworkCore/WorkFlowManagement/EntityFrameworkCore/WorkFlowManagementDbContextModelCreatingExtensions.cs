@@ -46,17 +46,17 @@ namespace WorkFlowManagement.EntityFrameworkCore
                     .HasForeignKey(x => x.OrganizationChartId);
             });
 
-            builder.Entity<WorkFlowRoleChart>(entity =>
+            builder.Entity<RoleOrganizationChart>(entity =>
             {
-                entity.ToTable("RoleCharts", "Flow");
+                entity.ToTable("RoleOrganizationChart", "Flow");
 
                 entity.HasOne<OrganizationChart>(o => o.OrganizationChart)
-                    .WithMany(w => w.WorkFlowRoleCharts)
+                    .WithMany(w => w.RoleOrganizationCharts)
                     .HasForeignKey(o => o.OrganizationChartId);
 
-                entity.HasOne<WorkFlowRole>(o => o.WorkFlowRole)
-                 .WithMany(w => w.WorkFlowRoleCharts)
-                 .HasForeignKey(o => o.WorkFlowRoleId);
+                entity.HasOne<Role>(o => o.Role)
+                 .WithMany(w => w.RoleOrganizationCharts)
+                 .HasForeignKey(o => o.RoleId);
 
             });
 

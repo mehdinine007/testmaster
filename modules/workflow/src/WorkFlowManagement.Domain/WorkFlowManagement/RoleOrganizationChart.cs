@@ -9,12 +9,12 @@ using Volo.Abp.Domain.Entities.Auditing;
 
 namespace WorkFlowManagement.Domain.WorkFlowManagement
 {
-    [Table("RoleChart", Schema = "Flow")]
-    public class WorkFlowRoleChart : FullAuditedEntity<int>
+    [Table("RoleOrganizationCharts", Schema = "Flow")]
+    public class RoleOrganizationChart : FullAuditedEntity<int>
     {
-        public int WorkFlowRoleId { get; set; }
+        public int RoleId { get; set; }
         public int OrganizationChartId { get; set; }
-        public virtual WorkFlowRole WorkFlowRole { get; set; } 
+        public virtual Role Role { get; set; } 
         public virtual OrganizationChart OrganizationChart { get; set; } 
     }
 }

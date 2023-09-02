@@ -59,6 +59,7 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
             var OrganizationChart = await Validation(organizationChartCreateOrUpdateDto.Id, organizationChartCreateOrUpdateDto);
             OrganizationChart.Status = organizationChartCreateOrUpdateDto.Status;
             OrganizationChart.Title = organizationChartCreateOrUpdateDto.Title;
+            OrganizationChart.OrganizationType = organizationChartCreateOrUpdateDto.OrganizationType;
             var entity = await _organizationChartRepository.UpdateAsync(OrganizationChart);
             return ObjectMapper.Map<OrganizationChart, OrganizationChartDto>(entity);
         }

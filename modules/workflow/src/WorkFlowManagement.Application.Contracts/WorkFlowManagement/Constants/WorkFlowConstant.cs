@@ -25,11 +25,16 @@ namespace WorkFlowManagement.Application.Contracts.WorkFlowManagement.Constants
         public static string InvalidEndDate = "تاریخ پایان نباید از تاریخ شروع کوچکتر باشد";
         public static string InvalidEndDateId = "1007";
 
-        public static string WorkFlowRoleNotFound = "نقش وجود ندارد";
-        public static string WorkFlowRoleNotFoundId = "1008";
 
+        public static string RoleNotFound = "نقش وجود ندارد";
+        public static string RoleNotFoundId = "1008";
+
+        public static string RoleOrganizationChartNotFound = "نقش چارت وجود ندارد";
+        public static string RoleOrganizationChartNotFoundId = "1009";
 
         public static string SchemeNotFound = "طرح وجود ندارد";
-        public static string SchemeNotFoundId = "1008";
+        public static string SchemeNotFoundId = "2001";
+
+       
     }
 }

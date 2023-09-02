@@ -20,18 +20,18 @@ namespace WorkFlowManagement.Application
             .ReverseMap();
             CreateMap<OrganizationPosition, OrganizationPositionCreateOrUpdateDto>()
           .ReverseMap();
-            CreateMap<WorkFlowRole, WorkFlowRoleDto>()
+            CreateMap<Role, RoleDto>()
                 .ForMember(x => x.Security, c => c.MapFrom(m => !string.IsNullOrWhiteSpace(m.Security) ? JsonConvert.DeserializeObject<List<int>>(m.Security) : null))
          .ReverseMap()
           .ForMember(x => x.Security, c => c.MapFrom(m => JsonConvert.SerializeObject(m.Security)));
-            CreateMap<WorkFlowRole, WorkFlowRoleCreateOrUpdateDto>()
+            CreateMap<Role, RoleCreateOrUpdateDto>()
        .ForMember(x => x.Security, c => c.MapFrom(m => !string.IsNullOrWhiteSpace(m.Security) ? JsonConvert.DeserializeObject<List<int>>(m.Security) : null))
        .ReverseMap()
          .ForMember(x => x.Security, c => c.MapFrom(m => JsonConvert.SerializeObject(m.Security)));
 
-            CreateMap<WorkFlowRoleChart, WorkFlowRoleChartCreateOrUpdateDto>()
+            CreateMap<RoleOrganizationChart, RoleOrganizationChartCreateOrUpdateDto>()
             .ReverseMap();
-            CreateMap<WorkFlowRoleChart, WorkFlowRoleChartDto>()
+            CreateMap<RoleOrganizationChart, RoleOrganizationChartDto>()
            .ReverseMap();
 
             CreateMap<Scheme, SchemeDto>()

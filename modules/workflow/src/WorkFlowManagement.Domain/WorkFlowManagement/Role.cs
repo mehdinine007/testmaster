@@ -10,11 +10,11 @@ using WorkFlowManagement.Domain.Shared.WorkFlowManagement.Enums;
 namespace WorkFlowManagement.Domain.WorkFlowManagement
 {
     [Table("Roles", Schema = "Flow")]
-    public class WorkFlowRole : FullAuditedEntity<int>
+    public class Role : FullAuditedEntity<int>
     {
         public string Title { get; set; }
         public bool Status { get; set; }
         public string Security { get; set; }
-        public virtual ICollection<WorkFlowRoleChart> WorkFlowRoleCharts { get; set; }
+        public virtual ICollection<RoleOrganizationChart> RoleOrganizationCharts { get; set; }
     }
 }

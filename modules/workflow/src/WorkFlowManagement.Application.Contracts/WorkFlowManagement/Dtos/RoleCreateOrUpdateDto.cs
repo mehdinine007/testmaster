@@ -7,7 +7,7 @@ using WorkFlowManagement.Domain.Shared.WorkFlowManagement.Enums;
 
 namespace WorkFlowManagement.Application.Contracts.WorkFlowManagement.Dtos
 {
-    public class WorkFlowRoleDto
+    public class RoleCreateOrUpdateDto
     {
         public int Id { get; set; }
         public string Title { get; set; }

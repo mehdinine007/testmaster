@@ -8,13 +8,13 @@ using WorkFlowManagement.Application.Contracts.WorkFlowManagement.Dtos;
 
 namespace WorkFlowManagement.Application.Contracts.WorkFlowManagement.IServices
 {
-    public interface IWorkFlowRoleService: IApplicationService
+    public interface IRoleService: IApplicationService
     {
 
-        Task<WorkFlowRoleDto> GetById(int id);
-        Task<WorkFlowRoleDto> Add(WorkFlowRoleCreateOrUpdateDto workFlowRoleCreateOrUpdateDto);
-        Task<WorkFlowRoleDto> Update(WorkFlowRoleCreateOrUpdateDto workFlowRoleCreateOrUpdateDto);
-        Task<List<WorkFlowRoleDto>> GetList();
+        Task<RoleDto> GetById(int id);
+        Task<RoleDto> Add(RoleCreateOrUpdateDto roleCreateOrUpdateDto);
+        Task<RoleDto> Update(RoleCreateOrUpdateDto roleCreateOrUpdateDto);
+        Task<List<RoleDto>> GetList();
         Task<bool> Delete(int id);
     }
 }

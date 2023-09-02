@@ -14,8 +14,8 @@ namespace WorkFlowManagement.EntityFrameworkCore
         public static string Schema { get; set; } = WorkFlowManagementConsts.DefaultDbSchema;
         public DbSet<OrganizationChart> OrganizationCharts { get; set ; }
         public DbSet<OrganizationPosition> OrganizationPositions { get; set; }
-        public DbSet<WorkFlowRole> Roles { get; set; }
-        public DbSet<WorkFlowRoleChart> RoleCharts { get; set; }
+        public DbSet<Role> Roles { get; set; }
+        public DbSet<RoleOrganizationChart> RoleOrganizationCharts { get; set; }
         public DbSet<Scheme> Schemes { get; set; }
 
 
