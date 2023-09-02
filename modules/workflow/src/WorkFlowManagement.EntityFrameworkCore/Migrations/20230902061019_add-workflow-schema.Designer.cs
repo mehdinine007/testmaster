@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Volo.Abp.EntityFrameworkCore;
 using WorkFlowManagement.EntityFrameworkCore;
@@ -12,9 +13,11 @@ using WorkFlowManagement.EntityFrameworkCore;
 namespace WorkFlowManagement.EntityFrameworkCore.Migrations
 {
     [DbContext(typeof(WorkFlowManagementDbContext))]
-    partial class WorkFlowManagementDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230902061019_add-workflow-schema")]
+    partial class addworkflowschema
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -86,7 +89,7 @@ namespace WorkFlowManagement.EntityFrameworkCore.Migrations
 
                     b.HasIndex("ParentId");
 
-                    b.ToTable("OrganizationCharts", "Flow");
+                    b.ToTable("OrganizationCharts", (string)null);
                 });
 
             modelBuilder.Entity("WorkFlowManagement.Domain.WorkFlowManagement.OrganizationPosition", b =>
@@ -146,7 +149,7 @@ namespace WorkFlowManagement.EntityFrameworkCore.Migrations
 
                     b.HasIndex("OrganizationChartId");
 
-                    b.ToTable("OrganizationPositions", "Flow");
+                    b.ToTable("OrganizationPositions", (string)null);
                 });
 
             modelBuilder.Entity("WorkFlowManagement.Domain.WorkFlowManagement.WorkFlowRole", b =>
@@ -251,7 +254,7 @@ namespace WorkFlowManagement.EntityFrameworkCore.Migrations
 
                     b.HasIndex("WorkFlowRoleId");
 
-                    b.ToTable("RoleCharts", "Flow");
+                    b.ToTable("RoleCharts", (string)null);
                 });
 
             modelBuilder.Entity("WorkFlowManagement.Domain.WorkFlowManagement.OrganizationChart", b =>

@@ -20,7 +20,7 @@ namespace WorkFlowManagement.EntityFrameworkCore
 
             builder.Entity<OrganizationChart>(entity =>
             {
-                entity.ToTable("OrganizationCharts");
+                entity.ToTable("OrganizationCharts","Flow");
 
                 entity.HasOne<OrganizationChart>(x => x.Parent)
                     .WithMany(x => x.Childrens)
@@ -40,7 +40,7 @@ namespace WorkFlowManagement.EntityFrameworkCore
 
             builder.Entity<OrganizationPosition>(entity =>
             {
-                entity.ToTable("OrganizationPositions");
+                entity.ToTable("OrganizationPositions", "Flow");
                 entity.HasOne<OrganizationChart>(x => x.OrganizationChart)
                     .WithMany(x => x.OrganizationPositions)
                     .HasForeignKey(x => x.OrganizationChartId);
@@ -48,7 +48,7 @@ namespace WorkFlowManagement.EntityFrameworkCore
 
             builder.Entity<WorkFlowRoleChart>(entity =>
             {
-                entity.ToTable("WorkFlowRoleCharts");
+                entity.ToTable("RoleCharts", "Flow");
 
                 entity.HasOne<OrganizationChart>(o => o.OrganizationChart)
                     .WithMany(w => w.WorkFlowRoleCharts)
