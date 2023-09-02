@@ -84,8 +84,8 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
             }
             if (activityCreateOrUpdateDto != null)
             {
-                var SchemeQuery = await _schemeRepository.GetQueryableAsync();
-                var scheme = SchemeQuery.FirstOrDefault(x => x.Id == activityCreateOrUpdateDto.SchemeId);
+                var schemeQuery = await _schemeRepository.GetQueryableAsync();
+                var scheme = schemeQuery.FirstOrDefault(x => x.Id == activityCreateOrUpdateDto.SchemeId);
                 if (scheme is null)
                 {
                     throw new UserFriendlyException(WorkFlowConstant.SchemeNotFound, WorkFlowConstant.SchemeNotFoundId);

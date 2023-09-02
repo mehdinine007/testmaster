@@ -20,5 +20,9 @@ namespace WorkFlowManagement.Domain.WorkFlowManagement
         public int SchemeId { get; set; }
         public virtual Scheme Scheme { get; set; }
 
+        public virtual ICollection<Transition> SourceTransitions { get; set; }
+        public virtual ICollection<Transition> TargetTransitions { get; set; }
+
+
     }
 }

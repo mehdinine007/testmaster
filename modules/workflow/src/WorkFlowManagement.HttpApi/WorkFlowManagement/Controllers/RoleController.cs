@@ -13,37 +13,37 @@ namespace WorkFlowManagement.HttpApi.WorkFlowManagement.Controllers
 {
     [DisableAuditing]
     [RemoteService]
-    [Route("api/services/app/WorkFlowRoleService/[action]")]
+    [Route("api/services/app/RoleService/[action]")]
     //[UserAuthorization]
     public class RoleController: Controller
     {
 
-        private readonly IRoleService _workFlowRoleService;
+        private readonly IRoleService _roleService;
         public RoleController(IRoleService workFlowRoleService)
-        => _workFlowRoleService = workFlowRoleService;
+        => _roleService = workFlowRoleService;
 
 
         [HttpGet]
         public Task<RoleDto> GetById(int id)
-    => _workFlowRoleService.GetById(id);
+    => _roleService.GetById(id);
 
 
         [HttpGet]
         public Task<List<RoleDto>> GetList()
-        => _workFlowRoleService.GetList();
+        => _roleService.GetList();
 
 
         [HttpPost]
         public Task<RoleDto> Add(RoleCreateOrUpdateDto workFlowRoleCreateOrUpdateDto)
-        => _workFlowRoleService.Add(workFlowRoleCreateOrUpdateDto);
+        => _roleService.Add(workFlowRoleCreateOrUpdateDto);
 
         [HttpPut]
         public Task<RoleDto> Update(RoleCreateOrUpdateDto workFlowRoleCreateOrUpdateDto)
-        => _workFlowRoleService.Update(workFlowRoleCreateOrUpdateDto);
+        => _roleService.Update(workFlowRoleCreateOrUpdateDto);
 
         [HttpDelete]
         public Task<bool> Delete(int id)
-        => _workFlowRoleService.Delete(id);
+        => _roleService.Delete(id);
     
 
 }

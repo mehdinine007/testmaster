@@ -40,5 +40,16 @@ namespace WorkFlowManagement.Application.Contracts.WorkFlowManagement.Constants
         public static string ActivityNotFoundId = "2002";
 
 
+        public static string TransitionNotFound = "انتفال وجود ندارد";
+        public static string TransitionNotFoundId = "2003";
+
+
+        public static string ActivitySourceNotFound = "مبدا فعالیت وجود ندارد";
+        public static string ActivitySourceNotFoundId = "2004";
+
+        public static string ActivityTargetNotFound = " مقصد فعالیت وجود ندارد";
+        public static string ActivityTargetNotFoundId = "2005";
+
+
     }
 }

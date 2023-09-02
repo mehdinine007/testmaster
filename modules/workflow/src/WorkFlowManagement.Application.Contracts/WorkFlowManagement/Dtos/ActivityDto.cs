@@ -11,8 +11,11 @@ namespace WorkFlowManagement.Application.Contracts.WorkFlowManagement.Dtos
     {
         public int Id { get; set; }
         public string Title { get; set; }
+        public string FlowTypeTitle { get; set; }
         public FlowTypeEnum FlowType { get; set; }
+        public string EntityTitle { get; set; }
         public EntityTypeEnum Entity { get; set; }
+        public string TypeTitle { get; set; }
         public TypeEnum Type { get; set; }
         public int SchemeId { get; set; }
         public virtual SchemeDto Scheme { get; set; }

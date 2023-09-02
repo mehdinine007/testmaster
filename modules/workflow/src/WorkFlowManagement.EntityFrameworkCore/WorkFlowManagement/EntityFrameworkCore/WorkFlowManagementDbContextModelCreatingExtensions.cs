@@ -67,6 +67,23 @@ namespace WorkFlowManagement.EntityFrameworkCore
                     .HasForeignKey(x => x.SchemeId);
             });
 
+            builder.Entity<Transition>(entity =>
+            {
+                entity.ToTable("Transitions", "Flow");
+                entity.HasOne<Activity>(x => x.ActivitySource)
+                    .WithMany(x => x.SourceTransitions)
+                    .HasForeignKey(x => x.ActivitySourceId)
+                     .OnDelete(DeleteBehavior.ClientCascade); ;
+
+
+                entity.HasOne<Activity>(x => x.ActivityTarget)
+                   .WithMany(x => x.TargetTransitions)
+                   .HasForeignKey(x => x.ActivityTargetId)
+                  .OnDelete(DeleteBehavior.ClientCascade);
+                entity.HasOne<Scheme>(x => x.Scheme)
+                  .WithMany(x => x.Transitions)
+                  .HasForeignKey(x => x.SchemeId);
+            });
 
 
 

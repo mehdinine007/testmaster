@@ -40,11 +40,21 @@ namespace WorkFlowManagement.Application
       .ReverseMap();
 
             CreateMap<Activity, ActivityDto>()
+     .ForMember(x => x.TypeTitle, c => c.MapFrom(m => m.Type != 0 ? EnumHelper.GetDescription(m.Type) : ""))
+     .ForMember(x => x.EntityTitle, c => c.MapFrom(m => m.Entity != 0 ? EnumHelper.GetDescription(m.Entity) : ""))
+     .ForMember(x => x.FlowTypeTitle, c => c.MapFrom(m => m.FlowType != 0 ? EnumHelper.GetDescription(m.FlowType) : ""))
      .ReverseMap();
 
             CreateMap<Activity, ActivityCreateOrUpdateDto>()
                .ReverseMap();
 
+
+
+            CreateMap<Transition, TransitionDto>()
+  .ReverseMap();
+
+            CreateMap<Transition, TransitionCreateOrUpdateDto>()
+               .ReverseMap();
 
 
 
