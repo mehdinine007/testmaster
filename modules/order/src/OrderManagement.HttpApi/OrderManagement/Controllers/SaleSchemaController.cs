@@ -12,6 +12,9 @@ using Volo.Abp.Application.Dtos;
 using Esale.Share.Authorize;
 using Microsoft.AspNetCore.Http;
 using OrderManagement.Domain.Shared;
+using NUglify.JavaScript;
+using Nest;
+using Esale.Core.Utility.Tools;
 
 namespace OrderManagement.HttpApi.OrderManagement.Controllers;
 
@@ -32,12 +35,14 @@ public class SaleSchemaController : Controller
 
     
     [HttpGet]
-    public Task<List<SaleSchemaDto>> GetList(List<AttachmentEntityTypeEnum> attachmentType=null)
-    => _saleSchemaService.GetList(attachmentType);
+    public Task<List<SaleSchemaDto>> GetList(string attachmentType)
+      =>    _saleSchemaService.GetList(EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(attachmentType));
+    
+    
 
     [HttpGet]
-    public Task<SaleSchemaDto> GetById(int id, List<AttachmentEntityTypeEnum> attachmentType = null)
-         => _saleSchemaService.GetById(id,attachmentType);
+    public Task<SaleSchemaDto> GetById(int id, string attachmentType)
+         => _saleSchemaService.GetById(id, EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(attachmentType));
 
     [HttpPost]
     public Task<SaleSchemaDto> Add(CreateSaleSchemaDto saleSchemaDto)

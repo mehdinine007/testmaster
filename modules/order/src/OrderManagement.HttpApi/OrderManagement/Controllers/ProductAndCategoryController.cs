@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using Nest;
 using System;
 using OrderManagement.Domain.Shared;
+using Esale.Core.Utility.Tools;
 
 namespace OrderManagement.HttpApi.OrderManagement.Controllers;
 
@@ -33,8 +34,8 @@ public class ProductAndCategoryController : AbpController //, IProductAndCategor
     }
 
     [HttpGet]
-    public async Task<ProductAndCategoryWithChildDto> GetById(int id, bool hasProperty, List<AttachmentEntityTypeEnum> attachmentType = null)
-        => await _productAndCategoryService.GetById(id, hasProperty, attachmentType);
+    public async Task<ProductAndCategoryWithChildDto> GetById(int id, bool hasProperty, string attachmentType)
+        => await _productAndCategoryService.GetById(id, hasProperty, EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(attachmentType));
 
     [HttpPost]
     public async Task<ProductAndCategoryDto> Insert([FromBody] ProductAndCategoryCreateDto productAndCategoryCreateDto)

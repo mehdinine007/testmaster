@@ -13,6 +13,7 @@ using Esale.Share.Authorize;
 using Microsoft.AspNetCore.Http;
 using OrderManagement.Domain.Shared;
 using OrderManagement.Application.Contracts;
+using Esale.Core.Utility.Tools;
 
 namespace OrderManagement.HttpApi.OrderManagement.Controllers;
 
@@ -27,8 +28,8 @@ public class SiteStructureController : Controller
         => _siteStructureService = siteStructureService;
 
     [HttpGet]
-    public Task<SiteStructureDto> GetById(int id, List<AttachmentEntityTypeEnum> attachmentType = null)
-    => _siteStructureService.GetById(id, attachmentType);
+    public Task<SiteStructureDto> GetById(int id, string attachmentType)
+    => _siteStructureService.GetById(id, EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(attachmentType));
 
 
     [HttpGet]
