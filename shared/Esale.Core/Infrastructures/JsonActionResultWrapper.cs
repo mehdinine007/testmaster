@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using System;
 
-namespace OrderService.Host.Infrastructures;
+namespace Esale.Core.Infrastructures;
 
 public class JsonActionResultWrapper : IActionResultWrapper
 {

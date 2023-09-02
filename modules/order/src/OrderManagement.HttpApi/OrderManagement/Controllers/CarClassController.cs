@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
 using OrderManagement.Application.Contracts.OrderManagement;
 using OrderManagement.Domain.Shared;
+using Esale.Core.Utility.Tools;
 
 namespace OrderManagement.HttpApi.OrderManagement.Controllers
 {
@@ -17,7 +18,7 @@ namespace OrderManagement.HttpApi.OrderManagement.Controllers
     [RemoteService]
     [Route("api/services/app/CarClassService/[action]")]
     //[UserAuthorization]
-    public class CarClassController: Controller, ICarClassService
+    public class CarClassController: Controller
     {
 
         private readonly ICarClassService _carClassService;
@@ -27,8 +28,8 @@ namespace OrderManagement.HttpApi.OrderManagement.Controllers
         public Task<bool> Delete(int id)
         =>_carClassService.Delete(id);
         [HttpGet]
-        public Task<List<CarClassDto>> GetList(List<AttachmentEntityTypeEnum> attachmentType=null)
-        =>_carClassService.GetList(attachmentType);
+        public Task<List<CarClassDto>> GetList(string attachmentType)
+        =>_carClassService.GetList(EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(attachmentType));
         [HttpPost]
         public Task<CarClassDto> Add(CarClassCreateDto carClassDto)
       =>_carClassService.Add(carClassDto);

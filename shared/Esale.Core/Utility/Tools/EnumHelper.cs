@@ -60,5 +60,16 @@ namespace Esale.Core.Utility.Tools
             return attr.Description;
         }
 
+        public static List<T> ConvertStringToEnum<T>(string source)
+            where T : Enum
+        {
+            if (!string.IsNullOrWhiteSpace(source))
+            {
+                var list = source.Split(',').ToList();
+                return list.Select(x => (T)Enum.Parse(typeof(T),x,true)).ToList();
+            }
+            return null;
+        }
+
     }
 }
