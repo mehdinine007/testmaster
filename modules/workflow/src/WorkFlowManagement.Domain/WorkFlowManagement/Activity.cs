@@ -22,6 +22,9 @@ namespace WorkFlowManagement.Domain.WorkFlowManagement
 
         public virtual ICollection<Transition> SourceTransitions { get; set; }
         public virtual ICollection<Transition> TargetTransitions { get; set; }
+        public virtual ICollection<ActivityRole> ActivityRoles { get; set; }
+
+
 
 
     }

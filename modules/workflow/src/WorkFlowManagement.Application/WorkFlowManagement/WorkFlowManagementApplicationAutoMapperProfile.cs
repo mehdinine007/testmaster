@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using AutoMapper;
 using Esale.Core.Utility.Tools;
 using Newtonsoft.Json;
 using WorkFlowManagement.Application.Contracts.WorkFlowManagement.Dtos;
@@ -47,15 +48,15 @@ namespace WorkFlowManagement.Application
 
             CreateMap<Activity, ActivityCreateOrUpdateDto>()
                .ReverseMap();
-
-
-
-            CreateMap<Transition, TransitionDto>()
-  .ReverseMap();
-
+            CreateMap<Transition, TransitionDto>().ReverseMap();
             CreateMap<Transition, TransitionCreateOrUpdateDto>()
                .ReverseMap();
 
+            CreateMap<ActivityRole, ActivityRoleDto>()
+              .ReverseMap();
+
+            CreateMap<ActivityRole, ActivityRoleCreateOrUpdate>()
+             .ReverseMap();
 
 
         }

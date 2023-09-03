@@ -51,5 +51,9 @@ namespace WorkFlowManagement.Application.Contracts.WorkFlowManagement.Constants
         public static string ActivityTargetNotFoundId = "2005";
 
 
+        public static string ActivityRoleNotFound = " نقش فعالیت وجود ندارد";
+        public static string ActivityRoleNotFoundId = "2006";
+
+
     }
 }
