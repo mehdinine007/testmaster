@@ -1,6 +1,4 @@
-﻿
-
-using Abp.Authorization.Users;
+﻿using Abp.Authorization.Users;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using UserManagement.Domain.UserManagement.Enums;
