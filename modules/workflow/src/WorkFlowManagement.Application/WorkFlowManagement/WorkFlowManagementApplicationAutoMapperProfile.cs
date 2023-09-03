@@ -66,6 +66,14 @@ namespace WorkFlowManagement.Application
             .ReverseMap();
 
 
+            CreateMap<Inbox, InboxDto>()
+               .ForMember(x => x.StateTitle, c => c.MapFrom(m => m.State != 0 ? EnumHelper.GetDescription(m.State) : ""))
+               .ForMember(x => x.InboxStatusTilte, c => c.MapFrom(m => m.Status != 0 ? EnumHelper.GetDescription(m.Status) : ""))
+               .ReverseMap();
+
+            CreateMap<Inbox, InboxCreateOrUpdateDto>()
+            .ReverseMap();
+
         }
     }
 }

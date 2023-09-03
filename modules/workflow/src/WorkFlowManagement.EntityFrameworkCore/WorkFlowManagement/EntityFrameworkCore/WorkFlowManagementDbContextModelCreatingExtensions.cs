@@ -134,7 +134,26 @@ namespace WorkFlowManagement.EntityFrameworkCore
 
 
             });
+            builder.Entity<Inbox>(entity =>
+            {
+                entity.ToTable("Inboxes", "Flow");
+                entity.HasOne<Process>(x => x.Process)
+                    .WithMany(x => x.Inboxes)
+                    .HasForeignKey(x => x.ProcessId);
 
+
+                entity.HasOne<OrganizationChart>(x => x.OrganizationChart)
+                    .WithMany(x => x.Inboxes)
+                    .HasForeignKey(x => x.OrganizationChartId)
+                    .OnDelete(DeleteBehavior.ClientCascade);
+
+
+                entity.HasOne<OrganizationPosition>(x => x.OrganizationPosition)
+                   .WithMany(x => x.Inboxes)
+                   .HasForeignKey(x => x.OrganizationPositionId)
+                   .OnDelete(DeleteBehavior.ClientCascade);
+
+            });
 
         }
     }

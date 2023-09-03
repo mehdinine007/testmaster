@@ -15,6 +15,7 @@ namespace WorkFlowManagement.Domain.WorkFlowManagement
         public DateTime? EndDate { get; set; }
         public bool Status { get; set; }
         public virtual OrganizationChart OrganizationChart { get; protected set; }
+        public virtual ICollection<Inbox> Inboxes { get; set; }
 
 
     }

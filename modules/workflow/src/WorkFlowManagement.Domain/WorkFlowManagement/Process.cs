@@ -38,6 +38,10 @@ namespace WorkFlowManagement.Domain.WorkFlowManagement
         public Guid PersonId { get; set; }
         public Guid? PreviousPersonId { get; set; }
         public Guid CreatedPersonId { get; set; }
+        public virtual ICollection<Inbox> Inboxes { get; set; }
+
+
+        
 
 
 

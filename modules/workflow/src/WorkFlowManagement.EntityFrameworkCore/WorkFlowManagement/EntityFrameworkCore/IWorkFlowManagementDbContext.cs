@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Runtime.CompilerServices;
 using Volo.Abp.Data;
 using Volo.Abp.EntityFrameworkCore;
 using WorkFlowManagement.Domain.WorkFlowManagement;
@@ -18,5 +19,6 @@ namespace WorkFlowManagement.EntityFrameworkCore
         DbSet<Transition> Transitions { get; set; }
         DbSet<ActivityRole> ActivityRoles { get; set; }
         DbSet<Process> Processes { get; set; }
+        DbSet<Inbox> Inboxes { get; set; }
     }
 }

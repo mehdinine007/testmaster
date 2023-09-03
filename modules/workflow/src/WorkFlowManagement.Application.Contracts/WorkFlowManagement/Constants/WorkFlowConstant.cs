@@ -66,5 +66,12 @@ namespace WorkFlowManagement.Application.Contracts.WorkFlowManagement.Constants
         public static string PreviousOrganizationChartNotFound = "سازمان قبلی وجود ندارد";
         public static string PreviousOrganizationChartNotFoundId = "3001";
 
+
+        public static string InboxNotFound = "صندوق ورودی وجود ندارد";
+        public static string InboxNotFoundId = "3002";
+
+        public static string InboxParentNotFound = "صندوق ورودی سطح بالایی وجود ندارد";
+        public static string InboxParentNotFoundId = "3003";
+
     }
 }

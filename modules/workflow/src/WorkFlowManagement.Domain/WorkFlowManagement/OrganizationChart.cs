@@ -28,6 +28,7 @@ namespace WorkFlowManagement.Domain.WorkFlowManagement
         public virtual ICollection<Process> Processes { get; set; }
         public virtual ICollection<Process> PreviousProcesses { get; set; }
         public virtual ICollection<Process> CreatedProcesses { get; set; }
+        public virtual ICollection<Inbox> Inboxes { get; set; }
 
 
     }
