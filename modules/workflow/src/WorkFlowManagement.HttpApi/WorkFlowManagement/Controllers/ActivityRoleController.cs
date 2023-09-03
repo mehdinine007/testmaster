@@ -22,7 +22,7 @@ namespace WorkFlowManagement.HttpApi.WorkFlowManagement.Controllers
         public ActivityRoleController(IActivityRoleService activityRoleService)
         => _activityRoleService = activityRoleService;
         [HttpPost]
-        public Task<ActivityRoleDto> Add(ActivityRoleCreateOrUpdate activityRoleCreateOrUpdate)
+        public Task<ActivityRoleDto> Add(ActivityRoleCreateOrUpdateDto activityRoleCreateOrUpdate)
         =>_activityRoleService.Add(activityRoleCreateOrUpdate);
         [HttpDelete]
         public Task<bool> Delete(int id)
@@ -34,7 +34,7 @@ namespace WorkFlowManagement.HttpApi.WorkFlowManagement.Controllers
         public Task<List<ActivityRoleDto>> GetList()
         =>_activityRoleService.GetList();
         [HttpPut]
-        public Task<ActivityRoleDto> Update(ActivityRoleCreateOrUpdate activityRoleCreateOrUpdate)
+        public Task<ActivityRoleDto> Update(ActivityRoleCreateOrUpdateDto activityRoleCreateOrUpdate)
         =>_activityRoleService.Update(activityRoleCreateOrUpdate);
     }
 }

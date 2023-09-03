@@ -17,7 +17,7 @@ namespace WorkFlowManagement.Domain.Shared.WorkFlowManagement.Enums
         [EnumProperty(Description = "برگشت به درخواست کننده")]
         ReturnRequester= 3,
         [EnumProperty(Description = "برگشت به ارجاع دهنده")]
-        ReturnReferrer = 4,
+        ReturnToReturn = 4,
         [EnumProperty(Description = "ابطال")]
         Cancellation = 5,
     }

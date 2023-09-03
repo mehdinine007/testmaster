@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿
+using Microsoft.EntityFrameworkCore;
 using Volo.Abp;
 using WorkFlowManagement.Domain.WorkFlowManagement;
 using Volo.Abp.EntityFrameworkCore.Modeling;
@@ -96,6 +97,41 @@ namespace WorkFlowManagement.EntityFrameworkCore
                 entity.HasOne<Role>(x => x.Role)
                    .WithMany(x => x.ActivityRoles)
                    .HasForeignKey(x => x.RoleId);
+
+            });
+
+
+
+            builder.Entity<Process>(entity =>
+            {
+                entity.ToTable("Processes", "Flow");
+                entity.HasOne<Scheme>(x => x.Scheme)
+                    .WithMany(x => x.Processes)
+                    .HasForeignKey(x => x.SchemeId)
+                    .OnDelete(DeleteBehavior.ClientCascade); ;
+
+                entity.HasOne<Activity>(x => x.Activity)
+                   .WithMany(x => x.Processes)
+                   .HasForeignKey(x => x.ActivityId);
+                entity.HasOne<Activity>(x => x.PreviousActivity)
+                  .WithMany(x => x.PreviousProcesses)
+                  .HasForeignKey(x => x.PreviousActivityId);
+
+                entity.HasOne<OrganizationChart>(x => x.OrganizationChart)
+                 .WithMany(x => x.Processes)
+                 .HasForeignKey(x => x.OrganizationChartId)
+                  .OnDelete(DeleteBehavior.ClientCascade);
+                entity.HasOne<OrganizationChart>(x => x.CreatedOrganizationChart)
+                .WithMany(x => x.CreatedProcesses)
+                .HasForeignKey(x => x.CreatedOrganizationChartId)
+                 .OnDelete(DeleteBehavior.ClientCascade);
+
+                entity.HasOne<OrganizationChart>(x => x.PreviousOrganizationChart)
+               .WithMany(x => x.PreviousProcesses)
+               .HasForeignKey(x => x.PreviousOrganizationChartId)
+                .OnDelete(DeleteBehavior.ClientCascade);
+
+
 
             });
 

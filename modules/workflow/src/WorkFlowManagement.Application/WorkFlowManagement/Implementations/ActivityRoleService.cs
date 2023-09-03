@@ -29,10 +29,10 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
         }
 
 
-        public async Task<ActivityRoleDto> Add(ActivityRoleCreateOrUpdate activityRoleCreateOrUpdate)
+        public async Task<ActivityRoleDto> Add(ActivityRoleCreateOrUpdateDto activityRoleCreateOrUpdate)
         {
             await Validation(null, activityRoleCreateOrUpdate);
-            var activityRole = ObjectMapper.Map<ActivityRoleCreateOrUpdate, ActivityRole>(activityRoleCreateOrUpdate);
+            var activityRole = ObjectMapper.Map<ActivityRoleCreateOrUpdateDto, ActivityRole>(activityRoleCreateOrUpdate);
             var entity = await _activityRoleRepository.InsertAsync(activityRole, autoSave: true);
             return ObjectMapper.Map<ActivityRole, ActivityRoleDto>(entity);
         }
@@ -58,7 +58,7 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
             return activityRoleDto;
         }
 
-        public async Task<ActivityRoleDto> Update(ActivityRoleCreateOrUpdate activityRoleCreateOrUpdate)
+        public async Task<ActivityRoleDto> Update(ActivityRoleCreateOrUpdateDto activityRoleCreateOrUpdate)
         {
             var activityRole = await Validation(activityRoleCreateOrUpdate.Id, activityRoleCreateOrUpdate);
             activityRole.ActivityId = activityRoleCreateOrUpdate.ActivityId;
@@ -68,7 +68,7 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
         }
 
 
-        private async Task<ActivityRole> Validation(int? id, ActivityRoleCreateOrUpdate activityRoleCreateOrUpdate)
+        private async Task<ActivityRole> Validation(int? id, ActivityRoleCreateOrUpdateDto activityRoleCreateOrUpdate)
         {
             var activityRole= new ActivityRole();
             var activityRoleQuery = (await _activityRoleRepository.GetQueryableAsync()).Include(x => x.Activity).Include(x=>x.Role);

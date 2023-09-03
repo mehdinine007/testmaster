@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace WorkFlowManagement.Application.Contracts.WorkFlowManagement.Dtos
 {
-    public class ActivityRoleCreateOrUpdate
+    public class ActivityRoleCreateOrUpdateDto
     {
         public int Id { get; set; }
         public int ActivityId { get; set; }

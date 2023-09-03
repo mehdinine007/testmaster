@@ -54,6 +54,17 @@ namespace WorkFlowManagement.Application.Contracts.WorkFlowManagement.Constants
         public static string ActivityRoleNotFound = " نقش فعالیت وجود ندارد";
         public static string ActivityRoleNotFoundId = "2006";
 
+        public static string ProcessNotFound = " فرآیند وجود ندارد";
+        public static string ProcessNotFoundId = "2007";
+
+        public static string PreviousActivityNotFound = "فعالیت قبلی وجود ندارد";
+        public static string PreviousActivityNotFoundId = "2008";
+
+        public static string CreatedOrganizationChartNotFound = "سمت درخواست کننده وجود ندارد";
+        public static string CreatedOrganizationChartNotFoundId = "2009";
+
+        public static string PreviousOrganizationChartNotFound = "سازمان قبلی وجود ندارد";
+        public static string PreviousOrganizationChartNotFoundId = "3001";
 
     }
 }

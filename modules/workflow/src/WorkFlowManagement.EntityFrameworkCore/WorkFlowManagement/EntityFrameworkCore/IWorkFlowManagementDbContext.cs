@@ -17,5 +17,6 @@ namespace WorkFlowManagement.EntityFrameworkCore
         DbSet<Activity> Activities { get; set; }
         DbSet<Transition> Transitions { get; set; }
         DbSet<ActivityRole> ActivityRoles { get; set; }
+        DbSet<Process> Processes { get; set; }
     }
 }

@@ -55,8 +55,15 @@ namespace WorkFlowManagement.Application
             CreateMap<ActivityRole, ActivityRoleDto>()
               .ReverseMap();
 
-            CreateMap<ActivityRole, ActivityRoleCreateOrUpdate>()
+            CreateMap<ActivityRole, ActivityRoleCreateOrUpdateDto>()
              .ReverseMap();
+            CreateMap<Process, ProcessDto>()
+                .ForMember(x => x.StateTitle, c => c.MapFrom(m => m.State != 0 ? EnumHelper.GetDescription(m.State) : ""))
+                .ForMember(x => x.StatusTitle, c => c.MapFrom(m => m.Status != 0 ? EnumHelper.GetDescription(m.Status) : ""))
+
+            .ReverseMap();
+            CreateMap<Process, ProcessCreateOrUpdateDto>()
+            .ReverseMap();
 
 
         }
