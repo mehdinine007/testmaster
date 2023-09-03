@@ -20,5 +20,7 @@ namespace WorkFlowManagement.Domain.Shared.WorkFlowManagement.Enums
         ReturnToReturn = 4,
         [EnumProperty(Description = "ابطال")]
         Cancellation = 5,
+        [EnumProperty(Description = "تایید")]
+        Confirm = 6,
     }
 }

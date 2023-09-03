@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Volo.Abp.EntityFrameworkCore;
 using WorkFlowManagement.EntityFrameworkCore;
@@ -12,9 +13,11 @@ using WorkFlowManagement.EntityFrameworkCore;
 namespace WorkFlowManagement.EntityFrameworkCore.Migrations
 {
     [DbContext(typeof(WorkFlowManagementDbContext))]
-    partial class WorkFlowManagementDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230903125613_remove-ParentProcess-fields")]
+    partial class removeParentProcessfields
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -388,9 +391,6 @@ namespace WorkFlowManagement.EntityFrameworkCore.Migrations
                     b.Property<int>("OrganizationChartId")
                         .HasColumnType("int");
 
-                    b.Property<Guid?>("ParentId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid>("PersonId")
                         .HasColumnType("uniqueidentifier");
 
@@ -425,8 +425,6 @@ namespace WorkFlowManagement.EntityFrameworkCore.Migrations
                     b.HasIndex("CreatedOrganizationChartId");
 
                     b.HasIndex("OrganizationChartId");
-
-                    b.HasIndex("ParentId");
 
                     b.HasIndex("PreviousActivityId");
 
@@ -756,10 +754,6 @@ namespace WorkFlowManagement.EntityFrameworkCore.Migrations
                         .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired();
 
-                    b.HasOne("WorkFlowManagement.Domain.WorkFlowManagement.Process", "Parent")
-                        .WithMany()
-                        .HasForeignKey("ParentId");
-
                     b.HasOne("WorkFlowManagement.Domain.WorkFlowManagement.Activity", "PreviousActivity")
                         .WithMany("PreviousProcesses")
                         .HasForeignKey("PreviousActivityId");
@@ -780,8 +774,6 @@ namespace WorkFlowManagement.EntityFrameworkCore.Migrations
                     b.Navigation("CreatedOrganizationChart");
 
                     b.Navigation("OrganizationChart");
-
-                    b.Navigation("Parent");
 
                     b.Navigation("PreviousActivity");
 

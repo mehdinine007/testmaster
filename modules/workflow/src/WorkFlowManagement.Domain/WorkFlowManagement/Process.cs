@@ -40,8 +40,10 @@ namespace WorkFlowManagement.Domain.WorkFlowManagement
         public Guid CreatedPersonId { get; set; }
         public virtual ICollection<Inbox> Inboxes { get; set; }
 
+        [ForeignKey("Process")]
+        public Guid? ParentId { get; set; }
+        public virtual Process Parent { get; set; }
 
-        
 
 
 

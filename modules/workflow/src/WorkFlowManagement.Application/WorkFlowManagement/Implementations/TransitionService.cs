@@ -53,7 +53,7 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
 
         public async Task<List<TransitionDto>> GetList()
         {
-            var transition = (await _transitionRepository.GetQueryableAsync()).Include(x => x.ActivitySource).Include(x => x.ActivityTarget).Include(x => x.Scheme).ToList();
+            var transition = (await _transitionRepository.GetQueryableAsync()).Include(x => x.ActivitySource).Include(x => x.ActivityTarget).ToList();
             var transitionDto = ObjectMapper.Map<List<Transition>, List<TransitionDto>>(transition);
             return transitionDto;
         }
@@ -63,7 +63,7 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
             var transition = await Validation(transitionCreateOrUpdateDto.Id, transitionCreateOrUpdateDto);
             transition.ActivitySourceId = transitionCreateOrUpdateDto.ActivitySourceId;
             transition.ActivityTargetId = transitionCreateOrUpdateDto.ActivityTargetId;
-            transition.SchemeId = transitionCreateOrUpdateDto.SchemeId;
+   
             var entity = await _transitionRepository.UpdateAsync(transition);
             return ObjectMapper.Map<Transition, TransitionDto>(entity);
         }
@@ -72,7 +72,7 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
         private async Task<Transition> Validation(int? id, TransitionCreateOrUpdateDto transitionCreateOrUpdateDto)
         {
             var transition = new Transition();
-            var transitionQuery = (await _transitionRepository.GetQueryableAsync()).Include(x => x.ActivitySource).Include(x => x.ActivityTarget).Include(x => x.Scheme);
+            var transitionQuery = (await _transitionRepository.GetQueryableAsync()).Include(x => x.ActivitySource).Include(x => x.ActivityTarget);
             if (id != null)
             {
                 transition = transitionQuery.FirstOrDefault(x => x.Id == id);
@@ -83,14 +83,6 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
             }
             if (transitionCreateOrUpdateDto != null)
             {
-                var schemeQuery = await _schemeRepository.GetQueryableAsync();
-                var scheme = schemeQuery.FirstOrDefault(x => x.Id == transitionCreateOrUpdateDto.SchemeId);
-                if (scheme is null)
-                {
-                    throw new UserFriendlyException(WorkFlowConstant.SchemeNotFound, WorkFlowConstant.SchemeNotFoundId);
-                }
-
-
                 var activity = (await _activityRepository.GetQueryableAsync()).AsNoTracking();
                 var activtySorce = activity.FirstOrDefault(x => x.Id == transitionCreateOrUpdateDto.ActivitySourceId);
                     if (activtySorce is null)

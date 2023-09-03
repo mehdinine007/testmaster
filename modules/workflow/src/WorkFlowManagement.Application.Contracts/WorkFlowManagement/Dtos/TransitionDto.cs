@@ -14,7 +14,6 @@ namespace WorkFlowManagement.Application.Contracts.WorkFlowManagement.Dtos
         public  ActivityDto ActivitySource { get; set; }
         public int ActivityTargetId { get; set; }
         public  ActivityDto ActivityTarget { get; set; }
-        public int SchemeId { get; set; }
-        public  SchemeDto Scheme { get; set; }
+       
     }
 }

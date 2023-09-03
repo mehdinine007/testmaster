@@ -35,7 +35,8 @@ namespace WorkFlowManagement.Application.Contracts.WorkFlowManagement.Dtos
         public Guid PersonId { get; set; }
         public Guid? PreviousPersonId { get; set; }
         public Guid CreatedPersonId { get; set; }
-
+        public Guid? ParentId { get; set; }
+        public ProcessDto Parent { get; set; }
 
     }
 }

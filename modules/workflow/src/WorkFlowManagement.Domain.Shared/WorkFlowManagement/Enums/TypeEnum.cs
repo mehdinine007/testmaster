@@ -9,6 +9,8 @@ namespace WorkFlowManagement.Domain.Shared.WorkFlowManagement.Enums
 {
     public enum TypeEnum
     {
+        [EnumProperty(Description = "نامشخص")]
+        None = 0,
         [EnumProperty(Description = "ایجاد")]
         Create = 1,
         [EnumProperty(Description = "پیش نمایش")]

@@ -12,8 +12,10 @@ namespace WorkFlowManagement.Domain.Shared.WorkFlowManagement.Enums
    
     public enum EntityTypeEnum
     {
+        [EnumProperty(Description = "نامشخص")]
+        None = 0,
         [EnumProperty(Description = "برنامه فروش")]
-        SaleSchema = 1,
+        SaleDetail = 1,
        
     }
 }

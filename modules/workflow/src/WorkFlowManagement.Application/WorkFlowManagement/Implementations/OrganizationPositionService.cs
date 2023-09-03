@@ -60,7 +60,7 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
         {
             var organizationPosition = await Validation(organizationPositionCreateOrUpdateDto.Id, organizationPositionCreateOrUpdateDto);
             organizationPosition.OrganizationChartId = organizationPositionCreateOrUpdateDto.OrganizationChartId;
-            organizationPosition.UserId = organizationPositionCreateOrUpdateDto.UserId;
+            organizationPosition.PersonId = organizationPositionCreateOrUpdateDto.PersonId;
             organizationPosition.Status = organizationPositionCreateOrUpdateDto.Status;
             organizationPosition.StartDate = organizationPositionCreateOrUpdateDto.StartDate;
             organizationPosition.EndDate = organizationPositionCreateOrUpdateDto.EndDate;

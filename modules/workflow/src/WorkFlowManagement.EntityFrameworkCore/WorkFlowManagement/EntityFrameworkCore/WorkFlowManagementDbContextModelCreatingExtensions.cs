@@ -21,7 +21,7 @@ namespace WorkFlowManagement.EntityFrameworkCore
 
             builder.Entity<OrganizationChart>(entity =>
             {
-                entity.ToTable("OrganizationCharts","Flow");
+                entity.ToTable("OrganizationCharts", "Flow");
 
                 entity.HasOne<OrganizationChart>(x => x.Parent)
                     .WithMany(x => x.Childrens)
@@ -63,6 +63,8 @@ namespace WorkFlowManagement.EntityFrameworkCore
             builder.Entity<Activity>(entity =>
             {
                 entity.ToTable("Activities", "Flow");
+                entity.Property(x => x.Title)
+               .IsRequired();
                 entity.HasOne<Scheme>(x => x.Scheme)
                     .WithMany(x => x.Activities)
                     .HasForeignKey(x => x.SchemeId);
@@ -82,8 +84,9 @@ namespace WorkFlowManagement.EntityFrameworkCore
                    .HasForeignKey(x => x.ActivityTargetId)
                   .OnDelete(DeleteBehavior.ClientCascade);
                 entity.HasOne<Scheme>(x => x.Scheme)
-                  .WithMany(x => x.Transitions)
-                  .HasForeignKey(x => x.SchemeId);
+                 .WithMany(x => x.Transitions)
+                 .HasForeignKey(x => x.SchemeId);
+
             });
 
 
