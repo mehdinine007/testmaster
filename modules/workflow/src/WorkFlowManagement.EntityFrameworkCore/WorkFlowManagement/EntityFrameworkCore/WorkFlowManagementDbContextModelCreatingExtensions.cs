@@ -83,10 +83,6 @@ namespace WorkFlowManagement.EntityFrameworkCore
                    .WithMany(x => x.TargetTransitions)
                    .HasForeignKey(x => x.ActivityTargetId)
                   .OnDelete(DeleteBehavior.ClientCascade);
-                entity.HasOne<Scheme>(x => x.Scheme)
-                 .WithMany(x => x.Transitions)
-                 .HasForeignKey(x => x.SchemeId);
-
             });
 
 

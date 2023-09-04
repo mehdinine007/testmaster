@@ -15,7 +15,6 @@ namespace WorkFlowManagement.Domain.WorkFlowManagement
         public virtual Activity ActivitySource { get; set; }
         public int ActivityTargetId { get; set; }
         public virtual Activity ActivityTarget { get; set; }
-        public int SchemeId { get; set; }
-        public virtual Scheme Scheme { get; set; }
+        
     }
 }

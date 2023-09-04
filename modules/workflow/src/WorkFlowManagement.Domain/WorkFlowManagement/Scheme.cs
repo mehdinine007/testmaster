@@ -15,7 +15,6 @@ namespace WorkFlowManagement.Domain.WorkFlowManagement
         public bool Status { get; set; }
         public int Priority { get; set; }
         public virtual ICollection<Activity> Activities { get; set; }
-        public virtual ICollection<Transition> Transitions { get; set; }
         public virtual ICollection<Process> Processes { get; set; }
 
     }

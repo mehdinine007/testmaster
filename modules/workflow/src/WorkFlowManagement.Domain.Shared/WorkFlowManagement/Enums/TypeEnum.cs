@@ -14,7 +14,7 @@ namespace WorkFlowManagement.Domain.Shared.WorkFlowManagement.Enums
         [EnumProperty(Description = "ایجاد")]
         Create = 1,
         [EnumProperty(Description = "پیش نمایش")]
-        PreView = 1,
+        PreView = 2,
 
     }
 }
