@@ -122,7 +122,7 @@ public class CapacityControlAppService : ApplicationService, ICapacityControlApp
                 new PropertyDto()
                 {
                     Id = ObjectId.GenerateNewId(),
-                    Tilte = "امتیاز خودرو",
+                    Title = "امتیاز خودرو",
                     Key = "score", 
                     Type = PropertyTypeEnum.Number,
                     Value = "0",
@@ -130,7 +130,7 @@ public class CapacityControlAppService : ApplicationService, ICapacityControlApp
                 new PropertyDto()
                 {
                     Id = ObjectId.GenerateNewId(),
-                    Tilte = "استاندارد 85 گانه",
+                    Title = "استاندارد 85 گانه",
                     Key = "standard85",
                     Type = PropertyTypeEnum.Boolean,
                     Value = "false"
@@ -138,7 +138,7 @@ public class CapacityControlAppService : ApplicationService, ICapacityControlApp
                 new PropertyDto()
                 {
                     Id = ObjectId.GenerateNewId(),
-                    Tilte = "مورد علاقه",
+                    Title = "مورد علاقه",
                     Key = "isfavorite",
                     Type = PropertyTypeEnum.Boolean,
                     Value = "false"
@@ -146,7 +146,7 @@ public class CapacityControlAppService : ApplicationService, ICapacityControlApp
                 new PropertyDto()
                 {
                     Id = ObjectId.GenerateNewId(),
-                    Tilte = "کلاس خودرو",
+                    Title = "کلاس خودرو",
                     Key = "carclass",
                     Type = PropertyTypeEnum.Coding,
                     CodingType = CodingTypeEnum.CarClass,
@@ -163,7 +163,7 @@ public class CapacityControlAppService : ApplicationService, ICapacityControlApp
                 new PropertyDto()
                 {
                     Id = ObjectId.GenerateNewId(),
-                    Tilte = "سرعت",
+                    Title = "سرعت",
                     Key = "speed",
                     Type = PropertyTypeEnum.Text,
                     Value = "120 کیلومتر برساعت"
@@ -171,7 +171,7 @@ public class CapacityControlAppService : ApplicationService, ICapacityControlApp
                 new PropertyDto()
                 {
                     Id = ObjectId.GenerateNewId(),
-                    Tilte = "موتور",
+                    Title = "موتور",
                     Key = "engine",
                     Type = PropertyTypeEnum.DropDown,
                     Value = "موتور بی کیفیت",
@@ -200,7 +200,7 @@ public class CapacityControlAppService : ApplicationService, ICapacityControlApp
                 new PropertyDto()
                 {
                     Id = ObjectId.GenerateNewId(),
-                    Tilte = "رنگ بدنه",
+                    Title = "رنگ بدنه",
                     Key = "bodycolor",
                     Type = PropertyTypeEnum.Text,
                     Value = "سفید",
@@ -208,7 +208,7 @@ public class CapacityControlAppService : ApplicationService, ICapacityControlApp
                 new PropertyDto()
                 {
                     Id = ObjectId.GenerateNewId(),
-                    Tilte = "جنس لاستیک",
+                    Title = "جنس لاستیک",
                     Key = "cartire",
                     Type = PropertyTypeEnum.Text,
                     Value = "بارز",
@@ -216,7 +216,7 @@ public class CapacityControlAppService : ApplicationService, ICapacityControlApp
                 new PropertyDto()
                 {
                     Id = ObjectId.GenerateNewId(),
-                    Tilte = "سپر عقب",
+                    Title = "سپر عقب",
                     Key = "rearbumper",
                     Type = PropertyTypeEnum.Text,
                     Value = "رنگ شده",

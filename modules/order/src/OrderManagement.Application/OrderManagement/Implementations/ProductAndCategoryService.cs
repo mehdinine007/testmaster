@@ -200,7 +200,7 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
         //var attachments = attachmentQuery.ToList();
 
         var ids = queryResult.Select(x => x.Id).ToList();
-        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, ids, input.AttachmentType);
+        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, ids, EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(input.AttachmentType));
 
         var resultList = ObjectMapper.Map<List<ProductAndCategory>, List<ProductAndCategoryDto>>(queryResult);
         resultList.ForEach(x =>
@@ -295,7 +295,7 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
         {   
              ProductList = await GetProductFilter(input.AdvancedSearch, ProductList);
         }
-        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, ProductList.Select(x => x.Id).ToList(), input.attachmentType);
+        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, ProductList.Select(x => x.Id).ToList(), EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(input.attachmentType) );
 
         var productAndSaleDetailListDto = ObjectMapper.Map<List<ProductAndCategory>, List<ProductAndCategoryWithChildDto>>(ProductList);
 
