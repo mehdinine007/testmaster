@@ -1,8 +1,10 @@
-﻿namespace UserManagement.Application.Contracts.UserManagement;
+﻿using UserManagement.Application.Contracts.UserManagement.UserDto;
+
+namespace UserManagement.Application.Contracts.UserManagement;
 
 public class PermissionDefinitionDto
 {
-    public string title { get; set; }
-    public string nodeCode { get; set; }
-    public List<PermissionDefinitionDto> childs { get; set; }
+    public string Title { get; set; }
+    public string Code { get; set; }
+    public List<PermissionDefinitionChildDto> Children { get; set; }
 }

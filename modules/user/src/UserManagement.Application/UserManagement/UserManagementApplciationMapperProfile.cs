@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using UserManagement.Application.Contracts.UserManagement;
+using UserManagement.Application.Contracts.UserManagement.UserDto;
 using UserManagement.Domain.UserManagement.Advocacy;
 using UserManagement.Domain.UserManagement.bases;
 
@@ -12,6 +13,7 @@ public class UserManagementApplciationMapperProfile : Profile
 
 
         CreateMap<PermissionDefinition, PermissionDefinitionDto>().ReverseMap();
+        CreateMap<PermissionDefinitionChild, PermissionDefinitionChildDto>().ReverseMap();
 
     }
 }

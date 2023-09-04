@@ -6,25 +6,25 @@ namespace UserManagement.Application.Contracts.UserManagement.Services;
 
 public interface IUserAppService : IApplicationService
 {
-    Task<UserDto> CheckUserStatus(CreateUserDto input);
+    //Task<UserDto> CheckUserStatus(CreateUserDto input);
 
-    Task<UserDto> GetLoginInfromationuserFromCache(string Username);
+    //Task<UserDto> GetLoginInfromationuserFromCache(string Username);
 
-    Task<UserDto> CreateAsync(CreateUserDto input);
+    //Task<UserDto> CreateAsync(CreateUserDto input);
 
-    Task<UserDto> GetUserProfile();
+    //Task<UserDto> GetUserProfile();
 
-    Task UpdateUserProfile(UserDto inputUser);
+    //Task UpdateUserProfile(UserDto inputUser);
 
-    Task ChangePassword(ChangePasswordDto forgetPasswordDto);
+    //Task ChangePassword(ChangePasswordDto forgetPasswordDto);
 
-    Task<UserDto> UpdateAsync(UserDto input);
+    //Task<UserDto> UpdateAsync(UserDto input);
 
-    Task DeleteAsync(EntityDto<long> input);
+    //Task DeleteAsync(EntityDto<long> input);
 
-    Task Activate(EntityDto<long> user);
+    //Task Activate(EntityDto<long> user);
 
-    Task DeActivate(EntityDto<long> user);
+    //Task DeActivate(EntityDto<long> user);
 
     //Task<ListResultDto<RoleDto>> GetRoles();
 }

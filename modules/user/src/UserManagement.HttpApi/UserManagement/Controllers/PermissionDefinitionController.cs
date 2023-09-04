@@ -11,7 +11,7 @@ namespace UserManagement.HttpApi.UserManagement.Controllers
     [RemoteService]
     [Route("api/services/app/PermissionDefinitionController/[action]")]
     //[UserAuthorization]
-    public class PermissionDefinitionController : Controller
+    public class PermissionDefinitionController : Controller, IPermissionDefinitionService
     {
         private readonly IPermissionDefinitionService _permission;
 
@@ -25,5 +25,8 @@ namespace UserManagement.HttpApi.UserManagement.Controllers
         [HttpPost]
         public async Task<List<PermissionDefinitionDto>> Insert(PermissionDefinitionDto permission)
             => await _permission.Insert(permission);
+        [HttpGet]
+        public async Task InsertList()
+            => await _permission.InsertList();
     }
 }
