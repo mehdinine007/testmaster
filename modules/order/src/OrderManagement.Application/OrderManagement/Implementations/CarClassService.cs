@@ -1,4 +1,5 @@
 ﻿using Esale.Core.DataAccess;
+using Esale.Core.Utility.Tools;
 using Microsoft.EntityFrameworkCore;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.OrderManagement;
@@ -82,7 +83,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             {
                 throw new UserFriendlyException(OrderConstant.CarClassNotFound, OrderConstant.CarClassNotFoundId);
             }
-            var attachments = await _attachmentService.GetList(AttachmentEntityEnum.CarClass, new List<int> { carClass.Id }, carClassQueryDto.AttachmentType);
+            var attachments = await _attachmentService.GetList(AttachmentEntityEnum.CarClass, new List<int> { carClass.Id }, EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(carClassQueryDto.AttachmentType) );
 
            var carClassDto= ObjectMapper.Map<CarClass, CarClassDto>(carClass);
         

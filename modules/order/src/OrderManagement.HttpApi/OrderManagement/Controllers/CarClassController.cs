@@ -39,7 +39,7 @@ namespace OrderManagement.HttpApi.OrderManagement.Controllers
         [HttpPost]
         public Task<Guid> UploadFile([FromForm]UploadFileDto uploadFile)
        => _carClassService.UploadFile(uploadFile);
-        [HttpPost]
+        [HttpGet]
         public Task<CarClassDto> GetById(CarClassQueryDto carClassQueryDto)
         =>_carClassService.GetById(carClassQueryDto);
     }
