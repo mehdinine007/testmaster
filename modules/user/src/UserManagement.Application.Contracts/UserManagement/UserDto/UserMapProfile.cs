@@ -1,7 +1,8 @@
 ﻿using AutoMapper;
+using UserManagement.Application.Contracts;
 using UserManagement.Domain.Authorization.Users;
 
-namespace UserManagement.Domain.UserManagement.UserDto
+namespace UserManagement.Domain.UserManagement
 {
     public class UserMapProfile : Profile
     {

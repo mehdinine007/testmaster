@@ -1,8 +1,9 @@
 ﻿using Abp.Application.Services;
 using Abp.Application.Services.Dto;
+using UserManagement.Application.Contracts;
 using UserManagement.Application.Contracts.UserManagement.Services;
 using UserManagement.Domain.Authorization.Users;
-using UserManagement.Domain.UserManagement.UserDto;
+using UserManagement.Domain.UserManagement;
 
 namespace UserManagement.Application.UserManagement.Implementations;
 
@@ -38,10 +39,6 @@ public class UserAppService : ApplicationService, IUserAppService
         throw new NotImplementedException();
     }
 
-    public Task<User> GetLoginInfromationuserFromCache(string Username)
-    {
-        throw new NotImplementedException();
-    }
 
     public Task<UserDto> GetUserProfile()
     {
@@ -54,6 +51,11 @@ public class UserAppService : ApplicationService, IUserAppService
     }
 
     public Task UpdateUserProfile(UserDto inputUser)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task<UserDto> GetLoginInfromationuserFromCache(string Username)
     {
         throw new NotImplementedException();
     }

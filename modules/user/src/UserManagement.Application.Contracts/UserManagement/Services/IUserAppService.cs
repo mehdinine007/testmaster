@@ -1,7 +1,6 @@
 ﻿using Abp.Application.Services;
 using Abp.Application.Services.Dto;
-using UserManagement.Domain.Authorization.Users;
-using UserManagement.Domain.UserManagement.UserDto;
+using UserManagement.Domain.UserManagement;
 
 namespace UserManagement.Application.Contracts.UserManagement.Services;
 
@@ -9,7 +8,7 @@ public interface IUserAppService : IApplicationService
 {
     Task<UserDto> CheckUserStatus(CreateUserDto input);
 
-    Task<User> GetLoginInfromationuserFromCache(string Username);
+    Task<UserDto> GetLoginInfromationuserFromCache(string Username);
 
     Task<UserDto> CreateAsync(CreateUserDto input);
 

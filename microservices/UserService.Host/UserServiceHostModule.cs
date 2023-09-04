@@ -20,6 +20,8 @@ using Volo.Abp;
 using Volo.Abp.Data;
 using Volo.Abp.BackgroundJobs.Hangfire;
 using Volo.Abp.MongoDB;
+using Esale.Core.Extensions;
+using UserManagement.EfCore.MongoDb;
 #endregion
 
 
@@ -75,14 +77,13 @@ public class UserServiceHostModule : AbpModule
         });
 
         using var scope = context.Services.BuildServiceProvider();
-        var service = scope.GetRequiredService<IActionResultWrapperFactory>();
-
-        context.Services.AddControllers(x =>
-        {
-            x.Filters.Add(new EsaleResultFilter(service));
-        });
+        context.Services.AddEsaleResultWrapper();
         IdentityModelEventSource.ShowPII = true;
         //ConfigureHangfire(context, configuration);
+        context.Services.AddMongoDbContext<UserManagementMongoDbContext>(options =>
+        {
+            options.AddDefaultRepositories(includeAllEntities: true);
+        });
 
         context.Services.AddGrpc();
         context.Services.EasyCaching(configuration, "RedisCache:ConnectionString");

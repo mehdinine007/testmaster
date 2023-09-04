@@ -10,7 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace UserManagement.Domain.UserManagement.UserDto
+namespace UserManagement.Domain.UserManagement
 {
     public class UsersCustomerOrdersDto
     {

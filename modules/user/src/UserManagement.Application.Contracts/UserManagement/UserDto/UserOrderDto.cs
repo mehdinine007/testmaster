@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace UserManagement.Domain.UserManagement.UserDto
+namespace UserManagement.Domain.UserManagement
 {
     public class UserOrderDto
     {
