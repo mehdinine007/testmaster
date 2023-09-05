@@ -11,8 +11,9 @@ using Esale.Core.IOC;
 using Esale.Core.Caching.Redis;
 using Esale.Core.Caching;
 using WorkFlowService.Host;
+using WorkFlowService.Host.Infrastructures.Middlewares;
 
-namespace OrderService.Host
+namespace WorkFlowService.Host
 {
     public class Startup
     {
@@ -30,7 +31,7 @@ namespace OrderService.Host
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
             app.UseCors(options => options.SetIsOriginAllowed(x => _ = true).AllowAnyMethod().AllowAnyHeader().AllowCredentials());
-           
+            app.UseMiddleware<JwtMiddleware>();
 
             app.InitializeApplication();
 

@@ -7,7 +7,7 @@ using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.Elasticsearch;
 
-namespace OrderService.Host
+namespace WorkFlowService.Host
 {
     public class Program
     {
@@ -25,7 +25,7 @@ namespace OrderService.Host
                 .MinimumLevel.Debug()
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
                 .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Warning)
-                .Enrich.WithProperty("Application", "OrderService")
+                .Enrich.WithProperty("Application", "WorkFlowService")
                 .Enrich.FromLogContext()
                 .WriteTo.Console()
                 .WriteTo.File("Logs/logs.txt")
