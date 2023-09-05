@@ -19,28 +19,28 @@ namespace WorkFlowManagement.HttpApi.WorkFlowManagement.Controllers
     public class ProcessController: Controller
     {
         private readonly IProcessService _processService;
-        public ProcessController(IProcessService processService)
+        public  ProcessController(IProcessService processService)
         => _processService = processService;
         [HttpPost]
-        public Task<ProcessDto> Add(ProcessCreateOrUpdateDto processCreateOrUpdateDto)
-        =>_processService.Add(processCreateOrUpdateDto);
+        public async Task<ProcessDto> Add(ProcessCreateOrUpdateDto processCreateOrUpdateDto)
+        =>await _processService.Add(processCreateOrUpdateDto);
         [HttpDelete]
-        public Task<bool> Delete(Guid id)
-        =>_processService.Delete(id);
+        public async Task<bool> Delete(Guid id)
+        =>await _processService.Delete(id);
         [HttpGet]
-        public Task<ProcessDto> GetById(Guid id)
-       =>_processService.GetById(id);
+        public async  Task<ProcessDto> GetById(Guid id)
+       =>await _processService.GetById(id);
         [HttpGet]
-        public Task<List<ProcessDto>> GetList()
-       =>_processService.GetList();
+        public async Task<List<ProcessDto>> GetList()
+       =>await _processService.GetList();
         [HttpPut]
-        public Task<ProcessDto> Update(ProcessCreateOrUpdateDto processCreateOrUpdateDto)
-        =>_processService.Update(processCreateOrUpdateDto);
+        public async Task<ProcessDto> Update(ProcessCreateOrUpdateDto processCreateOrUpdateDto)
+        =>await _processService.Update(processCreateOrUpdateDto);
 
 
-     
+        [UserAuthorization]
         [HttpGet]
-        public Task<bool> StartProcess(int schemeId)
-        => _processService.StartProcess(schemeId);
+        public async  Task<ProcessDto> StartProcess(int schemeId)
+        =>await _processService.StartProcess(schemeId);
     }
 }

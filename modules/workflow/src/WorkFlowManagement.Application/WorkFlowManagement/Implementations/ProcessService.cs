@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Nest;
 using NPOI.HPSF;
 using Org.BouncyCastle.Asn1.TeleTrust;
 using System;
@@ -30,7 +31,7 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
         private readonly IOrganizationPositionService _organizationPositionService;
         private readonly IOrganizationChartService _organizationChartService;
         public ProcessService(IRepository<Process
-            , Guid> processRepository,ISchemeService schemeService 
+            , Guid> processRepository, ISchemeService schemeService
             , IActivityService activityService
             , ICommonAppService commonAppService
             , IOrganizationPositionService organizationPositionService
@@ -43,8 +44,8 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
             _activityService = activityService;
             _commonAppService = commonAppService;
             _organizationPositionService = organizationPositionService;
-            _organizationChartService= organizationChartService;
-        
+            _organizationChartService = organizationChartService;
+
         }
 
 
@@ -75,7 +76,8 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
 
         public async Task<ProcessDto> GetById(Guid id)
         {
-            var process = await Validation(id, null);
+            var processQuery = (await _processRepository.GetQueryableAsync()).Include(x=>x.Activity);
+            var process = processQuery.FirstOrDefault(x => x.Id == id);
             var processDto = ObjectMapper.Map<Process, ProcessDto>(process);
             return processDto;
         }
@@ -87,33 +89,33 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
             return processDto;
         }
 
-        public async Task<bool> StartProcess(int schemeId)
+        public async Task<ProcessDto> StartProcess(int schemeId)
         {
-            Guid userId = new Guid("9e53dd17-1d3d-4a29-9ca7-ca980f240a73");
-            //var currentUserId = _commonAppService.GetUserId();
+            var currentUserId = _commonAppService.GetUserId();
             var scheme = await _schemeService.GetById(schemeId);
-            var activity =await  _activityService.GetBySchemeId(schemeId);
-            var organizationPosition =await _organizationPositionService.GetByPersonId(userId);
-           
+            var activity = await _activityService.GetBySchemeId(schemeId);
+            var organizationPosition = await _organizationPositionService.GetByPersonId(currentUserId);
+
             var process = new Process()
             {
                 SchemeId = schemeId,
                 Status = StatusEnum.Initialize,
                 State = StateEnum.Start,
                 Title = scheme.Title,
-                Subject="",
-                Description="",
+                Subject = "",
+                Description = "",
                 ActivityId = activity.Id,
-                PersonId= userId,
-                CreatedPersonId= userId,
+                PersonId = currentUserId,
+                CreatedPersonId = currentUserId,
                 OrganizationChartId = organizationPosition.OrganizationChartId,
-                CreatedOrganizationChartId= organizationPosition.OrganizationChartId,
-                OrganizationPositionId= organizationPosition.Id
+                CreatedOrganizationChartId = organizationPosition.OrganizationChartId,
+                OrganizationPositionId = organizationPosition.Id
             };
 
             var entity = await _processRepository.InsertAsync(process, autoSave: true);
 
-            return true;
+           return await GetById(entity.Id);
+     
         }
 
         public async Task<ProcessDto> Update(ProcessCreateOrUpdateDto processCreateOrUpdateDto)
@@ -128,6 +130,8 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
             var entity = await _processRepository.UpdateAsync(process);
             return ObjectMapper.Map<Process, ProcessDto>(entity);
         }
+
+       
 
         private async Task<Process> Validation(Guid? id, ProcessCreateOrUpdateDto processCreateOrUpdateDto)
         {
@@ -146,13 +150,13 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
             {
                 if (processCreateOrUpdateDto.PreviousActivityId != null)
                 {
-                    var previousActivity =await _activityService.GetById(processCreateOrUpdateDto.PreviousActivityId);
+                    var previousActivity = await _activityService.GetById(processCreateOrUpdateDto.PreviousActivityId);
                 }
                 var activity = await _activityService.GetById(processCreateOrUpdateDto.ActivityId);
 
                 var scheme = await _schemeService.GetById(processCreateOrUpdateDto.SchemeId);
 
-                var organizationPosition =await _organizationPositionService.GetByPersonId(processCreateOrUpdateDto.PersonId);
+                var organizationPosition = await _organizationPositionService.GetByPersonId(processCreateOrUpdateDto.PersonId);
 
                 var organizationChart = await _organizationChartService.GetById(processCreateOrUpdateDto.OrganizationChartId);
                 var createdOrganizationChartId = await _organizationChartService.GetById(processCreateOrUpdateDto.CreatedOrganizationChartId);
@@ -160,7 +164,7 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
                 {
                     var previousOrganizationChartId = await _organizationChartService.GetById(processCreateOrUpdateDto.PreviousOrganizationChartId);
                 }
-              
+
             }
 
             return process;
