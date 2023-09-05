@@ -8,13 +8,14 @@ using Volo.Abp;
 using Microsoft.AspNetCore.Mvc;
 using WorkFlowManagement.Application.Contracts.WorkFlowManagement.IServices;
 using WorkFlowManagement.Application.Contracts.WorkFlowManagement.Dtos;
+using Esale.Share.Authorize;
 
 namespace WorkFlowManagement.HttpApi.WorkFlowManagement.Controllers
 {
     [DisableAuditing]
     [RemoteService]
     [Route("api/services/app/ProcessService/[action]")]
-    //[UserAuthorization]
+
     public class ProcessController: Controller
     {
         private readonly IProcessService _processService;
@@ -35,5 +36,11 @@ namespace WorkFlowManagement.HttpApi.WorkFlowManagement.Controllers
         [HttpPut]
         public Task<ProcessDto> Update(ProcessCreateOrUpdateDto processCreateOrUpdateDto)
         =>_processService.Update(processCreateOrUpdateDto);
+
+
+     
+        [HttpGet]
+        public Task<bool> StartProcess(int schemeId)
+        => _processService.StartProcess(schemeId);
     }
 }

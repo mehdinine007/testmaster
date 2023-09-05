@@ -45,6 +45,14 @@ namespace WorkFlowManagement.Domain.WorkFlowManagement
         public virtual Process Parent { get; set; }
 
 
+        public int OrganizationPositionId { get; set; }
+        public virtual OrganizationPosition OrganizationPosition { get; set; }
+
+
+
+
+
+
 
 
 

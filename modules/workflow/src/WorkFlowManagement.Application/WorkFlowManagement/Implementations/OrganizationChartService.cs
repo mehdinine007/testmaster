@@ -27,7 +27,7 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
             _organizationChartRepository = organizationChartRepository;
         }
 
-        public async Task<OrganizationChartDto> GetById(int id)
+        public async Task<OrganizationChartDto> GetById(int? id)
         {
             var organizationChart = await Validation(id, null);
             var organizationChartDto = ObjectMapper.Map<OrganizationChart, OrganizationChartDto>(organizationChart);

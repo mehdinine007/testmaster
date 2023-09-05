@@ -16,6 +16,7 @@ namespace WorkFlowManagement.Domain.WorkFlowManagement
         public bool Status { get; set; }
         public virtual OrganizationChart OrganizationChart { get; protected set; }
         public virtual ICollection<Inbox> Inboxes { get; set; }
+        public virtual ICollection<Process> Processes { get; set; }
 
 
     }

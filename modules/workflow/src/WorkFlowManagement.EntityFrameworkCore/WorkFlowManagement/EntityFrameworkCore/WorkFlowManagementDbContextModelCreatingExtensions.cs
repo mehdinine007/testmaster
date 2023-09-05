@@ -131,7 +131,10 @@ namespace WorkFlowManagement.EntityFrameworkCore
                 .OnDelete(DeleteBehavior.ClientCascade);
 
 
-
+                entity.HasOne<OrganizationPosition>(x => x.OrganizationPosition)
+              .WithMany(x => x.Processes)
+              .HasForeignKey(x => x.OrganizationPositionId)
+               .OnDelete(DeleteBehavior.ClientCascade);
             });
             builder.Entity<Inbox>(entity =>
             {

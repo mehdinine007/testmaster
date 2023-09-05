@@ -15,6 +15,6 @@ namespace WorkFlowManagement.Application.Contracts.WorkFlowManagement.IServices
         Task<OrganizationPositionDto> Update(OrganizationPositionCreateOrUpdateDto organizationPositionCreateOrUpdateDto);
         Task<List<OrganizationPositionDto>> GetList(int organizationChartId);
         Task<bool> Delete(int id);
-
+        Task<OrganizationPositionDto> GetByPersonId(Guid personId);
     }
 }

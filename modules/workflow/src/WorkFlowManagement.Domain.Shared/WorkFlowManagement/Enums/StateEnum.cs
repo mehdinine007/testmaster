@@ -24,6 +24,8 @@ namespace WorkFlowManagement.Domain.Shared.WorkFlowManagement.Enums
         ReturnRequester = 6,
         [EnumProperty(Description = "درجریان")]
         During = 7,
+        [EnumProperty(Description = "شروع")]
+        Start = 8,
 
     }
 }

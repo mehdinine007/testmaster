@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using NPOI.HPSF;
+using Org.BouncyCastle.Asn1.TeleTrust;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -12,6 +14,7 @@ using Volo.Abp.ObjectMapping;
 using WorkFlowManagement.Application.Contracts.WorkFlowManagement.Constants;
 using WorkFlowManagement.Application.Contracts.WorkFlowManagement.Dtos;
 using WorkFlowManagement.Application.Contracts.WorkFlowManagement.IServices;
+using WorkFlowManagement.Domain.Shared.WorkFlowManagement.Enums;
 using WorkFlowManagement.Domain.WorkFlowManagement;
 using Activity = WorkFlowManagement.Domain.WorkFlowManagement.Activity;
 using Process = WorkFlowManagement.Domain.WorkFlowManagement.Process;
@@ -20,16 +23,28 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
 {
     public class ProcessService : ApplicationService, IProcessService
     {
-        private readonly IRepository<OrganizationChart, int> _organizationChartRepository;
-        private readonly IRepository<Scheme, int> _schemeRepository;
         private readonly IRepository<Process, Guid> _processRepository;
-        private readonly IRepository<Activity, int> _activityRepository;
-        public ProcessService(IRepository<OrganizationChart, int> organizationChartRepository, IRepository<Scheme, int> schemeRepository, IRepository<Process, Guid> processRepository, IRepository<Activity, int> activityRepository)
+        private readonly ISchemeService _schemeService;
+        private readonly IActivityService _activityService;
+        private readonly ICommonAppService _commonAppService;
+        private readonly IOrganizationPositionService _organizationPositionService;
+        private readonly IOrganizationChartService _organizationChartService;
+        public ProcessService(IRepository<Process
+            , Guid> processRepository,ISchemeService schemeService 
+            , IActivityService activityService
+            , ICommonAppService commonAppService
+            , IOrganizationPositionService organizationPositionService
+            , IOrganizationChartService organizationChartService
+
+            )
         {
-            _organizationChartRepository = organizationChartRepository;
-            _schemeRepository = schemeRepository;
             _processRepository = processRepository;
-            _activityRepository = activityRepository;
+            _schemeService = schemeService;
+            _activityService = activityService;
+            _commonAppService = commonAppService;
+            _organizationPositionService = organizationPositionService;
+            _organizationChartService= organizationChartService;
+        
         }
 
 
@@ -72,6 +87,35 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
             return processDto;
         }
 
+        public async Task<bool> StartProcess(int schemeId)
+        {
+            Guid userId = new Guid("9e53dd17-1d3d-4a29-9ca7-ca980f240a73");
+            //var currentUserId = _commonAppService.GetUserId();
+            var scheme = await _schemeService.GetById(schemeId);
+            var activity =await  _activityService.GetBySchemeId(schemeId);
+            var organizationPosition =await _organizationPositionService.GetByPersonId(userId);
+           
+            var process = new Process()
+            {
+                SchemeId = schemeId,
+                Status = StatusEnum.Initialize,
+                State = StateEnum.Start,
+                Title = scheme.Title,
+                Subject="",
+                Description="",
+                ActivityId = activity.Id,
+                PersonId= userId,
+                CreatedPersonId= userId,
+                OrganizationChartId = organizationPosition.OrganizationChartId,
+                CreatedOrganizationChartId= organizationPosition.OrganizationChartId,
+                OrganizationPositionId= organizationPosition.Id
+            };
+
+            var entity = await _processRepository.InsertAsync(process, autoSave: true);
+
+            return true;
+        }
+
         public async Task<ProcessDto> Update(ProcessCreateOrUpdateDto processCreateOrUpdateDto)
         {
             var process = await Validation(processCreateOrUpdateDto.Id, processCreateOrUpdateDto);
@@ -100,44 +144,27 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
 
             if (processCreateOrUpdateDto != null)
             {
-                var activityQuery = (await _activityRepository.GetQueryableAsync()).AsNoTracking();
                 if (processCreateOrUpdateDto.PreviousActivityId != null)
                 {
-                    var previousActivity = activityQuery.FirstOrDefault(x => x.Id == processCreateOrUpdateDto.PreviousActivityId);
-                    if (previousActivity is null)
-                        throw new UserFriendlyException(WorkFlowConstant.PreviousActivityNotFound, WorkFlowConstant.PreviousActivityNotFoundId);
+                    var previousActivity =await _activityService.GetById(processCreateOrUpdateDto.PreviousActivityId);
                 }
-                var activity = activityQuery.FirstOrDefault(x => x.Id == processCreateOrUpdateDto.ActivityId);
-                if (activity is null)
-                    throw new UserFriendlyException(WorkFlowConstant.ActivityNotFound, WorkFlowConstant.ActivityNotFoundId);
+                var activity = await _activityService.GetById(processCreateOrUpdateDto.ActivityId);
 
-                var schemeQuery = await _schemeRepository.GetQueryableAsync();
-                var scheme= schemeQuery.FirstOrDefault(x=>x.Id== processCreateOrUpdateDto.SchemeId);
-                if (scheme is null)
-                    throw new UserFriendlyException(WorkFlowConstant.SchemeNotFound, WorkFlowConstant.SchemeNotFoundId);
+                var scheme = await _schemeService.GetById(processCreateOrUpdateDto.SchemeId);
 
+                var organizationPosition =await _organizationPositionService.GetByPersonId(processCreateOrUpdateDto.PersonId);
 
-                var organizationChartQuery = (await _organizationChartRepository.GetQueryableAsync()).AsNoTracking();
-                var createdOrganizationChart= organizationChartQuery.FirstOrDefault(x=>x.Id== processCreateOrUpdateDto.CreatedOrganizationChartId);
-                if (createdOrganizationChart is null)
-                    throw new UserFriendlyException(WorkFlowConstant.CreatedOrganizationChartNotFound, WorkFlowConstant.CreatedOrganizationChartNotFoundId);
-                var OrganizationChart= organizationChartQuery.FirstOrDefault(x=>x.Id== processCreateOrUpdateDto.OrganizationChartId);
-                if (OrganizationChart is null)
-                    throw new UserFriendlyException(WorkFlowConstant.OrganizationChartNotFound, WorkFlowConstant.OrganizationChartNotFoundId);
-                if (processCreateOrUpdateDto.PreviousOrganizationChartId != null)
+                var organizationChart = await _organizationChartService.GetById(processCreateOrUpdateDto.OrganizationChartId);
+                var createdOrganizationChartId = await _organizationChartService.GetById(processCreateOrUpdateDto.CreatedOrganizationChartId);
+                if (processCreateOrUpdateDto.PreviousOrganizationChartId is not null)
                 {
-                    var PreviousOrganizationChart = organizationChartQuery.FirstOrDefault(x => x.Id == processCreateOrUpdateDto.PreviousOrganizationChartId);
-                    if (PreviousOrganizationChart is null)
-                    {
-                        throw new UserFriendlyException(WorkFlowConstant.PreviousOrganizationChartNotFound, WorkFlowConstant.PreviousOrganizationChartNotFoundId);
-                    }
+                    var previousOrganizationChartId = await _organizationChartService.GetById(processCreateOrUpdateDto.PreviousOrganizationChartId);
                 }
+              
             }
 
             return process;
         }
-
-
 
     }
 }

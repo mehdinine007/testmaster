@@ -15,5 +15,6 @@ namespace WorkFlowManagement.Application.Contracts.WorkFlowManagement.IServices
         Task<ProcessDto> Update(ProcessCreateOrUpdateDto processCreateOrUpdateDto);
         Task<List<ProcessDto>> GetList();
         Task<bool> Delete(Guid id);
+        Task<bool> StartProcess(int schemeId);
     }
 }
