@@ -34,41 +34,40 @@ namespace UserManagement.Application.UserManagement.Implementations
             {
 
                 Title = "Company",
+                Code = "0001",
                 Permissions = new List<PermissionDataDto>()
                 {
                       new PermissionDataDto()
                     {
-                        Title = "SaleSchema",
+
                         Code = "00010001",
                     },
                     new PermissionDataDto()
                     {
-                        Title = "SaleSchemaGetList",
+
                         Code = "000100020001",
                     },
                     new PermissionDataDto()
                     {
-                        Title = "SaleSchemaAdd",
+
                         Code = "000100020002",
                     },
                     new PermissionDataDto()
                     {
-                        Title = "SaleSchemaUpdate",
+
                         Code = "000100020003",
                     },
                        new PermissionDataDto()
                     {
-                             Title = "SaleSchemaDelete",
-                                Code = "000100020004",
+                     Code = "000100020004",
                     } ,
                           new PermissionDataDto()
                     {
-                              Title = "SaleSchemaGetById",
-                                Code = "000100020005",
+  Code = "000100020005",
                     }   ,
                                   new PermissionDataDto()
                     {
-                              Title = "SaleSchemaUploadFile",
+
                                 Code = "000100020006",
                     }
 
@@ -81,6 +80,6 @@ namespace UserManagement.Application.UserManagement.Implementations
                 .ToList();
         }
 
-   
+
     }
 }
