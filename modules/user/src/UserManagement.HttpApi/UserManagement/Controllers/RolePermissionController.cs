@@ -10,7 +10,7 @@ namespace UserManagement.HttpApi.UserManagement.Controllers
 {
     [DisableAuditing]
     [RemoteService]
-    [Route("api/services/app/RolePermissionControllerController/[action]")]
+    [Route("api/services/app/RolePermissionController/[action]")]
     //[UserAuthorization]
     public class RolePermissionController : Controller, IRolePermissionService
     {

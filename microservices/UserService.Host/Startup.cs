@@ -7,6 +7,7 @@ using UserService.Host.Infrastructures.Extensions;
 using Esale.Core.IOC;
 using Esale.Core.Caching.Redis;
 using Esale.Core.Caching;
+using WorkingWithMongoDB.WebAPI.Services;
 #endregion
 
 
@@ -32,6 +33,7 @@ namespace UserService.Host
             }
             services.AddSingleton<ICacheManager, CacheManager>();
             services.AddSingleton<IRedisCacheManager, RedisCacheManager>();
+            services.AddSingleton<UserMongoService>();
             ServiceTool.Create(services);
         }
 

@@ -1,62 +1,49 @@
-﻿using Abp.Application.Services;
-using Abp.Application.Services.Dto;
+﻿using MongoDB.Bson;
+using MongoDB.Driver;
 using UserManagement.Application.Contracts;
 using UserManagement.Application.Contracts.UserManagement.Services;
+using UserManagement.Application.Contracts.UserManagement.UserDto;
 using UserManagement.Domain.Authorization.Users;
 using UserManagement.Domain.UserManagement;
+using UserManagement.Domain.UserManagement.Authorization.RolePermissions;
+using Volo.Abp.Application.Services;
+using WorkingWithMongoDB.WebAPI.Services;
 
 namespace UserManagement.Application.UserManagement.Implementations;
 
 public class UserAppService : ApplicationService, IUserAppService
 {
-    public Task Activate(EntityDto<long> user)
+    private readonly UserMongoService _userMongoService;
+    public UserAppService(UserMongoService userMongoService)
     {
-        throw new NotImplementedException();
+        _userMongoService = userMongoService;
     }
 
-    public Task ChangePassword(ChangePasswordDto forgetPasswordDto)
+    public async Task<User> GetLoginInfromationuserFromCache(string Username)
     {
-        throw new NotImplementedException();
-    }
+        Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
+        object UserFromCache = null;
 
-    public Task<UserDto> CheckUserStatus(CreateUserDto input)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<UserDto> CreateAsync(CreateUserDto input)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task DeActivate(EntityDto<long> user)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task DeleteAsync(EntityDto<long> input)
-    {
-        throw new NotImplementedException();
-    }
-
-
-    public Task<UserDto> GetUserProfile()
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<UserDto> UpdateAsync(UserDto input)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task UpdateUserProfile(UserDto inputUser)
-    {
-        throw new NotImplementedException();
-    }
-
-    public async Task<UserDto> GetLoginInfromationuserFromCache(string Username)
-    {
-        throw new NotImplementedException();
+        var user = (await _userMongoService
+                .GetUserCollection())
+                .Find(x => x.NormalizedUserName == Username.ToUpper()
+                    && x.IsDeleted == false)
+                .Project(x =>
+                    new User
+                    {
+                        TempUID = x.UID,
+                        UserName = x.UserName,
+                        Password = x.Password,
+                        IsActive = x.IsActive,
+                        RolesM = x.RolesM,
+                        NormalizedUserName = x.NormalizedUserName
+                    }
+                    )
+                .FirstOrDefault();
+        if (user != null)
+        {
+            user.UID = new Guid(user.TempUID);
+        }
+        return user;
     }
 }
