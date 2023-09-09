@@ -7,6 +7,7 @@ using UserService.Host.Infrastructures.Extensions;
 using Esale.Core.IOC;
 using Esale.Core.Caching.Redis;
 using Esale.Core.Caching;
+using OrderManagement.Application.OrderManagement.Implementations;
 #endregion
 
 
@@ -32,6 +33,9 @@ namespace UserService.Host
             }
             services.AddSingleton<ICacheManager, CacheManager>();
             services.AddSingleton<IRedisCacheManager, RedisCacheManager>();
+            services.AddGrpc();
+            services.AddSingleton<GreeterService>();
+            services.AddControllers();
             ServiceTool.Create(services);
         }
 
@@ -39,6 +43,11 @@ namespace UserService.Host
         {
             app.UseCors(options => options.SetIsOriginAllowed(x => _ = true).AllowAnyMethod().AllowAnyHeader().AllowCredentials());
             app.UseMiddleware<JwtMiddleware>();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
 
             app.InitializeApplication();
 
