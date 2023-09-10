@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using UserManagement.Domain.UserManagement;
+using UserManagement.Domain.UserManagement.Bases;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
 using Volo.Abp.Data;
 using Volo.Abp.EntityFrameworkCore;
@@ -12,6 +13,8 @@ namespace UserManagement.EfCore.EntityFrameworkCore
         public UsermanagementDbContext(DbContextOptions<UsermanagementDbContext> options) : base(options)
         {
         }
+
+        public DbSet<WhiteList> WhiteList { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
