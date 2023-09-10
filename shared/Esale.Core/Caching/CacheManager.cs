@@ -26,6 +26,18 @@ namespace Esale.Core.Caching
             _hybridCache = hybridCache;
             _redisCacheManager = redisCacheManager;
         }
+
+        public T? Get<T>(string key, string prefix, CacheOptions options)
+        {
+            if (options.Provider == CacheProviderEnum.Hybrid)
+            {
+                var getValue = _hybridCache.Get<T>(prefix + key);
+                if (getValue.HasValue)
+                    return getValue.Value;
+            }
+            return default(T);
+        }
+
         public async Task<T?> GetAsync<T>(string key, string prefix, CacheOptions options)
         {
             if (options.Provider == CacheProviderEnum.Hybrid)
