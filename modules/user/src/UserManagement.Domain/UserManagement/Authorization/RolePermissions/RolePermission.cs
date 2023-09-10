@@ -6,6 +6,8 @@ namespace UserManagement.Domain.UserManagement.Authorization.RolePermissions
     public class RolePermission : FullAuditedEntity<ObjectId>
     {
         public string Title { get; set; }
+        public string Code { get; set; }
+
         public List<PermissionDataDto> Permissions { get; set; }
     }
 }

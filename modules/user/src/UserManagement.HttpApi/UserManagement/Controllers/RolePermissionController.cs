@@ -12,13 +12,14 @@ namespace UserManagement.HttpApi.UserManagement.Controllers
     [RemoteService]
     [Route("api/services/app/RolePermissionController/[action]")]
     //[UserAuthorization]
-    public class RolePermissionController : Controller, IRolePermissionService
+    public class RolePermissionController : Controller//, IRolePermissionService
     {
         private readonly IRolePermissionService _rolePermission;
 
         public RolePermissionController(IRolePermissionService rolePermission)
             => _rolePermission = rolePermission;
-        
+
+
         [HttpGet]
         public async Task<List<RolePermissionDto>> GetList()
         => await _rolePermission.GetList();
@@ -26,5 +27,7 @@ namespace UserManagement.HttpApi.UserManagement.Controllers
         [HttpGet]
         public async Task InsertList()
             => await _rolePermission.InsertList();
+
+
     }
 }

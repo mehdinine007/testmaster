@@ -8,16 +8,31 @@ using UserManagement.Application.Contracts.UserManagement.UserDto;
 using UserManagement.Domain.UserManagement.Authorization.RolePermissions;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
+using Esale.Core.Caching;
+using Authorization;
 
 namespace UserManagement.Application.UserManagement.Implementations
 {
     public class RolePermissionService : ApplicationService, IRolePermissionService
     {
         private readonly IRepository<RolePermission, ObjectId> _rolePermissionRepository;
-        public RolePermissionService(IRepository<RolePermission, ObjectId> rolePermissionRepository)
+        private readonly ICacheManager _cacheManager;
+
+        public RolePermissionService(IRepository<RolePermission, ObjectId> rolePermissionRepository, ICacheManager cacheManager)
         {
             _rolePermissionRepository = rolePermissionRepository;
+            _cacheManager = cacheManager;
         }
+
+        public async Task AddToRedis()
+        {
+            var roleperm = await GetList();
+            foreach (var role in roleperm)
+            {
+                await _cacheManager.SetAsync(role.Code, RolePermissionConstants.RolePermissionPrefix +"Role", role.Permissions.Select(x => x.Code), 2000, new CacheOptions { Provider = CacheProviderEnum.Hybrid });
+            }
+        }
+
         public async Task<List<RolePermissionDto>> GetList()
         {
             List<RolePermission> rolePermissions = new();
@@ -34,41 +49,40 @@ namespace UserManagement.Application.UserManagement.Implementations
             {
 
                 Title = "Company",
+                Code = "0001",
                 Permissions = new List<PermissionDataDto>()
                 {
                       new PermissionDataDto()
                     {
-                        Title = "SaleSchema",
+
                         Code = "00010001",
                     },
                     new PermissionDataDto()
                     {
-                        Title = "SaleSchemaGetList",
+
                         Code = "000100020001",
                     },
                     new PermissionDataDto()
                     {
-                        Title = "SaleSchemaAdd",
+
                         Code = "000100020002",
                     },
                     new PermissionDataDto()
                     {
-                        Title = "SaleSchemaUpdate",
+
                         Code = "000100020003",
                     },
                        new PermissionDataDto()
                     {
-                             Title = "SaleSchemaDelete",
-                                Code = "000100020004",
+                     Code = "000100020004",
                     } ,
                           new PermissionDataDto()
                     {
-                              Title = "SaleSchemaGetById",
-                                Code = "000100020005",
+  Code = "000100020005",
                     }   ,
                                   new PermissionDataDto()
                     {
-                              Title = "SaleSchemaUploadFile",
+
                                 Code = "000100020006",
                     }
 
@@ -81,6 +95,7 @@ namespace UserManagement.Application.UserManagement.Implementations
                 .ToList();
         }
 
-   
+
+
     }
 }
