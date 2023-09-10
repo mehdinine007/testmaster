@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Services;
+using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.ObjectMapping;
 using Volo.Abp.Users;
@@ -34,6 +35,7 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
         private readonly IOrganizationChartService _organizationChartService;
         private readonly IActivityRoleService _activityRoleService;
         private readonly IRoleOrganizationChartService _roleOrganizationChartService;
+        private readonly IInboxService _inboxService;
         public ProcessService(IRepository<Process
             , Guid> processRepository, ISchemeService schemeService
             , IActivityService activityService
@@ -42,6 +44,7 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
             , IOrganizationChartService organizationChartService
              , IActivityRoleService activityRoleService
              , IRoleOrganizationChartService roleOrganizationChartService
+             , IInboxService inboxService
 
             )
         {
@@ -53,7 +56,7 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
             _organizationChartService = organizationChartService;
             _activityRoleService = activityRoleService;
             _roleOrganizationChartService = roleOrganizationChartService;
-
+            _inboxService = inboxService;
         }
 
 
@@ -103,7 +106,6 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
             var scheme = await _schemeService.GetById(schemeId);
             var activity = await _activityService.GetBySchemeId(schemeId);
             var organizationPosition = await _organizationPositionService.GetByPersonId(currentUserId);
-
             var process = new Process()
             {
                 SchemeId = schemeId,
@@ -119,99 +121,115 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
                 CreatedOrganizationChartId = organizationPosition.OrganizationChartId,
                 OrganizationPositionId = organizationPosition.Id
             };
-
             var entity = await _processRepository.InsertAsync(process, autoSave: true);
+            await InsertInbox(entity, null);
+            return await GetById(entity.Id);
+        }
 
-
-            var inbox = new Inbox()
+        private async Task InsertInbox(Process process, int? inboxId)
+        {
+            var createInbox = new InboxCreateOrUpdateDto()
             {
-                 ProcessId = entity.Id,
-
+                ProcessId = process.Id,
+                PersonId = process.PersonId,
+                OrganizationChartId = process.OrganizationChartId,
+                OrganizationPositionId = process.OrganizationPositionId,
+                State = process.State,
+                ReferenceDescription = process.Description,
+                ParentId = inboxId,
+                Status = InboxStatusEnum.Active
             };
 
+            await _inboxService.Add(createInbox);
 
-            return await GetById(entity.Id);
+            if (inboxId != null)
+            {
+                _inboxService.DeActivate(inboxId);
+            }
 
         }
 
-        public async Task<ProcessDto> Execute(ExecuteQueryDto executeQueryDto)
+
+    public async Task<ProcessDto> Execute(ExecuteQueryDto executeQueryDto)
+    {
+        var process = await Validation(executeQueryDto.ProcessId, null);
+        var activity = await _activityService.NextAcvtivity(process.ActivityId);
+        var activityRole = await _activityRoleService.GetByActivityId(activity.Id);
+        var roleOrganizationChart = await _roleOrganizationChartService.GetByRoleId(activityRole.RoleId);
+        var organizationPosition = await _organizationPositionService.GetByOrganizationChartId(roleOrganizationChart.OrganizationChartId);
+        if (executeQueryDto.Action == StateEnum.Draft)
         {
-            var process = await Validation(executeQueryDto.ProcessId, null);
-            var activity = await _activityService.NextAcvtivity(process.ActivityId);
-            var activityRole = await _activityRoleService.GetByActivityId(activity.Id);
-            var roleOrganizationChart = await _roleOrganizationChartService.GetByRoleId(activityRole.RoleId);
-            var organizationPosition = await _organizationPositionService.GetByOrganizationChartId(roleOrganizationChart.OrganizationChartId);
-            if (executeQueryDto.Action == StateEnum.Draft)
-            {
-                process.State = StateEnum.Draft;
-            }
-            else if (executeQueryDto.Action == StateEnum.Refrence)
-            {
-                process.Status = StatusEnum.Runing;
-                process.State = StateEnum.Refrence;
-                process.PreviousActivityId = process.ActivityId;
-                process.ActivityId = activity.Id;
-                process.PreviousOrganizationChartId = process.OrganizationChartId;
-                process.PreviousPersonId = process.PersonId;
-                process.PersonId = organizationPosition.PersonId;
-            }
-            var entity = await _processRepository.UpdateAsync(process, autoSave: true);
-            return await GetById(entity.Id);
+            process.State = StateEnum.Draft;
         }
-
-
-
-        public async Task<ProcessDto> Update(ProcessCreateOrUpdateDto processCreateOrUpdateDto)
+        else if (executeQueryDto.Action == StateEnum.Refrence)
         {
-            var process = await Validation(processCreateOrUpdateDto.Id, processCreateOrUpdateDto);
-            process.Title = processCreateOrUpdateDto.Title;
-            process.Subject = processCreateOrUpdateDto.Subject;
-            process.Description = processCreateOrUpdateDto.Description;
-            process.State = processCreateOrUpdateDto.State;
-            process.SchemeId = processCreateOrUpdateDto.SchemeId;
-            process.Status = processCreateOrUpdateDto.Status;
-            var entity = await _processRepository.UpdateAsync(process);
-            return ObjectMapper.Map<Process, ProcessDto>(entity);
+            process.Status = StatusEnum.Runing;
+            process.State = StateEnum.Refrence;
+            process.PreviousActivityId = process.ActivityId;
+            process.ActivityId = activity.Id;
+            process.PreviousOrganizationChartId = process.OrganizationChartId;
+            process.PreviousPersonId = process.PersonId;
+            process.PersonId = organizationPosition.PersonId;
         }
-
-
-
-        private async Task<Process> Validation(Guid? id, ProcessCreateOrUpdateDto processCreateOrUpdateDto)
-        {
-            var process = new Process();
-            var processQuery = (await _processRepository.GetQueryableAsync());
-            if (id != null)
-            {
-                process = processQuery.FirstOrDefault(x => x.Id == id);
-                if (process is null)
-                {
-                    throw new UserFriendlyException(WorkFlowConstant.ProcessNotFound, WorkFlowConstant.ProcessNotFoundId);
-                }
-            }
-
-            if (processCreateOrUpdateDto != null)
-            {
-                if (processCreateOrUpdateDto.PreviousActivityId != null)
-                {
-                    var previousActivity = await _activityService.GetById(processCreateOrUpdateDto.PreviousActivityId);
-                }
-                var activity = await _activityService.GetById(processCreateOrUpdateDto.ActivityId);
-
-                var scheme = await _schemeService.GetById(processCreateOrUpdateDto.SchemeId);
-
-                var organizationPosition = await _organizationPositionService.GetByPersonId(processCreateOrUpdateDto.PersonId);
-
-                var organizationChart = await _organizationChartService.GetById(processCreateOrUpdateDto.OrganizationChartId);
-                var createdOrganizationChartId = await _organizationChartService.GetById(processCreateOrUpdateDto.CreatedOrganizationChartId);
-                if (processCreateOrUpdateDto.PreviousOrganizationChartId is not null)
-                {
-                    var previousOrganizationChartId = await _organizationChartService.GetById(processCreateOrUpdateDto.PreviousOrganizationChartId);
-                }
-
-            }
-
-            return process;
-        }
-
+        var entity = await _processRepository.UpdateAsync(process, autoSave: true);
+        var parent = await _inboxService.GetActiveInboxByProcessId(process.Id);
+        await InsertInbox(entity, parent.Id);
+        return await GetById(entity.Id);
     }
+
+
+
+    public async Task<ProcessDto> Update(ProcessCreateOrUpdateDto processCreateOrUpdateDto)
+    {
+        var process = await Validation(processCreateOrUpdateDto.Id, processCreateOrUpdateDto);
+        process.Title = processCreateOrUpdateDto.Title;
+        process.Subject = processCreateOrUpdateDto.Subject;
+        process.Description = processCreateOrUpdateDto.Description;
+        process.State = processCreateOrUpdateDto.State;
+        process.SchemeId = processCreateOrUpdateDto.SchemeId;
+        process.Status = processCreateOrUpdateDto.Status;
+        var entity = await _processRepository.UpdateAsync(process);
+        return ObjectMapper.Map<Process, ProcessDto>(entity);
+    }
+
+
+
+    private async Task<Process> Validation(Guid? id, ProcessCreateOrUpdateDto processCreateOrUpdateDto)
+    {
+        var process = new Process();
+        var processQuery = (await _processRepository.GetQueryableAsync());
+        if (id != null)
+        {
+            process = processQuery.FirstOrDefault(x => x.Id == id);
+            if (process is null)
+            {
+                throw new UserFriendlyException(WorkFlowConstant.ProcessNotFound, WorkFlowConstant.ProcessNotFoundId);
+            }
+        }
+
+        if (processCreateOrUpdateDto != null)
+        {
+            if (processCreateOrUpdateDto.PreviousActivityId != null)
+            {
+                var previousActivity = await _activityService.GetById(processCreateOrUpdateDto.PreviousActivityId);
+            }
+            var activity = await _activityService.GetById(processCreateOrUpdateDto.ActivityId);
+
+            var scheme = await _schemeService.GetById(processCreateOrUpdateDto.SchemeId);
+
+            var organizationPosition = await _organizationPositionService.GetByPersonId(processCreateOrUpdateDto.PersonId);
+
+            var organizationChart = await _organizationChartService.GetById(processCreateOrUpdateDto.OrganizationChartId);
+            var createdOrganizationChartId = await _organizationChartService.GetById(processCreateOrUpdateDto.CreatedOrganizationChartId);
+            if (processCreateOrUpdateDto.PreviousOrganizationChartId is not null)
+            {
+                var previousOrganizationChartId = await _organizationChartService.GetById(processCreateOrUpdateDto.PreviousOrganizationChartId);
+            }
+
+        }
+
+        return process;
+    }
+
+}
 }

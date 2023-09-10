@@ -1,15 +1,18 @@
-﻿using System;
+﻿using Org.BouncyCastle.Math.EC.Rfc7748;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp;
+using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.ObjectMapping;
 using WorkFlowManagement.Application.Contracts.WorkFlowManagement.Constants;
 using WorkFlowManagement.Application.Contracts.WorkFlowManagement.Dtos;
 using WorkFlowManagement.Application.Contracts.WorkFlowManagement.IServices;
+using WorkFlowManagement.Domain.Shared.WorkFlowManagement.Enums;
 using WorkFlowManagement.Domain.WorkFlowManagement;
 
 namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
@@ -51,6 +54,13 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
             var inboxDto = ObjectMapper.Map<Inbox, InboxDto>(inbox);
             return inboxDto;
         }
+        public async Task<InboxDto> GetActiveInboxByProcessId(Guid processId)
+        {
+            var inboxQuery = (await _inboxRepository.GetQueryableAsync()).OrderByDescending(x=>x.Id);
+            var inbox = inboxQuery.FirstOrDefault(x => x.ProcessId == processId && x.Status== InboxStatusEnum.Active);
+            var inboxDto = ObjectMapper.Map<Inbox, InboxDto>(inbox);
+            return inboxDto;
+        }
 
         public async Task<List<InboxDto>> GetList()
         {
@@ -69,6 +79,18 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
             return ObjectMapper.Map<Inbox, InboxDto>(entity);
         }
 
+        public async Task Activate(int? inboxId)
+        {
+            var inbox = await Validation(inboxId, null);
+            inbox.Status = InboxStatusEnum.Active;
+            var entity = await _inboxRepository.UpdateAsync(inbox);
+        }
+        public async Task DeActivate(int? inboxId)
+        {
+            var inbox = await Validation(inboxId, null);
+            inbox.Status = InboxStatusEnum.Posted;
+            var entity = await _inboxRepository.UpdateAsync(inbox);
+        }
 
         private async Task<Inbox> Validation(int? id, InboxCreateOrUpdateDto inboxCreateOrUpdateDto)
         {
@@ -99,7 +121,7 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
                 }
                 if (inboxCreateOrUpdateDto.ParentId is not null)
                 {
-                  var parent=  inboxQuery.FirstOrDefault(x => x.Id == inboxCreateOrUpdateDto.ParentId);
+                    var parent = inboxQuery.FirstOrDefault(x => x.Id == inboxCreateOrUpdateDto.ParentId);
                     if (parent is null)
                     {
                         throw new UserFriendlyException(WorkFlowConstant.InboxParentNotFound, WorkFlowConstant.InboxParentNotFoundId);

@@ -16,5 +16,8 @@ namespace WorkFlowManagement.Application.Contracts.WorkFlowManagement.IServices
         Task<InboxDto> Update(InboxCreateOrUpdateDto inboxCreateOrUpdateDto);
         Task<List<InboxDto>> GetList();
         Task<bool> Delete(int id);
+        Task<InboxDto> GetActiveInboxByProcessId(Guid processId);
+        Task Activate(int? inboxId);
+        Task DeActivate(int? inboxId);
     }
 }

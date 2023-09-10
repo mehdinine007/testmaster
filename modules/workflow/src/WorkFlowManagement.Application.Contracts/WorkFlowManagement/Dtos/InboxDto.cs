@@ -9,6 +9,7 @@ namespace WorkFlowManagement.Application.Contracts.WorkFlowManagement.Dtos
 {
     public class InboxDto
     {
+        public int Id { get; set; }
         public Guid ProcessId { get; set; }
         public  ProcessDto Process { get; set; }
 
