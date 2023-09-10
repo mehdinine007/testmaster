@@ -1,5 +1,8 @@
 ﻿using Abp.Authorization;
+using Esale.Core.Caching;
+using Esale.Core.IOC;
 using MongoDB.Bson;
+using Polly.Caching;
 using UserManagement.Application.Contracts.UserManagement;
 using UserManagement.Application.Contracts.UserManagement.Services;
 using UserManagement.Application.Contracts.UserManagement.UserDto;
@@ -12,9 +15,11 @@ namespace UserManagement.Application.UserManagement.Implementations
     public class PermissionDefinitionService : ApplicationService, IPermissionDefinitionService
     {
         private readonly IRepository<PermissionDefinition, ObjectId> _permissionRepository;
-        public PermissionDefinitionService(IRepository<PermissionDefinition, ObjectId> permissionRepository)
+        private readonly ICacheManager _cacheManager;
+        public PermissionDefinitionService(IRepository<PermissionDefinition, ObjectId> permissionRepository, ICacheManager cacheManager)
         {
             _permissionRepository = permissionRepository;
+            _cacheManager = cacheManager;
         }
         public async Task<List<PermissionDefinitionDto>> GetList()
         {
@@ -28,111 +33,121 @@ namespace UserManagement.Application.UserManagement.Implementations
         }
         public async Task InsertList()
         {
-            var permissionDto = new PermissionDefinitionDto()
-            {
-                //title = "esale",
-                //nodeCode = "0001",
-                //childs = new List<PermissionDefinitionDto>()
-                //{
-                //    new PermissionDefinitionDto()
-                //    {
-                //        title = "order",
-                //        nodeCode = "00010001"
-                //    }
-                //    , new PermissionDefinitionDto()
-                //    {
-                //        title = "user",
-                //        nodeCode = "00010002"
-                //    }
-                //}
 
-                Title = "OrderModule",
-                Code = "0001",
-                Children = new List<PermissionDefinitionChildDto>()
-                {
-                    new PermissionDefinitionChildDto()
-                    {
-                        Title = "SaleSchema",
-                        Code = "00010001",
-                        Children = new List<PermissionDefinitionChildDto>()
-                        {
-                            new PermissionDefinitionChildDto()
-                            {
-                                Title = "SaleSchemaGetList",
-                                Code = "000100020001",
-                            },
-                            new PermissionDefinitionChildDto()
-                            {
-                                Title = "SaleSchemaAdd",
-                                Code = "000100020002",
-                            },
-                            new PermissionDefinitionChildDto()
-                            {
-                                Title = "SaleSchemaUpdate",
-                                Code = "000100020003",
-                            },
-                            new PermissionDefinitionChildDto()
-                            {
-                                Title = "SaleSchemaDelete",
-                                Code = "000100020004",
-                            },
-                            new PermissionDefinitionChildDto()
-                            {
-                                Title = "SaleSchemaGetById",
-                                Code = "000100020005",
-                            },
-                             new PermissionDefinitionChildDto()
-                             {
-                                Title = "SaleSchemaUploadFile",
-                                Code = "000100020006",
-                             },
-                        }
-                    }
+            var a = "Role_0001";
+            var s = new List<string>() { "00010001", "000100020001" };
+            var dd = new PermissionDefinition();
+            await _cacheManager.SetAsync(a,
+               "n:RolePermission:", s, 5000
+               , new CacheOptions()
+               {
+                   Provider = CacheProviderEnum.Hybrid
+               });
+            // var permissionDto = new PermissionDefinitionDto()
+            // {
+            //     //title = "esale",
+            //     //nodeCode = "0001",
+            //     //childs = new List<PermissionDefinitionDto>()
+            //     //{
+            //     //    new PermissionDefinitionDto()
+            //     //    {
+            //     //        title = "order",
+            //     //        nodeCode = "00010001"
+            //     //    }
+            //     //    , new PermissionDefinitionDto()
+            //     //    {
+            //     //        title = "user",
+            //     //        nodeCode = "00010002"
+            //     //    }
+            //     //}
 
-                    ,new PermissionDefinitionChildDto()
-                    {
-                        Title = "SaleDetail",
-                        Code = "00010002",
-                         Children = new List<PermissionDefinitionChildDto>()
-                         {
-                            new PermissionDefinitionChildDto()
-                            {
-                                Title = "SaleDetailGetSaleDetails",
-                                Code = "000100030001",
-                            },
-                            new PermissionDefinitionChildDto()
-                            {
-                                Title = "SaleDetailSave",
-                                Code = "000100030002",
-                            },
-                            new PermissionDefinitionChildDto()
-                            {
-                                Title = "SaleSchemaUpdate",
-                                Code = "000100030003",
-                            },
-                            new PermissionDefinitionChildDto()
-                            {
-                                Title = "SaleSchemaDelete",
-                                Code = "000100030004",
-                            },
-                            new PermissionDefinitionChildDto()
-                            {
-                                Title = "SaleDetailGetById",
-                                Code = "000100030005",
-                            },
-                             new PermissionDefinitionChildDto()
-                             {
-                                Title = "SaleDetailGetActiveList",
-                                Code = "000100030007",
-                             },
-                        }
-                    }
-                }
-            };
-            var b = ObjectMapper.Map<PermissionDefinitionDto, PermissionDefinition>(permissionDto);
-           var a =  await _permissionRepository.InsertAsync(b);
-            var permissions = (await _permissionRepository.GetQueryableAsync())
-                .ToList();
+            //     Title = "OrderModule",
+            //     Code = "0001",
+            //     Children = new List<PermissionDefinitionChildDto>()
+            //     {
+            //         new PermissionDefinitionChildDto()
+            //         {
+            //             Title = "SaleSchema",
+            //             Code = "00010001",
+            //             Children = new List<PermissionDefinitionChildDto>()
+            //             {
+            //                 new PermissionDefinitionChildDto()
+            //                 {
+            //                     Title = "SaleSchemaGetList",
+            //                     Code = "000100020001",
+            //                 },
+            //                 new PermissionDefinitionChildDto()
+            //                 {
+            //                     Title = "SaleSchemaAdd",
+            //                     Code = "000100020002",
+            //                 },
+            //                 new PermissionDefinitionChildDto()
+            //                 {
+            //                     Title = "SaleSchemaUpdate",
+            //                     Code = "000100020003",
+            //                 },
+            //                 new PermissionDefinitionChildDto()
+            //                 {
+            //                     Title = "SaleSchemaDelete",
+            //                     Code = "000100020004",
+            //                 },
+            //                 new PermissionDefinitionChildDto()
+            //                 {
+            //                     Title = "SaleSchemaGetById",
+            //                     Code = "000100020005",
+            //                 },
+            //                  new PermissionDefinitionChildDto()
+            //                  {
+            //                     Title = "SaleSchemaUploadFile",
+            //                     Code = "000100020006",
+            //                  },
+            //             }
+            //         }
+
+            //         ,new PermissionDefinitionChildDto()
+            //         {
+            //             Title = "SaleDetail",
+            //             Code = "00010002",
+            //              Children = new List<PermissionDefinitionChildDto>()
+            //              {
+            //                 new PermissionDefinitionChildDto()
+            //                 {
+            //                     Title = "SaleDetailGetSaleDetails",
+            //                     Code = "000100030001",
+            //                 },
+            //                 new PermissionDefinitionChildDto()
+            //                 {
+            //                     Title = "SaleDetailSave",
+            //                     Code = "000100030002",
+            //                 },
+            //                 new PermissionDefinitionChildDto()
+            //                 {
+            //                     Title = "SaleSchemaUpdate",
+            //                     Code = "000100030003",
+            //                 },
+            //                 new PermissionDefinitionChildDto()
+            //                 {
+            //                     Title = "SaleSchemaDelete",
+            //                     Code = "000100030004",
+            //                 },
+            //                 new PermissionDefinitionChildDto()
+            //                 {
+            //                     Title = "SaleDetailGetById",
+            //                     Code = "000100030005",
+            //                 },
+            //                  new PermissionDefinitionChildDto()
+            //                  {
+            //                     Title = "SaleDetailGetActiveList",
+            //                     Code = "000100030007",
+            //                  },
+            //             }
+            //         }
+            //     }
+            // };
+            // var b = ObjectMapper.Map<PermissionDefinitionDto, PermissionDefinition>(permissionDto);
+            //var a =  await _permissionRepository.InsertAsync(b);
+            // var permissions = (await _permissionRepository.GetQueryableAsync())
+            //     .ToList();
         }
 
 

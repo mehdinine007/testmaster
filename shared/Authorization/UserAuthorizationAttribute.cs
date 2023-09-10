@@ -9,6 +9,12 @@ using Esale.Core.IOC;
 using Esale.Core.Caching;
 using System.Collections.Generic;
 using Authorization;
+using Microsoft.AspNetCore.Antiforgery;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using System.Net.Http;
 
 namespace Esale.Share.Authorize
 {
@@ -39,18 +45,34 @@ namespace Esale.Share.Authorize
 
         public void OnAuthorization(AuthorizationFilterContext context)
         {
+            if (context.HttpContext.Items["UserId"] == null)
+            {
+                context.Result = new UnauthorizedResult();
+                return;
+            }
             var a = "Role_0001";
             var _configuration = ServiceTool.Resolve<IConfiguration>();
             var _cacheManager = ServiceTool.Resolve<ICacheManager>();
-            var RoleAuthorization = _cacheManager.Get<List<string>>(a,
+            var RolePermission = _cacheManager.Get<List<string>>(a,
             RolePermissionConstants.RolePermissionPrefix,
             new CacheOptions()
             {
                 Provider = CacheProviderEnum.Hybrid
             });
 
-            
+            // Here I can get userId from my params.
+            if (!string.IsNullOrEmpty(_permissions))
+            {
+                var claimsPermisions = context.HttpContext.User.Claims.FirstOrDefault(x => x.Type == "permissions").Value;
+                var permissions = claimsPermisions.Split(",");
 
+                if (!permissions.Contains(_permissions))
+                {
+                    context.Result = new UnauthorizedResult();
+                    return;
+                }
+            }
+         
 
             if (_disabled)
                 return;
@@ -73,6 +95,11 @@ namespace Esale.Share.Authorize
                 context.Result = new UnauthorizedResult();
                 return;
             }
+
+
+            var permClaims = new List<Claim>();
+            permClaims.Add(new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()));
+            permClaims.Add(new Claim("user", "some_username"));
             //if(DateTime.Now > UnixTimeStampToDateTime(long.Parse(exp.ToString()) / 1000))
             //{
             //    context.Result = new UnauthorizedResult();
