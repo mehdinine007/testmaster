@@ -14,6 +14,7 @@ namespace WorkFlowManagement.Domain.WorkFlowManagement
     {
 
         public string Title { get; set; }
+        public int Priority { get; set; }
         public FlowTypeEnum FlowType { get; set; }
         public EntityTypeEnum Entity { get; set; }
         public TypeEnum Type { get; set; }
@@ -25,8 +26,8 @@ namespace WorkFlowManagement.Domain.WorkFlowManagement
         public virtual ICollection<ActivityRole> ActivityRoles { get; set; }
         public virtual ICollection<Process> Processes { get; set; }
         public virtual ICollection<Process> PreviousProcesses { get; set; }
-   
-    
+
+       
 
 
 

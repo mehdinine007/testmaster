@@ -11,6 +11,7 @@ namespace WorkFlowManagement.Application.Contracts.WorkFlowManagement.Dtos
     {
         public int Id { get; set; }
         public string Title { get; set; }
+        public int Priority { get; set; }
         public FlowTypeEnum FlowType { get; set; }
         public EntityTypeEnum Entity { get; set; }
         public TypeEnum Type { get; set; }

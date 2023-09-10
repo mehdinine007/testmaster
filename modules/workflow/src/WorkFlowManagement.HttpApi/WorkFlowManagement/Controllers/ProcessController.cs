@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using WorkFlowManagement.Application.Contracts.WorkFlowManagement.IServices;
 using WorkFlowManagement.Application.Contracts.WorkFlowManagement.Dtos;
 using Esale.Share.Authorize;
+using WorkFlowManagement.Domain.Shared.WorkFlowManagement.Enums;
 
 namespace WorkFlowManagement.HttpApi.WorkFlowManagement.Controllers
 {
@@ -42,5 +43,10 @@ namespace WorkFlowManagement.HttpApi.WorkFlowManagement.Controllers
         [HttpGet]
         public async  Task<ProcessDto> StartProcess(int schemeId)
         =>await _processService.StartProcess(schemeId);
+
+
+        [HttpPost]
+        public async Task<ProcessDto> Execute(ExecuteQueryDto executeQueryDto)
+        => await _processService.Execute(executeQueryDto);
     }
 }

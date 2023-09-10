@@ -20,12 +20,12 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
         private readonly IRepository<ActivityRole, int> _activityRoleRepository;
         private readonly IRepository<Activity, int> _activityRepository;
         private readonly IRepository<Role, int> _roleRepository;
-        public ActivityRoleService(IRepository<ActivityRole, int> activityRoleRepository,IRepository<Activity, int> activityRepository, IRepository<Role, int> roleRepository)
+        public ActivityRoleService(IRepository<ActivityRole, int> activityRoleRepository, IRepository<Activity, int> activityRepository, IRepository<Role, int> roleRepository)
         {
             _activityRepository = activityRepository;
             _roleRepository = roleRepository;
             _activityRoleRepository = activityRoleRepository;
-  
+
         }
 
 
@@ -51,6 +51,16 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
             return activityRoleDto;
         }
 
+        public async Task<ActivityRoleDto> GetByActivityId(int activityId)
+        {
+            var activityRole = await _activityRoleRepository.FirstOrDefaultAsync(x => x.ActivityId == activityId);
+            if (activityRole == null)
+                throw new UserFriendlyException(WorkFlowConstant.ActivityRoleNotFound, WorkFlowConstant.ActivityRoleNotFoundId);
+            var activityRoleDto = ObjectMapper.Map<ActivityRole, ActivityRoleDto>(activityRole);
+            return activityRoleDto;
+        }
+
+
         public async Task<List<ActivityRoleDto>> GetList()
         {
             var activityRole = (await _activityRoleRepository.GetQueryableAsync()).Include(x => x.Activity).Include(x => x.Role).ToList();
@@ -70,8 +80,8 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
 
         private async Task<ActivityRole> Validation(int? id, ActivityRoleCreateOrUpdateDto activityRoleCreateOrUpdate)
         {
-            var activityRole= new ActivityRole();
-            var activityRoleQuery = (await _activityRoleRepository.GetQueryableAsync()).Include(x => x.Activity).Include(x=>x.Role);
+            var activityRole = new ActivityRole();
+            var activityRoleQuery = (await _activityRoleRepository.GetQueryableAsync()).Include(x => x.Activity).Include(x => x.Role);
             if (id != null)
             {
                 activityRole = activityRoleQuery.FirstOrDefault(x => x.Id == id);
@@ -90,7 +100,7 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
                 }
 
 
-                var roleQuery = await   _roleRepository.GetQueryableAsync();
+                var roleQuery = await _roleRepository.GetQueryableAsync();
                 var role = roleQuery.FirstOrDefault(x => x.Id == activityRoleCreateOrUpdate.RoleId);
                 if (role is null)
                 {

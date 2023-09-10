@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Services;
 using WorkFlowManagement.Application.Contracts.WorkFlowManagement.Dtos;
+using WorkFlowManagement.Domain.Shared.WorkFlowManagement.Enums;
 
 namespace WorkFlowManagement.Application.Contracts.WorkFlowManagement.IServices
 {
@@ -16,5 +17,6 @@ namespace WorkFlowManagement.Application.Contracts.WorkFlowManagement.IServices
         Task<List<ProcessDto>> GetList();
         Task<bool> Delete(Guid id);
         Task<ProcessDto> StartProcess(int schemeId);
+        Task<ProcessDto> Execute(ExecuteQueryDto executeQueryDto);
     }
 }

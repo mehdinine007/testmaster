@@ -17,6 +17,7 @@ namespace WorkFlowManagement.Application.Contracts.WorkFlowManagement.IServices
         Task<List<ActivityDto>> GetList();
         Task<bool> Delete(int id);
         Task<ActivityDto> GetBySchemeId(int schemeId);
+        Task<ActivityDto> NextAcvtivity(int id);
 
     }
 }

@@ -50,6 +50,26 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
             var activityDto = ObjectMapper.Map<Activity, ActivityDto>(activity);
             return activityDto;
         }
+        public async Task<ActivityDto> NextAcvtivity(int id)
+        {
+
+            var activityQuery = (await _activityRepository.GetQueryableAsync());
+            var currentActivity = activityQuery.FirstOrDefault(x => x.Id == id);
+            if (currentActivity == null)
+            {
+                throw new UserFriendlyException(WorkFlowConstant.ActivityNotFound, WorkFlowConstant.ActivityNotFoundId);
+            }
+            var nextActivity = activityQuery.FirstOrDefault(x => x.Priority > currentActivity.Priority);
+            if (nextActivity == null)
+            {
+                throw new UserFriendlyException(WorkFlowConstant.ActivityNotFound, WorkFlowConstant.ActivityNotFoundId);
+            }
+            var activityDto = ObjectMapper.Map<Activity, ActivityDto>(nextActivity);
+            return activityDto;
+        }
+
+
+
 
         public async Task<ActivityDto> GetBySchemeId(int schemeId)
         {
@@ -85,7 +105,7 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
             var activityQuery = (await _activityRepository.GetQueryableAsync()).Include(x => x.Scheme);
             if (schemeId is not null)
             {
-                activity= activityQuery.FirstOrDefault(x => x.FlowType == FlowTypeEnum.Start && x.SchemeId == schemeId);
+                activity = activityQuery.FirstOrDefault(x => x.FlowType == FlowTypeEnum.Start && x.SchemeId == schemeId);
                 if (activity is null)
                 {
                     throw new UserFriendlyException(WorkFlowConstant.ActivityNotFound, WorkFlowConstant.ActivityNotFoundId);

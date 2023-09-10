@@ -12,11 +12,13 @@ using Volo.Abp;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.ObjectMapping;
+using Volo.Abp.Users;
 using WorkFlowManagement.Application.Contracts.WorkFlowManagement.Constants;
 using WorkFlowManagement.Application.Contracts.WorkFlowManagement.Dtos;
 using WorkFlowManagement.Application.Contracts.WorkFlowManagement.IServices;
 using WorkFlowManagement.Domain.Shared.WorkFlowManagement.Enums;
 using WorkFlowManagement.Domain.WorkFlowManagement;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Model;
 using Activity = WorkFlowManagement.Domain.WorkFlowManagement.Activity;
 using Process = WorkFlowManagement.Domain.WorkFlowManagement.Process;
 
@@ -30,12 +32,16 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
         private readonly ICommonAppService _commonAppService;
         private readonly IOrganizationPositionService _organizationPositionService;
         private readonly IOrganizationChartService _organizationChartService;
+        private readonly IActivityRoleService _activityRoleService;
+        private readonly IRoleOrganizationChartService _roleOrganizationChartService;
         public ProcessService(IRepository<Process
             , Guid> processRepository, ISchemeService schemeService
             , IActivityService activityService
             , ICommonAppService commonAppService
             , IOrganizationPositionService organizationPositionService
             , IOrganizationChartService organizationChartService
+             , IActivityRoleService activityRoleService
+             , IRoleOrganizationChartService roleOrganizationChartService
 
             )
         {
@@ -45,6 +51,8 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
             _commonAppService = commonAppService;
             _organizationPositionService = organizationPositionService;
             _organizationChartService = organizationChartService;
+            _activityRoleService = activityRoleService;
+            _roleOrganizationChartService = roleOrganizationChartService;
 
         }
 
@@ -76,7 +84,7 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
 
         public async Task<ProcessDto> GetById(Guid id)
         {
-            var processQuery = (await _processRepository.GetQueryableAsync()).Include(x=>x.Activity);
+            var processQuery = (await _processRepository.GetQueryableAsync()).Include(x => x.Activity);
             var process = processQuery.FirstOrDefault(x => x.Id == id);
             var processDto = ObjectMapper.Map<Process, ProcessDto>(process);
             return processDto;
@@ -114,9 +122,44 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
 
             var entity = await _processRepository.InsertAsync(process, autoSave: true);
 
-           return await GetById(entity.Id);
-     
+
+            var inbox = new Inbox()
+            {
+                 ProcessId = entity.Id,
+
+            };
+
+
+            return await GetById(entity.Id);
+
         }
+
+        public async Task<ProcessDto> Execute(ExecuteQueryDto executeQueryDto)
+        {
+            var process = await Validation(executeQueryDto.ProcessId, null);
+            var activity = await _activityService.NextAcvtivity(process.ActivityId);
+            var activityRole = await _activityRoleService.GetByActivityId(activity.Id);
+            var roleOrganizationChart = await _roleOrganizationChartService.GetByRoleId(activityRole.RoleId);
+            var organizationPosition = await _organizationPositionService.GetByOrganizationChartId(roleOrganizationChart.OrganizationChartId);
+            if (executeQueryDto.Action == StateEnum.Draft)
+            {
+                process.State = StateEnum.Draft;
+            }
+            else if (executeQueryDto.Action == StateEnum.Refrence)
+            {
+                process.Status = StatusEnum.Runing;
+                process.State = StateEnum.Refrence;
+                process.PreviousActivityId = process.ActivityId;
+                process.ActivityId = activity.Id;
+                process.PreviousOrganizationChartId = process.OrganizationChartId;
+                process.PreviousPersonId = process.PersonId;
+                process.PersonId = organizationPosition.PersonId;
+            }
+            var entity = await _processRepository.UpdateAsync(process, autoSave: true);
+            return await GetById(entity.Id);
+        }
+
+
 
         public async Task<ProcessDto> Update(ProcessCreateOrUpdateDto processCreateOrUpdateDto)
         {
@@ -131,7 +174,7 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
             return ObjectMapper.Map<Process, ProcessDto>(entity);
         }
 
-       
+
 
         private async Task<Process> Validation(Guid? id, ProcessCreateOrUpdateDto processCreateOrUpdateDto)
         {

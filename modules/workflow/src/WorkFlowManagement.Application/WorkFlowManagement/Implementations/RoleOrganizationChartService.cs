@@ -46,6 +46,20 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
             return roleOrganizationChartDto;
         }
 
+
+        public async Task<RoleOrganizationChartDto> GetByRoleId(int roleId)
+        {
+            var roleOrganizationChartQuery = await _roleOrganizationChartRepository.GetQueryableAsync();
+            var roleOrganizationChart = roleOrganizationChartQuery.FirstOrDefault(x => x.RoleId == roleId);
+            if (roleOrganizationChart is null)
+            {
+                throw new UserFriendlyException(WorkFlowConstant.RoleOrganizationChartNotFound, WorkFlowConstant.RoleOrganizationChartNotFoundId);
+            }
+
+            var roleOrganizationChartDto = ObjectMapper.Map<RoleOrganizationChart, RoleOrganizationChartDto>(roleOrganizationChart);
+            return roleOrganizationChartDto;
+        }
+
         public async Task<List<RoleOrganizationChartDto>> GetList()
         {
             var roleOrganizationChart = (await _roleOrganizationChartRepository.GetQueryableAsync()).Include(x=>x.Role).Include(x => x.OrganizationChart).ToList();
