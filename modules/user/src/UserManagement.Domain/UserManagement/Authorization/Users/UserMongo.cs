@@ -54,7 +54,9 @@ namespace UserManagement.Domain.Authorization.Users
         [Column(TypeName = "VARCHAR(26)")]
         public string Shaba { get; set; }
         //public Province Province { get; set; }
-        public virtual bank Bank { get; set; }
+
+        // boilerplate legacy
+        //public virtual bank Bank { get; set; }
         [Column(TypeName = "VARCHAR(6)")]
         public string PreTel { get; set; }
         [ForeignKey("City")]

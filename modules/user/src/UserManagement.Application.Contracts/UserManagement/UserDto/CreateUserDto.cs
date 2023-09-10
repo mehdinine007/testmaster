@@ -9,7 +9,7 @@ using Castle.MicroKernel.SubSystems.Conversion;
 using UserManagement.Domain.UserManagement.Enums;
 using Volo.Abp.Auditing;
 
-namespace UserManagement.Domain.UserManagement.UserDto
+namespace UserManagement.Domain.UserManagement
 {
     
     public class CreateUserDto 

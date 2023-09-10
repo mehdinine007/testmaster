@@ -18,8 +18,11 @@ using UserService.Host.Infrastructures;
 using Volo.Abp.Threading;
 using Volo.Abp;
 using Volo.Abp.Data;
-using Volo.Abp.BackgroundJobs.Hangfire;
 using Volo.Abp.MongoDB;
+using Esale.Core.Extensions;
+using UserManagement.EfCore.MongoDb;
+using Hangfire;
+using Microsoft.EntityFrameworkCore;
 using GrpcService;
 #endregion
 
@@ -76,18 +79,27 @@ public class UserServiceHostModule : AbpModule
         });
 
         using var scope = context.Services.BuildServiceProvider();
-        var service = scope.GetRequiredService<IActionResultWrapperFactory>();
-
-        context.Services.AddControllers(x =>
-        {
-            x.Filters.Add(new EsaleResultFilter(service));
-        });
+        context.Services.AddEsaleResultWrapper();
         IdentityModelEventSource.ShowPII = true;
         //ConfigureHangfire(context, configuration);
-
+        context.Services.AddMongoDbContext<UserManagementMongoDbContext>(options =>
+        {
+            options.AddDefaultRepositories(includeAllEntities: true);
+        });
+        ConfigureHangfire(context, configuration);
         context.Services.AddGrpc();
         context.Services.EasyCaching(configuration, "RedisCache:ConnectionString");
     }
+
+    private void ConfigureHangfire(ServiceConfigurationContext context, IConfiguration configuration)
+    {
+        context.Services.AddHangfire(config =>
+        {
+            config.UseSqlServerStorage(configuration.GetConnectionString("UserHangfire"));
+        });
+
+    }
+   
 
     public override void OnApplicationInitialization(ApplicationInitializationContext context)
     {
@@ -112,6 +124,7 @@ public class UserServiceHostModule : AbpModule
 
         app.UseAbpRequestLocalization(); //TODO: localization?
         app.UseSwagger();
+        app.UseHangfireDashboard("/hangfire");
         app.UseSwaggerUI(options =>
         {
             options.SwaggerEndpoint("/swagger/v1/swagger.json", "User Service API");

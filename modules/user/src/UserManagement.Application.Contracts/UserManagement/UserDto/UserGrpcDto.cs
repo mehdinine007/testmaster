@@ -1,4 +1,4 @@
-﻿namespace UserManagement.Domain.UserManagement.UserDto
+﻿namespace UserManagement.Domain.UserManagement
 {
     public class UserGrpcDto
     {
