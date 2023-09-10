@@ -1,9 +1,7 @@
 ﻿using Volo.Abp.Auditing;
 using Volo.Abp;
 using Microsoft.AspNetCore.Mvc;
-using Volo.Abp.AspNetCore.Mvc;
 using UserManagement.Application.Contracts.UserManagement.Services;
-using UserManagement.Application.Contracts.UserManagement;
 using UserManagement.Application.Contracts.UserManagement.UserDto;
 using UserManagement.Domain.UserManagement.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -11,6 +9,9 @@ using UserManagement.Domain.Authorization.Users;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Abp.Runtime.Security;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace UserManagement.HttpApi.UserManagement.Controllers
 {
@@ -20,17 +21,17 @@ namespace UserManagement.HttpApi.UserManagement.Controllers
     public class TokenAuthController : Controller
     {
         private readonly IUserAppService _userAppService;
-        private readonly TokenAuthConfiguration _configuration;
         private readonly IPasswordHasher<User> _passwordHasher;
+        private readonly IConfiguration _configuration;
 
-        public TokenAuthController(IUserAppService userAppService
-            ,TokenAuthConfiguration configuration
-            //, IPasswordHasher<User> PasswordHasher
+        public TokenAuthController(IUserAppService userAppService, 
+                                   IPasswordHasher<User> PasswordHasher,
+                                   IConfiguration configuration
             )
         {
-            _userAppService = userAppService; 
-            _configuration = configuration; 
-            //_passwordHasher = PasswordHasher;
+            _userAppService = userAppService;
+            _passwordHasher = PasswordHasher;
+            _configuration = configuration;
         }
 
 
@@ -61,7 +62,7 @@ namespace UserManagement.HttpApi.UserManagement.Controllers
             {
                 AccessToken = accessToken,
                 EncryptedAccessToken = GetEncryptedAccessToken(accessToken),
-                ExpireInSeconds = (int)_configuration.Expiration.TotalSeconds,
+                ExpireInSeconds = (int)TimeSpan.FromDays(1).TotalSeconds,
                 UserId = loginResult.Id
             };
         }
@@ -70,12 +71,12 @@ namespace UserManagement.HttpApi.UserManagement.Controllers
         {
             var now = DateTime.UtcNow;
             var jwtSecurityToken = new JwtSecurityToken(
-                issuer: _configuration.Issuer,
-                audience: _configuration.Audience,
+                issuer: _configuration.GetValue<string>("Authentication:JwtBearer:Issuer"),
+                audience: _configuration.GetValue<string>("Authentication:JwtBearer:Audience"),
                 claims: claims,
                 notBefore: now,
-                expires: now.Add(expiration ?? _configuration.Expiration),
-                signingCredentials: _configuration.SigningCredentials
+                expires: now.Add(expiration ?? TimeSpan.FromDays(1)),
+                signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_configuration.GetValue<string>("Authentication:JwtBearer:SecurityKey"))), SecurityAlgorithms.HmacSha256)
             );
 
             return new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
