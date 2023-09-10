@@ -17,6 +17,7 @@ using OrderManagement.Application.Contracts.OrderManagement.Models;
 using OrderManagement.Domain.OrderManagement;
 using OrderManagement.Domain.Shared;
 using OrderManagement.Application.Contracts.OrderManagement;
+using Esale.Core.Utility.Tools;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -121,7 +122,7 @@ public class SaleService : ApplicationService, ISaleService
 
 
 
-        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, queryResult.Select(x => x.ProductId).ToList(), input.AttachmentType);
+        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, queryResult.Select(x => x.ProductId).ToList(), EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(input.AttachmentType));
 
 
         queryResult.ForEach(x =>
