@@ -49,11 +49,11 @@ namespace UserService.Host
             app.UseCors(options => options.SetIsOriginAllowed(x => _ = true).AllowAnyMethod().AllowAnyHeader().AllowCredentials());
             app.UseMiddleware<JwtMiddleware>();
 
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
-
+            //app.UseEndpoints(endpoints =>
+            //{
+            //    endpoints.MapControllers();
+            //});
+            //app.UseRouting();
             app.InitializeApplication();
 
         }
