@@ -13,5 +13,9 @@ namespace UserManagement.Application.Contracts.UserManagement.Services
         Task<List<RolePermissionDto>> GetList();
          Task InsertList();
         Task AddToRedis();
+        Task<RolePermissionDto> Add(RolePermissionDto dto);
+        Task<RolePermissionDto> Update(RolePermissionDto dto);
+        Task<RolePermissionDto> GetById(ObjectId id);
+        Task<bool> Delete(ObjectId id);
     }
 }
