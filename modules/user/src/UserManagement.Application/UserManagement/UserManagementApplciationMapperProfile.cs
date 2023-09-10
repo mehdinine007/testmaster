@@ -1,7 +1,5 @@
 ﻿using AutoMapper;
-using UserManagement.Application.Contracts.UserManagement;
-using UserManagement.Application.Contracts.UserManagement.UserDto;
-using UserManagement.Domain.UserManagement.Advocacy;
+using UserManagement.Application.Contracts.Models;
 using UserManagement.Domain.UserManagement.Authorization.RolePermissions;
 using UserManagement.Domain.UserManagement.bases;
 
