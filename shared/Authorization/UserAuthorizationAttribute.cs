@@ -5,8 +5,7 @@ using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
-using Esale.Core.IOC;
-using Esale.Core.Caching;
+
 using System.Collections.Generic;
 using Authorization;
 
@@ -39,15 +38,15 @@ namespace Esale.Share.Authorize
 
         public void OnAuthorization(AuthorizationFilterContext context)
         {
-            var a = "Role_0001";
-            var _configuration = ServiceTool.Resolve<IConfiguration>();
-            var _cacheManager = ServiceTool.Resolve<ICacheManager>();
-            var RoleAuthorization = _cacheManager.Get<List<string>>(a,
-            RolePermissionConstants.RolePermissionPrefix,
-            new CacheOptions()
-            {
-                Provider = CacheProviderEnum.Hybrid
-            });
+            //var a = "Role_0001";
+            //var _configuration = ServiceTool.Resolve<IConfiguration>();
+            //var _cacheManager = ServiceTool.Resolve<ICacheManager>();
+            //var RoleAuthorization = _cacheManager.Get<List<string>>(a,
+            //RolePermissionConstants.RolePermissionPrefix,
+            //new CacheOptions()
+            //{
+            //    Provider = CacheProviderEnum.Hybrid
+            //});
 
             
 
