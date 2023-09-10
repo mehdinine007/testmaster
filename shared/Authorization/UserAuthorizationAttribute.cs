@@ -5,8 +5,7 @@ using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
-using Esale.Core.IOC;
-using Esale.Core.Caching;
+
 using System.Collections.Generic;
 using Authorization;
 using Microsoft.AspNetCore.Antiforgery;

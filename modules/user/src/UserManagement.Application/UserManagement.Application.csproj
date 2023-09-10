@@ -17,6 +17,7 @@
 		<PackageReference Include="volo.abp.mongodb" Version="7.2.1" />
 	</ItemGroup>
 	<ItemGroup>
+	  <ProjectReference Include="..\..\..\..\shared\Authorization\Authorization.csproj" />
 	  <ProjectReference Include="..\UserManagement.Application.Contracts\UserManagement.Application.Contracts.csproj" />
 	  <ProjectReference Include="..\UserManagement.Domain\UserManagement.Domain.csproj" />
 	</ItemGroup>
