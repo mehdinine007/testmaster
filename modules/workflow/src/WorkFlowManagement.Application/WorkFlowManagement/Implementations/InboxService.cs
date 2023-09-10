@@ -1,4 +1,5 @@
-﻿using Org.BouncyCastle.Math.EC.Rfc7748;
+﻿using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Math.EC.Rfc7748;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,6 +8,7 @@ using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
+using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.ObjectMapping;
 using WorkFlowManagement.Application.Contracts.WorkFlowManagement.Constants;
@@ -23,14 +25,17 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
         private readonly IRepository<Inbox, int> _inboxRepository;
         private readonly IRepository<OrganizationChart, int> _organizationChartRepository;
         private readonly IRepository<OrganizationPosition, int> _organizationPositionRepository;
+        private readonly ICommonAppService _commonAppService;
+        private readonly IOrganizationPositionService _organizationPositionService;
 
-
-        public InboxService(IRepository<Inbox, int> inboxRepository, IRepository<OrganizationChart, int> organizationChartRepository, IRepository<OrganizationPosition, int> organizationPositionRepository)
+        public InboxService(IRepository<Inbox, int> inboxRepository, IRepository<OrganizationChart, int> organizationChartRepository, IRepository<OrganizationPosition, int> organizationPositionRepository, ICommonAppService commonAppService
+            , IOrganizationPositionService organizationPositionService)
         {
             _inboxRepository = inboxRepository;
             _organizationChartRepository = organizationChartRepository;
             _organizationPositionRepository = organizationPositionRepository;
-
+            _commonAppService = commonAppService;
+            _organizationPositionService = organizationPositionService;
         }
 
         public async Task<InboxDto> Add(InboxCreateOrUpdateDto inboxCreateOrUpdateDto)
@@ -56,8 +61,8 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
         }
         public async Task<InboxDto> GetActiveInboxByProcessId(Guid processId)
         {
-            var inboxQuery = (await _inboxRepository.GetQueryableAsync()).OrderByDescending(x=>x.Id);
-            var inbox = inboxQuery.FirstOrDefault(x => x.ProcessId == processId && x.Status== InboxStatusEnum.Active);
+            var inboxQuery = (await _inboxRepository.GetQueryableAsync()).OrderByDescending(x => x.Id);
+            var inbox = inboxQuery.FirstOrDefault(x => x.ProcessId == processId && x.Status == InboxStatusEnum.Active);
             var inboxDto = ObjectMapper.Map<Inbox, InboxDto>(inbox);
             return inboxDto;
         }
@@ -131,5 +136,13 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
             return inbox;
         }
 
+        public async Task<List<InboxDto>> GetActiveList()
+        {
+            var currentUserId = _commonAppService.GetUserId();
+            var organizationPosition =await _organizationPositionService.GetByPersonId(currentUserId);
+            var inboxQuery =(await _inboxRepository.GetQueryableAsync()).Include(x=>x.Process);
+            var inbox = inboxQuery.Where(x => x.OrganizationChartId == organizationPosition.OrganizationChartId && x.Status == InboxStatusEnum.Active && x.PersonId== currentUserId).ToList();
+            return ObjectMapper.Map<List<Inbox>, List<InboxDto>>(inbox);
+        }
     }
 }

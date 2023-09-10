@@ -95,7 +95,7 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
             var organizationPositionQuery = (await _organizationPositionRepository.GetQueryableAsync()).Include(x => x.OrganizationChart);
             if (personId != null)
             {
-                organizationPosition = organizationPositionQuery.FirstOrDefault(x => x.PersonId == personId);
+                organizationPosition = organizationPositionQuery.FirstOrDefault(x => x.PersonId == personId && x.Status);
                 if (organizationPosition is null)
                 {
                     throw new UserFriendlyException(WorkFlowConstant.OrganizationPositionNotFound, WorkFlowConstant.OrganizationPositionNotFoundId);

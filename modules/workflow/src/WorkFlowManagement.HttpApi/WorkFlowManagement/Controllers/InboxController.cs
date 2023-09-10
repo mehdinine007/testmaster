@@ -8,6 +8,7 @@ using Volo.Abp;
 using WorkFlowManagement.Application.Contracts.WorkFlowManagement.IServices;
 using Microsoft.AspNetCore.Mvc;
 using WorkFlowManagement.Application.Contracts.WorkFlowManagement.Dtos;
+using Esale.Share.Authorize;
 
 namespace WorkFlowManagement.HttpApi.WorkFlowManagement.Controllers
 {
@@ -36,5 +37,11 @@ namespace WorkFlowManagement.HttpApi.WorkFlowManagement.Controllers
         [HttpPut]
         public Task<InboxDto> Update(InboxCreateOrUpdateDto inboxCreateOrUpdateDto)
         =>_inboxService.Update(inboxCreateOrUpdateDto);
+        [UserAuthorization]
+        [HttpGet]
+        public Task<List<InboxDto>> GetActiveList()
+       => _inboxService.GetActiveList();
+
+
     }
 }
