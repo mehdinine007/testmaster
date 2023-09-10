@@ -1,15 +1,11 @@
-﻿using Abp.Authorization;
-using MongoDB.Bson;
-using System.Reflection;
-using UserManagement.Application.Contracts.UserManagement;
-using UserManagement.Application.Contracts;//.UserManagement.RolePermissions;
+﻿using MongoDB.Bson;
 using UserManagement.Application.Contracts.UserManagement.Services;
-using UserManagement.Application.Contracts.UserManagement.UserDto;
 using UserManagement.Domain.UserManagement.Authorization.RolePermissions;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
 using Esale.Core.Caching;
 using Authorization;
+using UserManagement.Application.Contracts.Models;
 
 namespace UserManagement.Application.UserManagement.Implementations
 {

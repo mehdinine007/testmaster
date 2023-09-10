@@ -1,11 +1,6 @@
-﻿using MongoDB.Bson;
-using MongoDB.Driver;
-using UserManagement.Application.Contracts;
+﻿using MongoDB.Driver;
 using UserManagement.Application.Contracts.UserManagement.Services;
-using UserManagement.Application.Contracts.UserManagement.UserDto;
 using UserManagement.Domain.Authorization.Users;
-using UserManagement.Domain.UserManagement;
-using UserManagement.Domain.UserManagement.Authorization.RolePermissions;
 using Volo.Abp.Application.Services;
 using WorkingWithMongoDB.WebAPI.Services;
 

@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using UserManagement.Domain.UserManagement.Enums;
 
-namespace UserManagement.Application.Contracts;
+namespace UserManagement.Application.Contracts.Models;
 
 public class UserDto
 {

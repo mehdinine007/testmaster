@@ -1,8 +1,6 @@
-﻿using Abp.Authorization;
-using MongoDB.Bson;
-using UserManagement.Application.Contracts.UserManagement;
+﻿using MongoDB.Bson;
+using UserManagement.Application.Contracts.Models;
 using UserManagement.Application.Contracts.UserManagement.Services;
-using UserManagement.Application.Contracts.UserManagement.UserDto;
 using UserManagement.Domain.UserManagement.bases;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
