@@ -1,4 +1,5 @@
 ﻿using Abp.Domain.Uow;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -15,13 +16,26 @@ public class CommonAppService : ApplicationService, ICommonAppService
 {
     private readonly IConfiguration _configuration;
     private readonly IDistributedCache _distributedCache;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
     public CommonAppService(IConfiguration configuration,
-                            IDistributedCache distributedCache
+                            IDistributedCache distributedCache,
+                            IHttpContextAccessor httpContextAccessor
         )
     {
         _configuration = configuration;
         _distributedCache = distributedCache;
+        _httpContextAccessor = httpContextAccessor;
+    }
+
+    public Guid GetUID()
+    {
+        var userIdStr = _httpContextAccessor.HttpContext.User.Claims.SingleOrDefault(x => x.Type.Equals("UBP"))?.Value.ToUpper() ?? string.Empty;
+        if (string.IsNullOrWhiteSpace(userIdStr))
+            throw new UserFriendlyException("لطفا لاگین کنید");
+
+        Guid.TryParse(userIdStr, out var userId);
+        return userId;
     }
 
     public async Task<RecaptchaResponse> CheckCaptcha(CaptchaInputDto input)

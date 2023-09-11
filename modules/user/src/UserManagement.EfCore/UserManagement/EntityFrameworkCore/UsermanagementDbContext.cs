@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using UserManagement.Domain.UserManagement;
 using UserManagement.Domain.UserManagement.Advocacy;
+using UserManagement.Domain.UserManagement.Bases;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
 using Volo.Abp.Data;
 using Volo.Abp.EntityFrameworkCore;
@@ -15,6 +16,8 @@ namespace UserManagement.EfCore.EntityFrameworkCore
         }
 
         public DbSet<AdvocacyUsers> AdvocacyUsers { get; set; }
+
+        public DbSet<WhiteList> WhiteList { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

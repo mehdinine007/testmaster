@@ -1,9 +1,4 @@
-﻿using Abp.Domain.Entities.Auditing;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Volo.Abp.Domain.Entities.Auditing;
 
 namespace UserManagement.Domain.UserManagement.Bases
 {
@@ -17,6 +12,6 @@ namespace UserManagement.Domain.UserManagement.Bases
     {
         WhiteListBeforeLogin = 1,
         WhiteListOrder = 2,
-       
+        WhilteListEnseraf = 3
     }
 }

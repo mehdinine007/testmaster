@@ -14,5 +14,5 @@ public interface ICommonAppService : IApplicationService
 
     Task<string> GetAddressByZipCode(string zipCode, string nationalCode);
 
-    //Task<AdvocacyAcountResult> CheckAccount(string nationalCode, string mobileNo);
+    public Guid GetUID();
 }
