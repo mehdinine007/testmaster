@@ -14,6 +14,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using System.Net.Http;
+using Esale.Core.Caching;
+using Esale.Core.IOC;
 
 namespace Esale.Share.Authorize
 {
@@ -58,14 +60,12 @@ namespace Esale.Share.Authorize
             {
                 Provider = CacheProviderEnum.Hybrid
             });
-
+           // string permission = "000100020001";
             // Here I can get userId from my params.
             if (!string.IsNullOrEmpty(_permissions))
             {
-                var claimsPermisions = context.HttpContext.User.Claims.FirstOrDefault(x => x.Type == "permissions").Value;
-                var permissions = claimsPermisions.Split(",");
-
-                if (!permissions.Contains(_permissions))
+                var claimsPermisions = RolePermission.Contains(_permissions);            
+                if (!RolePermission.Contains(_permissions))
                 {
                     context.Result = new UnauthorizedResult();
                     return;
