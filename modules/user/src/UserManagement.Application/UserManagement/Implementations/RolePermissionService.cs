@@ -9,10 +9,10 @@ using UserManagement.Domain.UserManagement.Authorization.RolePermissions;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
 using Esale.Core.Caching;
-using Authorization;
 using Abp.UI;
 using Microsoft.EntityFrameworkCore;
 using UserManagement.Application.Contracts.UserManagement.Constant;
+using Esale.Core.Constant;
 
 namespace UserManagement.Application.UserManagement.Implementations
 {
@@ -33,7 +33,7 @@ namespace UserManagement.Application.UserManagement.Implementations
             var roleperm = await GetList();
             foreach (var role in roleperm)
             {
-                await _cacheManager.SetAsync(role.Code, RolePermissionConstants.RolePermissionPrefix + "Role", role.Permissions.Select(x => x.Code), 2000, new CacheOptions { Provider = CacheProviderEnum.Hybrid });
+                await _cacheManager.SetAsync(role.Code, RedisCoreConstant.RolePermissionPrefix + "Role", role.Permissions.Select(x => x.Code), 2000, new CacheOptions { Provider = CacheProviderEnum.Hybrid });
             }
         }
 

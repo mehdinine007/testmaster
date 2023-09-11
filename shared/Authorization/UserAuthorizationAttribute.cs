@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 
 using System.Collections.Generic;
-using Authorization;
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -55,7 +54,7 @@ namespace Esale.Share.Authorize
             var _configuration = ServiceTool.Resolve<IConfiguration>();
             var _cacheManager = ServiceTool.Resolve<ICacheManager>();
             var RolePermission = _cacheManager.Get<List<string>>(a,
-            RolePermissionConstants.RolePermissionPrefix,
+            "",
             new CacheOptions()
             {
                 Provider = CacheProviderEnum.Hybrid

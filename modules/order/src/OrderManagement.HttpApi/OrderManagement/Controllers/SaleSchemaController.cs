@@ -19,7 +19,7 @@ namespace OrderManagement.HttpApi.OrderManagement.Controllers;
 [DisableAuditing]
 [RemoteService]
 [Route("api/services/app/SaleSchemaService/[action]")]
-[UserAuthorization]
+//[UserAuthorization]
 public class SaleSchemaController : Controller
 {
     private readonly ISaleSchemaService _saleSchemaService;
@@ -33,7 +33,6 @@ public class SaleSchemaController : Controller
 
 
     [HttpGet]
-    [UserAuthorization(permissions: "000100020001")]
     public Task<List<SaleSchemaDto>> GetList(List<AttachmentEntityTypeEnum> attachmentType = null)
     => _saleSchemaService.GetList(attachmentType);
 
