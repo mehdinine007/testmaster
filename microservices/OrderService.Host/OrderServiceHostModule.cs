@@ -157,7 +157,11 @@ namespace OrderService.Host
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapGrpcService<GrpcTestService>();
+                endpoints.MapGrpcService<GreeterService>();
+
             });
+          
+
             app.UseAbpRequestLocalization(); //TODO: localization?
             app.UseSwagger();
             app.UseSwaggerUI(options =>

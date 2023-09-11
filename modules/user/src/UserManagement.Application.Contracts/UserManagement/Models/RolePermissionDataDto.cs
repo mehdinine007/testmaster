@@ -1,6 +1,6 @@
 ﻿using UserManagement.Domain.UserManagement.Authorization.RolePermissions;
 
-namespace UserManagement.Application.Contracts.UserManagement.UserDto;
+namespace UserManagement.Application.Contracts.Models;
 
 public class RolePermissionDataDto
 {

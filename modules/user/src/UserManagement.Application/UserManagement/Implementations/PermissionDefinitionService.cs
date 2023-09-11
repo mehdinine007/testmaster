@@ -3,6 +3,7 @@ using Esale.Core.Caching;
 using Esale.Core.IOC;
 using MongoDB.Bson;
 using Polly.Caching;
+using UserManagement.Application.Contracts.Models;
 using UserManagement.Application.Contracts.UserManagement;
 using UserManagement.Application.Contracts.UserManagement.Services;
 using UserManagement.Application.Contracts.UserManagement.UserDto;
@@ -133,7 +134,7 @@ public class PermissionDefinitionService : ApplicationService, IPermissionDefini
             }
         };
         var b = ObjectMapper.Map<PermissionDefinitionDto, PermissionDefinition>(permissionDto);
-       var a =  await _permissionRepository.InsertAsync(b);
+        var a = await _permissionRepository.InsertAsync(b);
         var permissions = (await _permissionRepository.GetQueryableAsync())
             .ToList();
     }
