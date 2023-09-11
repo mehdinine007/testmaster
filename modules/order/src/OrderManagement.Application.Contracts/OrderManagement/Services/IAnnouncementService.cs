@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OrderManagement.Domain.Shared;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,7 +11,7 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Services
 {
     public interface IAnnouncementService: IApplicationService
     {
-//        Task<AnnouncementDto> GetById(int id);
+        Task<AnnouncementDto> GetById(int id, List<AttachmentEntityTypeEnum>? attachmentType = null);
         Task<List<AnnouncementDto>> GetAllAnnouncement();
         Task<PagedResultDto<AnnouncementDto>> GetPagination(AnnouncementGetListDto input);
         Task<int> Insert(CreateAnnouncementDto announcementDto);

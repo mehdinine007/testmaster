@@ -10,9 +10,9 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Services
 {
     public interface IChartStructureService: IApplicationService
     {
-        Task<List<ChartStructureDto>> GetList(List<AttachmentEntityTypeEnum> attachmentType);
+        Task<List<ChartStructureDto>> GetList(List<AttachmentEntityTypeEnum>? attachmentType=null);
         Task<bool> UploadFile(UploadFileDto uploadFile);
-        Task<ChartStructureDto> GetById(int id);
+        Task<ChartStructureDto> GetById(int id, List<AttachmentEntityTypeEnum>? attachmentType = null);
         Task<ChartStructureDto> Add(ChartStructureCreateOrUpdateDto chartStructureCreateOrUpdateDto);
         Task<ChartStructureDto> Update(ChartStructureCreateOrUpdateDto chartStructureCreateOrUpdateDto);
         Task<bool> Delete(int id);

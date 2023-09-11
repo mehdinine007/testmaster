@@ -12,6 +12,7 @@ using Volo.Abp.Application.Dtos;
 using Esale.Share.Authorize;
 using Microsoft.AspNetCore.Http;
 using OrderManagement.Domain;
+using OrderManagement.Domain.Shared;
 
 namespace OrderManagement.HttpApi.OrderManagement.Controllers;
 
@@ -37,8 +38,11 @@ public class AnnouncementController : Controller, IAnnouncementService
     [HttpGet]
     public Task<List<AnnouncementDto>> GetAllAnnouncement()
     => _announcementService.GetAllAnnouncement();
+    [HttpGet]
+    public  Task<AnnouncementDto> GetById(int id, List<AttachmentEntityTypeEnum> attachmentType = null)
+        => _announcementService.GetById(id, attachmentType);
 
-     [HttpGet]
+    [HttpGet]
     public Task<PagedResultDto<AnnouncementDto>> GetPagination(AnnouncementGetListDto input)
     => _announcementService.GetPagination(input);
     [HttpPost]

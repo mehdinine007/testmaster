@@ -26,12 +26,12 @@ namespace OrderManagement.HttpApi.OrderManagement.Controllers
         => _bankAppService = bankAppService;
 
         [HttpGet]
-        public Task<BankDto> GetById(int id)
-    => _bankAppService.GetById(id);
+        public Task<BankDto> GetById(int id, List<AttachmentEntityTypeEnum> attachmentType = null)
+    => _bankAppService.GetById(id, attachmentType);
 
 
         [HttpGet]
-        public Task<List<BankDto>> GetList(AttachmentEntityTypeEnum attachmentType)
+        public Task<List<BankDto>> GetList(List<AttachmentEntityTypeEnum> attachmentType=null)
         => _bankAppService.GetList(attachmentType);
 
 
