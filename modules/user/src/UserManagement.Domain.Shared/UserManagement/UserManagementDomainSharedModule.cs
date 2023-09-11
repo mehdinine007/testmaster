@@ -1,12 +1,10 @@
 ﻿using Volo.Abp.Modularity;
-using Volo.Abp.Localization;
 
-namespace OrderManagement.Domain.Shared
+namespace UserManagement.Domain.Shared;
+
+public class UserManagementDomainSharedModule : AbpModule
 {
-    public class UserManagementDomainSharedModule : AbpModule
+    public override void ConfigureServices(ServiceConfigurationContext context)
     {
-        public override void ConfigureServices(ServiceConfigurationContext context)
-        {
-        }
     }
 }
