@@ -20,5 +20,6 @@ namespace WorkFlowManagement.Application.Contracts.WorkFlowManagement.IServices
         Task Activate(int? inboxId);
         Task DeActivate(int? inboxId);
         Task<List<InboxDto>> GetActiveList();
+        Task<List<InboxDto>> GetPostedList();
     }
 }

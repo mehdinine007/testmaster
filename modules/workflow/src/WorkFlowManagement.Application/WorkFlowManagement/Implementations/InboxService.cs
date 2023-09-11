@@ -144,5 +144,15 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
             var inbox = inboxQuery.Where(x => x.OrganizationChartId == organizationPosition.OrganizationChartId && x.Status == InboxStatusEnum.Active && x.PersonId== currentUserId).ToList();
             return ObjectMapper.Map<List<Inbox>, List<InboxDto>>(inbox);
         }
+
+        public async Task<List<InboxDto>> GetPostedList()
+        {
+            var currentUserId = _commonAppService.GetUserId();
+            var organizationPosition = await _organizationPositionService.GetByPersonId(currentUserId);
+            var inboxQuery = (await _inboxRepository.GetQueryableAsync()).Include(x => x.Process).Where(x=>x.Process.CreatedPersonId == currentUserId);
+            var inbox = inboxQuery.Where(x => x.OrganizationChartId == organizationPosition.OrganizationChartId && x.Status == InboxStatusEnum.Posted && x.PersonId == currentUserId).ToList();
+            return ObjectMapper.Map<List<Inbox>, List<InboxDto>>(inbox);
+        }
+
     }
 }

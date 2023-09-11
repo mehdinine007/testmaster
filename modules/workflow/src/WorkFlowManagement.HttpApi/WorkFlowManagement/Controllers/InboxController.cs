@@ -42,6 +42,11 @@ namespace WorkFlowManagement.HttpApi.WorkFlowManagement.Controllers
         public Task<List<InboxDto>> GetActiveList()
        => _inboxService.GetActiveList();
 
+        [UserAuthorization]
+        [HttpGet]
+        public Task<List<InboxDto>> GetPostedList()
+       => _inboxService.GetPostedList();
+
 
     }
 }
