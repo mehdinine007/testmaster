@@ -31,14 +31,14 @@ namespace Esale.Share.Authorize
             var _httpContextAccessor = ServiceTool.Resolve<IHttpContextAccessor>();
             if (!_httpContextAccessor.HttpContext.User.Identity.IsAuthenticated)
             {
-                throw new UserFriendlyException("خطا دسترسی");
+                throw new UserFriendlyException(CoreMessage.AuthenticationDenied, CoreMessage.AuthenticationDeniedId);
             }
             var roles = _httpContextAccessor.HttpContext.User.Claims
                 .Where(x => x.Type.Equals(ClaimTypes.Role))
                 .ToList();
             if (roles is null || roles.Count == 0)
             {
-                throw new UserFriendlyException("خطا دسترسی");
+                throw new UserFriendlyException(CoreMessage.AuthenticationDenied, CoreMessage.AuthenticationDeniedId);
             }
             var _cacheManager = ServiceTool.Resolve<ICacheManager>();
             foreach (var role in roles)
@@ -52,9 +52,10 @@ namespace Esale.Share.Authorize
                 if (rolePermission != null && rolePermission.Count > 0)
                 {
                     if (rolePermission.Any(x => x.Equals(_permission)))
-                        break;
+                        return;
                 }
             }
+            throw new UserFriendlyException(CoreMessage.AuthenticationDenied, CoreMessage.AuthenticationDeniedId);
         }
 
     }
