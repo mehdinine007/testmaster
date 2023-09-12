@@ -9,7 +9,7 @@ using WorkFlowManagement.Domain.Shared.WorkFlowManagement.Enums;
 
 namespace WorkFlowManagement.Domain.WorkFlowManagement
 {
-    [Table("Inboxes", Schema = "Flow")]
+    [Table("Inbox", Schema = "Flow")]
     public class Inbox:FullAuditedEntity<int>
     {
 
