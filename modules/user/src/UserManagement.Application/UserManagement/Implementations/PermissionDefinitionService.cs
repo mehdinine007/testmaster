@@ -1,5 +1,6 @@
 ﻿using Abp.Authorization;
 using Abp.UI;
+using Core.Utility.Tools;
 using Esale.Core.Caching;
 using Esale.Core.IOC;
 using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption;
@@ -18,7 +19,7 @@ using Volo.Abp.Domain.Repositories;
 
 namespace UserManagement.Application.UserManagement.Implementations
 {
-    public class PermissionDefinitionService : ApplicationService//, IPermissionDefinitionService
+    public class PermissionDefinitionService : ApplicationService, IPermissionDefinitionService
     {
         private readonly IRepository<PermissionDefinition, ObjectId> _permissionRepository;
         private readonly IRepository<RolePermission, ObjectId> _rolepermissionRepository;
@@ -164,12 +165,15 @@ namespace UserManagement.Application.UserManagement.Implementations
 
 
 
-        public async Task<List<PermissionDefinitionDto>> Insert(PermissionDefinitionDto permission)
+        public async Task<PermissionDefinitionDto> Insert(PermissionDefinitionDto permission)
         {
             var permissionQuery = await _permissionRepository.GetQueryableAsync();
+            var _maxCode = permissionQuery.Max(x => x.Code);
+            permission.Code = StringHelper.GenerateTreeNodePath(_maxCode, null, 4);
             var getpermission = ObjectMapper.Map<PermissionDefinitionDto, PermissionDefinition>(permission);
-            var a = await _permissionRepository.InsertAsync(getpermission);
-            return null;
+            var results = await _permissionRepository.InsertAsync(getpermission,autoSave: true);
+            return ObjectMapper.Map<PermissionDefinition, PermissionDefinitionDto>(results);
+            
         }
 
         public async Task<PermissionDefinitionDto> GetById(ObjectId Id)

@@ -15,7 +15,7 @@ namespace UserManagement.Application.Contracts.UserManagement.Services
         Task InsertList();
         Task<List<PermissionDefinitionDto>> GetList();
         Task<PermissionDefinitionDto> GetById(ObjectId Id);
-        Task<List<PermissionDefinitionDto>> Insert(PermissionDefinitionDto permission);
+        Task<PermissionDefinitionDto> Insert(PermissionDefinitionDto permission);
         Task<PermissionDefinitionDto> Add(PermissionDefinitionDto permission);
         Task<PermissionDefinitionDto> Update(PermissionDefinitionDto permission);
         Task<bool> Delete(ObjectId Id);
