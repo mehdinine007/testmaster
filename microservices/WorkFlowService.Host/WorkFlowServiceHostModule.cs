@@ -24,6 +24,7 @@ using Microsoft.EntityFrameworkCore;
 using WorkFlowManagement.Application;
 using GatewayManagement.HttpApi;
 using WorkFlowManagement.EntityFrameworkCore;
+using WorkFlowService.Host.Infrastructures;
 
 namespace WorkFlowService.Host
 {
@@ -49,11 +50,11 @@ namespace WorkFlowService.Host
         {
             var configuration = context.Services.GetConfiguration();
 
+            context.Services.Configure<AppSecret>(configuration.GetSection("Authentication:JwtBearer"));
 
-           
-                context.Services.AddSwaggerGen(options =>
+            context.Services.AddSwaggerGen(options =>
                 {
-                    options.SwaggerDoc("v1", new OpenApiInfo { Title = "Order Service API", Version = "v1" });
+                    options.SwaggerDoc("v1", new OpenApiInfo { Title = "WorkFlow Service API", Version = "v1" });
                     options.DocInclusionPredicate((docName, description) => true);
                     options.CustomSchemaIds(type => type.FullName);
                 });

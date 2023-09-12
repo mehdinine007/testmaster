@@ -29,38 +29,58 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
 
         public async Task<OrganizationPositionDto> Add(OrganizationPositionCreateOrUpdateDto organizationPositionCreateOrUpdateDto)
         {
-            await Validation(null, organizationPositionCreateOrUpdateDto);
+            await Validation(null, organizationPositionCreateOrUpdateDto, null);
             var organizationPosition = ObjectMapper.Map<OrganizationPositionCreateOrUpdateDto, OrganizationPosition>(organizationPositionCreateOrUpdateDto);
-            var entity = await _organizationPositionRepository.InsertAsync(organizationPosition,autoSave:true);
+            var entity = await _organizationPositionRepository.InsertAsync(organizationPosition, autoSave: true);
             return ObjectMapper.Map<OrganizationPosition, OrganizationPositionDto>(entity);
         }
 
         public async Task<bool> Delete(int id)
         {
-            var organizationPosition = await Validation(id, null);
+            var organizationPosition = await Validation(id, null, null);
             await _organizationPositionRepository.DeleteAsync(id);
             return true;
         }
 
         public async Task<OrganizationPositionDto> GetById(int id)
         {
-            var organizationPosition = await Validation(id, null);
+            var organizationPosition = await Validation(id, null, null);
             var organizationPositionDto = ObjectMapper.Map<OrganizationPosition, OrganizationPositionDto>(organizationPosition);
             return organizationPositionDto;
         }
 
-        public async Task<List<OrganizationPositionDto>> GetList()
+
+        public async Task<OrganizationPositionDto> GetByPersonId(Guid personId)
         {
-            var organizationPosition = (await _organizationPositionRepository.GetQueryableAsync()).Include(x => x.OrganizationChart).ToList();
+            var organizationPosition = await Validation(null, null, personId);
+            var organizationPositionDto = ObjectMapper.Map<OrganizationPosition, OrganizationPositionDto>(organizationPosition);
+            return organizationPositionDto;
+        }
+
+
+        public async Task<OrganizationPositionDto> GetByOrganizationChartId(int organizationChartId)
+        {
+            var organizationPositionQuery = await _organizationPositionRepository.GetQueryableAsync();
+            var organizationPosition = organizationPositionQuery.FirstOrDefault(x => x.OrganizationChartId == organizationChartId);
+
+            if (organizationPositionQuery == null)
+                throw new UserFriendlyException(WorkFlowConstant.OrganizationPositionNotFound, WorkFlowConstant.OrganizationPositionNotFoundId);
+            var organizationPositionDto = ObjectMapper.Map<OrganizationPosition, OrganizationPositionDto>(organizationPosition);
+            return organizationPositionDto;
+        }
+
+        public async Task<List<OrganizationPositionDto>> GetList(int organizationChartId)
+        {
+            var organizationPosition = (await _organizationPositionRepository.GetQueryableAsync()).Where(x => x.OrganizationChartId == organizationChartId).Include(x => x.OrganizationChart).ToList();
             var organizationPositionDto = ObjectMapper.Map<List<OrganizationPosition>, List<OrganizationPositionDto>>(organizationPosition);
             return organizationPositionDto;
         }
 
         public async Task<OrganizationPositionDto> Update(OrganizationPositionCreateOrUpdateDto organizationPositionCreateOrUpdateDto)
         {
-            var organizationPosition = await Validation(organizationPositionCreateOrUpdateDto.Id, organizationPositionCreateOrUpdateDto);
+            var organizationPosition = await Validation(organizationPositionCreateOrUpdateDto.Id, organizationPositionCreateOrUpdateDto, null);
             organizationPosition.OrganizationChartId = organizationPositionCreateOrUpdateDto.OrganizationChartId;
-            organizationPosition.UserId = organizationPositionCreateOrUpdateDto.UserId;
+            organizationPosition.PersonId = organizationPositionCreateOrUpdateDto.PersonId;
             organizationPosition.Status = organizationPositionCreateOrUpdateDto.Status;
             organizationPosition.StartDate = organizationPositionCreateOrUpdateDto.StartDate;
             organizationPosition.EndDate = organizationPositionCreateOrUpdateDto.EndDate;
@@ -68,10 +88,20 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
             return ObjectMapper.Map<OrganizationPosition, OrganizationPositionDto>(entity);
         }
 
-        private async Task<OrganizationPosition> Validation(int? id, OrganizationPositionCreateOrUpdateDto organizationPositionCreateOrUpdateDto)
+        private async Task<OrganizationPosition> Validation(int? id, OrganizationPositionCreateOrUpdateDto organizationPositionCreateOrUpdateDto, Guid? personId)
         {
+            var currentTime = DateTime.Now;
             var organizationPosition = new OrganizationPosition();
-            var organizationPositionQuery = (await _organizationPositionRepository.GetQueryableAsync()).Include(x=>x.OrganizationChart);
+            var organizationPositionQuery = (await _organizationPositionRepository.GetQueryableAsync()).Include(x => x.OrganizationChart);
+            if (personId != null)
+            {
+                organizationPosition = organizationPositionQuery.FirstOrDefault(x => x.PersonId == personId && x.Status);
+                if (organizationPosition is null)
+                {
+                    throw new UserFriendlyException(WorkFlowConstant.OrganizationPositionNotFound, WorkFlowConstant.OrganizationPositionNotFoundId);
+                }
+            }
+
             if (id != null)
             {
                 organizationPosition = organizationPositionQuery.FirstOrDefault(x => x.Id == id);
@@ -82,6 +112,13 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
             }
             if (organizationPositionCreateOrUpdateDto != null)
             {
+                if (organizationPositionCreateOrUpdateDto.EndDate is not null)
+                    if (organizationPositionCreateOrUpdateDto.EndDate < organizationPositionCreateOrUpdateDto.StartDate)
+                        throw new UserFriendlyException(WorkFlowConstant.InvalidEndDate, WorkFlowConstant.InvalidEndDateId);
+
+
+
+
                 var organizationChart = (await _organizationChartRepository.GetQueryableAsync()).FirstOrDefault(x => x.Id == organizationPositionCreateOrUpdateDto.OrganizationChartId);
                 if (organizationChart is null)
                 {
@@ -89,9 +126,9 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
                 }
                 else
                 {
-                  if (organizationChart.OrganizationType== OrganizationTypeEnum.SinglePosition)
+                    if (organizationChart.OrganizationType == OrganizationTypeEnum.SinglePosition)
                     {
-                      var  checkDuplicate = organizationPositionQuery.FirstOrDefault(x => x.OrganizationChartId == organizationPositionCreateOrUpdateDto.OrganizationChartId && x.Id!= organizationPositionCreateOrUpdateDto.Id);
+                        var checkDuplicate = organizationPositionQuery.FirstOrDefault(x => x.OrganizationChartId == organizationPositionCreateOrUpdateDto.OrganizationChartId && x.Id != organizationPositionCreateOrUpdateDto.Id);
                         if (checkDuplicate is not null)
                             throw new UserFriendlyException(WorkFlowConstant.OrganizationPositionDuplicateNotFound, WorkFlowConstant.OrganizationPositionDuplicateNotFoundId);
                     }

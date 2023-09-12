@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\shared\Authorization\Authorization.csproj" />
     <ProjectReference Include="..\WorkFlowManagement.Application.Contracts\WorkFlowManagement.Application.Contracts.csproj" />
     <ProjectReference Include="..\WorkFlowManagement.Application\WorkFlowManagement.Application.csproj" />
   </ItemGroup>

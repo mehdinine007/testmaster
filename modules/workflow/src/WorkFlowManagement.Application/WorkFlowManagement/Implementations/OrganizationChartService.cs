@@ -27,7 +27,7 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
             _organizationChartRepository = organizationChartRepository;
         }
 
-        public async Task<OrganizationChartDto> GetById(int id)
+        public async Task<OrganizationChartDto> GetById(int? id)
         {
             var organizationChart = await Validation(id, null);
             var organizationChartDto = ObjectMapper.Map<OrganizationChart, OrganizationChartDto>(organizationChart);
@@ -59,6 +59,7 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
             var OrganizationChart = await Validation(organizationChartCreateOrUpdateDto.Id, organizationChartCreateOrUpdateDto);
             OrganizationChart.Status = organizationChartCreateOrUpdateDto.Status;
             OrganizationChart.Title = organizationChartCreateOrUpdateDto.Title;
+            OrganizationChart.OrganizationType = organizationChartCreateOrUpdateDto.OrganizationType;
             var entity = await _organizationChartRepository.UpdateAsync(OrganizationChart);
             return ObjectMapper.Map<OrganizationChart, OrganizationChartDto>(entity);
         }

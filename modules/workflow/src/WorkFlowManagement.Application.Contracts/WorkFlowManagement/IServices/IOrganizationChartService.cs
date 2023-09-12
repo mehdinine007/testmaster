@@ -10,7 +10,7 @@ namespace WorkFlowManagement.Application.Contracts.WorkFlowManagement.IServices
 {
     public interface IOrganizationChartService: IApplicationService
     {
-        Task<OrganizationChartDto> GetById(int id);
+        Task<OrganizationChartDto> GetById(int? id);
         Task<OrganizationChartDto> Add(OrganizationChartCreateOrUpdateDto organizationChartCreateOrUpdateDto);
         Task<OrganizationChartDto> Update(OrganizationChartCreateOrUpdateDto organizationChartCreateOrUpdateDto);
         Task<List<OrganizationChartDto>> GetList();
