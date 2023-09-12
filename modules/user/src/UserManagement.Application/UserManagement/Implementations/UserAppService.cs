@@ -1,39 +1,67 @@
-﻿using MongoDB.Driver;
+﻿using MongoDB.Bson;
+using MongoDB.Driver;
+using UserManagement.Application.Contracts.UserManagement.Constant;
 using UserManagement.Application.Contracts.UserManagement.Services;
 using UserManagement.Domain.Authorization.Users;
+using UserManagement.Domain.UserManagement.Authorization.RolePermissions;
+using Volo.Abp;
 using Volo.Abp.Application.Services;
+using Volo.Abp.Domain.Repositories;
 using WorkingWithMongoDB.WebAPI.Services;
 
 namespace UserManagement.Application.UserManagement.Implementations;
 
 public class UserAppService : ApplicationService, IUserAppService
 {
-    private readonly UserMongoService _userMongoService;
-    public UserAppService(UserMongoService userMongoService)
+    
+    private readonly IRolePermissionService _rolePermissionService;
+    private readonly IRepository<UserMongo, ObjectId> _userMongoRepository;
+    public UserAppService(IRolePermissionService rolePermissionService,
+                          IRepository<UserMongo, ObjectId> userMongoRepository
+        )
     {
-        _userMongoService = userMongoService;
+
+        _rolePermissionService = rolePermissionService;
+        _userMongoRepository = userMongoRepository;
     }
+
+    public async Task<bool> AddRole(ObjectId userid, List<string> roleCode)
+    {
+        var user = (await _userMongoRepository
+               .GetQueryableAsync())
+               .FirstOrDefault(x => x.Id == userid);
+
+        if (user is null)
+            return false;
+        foreach (var cod in roleCode)
+        {
+            if (await _rolePermissionService.ValidationByCode(cod))
+                user.Roles.Add(cod);
+        }
+        await _userMongoRepository.UpdateAsync(user);
+        return true;
+    }
+
+
 
     public async Task<User> GetLoginInfromationuserFromCache(string Username)
     {
         Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
         object UserFromCache = null;
 
-        var user = (await _userMongoService
-                .GetUserCollection())
-                .Find(x => x.NormalizedUserName == Username.ToUpper()
-                    && x.IsDeleted == false)
-                .Project(x =>
-                    new User
-                    {
-                        TempUID = x.UID,
-                        UserName = x.UserName,
-                        Password = x.Password,
-                        IsActive = x.IsActive,
-                        RolesM = x.RolesM,
-                        NormalizedUserName = x.NormalizedUserName
-                    }
-                    )
+        var user = (await _userMongoRepository
+                .GetQueryableAsync())
+                .Where(x => x.NormalizedUserName == Username.ToUpper()
+                  )
+                .Select(x => new User
+                {
+                    TempUID = x.UID,
+                    UserName = x.UserName,
+                    Password = x.Password,
+                    IsActive = x.IsActive,
+                    RolesM = x.Roles,
+                    NormalizedUserName = x.NormalizedUserName
+                })
                 .FirstOrDefault();
         if (user != null)
         {

@@ -17,5 +17,6 @@ namespace UserManagement.Application.Contracts.UserManagement.Services
         Task<RolePermissionDto> Update(RolePermissionDto dto);
         Task<RolePermissionDto> GetById(ObjectId id);
         Task<bool> Delete(ObjectId id);
+        Task<bool> ValidationByCode(string code);
     }
 }
