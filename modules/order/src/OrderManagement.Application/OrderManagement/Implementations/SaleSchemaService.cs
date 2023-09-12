@@ -40,7 +40,7 @@ public class SaleSchemaService : ApplicationService, ISaleSchemaService
     }
 
 
-
+    [SecuredOperation(PermissionConstant.SaleSchemaGetList)]
     public async Task<List<SaleSchemaDto>> GetList(List<AttachmentEntityTypeEnum> attachmentType = null)
     {
         var count = _saleSchemaRepository.WithDetails().Count();
