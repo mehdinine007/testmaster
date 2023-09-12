@@ -1,10 +1,6 @@
 ﻿using Abp.Application.Services;
-using Abp.Authorization;
 using MongoDB.Bson;
-using System.Reflection;
-using UserManagement.Application.Contracts.UserManagement;
-using UserManagement.Application.Contracts;//.UserManagement.RolePermissions;
-using UserManagement.Application.Contracts.UserManagement.UserDto;
+using UserManagement.Application.Contracts.Models;
 
 namespace UserManagement.Application.Contracts.UserManagement.Services
 {

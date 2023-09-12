@@ -1,11 +1,9 @@
 ﻿using Volo.Abp.Auditing;
 using Volo.Abp;
 using Microsoft.AspNetCore.Mvc;
-using Volo.Abp.AspNetCore.Mvc;
 using UserManagement.Application.Contracts.UserManagement.Services;
-using UserManagement.Application.Contracts.UserManagement;
-using UserManagement.Application.Contracts.UserManagement.UserDto;
 using MongoDB.Bson;
+using UserManagement.Application.Contracts.Models;
 
 namespace UserManagement.HttpApi.UserManagement.Controllers
 {

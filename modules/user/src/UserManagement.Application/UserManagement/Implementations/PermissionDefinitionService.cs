@@ -1,12 +1,6 @@
-﻿using Abp.Authorization;
-using Esale.Core.Caching;
-using Esale.Core.IOC;
-using MongoDB.Bson;
-using Polly.Caching;
+﻿using MongoDB.Bson;
 using UserManagement.Application.Contracts.Models;
-using UserManagement.Application.Contracts.UserManagement;
 using UserManagement.Application.Contracts.UserManagement.Services;
-using UserManagement.Application.Contracts.UserManagement.UserDto;
 using UserManagement.Domain.UserManagement.bases;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
