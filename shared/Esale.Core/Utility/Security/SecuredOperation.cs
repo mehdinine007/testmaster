@@ -16,6 +16,7 @@ using Esale.Core.Caching;
 using Esale.Core.IOC;
 using Volo.Abp;
 using Esale.Core.Constant;
+using Nest;
 
 namespace Esale.Share.Authorize
 {
@@ -27,12 +28,8 @@ namespace Esale.Share.Authorize
         {
             _permission = permission;
             if (string.IsNullOrWhiteSpace(_permission))
-                return; 
-            var _httpContextAccessor = ServiceTool.Resolve<IHttpContextAccessor>();
-            if (!_httpContextAccessor.HttpContext.User.Identity.IsAuthenticated)
-            {
-                throw new UserFriendlyException(CoreMessage.AuthenticationDenied, CoreMessage.AuthenticationDeniedId);
-            }
+                return;
+            var _httpContextAccessor = CheckAuthenticate();
             var roles = _httpContextAccessor.HttpContext.User.Claims
                 .Where(x => x.Type.Equals(ClaimTypes.Role))
                 .ToList();
@@ -58,6 +55,17 @@ namespace Esale.Share.Authorize
             throw new UserFriendlyException(CoreMessage.AuthenticationDenied, CoreMessage.AuthenticationDeniedId);
         }
 
-    }
+        private IHttpContextAccessor CheckAuthenticate()
+        {
+            var _httpContextAccessor = ServiceTool.Resolve<IHttpContextAccessor>();
+            if (_httpContextAccessor is null)
+                return default;
+            if (!_httpContextAccessor.HttpContext.User.Identity.IsAuthenticated)
+            {
+                throw new UserFriendlyException(CoreMessage.AuthenticationDenied, CoreMessage.AuthenticationDeniedId);
+            }
+            return _httpContextAccessor;
+        }
 
+    }
 }
