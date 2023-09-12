@@ -11,6 +11,7 @@ namespace Esale.Core.Caching
     public interface ICacheManager
     {
         Task<T?> GetAsync<T>(string key,string prefix, CacheOptions options);
+        T? Get<T>(string key, string prefix, CacheOptions options);
         Task<string?> GetStringAsync(string key, string prefix,CacheOptions options);
         Task SetAsync<T>(string key, string prefix,T value,double ttl, CacheOptions options);
         Task SetStringAsync(string key, string prefix,string value,CacheOptions options,double ttl = 0);

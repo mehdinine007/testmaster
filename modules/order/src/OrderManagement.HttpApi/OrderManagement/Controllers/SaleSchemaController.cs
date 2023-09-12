@@ -12,13 +12,14 @@ using Volo.Abp.Application.Dtos;
 using Esale.Share.Authorize;
 using Microsoft.AspNetCore.Http;
 using OrderManagement.Domain.Shared;
+using OrderManagement.Application.Contracts;
 
 namespace OrderManagement.HttpApi.OrderManagement.Controllers;
 
 [DisableAuditing]
 [RemoteService]
 [Route("api/services/app/SaleSchemaService/[action]")]
-[UserAuthorization]
+//[UserAuthorization]
 public class SaleSchemaController : Controller
 {
     private readonly ISaleSchemaService _saleSchemaService;
@@ -30,14 +31,14 @@ public class SaleSchemaController : Controller
     public Task<bool> Delete(int id)
     => _saleSchemaService.Delete(id);
 
-    
+
     [HttpGet]
-    public Task<List<SaleSchemaDto>> GetList(List<AttachmentEntityTypeEnum> attachmentType=null)
+    public Task<List<SaleSchemaDto>> GetList(List<AttachmentEntityTypeEnum> attachmentType = null)
     => _saleSchemaService.GetList(attachmentType);
 
     [HttpGet]
     public Task<SaleSchemaDto> GetById(int id, List<AttachmentEntityTypeEnum> attachmentType = null)
-         => _saleSchemaService.GetById(id,attachmentType);
+         => _saleSchemaService.GetById(id, attachmentType);
 
     [HttpPost]
     public Task<SaleSchemaDto> Add(CreateSaleSchemaDto saleSchemaDto)
@@ -46,6 +47,6 @@ public class SaleSchemaController : Controller
     public Task<SaleSchemaDto> Update(CreateSaleSchemaDto saleSchemaDto)
     => _saleSchemaService.Update(saleSchemaDto);
     [HttpPost]
-    public Task<bool> UploadFile([FromForm]UploadFileDto uploadFile)
+    public Task<bool> UploadFile([FromForm] UploadFileDto uploadFile)
    => _saleSchemaService.UploadFile(uploadFile);
 }
