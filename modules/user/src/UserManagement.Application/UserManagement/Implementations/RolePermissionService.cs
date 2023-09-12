@@ -13,6 +13,7 @@ using Abp.UI;
 using Microsoft.EntityFrameworkCore;
 using UserManagement.Application.Contracts.UserManagement.Constant;
 using Esale.Core.Constant;
+using Core.Utility.Tools;
 
 namespace UserManagement.Application.UserManagement.Implementations
 {
@@ -33,7 +34,7 @@ namespace UserManagement.Application.UserManagement.Implementations
             var roleperm = await GetList();
             foreach (var role in roleperm)
             {
-                await _cacheManager.SetAsync(role.Code, RedisCoreConstant.RolePermissionPrefix + "Role", role.Permissions.Select(x => x.Code), 2000, new CacheOptions { Provider = CacheProviderEnum.Hybrid });
+                await _cacheManager.SetAsync(role.Code, RedisCoreConstant.RolePermissionPrefix + "Role", role.Permissions, 2000, new CacheOptions { Provider = CacheProviderEnum.Hybrid });
             }
         }
 
@@ -49,48 +50,15 @@ namespace UserManagement.Application.UserManagement.Implementations
 
         public async Task InsertList()
         {
+
+            var permis= new List<string>() { "00010001", "000100020001", "000100020002", "000100020003", "000100020004" , "000100020005" , "000100020006" };
             var rolePermissionDto = new RolePermissionDto()
             {
 
                 Title = "Company",
                 Code = "0001",
-                Permissions = new List<PermissionDataDto>()
-                {
-                      new PermissionDataDto()
-                    {
-
-                        Code = "00010001",
-                    },
-                    new PermissionDataDto()
-                    {
-
-                        Code = "000100020001",
-                    },
-                    new PermissionDataDto()
-                    {
-
-                        Code = "000100020002",
-                    },
-                    new PermissionDataDto()
-                    {
-
-                        Code = "000100020003",
-                    },
-                       new PermissionDataDto()
-                    {
-                     Code = "000100020004",
-                    } ,
-                          new PermissionDataDto()
-                    {
-  Code = "000100020005",
-                    }   ,
-                                  new PermissionDataDto()
-                    {
-
-                                Code = "000100020006",
-                    }
-
-                }
+                Permissions= permis
+              
             };
 
             var b = ObjectMapper.Map<RolePermissionDto, RolePermission>(rolePermissionDto);
@@ -101,7 +69,11 @@ namespace UserManagement.Application.UserManagement.Implementations
 
         public async Task<RolePermissionDto> Add(RolePermissionDto dto)
         {
+            var role =await _rolePermissionRepository.GetQueryableAsync();
+            var maxcode= role.Max(x => x.Code);
+            dto.Code= StringHelper.GenerateTreeNodePath(maxcode, null, 4);
             var rolePermission = ObjectMapper.Map<RolePermissionDto, RolePermission>(dto);
+            
             var entity = await _rolePermissionRepository.InsertAsync(rolePermission, autoSave: true);
             return ObjectMapper.Map<RolePermission, RolePermissionDto>(entity);
         }
@@ -116,10 +88,10 @@ namespace UserManagement.Application.UserManagement.Implementations
                 rolepermission.Code = dto.Code;
             if (dto.Permissions.Count > 0)
             {
-                rolepermission.Permissions = new List<PermissionDataDto>();
+                rolepermission.Permissions = new List<string>();
                 foreach (var prm in dto.Permissions)
                 {
-                    rolepermission.Permissions.Add(new PermissionDataDto { Code = prm.Code });
+                    rolepermission.Permissions.Add(prm);
 
                 }
             }
@@ -153,6 +125,15 @@ namespace UserManagement.Application.UserManagement.Implementations
         }
 
 
-
+        public async Task<bool> ValidationByCode(string code)
+        {
+            var role = (await _rolePermissionRepository.GetQueryableAsync())
+                .FirstOrDefault(x => x.Code == code);
+            if (role is null)
+            {
+                throw new UserFriendlyException(PermissionConstant.RoleNotFound, PermissionConstant.RoleNotFoundId);
+            }
+            return true;
+        }
     }
 }

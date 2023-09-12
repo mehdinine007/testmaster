@@ -1,4 +1,5 @@
-﻿using UserManagement.Application.Contracts.Models;
+﻿using MongoDB.Bson;
+using UserManagement.Application.Contracts.Models;
 using UserManagement.Domain.Authorization.Users;
 using UserManagement.Domain.UserManagement;
 using Volo.Abp.Application.Services;
@@ -10,5 +11,5 @@ public interface IUserAppService : IApplicationService
 {
     Task<User> GetLoginInfromationuserFromCache(string Username);
 
-    //Task<UserDto> CreateAsync(CreateUserDto input);
+    Task<bool> AddRole(ObjectId userid, List<string> roleCode);
 }

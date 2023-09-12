@@ -8,6 +8,6 @@ namespace UserManagement.Domain.UserManagement.Authorization.RolePermissions
         public string Title { get; set; }
         public string Code { get; set; }
 
-        public List<PermissionDataDto> Permissions { get; set; }
+        public List<string> Permissions { get; set; }
     }
 }
