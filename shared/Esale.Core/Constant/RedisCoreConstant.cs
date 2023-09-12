@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Authorization
+namespace Esale.Core.Constant
 {
-    public static class RolePermissionConstants
+    public static class RedisCoreConstant
     {
         public const string RolePermissionPrefix = "n:RolePermission:";
     }

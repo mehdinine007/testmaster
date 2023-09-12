@@ -28,6 +28,8 @@ using Volo.Abp.MongoDB;
 using Microsoft.EntityFrameworkCore;
 using OrderManagement.EfCore.MongoDb;
 using Esale.Core.Extensions;
+using Esale.Core.Utility.Security.Encyption;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace OrderService.Host
 {
@@ -53,18 +55,21 @@ namespace OrderService.Host
         {
             var configuration = context.Services.GetConfiguration();
             context.Services.Configure<AppSecret>(configuration.GetSection("Authentication:JwtBearer"));
-            //Configure<AbpMultiTenancyOptions>(options =>
-            //{
-            //    options.IsEnabled = MsDemoConsts.IsMultiTenancyEnabled;
-            //});
 
-            //context.Services.AddAuthentication("Bearer")
-            //    .AddIdentityServerAuthentication(options =>
-            //    {
-            //        options.Authority = configuration["AuthServer:Authority"];
-            //        options.ApiName = configuration["AuthServer:ApiName"];
-            //        options.RequireHttpsMetadata = Convert.ToBoolean(configuration["AuthServer:RequireHttpsMetadata"]);
-            //    });
+            context.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(opt =>
+            {
+                opt.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidIssuer = configuration["Authentication:JwtBearer:Issuer"],
+                    ValidAudience = configuration["Authentication:JwtBearer:Audience"],
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = SecurityKeyHelper.CreateSecurityKey(configuration["Authentication:JwtBearer:SecurityKey"])
+                };
+            });
             if (configuration.GetValue<bool?>("SwaggerIsEnable") ?? false)
             {
                 context.Services.AddSwaggerGen(options =>
