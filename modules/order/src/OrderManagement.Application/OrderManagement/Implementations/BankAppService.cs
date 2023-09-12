@@ -1,20 +1,15 @@
-﻿using OrderManagement.Application.Contracts.OrderManagement.Services;
-using OrderManagement.Application.Contracts;
+﻿using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.Services;
 using OrderManagement.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
 using OrderManagement.Application.Contracts.OrderManagement;
 using OrderManagement.Domain.Shared;
-using OrderManagement.Domain.OrderManagement;
-using Volo.Abp.ObjectMapping;
 using Volo.Abp;
-using Esale.Core.DataAccess;
 using MongoDB.Driver;
 using Microsoft.EntityFrameworkCore;
 

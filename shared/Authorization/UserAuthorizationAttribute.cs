@@ -4,6 +4,17 @@ using System.Linq;
 using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+
+using System.Collections.Generic;
+using Microsoft.AspNetCore.Antiforgery;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using System.Net.Http;
+using Esale.Core.Caching;
+using Esale.Core.IOC;
 
 namespace Esale.Share.Authorize
 {
@@ -13,12 +24,13 @@ namespace Esale.Share.Authorize
         private string _permissions;
 
         private bool _disabled = false;
-
+        //private readonly IConfiguration _configuration;
         public UserAuthorization(string permissions)
         {
             _permissions = permissions;
             //   _currentUser = currentUser;
 
+            //_configuration = ServiceTool.Resolve<IConfiguration>();
         }
 
         public UserAuthorization()
@@ -33,6 +45,33 @@ namespace Esale.Share.Authorize
 
         public void OnAuthorization(AuthorizationFilterContext context)
         {
+            if (context.HttpContext.Items["UserId"] == null)
+            {
+                context.Result = new UnauthorizedResult();
+                return;
+            }
+            var a = "Role_0001";
+            var _configuration = ServiceTool.Resolve<IConfiguration>();
+            var _cacheManager = ServiceTool.Resolve<ICacheManager>();
+            var RolePermission = _cacheManager.Get<List<string>>(a,
+            "",
+            new CacheOptions()
+            {
+                Provider = CacheProviderEnum.Hybrid
+            });
+           // string permission = "000100020001";
+            // Here I can get userId from my params.
+            if (!string.IsNullOrEmpty(_permissions))
+            {
+                var claimsPermisions = RolePermission.Contains(_permissions);            
+                if (!RolePermission.Contains(_permissions))
+                {
+                    context.Result = new UnauthorizedResult();
+                    return;
+                }
+            }
+         
+
             if (_disabled)
                 return;
 
@@ -54,6 +93,11 @@ namespace Esale.Share.Authorize
                 context.Result = new UnauthorizedResult();
                 return;
             }
+
+
+            var permClaims = new List<Claim>();
+            permClaims.Add(new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()));
+            permClaims.Add(new Claim("user", "some_username"));
             //if(DateTime.Now > UnixTimeStampToDateTime(long.Parse(exp.ToString()) / 1000))
             //{
             //    context.Result = new UnauthorizedResult();

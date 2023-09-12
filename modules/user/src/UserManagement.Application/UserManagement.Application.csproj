@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+	<PropertyGroup>
+		<RootNamespace>UserManagement.Application</RootNamespace>
+	</PropertyGroup>
+	<ItemGroup>
+	  <None Remove="UserManagement\Protos\greet.proto" />
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Grpc.aspnetcore" Version="2.53.0" />
+		<PackageReference Include="Microsoft.data.sqlclient" Version="5.1.1" />
+		<PackageReference Include="RestSharp" Version="108.0.3" />
+		<PackageReference Include="System.ServiceModel.Duplex" Version="4.10.*" />
+		<PackageReference Include="System.ServiceModel.Federation" Version="4.10.*" />
+		<PackageReference Include="System.ServiceModel.Http" Version="4.10.*" />
+		<PackageReference Include="System.ServiceModel.NetTcp" Version="4.10.*" />
+		<PackageReference Include="System.ServiceModel.Security" Version="4.10.*" />
+		<PackageReference Include="Volo.Abp.AutoMapper" Version="7.2.1" />
+		<PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="7.0.1" />
+		<PackageReference Include="StackExchange.Redis.Extensions.Newtonsoft" Version="9.1.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
+		<PackageReference Include="volo.abp.mongodb" Version="7.2.1" />
+	</ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\..\..\..\shared\Authorization\Authorization.csproj" />
+	  <ProjectReference Include="..\UserManagement.Application.Contracts\UserManagement.Application.Contracts.csproj" />
+	  <ProjectReference Include="..\UserManagement.Domain\UserManagement.Domain.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Protobuf Include="UserManagement\Protos\greet.proto" GrpcServices="Both" />
+	</ItemGroup>
+
+</Project>

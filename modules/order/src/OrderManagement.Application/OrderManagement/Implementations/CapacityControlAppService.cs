@@ -441,7 +441,7 @@ public class CapacityControlAppService : ApplicationService, ICapacityControlApp
         if (agencyId != null && agencyId != 0)
         {
             var agency = await AgencyValidation(saledetail.Id, agencyId, paymentDtos);
-            if (!agency.Succsess)
+            if (!agency.Success)
                 return new ErrorDataResult<List<PaymentStatusModel>>(agency.Message, agency.MessageId);
         }
         return new SuccsessDataResult<List<PaymentStatusModel>>(paymentDtos);

@@ -1,0 +1,64 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+	<PropertyGroup>
+		<TargetFramework>net7.0</TargetFramework>
+		<Nullable>disable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<AssetTargetFallback>$(AssetTargetFallback);portable-net45+win8+wp8+wpa81;</AssetTargetFallback>
+		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+		<GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
+		<GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
+		<PreserveCompilationContext>true</PreserveCompilationContext>
+		<MvcRazorExcludeRefAssembliesFromPublish>false</MvcRazorExcludeRefAssembliesFromPublish>
+		<PreserveCompilationReferences>true</PreserveCompilationReferences>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Hangfire.SqlServer" Version="1.7.29" />
+		<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.3" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+		<PackageReference Include="Serilog.AspNetCore" Version="6.1.0" />
+		<PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
+		<PackageReference Include="Serilog.Sinks.Elasticsearch" Version="9.0.0" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.1">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Volo.Abp.Autofac" Version="7.2.1" />
+		<PackageReference Include="Volo.Abp.AspNetCore.MultiTenancy" Version="7.2.1" />
+		<PackageReference Include="Volo.Abp.BackgroundJobs.HangFire" Version="7.2.2" />
+		<PackageReference Include="Volo.Abp.EntityFrameworkCore.SqlServer" Version="7.2.1" />
+		<PackageReference Include="Volo.Abp.EventBus.RabbitMQ" Version="7.2.1" />
+		<PackageReference Include="Volo.Abp.AuditLogging.EntityFrameworkCore" Version="7.2.1" />
+		<PackageReference Include="Volo.Abp.PermissionManagement.EntityFrameworkCore" Version="7.2.1" />
+		<PackageReference Include="Volo.Abp.SettingManagement.EntityFrameworkCore" Version="7.2.1" />
+		<PackageReference Include="Volo.Abp.TenantManagement.EntityFrameworkCore" Version="7.2.1" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\modules\order\src\OrderManagement.Application\OrderManagement.Application.csproj" />
+		<ProjectReference Include="..\..\shared\Esale.Core\Esale.Core.csproj" />
+		<ProjectReference Include="..\..\shared\Extensions\Extensions.csproj" />
+		<ProjectReference Include="..\..\modules\user\src\UserManagement.Application\UserManagement.Application.csproj" />
+		<ProjectReference Include="..\..\modules\user\src\UserManagement.EfCore\UserManagement.EfCore.csproj" />
+		<ProjectReference Include="..\..\modules\user\src\UserManagement.HttpApi\UserManagement.HttpApi.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Compile Remove="%2a%2a\**" />
+		<Compile Remove="Logs\**" />
+		<Content Remove="%2a%2a\**" />
+		<Content Remove="Logs\**" />
+		<EmbeddedResource Remove="%2a%2a\**" />
+		<EmbeddedResource Remove="Logs\**" />
+		<None Remove="%2a%2a\**" />
+		<None Remove="Logs\**" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Update="web.config">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+
+</Project>

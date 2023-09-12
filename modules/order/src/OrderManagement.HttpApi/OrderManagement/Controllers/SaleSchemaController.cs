@@ -33,7 +33,7 @@ public class SaleSchemaController : Controller
     public Task<bool> Delete(int id)
     => _saleSchemaService.Delete(id);
 
-    
+
     [HttpGet]
     public Task<List<SaleSchemaDto>> GetList(string attachmentType)
       =>    _saleSchemaService.GetList(EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(attachmentType));
@@ -51,6 +51,6 @@ public class SaleSchemaController : Controller
     public Task<SaleSchemaDto> Update(CreateSaleSchemaDto saleSchemaDto)
     => _saleSchemaService.Update(saleSchemaDto);
     [HttpPost]
-    public Task<bool> UploadFile([FromForm]UploadFileDto uploadFile)
+    public Task<bool> UploadFile([FromForm] UploadFileDto uploadFile)
    => _saleSchemaService.UploadFile(uploadFile);
 }
