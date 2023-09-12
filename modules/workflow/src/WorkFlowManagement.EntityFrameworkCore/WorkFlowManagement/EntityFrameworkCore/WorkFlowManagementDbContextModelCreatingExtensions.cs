@@ -138,7 +138,7 @@ namespace WorkFlowManagement.EntityFrameworkCore
             });
             builder.Entity<Inbox>(entity =>
             {
-                entity.ToTable("Inboxes", "Flow");
+                entity.ToTable("Inbox", "Flow");
                 entity.HasOne<Process>(x => x.Process)
                     .WithMany(x => x.Inboxes)
                     .HasForeignKey(x => x.ProcessId);
