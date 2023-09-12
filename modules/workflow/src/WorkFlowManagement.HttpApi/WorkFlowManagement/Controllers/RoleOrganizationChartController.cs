@@ -27,8 +27,8 @@ namespace WorkFlowManagement.HttpApi.WorkFlowManagement.Implementations
         public Task<RoleOrganizationChartDto> GetById(int id)
         => _roleOrganizationChartService.GetById(id);
         [HttpGet]
-        public Task<List<RoleOrganizationChartDto>> GetList()
-       => _roleOrganizationChartService.GetList();
+        public Task<List<RoleOrganizationChartDto>> GetList(int rolId)
+       => _roleOrganizationChartService.GetList(rolId);
         [HttpPut]
         public Task<RoleOrganizationChartDto> Update(RoleOrganizationChartCreateOrUpdateDto roleOrganizationChartCreateOrUpdateDto)
        => _roleOrganizationChartService.Update(roleOrganizationChartCreateOrUpdateDto);  

@@ -14,7 +14,7 @@ namespace WorkFlowManagement.Application.Contracts.WorkFlowManagement.IServices
         Task<ActivityRoleDto> GetById(int id);
         Task<ActivityRoleDto> Add(ActivityRoleCreateOrUpdateDto activityRoleCreateOrUpdate);
         Task<ActivityRoleDto> Update(ActivityRoleCreateOrUpdateDto activityRoleCreateOrUpdate);
-        Task<List<ActivityRoleDto>> GetList();
+        Task<List<ActivityRoleDto>> GetList(int activityId);
         Task<bool> Delete(int id);
         Task<ActivityRoleDto> GetByActivityId(int activityId);
        

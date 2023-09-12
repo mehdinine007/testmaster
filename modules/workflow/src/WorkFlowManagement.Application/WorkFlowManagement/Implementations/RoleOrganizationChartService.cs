@@ -60,9 +60,9 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
             return roleOrganizationChartDto;
         }
 
-        public async Task<List<RoleOrganizationChartDto>> GetList()
+        public async Task<List<RoleOrganizationChartDto>> GetList(int roleId)
         {
-            var roleOrganizationChart = (await _roleOrganizationChartRepository.GetQueryableAsync()).Include(x=>x.Role).Include(x => x.OrganizationChart).ToList();
+            var roleOrganizationChart = (await _roleOrganizationChartRepository.GetQueryableAsync()).Include(x=>x.Role).Include(x => x.OrganizationChart).Where(x=>x.RoleId== roleId).ToList();
             var roleOrganizationChartDto = ObjectMapper.Map<List<RoleOrganizationChart>, List<RoleOrganizationChartDto>>(roleOrganizationChart);
             return roleOrganizationChartDto;
         }

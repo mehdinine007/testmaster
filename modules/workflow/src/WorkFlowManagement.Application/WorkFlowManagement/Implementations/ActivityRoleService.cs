@@ -61,9 +61,9 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
         }
 
 
-        public async Task<List<ActivityRoleDto>> GetList()
+        public async Task<List<ActivityRoleDto>> GetList(int activityId)
         {
-            var activityRole = (await _activityRoleRepository.GetQueryableAsync()).Include(x => x.Activity).Include(x => x.Role).ToList();
+            var activityRole = (await _activityRoleRepository.GetQueryableAsync()).Include(x => x.Activity).Include(x => x.Role).Where(x=>x.ActivityId== activityId).ToList();
             var activityRoleDto = ObjectMapper.Map<List<ActivityRole>, List<ActivityRoleDto>>(activityRole);
             return activityRoleDto;
         }
