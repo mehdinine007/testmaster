@@ -13,7 +13,7 @@ namespace WorkFlowManagement.Application.Contracts.WorkFlowManagement.IServices
         Task<RoleOrganizationChartDto> GetById(int id);
         Task<RoleOrganizationChartDto> Add(RoleOrganizationChartCreateOrUpdateDto roleOrganizationChartCreateOrUpdateDto);
         Task<RoleOrganizationChartDto> Update(RoleOrganizationChartCreateOrUpdateDto roleOrganizationChartCreateOrUpdateDto);
-        Task<List<RoleOrganizationChartDto>> GetList();
+        Task<List<RoleOrganizationChartDto>> GetList(int roleId);
         Task<bool> Delete(int id);
         Task<RoleOrganizationChartDto> GetByRoleId(int roleId);
 

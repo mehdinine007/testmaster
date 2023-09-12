@@ -30,8 +30,8 @@ namespace WorkFlowManagement.HttpApi.WorkFlowManagement.Controllers
         public Task<TransitionDto> GetById(int id)
         =>_transitionService.GetById(id);
         [HttpGet]
-        public Task<List<TransitionDto>> GetList()
-        =>_transitionService.GetList();
+        public Task<List<TransitionDto>> GetList(int activitySourceId)
+        =>_transitionService.GetList(activitySourceId);
         [HttpPut]
         public Task<TransitionDto> Update(TransitionCreateOrUpdateDto transitionCreateOrUpdateDto)
         =>_transitionService.Update(transitionCreateOrUpdateDto);

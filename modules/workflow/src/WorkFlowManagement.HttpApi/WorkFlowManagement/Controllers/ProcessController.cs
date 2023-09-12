@@ -10,6 +10,7 @@ using WorkFlowManagement.Application.Contracts.WorkFlowManagement.IServices;
 using WorkFlowManagement.Application.Contracts.WorkFlowManagement.Dtos;
 using Esale.Share.Authorize;
 using WorkFlowManagement.Domain.Shared.WorkFlowManagement.Enums;
+using WorkFlowManagement.Application.WorkFlowManagement.Implementations;
 
 namespace WorkFlowManagement.HttpApi.WorkFlowManagement.Controllers
 {
@@ -22,22 +23,7 @@ namespace WorkFlowManagement.HttpApi.WorkFlowManagement.Controllers
         private readonly IProcessService _processService;
         public  ProcessController(IProcessService processService)
         => _processService = processService;
-        [HttpPost]
-        public async Task<ProcessDto> Add(ProcessCreateOrUpdateDto processCreateOrUpdateDto)
-        =>await _processService.Add(processCreateOrUpdateDto);
-        [HttpDelete]
-        public async Task<bool> Delete(Guid id)
-        =>await _processService.Delete(id);
-        [HttpGet]
-        public async  Task<ProcessDto> GetById(Guid id)
-       =>await _processService.GetById(id);
-        [HttpGet]
-        public async Task<List<ProcessDto>> GetList()
-       =>await _processService.GetList();
-        [HttpPut]
-        public async Task<ProcessDto> Update(ProcessCreateOrUpdateDto processCreateOrUpdateDto)
-        =>await _processService.Update(processCreateOrUpdateDto);
-
+       
 
         [UserAuthorization]
         [HttpGet]
@@ -48,5 +34,10 @@ namespace WorkFlowManagement.HttpApi.WorkFlowManagement.Controllers
         [HttpPost]
         public async Task<ProcessDto> Execute(ExecuteQueryDto executeQueryDto)
         => await _processService.Execute(executeQueryDto);
+
+        [UserAuthorization]
+        [HttpGet]
+        public Task<List<InboxDto>> GetOutBox()
+      => _processService.GetOutBox();
     }
 }

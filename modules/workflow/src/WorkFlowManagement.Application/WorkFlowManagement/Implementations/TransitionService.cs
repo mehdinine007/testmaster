@@ -51,9 +51,9 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
             return transitionDto;
         }
 
-        public async Task<List<TransitionDto>> GetList()
+        public async Task<List<TransitionDto>> GetList(int activitySourceId)
         {
-            var transition = (await _transitionRepository.GetQueryableAsync()).Include(x => x.ActivitySource).Include(x => x.ActivityTarget).ToList();
+            var transition = (await _transitionRepository.GetQueryableAsync()).Include(x => x.ActivitySource).Include(x => x.ActivityTarget).Where(x=>x.ActivitySourceId== activitySourceId).ToList();
             var transitionDto = ObjectMapper.Map<List<Transition>, List<TransitionDto>>(transition);
             return transitionDto;
         }

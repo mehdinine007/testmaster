@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Nest;
 using NPOI.HPSF;
 using Org.BouncyCastle.Asn1.TeleTrust;
@@ -28,6 +29,7 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
     public class ProcessService : ApplicationService, IProcessService
     {
         private readonly IRepository<Process, Guid> _processRepository;
+        private readonly IRepository<Inbox, int> _inboxRepository;
         private readonly ISchemeService _schemeService;
         private readonly IActivityService _activityService;
         private readonly ICommonAppService _commonAppService;
@@ -44,7 +46,8 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
             , IOrganizationChartService organizationChartService
              , IActivityRoleService activityRoleService
              , IRoleOrganizationChartService roleOrganizationChartService
-             , IInboxService inboxService
+             , IInboxService inboxService,
+            IRepository<Inbox, int> inboxRepository
 
             )
         {
@@ -57,6 +60,7 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
             _activityRoleService = activityRoleService;
             _roleOrganizationChartService = roleOrganizationChartService;
             _inboxService = inboxService;
+            _inboxRepository = inboxRepository;
         }
 
 
@@ -231,5 +235,13 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
         return process;
     }
 
-}
+        public async Task<List<InboxDto>> GetOutBox()
+        {
+            var currentUserId = _commonAppService.GetUserId();
+            var organizationPosition = await _organizationPositionService.GetByPersonId(currentUserId);
+            var inboxQuery = (await _inboxRepository.GetQueryableAsync()).Include(x => x.Process).Where(x => x.Process.CreatedPersonId == currentUserId);
+            var inbox = inboxQuery.Where(x => x.OrganizationChartId == organizationPosition.OrganizationChartId && x.Status == InboxStatusEnum.Posted && x.PersonId == currentUserId).ToList();
+            return ObjectMapper.Map<List<Inbox>, List<InboxDto>>(inbox);
+        }
+    }
 }

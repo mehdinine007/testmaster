@@ -31,8 +31,8 @@ namespace WorkFlowManagement.HttpApi.WorkFlowManagement.Controllers
         public Task<ActivityRoleDto> GetById(int id)
        =>_activityRoleService.GetById(id);
         [HttpGet]
-        public Task<List<ActivityRoleDto>> GetList()
-        =>_activityRoleService.GetList();
+        public Task<List<ActivityRoleDto>> GetList(int activityId)
+        =>_activityRoleService.GetList(activityId);
         [HttpPut]
         public Task<ActivityRoleDto> Update(ActivityRoleCreateOrUpdateDto activityRoleCreateOrUpdate)
         =>_activityRoleService.Update(activityRoleCreateOrUpdate);

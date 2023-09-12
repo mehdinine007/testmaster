@@ -19,7 +19,7 @@ namespace WorkFlowManagement.Application.Contracts.WorkFlowManagement.IServices
         Task<InboxDto> GetActiveInboxByProcessId(Guid processId);
         Task Activate(int? inboxId);
         Task DeActivate(int? inboxId);
-        Task<List<InboxDto>> GetActiveList();
-        Task<List<InboxDto>> GetPostedList();
+        Task<List<InboxDto>> GetInbox();
+   
     }
 }

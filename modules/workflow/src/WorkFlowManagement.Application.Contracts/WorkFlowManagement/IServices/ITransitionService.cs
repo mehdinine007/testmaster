@@ -14,7 +14,7 @@ namespace WorkFlowManagement.Application.Contracts.WorkFlowManagement.IServices
         Task<TransitionDto> GetById(int id);
         Task<TransitionDto> Add(TransitionCreateOrUpdateDto transitionCreateOrUpdateDto);
         Task<TransitionDto> Update(TransitionCreateOrUpdateDto transitionCreateOrUpdateDto);
-        Task<List<TransitionDto>> GetList();
+        Task<List<TransitionDto>> GetList(int activitySourceId);
         Task<bool> Delete(int id);
     }
 }

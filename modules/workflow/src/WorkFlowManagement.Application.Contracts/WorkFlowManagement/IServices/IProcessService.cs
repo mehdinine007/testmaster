@@ -18,5 +18,6 @@ namespace WorkFlowManagement.Application.Contracts.WorkFlowManagement.IServices
         Task<bool> Delete(Guid id);
         Task<ProcessDto> StartProcess(int schemeId);
         Task<ProcessDto> Execute(ExecuteQueryDto executeQueryDto);
+        Task<List<InboxDto>> GetOutBox();
     }
 }
