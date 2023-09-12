@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Volo.Abp.AspNetCore.Mvc;
 using UserManagement.Application.Contracts.UserManagement.Services;
 using UserManagement.Application.Contracts.UserManagement;
+using UserManagement.Application.Contracts.Models;
 
 namespace UserManagement.HttpApi.UserManagement.Controllers
 {

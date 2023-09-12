@@ -8,6 +8,12 @@
 	<PropertyGroup>
 		<RootNamespace>UserManagement.HttpApi</RootNamespace>
 	</PropertyGroup>
+
+	<ItemGroup>
+	  <Compile Remove="UserManagement\Controller\**" />
+	  <EmbeddedResource Remove="UserManagement\Controller\**" />
+	  <None Remove="UserManagement\Controller\**" />
+	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="Volo.Abp.AspNetCore.Mvc" Version="7.2.1" />
 	</ItemGroup>
@@ -16,10 +22,6 @@
 		<ProjectReference Include="..\..\..\..\shared\Authorization\Authorization.csproj" />
 		<ProjectReference Include="..\UserManagement.Application.Contracts\UserManagement.Application.Contracts.csproj" />
 		<ProjectReference Include="..\UserManagement.Application\UserManagement.Application.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="UserManagement\Controller\" />
 	</ItemGroup>
 
 </Project>

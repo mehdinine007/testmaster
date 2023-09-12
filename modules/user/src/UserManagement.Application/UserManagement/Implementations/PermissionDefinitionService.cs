@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption;
 using MongoDB.Bson;
 using Nest;
 using Polly.Caching;
+using UserManagement.Application.Contracts.Models;
 using UserManagement.Application.Contracts.UserManagement;
 using UserManagement.Application.Contracts.UserManagement.Constant;
 using UserManagement.Application.Contracts.UserManagement.Services;

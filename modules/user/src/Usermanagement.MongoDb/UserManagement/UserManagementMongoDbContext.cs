@@ -1,5 +1,4 @@
-﻿using Abp.Authorization;
-using MongoDB.Driver;
+﻿using MongoDB.Driver;
 using UserManagement.Domain.Authorization.Users;
 using UserManagement.Domain.UserManagement.Authorization.RolePermissions;
 using UserManagement.Domain.UserManagement.bases;
