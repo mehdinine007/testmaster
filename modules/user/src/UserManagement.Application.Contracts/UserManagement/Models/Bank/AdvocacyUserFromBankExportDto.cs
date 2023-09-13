@@ -1,9 +1,13 @@
 ﻿namespace UserManagement.Application.Contracts.Models;
 
-public class AdvocacyUserFromBankDto
+public class AdvocacyUserFromBankExportDto
 {
     public string ShebaNumber { get; set; }
+
     public string AccountNumber { get; set; }
-    public int BankId { get; set; }
-    public int GenderCode { get; set; }
+
+    public string NationalCode { get; set; }
+    public decimal Price { get; set; }
+
+
 }
