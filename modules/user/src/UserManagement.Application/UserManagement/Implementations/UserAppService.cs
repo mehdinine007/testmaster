@@ -14,6 +14,7 @@ using UserManagement.Domain.UserManagement.Advocacy;
 using Volo.Abp;
 using Volo.Abp.Application.Services;
 using WorkingWithMongoDB.WebAPI.Services;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace UserManagement.Application.UserManagement.Implementations;
 
@@ -401,4 +402,20 @@ public class UserAppService : ApplicationService, IUserAppService
         }
         return user;
     }
+
+    public Task<UserDto> GetUserProfile()
+    {
+        throw new NotImplementedException();
+    }
+
+    //public async Task<UserDto> GetUserProfile()
+    //{
+    //    Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
+    //    Guid test = _commonAppService.GetUID();
+    //    var filter = Builders<BsonDocument>.Filter.Eq(new StringFieldDefinition<BsonDocument, Guid>("UID"), test);
+    //    var user = await (await _userMongoService.GetUserCollection()).Find(x => x.UID == test.ToString().ToLower() && x.IsDeleted == false).FirstOrDefaultAsync();
+    //    var userDto = ObjectMapper.Map<User, UserDto>(user);
+    //    //_cacheManager.GetCache("UserProf").Set(AbpSession.UserId.Value.ToString(), userDto);
+    //    return userDto;
+    //}
 }

@@ -9,4 +9,5 @@ public interface IUserAppService : IApplicationService
     Task<User> GetLoginInfromationuserFromCache(string Username);
 
     Task<UserDto> CreateAsync(CreateUserDto input);
+    Task<UserDto> GetUserProfile();
 }

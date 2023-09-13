@@ -26,4 +26,9 @@ public class UserController : AbpController, IUserAppService
     [HttpGet]
     public async Task<User> GetLoginInfromationuserFromCache(string Username)
         => await _userAppService.GetLoginInfromationuserFromCache(Username);
+
+    public Task<UserDto> GetUserProfile()
+    {
+        throw new NotImplementedException();
+    }
 }
