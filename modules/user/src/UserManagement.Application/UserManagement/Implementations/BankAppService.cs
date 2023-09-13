@@ -46,18 +46,18 @@ public class BankAppService : ApplicationService, IBankAppService
     public async Task DeleteAdvocayUserFromBank(string nationalCode)
     {
         var userId = CurrentUser.Id;
-        var ad = await _advocacyUsersFromBank.GetAll().Select(x => new
-        {
-            x.nationalcode,
-            x.UserId,
-            x.Id
-        }).FirstOrDefaultAsync(x => x.nationalcode == nationalCode
-        && x.UserId == userId);
-        if (ad == null)
-        {
-            throw new UserFriendlyException("رکورد مورد نظر یافت نشد");
-        }
-        await _advocacyUsersFromBank.DeleteAsync(ad.Id);
+        //var ad = await _advocacyUsersFromBank.GetAll().Select(x => new
+        //{
+        //    x.nationalcode,
+        //    x.UserId,
+        //    x.Id
+        //}).FirstOrDefaultAsync(x => x.nationalcode == nationalCode
+        //&& x.UserId == userId);
+        //if (ad == null)
+        //{
+        //    throw new UserFriendlyException("رکورد مورد نظر یافت نشد");
+        //}
+        //await _advocacyUsersFromBank.DeleteAsync(ad.Id);
     }
 
     public Task<List<AdvocacyUsersFromBankWithCompanyDto>> GetAdvocacyUserByCompanyId()
