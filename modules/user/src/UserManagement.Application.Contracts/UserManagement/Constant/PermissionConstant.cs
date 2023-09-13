@@ -32,5 +32,9 @@ namespace UserManagement.Application.Contracts.UserManagement.Constant
         public static string RoleNotFound = "نقش وجود ندارد";
         public static string RoleNotFoundId = "1006";
 
+        public static string PermissionNotFound = "دسترسی وجود ندارد";
+        public static string PermissionNotFoundId = "1007";
+
+
     }
 }

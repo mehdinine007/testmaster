@@ -12,6 +12,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using UserManagement.Application.Contracts.Models;
+using MongoDB.Bson;
+using UserManagement.Application.Contracts.UserManagement.Models.User;
 
 namespace UserManagement.HttpApi.UserManagement.Controllers;
 
@@ -91,7 +93,7 @@ public class TokenAuthController : Controller
         //    new Claim(JwtRegisteredClaimNames.Sub, nameIdClaim.Value),
             new Claim(ClaimTypes.Name, user.UserName),
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Role, user.RolesM.FirstOrDefault()),
+            new Claim(ClaimTypes.Role, string.Join(",",user.RolesM?.ToString())),
             new Claim("UBP", user.UID.ToString()),
 
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
