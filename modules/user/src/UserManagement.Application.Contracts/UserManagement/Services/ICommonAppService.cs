@@ -1,6 +1,7 @@
 ﻿using Abp.Application.Services;
 using UserManagement.Application.Contracts.Models;
 using UserManagement.Domain.Shared;
+using UserManagement.Domain.UserManagement.CommonService.Dto;
 
 namespace UserManagement.Application.Contracts.Services;
 
@@ -15,4 +16,5 @@ public interface ICommonAppService : IApplicationService
     Task<string> GetAddressByZipCode(string zipCode, string nationalCode);
 
     public Guid GetUID();
+    Task ValidateVisualizeCaptcha(VisualCaptchaInput input);
 }

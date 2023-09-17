@@ -1,5 +1,6 @@
 ﻿using Abp.Dependency;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -17,6 +18,7 @@ namespace UserManagement.Application;
     typeof(UserManagementApplicationContractsModule))]
 public class UserManagementApplicationModule : AbpModule
 {
+    public static IConfiguration StaticConfig { get; private set; }
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
         Configure<AbpAutoMapperOptions>(options =>

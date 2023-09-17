@@ -33,8 +33,10 @@ public class UserController : AbpController
     public async Task<User> GetLoginInfromationuserFromCache(string Username)
         => await _userAppService.GetLoginInfromationuserFromCache(Username);
 
-    public Task<UserDto> GetUserProfile()
+    [HttpGet()]
+    public async Task<UserDto> GetUserProfile()
     {
-        throw new NotImplementedException();
+        var userDto = await _userAppService.GetUserProfile();
+        return userDto;
     }
 }

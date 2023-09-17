@@ -7,6 +7,7 @@ using UserManagement.Application.Contracts.Models;
 using UserManagement.Application.Contracts.Services;
 using UserManagement.Application.InquiryService;
 using UserManagement.Domain.Shared;
+using UserManagement.Domain.UserManagement.CommonService.Dto;
 using Volo.Abp;
 using Volo.Abp.Application.Services;
 
@@ -213,4 +214,27 @@ public class CommonAppService : ApplicationService, ICommonAppService
         return true;
     }
 
+    public async Task ValidateVisualizeCaptcha(VisualCaptchaInput input)
+    {
+        if (_configuration.GetSection("IsVisualizeCaptchaEnabled").Value == "1")
+        {
+            //var httpContext = _contextAccessor.HttpContext;
+            //var validatorService = httpContext.RequestServices.GetRequiredService<IDNTCaptchaValidatorService>();
+            //if (!validatorService.HasRequestValidCaptchaEntry(Language.Persian, DisplayMode.SumOfTwoNumbers, input.CT, input.CIT, input.CK)) 
+            //{
+            //    throw new UserFriendlyException(Messages.CaptchaNotValid);
+            //}
+            string objectCaptcha = await _distributedCache.GetStringAsync("cap_" + input.CIT);
+            await _distributedCache.RemoveAsync("cap_" + input.CIT);
+            if (objectCaptcha == null)
+            {
+                throw new UserFriendlyException("کپچای وارد شده صحیح نمی باشد");
+            }
+            else if (objectCaptcha != input.CK)
+            {
+                throw new UserFriendlyException("کپچای وارد شده صحیح نمی باشد");
+            }
+
+        }
+    }
 }

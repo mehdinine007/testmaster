@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Bson;
@@ -15,6 +16,7 @@ using UserManagement.Domain.UserManagement.Advocacy;
 using Volo.Abp;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp.ObjectMapping;
 using WorkingWithMongoDB.WebAPI.Services;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -426,19 +428,15 @@ public class UserAppService : ApplicationService, IUserAppService
         return user;
     }
 
-    public Task<UserDto> GetUserProfile()
+    public async Task<UserDto> GetUserProfile()
     {
-        throw new NotImplementedException();
+        Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
+        Guid test = _commonAppService.GetUID();
+        var filter = Builders<BsonDocument>.Filter.Eq(new StringFieldDefinition<BsonDocument, Guid>("UID"), test);
+        var user = await (await _userMongoRepository.GetQueryableAsync())
+            .Where(a => a.UID == test.ToString().ToLower() && a.IsDeleted == false).FirstOrDefaultAsync();
+        var userDto = ObjectMapper.Map<UserMongo, UserDto>(user);
+        //_cacheManager.GetCache("UserProf").Set(AbpSession.UserId.Value.ToString(), userDto);
+        return userDto;
     }
-
-    //public async Task<UserDto> GetUserProfile()
-    //{
-    //    Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
-    //    Guid test = _commonAppService.GetUID();
-    //    var filter = Builders<BsonDocument>.Filter.Eq(new StringFieldDefinition<BsonDocument, Guid>("UID"), test);
-    //    var user = await (await _userMongoService.GetUserCollection()).Find(x => x.UID == test.ToString().ToLower() && x.IsDeleted == false).FirstOrDefaultAsync();
-    //    var userDto = ObjectMapper.Map<User, UserDto>(user);
-    //    //_cacheManager.GetCache("UserProf").Set(AbpSession.UserId.Value.ToString(), userDto);
-    //    return userDto;
-    //}
 }

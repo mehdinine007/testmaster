@@ -63,7 +63,7 @@ namespace WorkingWithMongoDB.WebAPI.Services
         {
 
             _configuration = Configuration;
-            var client = new MongoClient(_configuration.GetSection("MongoConfiguration:ConnectionString").Value);
+            var client = new MongoClient(_configuration.GetConnectionString("MongoConnection"));
             BsonSerializer.RegisterSerializer(new GuidSerializer(GuidRepresentation.CSharpLegacy));
 
             var database = client.GetDatabase(_configuration.GetSection("MongoConfiguration:DatabaseName").Value);

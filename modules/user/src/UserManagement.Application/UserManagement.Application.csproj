@@ -9,11 +9,12 @@
 		<RootNamespace>UserManagement.Application</RootNamespace>
 	</PropertyGroup>
 	<ItemGroup>
-	  <None Remove="UserManagement\Protos\greet.proto" />
+	  <None Remove="UserManagement\Protos\GetwayService.proto" />
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="Grpc.aspnetcore" Version="2.53.0" />
 		<PackageReference Include="Microsoft.data.sqlclient" Version="5.1.1" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 		<PackageReference Include="RestSharp" Version="108.0.3" />
 		<PackageReference Include="System.ServiceModel.Duplex" Version="4.10.*" />
 		<PackageReference Include="System.ServiceModel.Federation" Version="4.10.*" />
@@ -32,7 +33,7 @@
 	  <ProjectReference Include="..\UserManagement.Domain\UserManagement.Domain.csproj" />
 	</ItemGroup>
 	<ItemGroup>
-	  <Protobuf Include="UserManagement\Protos\greet.proto" GrpcServices="Both" />
+	  <Protobuf Include="UserManagement\Protos\GetwayService.proto" GrpcServices="Client" />
 	</ItemGroup>
 
 </Project>
