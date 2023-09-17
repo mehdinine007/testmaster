@@ -29,7 +29,8 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
 
         public async Task<OrganizationChartDto> GetById(int? id)
         {
-            var organizationChart = await Validation(id, null);
+            var organizationChartQuery = (await _organizationChartRepository.GetQueryableAsync()).Include(x => x.Childrens).ThenInclude(x=>x.Childrens);
+            var organizationChart = organizationChartQuery.FirstOrDefault(x => x.Id == id);
             var organizationChartDto = ObjectMapper.Map<OrganizationChart, OrganizationChartDto>(organizationChart);
             return organizationChartDto;
         }
@@ -61,12 +62,12 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
             OrganizationChart.Title = organizationChartCreateOrUpdateDto.Title;
             OrganizationChart.OrganizationType = organizationChartCreateOrUpdateDto.OrganizationType;
             var entity = await _organizationChartRepository.UpdateAsync(OrganizationChart);
-            return ObjectMapper.Map<OrganizationChart, OrganizationChartDto>(entity);
+            return await GetById(entity.Id);
         }
 
         public async Task<List<OrganizationChartDto>> GetList()
         {
-            var organizationsChart = (await _organizationChartRepository.GetQueryableAsync()).Include(x => x.Childrens).Where(x=>x.ParentId==null).ToList();
+            var organizationsChart = (await _organizationChartRepository.GetQueryableAsync()).Include(x => x.Childrens).ToList();
             var organizationsChartDto = ObjectMapper.Map<List<OrganizationChart>, List<OrganizationChartDto>>(organizationsChart);
             return organizationsChartDto;
         }
@@ -74,6 +75,10 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
         public async Task<bool> Delete(int id)
         {
             var organizationChart = await Validation(id, null);
+            var firstDependentOrganizationChart = (await _organizationChartRepository.GetQueryableAsync())
+            .FirstOrDefault(x => x.ParentId == organizationChart.Id);
+            if (firstDependentOrganizationChart != null)
+                throw new UserFriendlyException(WorkFlowConstant.DependentOrganizationChartNotFound, WorkFlowConstant.DependentOrganizationChartNotFoundId);
             await _organizationChartRepository.DeleteAsync(id);
             return true;
         }
@@ -81,7 +86,7 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
         private async Task<OrganizationChart> Validation(int? id, OrganizationChartCreateOrUpdateDto organizationChartDto)
         {
             var organizationChart = new OrganizationChart();
-            var organizationChartQuery = (await _organizationChartRepository.GetQueryableAsync()).Include(x=>x.Childrens);
+            var organizationChartQuery = (await _organizationChartRepository.GetQueryableAsync()).Include(x => x.Childrens);
             if (id != null)
             {
                 organizationChart = organizationChartQuery.FirstOrDefault(x => x.Id == id);
@@ -109,7 +114,7 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
             }
 
 
-            
+
 
             return organizationChart;
         }

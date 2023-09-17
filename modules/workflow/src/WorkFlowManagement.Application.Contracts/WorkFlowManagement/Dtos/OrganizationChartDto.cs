@@ -9,6 +9,7 @@ namespace WorkFlowManagement.Application.Contracts.WorkFlowManagement.Dtos
 {
     public class OrganizationChartDto
     {
+        public int Id { get; set; }
         public string? Code { get; set; }
         public string? Title { get; set; }
         public bool Status { get; set; }
