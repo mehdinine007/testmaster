@@ -563,7 +563,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             IResult agencyCapacityControl = null;
 
             agencyCapacityControl = await _capacityControlAppService.Validation(SaleDetailDto.Id, commitOrderDto.AgencyId);
-            if (!agencyCapacityControl.Succsess)
+            if (!agencyCapacityControl.Success)
                 throw new UserFriendlyException(agencyCapacityControl.Message);
         }
      
@@ -1159,7 +1159,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
 
             var capacityControl = await _capacityControlAppService.Validation(order.SaleDetailId, order.AgencyId);
-            if (!capacityControl.Succsess)
+            if (!capacityControl.Success)
             {
                 await _ipgServiceProvider.ReverseTransaction(paymentId);
                 exceptionCollection.Add(new UserFriendlyException(capacityControl.Message));

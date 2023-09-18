@@ -1,8 +1,6 @@
-﻿using Abp.Domain.Entities.Auditing;
-using Castle.MicroKernel.SubSystems.Conversion;
-using System;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using Volo.Abp.Domain.Entities.Auditing;
 
 namespace UserManagement.Domain.UserManagement.Advocacy
 {
@@ -22,7 +20,5 @@ namespace UserManagement.Domain.UserManagement.Advocacy
         [Required]
         public string accountNumber { get; set; }
         public int BatchId { get; set; }
-
-
     }
 }

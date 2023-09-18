@@ -1,4 +1,5 @@
 ﻿using Esale.Core.DataAccess;
+using Esale.Share.Authorize;
 using Microsoft.EntityFrameworkCore;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.OrderManagement;
@@ -39,7 +40,7 @@ public class SaleSchemaService : ApplicationService, ISaleSchemaService
     }
 
 
-
+    [SecuredOperation(PermissionConstant.SaleSchemaGetList)]
     public async Task<List<SaleSchemaDto>> GetList(List<AttachmentEntityTypeEnum> attachmentType = null)
     {
         var count = _saleSchemaRepository.WithDetails().Count();
@@ -68,6 +69,7 @@ public class SaleSchemaService : ApplicationService, ISaleSchemaService
         return await GetById(saleSchemaDto.Id);
     }
 
+    [SecuredOperation(PermissionConstant.SaleSchemaGetById)]
     public async Task<SaleSchemaDto> GetById(int id, List<AttachmentEntityTypeEnum> attachmentType = null)
     {
         await Validation(id, null);

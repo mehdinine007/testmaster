@@ -27,6 +27,14 @@ namespace UserManagement.Application.Contracts.UserManagement.Constant
         public static string SaleDetailDelete = "000100030004";
         public static string SaleDetailGetById = "000100030005";
         public static string SaleDetailGetActiveList = "000100030007";
-        
+
+
+        public static string RoleNotFound = "نقش وجود ندارد";
+        public static string RoleNotFoundId = "1006";
+
+        public static string PermissionNotFound = "دسترسی وجود ندارد";
+        public static string PermissionNotFoundId = "1007";
+
+
     }
 }

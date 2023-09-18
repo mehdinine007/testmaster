@@ -1,4 +1,4 @@
-﻿using OrderManagement.Domain.Shared;
+﻿using UserManagement.Domain.Shared;
 using Volo.Abp.Modularity;
 using Volo.Abp.VirtualFileSystem;
 

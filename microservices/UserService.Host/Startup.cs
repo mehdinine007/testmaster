@@ -37,7 +37,6 @@ namespace UserService.Host
             services.AddSingleton<ICacheManager, CacheManager>();
             services.AddSingleton<IRedisCacheManager, RedisCacheManager>();
             services.AddGrpc();
-            services.AddSingleton<GreeterService>();
             services.AddControllers();
             services.AddSingleton<UserMongoService>();
             services.AddSingleton<IRolePermissionJob, RolePermissionJob>();

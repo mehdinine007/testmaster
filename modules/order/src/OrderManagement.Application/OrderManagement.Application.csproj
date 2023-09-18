@@ -10,7 +10,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <None Remove="OrderManagement\Protos\greet.proto" />
 	  <None Remove="OrderManagement\Protos\PaymentGrpcService.proto" />
 	</ItemGroup>
 
@@ -29,7 +28,6 @@
 
 	<ItemGroup>
 		<Protobuf Include="OrderManagement\Protos\EsaleUserService.proto" GrpcService="Client" />
-		<Protobuf Include="OrderManagement\Protos\greet.proto" GrpcServices="Both" />
 		<Protobuf Include="OrderManagement\Protos\PaymentGrpcService.proto">
 		  <GrpcService>Server</GrpcService>
 		</Protobuf>
@@ -37,6 +35,7 @@
 	</ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\..\..\shared\Authorization\Authorization.csproj" />
       <ProjectReference Include="..\..\..\..\shared\Extensions\Extensions.csproj" />
       <ProjectReference Include="..\OrderManagement.Application.Contracts\OrderManagement.Application.Contracts.csproj" />
       <ProjectReference Include="..\OrderManagement.Domain\OrderManagement.Domain.csproj" />

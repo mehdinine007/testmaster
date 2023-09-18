@@ -1,0 +1,16 @@
+{
+  "ExtendedData": {
+    "inputs": [
+      "http://wsiesalefavatest.ikco.com/GatewayService.svc"
+    ],
+    "collectionTypes": [
+      "System.Array",
+      "System.Collections.Generic.Dictionary`2"
+    ],
+    "namespaceMappings": [
+      "*, wsFava"
+    ],
+    "targetFramework": "netstandard2.1",
+    "typeReuseMode": "All"
+  }
+}
