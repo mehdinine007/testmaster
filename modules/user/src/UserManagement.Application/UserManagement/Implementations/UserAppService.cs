@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Bson;
@@ -13,6 +14,7 @@ using UserManagement.Domain.Shared;
 using Volo.Abp;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp.ObjectMapping;
 using WorkingWithMongoDB.WebAPI.Services;
 
 namespace UserManagement.Application.UserManagement.Implementations;
@@ -422,13 +424,13 @@ public class UserAppService : ApplicationService, IUserAppService
         return user;
     }
 
-
     public async Task<UserDto> GetUserProfile()
     {
         Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
         Guid test = _commonAppService.GetUID();
         var filter = Builders<BsonDocument>.Filter.Eq(new StringFieldDefinition<BsonDocument, Guid>("UID"), test);
-        var user = (await _userMongoRepository.GetQueryableAsync()).Where(x => x.UID == test.ToString().ToLower() && x.IsDeleted == false).FirstOrDefault();
+        var user = await (await _userMongoRepository.GetQueryableAsync())
+            .Where(a => a.UID == test.ToString().ToLower() && a.IsDeleted == false).FirstOrDefaultAsync();
         var userDto = ObjectMapper.Map<UserMongo, UserDto>(user);
         //_cacheManager.GetCache("UserProf").Set(AbpSession.UserId.Value.ToString(), userDto);
         return userDto;

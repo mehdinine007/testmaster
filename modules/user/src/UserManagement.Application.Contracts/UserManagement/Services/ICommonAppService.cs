@@ -1,6 +1,7 @@
 ﻿using Abp.Application.Services;
 using UserManagement.Application.Contracts.Models;
 using UserManagement.Domain.Shared;
+using UserManagement.Domain.UserManagement.CommonService.Dto;
 
 namespace UserManagement.Application.Contracts.Services;
 
@@ -19,4 +20,5 @@ public interface ICommonAppService : IApplicationService
     bool IsInRole(string Role);
 
     string GetRole();
+    Task ValidateVisualizeCaptcha(VisualCaptchaInput input);
 }

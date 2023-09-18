@@ -23,7 +23,6 @@ using Esale.Core.Extensions;
 using UserManagement.EfCore.MongoDb;
 using Hangfire;
 using Microsoft.EntityFrameworkCore;
-using GrpcService;
 #endregion
 
 
@@ -110,7 +109,7 @@ public class UserServiceHostModule : AbpModule
 
         app.UseEndpoints(endpoints =>
         {
-            endpoints.MapGrpcService<GreeterService>();
+            
 
             endpoints.MapGet("/", async context =>
             {
