@@ -10,6 +10,8 @@ using MongoDB.Driver;
 using System.Security.Claims;
 using UserManagement.Domain.UserManagement.Bases;
 using Microsoft.AspNetCore.Http;
+using UserManagement.Domain.Authorization.Users;
+using MongoDB.Bson;
 
 namespace UserManagement.Application.Implementations;
 
@@ -17,7 +19,7 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
 {
     private readonly IConfiguration _configuration;
     private readonly IRepository<AdvocacyUsers, int> _advocacyUsersRepository;
-    private readonly UserMongoService _userMongoService;
+    private readonly IRepository<UserMongo, ObjectId> _userMongoRepository;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IRepository<WhiteList, int> _whiteListRepository;
 
@@ -25,17 +27,18 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
                                   IRepository<AdvocacyUsers, int> advocacyUsersRepository,
                                   UserMongoService userMongoService,
                                   IHttpContextAccessor httpContextAccessor,
-                                  IRepository<WhiteList , int> whiteListRepository
+                                  IRepository<WhiteList, int> whiteListRepository,
+                                  IRepository<UserMongo, ObjectId> userMongoRepository
         )
     {
         _configuration = configuration;
         _advocacyUsersRepository = advocacyUsersRepository;
-        _userMongoService = userMongoService;
+        _userMongoRepository = userMongoRepository;
         _httpContextAccessor = httpContextAccessor;
         _whiteListRepository = whiteListRepository;
     }
 
-    public void RegistrationValidationWithoutCaptcha(RegistrationValidationDto input)
+    public async void RegistrationValidationWithoutCaptcha(RegistrationValidationDto input)
     {
         if (_configuration.GetSection("IsCheckAdvocacy").Value == "1")
         {
@@ -56,18 +59,14 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
             }
         }
 
-
-        var user = (_userMongoService.GetUserCollectionSync())
-            .Find(x => x.NormalizedUserName == input.Nationalcode
-            && x.IsDeleted == false)
-         .Project(x => x.NationalCode)
-         .FirstOrDefault();
+        var user = (await _userMongoRepository
+                    .GetQueryableAsync())
+                    .FirstOrDefault(a => a.NormalizedUserName == input.Nationalcode && a.IsDeleted == false);
         if (user != null)
         {
 
             throw new UserFriendlyException("این کد ملی قبلا ثبت نام شده است");
         }
-
     }
 
 

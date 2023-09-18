@@ -1,5 +1,4 @@
-﻿
-
+﻿using Esale;
 using Esale.Core.Caching;
 using Esale.Core.Utility.Results;
 using Microsoft.AspNetCore.Http;
@@ -12,7 +11,6 @@ using UserManagement.Domain;
 using UserManagement.Domain.Authorization.Users;
 using UserManagement.Domain.Shared;
 using UserManagement.Domain.UserManagement.Bases;
-using UserManagement.Domain.UserManagement.CommonService.Dto;
 using UserManagement.Domain.UserManagement.CommonService.Dto.Getway;
 using UserManagement.Domain.UserManagement.Enums;
 using UserManagement.Domain.UserManagement.SendBox.Dtos;
@@ -22,7 +20,7 @@ using Volo.Abp.Domain.Repositories;
 
 namespace UserManagement.Application.UserManagement.Implementations
 {
-    public class SendBoxAppService : ISendBoxAppService
+    public class SendBoxAppService : EsaleAppServiceBase, ISendBoxAppService
     {
         private IConfiguration _configuration { get; set; }
         private readonly ICommonAppService _commonAppService;
@@ -67,7 +65,7 @@ namespace UserManagement.Application.UserManagement.Implementations
             logs.Type = 0;
             logs.Ip = Utility.utilities.GetIpAddress(_contextAccessor);
             logs.Servername = Utility.utilities.GetServerIPAddress();
-            await _commonAppService.ValidateVisualizeCaptcha(new VisualCaptchaInput(input.CK, input.CIT));
+            await _commonAppService.ValidateVisualizeCaptcha(new Domain.UserManagement.CommonService.Dto.VisualCaptchaInput(input.CK, input.CIT));
 
             // await _commonAppService.ValidateVisualizeCaptcha(new CommonService.Dto.VisualCaptchaInput(input.CT,input.CK, input.CIT));
             if (_configuration.GetSection("IsRecaptchaEnabled").Value == "1")
