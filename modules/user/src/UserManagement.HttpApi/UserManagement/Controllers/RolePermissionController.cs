@@ -41,6 +41,11 @@ namespace UserManagement.HttpApi.UserManagement.Controllers
         [HttpDelete]
         public async Task<bool> Delete(ObjectId id)
               => await _rolePermission.Delete(id);
+        [HttpPost]
+        public async Task AddToRedis()
+            => await _rolePermission.AddToRedis();
+            
+        
 
 
     }

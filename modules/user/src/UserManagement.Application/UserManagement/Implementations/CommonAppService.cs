@@ -3,10 +3,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using System.Security.Claims;
 using UserManagement.Application.Contracts.Models;
 using UserManagement.Application.Contracts.Services;
 using UserManagement.Application.InquiryService;
 using UserManagement.Domain.Shared;
+using UserManagement.Domain.UserManagement.CommonService.Dto;
 using Volo.Abp;
 using Volo.Abp.Application.Services;
 
@@ -213,4 +215,47 @@ public class CommonAppService : ApplicationService, ICommonAppService
         return true;
     }
 
+    public async Task ValidateVisualizeCaptcha(VisualCaptchaInput input)
+    {
+        if (_configuration.GetSection("IsVisualizeCaptchaEnabled").Value == "1")
+        {
+            //var httpContext = _contextAccessor.HttpContext;
+            //var validatorService = httpContext.RequestServices.GetRequiredService<IDNTCaptchaValidatorService>();
+            //if (!validatorService.HasRequestValidCaptchaEntry(Language.Persian, DisplayMode.SumOfTwoNumbers, input.CT, input.CIT, input.CK)) 
+            //{
+            //    throw new UserFriendlyException(Messages.CaptchaNotValid);
+            //}
+            string objectCaptcha = await _distributedCache.GetStringAsync("cap_" + input.CIT);
+            await _distributedCache.RemoveAsync("cap_" + input.CIT);
+            if (objectCaptcha == null)
+            {
+                throw new UserFriendlyException("کپچای وارد شده صحیح نمی باشد");
+            }
+            else if (objectCaptcha != input.CK)
+            {
+                throw new UserFriendlyException("کپچای وارد شده صحیح نمی باشد");
+            }
+        }
+    }
+    public bool IsInRole(string Role)
+    {
+        var identity = (ClaimsPrincipal)Thread.CurrentPrincipal;
+        // Get the claims values
+        var role = _httpContextAccessor.HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.Role)
+                           .Select(c => c.Value).SingleOrDefault();
+        return role == Role;
+    }
+
+    public string GetRole()
+    {
+        var identity = (ClaimsPrincipal)Thread.CurrentPrincipal;
+        // Get the claims values
+        var Role = _httpContextAccessor.HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.Role)
+                           .Select(c => c.Value).SingleOrDefault();
+        if (Role == null)
+        {
+            throw new UserFriendlyException("دسترسی کافی نمی باشد");
+        }
+        return Role;
+    }
 }

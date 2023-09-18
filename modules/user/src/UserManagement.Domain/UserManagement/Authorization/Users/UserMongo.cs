@@ -1,25 +1,24 @@
-﻿
-
-using Abp.Authorization.Users;
+﻿using Abp.Authorization.Users;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using UserManagement.Domain.UserManagement.Bases;
 using UserManagement.Domain.UserManagement.Enums;
+using Volo.Abp.Domain.Entities.Auditing;
 
 namespace UserManagement.Domain.Authorization.Users
 {
     [BsonIgnoreExtraElements]
-    public class UserMongo
+    public class UserMongo : FullAuditedEntity<ObjectId>
     { 
-        [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)]
-        public string _Id { get; set; }
+    //    [BsonId]
+    //    [BsonRepresentation(BsonType.ObjectId)]
+    //    public string _Id { get; set; }
         public const string DefaultPassword = "123qwe";
         [Required]
         [Column(TypeName = "NCHAR(10)")]
-        public long Id { get; set; }
+        //public long Id { get; set; }
         public string NationalCode { get; set; }
         [Required]
         [Column(TypeName = "NVARCHAR(150)")]
@@ -85,19 +84,18 @@ namespace UserManagement.Domain.Authorization.Users
         public string ConcurrencyStamp { get;set; }
         public int? CompanyId { get; set; }
         public string UID { get; set; }
-        public bool IsDeleted { get;set; }
+       // public bool IsDeleted { get;set; }
         public string ChassiNo { get; set; }
         public string Vin { get; set; }
         public string EngineNo { get; set; }
         public string Vehicle { get; set; }
         public List<string> Roles { get; set; }
         public const int MaxUserNameLength = 256;
-        public DateTime CreationTime { get;set; }
-        public Guid? CreatorId { get; set; }
-        public Guid? LastModifierId { get; set; }
-        public Guid? DeleterId { get;set; }
-        public DateTime? LastModificationTime { get; set; }
-        public List<String> RolesM { get; set; }
+        //public DateTime CreationTime { get;set; }
+        //public Guid? CreatorId { get; set; }
+        //public Guid? LastModifierId { get; set; }
+        //public Guid? DeleterId { get;set; }
+        //public DateTime? LastModificationTime { get; set; }
         /// <summary>
         /// Maximum length of the <see cref="EmailAddress"/> property.
         /// </summary>

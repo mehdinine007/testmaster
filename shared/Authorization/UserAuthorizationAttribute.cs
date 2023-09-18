@@ -50,26 +50,26 @@ namespace Esale.Share.Authorize
                 context.Result = new UnauthorizedResult();
                 return;
             }
-            var a = "Role_0001";
-            var _configuration = ServiceTool.Resolve<IConfiguration>();
-            var _cacheManager = ServiceTool.Resolve<ICacheManager>();
-            var RolePermission = _cacheManager.Get<List<string>>(a,
-            "",
-            new CacheOptions()
-            {
-                Provider = CacheProviderEnum.Hybrid
-            });
-           // string permission = "000100020001";
-            // Here I can get userId from my params.
-            if (!string.IsNullOrEmpty(_permissions))
-            {
-                var claimsPermisions = RolePermission.Contains(_permissions);            
-                if (!RolePermission.Contains(_permissions))
-                {
-                    context.Result = new UnauthorizedResult();
-                    return;
-                }
-            }
+           // var a = "Role_0001";
+           // var _configuration = ServiceTool.Resolve<IConfiguration>();
+           // var _cacheManager = ServiceTool.Resolve<ICacheManager>();
+           // var RolePermission = _cacheManager.Get<List<string>>(a,
+           // "",
+           // new CacheOptions()
+           // {
+           //     Provider = CacheProviderEnum.Hybrid
+           // });
+           //// string permission = "000100020001";
+           // // Here I can get userId from my params.
+           // if (!string.IsNullOrEmpty(_permissions))
+           // {
+           //     var claimsPermisions = RolePermission.Contains(_permissions);            
+           //     if (!RolePermission.Contains(_permissions))
+           //     {
+           //         context.Result = new UnauthorizedResult();
+           //         return;
+           //     }
+           // }
          
 
             if (_disabled)

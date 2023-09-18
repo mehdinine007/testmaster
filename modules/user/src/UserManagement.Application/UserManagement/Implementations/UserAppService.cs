@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Bson;
@@ -10,16 +11,19 @@ using UserManagement.Application.Contracts.Services;
 using UserManagement.Application.Contracts.UserManagement.Services;
 using UserManagement.Domain.Authorization.Users;
 using UserManagement.Domain.Shared;
-using UserManagement.Domain.UserManagement.Advocacy;
 using Volo.Abp;
 using Volo.Abp.Application.Services;
+using Volo.Abp.Domain.Repositories;
+using Volo.Abp.ObjectMapping;
 using WorkingWithMongoDB.WebAPI.Services;
 
 namespace UserManagement.Application.UserManagement.Implementations;
 
 public class UserAppService : ApplicationService, IUserAppService
 {
-    private readonly UserMongoService _userMongoService;
+
+    private readonly IRolePermissionService _rolePermissionService;
+    private readonly IRepository<UserMongo, ObjectId> _userMongoRepository;
     private readonly IConfiguration _configuration;
     private readonly IBankAppService _bankAppService;
     private readonly ICommonAppService _commonAppService;
@@ -27,22 +31,41 @@ public class UserAppService : ApplicationService, IUserAppService
     private readonly IPasswordHasher<User> _passwordHasher;
     private readonly IBaseInformationService _baseInformationService;
 
-    public UserAppService(UserMongoService userMongoService,
-                          IConfiguration configuration,
+    public UserAppService(IConfiguration configuration,
                           IBankAppService bankAppService,
                           ICommonAppService commonAppService,
                           IDistributedCache distributedCache,
                           IPasswordHasher<User> passwordHasher,
-                          IBaseInformationService baseInformationService
+                          IBaseInformationService baseInformationService,
+                          IRolePermissionService rolePermissionService,
+                          IRepository<UserMongo, ObjectId> userMongoRepository
         )
     {
-        _userMongoService = userMongoService;
+        _rolePermissionService = rolePermissionService;
+        _userMongoRepository = userMongoRepository;
         _configuration = configuration;
         _bankAppService = bankAppService;
         _commonAppService = commonAppService;
         _distributedCache = distributedCache;
         _passwordHasher = passwordHasher;
         _baseInformationService = baseInformationService;
+    }
+
+    public async Task<bool> AddRole(ObjectId userid, List<string> roleCode)
+    {
+        var user = (await _userMongoRepository
+               .GetQueryableAsync())
+               .FirstOrDefault(x => x.Id == userid);
+
+        if (user is null)
+            return false;
+        foreach (var cod in roleCode)
+        {
+            if (await _rolePermissionService.ValidationByCode(cod))
+                user.Roles.Add(cod);
+        }
+        await _userMongoRepository.UpdateAsync(user);
+        return true;
     }
 
     public async Task<UserDto> CreateAsync(CreateUserDto input)
@@ -305,7 +328,7 @@ public class UserAppService : ApplicationService, IUserAppService
         //object userObject = null;
         //_cacheManager.GetCache("RegisterdUsers").TryGetValue(input.UserName, out userObject);
         //_distributedCache.GetAsync("")
-      //  User userFromCache = null;
+        //  User userFromCache = null;
 
 
         //User userFromCache = await _cacheManager.GetCache("RegisterdUsers").GetAsync(input.UserName
@@ -324,7 +347,7 @@ public class UserAppService : ApplicationService, IUserAppService
 
         //if (userFromCache == null)
         {
-            var user = ObjectMapper.Map<CreateUserDto,UserMongo>(input);
+            var user = ObjectMapper.Map<CreateUserDto, UserMongo>(input);
             user.IsActive = true;
             //user.TenantId = CurrentTenant.Id;
             user.IsEmailConfirmed = true;
@@ -335,19 +358,18 @@ public class UserAppService : ApplicationService, IUserAppService
             user.ConcurrencyStamp = null;
             user.UID = Guid.NewGuid().ToString().ToLower();
             user.IsDeleted = false;
-            user.CreationTime = DateTime.Now;
             user.Password = _passwordHasher.HashPassword(new User(), input.Password);
             List<string> lsRols = new List<string>();
             lsRols.Add("Customer");
-            user.RolesM = lsRols;
+            user.Roles = lsRols;
             //_userManager.InitializeOptions(AbpSession.TenantId);
             user.Address = useInquiryForUserAddress
                 ? user.Address = await _commonAppService.GetAddressByZipCode(user.PostalCode, user.NationalCode)
                 : user.Address = input.Address;
             try
             {
-                user._Id = ObjectId.GenerateNewId().ToString();
-                await(await _userMongoService.GetUserCollection()).InsertOneAsync(user);
+                //user._Id = ObjectId.GenerateNewId().ToString();
+                await _userMongoRepository.InsertAsync(user);
             }
             catch (Exception ex)
             {
@@ -374,31 +396,43 @@ public class UserAppService : ApplicationService, IUserAppService
     }
 
 
+
+
     public async Task<User> GetLoginInfromationuserFromCache(string Username)
     {
         Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
         object UserFromCache = null;
 
-        var user = (await _userMongoService
-                .GetUserCollection())
-                .Find(x => x.NormalizedUserName == Username.ToUpper()
-                    && x.IsDeleted == false)
-                .Project(x =>
-                    new User
-                    {
-                        TempUID = x.UID,
-                        UserName = x.UserName,
-                        Password = x.Password,
-                        IsActive = x.IsActive,
-                        RolesM = x.RolesM,
-                        NormalizedUserName = x.NormalizedUserName
-                    }
-                    )
+        var user = (await _userMongoRepository
+                .GetQueryableAsync())
+                .Where(x => x.NormalizedUserName == Username.ToUpper()
+                  )
+                .Select(x => new User
+                {
+                    TempUID = x.UID,
+                    UserName = x.UserName,
+                    Password = x.Password,
+                    IsActive = x.IsActive,
+                    RolesM = x.Roles,
+                    NormalizedUserName = x.NormalizedUserName
+                })
                 .FirstOrDefault();
         if (user != null)
         {
             user.UID = new Guid(user.TempUID);
         }
         return user;
+    }
+
+    public async Task<UserDto> GetUserProfile()
+    {
+        Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
+        Guid test = _commonAppService.GetUID();
+        var filter = Builders<BsonDocument>.Filter.Eq(new StringFieldDefinition<BsonDocument, Guid>("UID"), test);
+        var user = await (await _userMongoRepository.GetQueryableAsync())
+            .Where(a => a.UID == test.ToString().ToLower() && a.IsDeleted == false).FirstOrDefaultAsync();
+        var userDto = ObjectMapper.Map<UserMongo, UserDto>(user);
+        //_cacheManager.GetCache("UserProf").Set(AbpSession.UserId.Value.ToString(), userDto);
+        return userDto;
     }
 }

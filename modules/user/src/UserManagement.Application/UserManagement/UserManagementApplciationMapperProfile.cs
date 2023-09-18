@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using UserManagement.Application.Contracts.Models;
+using UserManagement.Application.Contracts.UserManagement;
 using UserManagement.Domain.Authorization.Users;
+using UserManagement.Domain.UserManagement.Advocacy;
 using UserManagement.Domain.UserManagement.Authorization.RolePermissions;
 using UserManagement.Domain.UserManagement.bases;
 
@@ -16,6 +18,6 @@ public class UserManagementApplciationMapperProfile : Profile
         CreateMap<PermissionDefinitionChild, PermissionDefinitionChildDto>().ReverseMap();
         CreateMap<RolePermission, RolePermissionDto>().ReverseMap();
         CreateMap<CreateUserDto, UserMongo>();
-
+        CreateMap<AdvocacyUsersFromBank, AdvocacyUsersFromBankWithCompanyDto>();
     }
 }
