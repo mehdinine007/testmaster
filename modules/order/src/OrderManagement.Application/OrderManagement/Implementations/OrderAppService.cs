@@ -37,7 +37,7 @@ using static OrderManagement.Application.Contracts.OrderManagementPermissions;
 using Esale.Core.Caching;
 using OrderManagement.Application.Contracts.OrderManagement.Models;
 using OrderManagement.Domain.OrderManagement;
-
+using OrderManagement.Application.Contracts.OrderManagement.Services;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -62,7 +62,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
     private readonly IUnitOfWorkManager _unitOfWorkManager;
     private readonly ICacheManager _cacheManager;
     private readonly IAttachmentService _attachmentService;
-
+    private readonly IProductAndCategoryService _productAndCategoryService;
+   
     public OrderAppService(ICommonAppService commonAppService,
                            IBaseInformationService baseInformationAppService,
                            IRepository<SaleDetail, int> saleDetailRepository,
@@ -83,7 +84,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
                            IObjectMapper objectMapper,
                            IUnitOfWorkManager unitOfWorkManager,
                            ICacheManager cacheManager,
-                           IAttachmentService attachmentService
+                           IAttachmentService attachmentService,
+                        IProductAndCategoryService productAndCategoryService
         )
     {
         _commonAppService = commonAppService;
@@ -105,6 +107,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         _unitOfWorkManager = unitOfWorkManager;
         _cacheManager = cacheManager;
         _attachmentService = attachmentService;
+        _productAndCategoryService = productAndCategoryService;
     }
 
 
@@ -766,6 +769,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         var userId = _commonAppService.GetUserId();
         var orderRejections = _orderRejectionTypeReadOnlyRepository.WithDetails().ToList();
         var orderStatusTypes = _orderStatusTypeReadOnlyRepository.WithDetails().ToList();
+        var parents =await _productAndCategoryService.GetAllParent();
         //var customerOrder = await _commitOrderRepository.GetAllListAsync(x => x.UserId == userId);
         var customerOrders = _commitOrderRepository.WithDetails()
             .AsNoTracking()
@@ -826,6 +830,12 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 x.Cancelable = true;
             //else if (x.OrderStatusCode == 40 && x.DeliveryDateDescription.Contains(cancleableDate, StringComparison.InvariantCultureIgnoreCase)) // OrderStatusType.Winner
             //    x.Cancelable = true;
+          var Parent = parents.FirstOrDefault(y =>y.Code==x.Product.Code.Substring(0, 4));
+            if (Parent is not null)
+            {
+                x.CompanyName = Parent.Title;
+            }
+          
         });
         return customerOrders.OrderByDescending(x => x.OrderId).ToList();
     }
