@@ -4,6 +4,8 @@ using GatewayService.Host.Infrastructures.Extensions;
 using Volo.Abp.Auditing;
 using GatewayService.Host.Infrastructures.Middlewares;
 using GatewayManagement.Application.GatewayManagement.Services;
+using GatewayManagement.Application.Contracts.GatewayManagement.IServices;
+using GatewayManagement.Application.GatewayManagement.Services.SendBox;
 
 namespace GatewayService.Host
 {

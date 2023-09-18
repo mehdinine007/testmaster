@@ -11,6 +11,8 @@ using OrderManagement.Application.OrderManagement.Implementations;
 using WorkingWithMongoDB.WebAPI.Services;
 using UserService.Host.Infrastructures.Hangfire.Abstract;
 using UserService.Host.Infrastructures.Hangfire.Concrete;
+using UserManagement.Application.Contracts.UserManagement.Services;
+using UserManagement.Application.UserManagement.Implementations;
 #endregion
 
 
@@ -40,6 +42,7 @@ namespace UserService.Host
             services.AddControllers();
             services.AddSingleton<UserMongoService>();
             services.AddSingleton<IRolePermissionJob, RolePermissionJob>();
+            services.AddScoped<ISendBoxAppService, SendBoxAppService>();
             ServiceTool.Create(services);
         }
 

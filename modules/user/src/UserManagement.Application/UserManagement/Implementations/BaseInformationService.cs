@@ -38,37 +38,6 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
         _whiteListRepository = whiteListRepository;
     }
 
-    public async void RegistrationValidationWithoutCaptcha(RegistrationValidationDto input)
-    {
-        if (_configuration.GetSection("IsCheckAdvocacy").Value == "1")
-        {
-            var advocacyuser = _advocacyUsersRepository.WithDetails()
-          .Select(x => new
-          {
-              x.shabaNumber,
-              x.accountNumber,
-              x.Id,
-              x.nationalcode,
-              x.BanksId
-          })
-          .OrderByDescending(x => x.Id).FirstOrDefault(x => x.nationalcode == input.Nationalcode);
-
-            if (advocacyuser == null)
-            {
-                throw new UserFriendlyException("اطلاعات حساب وکالتی یافت نشد");
-            }
-        }
-
-        var user = (await _userMongoRepository
-                    .GetQueryableAsync())
-                    .FirstOrDefault(a => a.NormalizedUserName == input.Nationalcode && a.IsDeleted == false);
-        if (user != null)
-        {
-
-            throw new UserFriendlyException("این کد ملی قبلا ثبت نام شده است");
-        }
-    }
-
 
     public async Task<bool> CheckWhiteListAsync(WhiteListEnumType whiteListEnumType, string Nationalcode)
     {
@@ -101,5 +70,36 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
         }
 
         return true;
+    }
+
+    public async Task RegistrationValidationWithoutCaptchaAsync(RegistrationValidationDto input)
+    {
+        if (_configuration.GetSection("IsCheckAdvocacy").Value == "1")
+        {
+            var advocacyuser = _advocacyUsersRepository.WithDetails()
+          .Select(x => new
+          {
+              x.shabaNumber,
+              x.accountNumber,
+              x.Id,
+              x.nationalcode,
+              x.BanksId
+          })
+          .OrderByDescending(x => x.Id).FirstOrDefault(x => x.nationalcode == input.Nationalcode);
+
+            if (advocacyuser == null)
+            {
+                throw new UserFriendlyException("اطلاعات حساب وکالتی یافت نشد");
+            }
+        }
+
+        var user = (await _userMongoRepository
+                    .GetQueryableAsync())
+                    .FirstOrDefault(a => a.NormalizedUserName == input.Nationalcode && a.IsDeleted == false);
+        if (user != null)
+        {
+
+            throw new UserFriendlyException("این کد ملی قبلا ثبت نام شده است");
+        }
     }
 }

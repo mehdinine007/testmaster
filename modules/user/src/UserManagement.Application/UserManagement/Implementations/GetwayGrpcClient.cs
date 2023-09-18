@@ -60,9 +60,7 @@ namespace UserManagement.Application.UserManagement.Implementations
 
         public async Task<Domain.UserManagement.CommonService.Dto.Getway.SendBoxServiceDto> SendService(Domain.UserManagement.CommonService.Dto.Getway.SendBoxServiceInput input)
         {
-            try
-            {
-
+            
                 var sendSeivice = PostCaptchaServiceGrpcClient().SendService(new()
                 {
                     Recipient = input.Recipient,
@@ -77,12 +75,7 @@ namespace UserManagement.Application.UserManagement.Implementations
                     Message = sendSeivice.Message,
                     MessageCode = sendSeivice.MessageCode
                 });
-            }
-            catch (Exception ex)
-            {
-
-                throw ex;
-            }
+         
         }
     
     }

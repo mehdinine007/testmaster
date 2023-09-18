@@ -19,5 +19,6 @@ public class UserManagementApplciationMapperProfile : Profile
         CreateMap<RolePermission, RolePermissionDto>().ReverseMap();
         CreateMap<CreateUserDto, UserMongo>();
         CreateMap<AdvocacyUsersFromBank, AdvocacyUsersFromBankWithCompanyDto>();
+        CreateMap<UserMongo, UserDto>().ReverseMap();
     }
 }
