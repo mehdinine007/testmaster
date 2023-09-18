@@ -5,9 +5,8 @@ using UserManagement.Application.Contracts.UserManagement.Services;
 using UserManagement.Application.Contracts.Models;
 using Volo.Abp.AspNetCore.Mvc;
 using UserManagement.Domain.Authorization.Users;
-using MongoDB.Bson;
-using wsFava;
 using UserManagement.Application.Contracts.UserManagement.Models.User;
+using Esale.Share.Authorize;
 
 namespace UserManagement.HttpApi.UserManagement.Controllers;
 
@@ -33,8 +32,8 @@ public class UserController : AbpController
     public async Task<User> GetLoginInfromationuserFromCache(string Username)
         => await _userAppService.GetLoginInfromationuserFromCache(Username);
 
-    public Task<UserDto> GetUserProfile()
-    {
-        throw new NotImplementedException();
-    }
+    [HttpGet]
+    [UserAuthorization]
+    public async Task<UserDto> GetUserProfile()
+        => await _userAppService.GetUserProfile();
 }

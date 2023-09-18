@@ -1,6 +1,4 @@
-﻿
-
-using Abp.Authorization.Users;
+﻿using Abp.Authorization.Users;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using System.ComponentModel.DataAnnotations;

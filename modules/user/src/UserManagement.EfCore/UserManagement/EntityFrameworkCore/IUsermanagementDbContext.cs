@@ -12,5 +12,9 @@ namespace UserManagement.EfCore.EntityFrameworkCore
     {
         DbSet<WhiteList> WhiteList { get; set; }
         DbSet<AdvocacyUsers> AdvocacyUsers { get; set; }
+
+        DbSet<AdvocacyUsersFromBank> AdvocacyUsersFromBank { get; set; }
+
+        DbSet<UserRejectionFromBank> UserRejectionFromBank { get; set; }
     }
 }

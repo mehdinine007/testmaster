@@ -19,6 +19,10 @@ namespace UserManagement.EfCore.EntityFrameworkCore
 
         public DbSet<WhiteList> WhiteList { get; set; }
 
+        public DbSet<AdvocacyUsersFromBank> AdvocacyUsersFromBank { get; set; }
+
+        public DbSet<UserRejectionFromBank> UserRejectionFromBank { get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);

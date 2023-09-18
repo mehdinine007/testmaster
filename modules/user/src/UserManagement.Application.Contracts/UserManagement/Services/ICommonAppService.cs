@@ -15,4 +15,8 @@ public interface ICommonAppService : IApplicationService
     Task<string> GetAddressByZipCode(string zipCode, string nationalCode);
 
     public Guid GetUID();
+
+    bool IsInRole(string Role);
+
+    string GetRole();
 }

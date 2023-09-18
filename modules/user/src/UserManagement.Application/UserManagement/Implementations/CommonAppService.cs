@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using System.Security.Claims;
 using UserManagement.Application.Contracts.Models;
 using UserManagement.Application.Contracts.Services;
 using UserManagement.Application.InquiryService;
@@ -213,4 +214,25 @@ public class CommonAppService : ApplicationService, ICommonAppService
         return true;
     }
 
+    public bool IsInRole(string Role)
+    {
+        var identity = (ClaimsPrincipal)Thread.CurrentPrincipal;
+        // Get the claims values
+        var role = _httpContextAccessor.HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.Role)
+                           .Select(c => c.Value).SingleOrDefault();
+        return role == Role;
+    }
+
+    public string GetRole()
+    {
+        var identity = (ClaimsPrincipal)Thread.CurrentPrincipal;
+        // Get the claims values
+        var Role = _httpContextAccessor.HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.Role)
+                           .Select(c => c.Value).SingleOrDefault();
+        if (Role == null)
+        {
+            throw new UserFriendlyException("دسترسی کافی نمی باشد");
+        }
+        return Role;
+    }
 }
