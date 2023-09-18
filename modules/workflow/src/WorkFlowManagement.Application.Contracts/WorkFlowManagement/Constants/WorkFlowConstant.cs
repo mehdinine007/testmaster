@@ -73,5 +73,8 @@ namespace WorkFlowManagement.Application.Contracts.WorkFlowManagement.Constants
         public static string InboxParentNotFound = "صندوق ورودی سطح بالایی وجود ندارد";
         public static string InboxParentNotFoundId = "3003";
 
+        public static string DependentOrganizationChartNotFound = "این سازمان درحال استفاده میباشد";
+        public static string DependentOrganizationChartNotFoundId = "3004";
+
     }
 }
