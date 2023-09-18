@@ -45,6 +45,10 @@ namespace WorkFlowManagement.EntityFrameworkCore
                 entity.HasOne<OrganizationChart>(x => x.OrganizationChart)
                     .WithMany(x => x.OrganizationPositions)
                     .HasForeignKey(x => x.OrganizationChartId);
+
+                entity.HasOne<Person>(x => x.Person)
+                    .WithMany(x => x.OrganizationPositions)
+                    .HasForeignKey(x => x.PersonId);
             });
 
             builder.Entity<RoleOrganizationChart>(entity =>

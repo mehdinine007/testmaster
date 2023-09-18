@@ -1,0 +1,62 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "OrderManagement.Application.Esale.UserServiceGrpc";
+
+import "google/protobuf/wrappers.proto";
+package UserService;
+service UserServiceGrpc{
+	rpc GetUserById(GetUserModel) returns (UserModel);
+	rpc GetUserByUBPId(GetUserUBPModel) returns (UserModel);
+
+	rpc GetUserAdvocacy(UserAdvocacyRequest) returns (UserAdvocacy);
+}
+
+
+message GetUserModel{
+	string userId = 1;
+}
+message GetUserUBPModel{
+	string userId = 1;
+}
+message UserModel{
+	string NationalCode = 1;
+
+	sfixed32 BankId = 2;
+
+	sfixed32 GenderCode = 13;
+
+	string AccountNumber = 3;
+
+	string Shaba = 4;
+
+	google.protobuf.Int32Value BirthCityId = 5;
+
+	google.protobuf.Int32Value IssuingCityId = 6;
+
+	google.protobuf.Int32Value HabitationCityId = 7;
+
+	google.protobuf.Int32Value BirthProvinceId = 8;
+
+	google.protobuf.Int32Value IssuingProvinceId = 9;
+
+	google.protobuf.Int32Value HabitationProvinceId = 10;
+
+	string MobileNumber = 11;
+
+	google.protobuf.Int32Value CompanyId = 12;
+
+	string Name = 14;
+
+	string SurName = 15;
+}
+
+message UserAdvocacy{
+	string ShebaNumber = 1;
+	string AccountNumber  = 2;
+	sfixed32 BankId =3;
+	sfixed32 GenderCode = 4;
+}
+
+message UserAdvocacyRequest{
+	string NationalCode = 1;
+}

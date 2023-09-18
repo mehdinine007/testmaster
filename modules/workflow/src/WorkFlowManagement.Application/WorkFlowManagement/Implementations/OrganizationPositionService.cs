@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using EasyCaching.Redis;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,18 +21,35 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
     {
         private readonly IRepository<OrganizationPosition, int> _organizationPositionRepository;
         private readonly IRepository<OrganizationChart, int> _organizationChartRepository;
-        public OrganizationPositionService(IRepository<OrganizationPosition, int> organizationPositionRepository, IRepository<OrganizationChart, int> organizationChartRepository)
+        private readonly IPersonService _personService;
+        public OrganizationPositionService(IRepository<OrganizationPosition, int> organizationPositionRepository
+            , IRepository<OrganizationChart, int> organizationChartRepository
+            , IPersonService personService)
         {
             _organizationPositionRepository = organizationPositionRepository;
             _organizationChartRepository = organizationChartRepository;
+            _personService = personService;
         }
 
 
         public async Task<OrganizationPositionDto> Add(OrganizationPositionCreateOrUpdateDto organizationPositionCreateOrUpdateDto)
         {
             await Validation(null, organizationPositionCreateOrUpdateDto, null);
+            var getPerson = await _personService.GetById(organizationPositionCreateOrUpdateDto.PersonId);
+            var personCreateDto = new PersonCreateOrUpdateDto
+            {
+                NationalCode = "",
+                Title = "",
+                Id = organizationPositionCreateOrUpdateDto.PersonId
+            };
+
+            if (getPerson is null)
+            {
+                await _personService.Add(personCreateDto);
+            }
             var organizationPosition = ObjectMapper.Map<OrganizationPositionCreateOrUpdateDto, OrganizationPosition>(organizationPositionCreateOrUpdateDto);
             var entity = await _organizationPositionRepository.InsertAsync(organizationPosition, autoSave: true);
+            
             return ObjectMapper.Map<OrganizationPosition, OrganizationPositionDto>(entity);
         }
 
