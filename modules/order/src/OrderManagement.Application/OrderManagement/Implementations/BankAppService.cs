@@ -1,20 +1,15 @@
-﻿using OrderManagement.Application.Contracts.OrderManagement.Services;
-using OrderManagement.Application.Contracts;
+﻿using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.Services;
 using OrderManagement.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
 using OrderManagement.Application.Contracts.OrderManagement;
 using OrderManagement.Domain.Shared;
-using OrderManagement.Domain.OrderManagement;
-using Volo.Abp.ObjectMapping;
 using Volo.Abp;
-using Esale.Core.DataAccess;
 using MongoDB.Driver;
 using Microsoft.EntityFrameworkCore;
 
@@ -31,10 +26,10 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             _bankRepository = bankRepository;
             _attachmentService = attachmentService;
         }
-        public async Task<List<BankDto>> GetList(AttachmentEntityTypeEnum attachmentType)
+        public async Task<List<BankDto>> GetList(List<AttachmentEntityTypeEnum> attachmentType = null)
         {
             var banks = (await _bankRepository.GetQueryableAsync()).ToList();
-            var attachments = await _attachmentService.GetList(AttachmentEntityEnum.Bank, banks.Select(x => x.Id).ToList(),new List<AttachmentEntityTypeEnum> { attachmentType });
+            var attachments = await _attachmentService.GetList(AttachmentEntityEnum.Bank, banks.Select(x => x.Id).ToList(), attachmentType );
             var banksDto = ObjectMapper.Map<List<Bank>, List<BankDto>>(banks);
             banksDto.ForEach(x =>
             {
@@ -61,12 +56,13 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             return await GetById(bank.Id);
             
         }
-        public async Task<BankDto> GetById(int id)
+        public async Task<BankDto> GetById(int id,List<AttachmentEntityTypeEnum> attachmentType=null)
         {
             var bank = await Validation(id, null);
-            var attachments = await _attachmentService.GetList(AttachmentEntityEnum.Bank, new List<int>() { id },new List<AttachmentEntityTypeEnum>());
+            var attachments = await _attachmentService.GetList(AttachmentEntityEnum.Bank, new List<int>() { id }, attachmentType);
             var bankDto= ObjectMapper.Map<Bank, BankDto>(bank);
-            bankDto.Attachments= ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(attachments);
+            
+                bankDto.Attachments= ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(attachments);
             return bankDto;
         }
         public async Task<bool> Delete(int id)

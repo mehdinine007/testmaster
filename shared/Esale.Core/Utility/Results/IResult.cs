@@ -6,7 +6,7 @@ namespace Esale.Core.Utility.Results
 {
     public interface IResult
     {
-        bool Succsess { get; }
+        bool Success { get; }
         string Message { get; }
         string MessageId { get; }
     }

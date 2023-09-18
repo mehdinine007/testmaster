@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
-using OrderManagement;
 using Volo.Abp.Data;
 using Volo.Abp.DependencyInjection;
-using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Uow;
 
 namespace OrderService.Host

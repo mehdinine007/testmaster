@@ -29,19 +29,19 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             _chartStructureRepository = chartStructureRepository;
             _attachmentService = attachmentService;
         }
-        public async Task<List<ChartStructureDto>> GetList(List<AttachmentEntityTypeEnum> attachmentType)
+        public async Task<List<ChartStructureDto>> GetList(List<AttachmentEntityTypeEnum> attachmentType = null)
         {
             var chartStructures = (await _chartStructureRepository.GetQueryableAsync())
                 .OrderBy(x => x.Priority)
                 .ToList();
             var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ChartStructure, chartStructures.Select(x => x.Id).ToList(), attachmentType);
-            var chartStructuresDto= ObjectMapper.Map<List<ChartStructure>, List<ChartStructureDto>>(chartStructures);
+            var chartStructuresDto = ObjectMapper.Map<List<ChartStructure>, List<ChartStructureDto>>(chartStructures);
             chartStructuresDto.ForEach(x =>
             {
                 var attachment = attachments.Where(y => y.EntityId == x.Id).ToList();
                 x.Attachments = ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(attachment);
             });
-            return chartStructuresDto;  
+            return chartStructuresDto;
         }
 
         private async Task<ChartStructure> Validation(int id)
@@ -56,24 +56,26 @@ namespace OrderManagement.Application.OrderManagement.Implementations
         }
         public async Task<bool> UploadFile(UploadFileDto uploadFile)
         {
-            var chartStructure=await Validation(uploadFile.Id);
+            var chartStructure = await Validation(uploadFile.Id);
             await _attachmentService.UploadFile(AttachmentEntityEnum.ChartStructure, uploadFile);
             return true;
         }
 
-        public async Task<ChartStructureDto> GetById(int id)
+        public async Task<ChartStructureDto> GetById(int id, List<AttachmentEntityTypeEnum> attachmentType = null)
         {
             var chartStructure = await Validation(id);
-            var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ChartStructure, new List<int>() { id },new List<AttachmentEntityTypeEnum>());
+            var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ChartStructure, new List<int>() { id }, attachmentType);
             var chartStructureDto = ObjectMapper.Map<ChartStructure, ChartStructureDto>(chartStructure);
-            chartStructureDto.Attachments = ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(attachments);
+            
+                chartStructureDto.Attachments = ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(attachments);
+
             return chartStructureDto;
         }
 
         public async Task<ChartStructureDto> Add(ChartStructureCreateOrUpdateDto chartStructureCreateOrUpdateDto)
         {
             var chartStructure = ObjectMapper.Map<ChartStructureCreateOrUpdateDto, ChartStructure>(chartStructureCreateOrUpdateDto);
-             chartStructure = await _chartStructureRepository.InsertAsync(chartStructure, autoSave: true);
+            chartStructure = await _chartStructureRepository.InsertAsync(chartStructure, autoSave: true);
             return await GetById(chartStructure.Id);
         }
 

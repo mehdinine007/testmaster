@@ -10,6 +10,7 @@ using OrderManagement.Domain.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp;
@@ -30,7 +31,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
         private readonly IBankAppService _bankAppServiceService;
         private readonly IAnnouncementService _announcementService;
         public SiteStructureService(IRepository<SiteStructure, int> siteStructureRepository, IAttachmentService attachmentService, ICarClassService carClassService, IProductAndCategoryService productAndCategoryService
-            , IRepository<ESaleType, int> eSaleTypeRepository, IBankAppService bankAppServiceService , IAnnouncementService announcementService)
+            , IRepository<ESaleType, int> eSaleTypeRepository, IBankAppService bankAppServiceService, IAnnouncementService announcementService)
         {
             _siteStructureRepository = siteStructureRepository;
             _attachmentService = attachmentService;
@@ -86,11 +87,17 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             return siteStructure;
         }
 
-        public async Task<SiteStructureDto> GetById(int id)
+        public async Task<SiteStructureDto> GetById(int id, List<AttachmentEntityTypeEnum> attachmentsType = null)
         {
-            var siteStructure = (await _siteStructureRepository.GetQueryableAsync())
+            await Validation(id, null);
+            var siteSt = (await _siteStructureRepository.GetQueryableAsync())
                 .FirstOrDefault(x => x.Id == id);
-            return ObjectMapper.Map<SiteStructure, SiteStructureDto>(siteStructure);
+                var siteStructure = ObjectMapper.Map<SiteStructure, SiteStructureDto>(siteSt);
+            var attachments = await _attachmentService.GetList(AttachmentEntityEnum.SiteStructure, new List<int> { siteSt.Id }, attachmentsType);
+         
+                siteStructure.Attachments = ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(attachments);
+            
+            return siteStructure;
         }
 
         public async Task<List<SiteStructureDto>> GetList(SiteStructureQueryDto siteStructureQuery)
@@ -139,14 +146,14 @@ namespace OrderManagement.Application.OrderManagement.Implementations
                 if (x.Type == SiteStructureTypeEnum.Bank)
 
                 {
-                    var banks = await _bankAppServiceService.GetList(AttachmentEntityTypeEnum.Logo);
+                    var banks = await _bankAppServiceService.GetList(new List<AttachmentEntityTypeEnum> { AttachmentEntityTypeEnum.Logo });
                     x.CarouselData = banks.Select(x => new CarouselData()
                     {
                         Id = x.Id,
                         Title = x.Title,
                         AdditionalFields = new Dictionary<string, object> { { "PhoneNumber", x.PhoneNumber }, { "Url", x.Url } },
                         Attachments = x.Attachments,
-                        
+
 
                     }).ToList();
                 }
@@ -158,7 +165,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
                         Id = x.Id,
                         Title = x.Title,
                         Attachments = x.Attachments,
-                        AdditionalFields = new Dictionary<string, object> { { "id", x.Id }, { "date", x.Date },{ "notice", x.Notice},{ "description",x.Description } },
+                        AdditionalFields = new Dictionary<string, object> { { "id", x.Id }, { "date", x.Date }, { "notice", x.Notice }, { "description", x.Description } },
                     }).ToList();
                 };
 
@@ -169,7 +176,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
 
         public async Task<bool> UploadFile(UploadFileDto uploadFile)
         {
-           await Validation(uploadFile.Id, null);
+            await Validation(uploadFile.Id, null);
             await _attachmentService.UploadFile(AttachmentEntityEnum.SiteStructure, uploadFile);
             return true;
         }

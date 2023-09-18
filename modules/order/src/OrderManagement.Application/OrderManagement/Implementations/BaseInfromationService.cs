@@ -339,7 +339,7 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
             var saleDetail = await _saleDetailRepository.FirstOrDefaultAsync(x => x.UID == saleDetailUid)
                 ?? throw new UserFriendlyException("برنامه فروش پیدا نشد");
             var capacitySaleDetail = await _capacityControlAppService.Validation(saleDetail.Id, null);
-            if (!capacitySaleDetail.Succsess)
+            if (!capacitySaleDetail.Success)
             {
                 throw new UserFriendlyException(OrderConstant.NoCapacitySaleDetail);
             }
@@ -350,7 +350,7 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
             foreach (var agency in _agencySaleDetailIds)
             {
                 var hasCapacity = await _capacityControlAppService.AgencyValidation(saleDetail.Id, agency, capacitySaleDetail.Data);
-                if (hasCapacity.Succsess)
+                if (hasCapacity.Success)
                 {
                     agencySaleDetailIds.Add(agency);
                 }

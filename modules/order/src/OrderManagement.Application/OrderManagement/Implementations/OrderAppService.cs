@@ -563,7 +563,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             IResult agencyCapacityControl = null;
 
             agencyCapacityControl = await _capacityControlAppService.Validation(SaleDetailDto.Id, commitOrderDto.AgencyId);
-            if (!agencyCapacityControl.Succsess)
+            if (!agencyCapacityControl.Success)
                 throw new UserFriendlyException(agencyCapacityControl.Message);
         }
      
@@ -757,7 +757,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         }
     }
     [UnitOfWork(false, IsolationLevel.ReadUncommitted)]
-    public async Task<List<CustomerOrder_OrderDetailDto>> GetCustomerOrderList(List<AttachmentEntityTypeEnum> attachmentType)
+    public async Task<List<CustomerOrder_OrderDetailDto>> GetCustomerOrderList(List<AttachmentEntityTypeEnum> attachmentType = null)
     {
         if (!_commonAppService.IsInRole("Customer"))
         {
@@ -1159,7 +1159,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
 
             var capacityControl = await _capacityControlAppService.Validation(order.SaleDetailId, order.AgencyId);
-            if (!capacityControl.Succsess)
+            if (!capacityControl.Success)
             {
                 await _ipgServiceProvider.ReverseTransaction(paymentId);
                 exceptionCollection.Add(new UserFriendlyException(capacityControl.Message));
@@ -1313,7 +1313,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         return inquiryResult;
     }
 
-    public async Task<CustomerOrder_OrderDetailDto> GetSaleDetailByUid(Guid saleDetailUid, List<AttachmentEntityTypeEnum> attachmentEntityType)
+    public async Task<CustomerOrder_OrderDetailDto> GetSaleDetailByUid(Guid saleDetailUid, List<AttachmentEntityTypeEnum> attachmentEntityType=null)
     {
         if (!_commonAppService.IsInRole("Customer"))
         {
@@ -1350,7 +1350,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         return saleDetail;
     }
 
-    public async Task<CustomerOrder_OrderDetailDto> GetOrderDetailById(int id,List<AttachmentEntityTypeEnum> attachmentType)
+    public async Task<CustomerOrder_OrderDetailDto> GetOrderDetailById(int id,List<AttachmentEntityTypeEnum> attachmentType=null)
     {
         if (!_commonAppService.IsInRole("Customer"))
         {

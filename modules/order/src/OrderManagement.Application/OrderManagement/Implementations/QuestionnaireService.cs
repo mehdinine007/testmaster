@@ -121,7 +121,11 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
 
     public async Task SubmitAnswer(SubmitAnswerTreeDto submitAnswerTreeDto)
     {
+        if (submitAnswerTreeDto.SubmitAnswerDto == null || !submitAnswerTreeDto.SubmitAnswerDto.Any())
+            throw new UserFriendlyException("به هیچ سوالی پاسخ داده نشده است");
         var questionnaire = await LoadQuestionnaireTree(submitAnswerTreeDto.QuestionnaireId);
+        if(questionnaire.Questions.Any())
+            throw new UserFriendlyException("برای این پرسشنامه سوالی تعریف نشده است");
         var currentUserUserId = _commonAppService.GetUserId();
         //check quesionnaire has not beeing completed by user
         //var answerSubmitted = questionnaire.Questions.Any(x => x.SubmittedAnswers.Any());

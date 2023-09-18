@@ -6,7 +6,7 @@ namespace Esale.Core.Utility.Results
 {
     public class Result:IResult
     {
-        public bool Succsess { get; }
+        public bool Success { get; }
 
         public string Message { get; }
         public string MessageId { get; }
@@ -17,7 +17,7 @@ namespace Esale.Core.Utility.Results
         }
         public Result(bool succsess)
         {
-            Succsess = succsess;
+            Success = succsess;
         }
     }
 }

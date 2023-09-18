@@ -10,7 +10,7 @@ namespace OrderManagement.Application.Contracts.OrderManagement
 {
     public class SaleSchemaGetListDto
     {
-        public List<AttachmentEntityTypeEnum> AttachmentType { get; set; }
+        public List<AttachmentEntityTypeEnum>? AttachmentType { get; set; } = null;
 
     }
 }
