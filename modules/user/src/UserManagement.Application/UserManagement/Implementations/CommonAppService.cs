@@ -235,7 +235,8 @@ public class CommonAppService : ApplicationService, ICommonAppService
             {
                 throw new UserFriendlyException("کپچای وارد شده صحیح نمی باشد");
             }
-
+        }
+    }
     public bool IsInRole(string Role)
     {
         var identity = (ClaimsPrincipal)Thread.CurrentPrincipal;
