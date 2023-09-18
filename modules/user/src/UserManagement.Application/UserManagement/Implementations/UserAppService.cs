@@ -428,11 +428,13 @@ public class UserAppService : ApplicationService, IUserAppService
     {
         Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
         Guid test = _commonAppService.GetUID();
-        var filter = Builders<BsonDocument>.Filter.Eq(new StringFieldDefinition<BsonDocument, Guid>("UID"), test);
-        var user = await (await _userMongoRepository.GetQueryableAsync())
-            .Where(a => a.UID == test.ToString().ToLower() && a.IsDeleted == false).FirstOrDefaultAsync();
-        var userDto = ObjectMapper.Map<UserMongo, UserDto>(user);
-        //_cacheManager.GetCache("UserProf").Set(AbpSession.UserId.Value.ToString(), userDto);
-        return userDto;
+        var user = (await _userMongoRepository.GetQueryableAsync())
+        .FirstOrDefault(a => a.UID == test.ToString().ToLower() && !a.IsDeleted);
+        if (user != null)
+        {
+            var userDto = ObjectMapper.Map<UserMongo, UserDto>(user);
+            return userDto;
+        }
+        return null;
     }
 }
