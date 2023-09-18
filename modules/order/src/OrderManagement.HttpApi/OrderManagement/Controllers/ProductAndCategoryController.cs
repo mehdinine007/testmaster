@@ -33,8 +33,8 @@ public class ProductAndCategoryController : AbpController //, IProductAndCategor
     }
 
     [HttpGet]
-    public async Task<ProductAndCategoryWithChildDto> GetById(int id, List<AttachmentEntityTypeEnum> attachmentType, bool hasProperty)
-        => await _productAndCategoryService.GetById(id, attachmentType, hasProperty);
+    public async Task<ProductAndCategoryWithChildDto> GetById(int id, bool hasProperty, List<AttachmentEntityTypeEnum> attachmentType = null)
+        => await _productAndCategoryService.GetById(id, hasProperty, attachmentType);
 
     [HttpPost]
     public async Task<ProductAndCategoryDto> Insert([FromBody] ProductAndCategoryCreateDto productAndCategoryCreateDto)

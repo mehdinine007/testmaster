@@ -65,7 +65,7 @@ public class SaleService : ApplicationService, ISaleService
         var saleDetail = saleDetailQuery.SingleOrDefault(x => x.UID == uid)
             ?? throw new EntityNotFoundException(typeof(SaleDetail), uid);
 
-        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, new List<int> { saleDetail.ProductId },new List<AttachmentEntityTypeEnum>());
+        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, new List<int> { saleDetail.ProductId });
         var attachment = attachments.Where(y => y.EntityId == saleDetail.ProductId).ToList();
         var saleDetailDto = ObjectMapper.Map<SaleDetail, SaleDetailDto>(saleDetail);
         saleDetailDto.Product.Attachments = ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(attachment);

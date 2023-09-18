@@ -1,8 +1,0 @@
-﻿using Microsoft.AspNetCore.Mvc.Filters;
-
-namespace OrderService.Host.Infrastructures;
-
-public interface IActionResultWrapper
-{
-    void Wrap(FilterContext context);
-}

@@ -12,6 +12,7 @@ using Volo.Abp.Application.Dtos;
 using Esale.Share.Authorize;
 using Microsoft.AspNetCore.Http;
 using OrderManagement.Domain.Shared;
+using OrderManagement.Application.Contracts;
 
 namespace OrderManagement.HttpApi.OrderManagement.Controllers;
 
@@ -30,10 +31,15 @@ public class SaleSchemaController : Controller
     public Task<bool> Delete(int id)
     => _saleSchemaService.Delete(id);
 
-    
+
     [HttpGet]
-    public Task<List<SaleSchemaDto>> GetList(AttachmentEntityTypeEnum attachmentType)
+    public Task<List<SaleSchemaDto>> GetList(List<AttachmentEntityTypeEnum> attachmentType = null)
     => _saleSchemaService.GetList(attachmentType);
+
+    [HttpGet]
+    public Task<SaleSchemaDto> GetById(int id, List<AttachmentEntityTypeEnum> attachmentType = null)
+         => _saleSchemaService.GetById(id, attachmentType);
+
     [HttpPost]
     public Task<SaleSchemaDto> Add(CreateSaleSchemaDto saleSchemaDto)
     => _saleSchemaService.Add(saleSchemaDto);
@@ -41,6 +47,6 @@ public class SaleSchemaController : Controller
     public Task<SaleSchemaDto> Update(CreateSaleSchemaDto saleSchemaDto)
     => _saleSchemaService.Update(saleSchemaDto);
     [HttpPost]
-    public Task<bool> UploadFile([FromForm]UploadFileDto uploadFile)
+    public Task<bool> UploadFile([FromForm] UploadFileDto uploadFile)
    => _saleSchemaService.UploadFile(uploadFile);
 }

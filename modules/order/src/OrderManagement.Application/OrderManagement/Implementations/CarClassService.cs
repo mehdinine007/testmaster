@@ -33,7 +33,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             return true;
         }
 
-        public async Task<List<CarClassDto>> GetList(List<AttachmentEntityTypeEnum> attachmentType)
+        public async Task<List<CarClassDto>> GetList(List<AttachmentEntityTypeEnum> attachmentType=null)
         {
             var carClassesQuery = await _carClassRepository.GetQueryableAsync();
             var carClasses = carClassesQuery.ToList();
@@ -85,6 +85,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             var attachments = await _attachmentService.GetList(AttachmentEntityEnum.CarClass, new List<int> { carClass.Id }, carClassQueryDto.AttachmentType);
 
            var carClassDto= ObjectMapper.Map<CarClass, CarClassDto>(carClass);
+        
             carClassDto.Attachments = ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(attachments);
             return carClassDto;
         }
