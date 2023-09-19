@@ -11,6 +11,7 @@ using OrderManagement.Domain.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.RateLimiting;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Services;
@@ -77,25 +78,28 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
         var questionnaireResult = questionnaireQuery.FirstOrDefault(x => x.Id == questionnaireId)
             ?? throw new UserFriendlyException("پرسشنامه مورد نظر یافت نشد");
         var resultDto = ObjectMapper.Map<Questionnaire, QuestionnaireTreeDto>(questionnaireResult);
-        resultDto.QuestionnaireAnalysis = await GetQuestionnaireReport(questionnaireId);
         return resultDto;
     }
 
-    public async Task<List<QuestionnaireAnalysisDto>> GetQuestionnaireReport(int questionnaireId)
+    public async Task<List<QuestionnaireAnalysisDto>> GetQuestionnaireReport(int questionnaireId, long? relatedEntityId)
     {
         var questionnaire = (await _questionnaireRepository.GetQueryableAsync())
             .Select(x => new { x.Id })
             .FirstOrDefault(x => x.Id == questionnaireId);
         if (questionnaire == null)
             throw new UserFriendlyException("پرسشنامه پیدا نشد");
-        var cacheKey = string.Format(RedisConstants.QuestionnaireSurveyReport, questionnaireId);
+        var cacheKey = relatedEntityId.HasValue
+            ? string.Format(RedisConstants.QuestionnaireSurveyReportWithRelatedEntity, questionnaireId, relatedEntityId.Value)
+            : string.Format(RedisConstants.QuestionnaireSurveyReport, questionnaireId);
         var result = await _hybridCachingProvider.GetAsync<List<QuestionnaireAnalysisDto>>(cacheKey);
         if (result.HasValue)
             return result.Value;
 
         var ls = new List<int>() { (int)QuestionType.Optional, (int)QuestionType.Range };
         var questions = (await _questionRepository.GetQueryableAsync())
-            .Where(x => x.QuestionnaireId == questionnaireId && ls.Any(y => (int)x.QuestionType == y));
+            .Where(x => x.QuestionnaireId == questionnaireId && ls.Any(y => (int)x.QuestionType == y))
+            .Select(x => new { x.Id, x.Title })
+            .ToList();
         var questionIds = questions.Select(x => x.Id).ToList();
         var answersQuery = (await _answerRepository.GetQueryableAsync())
             .Where(x => questionIds.Any(y => y == x.QuestionId));
@@ -109,8 +113,9 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
                 x.Value,
                 QuestionAnswerId = x.Id,
                 SubmittedAnswerId = y.Id,
+                y.RelatedEntityId
             })
-            .Where(x => questionIds.Any(y => y == x.QuestionId))
+            .Where(x => questionIds.Any(y => y == x.QuestionId) && x.RelatedEntityId == relatedEntityId)
             .GroupBy(x => x.QuestionId)
             .Select(x => new QuestionnaireAnalysisDto
             {
@@ -118,6 +123,13 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
                 QuestionId = x.Key
             })
             .ToList();
+
+        surveyReport.ForEach(x =>
+        {
+            var question = questions.FirstOrDefault(y => y.Id == x.QuestionId);
+            if (question != null)
+                x.QuestionTitle = question.Title;
+        });
 
         await _hybridCachingProvider.SetAsync(cacheKey, surveyReport, new TimeSpan(4, 0, 0));
         return surveyReport;
@@ -128,20 +140,25 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
         if (submitAnswerTreeDto.SubmitAnswerDto == null || !submitAnswerTreeDto.SubmitAnswerDto.Any())
             throw new UserFriendlyException("به هیچ سوالی پاسخ داده نشده است");
         var questionnaire = await LoadQuestionnaireTree(submitAnswerTreeDto.QuestionnaireId);
-        if (questionnaire.Questions.Any())
+        if (!questionnaire.Questions.Any())
             throw new UserFriendlyException("برای این پرسشنامه سوالی تعریف نشده است");
         var currentUserUserId = _commonAppService.GetUserId();
         //check quesionnaire has not beeing completed by user
         //var answerSubmitted = questionnaire.Questions.Any(x => x.SubmittedAnswers.Any());
-        var answerSubmitted = (await _submittedAnswerRepository.GetQueryableAsync())
+        var answerSubmittedQuery = (await _submittedAnswerRepository.GetQueryableAsync())
             .Include(x => x.Question)
             .Select(x => new
             {
                 x.UserId,
-                x.Question.QuestionnaireId
+                x.Question.QuestionnaireId,
+                x.RelatedEntityId
             })
-            .FirstOrDefault(x => x.UserId == currentUserUserId && x.QuestionnaireId == submitAnswerTreeDto.QuestionnaireId);
-        if (answerSubmitted != null)
+            .Where(x => x.UserId == currentUserUserId && x.QuestionnaireId == submitAnswerTreeDto.QuestionnaireId);
+        var submittedAnswer = submitAnswerTreeDto.RelatedEntity.HasValue
+            ? answerSubmittedQuery.FirstOrDefault(x => x.RelatedEntityId.Value == submitAnswerTreeDto.RelatedEntity.Value)
+            : answerSubmittedQuery.FirstOrDefault();
+
+        if (submittedAnswer != null)
             throw new UserFriendlyException("این پرسشنامه قبلا توسط شما تکمیل شده است");
 
         //check all available questions in questionnaire being completed
@@ -168,7 +185,10 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
                     {
                         UserId = currentUserUserId,
                         QuestionId = x.QuestionId,
-                        QuestionAnswerId = x.QuestionAnswerId
+                        QuestionAnswerId = x.QuestionAnswerId,
+                        RelatedEntityId = submitAnswerTreeDto.RelatedEntity.HasValue
+                            ? submitAnswerTreeDto.RelatedEntity.Value
+                            : null
                     });
                     break;
                 case QuestionType.MultiSelectOptional:
@@ -180,7 +200,10 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
                     {
                         QuestionAnswerId = y.Id,
                         QuestionId = x.QuestionId,
-                        UserId = currentUserUserId
+                        UserId = currentUserUserId,
+                        RelatedEntityId = submitAnswerTreeDto.RelatedEntity.HasValue
+                            ? submitAnswerTreeDto.RelatedEntity.Value
+                            : null
                     }).ToList());
                     break;
                 case QuestionType.Descriptional:
@@ -190,7 +213,10 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
                     {
                         CustomAnswerValue = x.CustomAnswerValue,
                         QuestionId = x.QuestionId,
-                        UserId = currentUserUserId
+                        UserId = currentUserUserId,
+                        RelatedEntityId = submitAnswerTreeDto.RelatedEntity.HasValue
+                            ? submitAnswerTreeDto.RelatedEntity.Value
+                            : null
                     });
                     break;
                 default:

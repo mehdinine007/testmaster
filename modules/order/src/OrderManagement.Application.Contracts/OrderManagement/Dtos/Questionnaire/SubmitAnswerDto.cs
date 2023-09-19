@@ -7,6 +7,8 @@ namespace OrderManagement.Application.Contracts.Dtos
 
         public List<SubmitAnswerDto> SubmitAnswerDto { get; set; }
 
+        public long? RelatedEntity { get; set; }
+
     }
 
     public class QuestionnaireAnalysisDto
@@ -14,6 +16,8 @@ namespace OrderManagement.Application.Contracts.Dtos
         public int QuestionId { get; set; }
 
         public double Rate { get; set; }
+
+        public string QuestionTitle { get; set; }
     }
 
     public class SubmitAnswerDto

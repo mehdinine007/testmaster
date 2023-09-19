@@ -10,7 +10,7 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Services
 
         public Task SubmitAnswer(SubmitAnswerTreeDto submitAnswerTreeDto);
 
-        Task<List<QuestionnaireAnalysisDto>> GetQuestionnaireReport(int questionnaireId);
+        Task<List<QuestionnaireAnalysisDto>> GetQuestionnaireReport(int questionnaireId,long? relatedEntityId);
 
         Task<bool> UploadFile(UploadFileDto uploadFile);
 

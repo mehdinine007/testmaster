@@ -13,12 +13,6 @@ namespace OrderManagement.Application.Contracts
 
         public int? WhitListRequirement { get; set; }
 
-        public RelatedEntityType? RelatedEntity { get; set; }
-
-        public long? RelatedEntityId { get; set; }
-
         public virtual ICollection<FullQuestionDto> Questions { get; set; }
-
-        public List<QuestionnaireAnalysisDto> QuestionnaireAnalysis { get; set; }
     }
 }
