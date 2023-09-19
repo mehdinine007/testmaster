@@ -64,6 +64,8 @@ namespace OrderManagement.Domain.OrderManagement
         public virtual ProductLevel ProductLevel { get; protected set; }
         public int Priority { get; set; }
         public virtual ICollection<SaleDetail> SaleDetails { get; set; }
+        public virtual Announcement Announcement { get; set; }
+
 
 
 

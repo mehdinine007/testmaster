@@ -416,8 +416,13 @@ public static class OrderManagementDbContextModelCreatingExtensions
                 .HasMaxLength(250);
         });
 
-        builder.Entity<Announcement>(
-            entity => entity.ToTable(nameof(Announcement))
-            );
+        builder.Entity<Announcement>(entity =>
+        {
+            entity.ToTable(nameof(Announcement));
+            entity.HasOne<ProductAndCategory>(x => x.Company)
+                .WithOne(x => x.Announcement)
+                .HasForeignKey<Announcement>(x => x.CompanyId)
+                .HasPrincipalKey<ProductAndCategory>(x => x.Id);
+        });
     }
 }
