@@ -312,7 +312,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         //if (activeSuccessfulOrderExists != null)
         //    throw new UserFriendlyException("جهت ثبت سفارش جدید لطفا ابتدا از جزئیات سفارش، سفارش قبلی خود که موعد تحویل آن در سال 1403 می باشد را لغو نمایید .");
         ///////////////////////////////check entekhab yek no tarh////////////
-        string EsaleTypeId = await _cacheManager.GetStringAsync(userId.ToString(), ""
+        string EsaleTypeId = await _cacheManager.GetStringAsync( "_EsaleType", RedisConstants.CommitOrderPrefix + userId.ToString()
             , new CacheOptions()
             {
                 Provider = CacheProviderEnum.Redis
@@ -704,14 +704,13 @@ public class OrderAppService : ApplicationService, IOrderAppService
             //         {
             //             AbsoluteExpiration = new DateTimeOffset(DateTime.Now.AddSeconds(ttl.TotalSeconds))
             //         });
+            await _cacheManager.SetWithPrefixKeyAsync("_EsaleType",
+                           RedisConstants.CommitOrderPrefix + userId.ToString(),
+                           SaleDetailDto.ESaleTypeId.ToString(),
+                           ttl.TotalSeconds);
 
-            await _cacheManager.SetStringAsync(userId.ToString(),
-                    RedisConstants.CommitOrderEsaleTypePrefix,
-                    SaleDetailDto.ESaleTypeId.ToString(),
-                    new CacheOptions()
-                    {
-                        Provider = CacheProviderEnum.Redis
-                    }, ttl.TotalSeconds);
+
+        
         }
 
         //var pspCacheKey = string.Format(RedisConstants.UserTransactionKey, nationalCode, customerOrder.Id);
