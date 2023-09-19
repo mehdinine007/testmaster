@@ -16,6 +16,7 @@ namespace OrderManagement.Application.Contracts.OrderManagement
         public string Content { get; set; }
         public DateTime FromDate { get; set; }
         public DateTime ToDate { get; set; }
+        public int? CompanyId { get; set; }
         public List<AttachmentViewModel> Attachments { get; set; }
     }
 }

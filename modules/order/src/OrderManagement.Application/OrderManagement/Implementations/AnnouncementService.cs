@@ -43,11 +43,25 @@ public class AnnouncementService : ApplicationService, IAnnouncementService
         return true;
     }
 
-    public async Task<List<AnnouncementDto>> GetAllAnnouncement()
+    public async Task<List<AnnouncementDto>> GetAllAnnouncement(AnnouncementDto input)
     {
-        var announcement = await _announcementRepository.GetListAsync();
-        var announcementDto = ObjectMapper.Map<List<Announcement>, List<AnnouncementDto>>(announcement);
-        return announcementDto;
+        var announcementRepository = await _announcementRepository.GetListAsync();
+        if (input.CompanyId.HasValue)
+        {
+            if (input.CompanyId != 0)
+            {
+                var announcementCompany = announcementRepository.Where(x => x.CompanyId == input.CompanyId).ToList();
+                var announcementDto = ObjectMapper.Map<List<Announcement>, List<AnnouncementDto>>(announcementCompany);
+                return announcementDto;
+            }
+            var announcementCompanies = announcementRepository.Where(x => x.CompanyId != null).ToList();
+            var announcementCompaniesDto = ObjectMapper.Map<List<Announcement>, List<AnnouncementDto>>(announcementCompanies);
+            return announcementCompaniesDto;
+        }
+
+        var announcement = announcementRepository.Where(x => x.CompanyId == null).ToList();
+        var announcements = ObjectMapper.Map<List<Announcement>, List<AnnouncementDto>>(announcement);
+        return announcements;
     }
 
     public async Task<PagedResultDto<AnnouncementDto>> GetPagination(AnnouncementGetListDto input)
@@ -102,14 +116,14 @@ public class AnnouncementService : ApplicationService, IAnnouncementService
             throw new UserFriendlyException("شناسه وارد شده معتبر نمیباشد.");
         }
         var announcement = ObjectMapper.Map<CreateAnnouncementDto, Announcement>(announcementDto);
-        await _announcementRepository.AttachAsync(announcement, 
-            t => t.Title, d => d.Description, s => s.Notice, c => c.Content, f=> f.FromDate, z => z.ToDate, o => o.ToDate, u => u.Date);
+        await _announcementRepository.AttachAsync(announcement,
+            t => t.Title, d => d.Description, s => s.Notice, c => c.Content, f => f.FromDate, z => z.ToDate, o => o.ToDate, u => u.Date);
         return announcement.Id;
     }
 
     public async Task<bool> UploadFile(UploadFileDto uploadFile)
     {
-       var announcement= await Validation(uploadFile.Id, null);
+        var announcement = await Validation(uploadFile.Id, null);
 
         await _attachmentService.UploadFile(AttachmentEntityEnum.Announcement, uploadFile);
         return true;
@@ -119,14 +133,14 @@ public class AnnouncementService : ApplicationService, IAnnouncementService
 
     public async Task<AnnouncementDto> GetById(int id, List<AttachmentEntityTypeEnum> attachmentType = null)
     {
-        var announc= await Validation(id, null);
+        var announc = await Validation(id, null);
         var announcement = (await _announcementRepository.GetQueryableAsync()).AsNoTracking()
             .FirstOrDefault(x => x.Id == id);
-        var announcementDto= ObjectMapper.Map<Announcement, AnnouncementDto>(announcement);
+        var announcementDto = ObjectMapper.Map<Announcement, AnnouncementDto>(announcement);
         var attachments = await _attachmentService.GetList(AttachmentEntityEnum.Announcement, new List<int>() { id }, attachmentType);
-       
-            announcementDto.Attachments = ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(attachments);
-        
+
+        announcementDto.Attachments = ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(attachments);
+
         return announcementDto;
     }
 

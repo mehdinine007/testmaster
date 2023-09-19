@@ -37,8 +37,8 @@ public class AnnouncementController : Controller
     //    => await _announcementService.GetById(id);
 
     [HttpGet]
-    public Task<List<AnnouncementDto>> GetAllAnnouncement()
-    => _announcementService.GetAllAnnouncement();
+    public Task<List<AnnouncementDto>> GetAllAnnouncement(AnnouncementDto input)
+    => _announcementService.GetAllAnnouncement(input);
     [HttpGet]
     public  Task<AnnouncementDto> GetById(int id, string attachmentType)
         => _announcementService.GetById(id, EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(attachmentType));
