@@ -9,6 +9,7 @@ using OrderManagement.Domain.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
@@ -45,23 +46,38 @@ public class AnnouncementService : ApplicationService, IAnnouncementService
 
     public async Task<List<AnnouncementDto>> GetAllAnnouncement(AnnouncementDto input)
     {
-        var announcementRepository = await _announcementRepository.GetListAsync();
+        var announcementRepository = await _announcementRepository.GetQueryableAsync();
         if (input.CompanyId.HasValue)
         {
             if (input.CompanyId != 0)
             {
                 var announcementCompany = announcementRepository.Where(x => x.CompanyId == input.CompanyId).ToList();
-                var announcementDto = ObjectMapper.Map<List<Announcement>, List<AnnouncementDto>>(announcementCompany);
-                return announcementDto;
+                return await getAttachment(AttachmentEntityEnum.Announcement,
+                     announcementCompany.Select(x => x.Id).ToList(),
+                     EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(input.AttachmentType), announcementCompany);
             }
             var announcementCompanies = announcementRepository.Where(x => x.CompanyId != null).ToList();
-            var announcementCompaniesDto = ObjectMapper.Map<List<Announcement>, List<AnnouncementDto>>(announcementCompanies);
-            return announcementCompaniesDto;
+            return await getAttachment(AttachmentEntityEnum.Announcement,
+                   announcementCompanies.Select(x => x.Id).ToList(),
+                   EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(input.AttachmentType), announcementCompanies);
         }
 
         var announcement = announcementRepository.Where(x => x.CompanyId == null).ToList();
-        var announcements = ObjectMapper.Map<List<Announcement>, List<AnnouncementDto>>(announcement);
-        return announcements;
+        return await getAttachment(AttachmentEntityEnum.Announcement,
+                 announcement.Select(x => x.Id).ToList(),
+                 EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(input.AttachmentType), announcement);
+    }
+    public async Task<List<AnnouncementDto>> getAttachment(AttachmentEntityEnum attachment, List<int> id, List<AttachmentEntityTypeEnum> typeEnum, List<Announcement> announcementCompany)
+    {
+        var attachments = await _attachmentService.GetList(attachment, id, typeEnum);
+
+        var announcement1 = ObjectMapper.Map<List<Announcement>, List<AnnouncementDto>>(announcementCompany);
+        announcement1.ForEach(x =>
+        {
+            var attachment = attachments.Where(y => y.EntityId == x.Id).ToList();
+            x.Attachments = ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(attachment);
+        });
+        return announcement1;
     }
 
     public async Task<PagedResultDto<AnnouncementDto>> GetPagination(AnnouncementGetListDto input)
@@ -124,7 +140,6 @@ public class AnnouncementService : ApplicationService, IAnnouncementService
     public async Task<bool> UploadFile(UploadFileDto uploadFile)
     {
         var announcement = await Validation(uploadFile.Id, null);
-
         await _attachmentService.UploadFile(AttachmentEntityEnum.Announcement, uploadFile);
         return true;
     }

@@ -21,5 +21,7 @@ namespace OrderManagement.Domain.Shared
         Circular = 5,
         [EnumProperty(Description = "آیکون")]
         Icon = 6,
+        [EnumProperty(Description = "اطلاعیه")]
+        Announcement = 7
     }
 }
