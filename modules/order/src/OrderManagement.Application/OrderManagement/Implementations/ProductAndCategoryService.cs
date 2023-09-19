@@ -356,5 +356,16 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
         return productAndCategory;
     }
 
+    
+    public async Task<List<ProductAndCategoryDto>> GetAllParent()
+    {
+        var productAndCategorytQueryable = await _productAndCategoryRepository.GetQueryableAsync();
+        var productAndCategory = new ProductAndCategory();
+        var parents = productAndCategorytQueryable.Where(x => x.ParentId == null).ToList();
+
+        var productAndCategoryDto = ObjectMapper.Map<List<ProductAndCategory>, List<ProductAndCategoryDto>>(parents);
+        return productAndCategoryDto;
+
+    }
 
 }
