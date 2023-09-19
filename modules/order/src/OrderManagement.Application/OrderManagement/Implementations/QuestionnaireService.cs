@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.Dtos;
+using OrderManagement.Application.Contracts.OrderManagement;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
 using OrderManagement.Application.Contracts.Services;
 using OrderManagement.Application.OrderManagement.Constants;
@@ -26,6 +27,7 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
     private readonly IHybridCachingProvider _hybridCachingProvider;
     private readonly IRepository<Question, int> _questionRepository;
     private readonly IRepository<QuestionAnswer, long> _answerRepository;
+    private readonly IAttachmentService _attachmentService;
 
     public QuestionnaireService(IRepository<Questionnaire, int> questionnaireRepository,
                                 IBaseInformationService baseInformationService,
@@ -33,7 +35,8 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
                                 IRepository<SubmittedAnswer, long> submittedAnswerRepository,
                                 IHybridCachingProvider hybridCachingProvider,
                                 IRepository<Question, int> questionRepository,
-                                IRepository<QuestionAnswer, long> answerRepository
+                                IRepository<QuestionAnswer, long> answerRepository,
+                                IAttachmentService attachmentService
         )
     {
         _questionnaireRepository = questionnaireRepository;
@@ -43,6 +46,7 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
         _hybridCachingProvider = hybridCachingProvider;
         _questionRepository = questionRepository;
         _answerRepository = answerRepository;
+        _attachmentService = attachmentService;
     }
 
     public async Task<QuestionnaireTreeDto> LoadQuestionnaireTree(int questionnaireId)
@@ -124,7 +128,7 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
         if (submitAnswerTreeDto.SubmitAnswerDto == null || !submitAnswerTreeDto.SubmitAnswerDto.Any())
             throw new UserFriendlyException("به هیچ سوالی پاسخ داده نشده است");
         var questionnaire = await LoadQuestionnaireTree(submitAnswerTreeDto.QuestionnaireId);
-        if(questionnaire.Questions.Any())
+        if (questionnaire.Questions.Any())
             throw new UserFriendlyException("برای این پرسشنامه سوالی تعریف نشده است");
         var currentUserUserId = _commonAppService.GetUserId();
         //check quesionnaire has not beeing completed by user
@@ -195,5 +199,30 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
         });
         //add to database
         await _submittedAnswerRepository.InsertManyAsync(submitAnswerList);
+    }
+
+    public async Task<bool> UploadFile(UploadFileDto uploadFile)
+    {
+        var questionnaire = (await _questionnaireRepository.GetQueryableAsync())
+            .Select(x => new { x.Id })
+            .Where(x => x.Id == uploadFile.Id)
+            ?? throw new UserFriendlyException("پرسشنامه یافت نشد");
+        await _attachmentService.UploadFile(AttachmentEntityEnum.Questionnaire, uploadFile);
+        return true;
+    }
+
+    public async Task<List<QuestionnaireDto>> LoadQuestionnaireList(List<AttachmentEntityTypeEnum> attachmentEntityTypeEnums)
+    {
+        var questionnaireList = (await _questionnaireRepository.GetQueryableAsync()).ToList();
+        var questionnaireIds = questionnaireList.Select(x => x.Id).ToList();
+        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.Questionnaire, questionnaireIds, attachmentEntityTypeEnums);
+        var questionnaireDtoList = ObjectMapper.Map<List<Questionnaire>, List<QuestionnaireDto>>(questionnaireList);
+        questionnaireDtoList.ForEach(x =>
+        {
+            var crrentAttachments = attachments.Where(y => y.EntityId == x.Id).ToList();
+            if (crrentAttachments.Any())
+                x.Attachments = ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(crrentAttachments);
+        });
+        throw new NotImplementedException();
     }
 }

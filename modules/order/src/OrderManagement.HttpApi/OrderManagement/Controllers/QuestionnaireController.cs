@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 using OrderManagement.Application.Contracts.Dtos;
 using OrderManagement.Application.Contracts;
 using Esale.Share.Authorize;
+using OrderManagement.Application.Contracts.OrderManagement;
+using System.Collections.Generic;
+using OrderManagement.Domain.Shared;
 
 namespace OrderManagement.HttpApi.OrderManagement.Controllers;
 
@@ -32,4 +35,12 @@ public class QuestionnaireController : Controller //, IQuestionnaireService
         await _questionnaireService.SubmitAnswer(submitAnswerTreeDto);
         return true;
     }
+
+    [HttpPost]
+    public async Task<bool> UploadFile(UploadFileDto uploadFile)
+        => await _questionnaireService.UploadFile(uploadFile);
+
+    [HttpGet]
+    Task<List<QuestionnaireDto>> LoadQuestionnaireList(List<AttachmentEntityTypeEnum> attachmentEntityTypeEnums)
+        => _questionnaireService.LoadQuestionnaireList(attachmentEntityTypeEnums);
 }

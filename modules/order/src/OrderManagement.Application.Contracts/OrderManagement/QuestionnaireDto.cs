@@ -7,5 +7,7 @@
         public int AnswerComponentId { get; set; }
 
         public int Id { get; set; }
+
+        public List<AttachmentViewModel> Attachments { get; set; }
     }
 }
