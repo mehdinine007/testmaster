@@ -223,6 +223,6 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
             if (crrentAttachments.Any())
                 x.Attachments = ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(crrentAttachments);
         });
-        throw new NotImplementedException();
+        return questionnaireDtoList;
     }
 }

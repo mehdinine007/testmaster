@@ -9,13 +9,13 @@ using Esale.Share.Authorize;
 using OrderManagement.Application.Contracts.OrderManagement;
 using System.Collections.Generic;
 using OrderManagement.Domain.Shared;
+using Esale.Core.Utility.Tools;
 
 namespace OrderManagement.HttpApi.OrderManagement.Controllers;
 
 [DisableAuditing]
 [RemoteService]
 [Route("api/services/app/Questionnaire/[action]")]
-[UserAuthorization]
 public class QuestionnaireController : Controller //, IQuestionnaireService
 {
     private readonly IQuestionnaireService _questionnaireService;
@@ -25,10 +25,12 @@ public class QuestionnaireController : Controller //, IQuestionnaireService
         _questionnaireService = questionnaireService;
     }
 
+    [UserAuthorization]
     [HttpGet]
     public async Task<QuestionnaireTreeDto> LoadQuestionnaireTree(int questionnaireId)
         => await _questionnaireService.LoadQuestionnaireTree(questionnaireId);
 
+    [UserAuthorization]
     [HttpPost]
     public async Task<bool> SubmitAnswer(SubmitAnswerTreeDto submitAnswerTreeDto)
     {
@@ -37,10 +39,10 @@ public class QuestionnaireController : Controller //, IQuestionnaireService
     }
 
     [HttpPost]
-    public async Task<bool> UploadFile(UploadFileDto uploadFile)
+    public async Task<bool> UploadFile([FromForm]UploadFileDto uploadFile)
         => await _questionnaireService.UploadFile(uploadFile);
 
     [HttpGet]
-    Task<List<QuestionnaireDto>> LoadQuestionnaireList(List<AttachmentEntityTypeEnum> attachmentEntityTypeEnums)
-        => _questionnaireService.LoadQuestionnaireList(attachmentEntityTypeEnums);
+    public async Task<List<QuestionnaireDto>> LoadQuestionnaireList(string attachmentEntityTypeEnums)
+        => await _questionnaireService.LoadQuestionnaireList(EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(attachmentEntityTypeEnums));
 }
