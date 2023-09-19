@@ -22,5 +22,7 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Services
         Task<List<ProductAndCategoryWithChildDto>> GetProductAndSaleDetailList(ProductAndSaleDetailGetListQueryDto input);
 
         Task<List<FilterParamDto>> GetFilterParamList();
+       
+        Task<List<ProductAndCategoryDto>> GetAllParent();
     }
 }
