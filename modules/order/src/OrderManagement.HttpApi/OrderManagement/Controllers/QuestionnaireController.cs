@@ -27,8 +27,8 @@ public class QuestionnaireController : Controller //, IQuestionnaireService
 
     [UserAuthorization]
     [HttpGet]
-    public async Task<QuestionnaireTreeDto> LoadQuestionnaireTree(int questionnaireId)
-        => await _questionnaireService.LoadQuestionnaireTree(questionnaireId);
+    public async Task<QuestionnaireTreeDto> LoadQuestionnaireTree(int questionnaireId, long? relatedEntityId)
+        => await _questionnaireService.LoadQuestionnaireTree(questionnaireId, relatedEntityId);
 
     [UserAuthorization]
     [HttpPost]

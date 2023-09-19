@@ -6,7 +6,7 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Services
 {
     public interface IQuestionnaireService : IApplicationService
     {
-        public Task<QuestionnaireTreeDto> LoadQuestionnaireTree(int questionnaireId);
+        public Task<QuestionnaireTreeDto> LoadQuestionnaireTree(int questionnaireId, long? relatedEntityId);
 
         public Task SubmitAnswer(SubmitAnswerTreeDto submitAnswerTreeDto);
 

@@ -50,7 +50,7 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
         _attachmentService = attachmentService;
     }
 
-    public async Task<QuestionnaireTreeDto> LoadQuestionnaireTree(int questionnaireId)
+    public async Task<QuestionnaireTreeDto> LoadQuestionnaireTree(int questionnaireId, long? relatedEntityId=null)
     {
         var questionnaireWhitListType = (await _questionnaireRepository.GetQueryableAsync())
             .Select(x => new
@@ -72,8 +72,16 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
         var questionnaireQuery = await _questionnaireRepository.GetQueryableAsync();
         questionnaireQuery = questionnaireQuery.Include(x => x.Questions)
             .ThenInclude(x => x.Answers);
-        questionnaireQuery = questionnaireQuery.Include(x => x.Questions)
-            .ThenInclude(x => x.SubmittedAnswers.Where(y => y.UserId == currentUserId));
+        if (!relatedEntityId.HasValue)
+        {
+            questionnaireQuery = questionnaireQuery.Include(x => x.Questions)
+                .ThenInclude(x => x.SubmittedAnswers.Where(y => y.UserId == currentUserId));
+        }
+        else
+        {
+            questionnaireQuery = questionnaireQuery.Include(x => x.Questions)
+                .ThenInclude(x => x.SubmittedAnswers.Where(y => y.UserId == currentUserId && y.RelatedEntityId.Value == relatedEntityId.Value));
+        }
 
         var questionnaireResult = questionnaireQuery.FirstOrDefault(x => x.Id == questionnaireId)
             ?? throw new UserFriendlyException("پرسشنامه مورد نظر یافت نشد");
