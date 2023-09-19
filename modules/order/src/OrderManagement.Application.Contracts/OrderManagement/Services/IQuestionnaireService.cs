@@ -1,4 +1,5 @@
 ﻿using OrderManagement.Application.Contracts.Dtos;
+using OrderManagement.Domain.Shared;
 using Volo.Abp.Application.Services;
 
 namespace OrderManagement.Application.Contracts.OrderManagement.Services
@@ -10,5 +11,9 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Services
         public Task SubmitAnswer(SubmitAnswerTreeDto submitAnswerTreeDto);
 
         Task<List<QuestionnaireAnalysisDto>> GetQuestionnaireReport(int questionnaireId);
+
+        Task<bool> UploadFile(UploadFileDto uploadFile);
+
+        Task<List<QuestionnaireDto>> LoadQuestionnaireList(List<AttachmentEntityTypeEnum> attachmentEntityTypeEnums);
     }
 }
