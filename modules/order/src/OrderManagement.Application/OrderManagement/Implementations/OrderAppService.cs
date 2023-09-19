@@ -970,7 +970,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         //var user = _userRepository.FirstOrDefault(userId);
         var userNationalCode = _commonAppService.GetNationalCode();
         var userId = _commonAppService.GetUserId();
-        var user = await _esaleGrpcClient.GetUserById(userId);
+        var user = await _esaleGrpcClient.GetUserByUBPId(userId.ToString());
         var (userMobile, userShaba, userAccountNumber) = (user.MobileNumber, user.Shaba, user.AccountNumber);
 
         await _commonAppService.ValidateSMS(userMobile, userNationalCode, userSmsCode, SMSType.UserRejectionAdvocacy);
