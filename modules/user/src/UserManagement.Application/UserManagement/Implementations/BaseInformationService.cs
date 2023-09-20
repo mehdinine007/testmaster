@@ -12,6 +12,9 @@ using UserManagement.Domain.UserManagement.Bases;
 using Microsoft.AspNetCore.Http;
 using UserManagement.Domain.Authorization.Users;
 using MongoDB.Bson;
+using Volo.Abp.Uow;
+using Volo.Abp.Auditing;
+using Microsoft.EntityFrameworkCore;
 
 namespace UserManagement.Application.Implementations;
 
@@ -25,7 +28,6 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
 
     public BaseInformationService(IConfiguration configuration,
                                   IRepository<AdvocacyUsers, int> advocacyUsersRepository,
-                                  UserMongoService userMongoService,
                                   IHttpContextAccessor httpContextAccessor,
                                   IRepository<WhiteList, int> whiteListRepository,
                                   IRepository<UserMongo, ObjectId> userMongoRepository
@@ -101,5 +103,58 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
         }
 
         return true;
+    }
+
+    [UnitOfWork(false)]
+    [Audited]
+    [RemoteService(false)]
+    public async Task<UserGrpcDto> GetUserByIdAsync(string userId)
+    {
+        object UserFromCache = null;
+
+        var userQueryable = await _userMongoRepository.GetQueryableAsync();
+        var user = userQueryable
+            .Select(x => new
+            {
+                x.AccountNumber,
+                x.BankId,
+                x.BirthCityId,
+                x.BirthProvinceId,
+                x.HabitationCityId,
+                x.HabitationProvinceId,
+                x.IssuingCityId,
+                x.IssuingProvinceId,
+                x.Mobile,
+                x.NationalCode,
+                x.Shaba,
+                x.CompanyId,
+                x.Gender,
+                x.Name,
+                x.Surname,
+                x.UID
+            })
+            .FirstOrDefault(x => x.UID == userId.ToLower());
+
+        if (user == null)
+            return null;
+
+        return new UserGrpcDto
+        {
+            AccountNumber = user.AccountNumber,
+            BankId = user.BankId,
+            BirthCityId = user.BirthCityId,
+            BirthProvinceId = user.BirthProvinceId,
+            HabitationCityId = user.HabitationCityId,
+            HabitationProvinceId = user.HabitationProvinceId,
+            IssuingCityId = user.IssuingCityId,
+            IssuingProvinceId = user.IssuingProvinceId,
+            MobileNumber = user.Mobile,
+            NationalCode = user.NationalCode,
+            Shaba = user.Shaba,
+            GenderCode = (int)user.Gender,
+            CompanyId = user.CompanyId,
+            SurName = user.Surname,
+            Name = user.Name
+        };
     }
 }
