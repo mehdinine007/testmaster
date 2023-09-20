@@ -99,9 +99,9 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
         var cacheKey = relatedEntityId.HasValue
             ? string.Format(RedisConstants.QuestionnaireSurveyReportWithRelatedEntity, questionnaireId, relatedEntityId.Value)
             : string.Format(RedisConstants.QuestionnaireSurveyReport, questionnaireId);
-        var result = await _hybridCachingProvider.GetAsync<List<QuestionnaireAnalysisDto>>(cacheKey);
-        if (result.HasValue)
-            return result.Value;
+      //  var result = await _hybridCachingProvider.GetAsync<List<QuestionnaireAnalysisDto>>(cacheKey);
+     //   if (result.HasValue)
+     //       return result.Value;
 
         var ls = new List<int>() { (int)QuestionType.Optional, (int)QuestionType.Range };
         var questions = (await _questionRepository.GetQueryableAsync())
@@ -139,7 +139,7 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
                 x.QuestionTitle = question.Title;
         });
 
-        await _hybridCachingProvider.SetAsync(cacheKey, surveyReport, new TimeSpan(4, 0, 0));
+     //   await _hybridCachingProvider.SetAsync(cacheKey, surveyReport, new TimeSpan(4, 0, 0));
         return surveyReport;
     }
 
