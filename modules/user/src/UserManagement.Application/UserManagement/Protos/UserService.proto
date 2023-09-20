@@ -1,6 +1,6 @@
-syntax = "proto3";
+﻿syntax = "proto3";
 
-option csharp_namespace = "OrderManagement.Application.Esale.UserServiceGrpc";
+option csharp_namespace = "Esale.UserServiceGrpc";
 
 import "google/protobuf/wrappers.proto";
 
@@ -11,9 +11,21 @@ service UserServiceGrpc{
 	rpc GetUserById(GetUserModel) returns (UserModel);
 }
 
+message UserAdvocacy{
+	string ShebaNumber = 1;
+	string AccountNumber  = 2;
+	sfixed32 BankId = 3;
+	sfixed32 GenderCode = 4;
+}
+
+message UserAdvocacyRequest{
+	string NationalCode = 1;
+}
+
 message GetUserModel{
 	string userId = 1;
 }
+
 message UserModel{
 	string NationalCode = 1;
 
@@ -43,16 +55,5 @@ message UserModel{
 
 	string Name = 14;
 
-	string SurName = 15;
-}
-
-message UserAdvocacy{
-	string ShebaNumber = 1;
-	string AccountNumber  = 2;
-	sfixed32 BankId =3;
-	sfixed32 GenderCode = 4;
-}
-
-message UserAdvocacyRequest{
-	string NationalCode = 1;
+	string SurName=15;
 }
