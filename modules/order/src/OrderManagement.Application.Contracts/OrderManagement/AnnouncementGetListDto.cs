@@ -10,6 +10,7 @@ namespace OrderManagement.Application.Contracts.OrderManagement
 {
     public class AnnouncementGetListDto: PagedResultRequestDto
     {
-        public string? AttachmentType { get; set; }  
+        public string? AttachmentType { get; set; }
+        public int? CompanyId { get; set; } 
     }
 }

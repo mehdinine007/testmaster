@@ -1,4 +1,5 @@
 ﻿using OrderManagement.Application.Contracts.Dtos;
+using OrderManagement.Domain.Shared;
 
 namespace OrderManagement.Application.Contracts
 {
@@ -13,7 +14,5 @@ namespace OrderManagement.Application.Contracts
         public int? WhitListRequirement { get; set; }
 
         public virtual ICollection<FullQuestionDto> Questions { get; set; }
-
-        public List<QuestionnaireAnalysisDto> QuestionnaireAnalysis { get; set; }
     }
 }
