@@ -19,7 +19,7 @@ namespace UserManagement.HttpApi.UserManagement.Controllers;
 
 [DisableAuditing]
 [RemoteService]
-[Route("api/services/app/TokenAuth/[action]")]
+[Route("api/TokenAuth/[action]")]
 public class TokenAuthController : Controller
 {
     private readonly IUserAppService _userAppService;
