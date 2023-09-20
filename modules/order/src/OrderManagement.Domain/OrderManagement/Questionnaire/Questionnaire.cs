@@ -16,10 +16,6 @@ public class Questionnaire : FullAuditedEntity<int>
 
     public int? WhitListRequirement { get; set; }
 
-    public RelatedEntityType? RelatedEntity { get; set; }
-
-    public long? RelatedEntityId { get; set; }
-
     public virtual ICollection<Question> Questions
     {
         get => _questions ?? (_questions = new List<Question>());

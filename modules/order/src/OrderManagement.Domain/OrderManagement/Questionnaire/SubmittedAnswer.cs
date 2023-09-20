@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OrderManagement.Domain.Shared;
+using System;
 using Volo.Abp.Domain.Entities.Auditing;
 
 namespace OrderManagement.Domain;
@@ -16,4 +17,6 @@ public class SubmittedAnswer : FullAuditedEntity<long>
     public string CustomAnswerValue { get; set; }
 
     public Guid UserId { get; set; }
+
+    public long? RelatedEntityId { get; set; }
 }

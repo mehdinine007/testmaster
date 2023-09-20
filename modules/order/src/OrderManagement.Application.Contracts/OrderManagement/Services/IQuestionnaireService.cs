@@ -6,11 +6,11 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Services
 {
     public interface IQuestionnaireService : IApplicationService
     {
-        public Task<QuestionnaireTreeDto> LoadQuestionnaireTree(int questionnaireId);
+        public Task<QuestionnaireTreeDto> LoadQuestionnaireTree(int questionnaireId, long? relatedEntityId);
 
         public Task SubmitAnswer(SubmitAnswerTreeDto submitAnswerTreeDto);
 
-        Task<List<QuestionnaireAnalysisDto>> GetQuestionnaireReport(int questionnaireId);
+        Task<List<QuestionnaireAnalysisDto>> GetQuestionnaireReport(int questionnaireId,long? relatedEntityId);
 
         Task<bool> UploadFile(UploadFileDto uploadFile);
 

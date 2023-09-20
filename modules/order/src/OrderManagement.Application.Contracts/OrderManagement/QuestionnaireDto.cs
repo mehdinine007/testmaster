@@ -12,10 +12,6 @@ namespace OrderManagement.Application.Contracts
 
         public int Id { get; set; }
 
-        public RelatedEntityType? RelatedEntity { get; set; }
-
-        public long? RelatedEntityId { get; set; }
-
         public List<AttachmentViewModel> Attachments { get; set; }
     }
 }

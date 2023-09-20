@@ -27,8 +27,8 @@ public class QuestionnaireController : Controller //, IQuestionnaireService
 
     [UserAuthorization]
     [HttpGet]
-    public async Task<QuestionnaireTreeDto> LoadQuestionnaireTree(int questionnaireId)
-        => await _questionnaireService.LoadQuestionnaireTree(questionnaireId);
+    public async Task<QuestionnaireTreeDto> LoadQuestionnaireTree(int questionnaireId, long? relatedEntityId)
+        => await _questionnaireService.LoadQuestionnaireTree(questionnaireId, relatedEntityId);
 
     [UserAuthorization]
     [HttpPost]
@@ -39,10 +39,14 @@ public class QuestionnaireController : Controller //, IQuestionnaireService
     }
 
     [HttpPost]
-    public async Task<bool> UploadFile([FromForm]UploadFileDto uploadFile)
+    public async Task<bool> UploadFile([FromForm] UploadFileDto uploadFile)
         => await _questionnaireService.UploadFile(uploadFile);
 
     [HttpGet]
     public async Task<List<QuestionnaireDto>> LoadQuestionnaireList(string attachmentEntityTypeEnums)
         => await _questionnaireService.LoadQuestionnaireList(EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(attachmentEntityTypeEnums));
+
+    [HttpGet]
+    public async Task<List<QuestionnaireAnalysisDto>> GetQuestionnaireReport(int questionnaireId, long? relatedEntityId)
+        => await _questionnaireService.GetQuestionnaireReport(questionnaireId, relatedEntityId);
 }
