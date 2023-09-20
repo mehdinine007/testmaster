@@ -71,13 +71,13 @@ public class AnnouncementService : ApplicationService, IAnnouncementService
     {
         var attachments = await _attachmentService.GetList(attachment, id, typeEnum);
 
-        var announcement1 = ObjectMapper.Map<List<Announcement>, List<AnnouncementDto>>(announcementCompany);
-        announcement1.ForEach(x =>
+        var result = ObjectMapper.Map<List<Announcement>, List<AnnouncementDto>>(announcementCompany);
+        result.ForEach(x =>
         {
             var attachment = attachments.Where(y => y.EntityId == x.Id).ToList();
             x.Attachments = ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(attachment);
         });
-        return announcement1;
+        return result;
     }
 
     public async Task<PagedResultDto<AnnouncementDto>> GetPagination(AnnouncementGetListDto input)
@@ -85,8 +85,11 @@ public class AnnouncementService : ApplicationService, IAnnouncementService
         var count = _announcementRepository.WithDetails().Count();
         var announcementResult = await _announcementRepository.GetQueryableAsync();
         var announcementList = announcementResult
-            .PageBy(input)
+            .Where(x => x.CompanyId == input.CompanyId)
             .AsNoTracking()
+            .OrderByDescending(x => x.Id)
+            .Skip(input.SkipCount)
+            .Take(input.MaxResultCount)
             .ToList();
         var attachments = await _attachmentService.GetList(AttachmentEntityEnum.Announcement, announcementList.Select(x => x.Id).ToList(), EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(input.AttachmentType));
         var announcement = ObjectMapper.Map<List<Announcement>, List<AnnouncementDto>>(announcementList);
