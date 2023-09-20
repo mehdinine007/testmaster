@@ -89,7 +89,6 @@ public class AnnouncementService : ApplicationService, IAnnouncementService
             .AsNoTracking()
             .ToList();
         var attachments = await _attachmentService.GetList(AttachmentEntityEnum.Announcement, announcementList.Select(x => x.Id).ToList(), EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(input.AttachmentType));
-
         var announcement = ObjectMapper.Map<List<Announcement>, List<AnnouncementDto>>(announcementList);
         announcement.ForEach(x =>
         {
