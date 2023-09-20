@@ -11,8 +11,8 @@ using OrderManagement.Application.OrderManagement.Implementations;
 using WorkingWithMongoDB.WebAPI.Services;
 using UserService.Host.Infrastructures.Hangfire.Abstract;
 using UserService.Host.Infrastructures.Hangfire.Concrete;
+using UserManagement.Application.UserManagement.Implementations;
 #endregion
-
 
 namespace UserService.Host
 {
@@ -47,14 +47,13 @@ namespace UserService.Host
         {
             app.UseCors(options => options.SetIsOriginAllowed(x => _ = true).AllowAnyMethod().AllowAnyHeader().AllowCredentials());
             app.UseMiddleware<JwtMiddleware>();
-
-            //app.UseEndpoints(endpoints =>
-            //{
-            //    endpoints.MapControllers();
-            //});
-            //app.UseRouting();
+            app.UseRouting();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapGrpcService<GrpcUserService>();
+            });
+            app.UseRouting();
             app.InitializeApplication();
-
         }
     }
 }
