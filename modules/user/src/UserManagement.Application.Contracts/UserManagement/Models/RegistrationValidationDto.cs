@@ -6,9 +6,5 @@ public class RegistrationValidationDto
     public string CT { get; set; }
     public string CIT { get; set; }
     public string CK { get; set; }
-    public RegistrationValidationDto(string nc)
-    {
-        this.Nationalcode = nc;
-    }
-
+   
 }
