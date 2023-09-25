@@ -95,15 +95,15 @@ public class UserAppService : ApplicationService, IUserAppService
         //    }
         //}
         var useInquiryForUserAddress = _configuration.GetValue<bool?>("UseInquiryForUserAddress") ?? false;
-        if (!string.IsNullOrWhiteSpace(input.Vin) &&
-            !string.IsNullOrWhiteSpace(input.ChassiNo) &&
-            !string.IsNullOrWhiteSpace(input.EngineNo) &&
-            !string.IsNullOrWhiteSpace(input.Vehicle))
-        { }
-        else
-        {
-            throw new UserFriendlyException("لطفا در صورت داشتن خودرو فرسوده همه ی فیلد های مربوط به آن را وارد کنید");
-        }
+        //if (!string.IsNullOrWhiteSpace(input.Vin) &&
+        //    !string.IsNullOrWhiteSpace(input.ChassiNo) &&
+        //    !string.IsNullOrWhiteSpace(input.EngineNo) &&
+        //    !string.IsNullOrWhiteSpace(input.Vehicle))
+        //{ }
+        //else
+        //{
+        //    throw new UserFriendlyException("لطفا در صورت داشتن خودرو فرسوده همه ی فیلد های مربوط به آن را وارد کنید");
+        //}
 
         if (_configuration.GetSection("IsIranCellActive").Value == "1")
         {
