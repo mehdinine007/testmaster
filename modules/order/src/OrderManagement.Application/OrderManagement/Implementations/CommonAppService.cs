@@ -125,7 +125,7 @@ public class CommonAppService : ApplicationService, ICommonAppService
     {
         var identity = (ClaimsPrincipal)Thread.CurrentPrincipal;
         // Get the claims values
-        var nationalcode = _httpContextAccessor.HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.Surname)
+        var nationalcode = _httpContextAccessor.HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.Name)
                            .Select(c => c.Value).SingleOrDefault();
         if (nationalcode == null)
         {
