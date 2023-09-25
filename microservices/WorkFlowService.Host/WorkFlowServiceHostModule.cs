@@ -25,6 +25,7 @@ using WorkFlowManagement.Application;
 using GatewayManagement.HttpApi;
 using WorkFlowManagement.EntityFrameworkCore;
 using WorkFlowService.Host.Infrastructures;
+using WorkFlowManagement.Application.WorkFlowManagement.Grpc;
 
 namespace WorkFlowService.Host
 {
@@ -106,7 +107,7 @@ namespace WorkFlowService.Host
             IdentityModelEventSource.ShowPII = true;
             //ConfigureHangfire(context, configuration);
 
-            //context.Services.AddGrpc();
+            context.Services.AddGrpc();
             context.Services.EasyCaching(configuration, "RedisCache:ConnectionString");
             //context.Services.AddMongoDbContext<OrderManagementMongoDbContext>(options =>
             //{
@@ -135,7 +136,12 @@ namespace WorkFlowService.Host
             app.UseAuthentication();
             app.UseAbpClaimsMap();
 
-           
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapGrpcService<UserGrpcClientService>();
+
+            });
+
             app.UseAbpRequestLocalization(); //TODO: localization?
             app.UseSwagger();
             app.UseSwaggerUI(options =>

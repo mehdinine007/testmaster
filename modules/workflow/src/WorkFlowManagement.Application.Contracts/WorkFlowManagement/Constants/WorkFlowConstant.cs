@@ -75,6 +75,11 @@ namespace WorkFlowManagement.Application.Contracts.WorkFlowManagement.Constants
 
         public static string DependentOrganizationChartNotFound = "این سازمان درحال استفاده میباشد";
         public static string DependentOrganizationChartNotFoundId = "3004";
+        public static string UserNotFound = "کاربروجود ندارد";
+        public static string UserNotFoundFoundId = "3005";
+
+        public static string PersonNotFound = "پرسنل وجود ندارد";
+        public static string PersonNotFoundId = "3006";
 
     }
 }
