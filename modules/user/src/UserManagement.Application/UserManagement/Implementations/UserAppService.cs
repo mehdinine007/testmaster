@@ -107,7 +107,10 @@ public class UserAppService : ApplicationService, IUserAppService
 
         if (_configuration.GetSection("IsIranCellActive").Value == "1")
         {
-            _baseInformationService.RegistrationValidationWithoutCaptcha(new RegistrationValidationDto(input.NationalCode));
+            _baseInformationService.RegistrationValidationWithoutCaptcha(new RegistrationValidationDto()
+            {
+                Nationalcode = input.NationalCode
+            });
             // TODO: pending baseinformtion
             if (!input.BirthCityId.HasValue)
             {
