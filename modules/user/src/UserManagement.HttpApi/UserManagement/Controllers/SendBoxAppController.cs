@@ -1,7 +1,7 @@
 ﻿using Esale.Core.Utility.Results;
 using Microsoft.AspNetCore.Mvc;
+using UserManagement.Application.Contracts.Models;
 using UserManagement.Application.Contracts.UserManagement.Services;
-using UserManagement.Domain.UserManagement.SendBox.Dtos;
 using Volo.Abp;
 using Volo.Abp.AspNetCore.Mvc;
 using Volo.Abp.Auditing;

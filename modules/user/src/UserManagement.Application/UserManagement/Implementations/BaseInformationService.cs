@@ -5,7 +5,6 @@ using UserManagement.Application.Contracts.Services;
 using Volo.Abp.Application.Services;
 using UserManagement.Domain.UserManagement.Advocacy;
 using Volo.Abp;
-using WorkingWithMongoDB.WebAPI.Services;
 using MongoDB.Driver;
 using System.Security.Claims;
 using UserManagement.Domain.UserManagement.Bases;
@@ -15,7 +14,6 @@ using MongoDB.Bson;
 using Volo.Abp.Uow;
 using Volo.Abp.Auditing;
 using Microsoft.EntityFrameworkCore;
-using UserManagement.Domain.UserManagement.CommonService.Dto;
 
 namespace UserManagement.Application.Implementations;
 

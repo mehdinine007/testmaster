@@ -5,18 +5,17 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Bson;
 using System.Text.Json;
+using UserManagement.Application.Contracts.Models.SendBox;
 using UserManagement.Application.Contracts.Services;
 using UserManagement.Application.Contracts.UserManagement.Services;
 using UserManagement.Domain;
 using UserManagement.Domain.Authorization.Users;
-using UserManagement.Domain.Shared;
+using UserManagement.Domain.Shared.SendBox;
 using UserManagement.Domain.UserManagement.Bases;
-using UserManagement.Domain.UserManagement.CommonService.Dto.Getway;
-using UserManagement.Domain.UserManagement.Enums;
-using UserManagement.Domain.UserManagement.SendBox.Dtos;
 using Volo.Abp;
 using Volo.Abp.Auditing;
 using Volo.Abp.Domain.Repositories;
+using UserManagement.Application.Contracts.Models;
 
 namespace UserManagement.Application.UserManagement.Implementations
 {
@@ -65,7 +64,7 @@ namespace UserManagement.Application.UserManagement.Implementations
             logs.Type = 0;
             logs.Ip = Utility.utilities.GetIpAddress(_contextAccessor);
             logs.Servername = Utility.utilities.GetServerIPAddress();
-            await _commonAppService.ValidateVisualizeCaptcha(new Domain.UserManagement.CommonService.Dto.VisualCaptchaInput(input.CK, input.CIT));
+            await _commonAppService.ValidateVisualizeCaptcha(new VisualCaptchaInput(input.CK, input.CIT));
 
             // await _commonAppService.ValidateVisualizeCaptcha(new CommonService.Dto.VisualCaptchaInput(input.CT,input.CK, input.CIT));
             if (_configuration.GetSection("IsRecaptchaEnabled").Value == "1")
