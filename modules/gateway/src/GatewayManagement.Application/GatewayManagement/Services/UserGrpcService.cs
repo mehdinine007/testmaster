@@ -25,7 +25,6 @@ namespace GatewayManagement.Application.GatewayManagement.Services
         }
         public override async Task<Esale.GetwayServiceGrpc.HttpResponseMessageDto> GetCaptcha(Esale.GetwayServiceGrpc.ContentInputDto request, ServerCallContext context)
         {
-            System.Diagnostics.Debugger.Launch();
             var getCaptcha = await _esalervice.GetCaptcha(new Contracts.GatewayManagement.Dtos.ContentInputDto
             {
                 ContentValue = request.ContentValue,
@@ -40,7 +39,6 @@ namespace GatewayManagement.Application.GatewayManagement.Services
         }
         public override async Task<Esale.GetwayServiceGrpc.SendBoxServiceDto> SendService(Esale.GetwayServiceGrpc.SendBoxServiceInput input, ServerCallContext context)
         {
-            System.Diagnostics.Debugger.Launch();
             var sendSms = await _sendBoxervice.SendService(new Contracts.GatewayManagement.Dtos.SendBoxServiceInput {
                 Recipient = input.Recipient, 
                 Text = input.Text, 
