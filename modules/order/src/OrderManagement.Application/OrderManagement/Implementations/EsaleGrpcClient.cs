@@ -29,67 +29,48 @@ public class EsaleGrpcClient : ApplicationService, IEsaleGrpcClient
         _logsRepository = logsRepository;
     }
 
-    public async Task<UserDto> GetUserById(Guid userId)
+    public async Task<UserDto> GetUserId(string userId)
     {
-        AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2Support", true);
-        AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
-        var httpHandler = new HttpClientHandler();
-        httpHandler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
-        var channel = GrpcChannel.ForAddress(_configuration.GetValue<string>("Esale:GrpcAddress"), new GrpcChannelOptions { HttpHandler = httpHandler });
-        var client = new UserServiceGrpc.UserServiceGrpcClient(channel);
 
-        var user = client.GetUserById(new GetUserModel() { UserId = userId.ToString() });
-        if (user.BankId == 0)
-            return null;
-        return new UserDto
+        try
         {
-            AccountNumber = user.AccountNumber,
-            BankId = user.BankId,
-            BirthCityId = user.BirthCityId,
-            BirthProvinceId = user.BirthProvinceId,
-            HabitationCityId = user.HabitationCityId,
-            HabitationProvinceId = user.HabitationProvinceId,
-            IssuingCityId = user.IssuingCityId,
-            IssuingProvinceId = user.IssuingProvinceId,
-            NationalCode = user.NationalCode,
-            Shaba = user.Shaba,
-            MobileNumber = user.MobileNumber,
-            CompanyId = user.CompanyId,
-            Name = user.Name,
-            SurName = user.SurName
-        };
-    }
-    public async Task<UserDto> GetUserByUBPId(string userId)
-    {
-        AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2Support", true);
-        AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
-        var httpHandler = new HttpClientHandler();
-        httpHandler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
-        var channel = GrpcChannel.ForAddress(_configuration.GetValue<string>("Esale:GrpcAddress"), new GrpcChannelOptions { HttpHandler = httpHandler });
+            AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2Support", true);
+            AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
+            var httpHandler = new HttpClientHandler();
+            httpHandler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+            var channel = GrpcChannel.ForAddress(_configuration.GetValue<string>("Esale:GrpcAddress"), new GrpcChannelOptions { HttpHandler = httpHandler });
+
+
+            var client = new UserServiceGrpc.UserServiceGrpcClient(channel);
+
+            var user = client.GetUserById(new GetUserModel() { UserId = userId });
+
+            if (user.BankId == 0)
+                return null;
+            return new UserDto
+            {
+                AccountNumber = user.AccountNumber,
+                BankId = user.BankId,
+                BirthCityId = user.BirthCityId,
+                BirthProvinceId = user.BirthProvinceId,
+                HabitationCityId = user.HabitationCityId,
+                HabitationProvinceId = user.HabitationProvinceId,
+                IssuingCityId = user.IssuingCityId,
+                IssuingProvinceId = user.IssuingProvinceId,
+                NationalCode = user.NationalCode,
+                Shaba = user.Shaba,
+                MobileNumber = user.MobileNumber,
+                CompanyId = user.CompanyId,
+                Name = user.Name,
+                SurName = user.SurName
+            };
+        }
+        catch (Exception)
+        {
+
+            throw;
+        }
        
-
-        var client = new UserServiceGrpc.UserServiceGrpcClient(channel);
-
-        var user = client.GetUserByUBPId(new GetUserUBPModel() { UserId = userId });
-        if (user.BankId == 0)
-            return null;
-        return new UserDto
-        {
-            AccountNumber = user.AccountNumber,
-            BankId = user.BankId,
-            BirthCityId = user.BirthCityId,
-            BirthProvinceId = user.BirthProvinceId,
-            HabitationCityId = user.HabitationCityId,
-            HabitationProvinceId = user.HabitationProvinceId,
-            IssuingCityId = user.IssuingCityId,
-            IssuingProvinceId = user.IssuingProvinceId,
-            NationalCode = user.NationalCode,
-            Shaba = user.Shaba,
-            MobileNumber = user.MobileNumber,
-            CompanyId = user.CompanyId,
-            Name = user.Name,
-            SurName = user.SurName
-        };
     }
     public async Task<AdvocacyUserDto> GetUserAdvocacyByNationalCode(string nationlCode)
     {

@@ -12,6 +12,10 @@ using UserManagement.Domain.UserManagement.Bases;
 using Microsoft.AspNetCore.Http;
 using UserManagement.Domain.Authorization.Users;
 using MongoDB.Bson;
+using Volo.Abp.Uow;
+using Volo.Abp.Auditing;
+using Microsoft.EntityFrameworkCore;
+using UserManagement.Domain.UserManagement.CommonService.Dto;
 
 namespace UserManagement.Application.Implementations;
 
@@ -22,13 +26,15 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
     private readonly IRepository<UserMongo, ObjectId> _userMongoRepository;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IRepository<WhiteList, int> _whiteListRepository;
+    private readonly ICommonAppService _commonAppService;
+
 
     public BaseInformationService(IConfiguration configuration,
                                   IRepository<AdvocacyUsers, int> advocacyUsersRepository,
-                                  UserMongoService userMongoService,
                                   IHttpContextAccessor httpContextAccessor,
                                   IRepository<WhiteList, int> whiteListRepository,
-                                  IRepository<UserMongo, ObjectId> userMongoRepository
+                                  IRepository<UserMongo, ObjectId> userMongoRepository,
+                                  ICommonAppService commonAppService
         )
     {
         _configuration = configuration;
@@ -36,6 +42,7 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
         _userMongoRepository = userMongoRepository;
         _httpContextAccessor = httpContextAccessor;
         _whiteListRepository = whiteListRepository;
+        _commonAppService = commonAppService;
     }
 
     public async void RegistrationValidationWithoutCaptcha(RegistrationValidationDto input)
@@ -69,7 +76,6 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
         }
     }
 
-
     public async Task<bool> CheckWhiteListAsync(WhiteListEnumType whiteListEnumType, string Nationalcode)
     {
         if (_configuration.GetSection(whiteListEnumType.ToString()).Value == "1")
@@ -101,5 +107,101 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
         }
 
         return true;
+    }
+
+    [UnitOfWork(false)]
+    [Audited]
+    [RemoteService(false)]
+    public async Task<UserGrpcDto> GetUserByIdAsync(string userId)
+    {
+        object UserFromCache = null;
+
+        var userQueryable = await _userMongoRepository.GetQueryableAsync();
+        var user = userQueryable
+            .Select(x => new
+            {
+                x.AccountNumber,
+                x.BankId,
+                x.BirthCityId,
+                x.BirthProvinceId,
+                x.HabitationCityId,
+                x.HabitationProvinceId,
+                x.IssuingCityId,
+                x.IssuingProvinceId,
+                x.Mobile,
+                x.NationalCode,
+                x.Shaba,
+                x.CompanyId,
+                x.Gender,
+                x.Name,
+                x.Surname,
+                x.UID
+            })
+            .FirstOrDefault(x => x.UID == userId.ToLower());
+
+        if (user == null)
+            return null;
+
+        return new UserGrpcDto
+        {
+            AccountNumber = user.AccountNumber,
+            BankId = user.BankId,
+            BirthCityId = user.BirthCityId,
+            BirthProvinceId = user.BirthProvinceId,
+            HabitationCityId = user.HabitationCityId,
+            HabitationProvinceId = user.HabitationProvinceId,
+            IssuingCityId = user.IssuingCityId,
+            IssuingProvinceId = user.IssuingProvinceId,
+            MobileNumber = user.Mobile,
+            NationalCode = user.NationalCode,
+            Shaba = user.Shaba,
+            GenderCode = (int)user.Gender,
+            CompanyId = user.CompanyId,
+            SurName = user.Surname,
+            Name = user.Name
+        };
+    }
+
+    [Audited]
+    public async Task RegistrationValidation(RegistrationValidationDto input)
+    {
+        await _commonAppService.ValidateVisualizeCaptcha(new VisualCaptchaInput(input.CK, input.CIT));
+        Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
+        if (!string.IsNullOrEmpty(_configuration.GetSection("CloseRegisterDate").Value)
+            && DateTime.Now > DateTime.Parse(_configuration.GetSection("CloseRegisterDate").Value))
+        {
+            throw new UserFriendlyException("زمان ثبت نام به پایان رسیده است");
+        }
+         //await _commonAppService.ValidateVisualizeCaptcha(new VisualCaptchaInput(input.CT,input.CK, input.CIT));
+
+        if (_configuration.GetSection("IsCheckAdvocacy").Value == "1")
+        {
+            var advocacyuser = _advocacyUsersRepository.WithDetails()
+                .AsNoTracking()
+                .Select(x => new
+                {
+                    x.shabaNumber,
+                    x.accountNumber,
+                    x.Id,
+                    x.nationalcode,
+                    x.BanksId
+                })
+                .OrderByDescending(x => x.Id).FirstOrDefault(x => x.nationalcode == input.Nationalcode);
+            if (advocacyuser == null)
+                throw new UserFriendlyException("حساب وکالتی یافت نشد");
+            {
+            }
+        }
+
+        var user = (await _userMongoRepository.GetQueryableAsync())
+            .FirstOrDefault(x => x.NormalizedUserName == input.Nationalcode);
+        if (user != null)
+        {
+
+            throw new UserFriendlyException("این کد ملی قبلا ثبت نام شده است");
+        }
+        
+
+
     }
 }

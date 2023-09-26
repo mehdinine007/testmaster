@@ -314,12 +314,12 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
     {
 
         // var dd = await _esaleGrpcClient.GetUserAdvocacyByNationalCode(_commonAppService.GetNationalCode());
-        return await _esaleGrpcClient.GetUserByUBPId(_commonAppService.GetUserUBPId());
+        return await _esaleGrpcClient.GetUserId(_commonAppService.GetUserId().ToString());
     }
 
     public async Task<List<AgencyDto>> GetAgencies()
     {
-        var user = await _esaleGrpcClient.GetUserById(_commonAppService.GetUserId());
+        var user = await _esaleGrpcClient.GetUserId(_commonAppService.GetUserId().ToString());
         var agencyQuery = await _agencyRepository.GetQueryableAsync();
         var agencies = agencyQuery.Where(x => x.ProvinceId == user.HabitationProvinceId).ToList();
         return ObjectMapper.Map<List<Agency>, List<AgencyDto>>(agencies);
@@ -327,7 +327,7 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
 
     public async Task<List<AgencyDto>> GetAgencies(Guid saleDetailUid)
     {
-        var user = await _esaleGrpcClient.GetUserById(_commonAppService.GetUserId());
+        var user = await _esaleGrpcClient.GetUserId(_commonAppService.GetUserId().ToString());
         var agencyQuery = await _agencyRepository.GetQueryableAsync();
         var cacheKey = string.Format(RedisConstants.SaleDetailAgenciesCacheName, saleDetailUid);
         var agencySaleDetailIds = await _cacheManager.GetAsync<List<int>>(cacheKey, RedisConstants.AgencyPrefix, new CacheOptions()
