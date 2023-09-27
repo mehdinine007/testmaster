@@ -178,7 +178,7 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
 
         if (_configuration.GetSection("IsCheckAdvocacy").Value == "1")
         {
-            var advocacyuser = _advocacyUsersRepository.WithDetails()
+            var advocacyuser =(await _advocacyUsersRepository.GetQueryableAsync())
            .Select(x => new
            {
                x.shabaNumber,
