@@ -10,5 +10,5 @@ public interface IBaseInformationService : IApplicationService
 
     Task<bool> CheckWhiteListAsync(WhiteListEnumType whiteListEnumType, string Nationalcode);
     Task<UserGrpcDto> GetUserByIdAsync(string userId);
-    Task RegistrationValidation(RegistrationValidationDto input);
+    Task<bool> RegistrationValidationAsync(RegistrationValidationDto input);
 }

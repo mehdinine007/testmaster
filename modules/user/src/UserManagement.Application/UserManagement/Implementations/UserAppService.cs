@@ -310,10 +310,6 @@ public class UserAppService : ApplicationService, IUserAppService
             throw new UserFriendlyException("ساختار کلمه عبور صحیح نمی باشد");
         }
 
-
-
-
-
         if (!ValidationHelper.IsNationalCode(input.NationalCode))
         {
             throw new UserFriendlyException(Messages.NationalCodeNotValid);
