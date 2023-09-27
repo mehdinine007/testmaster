@@ -179,16 +179,15 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
         if (_configuration.GetSection("IsCheckAdvocacy").Value == "1")
         {
             var advocacyuser = _advocacyUsersRepository.WithDetails()
-                .AsNoTracking()
-                .Select(x => new
-                {
-                    x.shabaNumber,
-                    x.accountNumber,
-                    x.Id,
-                    x.nationalcode,
-                    x.BanksId
-                })
-                .OrderByDescending(x => x.Id).FirstOrDefault(x => x.nationalcode == input.Nationalcode);
+           .Select(x => new
+           {
+               x.shabaNumber,
+               x.accountNumber,
+               x.Id,
+               x.nationalcode,
+               x.BanksId
+           })
+           .OrderByDescending(x => x.Id).FirstOrDefaultAsync(x => x.nationalcode == input.Nationalcode);
 
             if (advocacyuser == null)
             {
