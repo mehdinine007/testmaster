@@ -14,7 +14,6 @@ using MongoDB.Bson;
 using Volo.Abp.Uow;
 using Volo.Abp.Auditing;
 using Microsoft.EntityFrameworkCore;
-using UserManagement.Domain.UserManagement.CommonService.Dto;
 using UserManagement.Domain.Shared;
 
 namespace UserManagement.Application.Implementations;
