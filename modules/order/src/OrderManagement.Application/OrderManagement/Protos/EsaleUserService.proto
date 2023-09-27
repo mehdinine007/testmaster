@@ -7,16 +7,11 @@ import "google/protobuf/wrappers.proto";
 package UserService;
 
 service UserServiceGrpc{
-	rpc GetUserById(GetUserModel) returns (UserModel);
-	rpc GetUserByUBPId(GetUserUBPModel) returns (UserModel);
-
 	rpc GetUserAdvocacy(UserAdvocacyRequest) returns (UserAdvocacy);
+	rpc GetUserById(GetUserModel) returns (UserModel);
 }
 
 message GetUserModel{
-	string userId = 1;
-}
-message GetUserUBPModel{
 	string userId = 1;
 }
 message UserModel{

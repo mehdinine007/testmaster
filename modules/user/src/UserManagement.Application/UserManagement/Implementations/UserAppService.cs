@@ -95,19 +95,22 @@ public class UserAppService : ApplicationService, IUserAppService
         //    }
         //}
         var useInquiryForUserAddress = _configuration.GetValue<bool?>("UseInquiryForUserAddress") ?? false;
-        if (!string.IsNullOrWhiteSpace(input.Vin) &&
-            !string.IsNullOrWhiteSpace(input.ChassiNo) &&
-            !string.IsNullOrWhiteSpace(input.EngineNo) &&
-            !string.IsNullOrWhiteSpace(input.Vehicle))
-        { }
-        else
-        {
-            throw new UserFriendlyException("لطفا در صورت داشتن خودرو فرسوده همه ی فیلد های مربوط به آن را وارد کنید");
-        }
+        //if (!string.IsNullOrWhiteSpace(input.Vin) &&
+        //    !string.IsNullOrWhiteSpace(input.ChassiNo) &&
+        //    !string.IsNullOrWhiteSpace(input.EngineNo) &&
+        //    !string.IsNullOrWhiteSpace(input.Vehicle))
+        //{ }
+        //else
+        //{
+        //    throw new UserFriendlyException("لطفا در صورت داشتن خودرو فرسوده همه ی فیلد های مربوط به آن را وارد کنید");
+        //}
 
         if (_configuration.GetSection("IsIranCellActive").Value == "1")
         {
-            _baseInformationService.RegistrationValidationWithoutCaptcha(new RegistrationValidationDto(input.NationalCode));
+            _baseInformationService.RegistrationValidationWithoutCaptcha(new RegistrationValidationDto()
+            {
+                Nationalcode = input.NationalCode
+            });
             // TODO: pending baseinformtion
             if (!input.BirthCityId.HasValue)
             {
@@ -307,10 +310,6 @@ public class UserAppService : ApplicationService, IUserAppService
             throw new UserFriendlyException("ساختار کلمه عبور صحیح نمی باشد");
         }
 
-
-
-
-
         if (!ValidationHelper.IsNationalCode(input.NationalCode))
         {
             throw new UserFriendlyException(Messages.NationalCodeNotValid);
@@ -428,11 +427,13 @@ public class UserAppService : ApplicationService, IUserAppService
     {
         Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
         Guid test = _commonAppService.GetUID();
-        var filter = Builders<BsonDocument>.Filter.Eq(new StringFieldDefinition<BsonDocument, Guid>("UID"), test);
-        var user = await (await _userMongoRepository.GetQueryableAsync())
-            .Where(a => a.UID == test.ToString().ToLower() && a.IsDeleted == false).FirstOrDefaultAsync();
-        var userDto = ObjectMapper.Map<UserMongo, UserDto>(user);
-        //_cacheManager.GetCache("UserProf").Set(AbpSession.UserId.Value.ToString(), userDto);
-        return userDto;
+        var user = (await _userMongoRepository.GetQueryableAsync())
+        .FirstOrDefault(a => a.UID == test.ToString().ToLower() && !a.IsDeleted);
+        if (user != null)
+        {
+            var userDto = ObjectMapper.Map<UserMongo, UserDto>(user);
+            return userDto;
+        }
+        return null;
     }
 }

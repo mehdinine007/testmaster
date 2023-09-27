@@ -19,7 +19,7 @@ namespace UserManagement.HttpApi.UserManagement.Controllers;
 
 [DisableAuditing]
 [RemoteService]
-[Route("api/services/app/TokenAuth/[action]")]
+[Route("api/TokenAuth/[action]")]
 public class TokenAuthController : Controller
 {
     private readonly IUserAppService _userAppService;
@@ -93,7 +93,7 @@ public class TokenAuthController : Controller
         //    new Claim(JwtRegisteredClaimNames.Sub, nameIdClaim.Value),
             new Claim(ClaimTypes.Name, user.UserName),
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Role, string.Join(",",user.RolesM?.ToString())),
+            new Claim(ClaimTypes.Role, string.Join(",",user.RolesM)),
             new Claim("UBP", user.UID.ToString()),
 
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),

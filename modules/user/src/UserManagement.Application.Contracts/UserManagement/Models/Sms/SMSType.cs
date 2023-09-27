@@ -1,4 +1,4 @@
-﻿namespace UserManagement.Domain.Shared;
+﻿namespace UserManagement.Application.Contracts.Models;
 
 public enum SMSType
 {

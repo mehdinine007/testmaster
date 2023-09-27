@@ -18,5 +18,5 @@ public class UserManagementDomainModule : AbpModule
 
 public class UserDbConsts
 {
-    public const string EfConnectionStrinName = "";
+    public const string EfConnectionStrinName = "UserManagement";
 }

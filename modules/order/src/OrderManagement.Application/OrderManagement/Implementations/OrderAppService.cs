@@ -312,7 +312,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         //if (activeSuccessfulOrderExists != null)
         //    throw new UserFriendlyException("جهت ثبت سفارش جدید لطفا ابتدا از جزئیات سفارش، سفارش قبلی خود که موعد تحویل آن در سال 1403 می باشد را لغو نمایید .");
         ///////////////////////////////check entekhab yek no tarh////////////
-        string EsaleTypeId = await _cacheManager.GetStringAsync(userId.ToString(), ""
+        string EsaleTypeId = await _cacheManager.GetStringAsync( "_EsaleType", RedisConstants.CommitOrderPrefix + userId.ToString()
             , new CacheOptions()
             {
                 Provider = CacheProviderEnum.Redis
@@ -529,7 +529,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         }
         ////////////////////////
-        var customer = await _esaleGrpcClient.GetUserByUBPId(_commonAppService.GetUserId().ToString());
+        var customer = await _esaleGrpcClient.GetUserId(_commonAppService.GetUserId().ToString());
         if (!customer.NationalCode.Equals(nationalCode))
         {
 
@@ -704,14 +704,13 @@ public class OrderAppService : ApplicationService, IOrderAppService
             //         {
             //             AbsoluteExpiration = new DateTimeOffset(DateTime.Now.AddSeconds(ttl.TotalSeconds))
             //         });
+            await _cacheManager.SetWithPrefixKeyAsync("_EsaleType",
+                           RedisConstants.CommitOrderPrefix + userId.ToString(),
+                           SaleDetailDto.ESaleTypeId.ToString(),
+                           ttl.TotalSeconds);
 
-            await _cacheManager.SetStringAsync(userId.ToString(),
-                    RedisConstants.CommitOrderEsaleTypePrefix,
-                    SaleDetailDto.ESaleTypeId.ToString(),
-                    new CacheOptions()
-                    {
-                        Provider = CacheProviderEnum.Redis
-                    }, ttl.TotalSeconds);
+
+        
         }
 
         //var pspCacheKey = string.Format(RedisConstants.UserTransactionKey, nationalCode, customerOrder.Id);
@@ -970,7 +969,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         //var user = _userRepository.FirstOrDefault(userId);
         var userNationalCode = _commonAppService.GetNationalCode();
         var userId = _commonAppService.GetUserId();
-        var user = await _esaleGrpcClient.GetUserByUBPId(userId.ToString());
+        var user = await _esaleGrpcClient.GetUserId(userId.ToString());
         var (userMobile, userShaba, userAccountNumber) = (user.MobileNumber, user.Shaba, user.AccountNumber);
 
         await _commonAppService.ValidateSMS(userMobile, userNationalCode, userSmsCode, SMSType.UserRejectionAdvocacy);
@@ -1353,7 +1352,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, new List<int> { saleDetail.ProductId }.ToList(), attachmentEntityType);
         var attachment = attachments.Where(y => y.EntityId == saleDetail.ProductId).ToList();
         saleDetail.Product.Attachments = ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(attachment);
-        var user = await _esaleGrpcClient.GetUserById(_commonAppService.GetUserId());
+        var user = await _esaleGrpcClient.GetUserId(_commonAppService.GetUserId().ToString());
         saleDetail.SurName = user.SurName;
         saleDetail.Name = user.Name;
         saleDetail.NationalCode = user.NationalCode;
@@ -1422,7 +1421,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 _auditingManager.Current.Log.Exceptions.Add(new NullReferenceException($"Payment grpc service result was null for order id [{id}]"));
             }
         }
-        var user = await _esaleGrpcClient.GetUserById(customerOrder.UserId);
+        var user = await _esaleGrpcClient.GetUserId(customerOrder.UserId.ToString());
         customerOrder.SurName = user.SurName;
         customerOrder.Name = user.Name;
         customerOrder.NationalCode = user.NationalCode;

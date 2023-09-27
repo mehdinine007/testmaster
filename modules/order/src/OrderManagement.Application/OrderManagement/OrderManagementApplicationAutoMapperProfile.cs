@@ -146,6 +146,10 @@ namespace OrderManagement
             CreateMap<CarClass, CarClassDto>().ReverseMap();
             CreateMap<CarClass, CarClassCreateDto>().ReverseMap();
             CreateMap<Questionnaire, QuestionnaireTreeDto>();
+            CreateMap<Questionnaire, QuestionnaireDto>()
+                .ForMember(x => x.Attachments ,opt => opt.Ignore())
+                .ReverseMap()
+                .IgnoreFullAuditedObjectProperties();
             CreateMap<Question, FullQuestionDto>();
             CreateMap<QuestionAnswer, QuestionAnswerDto>();
             CreateMap<SubmittedAnswer, SubmittedAnswerDto>();

@@ -288,6 +288,9 @@ namespace OrderManagement.EfCore.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("CompanyId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Content")
                         .HasColumnType("nvarchar(max)");
 
@@ -612,7 +615,7 @@ namespace OrderManagement.EfCore.Migrations
                         {
                             Id = 15,
                             Code = 15,
-                            Title = "عدم احراض خودرو فرسوده",
+                            Title = "عدم احراز خودرو فرسوده",
                             TitleEn = "OldPlan"
                         });
                 });
@@ -2648,6 +2651,9 @@ namespace OrderManagement.EfCore.Migrations
 
                     b.Property<int>("QuestionId")
                         .HasColumnType("int");
+
+                    b.Property<long?>("RelatedEntityId")
+                        .HasColumnType("bigint");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");

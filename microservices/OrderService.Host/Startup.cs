@@ -1,4 +1,5 @@
-﻿using System;
+﻿#region NS
+using System;
 using Volo.Abp;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -13,6 +14,8 @@ using OrderService.Host.Infrastructures.Hangfire.Concrete;
 using Esale.Core.IOC;
 using Esale.Core.Caching.Redis;
 using Esale.Core.Caching;
+#endregion
+
 
 namespace OrderService.Host
 {
