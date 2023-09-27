@@ -1,14 +1,9 @@
-﻿using Esale.GetwayServiceGrpc;
-using Grpc.Net.Client;
+﻿using Grpc.Net.Client;
 using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using UserManagement.Application.Contracts.Models.SendBox;
 using UserManagement.Application.Contracts.UserManagement.Services;
 using Volo.Abp.Application.Services;
-
+using GetwayServiceGrpc = Esale.GetwayServiceGrpc.GetwayServiceGrpc;
 namespace UserManagement.Application.UserManagement.Implementations
 {
     public class GetwayGrpcClient : ApplicationService , IGetwayGrpcClient
@@ -31,7 +26,7 @@ namespace UserManagement.Application.UserManagement.Implementations
 
 
 
-        public async Task<Domain.UserManagement.CommonService.Dto.Getway.HttpResponseMessageDto> GetCaptcha(Domain.UserManagement.CommonService.Dto.Getway.ContentInputDto Content)
+        public async Task<HttpResponseMessageDto> GetCaptcha(ContentInputDto Content)
         {
             try
             {
@@ -45,7 +40,7 @@ namespace UserManagement.Application.UserManagement.Implementations
                     ContentValue = Content.ContentValue,
                     KeyValue = Content.KeyValue
                 });
-                return await Task.FromResult(new Domain.UserManagement.CommonService.Dto.Getway.HttpResponseMessageDto
+                return await Task.FromResult(new HttpResponseMessageDto
                 {
                     IsSuccessStatusCode = getCatcha.IsSuccessStatusCode,
                     StringContent = getCatcha.StringContent
@@ -58,7 +53,7 @@ namespace UserManagement.Application.UserManagement.Implementations
             }
         }
 
-        public async Task<Domain.UserManagement.CommonService.Dto.Getway.SendBoxServiceDto> SendService(Domain.UserManagement.CommonService.Dto.Getway.SendBoxServiceInput input)
+        public async Task<SendBoxServiceDto> SendService(SendBoxServiceInput input)
         {
             try
             {
@@ -70,7 +65,7 @@ namespace UserManagement.Application.UserManagement.Implementations
                     Provider = (Esale.GetwayServiceGrpc.ProviderSmsTypeEnum)input.Provider,
                     Type = (Esale.GetwayServiceGrpc.TypeMessageEnum)input.Type
                 });
-                return await Task.FromResult(new Domain.UserManagement.CommonService.Dto.Getway.SendBoxServiceDto
+                return await Task.FromResult(new SendBoxServiceDto
                 {
                     Success = sendSeivice.Success,
                     DataResult = sendSeivice.DataResult,

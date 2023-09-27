@@ -8,7 +8,6 @@ using UserManagement.Application.Contracts.Models;
 using UserManagement.Application.Contracts.Services;
 using UserManagement.Application.InquiryService;
 using UserManagement.Domain.Shared;
-using UserManagement.Domain.UserManagement.CommonService.Dto;
 using Volo.Abp;
 using Volo.Abp.Application.Services;
 
