@@ -34,8 +34,8 @@ namespace UserManagement.HttpApi.UserManagement.Controllers
             throw new NotImplementedException();
         }
         [HttpGet]
-        public async Task RegistrationValidation(RegistrationValidationDto input)
-         => await _baseInformationService.RegistrationValidation(input);
+        public async Task<bool> RegistrationValidationAsync(RegistrationValidationDto input)
+         => await _baseInformationService.RegistrationValidationAsync(input);
         
         [HttpGet]
         public void RegistrationValidationWithoutCaptcha(RegistrationValidationDto input)

@@ -5,7 +5,6 @@ using UserManagement.Application.Contracts.Services;
 using Volo.Abp.Application.Services;
 using UserManagement.Domain.UserManagement.Advocacy;
 using Volo.Abp;
-using WorkingWithMongoDB.WebAPI.Services;
 using MongoDB.Driver;
 using System.Security.Claims;
 using UserManagement.Domain.UserManagement.Bases;
@@ -15,7 +14,7 @@ using MongoDB.Bson;
 using Volo.Abp.Uow;
 using Volo.Abp.Auditing;
 using Microsoft.EntityFrameworkCore;
-using UserManagement.Domain.UserManagement.CommonService.Dto;
+using UserManagement.Domain.Shared;
 
 namespace UserManagement.Application.Implementations;
 
@@ -163,16 +162,19 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
     }
 
     [Audited]
-    public async Task RegistrationValidation(RegistrationValidationDto input)
+    public async Task<bool> RegistrationValidationAsync(RegistrationValidationDto input)
     {
         await _commonAppService.ValidateVisualizeCaptcha(new VisualCaptchaInput(input.CK, input.CIT));
         Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
+        if (!ValidationHelper.IsNationalCode(input.Nationalcode))
+        {
+            throw new UserFriendlyException(Messages.NationalCodeNotValid);
+        }
         if (!string.IsNullOrEmpty(_configuration.GetSection("CloseRegisterDate").Value)
             && DateTime.Now > DateTime.Parse(_configuration.GetSection("CloseRegisterDate").Value))
         {
             throw new UserFriendlyException("زمان ثبت نام به پایان رسیده است");
         }
-         //await _commonAppService.ValidateVisualizeCaptcha(new VisualCaptchaInput(input.CT,input.CK, input.CIT));
 
         if (_configuration.GetSection("IsCheckAdvocacy").Value == "1")
         {
@@ -187,21 +189,21 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
                     x.BanksId
                 })
                 .OrderByDescending(x => x.Id).FirstOrDefault(x => x.nationalcode == input.Nationalcode);
+
             if (advocacyuser == null)
-                throw new UserFriendlyException("حساب وکالتی یافت نشد");
             {
+                throw new UserFriendlyException("حساب وکالتی یافت نشد");
             }
         }
 
         var user = (await _userMongoRepository.GetQueryableAsync())
             .FirstOrDefault(x => x.NormalizedUserName == input.Nationalcode);
+
         if (user != null)
         {
-
             throw new UserFriendlyException("این کد ملی قبلا ثبت نام شده است");
         }
-        
 
-
+        return true;
     }
 }

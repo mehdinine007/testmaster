@@ -7,7 +7,6 @@ using Volo.Abp.EntityFrameworkCore.Modeling;
 using OrderManagement.Domain.OrderManagement;
 using Esale.Core.DataAccess;
 using OrderManagement.Domain.Shared;
-using Nest;
 
 namespace OrderManagement.EfCore;
 
