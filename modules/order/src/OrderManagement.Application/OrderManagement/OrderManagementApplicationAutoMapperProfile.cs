@@ -45,7 +45,8 @@ namespace OrderManagement
                 .ReverseMap();
 
             CreateMap<CustomerOrder, CustomerOrderDto>()
-                .ForMember(x => x.OrderStatus, opt => opt.MapFrom(y => y.OrderStatus.GetDisplayName()))
+                .ForMember(x => x.OrderStatusDescription, opt => opt.MapFrom(y => y.OrderStatus.GetDisplayName()))
+                .ForMember(x => x.OrderStatus, opt => opt.MapFrom(y => (int)y.OrderStatus))
                 .ReverseMap();
 
 
