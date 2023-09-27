@@ -1,7 +1,6 @@
 ﻿using Abp.Application.Services;
 using UserManagement.Application.Contracts.Models;
 using UserManagement.Domain.Shared;
-using UserManagement.Domain.UserManagement.CommonService.Dto;
 
 namespace UserManagement.Application.Contracts.Services;
 

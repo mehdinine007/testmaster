@@ -526,7 +526,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         }
         ////////////////////////
-        var customer = await _esaleGrpcClient.GetUserByUBPId(_commonAppService.GetUserId().ToString());
+        var customer = await _esaleGrpcClient.GetUserId(_commonAppService.GetUserId().ToString());
         if (!customer.NationalCode.Equals(nationalCode))
         {
 
@@ -960,7 +960,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         //var user = _userRepository.FirstOrDefault(userId);
         var userNationalCode = _commonAppService.GetNationalCode();
         var userId = _commonAppService.GetUserId();
-        var user = await _esaleGrpcClient.GetUserById(userId);
+        var user = await _esaleGrpcClient.GetUserId(userId.ToString());
         var (userMobile, userShaba, userAccountNumber) = (user.MobileNumber, user.Shaba, user.AccountNumber);
 
         await _commonAppService.ValidateSMS(userMobile, userNationalCode, userSmsCode, SMSType.UserRejectionAdvocacy);
@@ -1343,7 +1343,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, new List<int> { saleDetail.ProductId }.ToList(), attachmentEntityType);
         var attachment = attachments.Where(y => y.EntityId == saleDetail.ProductId).ToList();
         saleDetail.Product.Attachments = ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(attachment);
-        var user = await _esaleGrpcClient.GetUserById(_commonAppService.GetUserId());
+        var user = await _esaleGrpcClient.GetUserId(_commonAppService.GetUserId().ToString());
         saleDetail.SurName = user.SurName;
         saleDetail.Name = user.Name;
         saleDetail.NationalCode = user.NationalCode;
@@ -1412,7 +1412,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 _auditingManager.Current.Log.Exceptions.Add(new NullReferenceException($"Payment grpc service result was null for order id [{id}]"));
             }
         }
-        var user = await _esaleGrpcClient.GetUserById(customerOrder.UserId);
+        var user = await _esaleGrpcClient.GetUserId(customerOrder.UserId.ToString());
         customerOrder.SurName = user.SurName;
         customerOrder.Name = user.Name;
         customerOrder.NationalCode = user.NationalCode;

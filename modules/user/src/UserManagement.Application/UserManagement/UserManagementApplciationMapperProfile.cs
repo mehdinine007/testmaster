@@ -12,13 +12,12 @@ public class UserManagementApplciationMapperProfile : Profile
 {
     public UserManagementApplciationMapperProfile()
     {
-
-
         CreateMap<PermissionDefinition, PermissionDefinitionDto>().ReverseMap();
         CreateMap<PermissionDefinitionChild, PermissionDefinitionChildDto>().ReverseMap();
         CreateMap<RolePermission, RolePermissionDto>().ReverseMap();
         CreateMap<CreateUserDto, UserMongo>();
         CreateMap<AdvocacyUsersFromBank, AdvocacyUsersFromBankWithCompanyDto>();
         CreateMap<UserMongo, UserDto>().ReverseMap();
+
     }
 }

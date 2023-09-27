@@ -10,6 +10,7 @@
 	</PropertyGroup>
 	<ItemGroup>
 	  <None Remove="UserManagement\Protos\GetwayService.proto" />
+	  <None Remove="UserManagement\Protos\UserService.proto" />
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="Grpc.aspnetcore" Version="2.53.0" />
@@ -34,6 +35,7 @@
 	</ItemGroup>
 	<ItemGroup>
 	  <Protobuf Include="UserManagement\Protos\GetwayService.proto" GrpcServices="Client" />
+	  <Protobuf Include="UserManagement\Protos\UserService.proto" GrpcServices="Server" />
 	</ItemGroup>
 
 </Project>

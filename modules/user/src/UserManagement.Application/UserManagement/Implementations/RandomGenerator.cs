@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Volo.Abp.Application.Services;
 using UserManagement.Application.Contracts.UserManagement.Services;
 
 namespace UserManagement.Application.UserManagement.Implementations
 {
-    public class RandomGenerator : IRandomGenerator
+    public class RandomGenerator : ApplicationService,IRandomGenerator
     {
         public int GetUniqueInt()
         {

@@ -6,7 +6,9 @@ namespace UserManagement.Application.Contracts.Services;
 
 public interface IBaseInformationService : IApplicationService
 {
-    Task RegistrationValidationWithoutCaptchaAsync(RegistrationValidationDto input);
+    void RegistrationValidationWithoutCaptcha(RegistrationValidationDto input);
 
     Task<bool> CheckWhiteListAsync(WhiteListEnumType whiteListEnumType, string Nationalcode);
+    Task<UserGrpcDto> GetUserByIdAsync(string userId);
+    Task RegistrationValidation(RegistrationValidationDto input);
 }
