@@ -101,7 +101,7 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
                     && !x.IsDeleted && x.Id!= transitionCreateOrUpdateDto.Id);
                 if (duplicate is not null)
                 {
-                    throw new UserFriendlyException(WorkFlowConstant.TransitionDuplicateNotFound, WorkFlowConstant.TransitionDuplicateNotFoundId);
+                    throw new UserFriendlyException(WorkFlowConstant.TransitionDuplicate, WorkFlowConstant.TransitionDuplicateId);
                 }  
 
             }

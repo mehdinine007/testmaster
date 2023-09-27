@@ -90,8 +90,8 @@ namespace WorkFlowManagement.Application.Contracts.WorkFlowManagement.Constants
         public static string SecurityIsRequired = "دسترسی اجباری میباشد";
         public static string SecurityIsRequiredId = "3009";
 
-        public static string TransitionDuplicateNotFound = "انتقال انجام شده است";
-        public static string TransitionDuplicateNotFoundId = "4001";
+        public static string TransitionDuplicate = "انتقال انجام شده است";
+        public static string TransitionDuplicateId = "4001";
 
     }
 }
