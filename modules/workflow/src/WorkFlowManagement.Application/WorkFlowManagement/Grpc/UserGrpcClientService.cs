@@ -24,61 +24,52 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Grpc
         public async Task<UserDto> GetUserById(Guid userId)
 
         {
-            try
+            AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2Support", true);
+
+            AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
+
+            var httpHandler = new HttpClientHandler();
+
+            httpHandler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+            var channel = GrpcChannel.ForAddress(_configuration.GetValue<string>("Grpc:UserUrl"), new GrpcChannelOptions { HttpHandler = httpHandler });
+            var client = new UserServiceGrpc.UserServiceGrpcClient(channel);
+            var user = client.GetUserById(new GetUserModel() { UserId = userId.ToString() });
+            if (user.BankId == 0)
+                return null;
+            return new UserDto
+
             {
 
+                AccountNumber = user.AccountNumber,
 
-                AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2Support", true);
+                BankId = user.BankId,
 
-                AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
+                BirthCityId = user.BirthCityId,
 
-                var httpHandler = new HttpClientHandler();
+                BirthProvinceId = user.BirthProvinceId,
 
-                httpHandler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
-                var channel = GrpcChannel.ForAddress(_configuration.GetValue<string>("Grpc:UserUrl"), new GrpcChannelOptions { HttpHandler = httpHandler });
-                var client = new UserServiceGrpc.UserServiceGrpcClient(channel);
-                var user = client.GetUserById(new GetUserModel() { UserId = userId.ToString() });
-                if (user.BankId == 0)
-                    return null;
-                return new UserDto
+                HabitationCityId = user.HabitationCityId,
 
-                {
+                HabitationProvinceId = user.HabitationProvinceId,
 
-                    AccountNumber = user.AccountNumber,
+                IssuingCityId = user.IssuingCityId,
 
-                    BankId = user.BankId,
+                IssuingProvinceId = user.IssuingProvinceId,
 
-                    BirthCityId = user.BirthCityId,
+                NationalCode = user.NationalCode,
 
-                    BirthProvinceId = user.BirthProvinceId,
+                Shaba = user.Shaba,
 
-                    HabitationCityId = user.HabitationCityId,
+                MobileNumber = user.MobileNumber,
 
-                    HabitationProvinceId = user.HabitationProvinceId,
+                CompanyId = user.CompanyId,
 
-                    IssuingCityId = user.IssuingCityId,
+                Name = user.Name,
 
-                    IssuingProvinceId = user.IssuingProvinceId,
+                SurName = user.SurName
 
-                    NationalCode = user.NationalCode,
+            };
 
-                    Shaba = user.Shaba,
-
-                    MobileNumber = user.MobileNumber,
-
-                    CompanyId = user.CompanyId,
-
-                    Name = user.Name,
-
-                    SurName = user.SurName
-
-                };
-            }
-            catch (Exception ex)
-            {
-
-                throw ex;
-            }
         }
 
 

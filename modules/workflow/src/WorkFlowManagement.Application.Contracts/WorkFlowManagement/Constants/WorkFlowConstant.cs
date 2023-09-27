@@ -87,5 +87,8 @@ namespace WorkFlowManagement.Application.Contracts.WorkFlowManagement.Constants
         public static string PriorityDuplicate = "اولویت تکراری میباشد";
         public static string PriorityDuplicateId = "3008";
 
+        public static string SecurityIsRequired = "دسترسی اجباری میباشد";
+        public static string SecurityIsRequiredId = "3009";
+
     }
 }
