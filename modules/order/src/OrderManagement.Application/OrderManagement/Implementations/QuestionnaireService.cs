@@ -8,10 +8,8 @@ using OrderManagement.Application.Contracts.Services;
 using OrderManagement.Application.OrderManagement.Constants;
 using OrderManagement.Domain;
 using OrderManagement.Domain.Shared;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.RateLimiting;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Services;
@@ -50,7 +48,7 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
         _attachmentService = attachmentService;
     }
 
-    public async Task<QuestionnaireTreeDto> LoadQuestionnaireTree(int questionnaireId, long? relatedEntityId=null)
+    public async Task<QuestionnaireTreeDto> LoadQuestionnaireTree(int questionnaireId, long? relatedEntityId = null)
     {
         var questionnaireWhitListType = (await _questionnaireRepository.GetQueryableAsync())
             .Select(x => new
@@ -65,10 +63,8 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
         var currentUserNationalCode = _commonAppService.GetNationalCode();
 
         if (questionnaireWhitListType.WhitListRequirement.HasValue)
-        {
-            var requiredWhitListType = (WhiteListEnumType)questionnaireWhitListType.WhitListRequirement.Value;
-            _baseInformationService.CheckWhiteList(requiredWhitListType, currentUserNationalCode);
-        }
+            _baseInformationService.CheckWhiteList((WhiteListEnumType)questionnaireWhitListType.WhitListRequirement.Value, currentUserNationalCode);
+
         var questionnaireQuery = await _questionnaireRepository.GetQueryableAsync();
         questionnaireQuery = questionnaireQuery.Include(x => x.Questions)
             .ThenInclude(x => x.Answers);
@@ -99,9 +95,9 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
         var cacheKey = relatedEntityId.HasValue
             ? string.Format(RedisConstants.QuestionnaireSurveyReportWithRelatedEntity, questionnaireId, relatedEntityId.Value)
             : string.Format(RedisConstants.QuestionnaireSurveyReport, questionnaireId);
-      //  var result = await _hybridCachingProvider.GetAsync<List<QuestionnaireAnalysisDto>>(cacheKey);
-     //   if (result.HasValue)
-     //       return result.Value;
+        //  var result = await _hybridCachingProvider.GetAsync<List<QuestionnaireAnalysisDto>>(cacheKey);
+        //   if (result.HasValue)
+        //       return result.Value;
 
         var ls = new List<int>() { (int)QuestionType.Optional, (int)QuestionType.Range };
         var questions = (await _questionRepository.GetQueryableAsync())
@@ -139,7 +135,7 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
                 x.QuestionTitle = question.Title;
         });
 
-     //   await _hybridCachingProvider.SetAsync(cacheKey, surveyReport, new TimeSpan(4, 0, 0));
+        //   await _hybridCachingProvider.SetAsync(cacheKey, surveyReport, new TimeSpan(4, 0, 0));
         return surveyReport;
     }
 
@@ -170,8 +166,9 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
             throw new UserFriendlyException("این پرسشنامه قبلا توسط شما تکمیل شده است");
 
         //check all available questions in questionnaire being completed
-        var questionIds = questionnaire.Questions.Select(x => x.Id).ToList();
-        var missedQuestionExists = submitAnswerTreeDto.SubmitAnswerDto.Any(x => !questionIds.Any(y => y == x.QuestionId));
+        var questionIds = questionnaire.Questions.Select(x => x.Id).OrderBy(x => x).ToList();   
+        var incomigAnswerIds = submitAnswerTreeDto.SubmitAnswerDto.Select(x => x.QuestionId).OrderBy(x => x).ToList();
+        var missedQuestionExists = !questionIds.SequenceEqual(incomigAnswerIds);
         if (missedQuestionExists)
             throw new UserFriendlyException("لطفا به تمام سوالات پاسخ دهید");
 
@@ -247,7 +244,7 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
 
     public async Task<List<QuestionnaireDto>> LoadQuestionnaireList(List<AttachmentEntityTypeEnum> attachmentEntityTypeEnums)
     {
-        var questionnaireList = (await _questionnaireRepository.GetQueryableAsync()).ToList();
+        var questionnaireList = (await _questionnaireRepository.GetQueryableAsync()).Where(x => x.Id != 0).ToList();
         var questionnaireIds = questionnaireList.Select(x => x.Id).ToList();
         var attachments = await _attachmentService.GetList(AttachmentEntityEnum.Questionnaire, questionnaireIds, attachmentEntityTypeEnums);
         var questionnaireDtoList = ObjectMapper.Map<List<Questionnaire>, List<QuestionnaireDto>>(questionnaireList);
