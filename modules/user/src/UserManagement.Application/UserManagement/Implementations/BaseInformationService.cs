@@ -187,7 +187,7 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
                x.nationalcode,
                x.BanksId
            })
-           .OrderByDescending(x => x.Id).FirstOrDefaultAsync(x => x.nationalcode == input.Nationalcode);
+           .FirstOrDefault(x => x.nationalcode == input.Nationalcode);
 
             if (advocacyuser == null)
             {
