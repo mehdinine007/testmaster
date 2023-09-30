@@ -60,7 +60,8 @@ namespace UserManagement.Application.UserManagement.Implementations
                     GenderCode = user.GenderCode,
                     CompanyId = user.CompanyId,
                     Name = user.Name,
-                    SurName = user.SurName
+                    SurName = user.SurName,
+                    Uid=user.Uid
                 };
             }
             catch (Exception)
