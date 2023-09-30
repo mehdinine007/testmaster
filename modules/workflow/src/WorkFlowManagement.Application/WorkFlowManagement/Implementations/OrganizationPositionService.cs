@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using EasyCaching.Redis;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +12,7 @@ using Volo.Abp.ObjectMapping;
 using WorkFlowManagement.Application.Contracts.WorkFlowManagement.Constants;
 using WorkFlowManagement.Application.Contracts.WorkFlowManagement.Dtos;
 using WorkFlowManagement.Application.Contracts.WorkFlowManagement.IServices;
+using WorkFlowManagement.Application.WorkFlowManagement.Grpc;
 using WorkFlowManagement.Domain.Shared.WorkFlowManagement.Enums;
 using WorkFlowManagement.Domain.WorkFlowManagement;
 
@@ -20,31 +22,53 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
     {
         private readonly IRepository<OrganizationPosition, int> _organizationPositionRepository;
         private readonly IRepository<OrganizationChart, int> _organizationChartRepository;
-        public OrganizationPositionService(IRepository<OrganizationPosition, int> organizationPositionRepository, IRepository<OrganizationChart, int> organizationChartRepository)
+        private readonly IPersonService _personService;
+        private readonly IUserGrpcClientService _userGrpcClientService;
+        public OrganizationPositionService(IRepository<OrganizationPosition, int> organizationPositionRepository
+            , IRepository<OrganizationChart, int> organizationChartRepository
+            , IPersonService personService,
+            IUserGrpcClientService userGrpcClientService)
         {
             _organizationPositionRepository = organizationPositionRepository;
             _organizationChartRepository = organizationChartRepository;
+            _personService = personService;
+            _userGrpcClientService = userGrpcClientService;
         }
 
 
         public async Task<OrganizationPositionDto> Add(OrganizationPositionCreateOrUpdateDto organizationPositionCreateOrUpdateDto)
         {
-            await Validation(null, organizationPositionCreateOrUpdateDto, null);
+
+            await Validation(null, organizationPositionCreateOrUpdateDto);
+            var person = await _personService.GetById(organizationPositionCreateOrUpdateDto.PersonId);
+            if (person == null)
+            {
+                var personCreateDto = new PersonCreateOrUpdateDto
+                {
+                    NationalCode = "",
+                    Title = "",
+                    Id = organizationPositionCreateOrUpdateDto.PersonId
+
+                };
+                await _personService.Add(personCreateDto);
+            };
+
             var organizationPosition = ObjectMapper.Map<OrganizationPositionCreateOrUpdateDto, OrganizationPosition>(organizationPositionCreateOrUpdateDto);
             var entity = await _organizationPositionRepository.InsertAsync(organizationPosition, autoSave: true);
+
             return ObjectMapper.Map<OrganizationPosition, OrganizationPositionDto>(entity);
         }
 
         public async Task<bool> Delete(int id)
         {
-            var organizationPosition = await Validation(id, null, null);
+            var organizationPosition = await Validation(id, null);
             await _organizationPositionRepository.DeleteAsync(id);
             return true;
         }
 
         public async Task<OrganizationPositionDto> GetById(int id)
         {
-            var organizationPosition = await Validation(id, null, null);
+            var organizationPosition = await Validation(id, null);
             var organizationPositionDto = ObjectMapper.Map<OrganizationPosition, OrganizationPositionDto>(organizationPosition);
             return organizationPositionDto;
         }
@@ -52,7 +76,7 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
 
         public async Task<OrganizationPositionDto> GetByPersonId(Guid personId)
         {
-            var organizationPosition = await Validation(null, null, personId);
+            var organizationPosition = await Validation(null, null);
             var organizationPositionDto = ObjectMapper.Map<OrganizationPosition, OrganizationPositionDto>(organizationPosition);
             return organizationPositionDto;
         }
@@ -78,7 +102,7 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
 
         public async Task<OrganizationPositionDto> Update(OrganizationPositionCreateOrUpdateDto organizationPositionCreateOrUpdateDto)
         {
-            var organizationPosition = await Validation(organizationPositionCreateOrUpdateDto.Id, organizationPositionCreateOrUpdateDto, null);
+            var organizationPosition = await Validation(organizationPositionCreateOrUpdateDto.Id, organizationPositionCreateOrUpdateDto);
             organizationPosition.OrganizationChartId = organizationPositionCreateOrUpdateDto.OrganizationChartId;
             organizationPosition.PersonId = organizationPositionCreateOrUpdateDto.PersonId;
             organizationPosition.Status = organizationPositionCreateOrUpdateDto.Status;
@@ -88,19 +112,12 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
             return ObjectMapper.Map<OrganizationPosition, OrganizationPositionDto>(entity);
         }
 
-        private async Task<OrganizationPosition> Validation(int? id, OrganizationPositionCreateOrUpdateDto organizationPositionCreateOrUpdateDto, Guid? personId)
+        private async Task<OrganizationPosition> Validation(int? id, OrganizationPositionCreateOrUpdateDto organizationPositionCreateOrUpdateDto)
         {
             var currentTime = DateTime.Now;
             var organizationPosition = new OrganizationPosition();
             var organizationPositionQuery = (await _organizationPositionRepository.GetQueryableAsync()).Include(x => x.OrganizationChart);
-            if (personId != null)
-            {
-                organizationPosition = organizationPositionQuery.FirstOrDefault(x => x.PersonId == personId && x.Status);
-                if (organizationPosition is null)
-                {
-                    throw new UserFriendlyException(WorkFlowConstant.OrganizationPositionNotFound, WorkFlowConstant.OrganizationPositionNotFoundId);
-                }
-            }
+
 
             if (id != null)
             {
@@ -112,6 +129,13 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
             }
             if (organizationPositionCreateOrUpdateDto != null)
             {
+                var user = await _userGrpcClientService.GetUserById(organizationPositionCreateOrUpdateDto.PersonId);
+                if (user == null)
+                {
+                    throw new UserFriendlyException(WorkFlowConstant.UserNotFound, WorkFlowConstant.UserNotFoundFoundId);
+                }
+
+
                 if (organizationPositionCreateOrUpdateDto.EndDate is not null)
                     if (organizationPositionCreateOrUpdateDto.EndDate < organizationPositionCreateOrUpdateDto.StartDate)
                         throw new UserFriendlyException(WorkFlowConstant.InvalidEndDate, WorkFlowConstant.InvalidEndDateId);

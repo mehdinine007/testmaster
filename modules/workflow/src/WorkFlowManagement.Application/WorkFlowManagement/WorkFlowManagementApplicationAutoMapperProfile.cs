@@ -74,6 +74,11 @@ namespace WorkFlowManagement.Application
             CreateMap<Inbox, InboxCreateOrUpdateDto>()
             .ReverseMap();
 
+            CreateMap<Person, PersonCreateOrUpdateDto>()
+          .ReverseMap();
+            CreateMap<Person, PersonDto>()
+       .ReverseMap();
+
         }
     }
 }

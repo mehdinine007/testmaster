@@ -79,7 +79,23 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
                     throw new UserFriendlyException(WorkFlowConstant.SchemeNotFound, WorkFlowConstant.SchemeNotFoundId);
                 }
             }
-            
+
+            if (schemeCreateOrUpdateDto != null)
+            {
+                var schemeTitle = schemeQuery.FirstOrDefault(x => x.Title == schemeCreateOrUpdateDto.Title && x.Id != schemeCreateOrUpdateDto.Id && !x.IsDeleted);
+                if (schemeTitle is not null)
+                {
+                    throw new UserFriendlyException(WorkFlowConstant.TitleDuplicate, WorkFlowConstant.TitleDuplicateId);
+                }
+
+
+                var schemePriority = schemeQuery.FirstOrDefault(x => x.Priority == schemeCreateOrUpdateDto.Priority && x.Id != schemeCreateOrUpdateDto.Id && !x.IsDeleted);
+                if (schemePriority is not null)
+                {
+                    throw new UserFriendlyException(WorkFlowConstant.PriorityDuplicate, WorkFlowConstant.PriorityDuplicateId);
+                }
+            }
+
 
             return scheme;
         }

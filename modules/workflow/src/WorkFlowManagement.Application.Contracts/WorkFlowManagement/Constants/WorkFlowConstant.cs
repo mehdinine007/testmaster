@@ -14,7 +14,7 @@ namespace WorkFlowManagement.Application.Contracts.WorkFlowManagement.Constants
         public static string OrganizationChartDuplicate = "پست  سازمان تکراری میباشد";
         public static string OrganizationChartDuplicateId = "1003";
         public static string OrganizationChartParentNotFound = "چارت سازمان سطح بالایی وجود ندارد";
-        public static string OrganizationChartParentNotFoundId= "1004";
+        public static string OrganizationChartParentNotFoundId = "1004";
 
         public static string OrganizationPositionNotFound = "پست سازمانی وجود ندارد";
         public static string OrganizationPositionNotFoundId = "1005";
@@ -75,6 +75,23 @@ namespace WorkFlowManagement.Application.Contracts.WorkFlowManagement.Constants
 
         public static string DependentOrganizationChartNotFound = "این سازمان درحال استفاده میباشد";
         public static string DependentOrganizationChartNotFoundId = "3004";
+        public static string UserNotFound = "کاربروجود ندارد";
+        public static string UserNotFoundFoundId = "3005";
+
+        public static string PersonNotFound = "پرسنل وجود ندارد";
+        public static string PersonNotFoundId = "3006";
+
+        public static string TitleDuplicate = "عنوان تکراری میباشد";
+        public static string TitleDuplicateId = "3007";
+
+        public static string PriorityDuplicate = "اولویت تکراری میباشد";
+        public static string PriorityDuplicateId = "3008";
+
+        public static string SecurityIsRequired = "دسترسی اجباری میباشد";
+        public static string SecurityIsRequiredId = "3009";
+
+        public static string TransitionDuplicate = "انتقال انجام شده است";
+        public static string TransitionDuplicateId = "4001";
 
     }
 }
