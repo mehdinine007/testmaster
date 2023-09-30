@@ -1,4 +1,5 @@
-﻿using UserManagement.Application.Contracts.Models;
+﻿using Nest;
+using UserManagement.Application.Contracts.Models;
 using UserManagement.Domain.UserManagement.Bases;
 using Volo.Abp.Application.Services;
 
@@ -11,4 +12,5 @@ public interface IBaseInformationService : IApplicationService
     Task<bool> CheckWhiteListAsync(WhiteListEnumType whiteListEnumType, string Nationalcode);
     Task<UserGrpcDto> GetUserByIdAsync(string userId);
     Task<bool> RegistrationValidationAsync(RegistrationValidationDto input);
+    Task<string> AddressInquiry(AddressInquiryDto input);
 }
