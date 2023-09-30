@@ -120,6 +120,8 @@ public class UserAppService : ApplicationService, IUserAppService
                 throw new UserFriendlyException("تارخ تولد نمیتواند با تاریخ جاری برابر یا بزرگتر باشد");
             if (input.IssuingDate >= DateTime.Now)
                 throw new UserFriendlyException("تارخ صدور شناسنامه نمیتواند با تاریخ جاری برابر یا بزرگتر باشد");
+            if (input.BirthDate > input.IssuingDate)
+                throw new UserFriendlyException("تارخ تولد نمیتواند با صدور شناسنامه بزرگتر باشد");
             if (!input.IssuingCityId.HasValue)
             {
                 throw new UserFriendlyException("شهر محل صدور شناسنامه رو انتخاب نمایید");
@@ -194,11 +196,11 @@ public class UserAppService : ApplicationService, IUserAppService
             {
                 throw new UserFriendlyException("کد پستی خالی است یا محدودیت تعداد کارکتر را نقض کرده است");
             }
-            if (string.IsNullOrWhiteSpace(input.Mobile) || input.Mobile.Length > 11)
+            if (string.IsNullOrWhiteSpace(input.Mobile) || (input.Mobile.Length > 11 && input.Mobile.StartsWith("09")))
             {
                 throw new UserFriendlyException("شماره موبایل خالی است یا محدودیت تعداد کارکتر را نقض کرده است");
             }
-            if (string.IsNullOrWhiteSpace(input.Tel) || input.Tel.Length > 11)
+            if (string.IsNullOrWhiteSpace(input.Tel) || input.Tel.Length > 11 )
             {
                 throw new UserFriendlyException("شماره تلفن خالی است یا محدودیت تعداد کارکتر را نقض کرده است");
             }
