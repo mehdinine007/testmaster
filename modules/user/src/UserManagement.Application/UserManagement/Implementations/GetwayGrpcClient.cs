@@ -3,7 +3,7 @@ using Microsoft.Extensions.Configuration;
 using UserManagement.Application.Contracts.Models.SendBox;
 using UserManagement.Application.Contracts.UserManagement.Services;
 using Volo.Abp.Application.Services;
-using GetwayServiceGrpc = Esale.GetwayServiceGrpc.GetwayServiceGrpc;
+
 namespace UserManagement.Application.UserManagement.Implementations
 {
     public class GetwayGrpcClient : ApplicationService , IGetwayGrpcClient
@@ -14,14 +14,16 @@ namespace UserManagement.Application.UserManagement.Implementations
                 _configuration = configuration;
         }
 
-        private GetwayServiceGrpc.GetwayServiceGrpcClient PostCaptchaServiceGrpcClient()
+        
+
+        private Esale.GetwayServiceGrpc.GetwayServiceGrpc.GetwayServiceGrpcClient PostCaptchaServiceGrpcClient()
         {
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2Support", true);
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
             var httpHandler = new HttpClientHandler();
             httpHandler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
             var channel = GrpcChannel.ForAddress(_configuration.GetValue<string>("GatewayManagement:GrpcAddress"));
-            return new GetwayServiceGrpc.GetwayServiceGrpcClient(channel);
+            return new Esale.GetwayServiceGrpc.GetwayServiceGrpc.GetwayServiceGrpcClient(channel);
         }
 
 
@@ -55,8 +57,8 @@ namespace UserManagement.Application.UserManagement.Implementations
 
         public async Task<SendBoxServiceDto> SendService(SendBoxServiceInput input)
         {
-            
-                var sendSeivice = PostCaptchaServiceGrpcClient().SendService(new()
+
+            var sendSeivice = PostCaptchaServiceGrpcClient().SendService(new()
                 {
                     Recipient = input.Recipient,
                     Text = input.Text,
@@ -72,6 +74,5 @@ namespace UserManagement.Application.UserManagement.Implementations
                 });
          
         }
-    
     }
 }

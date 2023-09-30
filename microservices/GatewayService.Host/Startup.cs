@@ -14,6 +14,7 @@ namespace GatewayService.Host
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddApplication<GatewayServiceHostModule>();
+
             var configurations = services.GetConfiguration();
             if (configurations["IsElkEnabled"] == "1")
             {
@@ -22,7 +23,9 @@ namespace GatewayService.Host
             else
             {
                 services.AddScoped<IAuditingStore, AuditingStoreDb>();
+                
             }
+            services.AddScoped<ISendBoxService, SendBoxService>();
             ServiceTool.Create(services);
         }
 

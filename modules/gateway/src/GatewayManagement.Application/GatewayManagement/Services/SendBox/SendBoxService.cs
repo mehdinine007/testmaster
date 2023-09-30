@@ -17,7 +17,7 @@ using Volo.Abp.Application.Services;
 
 namespace GatewayManagement.Application.GatewayManagement.Services.SendBox
 {
-    public class SendBoxService : IApplicationService, ISendBoxService
+    public class SendBoxService : ApplicationService, ISendBoxService
     {
         private IConfiguration _configuration; 
 
@@ -28,19 +28,36 @@ namespace GatewayManagement.Application.GatewayManagement.Services.SendBox
 
         public async Task<SendBoxServiceDto> SendService(SendBoxServiceInput sendBoxService)
         {
+           
             SendBoxServiceDto _ret = null;
+
             if (sendBoxService.Provider == ProviderSmsTypeEnum.Magfa && sendBoxService.Type == TypeMessageEnum.Sms)
             {
-                var _magfa = new MagfaSendSms(JsonConvert.DeserializeObject<MagfaConfig>(_configuration.GetSection("SendBoxConfig:Sms:Magfa").Value));
-                _ret = await _magfa.Send(sendBoxService.Text, sendBoxService.Recipient);
-                return _ret;
+                string magfaConfigJson = _configuration.GetSection("SendBoxConfig:Sms:Magfa").Value;
+
+                if (!string.IsNullOrEmpty(magfaConfigJson))
+                {
+                    var magfaConfig = JsonConvert.DeserializeObject<MagfaConfig>(magfaConfigJson);
+                    var _magfa = new MagfaSendSms(magfaConfig);
+                    _ret = await _magfa.Send(sendBoxService.Text, sendBoxService.Recipient);
+                }
+                else
+                {
+                    // Handle the case when the Magfa configuration JSON is null or empty
+                    // You can throw an exception, log an error, or take any other appropriate action
+                }
             }
-            return new SendBoxServiceDto
+            else
             {
-                Success = false,
-                DataResult = "None Service Send",
-                MessageCode = 97
-            };
+                _ret = new SendBoxServiceDto
+                {
+                    Success = false,
+                    DataResult = "None Service Send",
+                    MessageCode = 97
+                };
+            }
+
+            return _ret ?? new SendBoxServiceDto();
         }
     }
 }

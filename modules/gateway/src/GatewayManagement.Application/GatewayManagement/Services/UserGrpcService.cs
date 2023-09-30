@@ -13,12 +13,12 @@ using Volo.Abp.Application.Services;
 
 namespace GatewayManagement.Application.GatewayManagement.Services
 {
-    public class UserGrpcService : GetwayServiceGrpc.GetwayServiceGrpcBase   //, IGrpcEsaleAppService
+    public class UserGrpcService : GetwayServiceGrpc.GetwayServiceGrpcBase
     {
         private readonly ICaptchaService _esalervice;
         private readonly ISendBoxService _sendBoxervice;
-        
-        public UserGrpcService(ICaptchaService esalervice, ISendBoxService sendBox )
+
+        public UserGrpcService(ICaptchaService esalervice, ISendBoxService sendBox)
         {
             _esalervice = esalervice;
             _sendBoxervice = sendBox;
@@ -39,19 +39,22 @@ namespace GatewayManagement.Application.GatewayManagement.Services
         }
         public override async Task<Esale.GetwayServiceGrpc.SendBoxServiceDto> SendService(Esale.GetwayServiceGrpc.SendBoxServiceInput input, ServerCallContext context)
         {
-            var sendSms = await _sendBoxervice.SendService(new Contracts.GatewayManagement.Dtos.SendBoxServiceInput {
-                Recipient = input.Recipient, 
-                Text = input.Text, 
-                Type = (Contracts.GatewayManagement.Enums.TypeMessageEnum)input.Type, 
+            var sendSms = await _sendBoxervice.SendService(new Contracts.GatewayManagement.Dtos.SendBoxServiceInput
+            {
+                Recipient = input.Recipient,
+                Text = input.Text,
+                Type = (Contracts.GatewayManagement.Enums.TypeMessageEnum)input.Type,
                 Provider = (Contracts.GatewayManagement.Enums.ProviderSmsTypeEnum)input.Provider
             });
-            return await Task.FromResult(new Esale.GetwayServiceGrpc.SendBoxServiceDto
+
+            var sendBoxServiceDto = new Esale.GetwayServiceGrpc.SendBoxServiceDto
             {
-                DataResult = sendSms.DataResult,
                 Success = sendSms.Success,
-                Message = sendSms.Message,
-                MessageCode = sendSms.MessageCode
-            });
+                MessageCode = sendSms.MessageCode,
+                Message = sendSms.Message ?? string.Empty
+            };
+
+            return sendBoxServiceDto;
         }
     }
 }

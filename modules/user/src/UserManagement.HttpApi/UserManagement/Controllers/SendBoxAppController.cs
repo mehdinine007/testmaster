@@ -11,7 +11,7 @@ namespace UserManagement.HttpApi.UserManagement.Controllers;
 [DisableAuditing]
 [RemoteService]
 [Route("api/services/app/[controller]/[action]")]
-public class SendBoxController : AbpController
+public class SendBoxController : Controller
 {
     private readonly ISendBoxAppService _sendBoxAppService;
     public SendBoxController(ISendBoxAppService sendBoxAppService)

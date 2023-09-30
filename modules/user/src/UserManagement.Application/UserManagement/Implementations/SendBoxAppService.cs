@@ -39,7 +39,8 @@ public class SendBoxAppService : ApplicationService, ISendBoxAppService
         IRandomGenerator iRandomGenerator,
         IBaseInformationService baseInformationService,
         //IRepository<Logs, long> LogsRepository,
-        ICacheManager cacheManager)
+        ICacheManager cacheManager,
+        IGetwayGrpcClient getwayGrpcClient)
     {
         _configuration = configuration;
         _commonAppService = CommonAppService;
@@ -47,6 +48,7 @@ public class SendBoxAppService : ApplicationService, ISendBoxAppService
         _baseInformationService = baseInformationService;
         //_logsRepository = LogsRepository;
         _cacheManager = cacheManager;
+        _getwayGrpcClient = getwayGrpcClient;
     }
 
 
@@ -75,11 +77,11 @@ public class SendBoxAppService : ApplicationService, ISendBoxAppService
         // await _commonAppService.ValidateVisualizeCaptcha(new CommonService.Dto.VisualCaptchaInput(input.CT,input.CK, input.CIT));
         if (_configuration.GetSection("IsRecaptchaEnabled").Value == "1")
         {
-            //var response = await _commonAppService.CheckCaptcha(new CaptchaInputDto(input.CK, "login"));
-            //if (response.Success == false)
-            //{
-            //    throw new UserFriendlyException("خطای کپچا");
-            //}
+            var response = await _commonAppService.CheckCaptcha(new CaptchaInputDto(input.CK, "login"));
+            if (response.Success == false)
+            {
+                throw new UserFriendlyException("خطای کپچا");
+            }
 
 
         }
@@ -157,18 +159,14 @@ public class SendBoxAppService : ApplicationService, ISendBoxAppService
                 }
 
             }
-            IDataResult<string> _ret = null;
-            //SendBoxServiceDto _ret = null;
-            try
-            {
+            IDataResult<string> _ret1 = null;
+            SendBoxServiceDto _ret = null;
+          
                 if (!string.IsNullOrWhiteSpace(_configuration.GetSection("DisableSendSMS").Value))
                 {
                     sendSMSDto.SMSCode = "1";
 
                     return new SuccsessResult();
-
-
-
 
                 }
                 else
@@ -183,46 +181,19 @@ public class SendBoxAppService : ApplicationService, ISendBoxAppService
                         Type = TypeMessageEnum.Sms
                     };
 
-                    _ret = await _magfa.Send(Message, input.Recipient);
-                    //_ret = await _getwayGrpcClient.SendService(sendService);
+                    //_ret = await _magfa.Send(Message, input.Recipient);
+                    //_ret = (IDataResult<string>)await _getwayGrpcClient.SendService(sendService);
+                    var _retgrpc = await _getwayGrpcClient.SendService(sendService);
+                    if (_retgrpc.Success)
+                    {
+                        sendSMSDto.LastSMSSend = DateTime.Now;
+                        await _cacheManager.SetStringAsync(input.Recipient + input.NationalCode, PreFix, JsonConvert.SerializeObject(sendSMSDto), new() { Provider = CacheProviderEnum.Redis });
+                    }
+                   
+                    //return new SuccsessResult()
                     //grpc
 
                 }
-            }
-            catch (Exception ex)
-            {
-                //logs.EndDate = DateTime.Now;
-                //logs.Message = ex.Message;
-                //_logsRepository.InsertAsync(logs);
-            }
-
-
-            if (_ret.Success)
-            {
-                //logs.EndDate = DateTime.Now;
-                //logs.Message = _ret.DataResult;
-                //logs.Type = 1;
-
-                //_logsRepository.InsertAsync(logs);
-                sendSMSDto.LastSMSSend = DateTime.Now;
-                await _cacheManager.SetStringAsync(input.Recipient + input.NationalCode, PreFix, JsonConvert.SerializeObject(sendSMSDto), new() { Provider = CacheProviderEnum.Redis });
-                //RedisHelper.Connection.GetDatabase().StringSet(PreFix + input.Recipient + input.NationalCode,
-                //  , TimeSpan.FromMinutes(4));
-                //  _cacheManager.GetCache("SMS").Set(PreFix + input.Recipient + input.NationalCode, sendSMSDto);
-                return new SuccsessResult();
-            }
-            else
-            {
-                //logs.Type = 0;
-                //logs.EndDate = DateTime.Now;
-                //logs.Message = _ret.DataResult;
-                //_logsRepository.InsertAsync(logs);
-                sendSMSDto.LastSMSSend = DateTime.Now;
-                //sendSMSDto.SMSCode = "1";
-                //_cacheManager.GetCache("SMS").Set(PreFix + input.Recipient + input.NationalCode, sendSMSDto);
-                //_logsRepository.InsertAsync(logs);
-
-            }
         }
         return new ErrorResult();
     }
