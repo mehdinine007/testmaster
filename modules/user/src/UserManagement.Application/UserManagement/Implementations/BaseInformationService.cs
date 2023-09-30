@@ -157,7 +157,8 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
             GenderCode = (int)user.Gender,
             CompanyId = user.CompanyId,
             SurName = user.Surname,
-            Name = user.Name
+            Name = user.Name,
+            Uid=user.UID
         };
     }
 
