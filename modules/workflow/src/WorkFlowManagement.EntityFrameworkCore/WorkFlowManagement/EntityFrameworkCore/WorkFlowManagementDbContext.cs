@@ -22,6 +22,7 @@ namespace WorkFlowManagement.EntityFrameworkCore
         public DbSet<ActivityRole> ActivityRoles { get; set; }
         public DbSet<Process> Processes { get; set; }
         public DbSet<Inbox> Inbox { get; set; }
+        public DbSet<Person> Person { get; set; }
 
 
         public WorkFlowManagementDbContext(DbContextOptions<WorkFlowManagementDbContext> options)

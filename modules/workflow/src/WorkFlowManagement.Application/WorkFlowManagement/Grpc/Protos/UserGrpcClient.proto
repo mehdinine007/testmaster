@@ -1,6 +1,6 @@
 ﻿syntax = "proto3";
 
-option csharp_namespace = "Esale.UserServiceGrpc";
+option csharp_namespace = "WorkFlowManagement.Application.Grpc.UserGrpcClient";
 
 import "google/protobuf/wrappers.proto";
 
@@ -56,6 +56,4 @@ message UserModel{
 	string Name = 14;
 
 	string SurName=15;
-	string Uid=16;
-
 }

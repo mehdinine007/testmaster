@@ -157,7 +157,8 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
             GenderCode = (int)user.Gender,
             CompanyId = user.CompanyId,
             SurName = user.Surname,
-            Name = user.Name
+            Name = user.Name,
+            Uid=user.UID
         };
     }
 
@@ -204,5 +205,23 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
         }
 
         return true;
+    }
+
+    public async Task<string> AddressInquiry(AddressInquiryDto input)
+
+    {
+        if (input.nationalCode == null)
+        {
+            throw new UserFriendlyException("کد ملی را وارد نمایید");
+        }
+        if (input.zipCod == null)
+        {
+            throw new UserFriendlyException("کدپستی را وارد نمایید");
+        }
+        var useInquiryForUserAddress = _configuration.GetValue<bool?>("UseInquiryForUserAddress") ?? false;
+        if (useInquiryForUserAddress)
+            throw new UserFriendlyException("استعلام شماره موبایل ممکن نیست");
+        var zipCodeInquiry =await _commonAppService.GetAddressByZipCode(input.zipCod, input.nationalCode);
+        return zipCodeInquiry;
     }
 }

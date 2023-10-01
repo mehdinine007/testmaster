@@ -79,6 +79,14 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
                 }
             }
 
+            if (roleCreateOrUpdateDto is not null)
+            {
+                if (roleCreateOrUpdateDto.Security.Count<=0)
+                {
+                    throw new UserFriendlyException(WorkFlowConstant.SecurityIsRequired, WorkFlowConstant.SecurityIsRequiredId);
+                }
+            }
+
             return role;
         }
     }
