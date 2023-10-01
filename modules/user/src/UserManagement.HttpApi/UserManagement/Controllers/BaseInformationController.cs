@@ -42,5 +42,8 @@ namespace UserManagement.HttpApi.UserManagement.Controllers
         {
             throw new NotImplementedException();
         }
+        [HttpGet]
+        public async Task<string> AddressInquiry(AddressInquiryDto input)
+            => await _baseInformationService.AddressInquiry(input);
     }
 }
