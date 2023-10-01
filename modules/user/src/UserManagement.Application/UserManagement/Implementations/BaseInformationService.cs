@@ -44,7 +44,7 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
         _commonAppService = commonAppService;
     }
 
-    public async void RegistrationValidationWithoutCaptcha(RegistrationValidationDto input)
+    public async Task RegistrationValidationWithoutCaptcha(RegistrationValidationDto input)
     {
         if (_configuration.GetSection("IsCheckAdvocacy").Value == "1")
         {
