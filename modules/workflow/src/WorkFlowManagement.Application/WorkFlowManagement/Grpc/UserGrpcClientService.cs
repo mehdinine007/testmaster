@@ -34,7 +34,7 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Grpc
             var channel = GrpcChannel.ForAddress(_configuration.GetValue<string>("Grpc:UserUrl"), new GrpcChannelOptions { HttpHandler = httpHandler });
             var client = new UserServiceGrpc.UserServiceGrpcClient(channel);
             var user = client.GetUserById(new GetUserModel() { UserId = userId.ToString() });
-            if (user.BankId == 0)
+            if (user.Uid is null || user.Uid=="")
                 return null;
             return new UserDto
 
@@ -66,7 +66,8 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Grpc
 
                 Name = user.Name,
 
-                SurName = user.SurName
+                SurName = user.SurName,
+                Uid = user.Uid, 
 
             };
 
