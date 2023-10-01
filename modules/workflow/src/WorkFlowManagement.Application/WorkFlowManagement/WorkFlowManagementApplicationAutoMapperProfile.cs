@@ -18,6 +18,7 @@ namespace WorkFlowManagement.Application
              .ReverseMap();
 
             CreateMap<OrganizationPosition, OrganizationPositionDto>()
+                  .ForMember(x => x.FullName, c => c.MapFrom(m => m.Person.Title))
             .ReverseMap();
             CreateMap<OrganizationPosition, OrganizationPositionCreateOrUpdateDto>()
           .ReverseMap();
@@ -60,6 +61,7 @@ namespace WorkFlowManagement.Application
             CreateMap<Process, ProcessDto>()
                 .ForMember(x => x.StateTitle, c => c.MapFrom(m => m.State != 0 ? EnumHelper.GetDescription(m.State) : ""))
                 .ForMember(x => x.StatusTitle, c => c.MapFrom(m => m.Status != 0 ? EnumHelper.GetDescription(m.Status) : ""))
+                 .ForMember(x => x.FullName, c => c.MapFrom(m => m.Person.Title))
 
             .ReverseMap();
             CreateMap<Process, ProcessCreateOrUpdateDto>()
@@ -69,6 +71,7 @@ namespace WorkFlowManagement.Application
             CreateMap<Inbox, InboxDto>()
                .ForMember(x => x.StateTitle, c => c.MapFrom(m => m.State != 0 ? EnumHelper.GetDescription(m.State) : ""))
                .ForMember(x => x.InboxStatusTilte, c => c.MapFrom(m => m.Status != 0 ? EnumHelper.GetDescription(m.Status) : ""))
+                .ForMember(x => x.FullName, c => c.MapFrom(m => m.Person.Title))
                .ReverseMap();
 
             CreateMap<Inbox, InboxCreateOrUpdateDto>()
