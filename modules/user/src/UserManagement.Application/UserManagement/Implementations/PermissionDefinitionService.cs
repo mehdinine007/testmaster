@@ -22,16 +22,20 @@ namespace UserManagement.Application.UserManagement.Implementations
     public class PermissionDefinitionService : ApplicationService, IPermissionDefinitionService
     {
         private readonly IRepository<PermissionDefinition, ObjectId> _permissionRepository;
+        private readonly IRepository<PermissionDefinitionWrite, ObjectId> _permissionWriteRepository;
         private readonly IRepository<RolePermission, ObjectId> _rolepermissionRepository;
         private readonly ICacheManager _cacheManager;
 
         public PermissionDefinitionService(IRepository<PermissionDefinition, ObjectId> permissionRepository,
-        IRepository<RolePermission, ObjectId> rolepermissionRepository,
-        ICacheManager cacheManager)
+                                           IRepository<RolePermission, ObjectId> rolepermissionRepository,
+                                           ICacheManager cacheManager,
+                                           IRepository<PermissionDefinitionWrite, ObjectId> permissionWriteRepository
+            )
         {
             _permissionRepository = permissionRepository;
             _rolepermissionRepository = rolepermissionRepository;
             _cacheManager = cacheManager;
+            _permissionWriteRepository = permissionWriteRepository;
         }
 
         public async Task<List<PermissionDefinitionDto>> GetList()
@@ -170,10 +174,9 @@ namespace UserManagement.Application.UserManagement.Implementations
             var permissionQuery = await _permissionRepository.GetQueryableAsync();
             var _maxCode = permissionQuery.Max(x => x.Code);
             permission.Code = StringHelper.GenerateTreeNodePath(_maxCode, null, 4);
-            var getpermission = ObjectMapper.Map<PermissionDefinitionDto, PermissionDefinition>(permission);
-            var results = await _permissionRepository.InsertAsync(getpermission,autoSave: true);
+            var getpermission = ObjectMapper.Map<PermissionDefinitionDto, PermissionDefinitionWrite>(permission);
+            var results = await _permissionWriteRepository.InsertAsync(ObjectMapper.Map<PermissionDefinition, PermissionDefinitionWrite>(getpermission), autoSave: true);
             return ObjectMapper.Map<PermissionDefinition, PermissionDefinitionDto>(results);
-            
         }
 
         public async Task<PermissionDefinitionDto> GetById(ObjectId Id)
@@ -195,8 +198,8 @@ namespace UserManagement.Application.UserManagement.Implementations
 
         public async Task<PermissionDefinitionDto> Add(PermissionDefinitionDto permission)
         {
-           var permissiondefinition = ObjectMapper.Map<PermissionDefinitionDto, PermissionDefinition>(permission);
-            var result = await _permissionRepository.InsertAsync(permissiondefinition);
+            var permissiondefinition = ObjectMapper.Map<PermissionDefinitionDto, PermissionDefinitionWrite>(permission);
+            var result = await _permissionWriteRepository.InsertAsync(permissiondefinition);
             return ObjectMapper.Map<PermissionDefinition, PermissionDefinitionDto>(result);
         }
 
@@ -225,7 +228,7 @@ namespace UserManagement.Application.UserManagement.Implementations
 
             //}
 
-                      
+
             var result = await _permissionRepository.UpdateAsync(permissiondefenition);
             return ObjectMapper.Map<PermissionDefinition, PermissionDefinitionDto>(result);
 

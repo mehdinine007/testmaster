@@ -81,10 +81,8 @@ public class UserServiceHostModule : AbpModule
         context.Services.AddEsaleResultWrapper();
         IdentityModelEventSource.ShowPII = true;
         //ConfigureHangfire(context, configuration);
-        context.Services.AddMongoDbContext<UserManagementMongoDbContext>(options =>
-        {
-            options.AddDefaultRepositories(includeAllEntities: true);
-        });
+        context.Services.AddMongoDbContext<UserManagementMongoDbContext>(options => options.AddDefaultRepositories(includeAllEntities: true));
+        context.Services.AddMongoDbContext<UserManagementMongoDbContextWriteOnly>(options => options.AddDefaultRepositories(includeAllEntities: true));
         ConfigureHangfire(context, configuration);
         context.Services.AddGrpc();
         context.Services.EasyCaching(configuration, "RedisCache:ConnectionString");
