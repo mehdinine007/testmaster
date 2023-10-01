@@ -117,11 +117,11 @@ public class UserAppService : ApplicationService, IUserAppService
                 throw new UserFriendlyException("شهر محل تولد رو انتخاب نمایید");
             }
             if (input.BirthDate >= DateTime.Now)
-                throw new UserFriendlyException("تارخ تولد نمیتواند با تاریخ جاری برابر یا بزرگتر باشد");
+                throw new UserFriendlyException("تاریخ تولد نمیتواند با تاریخ جاری برابر یا بزرگتر باشد");
             if (input.IssuingDate >= DateTime.Now)
-                throw new UserFriendlyException("تارخ صدور شناسنامه نمیتواند با تاریخ جاری برابر یا بزرگتر باشد");
+                throw new UserFriendlyException("تاریخ صدور شناسنامه نمیتواند با تاریخ جاری برابر یا بزرگتر باشد");
             if (input.BirthDate > input.IssuingDate)
-                throw new UserFriendlyException("تارخ تولد نمیتواند با صدور شناسنامه بزرگتر باشد");
+                throw new UserFriendlyException("تاریخ تولد نمیتواند با صدور شناسنامه بزرگتر باشد");
             if (!input.IssuingCityId.HasValue)
             {
                 throw new UserFriendlyException("شهر محل صدور شناسنامه رو انتخاب نمایید");
@@ -192,11 +192,13 @@ public class UserAppService : ApplicationService, IUserAppService
             {
                 throw new UserFriendlyException("شناسه محل تولد خالی است یا محدودیت تعداد کارکتر را نقض کرده است");
             }
-            if (string.IsNullOrWhiteSpace(input.PostalCode) || input.PostalCode.Length > 10)
+            if (string.IsNullOrWhiteSpace(input.PostalCode) || input.PostalCode.Length != 10)
             {
                 throw new UserFriendlyException("کد پستی خالی است یا محدودیت تعداد کارکتر را نقض کرده است");
             }
-            if (string.IsNullOrWhiteSpace(input.Mobile) || (input.Mobile.Length > 11 && input.Mobile.StartsWith("09")))
+
+            var mob = new Regex(@"^09[0-39][0-9]{8}$");
+            if (string.IsNullOrWhiteSpace(input.Mobile) || !mob.IsMatch(input.Mobile)) //(input.Mobile.Length != 11 && input.Mobile.StartsWith("09")))
             {
                 throw new UserFriendlyException("شماره موبایل خالی است یا محدودیت تعداد کارکتر را نقض کرده است");
             }
@@ -292,6 +294,12 @@ public class UserAppService : ApplicationService, IUserAppService
         var hasUpperChar = new Regex(@"[A-Z]+");
         var hasLowerChar = new Regex(@"[a-z]+");
         var hasSymbols = new Regex(@"[!@#$%^&*()_+=\[{\]};:<>|./?,-]");
+
+        if (!hasNumber.IsMatch(input.PostalCode))
+        {
+            throw new UserFriendlyException("ساختار کدپستی صحیح نمی باشد");
+        }
+
 
         if (!hasLowerChar.IsMatch(input.Password))
         {
