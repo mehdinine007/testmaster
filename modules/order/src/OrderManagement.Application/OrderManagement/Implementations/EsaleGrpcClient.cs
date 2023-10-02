@@ -70,7 +70,7 @@ public class EsaleGrpcClient : ApplicationService, IEsaleGrpcClient
 
             throw;
         }
-       
+
     }
     public async Task<AdvocacyUserDto> GetUserAdvocacyByNationalCode(string nationlCode)
     {
@@ -204,7 +204,7 @@ public class EsaleGrpcClient : ApplicationService, IEsaleGrpcClient
             FilterParam1 = handShakeDto.FilterParam1,
             FilterParam2 = handShakeDto.FilterParam2,
             FilterParam3 = handShakeDto.FilterParam3,
-            FilterParam4 = handShakeDto.FilterParam4 
+            FilterParam4 = handShakeDto.FilterParam4
         });
         if (handShake == null)
         {
@@ -257,5 +257,39 @@ public class EsaleGrpcClient : ApplicationService, IEsaleGrpcClient
             PspJsonResult = reverse.PspJsonResult,
             StatusCode = reverse.StatusCode,
         };
+    }
+    public async Task<ClientOrderDeliveryInformationDto> ValidateClientOrderDeliveryDate(ClientOrderDeliveryInformationRequestDto clientOrderRequest)
+    {
+        try
+        {
+
+            var httpHandler = new HttpClientHandler();
+            httpHandler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+            var channel = GrpcChannel.ForAddress(_configuration.GetValue<string>("Esale:GrpcAddress"), new GrpcChannelOptions { HttpHandler = httpHandler });
+            var client = new UserServiceGrpc.UserServiceGrpcClient(channel);
+
+            var deliverDateValidation = await client.CheckOrderDeliveryDateAsync(new ClientOrderDetailRequest
+            {
+                NationalCode = clientOrderRequest.NationalCode,
+                OrderId = clientOrderRequest.OrderId
+            });
+            return new ClientOrderDeliveryInformationDto
+            {
+                NationalCode = deliverDateValidation.NationalCode,
+                TranDate = deliverDateValidation.TranDate.ToDateTime(),// ? Timestamp.FromDateTime(deliverDateValidation.TranDate) : new,
+                PayedPrice = deliverDateValidation.PayedPrice,
+                ContRowId = deliverDateValidation.ContRowId,
+                Vin = deliverDateValidation.Vin,
+                BodyNumber = deliverDateValidation.BodyNumber,
+                DeliveryDate = deliverDateValidation.DeliveryDate.ToDateTime(),
+                FinalPrice = deliverDateValidation.FinalPrice,
+                CarDesc = deliverDateValidation.CarDesc
+            };
+        }
+        catch (Exception e)
+        {
+
+            throw;
+        }
     }
 }

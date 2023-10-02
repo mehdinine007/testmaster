@@ -15,6 +15,7 @@ using Volo.Abp.Uow;
 using Volo.Abp.Auditing;
 using Microsoft.EntityFrameworkCore;
 using UserManagement.Domain.Shared;
+using UserManagement.Domain.UserManagement.CompanyService;
 
 namespace UserManagement.Application.Implementations;
 
@@ -26,6 +27,8 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IRepository<WhiteList, int> _whiteListRepository;
     private readonly ICommonAppService _commonAppService;
+    private readonly IRepository<ClientsOrderDetailByCompany, long> _clientsOrderDetailByCompany;
+    private readonly IRepository<CompanyPaypaidPrices, long> _companyPaypaidPricesRepository;
 
 
     public BaseInformationService(IConfiguration configuration,
@@ -224,4 +227,56 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
         var zipCodeInquiry =await _commonAppService.GetAddressByZipCode(input.zipCod, input.nationalCode);
         return zipCodeInquiry;
     }
+
+    [UnitOfWork(false)]
+    [RemoteService(false)]
+    public async Task<bool> CheckOrderDeliveryDate(string nationalCode, long orderId)
+    {
+        var clientDetailByCompany= await _clientsOrderDetailByCompany.GetQueryableAsync();
+        var clientsOrderDretail = clientDetailByCompany
+            .Select(x => new
+            {
+                x.OrderId,
+                x.NationalCode,
+                x.DeliveryDate
+            })
+            .FirstOrDefault(x => x.NationalCode == nationalCode && x.OrderId == orderId);
+        if (clientsOrderDretail == null || !clientsOrderDretail.DeliveryDate.HasValue)
+            return false;
+
+        var a = DateTime.Now.Subtract(clientsOrderDretail.DeliveryDate.Value).TotalDays > 90;
+        return a;
+    }
+
+    [UnitOfWork(false)]
+    [RemoteService(false)]
+    public async Task<OrderDeliveryDto> GetOrderDelivery(string nationalCode, long orderId)
+    {
+        var OrderDetailByCompany = await _clientsOrderDetailByCompany.GetQueryableAsync();
+        var orderDelay = OrderDetailByCompany.Join((await _companyPaypaidPricesRepository.GetQueryableAsync()),
+               x => x.Id,
+               y => y.ClientsOrderDetailByCompanyId,
+               (dco, d) => new OrderDeliveryDto
+               {
+                   Id = dco.Id,
+                   NationalCode = dco.NationalCode,
+                   TranDate = d.TranDate,
+                   PayedPrice = d.PayedPrice,
+                   ContRowId = dco.ContRowId,
+                   Vin = dco.Vin,
+                   BodyNumber = dco.BodyNumber,
+                   DeliveryDate = dco.DeliveryDate,
+                   FinalPrice = dco.FinalPrice,
+                   CarDesc = dco.CarDesc,
+                   OrderId = dco.OrderId
+               })
+                .OrderByDescending(x => x.Id)
+                .FirstOrDefault(x => x.NationalCode == nationalCode && x.OrderId == orderId);
+        if (orderDelay == null)
+        {
+            throw new UserFriendlyException("موجودی وجود ندارد.");
+        }
+        return orderDelay;
+    }
+
 }
