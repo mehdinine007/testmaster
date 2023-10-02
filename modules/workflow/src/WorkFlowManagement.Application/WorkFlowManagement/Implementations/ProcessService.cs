@@ -38,6 +38,7 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
         private readonly IActivityRoleService _activityRoleService;
         private readonly IRoleOrganizationChartService _roleOrganizationChartService;
         private readonly IInboxService _inboxService;
+        private readonly IPersonService _personService;
         public ProcessService(IRepository<Process
             , Guid> processRepository, ISchemeService schemeService
             , IActivityService activityService
@@ -46,8 +47,9 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
             , IOrganizationChartService organizationChartService
              , IActivityRoleService activityRoleService
              , IRoleOrganizationChartService roleOrganizationChartService
-             , IInboxService inboxService,
-            IRepository<Inbox, int> inboxRepository
+             , IInboxService inboxService
+            ,IRepository<Inbox, int> inboxRepository
+            ,IPersonService personService
 
             )
         {
@@ -61,6 +63,7 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
             _roleOrganizationChartService = roleOrganizationChartService;
             _inboxService = inboxService;
             _inboxRepository = inboxRepository;
+            _personService = personService;
         }
 
 
@@ -91,7 +94,7 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
 
         public async Task<ProcessDto> GetById(Guid id)
         {
-            var processQuery = (await _processRepository.GetQueryableAsync()).Include(x => x.Activity);
+            var processQuery = (await _processRepository.GetQueryableAsync()).Include(x => x.Activity).Include(x => x.Person);
             var process = processQuery.FirstOrDefault(x => x.Id == id);
             var processDto = ObjectMapper.Map<Process, ProcessDto>(process);
             return processDto;
@@ -99,7 +102,7 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
 
         public async Task<List<ProcessDto>> GetList()
         {
-            var process = (await _processRepository.GetQueryableAsync()).Include(x => x.Scheme).ToList();
+            var process = (await _processRepository.GetQueryableAsync()).Include(x => x.Scheme).Include(x => x.Person).ToList();
             var processDto = ObjectMapper.Map<List<Process>, List<ProcessDto>>(process);
             return processDto;
         }
