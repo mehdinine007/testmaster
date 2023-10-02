@@ -39,6 +39,7 @@
       <ProjectReference Include="..\..\..\..\shared\Extensions\Extensions.csproj" />
       <ProjectReference Include="..\OrderManagement.Application.Contracts\OrderManagement.Application.Contracts.csproj" />
       <ProjectReference Include="..\OrderManagement.Domain\OrderManagement.Domain.csproj" />
+      <ProjectReference Include="..\OrderManagement.EntityFrameworkCore\OrderManagement.EntityFrameworkCore.csproj" />
     </ItemGroup>
 
 </Project>
