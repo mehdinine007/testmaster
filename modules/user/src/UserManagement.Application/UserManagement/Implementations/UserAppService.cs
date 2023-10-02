@@ -30,6 +30,7 @@ public class UserAppService : ApplicationService, IUserAppService
     private readonly IDistributedCache _distributedCache;
     private readonly IPasswordHasher<User> _passwordHasher;
     private readonly IBaseInformationService _baseInformationService;
+    private readonly ICaptchaService _captchaService;
 
     public UserAppService(IConfiguration configuration,
                           IBankAppService bankAppService,
@@ -38,7 +39,8 @@ public class UserAppService : ApplicationService, IUserAppService
                           IPasswordHasher<User> passwordHasher,
                           IBaseInformationService baseInformationService,
                           IRolePermissionService rolePermissionService,
-                          IRepository<UserMongo, ObjectId> userMongoRepository
+                          IRepository<UserMongo, ObjectId> userMongoRepository,
+                          ICaptchaService captchaService
         )
     {
         _rolePermissionService = rolePermissionService;
@@ -49,6 +51,7 @@ public class UserAppService : ApplicationService, IUserAppService
         _distributedCache = distributedCache;
         _passwordHasher = passwordHasher;
         _baseInformationService = baseInformationService;
+        _captchaService = captchaService;
     }
 
     public async Task<bool> AddRole(ObjectId userid, List<string> roleCode)
@@ -252,7 +255,7 @@ public class UserAppService : ApplicationService, IUserAppService
 
             if (_configuration.GetSection("IsRecaptchaEnabled").Value == "1")
             {
-                var response = await _commonAppService.CheckCaptcha(new CaptchaInputDto(input.ck, "CreateUser"));
+                var response = await _captchaService.ReCaptcha(new CaptchaInputDto(input.ck, "CreateUser"));
                 if (response.Success == false)
                 {
                     throw new UserFriendlyException("خطای کپچا");
@@ -276,7 +279,7 @@ public class UserAppService : ApplicationService, IUserAppService
 
             if (_configuration.GetSection("IsRecaptchaEnabled").Value == "1")
             {
-                var response = await _commonAppService.CheckCaptcha(new CaptchaInputDto(input.ck, "CreateUser"));
+                var response = await _captchaService.ReCaptcha(new CaptchaInputDto(input.ck, "CreateUser"));
                 if (response.Success == false)
                 {
                     throw new UserFriendlyException("خطای کپچا");

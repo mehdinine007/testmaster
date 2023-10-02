@@ -1,31 +1,24 @@
-﻿using Esale.GetwayServiceGrpc;
+﻿#region NS
+using Esale.GetwayServiceGrpc;
 using GatewayManagement.Application.Contracts.GatewayManagement.IServices;
-using GatewayManagement.Application.Contracts.GatewayManagement.IServices.Esale;
 using Grpc.Core;
-using GatewayManagement.Application.Contracts.GatewayManagement.Dtos;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Volo.Abp.Application.Services;
-
+#endregion
 
 namespace GatewayManagement.Application.GatewayManagement.Services
 {
     public class UserGrpcService : GetwayServiceGrpc.GetwayServiceGrpcBase
     {
-        private readonly ICaptchaService _esalervice;
+        private readonly ICaptchaService _captchaService;
         private readonly ISendBoxService _sendBoxervice;
 
-        public UserGrpcService(ICaptchaService esalervice, ISendBoxService sendBox)
+        public UserGrpcService(ICaptchaService captchaService, ISendBoxService sendBox)
         {
-            _esalervice = esalervice;
+            _captchaService = captchaService;
             _sendBoxervice = sendBox;
         }
-        public override async Task<Esale.GetwayServiceGrpc.HttpResponseMessageDto> GetCaptcha(Esale.GetwayServiceGrpc.ContentInputDto request, ServerCallContext context)
+        public override async Task<Esale.GetwayServiceGrpc.HttpResponseMessageDto> ReCaptcha(Esale.GetwayServiceGrpc.ContentInputDto request, ServerCallContext context)
         {
-            var getCaptcha = await _esalervice.GetCaptcha(new Contracts.GatewayManagement.Dtos.ContentInputDto
+            var getCaptcha = await _captchaService.ReCaptcha(new Contracts.GatewayManagement.Dtos.ContentInputDto
             {
                 ContentValue = request.ContentValue,
                 KeyValue = request.KeyValue

@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿#region NS
+using Microsoft.AspNetCore.Mvc;
 using Volo.Abp;
-using GatewayManagement.Application.Contracts.GatewayManagement.IServices.Esale;
 using GatewayManagement.Application.Contracts.GatewayManagement.Dtos;
 using Volo.Abp.Auditing;
+using GatewayManagement.Application.Contracts.GatewayManagement.IServices;
+#endregion
 
 namespace SendBoxController
 {
@@ -11,17 +13,17 @@ namespace SendBoxController
     [Route("api/services/app/SendBoxService/[action]")]
     public class SendBoxController : Controller
     {
-        private readonly ISendSmsService _sendSmsService;
-        public SendBoxController(ISendSmsService sendSmsService)
+        private readonly ISendBoxService _sendBoxService;
+        public SendBoxController(ISendBoxService sendBoxService)
         {
-            _sendSmsService = sendSmsService;
+            _sendBoxService = sendBoxService;
         }
 
         [HttpPost]
-        public async Task<SendBoxServiceDto> SendSms(SendBoxServiceInput input) 
+        public async Task<SendBoxServiceDto> SendSms(SendBoxServiceInput input)
         {
-           return await _sendSmsService.MagfaSendSms(input.Recipient, input.Text);
-        } 
+            return await _sendBoxService.SendService(input);
+        }
 
     }
 }

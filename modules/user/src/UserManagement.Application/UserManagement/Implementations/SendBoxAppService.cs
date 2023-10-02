@@ -1,4 +1,5 @@
-﻿using Esale.Core.Caching;
+﻿#region NS
+using Esale.Core.Caching;
 using Esale.Core.Utility.Results;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -15,6 +16,7 @@ using Volo.Abp.Domain.Repositories;
 using UserManagement.Application.Contracts.Models;
 using Volo.Abp.Application.Services;
 using Newtonsoft.Json;
+#endregion
 
 namespace UserManagement.Application.UserManagement.Implementations;
 
@@ -30,9 +32,7 @@ public class SendBoxAppService : ApplicationService, ISendBoxAppService
     //private readonly IRepository<Logs, long> _logsRepository;
     //private readonly IDistributedCache _distributedCache;
     private readonly IGetwayGrpcClient _getwayGrpcClient;
-
-
-
+    private readonly ICaptchaService _captchaService;
 
     public SendBoxAppService(IConfiguration configuration,
         ICommonAppService CommonAppService,
@@ -40,7 +40,8 @@ public class SendBoxAppService : ApplicationService, ISendBoxAppService
         IBaseInformationService baseInformationService,
         //IRepository<Logs, long> LogsRepository,
         ICacheManager cacheManager,
-        IGetwayGrpcClient getwayGrpcClient)
+        IGetwayGrpcClient getwayGrpcClient,
+        ICaptchaService captchaService)
     {
         _configuration = configuration;
         _commonAppService = CommonAppService;
@@ -49,8 +50,8 @@ public class SendBoxAppService : ApplicationService, ISendBoxAppService
         //_logsRepository = LogsRepository;
         _cacheManager = cacheManager;
         _getwayGrpcClient = getwayGrpcClient;
+        _captchaService = captchaService;
     }
-
 
 
     [Audited]
@@ -77,12 +78,11 @@ public class SendBoxAppService : ApplicationService, ISendBoxAppService
         // await _commonAppService.ValidateVisualizeCaptcha(new CommonService.Dto.VisualCaptchaInput(input.CT,input.CK, input.CIT));
         if (_configuration.GetSection("IsRecaptchaEnabled").Value == "1")
         {
-            var response = await _commonAppService.CheckCaptcha(new CaptchaInputDto(input.CK, "login"));
+            var response = await _captchaService.ReCaptcha(new CaptchaInputDto(input.CK, "CreateUser"));
             if (response.Success == false)
             {
                 throw new UserFriendlyException("خطای کپچا");
             }
-
 
         }
 
@@ -161,39 +161,39 @@ public class SendBoxAppService : ApplicationService, ISendBoxAppService
             }
             IDataResult<string> _ret1 = null;
             SendBoxServiceDto _ret = null;
-          
-                if (!string.IsNullOrWhiteSpace(_configuration.GetSection("DisableSendSMS").Value))
+
+            if (!string.IsNullOrWhiteSpace(_configuration.GetSection("DisableSendSMS").Value))
+            {
+                sendSMSDto.SMSCode = "1";
+
+                return new SuccsessResult();
+
+            }
+            else
+            {
+                //_ret = await _magfa.Send(Message, input.Recipient);
+                //grpc
+                SendBoxServiceInput sendService = new SendBoxServiceInput
                 {
-                    sendSMSDto.SMSCode = "1";
+                    Recipient = input.Recipient,
+                    Text = Message,
+                    Provider = ProviderSmsTypeEnum.Magfa,
+                    Type = TypeMessageEnum.Sms
+                };
 
-                    return new SuccsessResult();
-
-                }
-                else
+                //_ret = await _magfa.Send(Message, input.Recipient);
+                //_ret = (IDataResult<string>)await _getwayGrpcClient.SendService(sendService);
+                var _retgrpc = await _getwayGrpcClient.SendService(sendService);
+                if (_retgrpc.Success)
                 {
-                    //_ret = await _magfa.Send(Message, input.Recipient);
-                    //grpc
-                    SendBoxServiceInput sendService = new SendBoxServiceInput
-                    {
-                        Recipient = input.Recipient,
-                        Text = Message,
-                        Provider = ProviderSmsTypeEnum.Magfa,
-                        Type = TypeMessageEnum.Sms
-                    };
-
-                    //_ret = await _magfa.Send(Message, input.Recipient);
-                    //_ret = (IDataResult<string>)await _getwayGrpcClient.SendService(sendService);
-                    var _retgrpc = await _getwayGrpcClient.SendService(sendService);
-                    if (_retgrpc.Success)
-                    {
-                        sendSMSDto.LastSMSSend = DateTime.Now;
-                        await _cacheManager.SetStringAsync(input.Recipient + input.NationalCode, PreFix, JsonConvert.SerializeObject(sendSMSDto), new() { Provider = CacheProviderEnum.Redis });
-                    }
-                   
-                    //return new SuccsessResult()
-                    //grpc
-
+                    sendSMSDto.LastSMSSend = DateTime.Now;
+                    await _cacheManager.SetStringAsync(input.Recipient + input.NationalCode, PreFix, JsonConvert.SerializeObject(sendSMSDto), new() { Provider = CacheProviderEnum.Redis });
                 }
+
+                //return new SuccsessResult()
+                //grpc
+
+            }
         }
         return new ErrorResult();
     }

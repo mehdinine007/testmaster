@@ -5,8 +5,8 @@ using Volo.Abp.Application.Services;
 
 namespace GatewayManagement.Application.Contracts.GatewayManagement.IServices
 {
-    public interface ISendBoxService : IApplicationService
+    public interface ICaptchaService : IApplicationService
     {
-        Task<SendBoxServiceDto> SendService(SendBoxServiceInput sendBoxService);
+        Task<HttpResponseMessageDto> ReCaptcha(ContentInputDto Content);
     }
 }

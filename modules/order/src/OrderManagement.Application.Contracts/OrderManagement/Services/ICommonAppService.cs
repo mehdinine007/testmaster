@@ -4,7 +4,6 @@ namespace OrderManagement.Application.Contracts.Services
 {
     public interface ICommonAppService : IApplicationService
     {
-        Task<RecaptchaResponse> CheckCaptcha(CaptchaInputDto input);
         //Task<AdvocacyAcountResult> CheckAccount(string nationalCode, string mobileNo);
         Task<bool> ValidateSMS(string Mobile, string NationalCode, string UserSMSCode, SMSType sMSType);
         Task ValidateVisualizeCaptcha(VisualCaptchaInput input);

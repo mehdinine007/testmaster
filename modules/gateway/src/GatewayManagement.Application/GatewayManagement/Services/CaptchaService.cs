@@ -1,26 +1,14 @@
-﻿using Esale.Core.Utility.Results;
-using GatewayManagement.Application.Contracts.GatewayManagement.Dtos.Esale;
+﻿#region NS
 using GatewayManagement.Application.Contracts.GatewayManagement.IServices;
-using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
 using GatewayManagement.Application.Contracts.GatewayManagement.Dtos;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http.Headers;
-using System.Text;
-using System.Threading.Tasks;
 using Volo.Abp.Application.Services;
+#endregion
 
 namespace GatewayManagement.Application.GatewayManagement.Services
 {
     public class CaptchaService : ApplicationService, ICaptchaService
     {
-        public CaptchaService()
-        {
-        }
-        public async Task<HttpResponseMessageDto> GetCaptcha(ContentInputDto Content)
+        public async Task<HttpResponseMessageDto> ReCaptcha(ContentInputDto Content)
         {
             var dictionary = new Dictionary<string, string>()
          {
@@ -42,8 +30,5 @@ namespace GatewayManagement.Application.GatewayManagement.Services
 
             return httpResponse;
         }
-
-       
-
     }
 }
