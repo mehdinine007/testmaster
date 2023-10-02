@@ -30,6 +30,7 @@ public class UserAppService : ApplicationService, IUserAppService
     private readonly IDistributedCache _distributedCache;
     private readonly IPasswordHasher<User> _passwordHasher;
     private readonly IBaseInformationService _baseInformationService;
+    private readonly IRepository<UserMongoWrite, ObjectId> _userMongoWriteRepository;
 
     public UserAppService(IConfiguration configuration,
                           IBankAppService bankAppService,
@@ -38,7 +39,8 @@ public class UserAppService : ApplicationService, IUserAppService
                           IPasswordHasher<User> passwordHasher,
                           IBaseInformationService baseInformationService,
                           IRolePermissionService rolePermissionService,
-                          IRepository<UserMongo, ObjectId> userMongoRepository
+                          IRepository<UserMongo, ObjectId> userMongoRepository,
+                          IRepository<UserMongoWrite, ObjectId> userMongoWriteRepository
         )
     {
         _rolePermissionService = rolePermissionService;
@@ -49,6 +51,7 @@ public class UserAppService : ApplicationService, IUserAppService
         _distributedCache = distributedCache;
         _passwordHasher = passwordHasher;
         _baseInformationService = baseInformationService;
+        _userMongoWriteRepository = userMongoWriteRepository;
     }
 
     public async Task<bool> AddRole(ObjectId userid, List<string> roleCode)
@@ -64,7 +67,7 @@ public class UserAppService : ApplicationService, IUserAppService
             if (await _rolePermissionService.ValidationByCode(cod))
                 user.Roles.Add(cod);
         }
-        await _userMongoRepository.UpdateAsync(user);
+        await _userMongoWriteRepository.UpdateAsync(ObjectMapper.Map<UserMongo, UserMongoWrite>(user));
         return true;
     }
 
@@ -378,7 +381,7 @@ public class UserAppService : ApplicationService, IUserAppService
             try
             {
                 //user._Id = ObjectId.GenerateNewId().ToString();
-                await _userMongoRepository.InsertAsync(user);
+                await _userMongoWriteRepository.InsertAsync(ObjectMapper.Map<UserMongo, UserMongoWrite>(user));
             }
             catch (Exception ex)
             {
