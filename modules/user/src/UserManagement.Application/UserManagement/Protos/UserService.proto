@@ -4,6 +4,7 @@ option csharp_namespace = "Esale.UserServiceGrpc";
 
 import "google/protobuf/wrappers.proto";
 import "google/protobuf/timestamp.proto";
+//import "google/protobuf/timestamp.protos";
 
 package UserService;
 
