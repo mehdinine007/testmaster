@@ -46,6 +46,10 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
 
     public async Task RegistrationValidationWithoutCaptcha(RegistrationValidationDto input)
     {
+        if (!ValidationHelper.IsNationalCode(input.Nationalcode))
+        {
+            throw new UserFriendlyException(Messages.NationalCodeNotValid);
+        }
         if (_configuration.GetSection("IsCheckAdvocacy").Value == "1")
         {
             var advocacyuser = _advocacyUsersRepository.WithDetails()
