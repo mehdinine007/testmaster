@@ -22,7 +22,7 @@ namespace UserManagement.Application.UserManagement.Implementations
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
             var httpHandler = new HttpClientHandler();
             httpHandler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
-            var channel = GrpcChannel.ForAddress(_configuration.GetValue<string>("GatewayManagement:GrpcAddress"));
+            var channel = GrpcChannel.ForAddress(_configuration.GetValue<string>("GatewayManagement:GrpcAddress"), new GrpcChannelOptions { HttpHandler = httpHandler });
             return new Esale.GetwayServiceGrpc.GetwayServiceGrpc.GetwayServiceGrpcClient(channel);
         }
 
