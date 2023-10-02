@@ -11,6 +11,7 @@ using WorkFlowManagement.Application.Contracts.WorkFlowManagement.Constants;
 using WorkFlowManagement.Application.Contracts.WorkFlowManagement.Dtos;
 using WorkFlowManagement.Application.Contracts.WorkFlowManagement.IServices;
 using WorkFlowManagement.Domain.WorkFlowManagement;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Model;
 
 namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
 {
@@ -24,7 +25,7 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
 
         public async Task<PersonDto> Add(PersonCreateOrUpdateDto personCreateOrUpdateDto)
         {
-            var person = ObjectMapper.Map<PersonCreateOrUpdateDto,Person>(personCreateOrUpdateDto);
+            var person = ObjectMapper.Map<PersonCreateOrUpdateDto, Person>(personCreateOrUpdateDto);
             var entity = await _PersonRepository.InsertAsync(person, autoSave: true);
             return ObjectMapper.Map<Person, PersonDto>(entity);
         }
@@ -38,15 +39,14 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
 
         public async Task<PersonDto> GetById(Guid id)
         {
-            var personQuery = (await _PersonRepository.GetQueryableAsync());
-            var person = personQuery.FirstOrDefault(x => x.Id == id);
+            var person = await Validation(id, null);
             var personDto = ObjectMapper.Map<Person, PersonDto>(person);
             return personDto;
         }
 
-       
 
-        public async  Task<List<PersonDto>> GetList(int activityId)
+
+        public async Task<List<PersonDto>> GetList(int activityId)
         {
             var person = (await _PersonRepository.GetQueryableAsync()).ToList();
             var personDto = ObjectMapper.Map<List<Person>, List<PersonDto>>(person);
@@ -71,7 +71,7 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
                 person = personQuery.FirstOrDefault(x => x.Id == id);
                 if (person is null)
                 {
-                    throw new UserFriendlyException(WorkFlowConstant.ProcessNotFound, WorkFlowConstant.ProcessNotFoundId);
+                    throw new UserFriendlyException(WorkFlowConstant.PersonNotFound, WorkFlowConstant.PersonNotFoundId);
                 }
             }
             return person;

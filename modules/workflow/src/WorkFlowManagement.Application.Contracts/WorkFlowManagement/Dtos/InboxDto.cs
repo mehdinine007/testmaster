@@ -25,6 +25,6 @@ namespace WorkFlowManagement.Application.Contracts.WorkFlowManagement.Dtos
         public string ReferenceDescription { get; set; }
         public int? ParentId { get; set; }
         public  InboxDto Parent { get; set; }
-
+        public string FullName { get; set; }
     }
 }

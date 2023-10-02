@@ -43,11 +43,17 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
             var person = await _personService.GetById(organizationPositionCreateOrUpdateDto.PersonId);
             if (person == null)
             {
+                var user = await _userGrpcClientService.GetUserById(organizationPositionCreateOrUpdateDto.PersonId);
+                if (user == null)
+                {
+                    throw new UserFriendlyException(WorkFlowConstant.UserNotFound, WorkFlowConstant.UserNotFoundFoundId);
+                }
+
                 var personCreateDto = new PersonCreateOrUpdateDto
                 {
-                    NationalCode = "",
-                    Title = "",
-                    Id = organizationPositionCreateOrUpdateDto.PersonId
+                    NationalCode = user.NationalCode,
+                    Title = user.Name + " " + user.SurName,
+                    Id = new Guid(user.Uid)
 
                 };
                 await _personService.Add(personCreateDto);
@@ -76,7 +82,12 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
 
         public async Task<OrganizationPositionDto> GetByPersonId(Guid personId)
         {
-            var organizationPosition = await Validation(null, null);
+            var organizationPositionQuery = await _organizationPositionRepository.GetQueryableAsync();
+           var organizationPosition= organizationPositionQuery.FirstOrDefault(c => c.PersonId == personId);
+            if (organizationPosition is null)
+            {
+                throw new UserFriendlyException(WorkFlowConstant.OrganizationPositionNotFound, WorkFlowConstant.OrganizationPositionNotFoundId);
+            }
             var organizationPositionDto = ObjectMapper.Map<OrganizationPosition, OrganizationPositionDto>(organizationPosition);
             return organizationPositionDto;
         }
@@ -87,7 +98,7 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
             var organizationPositionQuery = await _organizationPositionRepository.GetQueryableAsync();
             var organizationPosition = organizationPositionQuery.FirstOrDefault(x => x.OrganizationChartId == organizationChartId);
 
-            if (organizationPositionQuery == null)
+            if (organizationPosition == null)
                 throw new UserFriendlyException(WorkFlowConstant.OrganizationPositionNotFound, WorkFlowConstant.OrganizationPositionNotFoundId);
             var organizationPositionDto = ObjectMapper.Map<OrganizationPosition, OrganizationPositionDto>(organizationPosition);
             return organizationPositionDto;
@@ -95,7 +106,7 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
 
         public async Task<List<OrganizationPositionDto>> GetList(int organizationChartId)
         {
-            var organizationPosition = (await _organizationPositionRepository.GetQueryableAsync()).Where(x => x.OrganizationChartId == organizationChartId).Include(x => x.OrganizationChart).ToList();
+            var organizationPosition = (await _organizationPositionRepository.GetQueryableAsync()).Where(x => x.OrganizationChartId == organizationChartId).Include(x => x.OrganizationChart).Include(x => x.Person).ToList();
             var organizationPositionDto = ObjectMapper.Map<List<OrganizationPosition>, List<OrganizationPositionDto>>(organizationPosition);
             return organizationPositionDto;
         }
@@ -103,20 +114,40 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
         public async Task<OrganizationPositionDto> Update(OrganizationPositionCreateOrUpdateDto organizationPositionCreateOrUpdateDto)
         {
             var organizationPosition = await Validation(organizationPositionCreateOrUpdateDto.Id, organizationPositionCreateOrUpdateDto);
+            var person = await _personService.GetById(organizationPositionCreateOrUpdateDto.PersonId);
+            if (person == null)
+            {
+                var user = await _userGrpcClientService.GetUserById(organizationPositionCreateOrUpdateDto.PersonId);
+                if (user == null)
+                {
+                    throw new UserFriendlyException(WorkFlowConstant.UserNotFound, WorkFlowConstant.UserNotFoundFoundId);
+                }
+
+                var personCreateDto = new PersonCreateOrUpdateDto
+                {
+                    NationalCode = user.NationalCode,
+                    Title = user.Name + " " + user.SurName,
+                    Id = new Guid(user.Uid)
+
+                };
+                await _personService.Add(personCreateDto);
+            };
+
+
             organizationPosition.OrganizationChartId = organizationPositionCreateOrUpdateDto.OrganizationChartId;
             organizationPosition.PersonId = organizationPositionCreateOrUpdateDto.PersonId;
             organizationPosition.Status = organizationPositionCreateOrUpdateDto.Status;
             organizationPosition.StartDate = organizationPositionCreateOrUpdateDto.StartDate;
             organizationPosition.EndDate = organizationPositionCreateOrUpdateDto.EndDate;
             var entity = await _organizationPositionRepository.UpdateAsync(organizationPosition);
-            return ObjectMapper.Map<OrganizationPosition, OrganizationPositionDto>(entity);
+            return await GetById(entity.Id);
         }
 
         private async Task<OrganizationPosition> Validation(int? id, OrganizationPositionCreateOrUpdateDto organizationPositionCreateOrUpdateDto)
         {
             var currentTime = DateTime.Now;
             var organizationPosition = new OrganizationPosition();
-            var organizationPositionQuery = (await _organizationPositionRepository.GetQueryableAsync()).Include(x => x.OrganizationChart);
+            var organizationPositionQuery = (await _organizationPositionRepository.GetQueryableAsync()).Include(x => x.OrganizationChart).Include(x => x.Person);
 
 
             if (id != null)
@@ -129,12 +160,6 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
             }
             if (organizationPositionCreateOrUpdateDto != null)
             {
-                var user = await _userGrpcClientService.GetUserById(organizationPositionCreateOrUpdateDto.PersonId);
-                if (user == null)
-                {
-                    throw new UserFriendlyException(WorkFlowConstant.UserNotFound, WorkFlowConstant.UserNotFoundFoundId);
-                }
-
 
                 if (organizationPositionCreateOrUpdateDto.EndDate is not null)
                     if (organizationPositionCreateOrUpdateDto.EndDate < organizationPositionCreateOrUpdateDto.StartDate)

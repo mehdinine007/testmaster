@@ -56,4 +56,5 @@ message UserModel{
 	string Name = 14;
 
 	string SurName=15;
+	string Uid=16;
 }

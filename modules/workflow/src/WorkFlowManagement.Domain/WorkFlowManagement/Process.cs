@@ -36,7 +36,9 @@ namespace WorkFlowManagement.Domain.WorkFlowManagement
         public virtual OrganizationChart PreviousOrganizationChart { get; set; }
 
         public Guid PersonId { get; set; }
+        public virtual Person Person { get; protected set; }
         public Guid? PreviousPersonId { get; set; }
+        public virtual Person PreviousPerson { get; protected set; }
         public Guid CreatedPersonId { get; set; }
         public virtual ICollection<Inbox> Inboxes { get; set; }
 

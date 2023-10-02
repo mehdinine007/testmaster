@@ -15,6 +15,7 @@ namespace WorkFlowManagement.Application.Contracts.WorkFlowManagement.Dtos
         public DateTime? EndDate { get; set; }
         public bool Status { get; set; }
         public virtual OrganizationChartDto OrganizationChart { get; protected set; }
+        public string FullName { get; set; }
 
     }
 }
