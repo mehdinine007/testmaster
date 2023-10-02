@@ -53,8 +53,10 @@ public class AnnouncementController : Controller
     public Task<int> Update(CreateAnnouncementDto announcementDto)
     => _announcementService.Update(announcementDto);
     [HttpPost]
-    public Task<bool> UploadFile([FromForm]UploadFileDto uploadFile)
+    public Task<bool> UploadFile([FromForm] UploadFileDto uploadFile)
    => _announcementService.UploadFile(uploadFile);
+    //public Task<AnnouncementDto> GetById(int id)
+    //=> _announcementService.GetById(id);
 
     
 }

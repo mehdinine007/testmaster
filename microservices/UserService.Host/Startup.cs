@@ -40,6 +40,7 @@ namespace UserService.Host
             services.AddControllers();
             services.AddSingleton<UserMongoService>();
             services.AddSingleton<IRolePermissionJob, RolePermissionJob>();
+            
             ServiceTool.Create(services);
         }
 

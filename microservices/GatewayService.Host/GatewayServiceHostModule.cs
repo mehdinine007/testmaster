@@ -20,6 +20,7 @@ using Volo.Abp.Uow;
 using Microsoft.EntityFrameworkCore;
 using GatewayManagement.Application.Servicess;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
+using GatewayManagement.Application.GatewayManagement.Services;
 
 namespace GatewayService.Host
 {
@@ -114,7 +115,8 @@ namespace GatewayService.Host
 
             app.UseConfiguredEndpoints(endpoints =>
             {
-                endpoints.MapGet("/grpc", () => "grpc");
+                endpoints.MapGrpcService<UserGrpcService>();
+                //endpoints.MapGet("/grpc", () => "grpc");
                 endpoints.MapGrpcService<GatewayGrpcServiceProvider>();
             });
 

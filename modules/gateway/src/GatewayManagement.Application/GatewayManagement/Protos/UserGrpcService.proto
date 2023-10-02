@@ -35,11 +35,9 @@ message SendBoxServiceInput{
 	ProviderSmsTypeEnum Provider = 3;
 	TypeMessageEnum Type = 4;
 }
-
 message SendBoxServiceDto{
 	bool Success = 1;
 	string DataResult = 2;
 	string Message = 3;
 	int32 MessageCode = 4;
 }
-

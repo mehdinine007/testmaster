@@ -1,6 +1,7 @@
 ﻿using Esale.Core.Utility.Results;
 using Microsoft.AspNetCore.Mvc;
 using UserManagement.Application.Contracts.Models;
+using UserManagement.Application.Contracts.Models.SendBox;
 using UserManagement.Application.Contracts.UserManagement.Services;
 using Volo.Abp;
 using Volo.Abp.AspNetCore.Mvc;
@@ -11,12 +12,15 @@ namespace UserManagement.HttpApi.UserManagement.Controllers;
 [DisableAuditing]
 [RemoteService]
 [Route("api/services/app/[controller]/[action]")]
-public class SendBoxController : AbpController
+public class SendBoxController : Controller
 {
     private readonly ISendBoxAppService _sendBoxAppService;
+   
+
     public SendBoxController(ISendBoxAppService sendBoxAppService)
     {
         _sendBoxAppService = sendBoxAppService;
+        
     }
 
     [HttpPost]
@@ -25,4 +29,6 @@ public class SendBoxController : AbpController
         IResult result = await _sendBoxAppService.SendSms(input);
         return result;
     }
+
+    
 }
