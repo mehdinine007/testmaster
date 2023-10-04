@@ -8,7 +8,8 @@ namespace UserManagement.Application.UserManagement.Implementations
         public int GetUniqueInt()
         {
             byte[] value = Guid.NewGuid().ToByteArray();
-            return Math.Abs(BitConverter.ToInt32(value, 0));
+            int x = Math.Abs(BitConverter.ToInt32(value, 0));
+            return int.Parse(x.ToString().Substring(0, 6));
         }
     }
 }

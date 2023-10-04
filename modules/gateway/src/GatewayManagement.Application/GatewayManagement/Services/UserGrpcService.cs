@@ -25,8 +25,9 @@ namespace GatewayManagement.Application.GatewayManagement.Services
             });
             return await Task.FromResult(new Esale.GetwayServiceGrpc.HttpResponseMessageDto
             {
-                IsSuccessStatusCode = getCaptcha.IsSuccessStatusCode,
-                StringContent = getCaptcha.StringContent
+                Success = getCaptcha.Success,
+                Error = getCaptcha.Error,
+                ErrorCode = getCaptcha.ErrorCode
             });
 
         }

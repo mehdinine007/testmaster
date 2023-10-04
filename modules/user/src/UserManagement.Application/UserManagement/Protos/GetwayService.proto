@@ -25,8 +25,9 @@ message ContentInputDto{
 	string KeyValue = 2;
 }
 message HttpResponseMessageDto{
-   bool IsSuccessStatusCode =1;
-   string StringContent = 2;
+   bool Success =1;
+   string Error = 2;
+   string ErrorCode = 3;
 }
 
 message SendBoxServiceInput{

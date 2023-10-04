@@ -35,8 +35,9 @@ namespace UserManagement.Application.UserManagement.Implementations
             });
             return await Task.FromResult(new HttpResponseMessageDto
             {
-                IsSuccessStatusCode = getCatcha.IsSuccessStatusCode,
-                StringContent = getCatcha.StringContent
+                Success = getCatcha.Success,
+                Error = getCatcha.Error,
+                ErrorCode = getCatcha.ErrorCode
             });
         }
 
