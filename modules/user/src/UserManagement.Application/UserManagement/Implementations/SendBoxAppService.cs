@@ -57,6 +57,10 @@ public class SendBoxAppService : ApplicationService, ISendBoxAppService
     [Audited]
     public async Task<Esale.Core.Utility.Results.IResult> SendSms(SendSMSDto input)
     {
+        if (input.NationalCode.Length != 10 || input.NationalCode.AsParallel().Any(x => !char.IsDigit(x)))
+            throw new UserFriendlyException("کد ملی صحیح نیست");
+        if (input.Recipient.Length != 11 || !input.Recipient.StartsWith("09") || input.Recipient.AsParallel().Any(x => !char.IsDigit(x)))
+            throw new UserFriendlyException("شماره موبایل صحیح نیست");
         Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
         RegistrationSMSDto sendSMSDto = new RegistrationSMSDto();
         //Logs logs = new Logs();
