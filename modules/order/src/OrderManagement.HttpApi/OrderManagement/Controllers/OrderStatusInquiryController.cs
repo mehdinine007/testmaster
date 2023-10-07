@@ -21,8 +21,8 @@ public class OrderStatusInquiryController : Controller // , IOrderStatusInquiryS
 
     [HttpPost]
     [UserAuthorization]
-    public async Task<OrderStatusInquiryResultDto> CommitOrderDeilveryLog(OrderStatusInquiryCommitDto orderStatusInquiryCommitDto)
-        => await _orderStatusInquiryService.CommitOrderDeilveryLog(orderStatusInquiryCommitDto);
+    public async Task<OrderStatusInquiryResultDto> GetOrderDeilvery(OrderStatusInquiryCommitDto orderStatusInquiryCommitDto)
+        => await _orderStatusInquiryService.GetOrderDeilvery(orderStatusInquiryCommitDto);
 
     //public Task<OrderStatusInquiryDto> GetCurrentUserOrderStatus(string nationalCode, int customerOrderId)
     //{

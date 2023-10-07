@@ -55,16 +55,16 @@ public class OrderStatusInquiryService : ApplicationService, IOrderStatusInquiry
         throw new NotImplementedException();
     }
 
-    public async Task<OrderStatusInquiryResultDto> CommitOrderDeilveryLog(OrderStatusInquiryCommitDto orderStatusInquiryCommitDto)
+    public async Task<OrderStatusInquiryResultDto> GetOrderDeilvery(OrderStatusInquiryCommitDto orderStatusInquiryCommitDto)
     {
         var orderDeliveries = (await _orderDeliveryStatusTypeRepository.GetQueryableAsync()).AsNoTracking().ToList();
-        //var userId = _commonAppService.GetUserId();
-        var userId = "20e5d14f-1c64-44d6-a80c-1a0ca2417a6e";// جهت دمو
-        Guid userGuid = new Guid(userId);
+        var userId = _commonAppService.GetUserId();
+        //var userId = "20e5d14f-1c64-44d6-a80c-1a0ca2417a6e";// جهت دمو
+        //Guid userGuid = new Guid(userId);
         var order = (await _customerOrderRepository.GetQueryableAsync())
             .Include(x => x.SaleDetail)
             .ThenInclude(x => x.Product)
-            .FirstOrDefault(x => x.Id == orderStatusInquiryCommitDto.OrderId && x.UserId == userGuid)
+            .FirstOrDefault(x => x.Id == orderStatusInquiryCommitDto.OrderId && x.UserId == userId)
             ?? throw new UserFriendlyException("سفارش یافت نشد");
         var currentOrderDeliveryStatus = order.OrderDeliveryStatus;
         var nationalCode = _commonAppService.GetNationalCode();
@@ -118,24 +118,24 @@ public class OrderStatusInquiryService : ApplicationService, IOrderStatusInquiry
                 x.Title
             })
             .FirstOrDefault(x => x.Code == product.Code.Substring(0, 4));
-        var orderLastLog = (await _orderStatusInquiryRepository.GetQueryableAsync())
-            .OrderByDescending(x => x.Id)
-            .FirstOrDefault(x => x.OrderId == orderStatusInquiryCommitDto.OrderId);
-        if (orderLastLog != null)
-        {
-            var lastLogSubmitDate = orderLastLog.SubmitDate;
-            var dateDiff = lastLogSubmitDate.Subtract(DateTime.Now);
-            if (dateDiff.Days <= 0)
-            {
-                result = ObjectMapper.Map<OrderStatusInquiry, OrderStatusInquiryResultDto>(orderLastLog, result);
-                //result.OrderDeliveryStatusDescription = (await _orderDeliveryStatusTypeRepository.GetQueryableAsync())
-                //    .FirstOrDefault(x => x.Code == (int)result.OrderDeliveryStatus).Description;
-                result.AvailableDeliveryStatusList = availableDeliveryStatusList;
-                FormatOrderDeliveryStatusDescriptions(result.AvailableDeliveryStatusList, order, orderLastLog, company.Title);
-                result.OrderDeliveryStatusDescription = availableDeliveryStatusList.First(x => x.OrderDeliverySatusCode == (int)result.OrderDeliveryStatus).Description;
-                return result;
-            }
-        }
+        //var orderLastLog = (await _orderStatusInquiryRepository.GetQueryableAsync())
+        //    .OrderByDescending(x => x.Id)
+        //    .FirstOrDefault(x => x.OrderId == orderStatusInquiryCommitDto.OrderId);
+        //if (orderLastLog != null)
+        //{
+        //    var lastLogSubmitDate = orderLastLog.SubmitDate;
+        //    var dateDiff = lastLogSubmitDate.Subtract(DateTime.Now);
+        //    if (dateDiff.Days <= 0)
+        //    {
+        //        result = ObjectMapper.Map<OrderStatusInquiry, OrderStatusInquiryResultDto>(orderLastLog, result);
+        //        //result.OrderDeliveryStatusDescription = (await _orderDeliveryStatusTypeRepository.GetQueryableAsync())
+        //        //    .FirstOrDefault(x => x.Code == (int)result.OrderDeliveryStatus).Description;
+        //        result.AvailableDeliveryStatusList = availableDeliveryStatusList;
+        //        FormatOrderDeliveryStatusDescriptions(result.AvailableDeliveryStatusList, order, orderLastLog, company.Title);
+        //        result.OrderDeliveryStatusDescription = availableDeliveryStatusList.First(x => x.OrderDeliverySatusCode == (int)result.OrderDeliveryStatus).Description;
+        //        return result;
+        //    }
+        //}
         // var companyAccessToken = await _commonAppService.GetIkcoAccessTokenAsync();
         // var inquiryFromCompany2 = await _commonAppService.IkcoOrderStatusInquiryAsync(nationalCode, orderStatusInquiryCommitDto.OrderId, companyAccessToken);
 
