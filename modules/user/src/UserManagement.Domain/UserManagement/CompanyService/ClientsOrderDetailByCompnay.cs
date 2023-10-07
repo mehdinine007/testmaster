@@ -19,7 +19,7 @@ namespace UserManagement.Domain.UserManagement.CompanyService
 
         public long? PayedPrice { get; set; }
 
-        public string ContRowId { get; set; }
+        public int ContRowId { get; set; }
 
         public DateTime? ContRowIdDate { get; set; }
 

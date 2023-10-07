@@ -2,6 +2,7 @@
 using UserManagement.Domain.UserManagement;
 using UserManagement.Domain.UserManagement.Advocacy;
 using UserManagement.Domain.UserManagement.Bases;
+using UserManagement.Domain.UserManagement.CompanyService;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
 using Volo.Abp.Data;
 using Volo.Abp.EntityFrameworkCore;
@@ -22,7 +23,8 @@ namespace UserManagement.EfCore.EntityFrameworkCore
         public DbSet<AdvocacyUsersFromBank> AdvocacyUsersFromBank { get; set; }
 
         public DbSet<UserRejectionFromBank> UserRejectionFromBank { get; set; }
-
+        public DbSet<ClientsOrderDetailByCompany> ClientsOrderDetailByCompany { get; set; }
+        public DbSet<CompanyPaypaidPrices> CompanyPaypaidPrices { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);

@@ -16,6 +16,7 @@ using Volo.Abp.Auditing;
 using Microsoft.EntityFrameworkCore;
 using UserManagement.Domain.Shared;
 using UserManagement.Domain.UserManagement.CompanyService;
+using Microsoft.EntityFrameworkCore.Internal;
 
 namespace UserManagement.Application.Implementations;
 
@@ -36,8 +37,9 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
                                   IHttpContextAccessor httpContextAccessor,
                                   IRepository<WhiteList, int> whiteListRepository,
                                   IRepository<UserMongo, ObjectId> userMongoRepository,
-                                  ICommonAppService commonAppService
-        )
+                                  ICommonAppService commonAppService,
+                                  IRepository<ClientsOrderDetailByCompany, long> clientsOrderDetailByCompany,
+                                  IRepository<CompanyPaypaidPrices, long> companyPaypaidPricesRepository)
     {
         _configuration = configuration;
         _advocacyUsersRepository = advocacyUsersRepository;
@@ -45,6 +47,8 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
         _httpContextAccessor = httpContextAccessor;
         _whiteListRepository = whiteListRepository;
         _commonAppService = commonAppService;
+        _clientsOrderDetailByCompany = clientsOrderDetailByCompany;
+        _companyPaypaidPricesRepository = companyPaypaidPricesRepository;
     }
 
     public async void RegistrationValidationWithoutCaptcha(RegistrationValidationDto input)
@@ -253,16 +257,16 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
     public async Task<OrderDeliveryDto> GetOrderDelivery(string nationalCode, long orderId)
     {
         var OrderDetailByCompany = await _clientsOrderDetailByCompany.GetQueryableAsync();
-        var orderDelay = OrderDetailByCompany.Join((await _companyPaypaidPricesRepository.GetQueryableAsync()),
+        var orderDelay = OrderDetailByCompany.GroupJoin((await _companyPaypaidPricesRepository.GetQueryableAsync()),
                x => x.Id,
                y => y.ClientsOrderDetailByCompanyId,
                (dco, d) => new OrderDeliveryDto
                {
                    Id = dco.Id,
                    NationalCode = dco.NationalCode,
-                   TranDate = d.TranDate,
-                   PayedPrice = d.PayedPrice,
-                   ContRowId = dco.ContRowId,
+                   TranDate = d.Max(x => x.TranDate),
+                   PayedPrice = d.Any() ? d.Sum(x=> x.PayedPrice) : 0,
+                   ContRowId = dco.ContRowId.ToString(),
                    Vin = dco.Vin,
                    BodyNumber = dco.BodyNumber,
                    DeliveryDate = dco.DeliveryDate,

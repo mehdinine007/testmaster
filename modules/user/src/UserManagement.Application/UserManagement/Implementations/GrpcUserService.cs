@@ -79,7 +79,8 @@ namespace UserManagement.Application.UserManagement.Implementations
             if (clientsOrderDeliveryDateValidation)
             {
                 var orderDelay = await _baseInformationSevice.GetOrderDelivery(request.NationalCode, request.OrderId);
-                return await Task.FromResult(new ClientOrderDetailResponse()
+                System.Diagnostics.Debugger.Launch();
+                var a =  await Task.FromResult(new ClientOrderDetailResponse()
                 {
                     NationalCode = orderDelay.NationalCode,
                     TranDate = orderDelay.TranDate.HasValue ? Timestamp.FromDateTimeOffset(orderDelay.TranDate.Value) : new(),
@@ -91,6 +92,7 @@ namespace UserManagement.Application.UserManagement.Implementations
                     FinalPrice = orderDelay.FinalPrice,
                     CarDesc = orderDelay.CarDesc
                 });
+                return a;
             }
             return null;
         }
