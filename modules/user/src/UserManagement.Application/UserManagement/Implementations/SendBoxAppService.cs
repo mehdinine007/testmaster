@@ -16,6 +16,7 @@ using Volo.Abp.Domain.Repositories;
 using UserManagement.Application.Contracts.Models;
 using Volo.Abp.Application.Services;
 using Newtonsoft.Json;
+using UserManagement.Domain.Shared;
 #endregion
 
 namespace UserManagement.Application.UserManagement.Implementations;
@@ -57,10 +58,15 @@ public class SendBoxAppService : ApplicationService, ISendBoxAppService
     [Audited]
     public async Task<Esale.Core.Utility.Results.IResult> SendSms(SendSMSDto input)
     {
-        if (input.NationalCode.Length != 10 || input.NationalCode.AsParallel().Any(x => !char.IsDigit(x)))
-            throw new UserFriendlyException("کد ملی صحیح نیست");
-        if (input.Recipient.Length != 11 || !input.Recipient.StartsWith("09") || input.Recipient.AsParallel().Any(x => !char.IsDigit(x)))
-            throw new UserFriendlyException("شماره موبایل صحیح نیست");
+        if (!ValidationHelper.IsNationalCode(input.NationalCode))
+        {
+            throw new UserFriendlyException(Messages.NationalCodeNotValid);
+        }
+        if (!ValidationHelper.IsMobileNumber(input.Recipient))
+        {
+            throw new UserFriendlyException(Messages.IsMobileNumberMessage);
+        }
+
         Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
         RegistrationSMSDto sendSMSDto = new RegistrationSMSDto();
         //Logs logs = new Logs();

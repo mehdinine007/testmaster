@@ -4,6 +4,8 @@ namespace UserManagement.Domain.Shared;
 
 public static class ValidationHelper
 {
+
+    #region IsEmail
     public const string EmailRegex = @"^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$";
 
     public static bool IsEmail(string value)
@@ -16,7 +18,9 @@ public static class ValidationHelper
         var regex = new Regex(EmailRegex);
         return regex.IsMatch(value);
     }
+    #endregion
 
+    #region IsShaba
     public static bool IsShaba(string shaba)
     {
         if (!shaba.ToLower().StartsWith("ir"))
@@ -57,6 +61,9 @@ public static class ValidationHelper
         }
         return false;
     }
+    #endregion
+
+    #region IsNationalCode
     public static bool IsNationalCode(string nationalCode)
     {
         try
@@ -90,6 +97,54 @@ public static class ValidationHelper
         }
         catch { return false; }
     }
+    #endregion
 
+    #region IsMobileNumber
+    //ToDO(Severe-limitation):kavian
+    public static bool IsMobileNumber(string mobileNumber)
+    {
+        try
+        {
+            if (mobileNumber.Length != 11)
+            {
+                return false;
+            }
+
+            if (!mobileNumber.All(char.IsDigit))
+            {
+                return false;
+            }
+
+            var allDigitEqual = new[] { "00000000000", "11111111111", "22222222222", "33333333333", "44444444444", "55555555555", "66666666666", "77777777777", "88888888888", "99999999999" };
+            if (allDigitEqual.Contains(mobileNumber)) return false;
+
+            var StartsWith = mobileNumber.StartsWith("09");
+            if (StartsWith) return StartsWith;
+
+            var chArray = mobileNumber.ToCharArray();
+            var num0 = Convert.ToInt32(chArray[0].ToString()) * 10;
+            var num2 = Convert.ToInt32(chArray[1].ToString()) * 9;
+            var num3 = Convert.ToInt32(chArray[2].ToString()) * 8;
+            var num4 = Convert.ToInt32(chArray[3].ToString()) * 7;
+            var num5 = Convert.ToInt32(chArray[4].ToString()) * 6;
+            var num6 = Convert.ToInt32(chArray[5].ToString()) * 5;
+            var num7 = Convert.ToInt32(chArray[6].ToString()) * 4;
+            var num8 = Convert.ToInt32(chArray[7].ToString()) * 3;
+            var num9 = Convert.ToInt32(chArray[8].ToString()) * 2;
+            var num10 = Convert.ToInt32(chArray[9].ToString()) * 1;
+            var a = Convert.ToInt32(chArray[10].ToString());
+
+            var b = (((((((num0 + num2) + num3) + num4) + num5) + num6) + num7) + num8) + num9 + num10;
+            var c = b % 11;
+
+            return (((c < 2) && (a == c)) || ((c >= 2) && ((11 - c) == a)));
+        }
+        catch (Exception)
+        {
+
+            return false;
+        }
+    }
+    #endregion
 
 }
