@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using Nest;
+using System.Text.RegularExpressions;
 
 namespace UserManagement.Domain.Shared;
 
@@ -91,5 +92,34 @@ public static class ValidationHelper
         catch { return false; }
     }
 
+    public static bool IsMobileNumber(string mobileNumber)
+    {
+        if (mobileNumber.Length != 11)
+        {
+            return false;
+        }
 
+        var allDigitEqual = new[] { "00000000000", "11111111111", "22222222222", "33333333333", "44444444444", "55555555555", "66666666666", "77777777777", "88888888888", "99999999999" };
+        if (allDigitEqual.Contains(mobileNumber)) return false;
+
+        var StartsWith = mobileNumber.StartsWith("09");
+        if (StartsWith) return StartsWith;
+
+        var chArray = mobileNumber.ToCharArray();
+        var num0 = Convert.ToInt32(chArray[0].ToString()) * 10;
+        var num2 = Convert.ToInt32(chArray[1].ToString()) * 9;
+        var num3 = Convert.ToInt32(chArray[2].ToString()) * 8;
+        var num4 = Convert.ToInt32(chArray[3].ToString()) * 7;
+        var num5 = Convert.ToInt32(chArray[4].ToString()) * 6;
+        var num6 = Convert.ToInt32(chArray[5].ToString()) * 5;
+        var num7 = Convert.ToInt32(chArray[6].ToString()) * 4;
+        var num8 = Convert.ToInt32(chArray[7].ToString()) * 3;
+        var num9 = Convert.ToInt32(chArray[8].ToString()) * 2;
+        var a = Convert.ToInt32(chArray[9].ToString());
+
+        var b = (((((((num0 + num2) + num3) + num4) + num5) + num6) + num7) + num8) + num9;
+        var c = b % 11;
+
+        return (((c < 2) && (a == c)) || ((c >= 2) && ((11 - c) == a)));
+    }
 }
