@@ -13,4 +13,6 @@ public interface IBaseInformationService : IApplicationService
     Task<UserGrpcDto> GetUserByIdAsync(string userId);
     Task<bool> RegistrationValidationAsync(RegistrationValidationDto input);
     Task<string> AddressInquiry(AddressInquiryDto input);
+    Task<bool> CheckOrderDeliveryDate(string nationalCode, long orderId);
+   Task<OrderDeliveryDto> GetOrderDelivery(string nationalCode, long orderId);
 }

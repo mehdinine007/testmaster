@@ -156,7 +156,7 @@ namespace OrderService.Host
             //}
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGrpcService<GrpcTestService>();
+                endpoints.MapGrpcService<EsaleGrpcClient>();
                 
 
             });

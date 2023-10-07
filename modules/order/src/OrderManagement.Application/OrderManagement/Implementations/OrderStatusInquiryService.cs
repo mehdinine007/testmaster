@@ -29,6 +29,7 @@ public class OrderStatusInquiryService : ApplicationService, IOrderStatusInquiry
     private readonly IRepository<ProductAndCategory, int> _productAndCategoryRepository;
     private readonly IReadOnlyRepository<OrderDeliveryStatusTypeReadOnly, int> _orderDeliveryStatusTypeRepository;
     private readonly IRepository<UserRejectionAdvocacy, int> _userRejectionAdvocacyRepository;
+    private readonly IEsaleGrpcClient _esaleGrpcClient;
 
     public OrderStatusInquiryService(IRepository<OrderStatusInquiry, long> orderStatusInquiryRepository,
                                      IRepository<CustomerOrder, int> customerOrderRepository,
@@ -36,8 +37,8 @@ public class OrderStatusInquiryService : ApplicationService, IOrderStatusInquiry
                                      IAuditingManager auditingManager,
                                      IRepository<ProductAndCategory, int> productAndCategoryRepository,
                                      IReadOnlyRepository<OrderDeliveryStatusTypeReadOnly, int> orderDeliveryStatusTypeRepository,
-                                     IRepository<UserRejectionAdvocacy, int> userRejectionAdvocacyRepository
-        )
+                                     IRepository<UserRejectionAdvocacy, int> userRejectionAdvocacyRepository,
+                                     IEsaleGrpcClient esaleGrpcClient)
     {
         _orderStatusInquiryRepository = orderStatusInquiryRepository;
         _commonAppService = commonAppService;
@@ -46,6 +47,7 @@ public class OrderStatusInquiryService : ApplicationService, IOrderStatusInquiry
         _productAndCategoryRepository = productAndCategoryRepository;
         _orderDeliveryStatusTypeRepository = orderDeliveryStatusTypeRepository;
         _userRejectionAdvocacyRepository = userRejectionAdvocacyRepository;
+        _esaleGrpcClient = esaleGrpcClient;
     }
 
     public async Task<OrderStatusInquiryDto> GetCurrentUserOrderStatus(string nationalCode, int customerOrderId)
@@ -56,15 +58,17 @@ public class OrderStatusInquiryService : ApplicationService, IOrderStatusInquiry
     public async Task<OrderStatusInquiryResultDto> CommitOrderDeilveryLog(OrderStatusInquiryCommitDto orderStatusInquiryCommitDto)
     {
         var orderDeliveries = (await _orderDeliveryStatusTypeRepository.GetQueryableAsync()).AsNoTracking().ToList();
-        var userId = _commonAppService.GetUserId();
+        //var userId = _commonAppService.GetUserId();
+        var userId = "20e5d14f-1c64-44d6-a80c-1a0ca2417a6e";// جهت دمو
+        Guid userGuid = new Guid(userId);
         var order = (await _customerOrderRepository.GetQueryableAsync())
             .Include(x => x.SaleDetail)
             .ThenInclude(x => x.Product)
-            .FirstOrDefault(x => x.Id == orderStatusInquiryCommitDto.OrderId && x.UserId == userId)
+            .FirstOrDefault(x => x.Id == orderStatusInquiryCommitDto.OrderId && x.UserId == userGuid)
             ?? throw new UserFriendlyException("سفارش یافت نشد");
         var currentOrderDeliveryStatus = order.OrderDeliveryStatus;
         var nationalCode = _commonAppService.GetNationalCode();
-        nationalCode = "5580099126"; //جهت دمو - 498729
+        //nationalCode = "5580099126"; //جهت دمو - 498729
         var availableDeliveryStatusList = orderDeliveries.OrderBy(x => x.Code).Select(x =>
         {
             OrderDeliveryStatusViewModel statusModel = new()
@@ -132,32 +136,44 @@ public class OrderStatusInquiryService : ApplicationService, IOrderStatusInquiry
                 return result;
             }
         }
-        var companyAccessToken = await _commonAppService.GetIkcoAccessTokenAsync();
-        var inquiryFromCompany = await _commonAppService.IkcoOrderStatusInquiryAsync(nationalCode, orderStatusInquiryCommitDto.OrderId, companyAccessToken);
-        if (!inquiryFromCompany.Succeeded)
-            _auditingManager.Current.Log.Exceptions.Add(new Exception(inquiryFromCompany.Errors));
-        var rowContractId = 0;
-        decimal? fullAmountPaid = null;
-        if (inquiryFromCompany?.Data.Length >= 1)
+        // var companyAccessToken = await _commonAppService.GetIkcoAccessTokenAsync();
+        // var inquiryFromCompany2 = await _commonAppService.IkcoOrderStatusInquiryAsync(nationalCode, orderStatusInquiryCommitDto.OrderId, companyAccessToken);
+
+        if (string.IsNullOrWhiteSpace(nationalCode) || nationalCode.AsParallel().Any(x => !char.IsDigit(x)))
+            throw new UserFriendlyException("خطا در استعلام سفارش. کدملی صحیح نمیباشد");
+        var validateClientOrderDeliveryDate = new ClientOrderDeliveryInformationRequestDto
         {
-            var inquiryData = inquiryFromCompany.Data[0];
-            rowContractId = inquiryData.ContRowId;
-            fullAmountPaid = inquiryData.FinalPrice;
-            if (inquiryData.ContRowId > 0)
+            NationalCode = nationalCode,
+            OrderId = orderStatusInquiryCommitDto.OrderId
+        };
+        var inquiryFromCompany1 = await _esaleGrpcClient.ValidateClientOrderDeliveryDate(validateClientOrderDeliveryDate);
+
+        //if (!inquiryFromCompany.Succeeded)
+        //    _auditingManager.Current.Log.Exceptions.Add(new Exception(inquiryFromCompany.Errors));
+        string rowContractId = "";
+        decimal? fullAmountPaid = null;
+        if (inquiryFromCompany1 != null)
+        {
+            // var inquiryData = inquiryFromCompany1.Data[0];
+            rowContractId = inquiryFromCompany1.ContRowId;//? inquiryFromCompany1.ContRowId : default;
+            fullAmountPaid = inquiryFromCompany1.FinalPrice;
+            if (rowContractId.Count() > 0)
             {
                 orderDeliverStatusList.Add((int)OrderDeliveryStatusType.ReceivingContractRowId);
                 var contRowIdItem = availableDeliveryStatusList.FirstOrDefault(x => x.OrderDeliverySatusCode == (int)OrderDeliveryStatusType.ReceivingContractRowId);
-                contRowIdItem.SubmitDate = inquiryData.TranDate.ToDateTime();
+                contRowIdItem.SubmitDate = inquiryFromCompany1.TranDate;// inquiryData.TranDate.ToDateTime();
                 currentOrderDeliveryStatus = OrderDeliveryStatusType.ReceivingContractRowId;
             }
-            if (inquiryData.FinalPrice > 0)
+            if (fullAmountPaid > 0)
             {
                 orderDeliverStatusList.Add((int)OrderDeliveryStatusType.ReceivingAmountCompleted);
                 var recievingAmountItem = availableDeliveryStatusList.FirstOrDefault(x => x.OrderDeliverySatusCode == (int)OrderDeliveryStatusType.ReceivingAmountCompleted);
-                recievingAmountItem.SubmitDate = inquiryData.TranDate.ToDateTime();
+                //recievingAmountItem.SubmitDate = inquiryData.TranDate.ToDateTime();
+                recievingAmountItem.SubmitDate = inquiryFromCompany1.TranDate;
                 currentOrderDeliveryStatus = OrderDeliveryStatusType.ReceivingAmountCompleted;
             }
         }
+
         //else
         //{
         //    var ordersDeliveryCurrentStatus = order.OrderDeliveryStatus.HasValue
@@ -165,7 +181,7 @@ public class OrderStatusInquiryService : ApplicationService, IOrderStatusInquiry
         //        : OrderDeliveryStatusType.OrderRegistered;
         //    orderDeliverStatusList.Add((int)ordersDeliveryCurrentStatus);
         //}
-        var serializedInquiryResponse = JsonConvert.SerializeObject(inquiryFromCompany);
+        var serializedInquiryResponse = JsonConvert.SerializeObject(inquiryFromCompany1);
         var orderLog = await _orderStatusInquiryRepository.InsertAsync(new OrderStatusInquiry()
         {
             ClientNationalCode = nationalCode,
@@ -174,7 +190,7 @@ public class OrderStatusInquiryService : ApplicationService, IOrderStatusInquiry
             OrderDeliveryStatus = currentOrderDeliveryStatus,
             SubmitDate = DateTime.Now,
             OrderId = order.Id,
-            RowContractId = rowContractId,
+            RowContractId = Convert.ToInt32(rowContractId),
             FullAmountPaid = fullAmountPaid
         });
         order.OrderDeliveryStatus = currentOrderDeliveryStatus;
@@ -187,6 +203,7 @@ public class OrderStatusInquiryService : ApplicationService, IOrderStatusInquiry
         result.OrderDeliveryStatusDescription = availableDeliveryStatusList.First(x => x.OrderDeliverySatusCode == (int)currentOrderDeliveryStatus).Description;
         return result;
     }
+
 
     private void FormatOrderDeliveryStatusDescriptions(List<OrderDeliveryStatusViewModel> orderDeliveryStatusViewModels,
         CustomerOrder order,
