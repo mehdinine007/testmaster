@@ -23,6 +23,8 @@ using Esale.Core.Extensions;
 using UserManagement.EfCore.MongoDb;
 using Hangfire;
 using Microsoft.EntityFrameworkCore;
+using Volo.Abp.RabbitMQ;
+using Volo.Abp.EventBus.RabbitMq;
 #endregion
 
 
@@ -31,6 +33,7 @@ namespace UserService.Host;
 [DependsOn(
     typeof(AbpAutofacModule),
     typeof(AbpAspNetCoreMvcModule),
+    typeof(AbpEventBusRabbitMqModule),
     typeof(AbpEntityFrameworkCoreSqlServerModule),
     typeof(AbpAuditLoggingEntityFrameworkCoreModule),
     typeof(UserManagementApplicationModule),
@@ -88,6 +91,8 @@ public class UserServiceHostModule : AbpModule
         ConfigureHangfire(context, configuration);
         context.Services.AddGrpc();
         context.Services.EasyCaching(configuration, "RedisCache:ConnectionString");
+       
+
     }
 
     private void ConfigureHangfire(ServiceConfigurationContext context, IConfiguration configuration)

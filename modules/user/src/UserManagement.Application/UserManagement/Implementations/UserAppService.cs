@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Abp.Dependency;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
@@ -14,6 +15,8 @@ using UserManagement.Domain.Shared;
 using Volo.Abp;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp.EventBus;
+using Volo.Abp.EventBus.Distributed;
 using Volo.Abp.ObjectMapping;
 using WorkingWithMongoDB.WebAPI.Services;
 
@@ -30,6 +33,7 @@ public class UserAppService : ApplicationService, IUserAppService
     private readonly IDistributedCache _distributedCache;
     private readonly IPasswordHasher<User> _passwordHasher;
     private readonly IBaseInformationService _baseInformationService;
+    private readonly IDistributedEventBus _distributedEventBus;
 
     public UserAppService(IConfiguration configuration,
                           IBankAppService bankAppService,
@@ -38,7 +42,8 @@ public class UserAppService : ApplicationService, IUserAppService
                           IPasswordHasher<User> passwordHasher,
                           IBaseInformationService baseInformationService,
                           IRolePermissionService rolePermissionService,
-                          IRepository<UserMongo, ObjectId> userMongoRepository
+                          IRepository<UserMongo, ObjectId> userMongoRepository,
+                          IDistributedEventBus distributedEventBus
         )
     {
         _rolePermissionService = rolePermissionService;
@@ -49,6 +54,7 @@ public class UserAppService : ApplicationService, IUserAppService
         _distributedCache = distributedCache;
         _passwordHasher = passwordHasher;
         _baseInformationService = baseInformationService;
+        _distributedEventBus = distributedEventBus;
     }
 
     public async Task<bool> AddRole(ObjectId userid, List<string> roleCode)
@@ -67,10 +73,34 @@ public class UserAppService : ApplicationService, IUserAppService
         await _userMongoRepository.UpdateAsync(user);
         return true;
     }
+    [EventName("MyApp.Product.StockChange")]
+    public class StockCountChangedEto
+    {
+        public Guid ProductId { get; set; }
 
+        public int NewCount { get; set; }
+    }
+    public class MyHandler
+      : IDistributedEventHandler<StockCountChangedEto>,
+        ITransientDependency
+    {
+        public async Task HandleEventAsync(StockCountChangedEto eventData)
+        {
+            var productId = eventData.ProductId;
+        }
+    }
     public async Task<UserDto> CreateAsync(CreateUserDto input)
     {
+         await _distributedEventBus.PublishAsync<StockCountChangedEto>(
+                new StockCountChangedEto
+                {
+                    ProductId = Guid.NewGuid(),
+                    NewCount = 20
+                }
+            );
+        await CurrentUnitOfWork.SaveChangesAsync();
 
+        return null;
 
         if (!string.IsNullOrEmpty(_configuration.GetSection("CloseRegisterDate").Value)
             && DateTime.Now > DateTime.Parse(_configuration.GetSection("CloseRegisterDate").Value))
