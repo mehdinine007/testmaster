@@ -248,8 +248,7 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
         if (clientsOrderDretail == null || !clientsOrderDretail.DeliveryDate.HasValue)
             return false;
 
-        var a = DateTime.Now.Subtract(clientsOrderDretail.DeliveryDate.Value).TotalDays > 90;
-        return a;
+        return DateTime.Now.Subtract(clientsOrderDretail.DeliveryDate.Value).TotalDays > 90;
     }
 
     [UnitOfWork(false)]
