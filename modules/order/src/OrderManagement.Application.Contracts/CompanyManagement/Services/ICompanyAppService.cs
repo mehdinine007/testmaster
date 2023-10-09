@@ -10,9 +10,9 @@ namespace OrderManagement.Application.Contracts.CompanyManagement.Services
 {
     public interface ICompanyAppService: IApplicationService
     {
-        Task SubmitOrderInformations(List<ClientsOrderDetailByCompanyDto> clientsOrderDetailByCompnayDtos);
+        Task<bool> SubmitOrderInformations(List<ClientsOrderDetailByCompanyDto> clientsOrderDetailByCompnayDtos);
         List<CustomersWithCars> GetCustomersAndCars(GetCustomersAndCarsDto input);
-        Task InsertCompanyProduction(List<CompanyProductionDto> companyProductionsDto);
+        Task<bool> InsertCompanyProduction(List<CompanyProductionDto> companyProductionsDto);
 
     }
 }
