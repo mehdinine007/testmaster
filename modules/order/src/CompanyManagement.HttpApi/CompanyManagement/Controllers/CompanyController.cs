@@ -33,9 +33,9 @@ public class CompanyController : Controller
     public List<CustomersWithCars> GetCustomersAndCars(GetCustomersAndCarsDto input)
     =>_companyAppService.GetCustomersAndCars(input);
     [HttpPost]
-    public Task InsertCompanyProduction(List<CompanyProductionDto> companyProductionsDto)
+    public Task<bool> InsertCompanyProduction(List<CompanyProductionDto> companyProductionsDto)
     =>_companyAppService.InsertCompanyProduction(companyProductionsDto);
     [HttpPost]
-    public Task SubmitOrderInformations(List<ClientsOrderDetailByCompanyDto> clientsOrderDetailByCompnayDtos)
+    public Task<bool> SubmitOrderInformations(List<ClientsOrderDetailByCompanyDto> clientsOrderDetailByCompnayDtos)
     => _companyAppService.SubmitOrderInformations(clientsOrderDetailByCompnayDtos);
 }
