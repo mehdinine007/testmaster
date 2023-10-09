@@ -70,15 +70,16 @@ namespace OrderManagement.Application.CompanyManagement.Implementations
             return lsCustomersWithCars;
         }
 
-        public async Task InsertCompanyProduction(List<CompanyProductionDto> companyProductionsDto)
+        public async Task<bool> InsertCompanyProduction(List<CompanyProductionDto> companyProductionsDto)
         {
             if (!IsInRole("Company"))
                 throw new UserFriendlyException("عدم دسترسی کافی");
             var companyProductions = ObjectMapper.Map(companyProductionsDto, new List<CompanyProduction>());
             await _companyProductionRepository.InsertManyAsync(companyProductions);
+            return true;
         }
 
-        public async Task SubmitOrderInformations(List<ClientsOrderDetailByCompanyDto> clientsOrderDetailByCompnayDtos)
+        public async Task<bool> SubmitOrderInformations(List<ClientsOrderDetailByCompanyDto> clientsOrderDetailByCompnayDtos)
         {
             if (!IsInRole("Company"))
                 throw new UserFriendlyException("عدم دسترسی کافی");
@@ -86,6 +87,7 @@ namespace OrderManagement.Application.CompanyManagement.Implementations
 
             await _clientsOrderDetailByCompanyRepository.InsertManyAsync(
                 ObjectMapper.Map<List<ClientsOrderDetailByCompanyDto>, List<ClientsOrderDetailByCompany>>(clientsOrderDetailByCompnayDtos, new List<ClientsOrderDetailByCompany>()));
+            return true;
         }
 
         private bool IsInRole(string Role)

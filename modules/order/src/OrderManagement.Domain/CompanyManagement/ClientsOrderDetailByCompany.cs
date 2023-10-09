@@ -18,7 +18,7 @@ namespace OrderManagement.Domain.CompanyManagement
 
         public DateTime? InviteDate { get; set; }
 
-        public string ContRowId { get; set; }
+        public int ContRowId { get; set; }
 
         public DateTime? ContRowIdDate { get; set; }
 
