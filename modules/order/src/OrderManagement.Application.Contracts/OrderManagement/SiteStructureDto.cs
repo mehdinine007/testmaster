@@ -19,7 +19,7 @@ namespace OrderManagement.Application.Contracts
         public string Content { get; set; }
         public string Description { get; set; }
         public List<AttachmentViewModel> Attachments { get; set; }
-        public List<CarouselData> CarouselData { get; set; }
+        public IEnumerable<dynamic> CarouselData { get; set; }
     }
 
     public class CarouselData
@@ -28,6 +28,16 @@ namespace OrderManagement.Application.Contracts
         public string Code { get; set; }
         public string Title { get; set; }
         public List<AttachmentViewModel> Attachments { get; set; }
-       public Dictionary<string, object> AdditionalFields { get; set; }
-    } 
+       public Dictionary<string, dynamic> AdditionalFields { get; set; }
+    }
+
+    public class ProductCarousel: CarouselData
+    {
+        public int Id { get; set; }
+        public string Code { get; set; }
+        public string Title { get; set; }
+        public List<AttachmentViewModel> Attachments { get; set; }
+        public List<PropertyCategoryDto> PropertyCategories { get; set; }
+    }
+
 }
