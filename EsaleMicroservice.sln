@@ -177,6 +177,24 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CompanyManagement.HttpApi",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CompanyService.Host", "microservices\CompanyService.Host\CompanyService.Host.csproj", "{1F4146FA-F9C7-4DDD-8901-39F60CC98BB8}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "adminpanel", "adminpanel", "{A983C9E5-6538-427E-A42A-03CD488D8A0B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{AE24F48D-A255-48EB-94F5-7FC92796CCCD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdminPanelManagement.Application", "modules\adminPanel\src\AdminPanelManagement.Application\AdminPanelManagement.Application.csproj", "{057DEBA1-15CF-4739-808C-FC7701910A39}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdminPanelManagement.Application.Contracts", "modules\adminPanel\src\AdminPanelManagement.Application.Contracts\AdminPanelManagement.Application.Contracts.csproj", "{859A6E8E-C0D0-469D-AC13-852ED498BD42}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdminPanelManagement.Domain", "modules\adminPanel\src\AdminPanelManagement.Domain\AdminPanelManagement.Domain.csproj", "{0B3AEF38-5AB5-4FA9-AC3A-D883B5239A56}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdminPanelManagement.Domain.Shared", "modules\adminPanel\src\AdminPanelManagement.Domain.Shared\AdminPanelManagement.Domain.Shared.csproj", "{975248E8-A4E8-4352-87C3-E29E2EA30849}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdminPanelManagement.EntityFrameworkCore", "modules\adminPanel\src\AdminPanelManagement.EntityFrameworkCore\AdminPanelManagement.EntityFrameworkCore.csproj", "{EB10E8F0-653C-4434-8F75-C7244DA93790}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdminPanelManagement.HttpApi", "modules\adminPanel\src\AdminPanelManagement.HttpApi\AdminPanelManagement.HttpApi.csproj", "{FD31A568-13CB-4EE3-802C-AF0D051CC72B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdminPanelService.Host", "microservices\AdminPanelService.Host\AdminPanelService.Host.csproj", "{C8722754-FFC9-4CA3-B223-141552FB24D4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -451,6 +469,34 @@ Global
 		{1F4146FA-F9C7-4DDD-8901-39F60CC98BB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1F4146FA-F9C7-4DDD-8901-39F60CC98BB8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1F4146FA-F9C7-4DDD-8901-39F60CC98BB8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{057DEBA1-15CF-4739-808C-FC7701910A39}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{057DEBA1-15CF-4739-808C-FC7701910A39}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{057DEBA1-15CF-4739-808C-FC7701910A39}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{057DEBA1-15CF-4739-808C-FC7701910A39}.Release|Any CPU.Build.0 = Release|Any CPU
+		{859A6E8E-C0D0-469D-AC13-852ED498BD42}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{859A6E8E-C0D0-469D-AC13-852ED498BD42}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{859A6E8E-C0D0-469D-AC13-852ED498BD42}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{859A6E8E-C0D0-469D-AC13-852ED498BD42}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0B3AEF38-5AB5-4FA9-AC3A-D883B5239A56}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B3AEF38-5AB5-4FA9-AC3A-D883B5239A56}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B3AEF38-5AB5-4FA9-AC3A-D883B5239A56}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B3AEF38-5AB5-4FA9-AC3A-D883B5239A56}.Release|Any CPU.Build.0 = Release|Any CPU
+		{975248E8-A4E8-4352-87C3-E29E2EA30849}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{975248E8-A4E8-4352-87C3-E29E2EA30849}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{975248E8-A4E8-4352-87C3-E29E2EA30849}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{975248E8-A4E8-4352-87C3-E29E2EA30849}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EB10E8F0-653C-4434-8F75-C7244DA93790}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB10E8F0-653C-4434-8F75-C7244DA93790}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB10E8F0-653C-4434-8F75-C7244DA93790}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB10E8F0-653C-4434-8F75-C7244DA93790}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FD31A568-13CB-4EE3-802C-AF0D051CC72B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD31A568-13CB-4EE3-802C-AF0D051CC72B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD31A568-13CB-4EE3-802C-AF0D051CC72B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD31A568-13CB-4EE3-802C-AF0D051CC72B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C8722754-FFC9-4CA3-B223-141552FB24D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C8722754-FFC9-4CA3-B223-141552FB24D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C8722754-FFC9-4CA3-B223-141552FB24D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C8722754-FFC9-4CA3-B223-141552FB24D4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -538,6 +584,15 @@ Global
 		{18CD7D81-5338-4FD2-BFD4-E00A87B5A0CB} = {3B26D176-390B-4F51-BE52-E9B422C28A88}
 		{28C0D72B-4CA1-4B8E-BE9F-9EE8BF7CD9E0} = {FD0243FA-5C37-474B-9649-71813ECB8AFA}
 		{1F4146FA-F9C7-4DDD-8901-39F60CC98BB8} = {3B26D176-390B-4F51-BE52-E9B422C28A88}
+		{A983C9E5-6538-427E-A42A-03CD488D8A0B} = {818134CC-2F7F-41B9-ACA6-87F0650F5D52}
+		{AE24F48D-A255-48EB-94F5-7FC92796CCCD} = {A983C9E5-6538-427E-A42A-03CD488D8A0B}
+		{057DEBA1-15CF-4739-808C-FC7701910A39} = {AE24F48D-A255-48EB-94F5-7FC92796CCCD}
+		{859A6E8E-C0D0-469D-AC13-852ED498BD42} = {AE24F48D-A255-48EB-94F5-7FC92796CCCD}
+		{0B3AEF38-5AB5-4FA9-AC3A-D883B5239A56} = {AE24F48D-A255-48EB-94F5-7FC92796CCCD}
+		{975248E8-A4E8-4352-87C3-E29E2EA30849} = {AE24F48D-A255-48EB-94F5-7FC92796CCCD}
+		{EB10E8F0-653C-4434-8F75-C7244DA93790} = {AE24F48D-A255-48EB-94F5-7FC92796CCCD}
+		{FD31A568-13CB-4EE3-802C-AF0D051CC72B} = {AE24F48D-A255-48EB-94F5-7FC92796CCCD}
+		{C8722754-FFC9-4CA3-B223-141552FB24D4} = {3B26D176-390B-4F51-BE52-E9B422C28A88}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {37474F0D-2E52-4D2F-B39B-7FE3FF31B4EC}
