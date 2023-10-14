@@ -13,7 +13,6 @@ namespace OrderManagement.Application.Contracts
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; }
-        public ObjectId IP { get; set; }
         public string Title { get; set; }
         public List<PropertyDto> Properties { get; set; }
         public int Priority { get; set; }
