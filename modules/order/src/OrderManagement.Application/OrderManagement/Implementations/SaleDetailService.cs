@@ -241,6 +241,16 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
     }
 
 
+    public List<SaleDetailForDropDownDto> GetAll()
+    {
+        var saledetails = _saleDetailRepository
+            .WithDetails()
+            .AsNoTracking()
+            .ToList();
+        return ObjectMapper.Map<List<SaleDetail>, List<SaleDetailForDropDownDto>>(saledetails);
+    }
+
+
 
 
 }

@@ -108,6 +108,11 @@ namespace OrderManagement
             CreateMap<Agency, AgencyDto>().ReverseMap();
             //CreateMap<ApiResult, HandShakeResultDto>();
             CreateMap<SaleDetail, CreateSaleDetailDto>().ReverseMap();
+            CreateMap<SaleDetail, SaleDetailForDropDownDto>()
+                .ReverseMap()
+                .IgnoreFullAuditedObjectProperties();
+            
+
             CreateMap<AgencySaleDetail, AgencySaleDetailDto>().ReverseMap();
             CreateMap<AgencySaleDetail, AgencySaleDetailListDto>()
                .ForMember(x => x.AgencyName, opt => opt.MapFrom(y => y.Agency.Name))
