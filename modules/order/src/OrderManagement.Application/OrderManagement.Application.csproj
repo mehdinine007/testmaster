@@ -10,6 +10,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <None Remove="OrderManagement\Protos\CompanyServiceClient.proto" />
 	  <None Remove="OrderManagement\Protos\PaymentGrpcService.proto" />
 	</ItemGroup>
 
@@ -27,8 +28,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<Protobuf Include="OrderManagement\Protos\CompanyServiceClient.proto" GrpcServices="Client" />
 		<Protobuf Include="OrderManagement\Protos\EsaleUserService.proto" GrpcService="Client" />
-		<Protobuf Include="OrderManagement\Protos\PaymentGrpcService.proto">
+		<Protobuf Include="OrderManagement\Protos\PaymentGrpcService.proto" GrpcService="Client">
 		  <GrpcService>Server</GrpcService>
 		</Protobuf>
 		<Protobuf Include="OrderManagement\Protos\TestOrder.proto" GrpcService="Server" />
@@ -41,5 +43,13 @@
       <ProjectReference Include="..\OrderManagement.Domain\OrderManagement.Domain.csproj" />
       <ProjectReference Include="..\OrderManagement.EntityFrameworkCore\OrderManagement.EntityFrameworkCore.csproj" />
     </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="CompanyManagement\" />
+    </ItemGroup>
+
+	<!--<ItemGroup>
+		<Protobuf Include="CompanyManagement\Protos\CompanyService.proto" GrpcServices="Server" />
+	</ItemGroup>-->
 
 </Project>

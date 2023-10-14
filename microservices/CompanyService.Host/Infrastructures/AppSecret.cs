@@ -1,4 +1,4 @@
-﻿namespace OrderService.Host.Infrastructures;
+﻿namespace CompanyService.Host.Infrastructures;
 
 public class AppSecret
 {

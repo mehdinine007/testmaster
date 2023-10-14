@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net7.0</TargetFramework>
+    </PropertyGroup>
+
+	<PropertyGroup>
+		<RootNamespace>CompanyManagement.HttpApi</RootNamespace>
+	</PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Volo.Abp.AspNetCore.Mvc" Version="7.2.1" />
+	</ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\..\shared\Authorization\Authorization.csproj" />
+      <ProjectReference Include="..\CompanyManagement.Application.Contracts\CompanyManagement.Application.Contracts.csproj" />
+      <ProjectReference Include="..\CompanyManagement.Application\CompanyManagement.Application.csproj" />
+    </ItemGroup>
+
+</Project>

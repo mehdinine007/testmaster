@@ -1,0 +1,29 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "CompanyManagement.Application.CompanyService";
+
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/timestamp.proto";
+
+package CompanyService;
+
+service CompanyServiceGrpc{
+	rpc CheckOrderDeliveryDate(ClientOrderDetailRequest) returns (ClientOrderDetailResponse);
+
+}
+message ClientOrderDetailRequest{
+	string NationalCode = 1;
+	int64 OrderId = 2;
+}
+
+message ClientOrderDetailResponse{
+	string NationalCode = 1;
+	google.protobuf.Timestamp TranDate = 2;
+	google.protobuf.Int64Value PayedPrice = 3;
+	string ContRowId = 4;
+	string Vin = 5;
+	string BodyNumber = 6;
+	google.protobuf.Timestamp DeliveryDate = 7;
+	google.protobuf.Int64Value FinalPrice = 8;
+	string CarDesc = 9;
+}

@@ -25,7 +25,7 @@ namespace CompanyService.Host
                 .MinimumLevel.Debug()
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
                 .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Warning)
-                .Enrich.WithProperty("Application", "OrderService")
+                .Enrich.WithProperty("Application", "CompanyService")
                 .Enrich.FromLogContext()
                 .WriteTo.Console()
                 .WriteTo.File("Logs/logs.txt")

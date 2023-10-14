@@ -4,11 +4,11 @@ using Microsoft.Extensions.DependencyInjection;
 using MsDemo.Shared.ExtensionsImplementions;
 using MsDemo.Shared.ExtensionsInterfaces;
 using Nest;
-using OrderService.Host.Infrastructures.Middlewares;
+using CompanyService.Host.Infrastructures.Middlewares;
 using System;
 using Volo.Abp.Auditing;
 
-namespace OrderService.Host.Infrastructures.Extensions
+namespace CompanyService.Host.Infrastructures.Extensions
 {
     public static class ElkExtension
     {

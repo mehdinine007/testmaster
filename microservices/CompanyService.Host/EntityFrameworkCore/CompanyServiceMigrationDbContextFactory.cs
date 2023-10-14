@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 
-namespace OrderService.Host.EntityFrameworkCore
+namespace CompanyService.Host.EntityFrameworkCore
 {
     public class CompanyServiceMigrationDbContextFactory : IDesignTimeDbContextFactory<CompanyServiceMigrationDbContext>
     {

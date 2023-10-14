@@ -13,8 +13,7 @@ using Volo.Abp.Localization;
 using Volo.Abp.Modularity;
 using Volo.Abp.TenantManagement.EntityFrameworkCore;
 using Volo.Abp.Threading;
-using OrderService.Host.Infrastructures;
-using OrderManagement.Application.OrderManagement.Implementations;
+using CompanyService.Host.Infrastructures;
 using Volo.Abp.Uow;
 using Microsoft.IdentityModel.Logging;
 using Volo.Abp.BackgroundJobs.Hangfire;
@@ -27,9 +26,8 @@ using Esale.Core.Extensions;
 using Esale.Core.Utility.Security.Encyption;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using CompanyManagement.HttpApi;
-using OrderManagement.EfCore.MongoDb;
-using OrderManagement.EfCore.CompanyManagement.EntityFrameworkCore;
-using OrderManagement.Application.CompanyManagement;
+using CompanyManagement.EfCore.CompanyManagement.EntityFrameworkCore;
+using CompanyManagement.Application.CompanyManagement;
 
 namespace CompanyService.Host
 {
@@ -123,10 +121,10 @@ namespace CompanyService.Host
 
             context.Services.AddGrpc();
             context.Services.EasyCaching(configuration, "RedisCache:ConnectionString");
-            context.Services.AddMongoDbContext<OrderManagementMongoDbContext>(options =>
-            {
-                options.AddDefaultRepositories(includeAllEntities: true);
-            });
+            //context.Services.AddMongoDbContext<CompanyManagementMongoDbContext>(options =>
+            //{
+            //    options.AddDefaultRepositories(includeAllEntities: true);
+            //});
 
             //var redis = ConnectionMultiplexer.Connect(configuration["Redis:Configuration"]);
             //context.Services.AddDataProtection()
@@ -136,7 +134,7 @@ namespace CompanyService.Host
         {
             //context.Services.AddHangfire(config =>
             //{
-            //    config.UseSqlServerStorage(configuration.GetConnectionString("OrderHangfire"));
+            //    config.UseSqlServerStorage(configuration.GetConnectionString("CompanyHangfire"));
             //});
 
         }
@@ -154,12 +152,12 @@ namespace CompanyService.Host
             //{
             //    app.UseMultiTenancy();
             //}
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapGrpcService<GrpcTestService>();
+            //app.UseEndpoints(endpoints =>
+            //{
+            //    endpoints.MapGrpcService<CompanyDeliveryService>();
                 
 
-            });
+            //});
           
 
             app.UseAbpRequestLocalization(); //TODO: localization?

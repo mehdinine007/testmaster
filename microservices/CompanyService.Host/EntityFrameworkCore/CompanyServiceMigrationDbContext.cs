@@ -1,8 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using OrderManagement.EfCore;
 using Volo.Abp.EntityFrameworkCore;
+using CompanyManagement.EfCore;
 
-namespace OrderService.Host.EntityFrameworkCore
+
+namespace CompanyService.Host.EntityFrameworkCore
 {
     public class CompanyServiceMigrationDbContext : AbpDbContext<CompanyServiceMigrationDbContext>
     {
@@ -17,7 +18,7 @@ namespace OrderService.Host.EntityFrameworkCore
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.ConfigureOrderManagement();
+            modelBuilder.ConfigureCompanyManagement();
         }
     }
 }

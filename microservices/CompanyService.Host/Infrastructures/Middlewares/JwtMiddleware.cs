@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using CompanyService.Host.Infrastructures;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using OrderService.Host.Infrastructures;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;

@@ -23,4 +23,8 @@
       <ProjectReference Include="..\OrderManagement.Domain\OrderManagement.Domain.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="CompanyManagement\" />
+    </ItemGroup>
+
 </Project>
