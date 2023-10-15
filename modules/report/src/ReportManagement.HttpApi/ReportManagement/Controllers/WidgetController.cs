@@ -30,13 +30,14 @@ namespace ReportManagement.HttpApi.ReportManagement.Controllers
         [HttpGet]
         public Task<WidgetDto> GetById(int id)
        =>_widgetService.GetById(id);
-        [HttpGet]
-        public Task<ChartDto> GetChart(int widgetId)
-       =>_widgetService.GetChart(widgetId);
+        
+        [HttpPost]
+        public Task<ChartDto> GetChart(ChartInputDto chartInputDto)
+       =>_widgetService.GetChart(chartInputDto.WidgetId, chartInputDto.ConditionValue);
 
         [HttpGet]
-        public Task<List<WidgetDto>> GetList(int Id)
-       =>_widgetService.GetList(Id);
+        public Task<List<DashboardWidgetDto>> GetList(int dashboardId)
+       =>_widgetService.GetList(dashboardId);
         [HttpPut]
         public Task<WidgetDto> Update(WidgetCreateOrUpdateDto widgetCreateOrUpdateDto)
         =>_widgetService.Update(widgetCreateOrUpdateDto);

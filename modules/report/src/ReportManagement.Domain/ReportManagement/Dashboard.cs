@@ -11,6 +11,6 @@ namespace ReportManagement.Domain.ReportManagement
     {
         public string Title { get; set; }
         public int Priority { get; set; }
-        public virtual ICollection<DashboardWidget> DashboardWidgets { get; set; }
+        public virtual ICollection<Widget> Widgets { get; set; }
     }
 }

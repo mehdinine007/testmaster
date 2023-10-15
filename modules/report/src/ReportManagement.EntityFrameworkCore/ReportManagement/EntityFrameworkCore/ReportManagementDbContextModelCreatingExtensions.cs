@@ -17,17 +17,13 @@ namespace ReportManagement.EntityFrameworkCore
             var options = new ReportManagementModelBuilderConfigurationOptions();
             optionsAction?.Invoke(options);
 
-            
-            builder.Entity<DashboardWidget>(entity =>
-            {
-                entity.ToTable("DashboardWidgets");
-                entity.HasOne<Dashboard>(x => x.Dashboard)
-                    .WithMany(x => x.DashboardWidgets)
-                    .HasForeignKey(x => x.DashboardId);
 
-                entity.HasOne<Widget>(x => x.Widget)
-                   .WithMany(x => x.DashboardWidgets)
-                   .HasForeignKey(x => x.WidgetId);
+            builder.Entity<Dashboard>(entity =>
+            {
+                entity.ToTable("Dashboards")
+                .HasMany(e => e.Widgets)
+        .WithMany(e => e.Dashboards)
+        .UsingEntity<DashboardWidget>();
 
             });
 

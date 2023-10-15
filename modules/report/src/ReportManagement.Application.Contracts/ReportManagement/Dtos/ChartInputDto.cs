@@ -6,10 +6,9 @@ using System.Threading.Tasks;
 
 namespace ReportManagement.Application.Contracts.ReportManagement.Dtos
 {
-    public class DashboardWidgetDto
+    public class ChartInputDto
     {
-        public int Id { get; set; }
-        public int DashboardId { get; set; }
         public int WidgetId { get; set; }
+        public List<ConditionValue> ConditionValue { get; set; }
     }
 }

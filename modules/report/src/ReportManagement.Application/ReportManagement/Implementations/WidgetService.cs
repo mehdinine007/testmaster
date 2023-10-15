@@ -1,10 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using NPOI.SS.Formula.Functions;
 using ReportManagement.Application.Contracts.ReportManagement.Dtos;
 using ReportManagement.Application.Contracts.ReportManagement.IServices;
 using ReportManagement.Application.Contracts.WorkFlowManagement.Constants;
 using ReportManagement.Domain.ReportManagement;
+using ReportManagement.Domain.Shared.ReportManagement.Dtos;
+using ReportManagement.Domain.Shared.ReportManagement.Enums;
+using ReportManagement.EntityFrameworkCore.ReportManagement.EntityFrameworkCore.Repositories;
 using System.Linq;
 using Volo.Abp;
 using Volo.Abp.Application.Services;
@@ -15,11 +19,18 @@ namespace ReportManagement.Application.ReportManagement.Implementations
 {
     public class WidgetService : ApplicationService, IWidgetService
     {
-
         private readonly IRepository<Widget, int> _widgetRepository;
-        public WidgetService(IRepository<Widget, int> widgetRepository)
+        private readonly IRepository<DashboardWidget, int> _dashboardWidgetRepository;
+        private readonly IWidgetRepository _repository;
+       
+
+
+        public WidgetService(IRepository<Widget, int> widgetRepository, IWidgetRepository repository
+            , IRepository<DashboardWidget, int> dashboardWidgetRepository)
         {
             _widgetRepository = widgetRepository;
+            _repository = repository;
+            _dashboardWidgetRepository = dashboardWidgetRepository;
         }
 
 
@@ -44,28 +55,73 @@ namespace ReportManagement.Application.ReportManagement.Implementations
             return widgetDto;
         }
 
-        public async Task<ChartDto> GetChart(int widgetId)
+        public async Task<ChartDto> GetChart(int widgetId, List<ConditionValue> conditionValue)
         {
-        var widget=  await Validation(widgetId,null);
+            var widget = await Validation(widgetId, null);
+            var categoryDatas = JsonConvert.DeserializeObject<List<CategoryData>>(widget.Fields);
 
+            var conditionDec = new List<string>();
+            foreach (var condition in conditionValue)
+            {
+                string declare = "@" + condition.Name;
+                string type = "";
+                string value = condition.Value;
+                switch (condition.Type)
+                {
+                    case ConditionTypeEnum.String:
+                        type = "nvarchar(max)";
+                        value = "'"+condition.Value + "'";
+                        break;
+                    case ConditionTypeEnum.Numerical:
+                        type = "int";
+                        break;
+                    case ConditionTypeEnum.DropDown:
+                        type = !condition.MultiSelect ? "int" : "nvarchar(max)";
+                        break;
+                    case ConditionTypeEnum.CodingApi:
+                        type = !condition.MultiSelect ? "int" : "nvarchar(max)";
+                        break;
+                    case ConditionTypeEnum.Date:
+                        type = "datetime";
+                        break;
+                    default:
+                        type = "nvarchar(max)";
+                        break;
+                }
+                if (condition.Type == ConditionTypeEnum.DropDown || condition.Type == ConditionTypeEnum.CodingApi)
+                    value = !condition.MultiSelect ? condition.Value : "'" + condition.Value + "'";
+                if (string.IsNullOrEmpty(value))
+                    value = "NULL";
+                declare += " as " + type + " = " + value;
+                conditionDec.Add(declare);
+            }
+            string _command = widget.Command;
+            if (conditionDec.Count > 0)
+                _command = " declare " + string.Join(",", conditionDec) + " " + widget.Command;
+            var result = _repository.GetReportData(_command);
+            List<ChartSeriesData> SeriDataList = new List<ChartSeriesData>();
+            ChartSeriesData seriesData = new ChartSeriesData();
+            seriesData.Data = result.SelectMany(x => x.Values).Cast<int>().ToList();
 
+            SeriDataList.Add(seriesData);
             var chartDto = new ChartDto()
             {
-                 Id= widget.Id,
-                 Title= widget.Title,
-                 Type= widget.Type,  
-                 Categories = JsonConvert.DeserializeObject<List<CategoryData>>(widget.Fields),
-                 Series = JsonConvert.DeserializeObject<List<ChartSeriesData>>(widget.Fields)
+                Id = widget.Id,
+                Title = widget.Title,
+                Type = widget.Type,
+                Categories = JsonConvert.DeserializeObject<List<CategoryData>>(widget.Fields),
+                Series = SeriDataList
 
             };
             return chartDto;
-            
+
         }
 
-        public async Task<List<WidgetDto>> GetList(int dashboardId)
+        public async Task<List<DashboardWidgetDto>> GetList(int dashboardId)
         {
-            var widget = (await _widgetRepository.GetQueryableAsync()).ToList();
-            var widgetDto = ObjectMapper.Map<List<Widget>, List<WidgetDto>>(widget);
+            var widgetQuery = (await _dashboardWidgetRepository.GetQueryableAsync());
+            var widgets= widgetQuery.Include(x => x.Widget).Where(x=>x.DashboardId == dashboardId).ToList();    
+            var widgetDto = ObjectMapper.Map<List<DashboardWidget>, List<DashboardWidgetDto>>(widgets);
             return widgetDto;
         }
 
@@ -83,7 +139,7 @@ namespace ReportManagement.Application.ReportManagement.Implementations
 
         private async Task<Widget> Validation(int? id, WidgetCreateOrUpdateDto widgetCreateOrUpdateDto)
         {
-            var widgetQuery = await _widgetRepository.GetQueryableAsync();
+            var widgetQuery = (await _widgetRepository.GetQueryableAsync());
             Widget widget = new Widget();
             if (id is not null)
             {
@@ -96,6 +152,8 @@ namespace ReportManagement.Application.ReportManagement.Implementations
 
             return widget;
         }
+
+
 
     }
 }

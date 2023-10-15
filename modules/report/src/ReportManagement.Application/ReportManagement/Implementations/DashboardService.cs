@@ -1,4 +1,6 @@
-﻿using ReportManagement.Application.Contracts.ReportManagement.Dtos;
+﻿using Nest;
+using NPOI.OpenXmlFormats.Dml;
+using ReportManagement.Application.Contracts.ReportManagement.Dtos;
 using ReportManagement.Application.Contracts.ReportManagement.IServices;
 using ReportManagement.Application.Contracts.WorkFlowManagement.Constants;
 using ReportManagement.Domain.ReportManagement;
@@ -17,9 +19,14 @@ namespace ReportManagement.Application.ReportManagement.Implementations
     public class DashboardService : ApplicationService, IDashboardService
     {
         private readonly IRepository<Dashboard, int> _dashboardRepository;
-        public DashboardService(IRepository<Dashboard, int> dashboardRepository)
+        private readonly IRepository<DashboardWidget, int> _dashboardWidgetRepository;
+        private readonly  IWidgetService _widgetService;
+        public DashboardService(IRepository<Dashboard, int> dashboardRepository, IRepository<DashboardWidget, int> dashboardWidgetRepository
+            , IWidgetService widgetService)
         {
             _dashboardRepository = dashboardRepository;
+            _dashboardWidgetRepository = dashboardWidgetRepository;
+            _widgetService = widgetService;
         }
 
 
@@ -76,5 +83,26 @@ namespace ReportManagement.Application.ReportManagement.Implementations
             return dashboard;
         }
 
+
+        public async Task<DashboardWidgetDto> AddDashboardWidget(DashboardWidgetCreateOrUpdateDto dashboardWidgetCreateOrUpdateDto)
+        {
+            var dashboardWidget = ObjectMapper.Map<DashboardWidgetCreateOrUpdateDto, DashboardWidget>(dashboardWidgetCreateOrUpdateDto);
+          await  GetById(dashboardWidget.DashboardId);
+            await _widgetService.GetById(dashboardWidget.WidgetId);
+            var entity = await _dashboardWidgetRepository.InsertAsync(dashboardWidget, autoSave: true);
+            return ObjectMapper.Map<DashboardWidget, DashboardWidgetDto>(entity);
+        }
+
+        public async Task<bool> DeleteDashboardWidget(int dashboardWidgetId)
+        {
+          var  dashboardWidgetQuery=await _dashboardWidgetRepository.GetQueryableAsync();
+           var dashboardWidget= dashboardWidgetQuery.FirstOrDefault(x => x.Id == dashboardWidgetId);
+            if (dashboardWidget is null)
+            {
+                throw new UserFriendlyException(ReportConstant.DashboardWidgetNotFound, ReportConstant.DashboardWidgetNotFoundId);
+            }
+            await _dashboardRepository.DeleteAsync(dashboardWidgetId);
+            return true;
+        }
     }
 }

@@ -10,12 +10,14 @@ namespace ReportManagement.Domain.Shared.ReportManagement.Enums
     public enum ConditionTypeEnum
     {
         [EnumProperty(Description = "حرفی")]
-        Word = 1,
+        String = 1,
         [EnumProperty(Description = "عددی")]
         Numerical = 2,
         [EnumProperty(Description = "لیستی")]
-        List = 3,
+        DropDown = 3,
         [EnumProperty(Description = "کدینگ")]
-        Coding = 4,
+        CodingApi = 4,
+        [EnumProperty(Description = "تاریخ")]
+        Date = 5,
     }
 }

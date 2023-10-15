@@ -1,4 +1,5 @@
-﻿using ReportManagement.Domain.Shared.ReportManagement.Enums;
+﻿using ReportManagement.Domain.Shared.ReportManagement.Dtos;
+using ReportManagement.Domain.Shared.ReportManagement.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,16 +17,4 @@ namespace ReportManagement.Application.Contracts.ReportManagement.Dtos
         public List<ChartSeriesData> Series { get; set; }
     }
 
-    public class ChartSeriesData
-    {
-        public string Name { get; set; }
-        public string Color { get; set; }
-        public List<int> Data { get; set; }
-    }
-
-    public class CategoryData
-    {
-        public string Title { get; set; }
-        public string Color { get; set; }
-    }
 }

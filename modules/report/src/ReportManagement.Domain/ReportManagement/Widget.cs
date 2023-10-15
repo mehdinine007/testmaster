@@ -16,7 +16,7 @@ namespace ReportManagement.Domain.ReportManagement
         public string Fields { get; set; }
         public string Condition { get; set; }
 
-        public virtual ICollection<DashboardWidget> DashboardWidgets { get; set; }
+        public virtual ICollection<Dashboard> Dashboards { get; set; }
 
 
     }

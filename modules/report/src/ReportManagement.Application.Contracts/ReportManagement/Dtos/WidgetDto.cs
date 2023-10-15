@@ -14,6 +14,6 @@ namespace ReportManagement.Application.Contracts.ReportManagement.Dtos
         public WidgetTypeEnum Type { get; set; }
 
         public List<ConditionDto> Condition { get; set; }
-
+        public  ICollection<DashboardDto> Dashboards { get; set; }
     }
 }

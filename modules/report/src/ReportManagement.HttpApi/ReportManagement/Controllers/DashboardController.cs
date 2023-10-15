@@ -24,9 +24,17 @@ namespace ReportManagement.HttpApi.ReportManagement.Controllers
         [HttpPost]
         public Task<DashboardDto> Add(DashboardCreateOrUpdateDto dashboardCreateOrUpdateDto)
         =>_dashboardService.Add(dashboardCreateOrUpdateDto);
+        [HttpPost]
+        public Task<DashboardWidgetDto> AddDashboardWidget(DashboardWidgetCreateOrUpdateDto dashboardWidgetCreateOrUpdateDto)
+       =>_dashboardService.AddDashboardWidget(dashboardWidgetCreateOrUpdateDto);    
+
         [HttpDelete]
         public Task<bool> Delete(int id)
         =>_dashboardService.Delete(id);
+        [HttpDelete]
+        public Task<bool> DeleteDashboardWidget(int dashboardWidgetId)
+        =>_dashboardService.DeleteDashboardWidget(dashboardWidgetId);   
+
         [HttpGet]
         public Task<DashboardDto> GetById(int id)
         =>_dashboardService.GetById(id);

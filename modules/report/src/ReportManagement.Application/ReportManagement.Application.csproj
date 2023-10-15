@@ -38,6 +38,7 @@
     <ProjectReference Include="..\..\..\..\shared\Esale.Core\Esale.Core.csproj" />
     <ProjectReference Include="..\ReportManagement.Application.Contracts\ReportManagement.Application.Contracts.csproj" />
     <ProjectReference Include="..\ReportManagement.Domain\ReportManagement.Domain.csproj" />
+    <ProjectReference Include="..\ReportManagement.EntityFrameworkCore\ReportManagement.EntityFrameworkCore.csproj" />
   </ItemGroup>
 
 </Project>
