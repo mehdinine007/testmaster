@@ -1,4 +1,5 @@
-﻿using Esale.UserServiceGrpc;
+﻿using Azure.Core;
+using Esale.UserServiceGrpc;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using System;
@@ -6,7 +7,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UserManagement.Application.Contracts.Models;
 using UserManagement.Application.Contracts.Services;
+using UserManagement.Application.Contracts.UserManagement.Services;
+using UserManagement.Domain.UserManagement.Authorization;
 
 namespace UserManagement.Application.UserManagement.Implementations
 {
@@ -14,12 +18,16 @@ namespace UserManagement.Application.UserManagement.Implementations
     {
         private readonly IBaseInformationService _baseInformationSevice;
         private readonly IBankAppService _bankAppService;
+        private readonly IAuthenticateAppService _authenticateAppService;
+
 
         public GrpcUserService(IBaseInformationService baseInformationService,
-                               IBankAppService bankAppService)
+                               IBankAppService bankAppService,
+                               IAuthenticateAppService authenticateAppService)
         {
             _baseInformationSevice = baseInformationService;
             _bankAppService = bankAppService;
+            _authenticateAppService= authenticateAppService;
         }
 
         public override Task<UserAdvocacy> GetUserAdvocacy(UserAdvocacyRequest request, ServerCallContext context)
@@ -79,7 +87,6 @@ namespace UserManagement.Application.UserManagement.Implementations
             //if (clientsOrderDeliveryDateValidation)
             //{
             var orderDelay = await _baseInformationSevice.GetOrderDelivery(request.NationalCode, request.OrderId);
-            System.Diagnostics.Debugger.Launch();
             var ClientOrderDetail = await Task.FromResult(new ClientOrderDetailResponse()
             {
                 NationalCode = orderDelay.NationalCode,
@@ -97,6 +104,25 @@ namespace UserManagement.Application.UserManagement.Implementations
             //return null;
         }
 
+        public override async Task<AuthenticateResponse> Authenticate(AuthenticateRequest request, ServerCallContext context)
+        {
+            var model = new AuthenticateModel()
+            {
+                UserNameOrEmailAddress = request.UserNameOrEmailAddress,
+                Password = request.Password
+            };
+            var auth =await _authenticateAppService.Authenticate(model);
+            if (auth == null)
+                   return new AuthenticateResponse();
+
+            return new AuthenticateResponse
+            {
+                AccessToken = auth.AccessToken,
+                EncryptedAccessToken = auth.EncryptedAccessToken,
+                ExpireInSeconds = auth.ExpireInSeconds,
+                UserId = auth.UserId
+            };
+        }
 
     }
 }
