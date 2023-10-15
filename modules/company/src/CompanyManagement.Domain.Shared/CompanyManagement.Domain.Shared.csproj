@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+		<TargetFramework>net7.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+    </PropertyGroup>
+
+	<PropertyGroup>
+		<RootNameSpace>CompanyManagement.Domain.Shared</RootNameSpace>
+	</PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Volo.Abp.Localization" Version="7.2.1" />
+        <PackageReference Include="Volo.Abp.Ddd.Domain" Version="7.2.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\..\shared\Esale.Core\Esale.Core.csproj" />
+    </ItemGroup>
+
+</Project>

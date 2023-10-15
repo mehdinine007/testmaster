@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.Linq;
 using OrderManagement.Application.PaymentServiceGrpc;
 using System.Net.Http;
+using OrderManagement.Application.CompanyService;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -250,38 +251,39 @@ public class EsaleGrpcClient : ApplicationService, IEsaleGrpcClient
             StatusCode = reverse.StatusCode,
         };
     }
-    public async Task<ClientOrderDeliveryInformationDto> ValidateClientOrderDeliveryDate(ClientOrderDeliveryInformationRequestDto clientOrderRequest)
-    {
-        try
-        {
+    //public async Task<ClientOrderDeliveryInformationDto> ValidateClientOrderDeliveryDate(ClientOrderDeliveryInformationRequestDto clientOrderRequest)
+    //{
+    //    try
+    //    {
+    //        System.Diagnostics.Debugger.Launch();
+    //        var httpHandler = new HttpClientHandler();
+    //        httpHandler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+    //        var channel = GrpcChannel.ForAddress(_configuration.GetValue<string>("Company:GrpcAddress"), new GrpcChannelOptions { HttpHandler = httpHandler });
+    //        var client1 = new UserServiceGrpc.UserServiceGrpcClient(channel);
+    //        var client = new CompanyServiceGrpc.CompanyServiceGrpcBase(channel);
 
-            var httpHandler = new HttpClientHandler();
-            httpHandler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
-            var channel = GrpcChannel.ForAddress(_configuration.GetValue<string>("Esale:GrpcAddress"), new GrpcChannelOptions { HttpHandler = httpHandler });
-            var client = new UserServiceGrpc.UserServiceGrpcClient(channel);
+    //        var deliverDateValidation = await client.CheckOrderDeliveryDateAsync(new ClientOrderDetailRequest
+    //        {
+    //            NationalCode = clientOrderRequest.NationalCode,
+    //            OrderId = clientOrderRequest.OrderId
+    //        });
+    //        return new ClientOrderDeliveryInformationDto
+    //        {
+    //            NationalCode = deliverDateValidation.NationalCode,
+    //            TranDate = deliverDateValidation.TranDate.ToDateTime(),// ? Timestamp.FromDateTime(deliverDateValidation.TranDate) : new,
+    //            PayedPrice = deliverDateValidation.PayedPrice,
+    //            ContRowId = deliverDateValidation.ContRowId,
+    //            Vin = deliverDateValidation.Vin,
+    //            BodyNumber = deliverDateValidation.BodyNumber,
+    //            DeliveryDate = deliverDateValidation.DeliveryDate.ToDateTime(),
+    //            FinalPrice = deliverDateValidation.FinalPrice,
+    //            CarDesc = deliverDateValidation.CarDesc
+    //        };
+    //    }
+    //    catch (Exception e)
+    //    {
 
-            var deliverDateValidation = await client.CheckOrderDeliveryDateAsync(new ClientOrderDetailRequest
-            {
-                NationalCode = clientOrderRequest.NationalCode,
-                OrderId = clientOrderRequest.OrderId
-            });
-            return new ClientOrderDeliveryInformationDto
-            {
-                NationalCode = deliverDateValidation.NationalCode,
-                TranDate = deliverDateValidation.TranDate.ToDateTime(),// ? Timestamp.FromDateTime(deliverDateValidation.TranDate) : new,
-                PayedPrice = deliverDateValidation.PayedPrice,
-                ContRowId = deliverDateValidation.ContRowId,
-                Vin = deliverDateValidation.Vin,
-                BodyNumber = deliverDateValidation.BodyNumber,
-                DeliveryDate = deliverDateValidation.DeliveryDate.ToDateTime(),
-                FinalPrice = deliverDateValidation.FinalPrice,
-                CarDesc = deliverDateValidation.CarDesc
-            };
-        }
-        catch (Exception e)
-        {
-
-            throw;
-        }
-    }
+    //        throw;
+    //    }
+    //}
 }

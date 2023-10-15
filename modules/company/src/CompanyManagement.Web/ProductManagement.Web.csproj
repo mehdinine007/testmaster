@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net7.0</TargetFramework>
+        <AssetTargetFallback>$(AssetTargetFallback);portable-net45+win8+wp8+wpa81;</AssetTargetFallback>
+        <IsPackable>true</IsPackable>
+        <OutputType>Library</OutputType>
+        <RootNamespace>ProductManagement</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <EmbeddedResource Include="Pages\**\*.css" />
+        <EmbeddedResource Include="Pages\**\*.js" />
+        <EmbeddedResource Include="Localization\Resources\**\*.json" />
+        <Content Remove="Pages\**\*.css" />
+        <Content Remove="Pages\**\*.js" />
+        <Content Remove="Localization\Resources\**\*.json" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Volo.Abp.AutoMapper" Version="7.2.1" />
+        <PackageReference Include="Volo.Abp.AspNetCore.Mvc.UI.Theme.Shared" Version="5.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Pages\OrderManagement\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\CompanyManagement.HttpApi.Client\CompanyManagement.HttpApi.Client.csproj" />
+    </ItemGroup>
+
+</Project>

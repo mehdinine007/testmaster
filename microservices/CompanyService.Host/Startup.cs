@@ -7,14 +7,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ProductService.Host.Infrastructure.Middlewares;
 using Volo.Abp.Auditing;
-using OrderService.Host.Infrastructures.Middlewares;
-using OrderService.Host.Infrastructures.Extensions;
-using OrderService.Host.Infrastructures.Hangfire.Abstract;
-using OrderService.Host.Infrastructures.Hangfire.Concrete;
+using CompanyService.Host.Infrastructures.Middlewares;
+using CompanyService.Host.Infrastructures.Extensions;
 using Esale.Core.IOC;
 using Esale.Core.Caching.Redis;
 using Esale.Core.Caching;
-using CompanyService.Host;
+using CompanyManagement.Application.CompanyManagement.Implementations;
+using OrderManagement.Application.CompanyManagement.GrpcServer;
 #endregion
 
 
@@ -40,8 +39,8 @@ namespace CompanyService.Host
             }
             services.AddSingleton<ICacheManager, CacheManager>();
             services.AddSingleton<IRedisCacheManager, RedisCacheManager>();
-            services.AddSingleton<ICapacityControlJob, CapacityControlJob>();
-            services.AddSingleton<IIpgJob, IpgJob>();
+            services.AddGrpc();
+            services.AddControllers();
             ServiceTool.Create(services);
         }
 
@@ -49,7 +48,11 @@ namespace CompanyService.Host
         {
             app.UseCors(options => options.SetIsOriginAllowed(x => _ = true).AllowAnyMethod().AllowAnyHeader().AllowCredentials());
             app.UseMiddleware<JwtMiddleware>();
-
+            app.UseRouting();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapGrpcService<GrpcOrderService>();
+            });
             app.InitializeApplication();
 
         }

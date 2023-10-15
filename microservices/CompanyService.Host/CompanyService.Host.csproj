@@ -37,8 +37,9 @@
         <PackageReference Include="Volo.Abp.PermissionManagement.EntityFrameworkCore" Version="7.2.1" />
         <PackageReference Include="Volo.Abp.SettingManagement.EntityFrameworkCore" Version="7.2.1" />
         <PackageReference Include="Volo.Abp.TenantManagement.EntityFrameworkCore" Version="7.2.1" />
-        <ProjectReference Include="..\..\modules\order\src\CompanyManagement.HttpApi\CompanyManagement.HttpApi.csproj" />
-        <ProjectReference Include="..\..\modules\order\src\OrderManagement.EntityFrameworkCore\OrderManagement.EntityFrameworkCore.csproj" />
+        <ProjectReference Include="..\..\modules\company\src\CompanyManagement.Application\CompanyManagement.Application.csproj" />
+        <ProjectReference Include="..\..\modules\company\src\CompanyManagement.EntityFrameworkCore\CompanyManagement.EntityFrameworkCore.csproj" />
+        <ProjectReference Include="..\..\modules\company\src\CompanyManagement.HttpApi\CompanyManagement.HttpApi.csproj" />
         <ProjectReference Include="..\..\shared\Esale.Core\Esale.Core.csproj" />
         <ProjectReference Include="..\..\shared\Extensions\Extensions.csproj" />
         <ProjectReference Include="..\..\shared\MsDemo.Shared\MsDemo.Shared.csproj" />
@@ -59,6 +60,11 @@
       <Content Update="web.config">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Infrastructures\Hangfire\Abstract\" />
+      <Folder Include="Infrastructures\Hangfire\Concrete\" />
     </ItemGroup>
 
 </Project>

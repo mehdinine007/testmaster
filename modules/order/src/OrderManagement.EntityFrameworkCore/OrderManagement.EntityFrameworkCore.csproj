@@ -6,6 +6,11 @@
 	<PropertyGroup>
 		<RootNamespace>OrderManagement.EfCore</RootNamespace>
 	</PropertyGroup>
+	<ItemGroup>
+	  <Compile Remove="CompanyManagement\**" />
+	  <EmbeddedResource Remove="CompanyManagement\**" />
+	  <None Remove="CompanyManagement\**" />
+	</ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.1">

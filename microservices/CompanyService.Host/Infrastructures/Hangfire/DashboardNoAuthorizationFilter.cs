@@ -1,6 +1,6 @@
 ﻿using Hangfire.Dashboard;
 
-namespace OrderService.Host.Infrastructures.Hangfire
+namespace CompanyService.Host.Infrastructures.Hangfire
 {
     public class DashboardNoAuthorizationFilter : IDashboardAuthorizationFilter
     {

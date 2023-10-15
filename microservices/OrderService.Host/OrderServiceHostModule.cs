@@ -160,7 +160,7 @@ namespace OrderService.Host
             //}
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGrpcService<EsaleGrpcClient>();
+                endpoints.MapGrpcService<CompanyGrpcClient>();
                 
 
             });
