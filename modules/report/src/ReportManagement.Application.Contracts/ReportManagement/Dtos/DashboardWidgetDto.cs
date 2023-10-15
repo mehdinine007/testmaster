@@ -11,5 +11,9 @@ namespace ReportManagement.Application.Contracts.ReportManagement.Dtos
         public int Id { get; set; }
         public int DashboardId { get; set; }
         public int WidgetId { get; set; }
+        public WidgetDto Widget { get; set; }
+        public DashboardDto Dashboard { get; set; }
+    
+      
     }
 }
