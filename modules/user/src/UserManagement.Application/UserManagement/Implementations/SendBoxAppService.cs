@@ -157,7 +157,7 @@ public class SendBoxAppService : ApplicationService, ISendBoxAppService
 
             if (sendSMSDFromCache != null)
             {
-                if (string.IsNullOrEmpty(_configuration.GetSection("SMSValidation").Value))
+                if (!string.IsNullOrEmpty(_configuration.GetSection("SMSValidation").Value))
                 {
                     if (sendSMSDFromCache != null)
                     {
@@ -167,9 +167,10 @@ public class SendBoxAppService : ApplicationService, ISendBoxAppService
                         }
                     }
                 }
-
             }
+
             IDataResult<string> _ret1 = null;
+
             SendBoxServiceDto _ret = null;
 
             if (!string.IsNullOrWhiteSpace(_configuration.GetSection("DisableSendSMS").Value))
