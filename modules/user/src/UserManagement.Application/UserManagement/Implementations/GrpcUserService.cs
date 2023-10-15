@@ -73,30 +73,7 @@ namespace UserManagement.Application.UserManagement.Implementations
 
 
         }
-        public override async Task<ClientOrderDetailResponse> CheckOrderDeliveryDate(ClientOrderDetailRequest request, ServerCallContext context)
-        {
-            //var clientsOrderDeliveryDateValidation =await _baseInformationSevice.CheckOrderDeliveryDate(request.NationalCode, request.OrderId);
-            //if (clientsOrderDeliveryDateValidation)
-            //{
-            var orderDelay = await _baseInformationSevice.GetOrderDelivery(request.NationalCode, request.OrderId);
-            System.Diagnostics.Debugger.Launch();
-            var ClientOrderDetail = await Task.FromResult(new ClientOrderDetailResponse()
-            {
-                NationalCode = orderDelay.NationalCode,
-                TranDate = orderDelay.TranDate.HasValue ? Timestamp.FromDateTimeOffset(orderDelay.TranDate.Value) : new(),
-                PayedPrice = orderDelay.PayedPrice,
-                ContRowId = orderDelay.ContRowId,
-                Vin = orderDelay.Vin,
-                DeliveryDate = orderDelay.DeliveryDate.HasValue ? Timestamp.FromDateTimeOffset(orderDelay.TranDate.Value) : new(),
-                BodyNumber = orderDelay.BodyNumber,
-                FinalPrice = orderDelay.FinalPrice,
-                CarDesc = orderDelay.CarDesc
-            });
-            return ClientOrderDetail;
-            //}
-            //return null;
-        }
-
+ 
 
     }
 }
