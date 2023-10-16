@@ -16,6 +16,7 @@ using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.ObjectMapping;
 using WorkingWithMongoDB.WebAPI.Services;
+using wsFava;
 
 namespace UserManagement.Application.UserManagement.Implementations;
 
@@ -483,8 +484,10 @@ public class UserAppService : ApplicationService, IUserAppService
          
 
         await _commonAppService.ValidateSMS(forgetPasswordDto.Mobile, forgetPasswordDto.NationalCode, forgetPasswordDto.SMSCode, SMSType.ForgetPassword);
-        var userFromDb = await (await _userMongoRepository.GetQueryableAsync())
-            .SingleOrDefaultAsync(x => x.NationalCode == forgetPasswordDto.NationalCode && x.IsDeleted == false);
+        var userFromDb = (await _userMongoRepository.GetQueryableAsync())
+            .SingleOrDefault(x => x.NationalCode == forgetPasswordDto.NationalCode && x.IsDeleted == false);
+        
+
 
         if (userFromDb == null || userFromDb.Mobile.Replace(" ", "") != forgetPasswordDto.Mobile)
         {
@@ -494,6 +497,14 @@ public class UserAppService : ApplicationService, IUserAppService
         var filter = Builders<UserMongo>.Filter.Where(_ => _.NationalCode == forgetPasswordDto.NationalCode && _.IsDeleted == false);
         var update = Builders<UserMongo>.Update.Set(_ => _.Password, userFromDb.Password)
             .Set(_ => _.LastModificationTime, DateTime.Now);
+
+        var collection = _userMongoRepository.GetCollection<UserMongo>();
+        var updateResult = await collection.UpdateOneAsync(filter, update);
+
+        if (updateResult.ModifiedCount == 0)
+        {
+            throw new UserFriendlyException("Failed to update password.");
+        }
 
         return true;
     }

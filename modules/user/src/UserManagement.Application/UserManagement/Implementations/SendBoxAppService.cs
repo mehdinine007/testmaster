@@ -42,7 +42,8 @@ public class SendBoxAppService : ApplicationService, ISendBoxAppService
         //IRepository<Logs, long> LogsRepository,
         ICacheManager cacheManager,
         IGetwayGrpcClient getwayGrpcClient,
-        ICaptchaService captchaService)
+        ICaptchaService captchaService,
+         IRepository<UserMongo, ObjectId> userMongoRepository)
     {
         _configuration = configuration;
         _commonAppService = CommonAppService;
@@ -52,6 +53,7 @@ public class SendBoxAppService : ApplicationService, ISendBoxAppService
         _cacheManager = cacheManager;
         _getwayGrpcClient = getwayGrpcClient;
         _captchaService = captchaService;
+        _userMongoRepository = userMongoRepository;
     }
 
 
@@ -201,7 +203,7 @@ public class SendBoxAppService : ApplicationService, ISendBoxAppService
                     await _cacheManager.SetStringAsync(input.Recipient + input.NationalCode, PreFix, JsonConvert.SerializeObject(sendSMSDto), new() { Provider = CacheProviderEnum.Redis });
                 }
 
-                //return new SuccsessResult()
+                return new SuccsessResult();
                 //grpc
 
             }
