@@ -17,6 +17,8 @@ using UserManagement.Application.Contracts.Models;
 using Volo.Abp.Application.Services;
 using Newtonsoft.Json;
 using UserManagement.Domain.Shared;
+using MongoDB.Driver;
+using WorkingWithMongoDB.WebAPI.Services;
 #endregion
 
 namespace UserManagement.Application.UserManagement.Implementations;
@@ -139,7 +141,7 @@ public class SendBoxAppService : ApplicationService, ISendBoxAppService
             {
                 var userFromDb = (await _userMongoRepository
                                   .GetQueryableAsync())
-                                  .FirstOrDefault(a => a.NationalCode == input.NationalCode);
+                                  .FirstOrDefault(a => a.NationalCode == input.NationalCode && a.IsDeleted == false);
 
                 if (userFromDb == null || userFromDb.Mobile.Replace(" ", "") != input.Recipient)
                 {
@@ -147,6 +149,24 @@ public class SendBoxAppService : ApplicationService, ISendBoxAppService
                 }
                 PreFix = SMSType.ForgetPassword.ToString();
                 Message = _configuration.GetSection("ForgetPassText").Value.Replace("{0}", sendSMSDto.SMSCode);
+            }
+            else if (input.SMSLocation == SMSType.ChangePassword)
+            {
+                string uid = _commonAppService.GetUID().ToString();
+                var filter = Builders<UserMongo>.Filter.Where(e => e.UID == uid && e.IsDeleted == false);
+
+                var userFromDb = (await _userMongoRepository
+                                .GetQueryableAsync())
+                                .FirstOrDefault(a =>a.UID == uid && a.IsDeleted == false);
+
+                if (userFromDb == null)
+                {
+                    throw new UserFriendlyException("خطایی ");
+                }
+                PreFix = SMSType.ChangePassword.ToString();
+                Message = _configuration.GetSection("RegisterText").Value.Replace("{0}", sendSMSDto.SMSCode);
+                input.Recipient = userFromDb.Mobile;
+                input.NationalCode = userFromDb.NationalCode;
             }
             //_cacheManager.GetCache("SMS").TryGetValue(PreFix + input.Recipient + input.NationalCode, out objectSMS);
             //string objectSMSString = RedisHelper.Connection.GetDatabase().StringGet(PreFix + input.Recipient + input.NationalCode);
