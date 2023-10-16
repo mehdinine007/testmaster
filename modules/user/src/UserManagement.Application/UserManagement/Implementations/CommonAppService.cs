@@ -1,8 +1,11 @@
 ﻿using Abp.Domain.Uow;
+using Esale.Core.Caching;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
+using Nest;
 using Newtonsoft.Json;
+using System.Reflection;
 using System.Security.Claims;
 using UserManagement.Application.Contracts.Models;
 using UserManagement.Application.Contracts.Services;
@@ -10,6 +13,7 @@ using UserManagement.Application.InquiryService;
 using UserManagement.Domain.Shared;
 using Volo.Abp;
 using Volo.Abp.Application.Services;
+using wsFava;
 
 namespace UserManagement.Application.UserManagement.Implementations;
 
@@ -18,15 +22,17 @@ public class CommonAppService : ApplicationService, ICommonAppService
     private readonly IConfiguration _configuration;
     private readonly IDistributedCache _distributedCache;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly ICacheManager _cacheManager;
 
     public CommonAppService(IConfiguration configuration,
                             IDistributedCache distributedCache,
-                            IHttpContextAccessor httpContextAccessor
-        )
+                            IHttpContextAccessor httpContextAccessor,
+                            ICacheManager cacheManager)
     {
         _configuration = configuration;
         _distributedCache = distributedCache;
         _httpContextAccessor = httpContextAccessor;
+        _cacheManager = cacheManager;
     }
 
     public Guid GetUID()
@@ -124,7 +130,12 @@ public class CommonAppService : ApplicationService, ICommonAppService
             return true;
 
         //string ObjectSMSCode = RedisHelper.GetDatabase().StringGet(sMSType.ToString() + Mobile + NationalCode);
-        var ObjectSMSCode = await _distributedCache.GetStringAsync(sMSType.ToString() + Mobile + NationalCode);
+        //var ObjectSMSCode = await _distributedCache.GetStringAsync(sMSType.ToString() + Mobile + NationalCode);
+        var PreFix = "";
+        var ObjectSMSCode = await _cacheManager.GetStringAsync(Mobile + NationalCode, PreFix, new() { Provider = CacheProviderEnum.Redis });
+
+
+
         if (ObjectSMSCode == null)
         {
             throw new UserFriendlyException("کد پیامک ارسالی صحیح نمی باشد");

@@ -449,4 +449,52 @@ public class UserAppService : ApplicationService, IUserAppService
         }
         return null;
     }
+
+    public async Task<bool> ForgotPassword(ForgetPasswordDto forgetPasswordDto)
+    {
+        Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
+
+        var hasNumber = new Regex(@"[0-9]+");
+        var hasUpperChar = new Regex(@"[A-Z]+");
+        var hasLowerChar = new Regex(@"[a-z]+");
+        var hasSymbols = new Regex(@"[!@#$%^&*()_+=\[{\]};:<>|./?,-]");
+
+        if (!hasLowerChar.IsMatch(forgetPasswordDto.PassWord))
+        {
+            throw new UserFriendlyException("ساختار کلمه عبور صحیح نمی باشد");
+        }
+        else if (!hasUpperChar.IsMatch(forgetPasswordDto.PassWord))
+        {
+            throw new UserFriendlyException("ساختار کلمه عبور صحیح نمی باشد");
+
+        }
+
+        else if (!hasNumber.IsMatch(forgetPasswordDto.PassWord))
+        {
+            throw new UserFriendlyException("ساختار کلمه عبور صحیح نمی باشد");
+
+        }
+
+        else if (!hasSymbols.IsMatch(forgetPasswordDto.PassWord))
+        {
+            throw new UserFriendlyException("ساختار کلمه عبور صحیح نمی باشد");
+
+        }
+         
+
+        await _commonAppService.ValidateSMS(forgetPasswordDto.Mobile, forgetPasswordDto.NationalCode, forgetPasswordDto.SMSCode, SMSType.ForgetPassword);
+        var userFromDb = await (await _userMongoRepository.GetQueryableAsync())
+            .SingleOrDefaultAsync(x => x.NationalCode == forgetPasswordDto.NationalCode && x.IsDeleted == false);
+
+        if (userFromDb == null || userFromDb.Mobile.Replace(" ", "") != forgetPasswordDto.Mobile)
+        {
+            throw new UserFriendlyException("کد ملی یا شماره موبایل صحیح نمی باشد");
+        }
+        userFromDb.Password = _passwordHasher.HashPassword(new User(), forgetPasswordDto.PassWord);
+        var filter = Builders<UserMongo>.Filter.Where(_ => _.NationalCode == forgetPasswordDto.NationalCode && _.IsDeleted == false);
+        var update = Builders<UserMongo>.Update.Set(_ => _.Password, userFromDb.Password)
+            .Set(_ => _.LastModificationTime, DateTime.Now);
+
+        return true;
+    }
 }

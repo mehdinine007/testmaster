@@ -144,7 +144,7 @@ public class SendBoxAppService : ApplicationService, ISendBoxAppService
                     throw new UserFriendlyException("کد ملی یا شماره موبایل صحیح نمی باشد");
                 }
                 PreFix = SMSType.ForgetPassword.ToString();
-                Message = _configuration.GetSection("RegisterText").Value.Replace("{0}", sendSMSDto.SMSCode);
+                Message = _configuration.GetSection("ForgetPassText").Value.Replace("{0}", sendSMSDto.SMSCode);
             }
             //_cacheManager.GetCache("SMS").TryGetValue(PreFix + input.Recipient + input.NationalCode, out objectSMS);
             //string objectSMSString = RedisHelper.Connection.GetDatabase().StringGet(PreFix + input.Recipient + input.NationalCode);
