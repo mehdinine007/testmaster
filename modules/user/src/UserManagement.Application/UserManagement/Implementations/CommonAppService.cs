@@ -1,11 +1,9 @@
-﻿using Abp.Domain.Uow;
+﻿#region NS
 using Esale.Core.Caching;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
-using Nest;
 using Newtonsoft.Json;
-using System.Reflection;
 using System.Security.Claims;
 using UserManagement.Application.Contracts.Models;
 using UserManagement.Application.Contracts.Services;
@@ -13,7 +11,7 @@ using UserManagement.Application.InquiryService;
 using UserManagement.Domain.Shared;
 using Volo.Abp;
 using Volo.Abp.Application.Services;
-using wsFava;
+#endregion
 
 namespace UserManagement.Application.UserManagement.Implementations;
 
@@ -79,7 +77,6 @@ public class CommonAppService : ApplicationService, ICommonAppService
         return zipCache;
     }
 
-
     public async Task<bool> ValidateMobileNumber(string nationalCode, string mobileNo)
     {
         if (nationalCode.Length != 10 || nationalCode.AsParallel().Any(x => !char.IsDigit(x)))
@@ -131,12 +128,8 @@ public class CommonAppService : ApplicationService, ICommonAppService
 
         //string ObjectSMSCode = RedisHelper.GetDatabase().StringGet(sMSType.ToString() + Mobile + NationalCode);
         //var ObjectSMSCode = await _distributedCache.GetStringAsync(sMSType.ToString() + Mobile + NationalCode);
-        //var PreFix = "";
-        //var ObjectSMSCode = await _cacheManager.GetStringAsync(Mobile + NationalCode, PreFix, new() { Provider = CacheProviderEnum.Redis });
         string PreFix = SMSType.ForgetPassword.ToString();
         string ObjectSMSCode = await _cacheManager.GetStringAsync(Mobile + NationalCode, PreFix, new() { Provider = CacheProviderEnum.Redis });
-
-
 
         if (ObjectSMSCode == null)
         {

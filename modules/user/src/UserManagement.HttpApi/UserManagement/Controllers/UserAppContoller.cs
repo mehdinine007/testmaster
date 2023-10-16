@@ -1,12 +1,11 @@
-﻿using Volo.Abp.Auditing;
+﻿#region NS
+using Volo.Abp.Auditing;
 using Volo.Abp;
 using Microsoft.AspNetCore.Mvc;
-using Volo.Abp.AspNetCore.Mvc;
 using UserManagement.Application.Contracts.Services;
 using UserManagement.Application.Contracts.Models;
 using UserManagement.Application.Contracts.UserManagement.Services;
-using MongoDB.Bson;
-using UserManagement.Domain.Authorization.Users;
+#endregion
 
 namespace UserManagement.HttpApi.UserManagement.Controllers;
 

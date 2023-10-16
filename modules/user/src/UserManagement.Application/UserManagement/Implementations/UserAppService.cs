@@ -501,21 +501,12 @@ public class UserAppService : ApplicationService, IUserAppService
         var update = Builders<UserMongo>.Update.Set(_ => _.Password, userFromDb.Password)
             .Set(_ => _.LastModificationTime, DateTime.Now);
 
-        var collection = _userMongoRepository.GetCollection<UserMongo>();
-        var updateResult = await collection.UpdateOneAsync(filter, update);
-
-        if (updateResult.ModifiedCount == 0)
-        {
-            throw new UserFriendlyException("Failed to update password.");
-        }
+        (await _userMongoRepository.GetCollectionAsync())
+            .UpdateOne(filter, update);
 
         return true;
     }
 
-    //[UnitOfWork(isTransactional: false)]
-    //[AbpAuthorize]
-    //[AbpAllowAnonymous]
-    //[HttpPost]
     public async Task<bool> ChangePassword(ChangePasswordDto input)
     {
         Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
