@@ -8,7 +8,8 @@ namespace GatewayManagement.Application.Contracts.GatewayManagement.Dtos
 {
     public class HttpResponseMessageDto
     {
-        public bool IsSuccessStatusCode { get; set; }
-        public string StringContent { get; set; }
+        public bool Success { get; set; }
+        public string Error { get; set; }
+        public string ErrorCode { get; set; }
     }
 }

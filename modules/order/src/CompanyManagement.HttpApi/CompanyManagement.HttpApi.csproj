@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net7.0</TargetFramework>
+    </PropertyGroup>
+
+	<PropertyGroup>
+		<RootNamespace>OrderManagement.HttpApi</RootNamespace>
+	</PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Volo.Abp.AspNetCore.Mvc" Version="7.2.1" />
+	</ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\..\shared\Authorization\Authorization.csproj" />
+      <ProjectReference Include="..\OrderManagement.Application.Contracts\OrderManagement.Application.Contracts.csproj" />
+      <ProjectReference Include="..\OrderManagement.Application\OrderManagement.Application.csproj" />
+    </ItemGroup>
+
+</Project>

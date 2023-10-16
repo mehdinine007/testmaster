@@ -3,12 +3,15 @@ syntax = "proto3";
 option csharp_namespace = "OrderManagement.Application.Esale.UserServiceGrpc";
 
 import "google/protobuf/wrappers.proto";
+import "google/protobuf/timestamp.proto";
 
 package UserService;
 
 service UserServiceGrpc{
 	rpc GetUserAdvocacy(UserAdvocacyRequest) returns (UserAdvocacy);
 	rpc GetUserById(GetUserModel) returns (UserModel);
+	//rpc CheckOrderDeliveryDate(ClientOrderDetailRequest) returns (ClientOrderDetailResponse);
+
 }
 
 message GetUserModel{
@@ -56,3 +59,4 @@ message UserAdvocacy{
 message UserAdvocacyRequest{
 	string NationalCode = 1;
 }
+

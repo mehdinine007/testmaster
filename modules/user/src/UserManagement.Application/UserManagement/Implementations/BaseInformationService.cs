@@ -15,6 +15,8 @@ using Volo.Abp.Uow;
 using Volo.Abp.Auditing;
 using Microsoft.EntityFrameworkCore;
 using UserManagement.Domain.Shared;
+using UserManagement.Domain.UserManagement.CompanyService;
+using Microsoft.EntityFrameworkCore.Internal;
 
 namespace UserManagement.Application.Implementations;
 
@@ -26,6 +28,8 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IRepository<WhiteList, int> _whiteListRepository;
     private readonly ICommonAppService _commonAppService;
+    private readonly IRepository<ClientsOrderDetailByCompany, long> _clientsOrderDetailByCompany;
+    private readonly IRepository<CompanyPaypaidPrices, long> _companyPaypaidPricesRepository;
 
 
     public BaseInformationService(IConfiguration configuration,
@@ -33,8 +37,9 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
                                   IHttpContextAccessor httpContextAccessor,
                                   IRepository<WhiteList, int> whiteListRepository,
                                   IRepository<UserMongo, ObjectId> userMongoRepository,
-                                  ICommonAppService commonAppService
-        )
+                                  ICommonAppService commonAppService,
+                                  IRepository<ClientsOrderDetailByCompany, long> clientsOrderDetailByCompany,
+                                  IRepository<CompanyPaypaidPrices, long> companyPaypaidPricesRepository)
     {
         _configuration = configuration;
         _advocacyUsersRepository = advocacyUsersRepository;
@@ -42,6 +47,8 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
         _httpContextAccessor = httpContextAccessor;
         _whiteListRepository = whiteListRepository;
         _commonAppService = commonAppService;
+        _clientsOrderDetailByCompany = clientsOrderDetailByCompany;
+        _companyPaypaidPricesRepository = companyPaypaidPricesRepository;
     }
 
     public async Task RegistrationValidationWithoutCaptcha(RegistrationValidationDto input)
@@ -228,4 +235,6 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
         var zipCodeInquiry =await _commonAppService.GetAddressByZipCode(input.zipCod, input.nationalCode);
         return zipCodeInquiry;
     }
+
+
 }

@@ -23,7 +23,6 @@ using Esale.Core.Extensions;
 using UserManagement.EfCore.MongoDb;
 using Hangfire;
 using Microsoft.EntityFrameworkCore;
-using OrderManagement.Application.OrderManagement.Implementations;
 using UserManagement.Application.UserManagement.Implementations;
 #endregion
 

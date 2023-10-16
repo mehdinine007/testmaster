@@ -26,10 +26,10 @@ namespace Esale.Share.Authorize
         private string _permission;
         public SecuredOperation(string permission)
         {
+            var _httpContextAccessor = CheckAuthenticate();
             _permission = permission;
             if (string.IsNullOrWhiteSpace(_permission))
-                return;
-            var _httpContextAccessor = CheckAuthenticate();
+                throw new UserFriendlyException(CoreMessage.AuthenticationDenied, CoreMessage.AuthenticationDeniedId);
             var roles = _httpContextAccessor.HttpContext.User.Claims
                 .Where(x => x.Type.Equals(ClaimTypes.Role))
                 .ToList();

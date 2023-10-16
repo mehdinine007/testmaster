@@ -82,7 +82,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
 
             var productLevel = ObjectMapper.Map<ProductLevelDto, ProductLevel>(productLevelDto);
 
-           var entity= await _productLevelRepository.AttachAsync(productLevel, c => c.Title, c => c.Priority);
+            var entity= await _productLevelRepository.AttachAsync(productLevel, c => c.Title, c => c.Priority);
 
             return ObjectMapper.Map<ProductLevel, ProductLevelDto>(entity);
         }

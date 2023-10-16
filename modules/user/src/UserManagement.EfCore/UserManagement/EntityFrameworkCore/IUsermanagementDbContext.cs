@@ -4,6 +4,7 @@ using UserManagement.Domain.UserManagement.Bases;
 using Volo.Abp.Data;
 using Volo.Abp.EntityFrameworkCore;
 using UserManagement.Domain.UserManagement;
+using UserManagement.Domain.UserManagement.CompanyService;
 
 namespace UserManagement.EfCore.EntityFrameworkCore
 {
@@ -16,5 +17,7 @@ namespace UserManagement.EfCore.EntityFrameworkCore
         DbSet<AdvocacyUsersFromBank> AdvocacyUsersFromBank { get; set; }
 
         DbSet<UserRejectionFromBank> UserRejectionFromBank { get; set; }
+        DbSet<ClientsOrderDetailByCompany> ClientsOrderDetailByCompany { get; set; }
+        DbSet<CompanyPaypaidPrices> CompanyPaypaidPrices { get; set; }
     }
 }
