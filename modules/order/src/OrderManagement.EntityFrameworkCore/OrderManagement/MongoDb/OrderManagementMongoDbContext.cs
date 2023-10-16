@@ -13,7 +13,6 @@ namespace OrderManagement.EfCore.MongoDb
     [ConnectionStringName("MongoConnection")]
     public class OrderManagementMongoDbContext : AbpMongoDbContext
     {
-        public IMongoCollection<UserMongo> Customers => Collection<UserMongo>();
         public IMongoCollection<PropertyCategory> PropertyCategories => Collection<PropertyCategory>();
         public IMongoCollection<ProductProperty> ProductProperties => Collection<ProductProperty>();
         protected override void CreateModel(IMongoModelBuilder modelBuilder)
