@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Abp.Authorization;
+using Abp.Domain.Uow;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
@@ -480,7 +483,7 @@ public class UserAppService : ApplicationService, IUserAppService
             throw new UserFriendlyException("ساختار کلمه عبور صحیح نمی باشد");
 
         }
-         
+
 
         await _commonAppService.ValidateSMS(forgetPasswordDto.Mobile, forgetPasswordDto.NationalCode, forgetPasswordDto.SMSCode, SMSType.ForgetPassword);
         var userFromDb = await (await _userMongoRepository.GetQueryableAsync())
@@ -496,5 +499,64 @@ public class UserAppService : ApplicationService, IUserAppService
             .Set(_ => _.LastModificationTime, DateTime.Now);
 
         return true;
+    }
+
+    //[UnitOfWork(isTransactional: false)]
+    //[AbpAuthorize]
+    //[AbpAllowAnonymous]
+    //[HttpPost]
+    public async Task<bool> ChangePassword(ChangePasswordDto input)
+    {
+        Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
+
+        var hasNumber = new Regex(@"[0-9]+");
+        var hasUpperChar = new Regex(@"[A-Z]+");
+        var hasLowerChar = new Regex(@"[a-z]+");
+        var hasSymbols = new Regex(@"[!@#$%^&*()_+=\[{\]};:<>|./?,-]");
+
+        if (!hasLowerChar.IsMatch(input.NewPassWord))
+        {
+            throw new UserFriendlyException("ساختار کلمه عبور صحیح نمی باشد");
+        }
+        else if (!hasUpperChar.IsMatch(input.NewPassWord))
+        {
+            throw new UserFriendlyException("ساختار کلمه عبور صحیح نمی باشد");
+
+        }
+
+        else if (!hasNumber.IsMatch(input.NewPassWord))
+        {
+            throw new UserFriendlyException("ساختار کلمه عبور صحیح نمی باشد");
+
+        }
+
+        else if (!hasSymbols.IsMatch(input.NewPassWord))
+        {
+            throw new UserFriendlyException("ساختار کلمه عبور صحیح نمی باشد");
+
+        }
+        string uid = _commonAppService.GetUID().ToString();
+
+        if (uid == null)
+        {
+            throw new UserFriendlyException("خطایی پیش آمده است،لطفا با پشتیبانی تماس بگیرید. کد خطا 1");
+        }
+
+        UserMongo userFromDb = await (await _userMongoRepository.GetCollectionAsync())
+       .Find(x => x.UID == uid
+          && x.IsDeleted == false)
+       .FirstOrDefaultAsync();
+
+        await _commonAppService.ValidateSMS(userFromDb.Mobile, userFromDb.NationalCode, input.SMSCode, SMSType.ChangePassword);
+
+        userFromDb.Password = _passwordHasher.HashPassword(new User(), input.NewPassWord);
+        var filter = Builders<UserMongo>.Filter.Where(_ => _.UID == uid && _.IsDeleted == false);
+        var update = Builders<UserMongo>.Update.Set(_ => _.Password, userFromDb.Password)
+            .Set(_ => _.LastModificationTime, DateTime.Now);
+        (await _userMongoRepository.GetCollectionAsync())
+            .UpdateOne(filter, update);
+
+        return true;
+
     }
 }

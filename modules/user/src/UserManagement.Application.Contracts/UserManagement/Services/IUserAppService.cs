@@ -13,5 +13,7 @@ public interface IUserAppService : IApplicationService
     Task<UserDto> CreateAsync(CreateUserDto input);
     Task<UserDto> GetUserProfile();
     Task<bool> ForgotPassword(ForgetPasswordDto forgetPasswordDto);
+    Task<bool> ChangePassword(ChangePasswordDto input);
+
 }
 
