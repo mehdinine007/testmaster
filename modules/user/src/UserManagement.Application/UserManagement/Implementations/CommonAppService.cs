@@ -131,9 +131,7 @@ public class CommonAppService : ApplicationService, ICommonAppService
 
         //string ObjectSMSCode = RedisHelper.GetDatabase().StringGet(sMSType.ToString() + Mobile + NationalCode);
         //var ObjectSMSCode = await _distributedCache.GetStringAsync(sMSType.ToString() + Mobile + NationalCode);
-        var PreFix = "";
-        var ObjectSMSCode = await _cacheManager.GetStringAsync(Mobile + NationalCode, PreFix, new() { Provider = CacheProviderEnum.Redis });
-
+        var ObjectSMSCode = await _cacheManager.GetStringAsync(Mobile + NationalCode, sMSType.ToString(), new() { Provider = CacheProviderEnum.Redis });
 
 
         if (ObjectSMSCode == null)
