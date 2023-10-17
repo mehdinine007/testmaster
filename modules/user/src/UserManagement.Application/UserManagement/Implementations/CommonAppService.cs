@@ -1,11 +1,9 @@
-﻿using Abp.Domain.Uow;
+﻿#region NS
 using Esale.Core.Caching;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
-using Nest;
 using Newtonsoft.Json;
-using System.Reflection;
 using System.Security.Claims;
 using UserManagement.Application.Contracts.Models;
 using UserManagement.Application.Contracts.Services;
@@ -13,7 +11,7 @@ using UserManagement.Application.InquiryService;
 using UserManagement.Domain.Shared;
 using Volo.Abp;
 using Volo.Abp.Application.Services;
-using wsFava;
+#endregion
 
 namespace UserManagement.Application.UserManagement.Implementations;
 
@@ -78,7 +76,6 @@ public class CommonAppService : ApplicationService, ICommonAppService
         }
         return zipCache;
     }
-
 
     public async Task<bool> ValidateMobileNumber(string nationalCode, string mobileNo)
     {

@@ -1,7 +1,10 @@
-﻿using MongoDB.Bson;
+﻿#region NS
+using MongoDB.Bson;
 using UserManagement.Application.Contracts.Models;
 using UserManagement.Domain.Authorization.Users;
 using Volo.Abp.Application.Services;
+#endregion
+
 
 namespace UserManagement.Application.Contracts.UserManagement.Services;
 

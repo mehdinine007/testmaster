@@ -1,4 +1,5 @@
-﻿using Volo.Abp.Domain.Repositories;
+﻿#region NS
+using Volo.Abp.Domain.Repositories;
 using Microsoft.Extensions.Configuration;
 using UserManagement.Application.Contracts.Models;
 using UserManagement.Application.Contracts.Services;
@@ -16,7 +17,7 @@ using Volo.Abp.Auditing;
 using Microsoft.EntityFrameworkCore;
 using UserManagement.Domain.Shared;
 using UserManagement.Domain.UserManagement.CompanyService;
-using Microsoft.EntityFrameworkCore.Internal;
+#endregion
 
 namespace UserManagement.Application.Implementations;
 
@@ -235,6 +236,5 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
         var zipCodeInquiry =await _commonAppService.GetAddressByZipCode(input.zipCod, input.nationalCode);
         return zipCodeInquiry;
     }
-
 
 }
