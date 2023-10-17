@@ -1,4 +1,6 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using Dapper;
+using EasyCaching.Core.Diagnostics;
+using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Nest;
 using Newtonsoft.Json.Linq;
@@ -11,6 +13,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Domain.Repositories.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore;
@@ -20,38 +23,22 @@ namespace ReportManagement.EntityFrameworkCore.ReportManagement.EntityFrameworkC
     public class WidgetRepository :EfCoreRepository<ReportManagementDbContext, Widget, int>, IWidgetRepository
     {
         private readonly IConfiguration _configuration;
+        private string _connectionStrings;
         public WidgetRepository(IConfiguration configuration, IDbContextProvider<ReportManagementDbContext> dbContextProvider)
           : base(dbContextProvider)
         {
             _configuration = configuration;
+            _connectionStrings = _configuration.GetConnectionString("ReportManagement");
         }
 
-        public List<Dictionary<string, object>> GetReportData(string command)
+        public IEnumerable<dynamic> GetReportData(string command)
         {
-            var values = new List<Dictionary<string, object>>();
-            using (SqlConnection con = new SqlConnection(_configuration.GetConnectionString("ReportManagement")))
+            using (var connection = new SqlConnection(_connectionStrings))
             {
-                SqlCommand cmd = new SqlCommand(command, con);
-                cmd.CommandType = CommandType.Text;
-                con.Open();
-                SqlDataReader rdr = cmd.ExecuteReader();
-                while (rdr.Read())
-                {
-                    var fieldValues = new Dictionary<string, object>();
-                    for (int i = 0; i < rdr.FieldCount; i++)
-                    {
-                        fieldValues.Add(rdr.GetName(i),rdr[i]);
-                    }
-                    values.Add(fieldValues);
-                }
-                con.Close();
-                rdr.Close();
-
+                var _ret = connection.Query(command,commandType: CommandType.Text).ToList();
+                return _ret;
             }
-            return values;
         }
-
-
 
     }
 }

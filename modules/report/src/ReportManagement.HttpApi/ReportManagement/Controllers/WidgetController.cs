@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using ReportManagement.Application.Contracts.ReportManagement.IServices;
 using ReportManagement.Application.ReportManagement.Implementations;
 using ReportManagement.Application.Contracts.ReportManagement.Dtos;
+using ReportManagement.Domain.Shared.ReportManagement.Dtos;
 
 namespace ReportManagement.HttpApi.ReportManagement.Controllers
 {
@@ -36,7 +37,7 @@ namespace ReportManagement.HttpApi.ReportManagement.Controllers
        =>_widgetService.GetChart(chartInputDto.WidgetId, chartInputDto.ConditionValue);
 
         [HttpGet]
-        public Task<List<DashboardWidgetDto>> GetList(int dashboardId)
+        public Task<List<WidgetDto>> GetList(int dashboardId)
        =>_widgetService.GetList(dashboardId);
         [HttpPut]
         public Task<WidgetDto> Update(WidgetCreateOrUpdateDto widgetCreateOrUpdateDto)

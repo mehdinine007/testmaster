@@ -6,10 +6,9 @@ using System.Threading.Tasks;
 
 namespace ReportManagement.Domain.Shared.ReportManagement.Dtos
 {
-    public class ChartSeriesData
+    public enum OutPutTypeEnum
     {
-        public string Name { get; set; }
-        public string Color { get; set; }
-        public List<long> Data { get; set; }
+        Column = 1,
+        Row = 2
     }
 }

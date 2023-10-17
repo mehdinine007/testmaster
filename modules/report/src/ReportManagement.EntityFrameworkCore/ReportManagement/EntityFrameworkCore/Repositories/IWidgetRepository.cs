@@ -12,7 +12,7 @@ namespace ReportManagement.EntityFrameworkCore.ReportManagement.EntityFrameworkC
 {
     public interface IWidgetRepository: IRepository<Widget, int>
     {
-        List<Dictionary<string, object>> GetReportData(string command);
+        IEnumerable<dynamic> GetReportData(string command);
 
     }
 }

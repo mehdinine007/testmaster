@@ -1,4 +1,5 @@
 ﻿using ReportManagement.Application.Contracts.ReportManagement.Dtos;
+using ReportManagement.Domain.Shared.ReportManagement.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +15,7 @@ namespace ReportManagement.Application.Contracts.ReportManagement.IServices
         Task<WidgetDto> GetById(int id);
         Task<WidgetDto> Add(WidgetCreateOrUpdateDto widgetCreateOrUpdateDto);
         Task<WidgetDto> Update(WidgetCreateOrUpdateDto widgetCreateOrUpdateDto);
-        Task<List<DashboardWidgetDto>> GetList(int dashboardId);
+        Task<List<WidgetDto>> GetList(int dashboardId);
         Task<ChartDto> GetChart(int widgetId, List<ConditionValue> conditionValue);
 
         Task<bool> Delete(int id);

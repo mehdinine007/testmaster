@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Esale.Core.Utility.Results;
+using Microsoft.EntityFrameworkCore;
+using Nest;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NPOI.SS.Formula.Functions;
@@ -12,6 +14,7 @@ using ReportManagement.EntityFrameworkCore.ReportManagement.EntityFrameworkCore.
 using System.Linq;
 using Volo.Abp;
 using Volo.Abp.Application.Services;
+using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.ObjectMapping;
 
@@ -22,7 +25,7 @@ namespace ReportManagement.Application.ReportManagement.Implementations
         private readonly IRepository<Widget, int> _widgetRepository;
         private readonly IRepository<DashboardWidget, int> _dashboardWidgetRepository;
         private readonly IWidgetRepository _repository;
-       
+
 
 
         public WidgetService(IRepository<Widget, int> widgetRepository, IWidgetRepository repository
@@ -58,8 +61,8 @@ namespace ReportManagement.Application.ReportManagement.Implementations
         public async Task<ChartDto> GetChart(int widgetId, List<ConditionValue> conditionValue)
         {
             var widget = await Validation(widgetId, null);
-            var categoryDatas = JsonConvert.DeserializeObject<List<CategoryData>>(widget.Fields);
-
+            //var categoryDatas = JsonConvert.DeserializeObject<List<CategoryData>>(widget.Fields);
+            var categories = new List<CategoryData>();
             var conditionDec = new List<string>();
             foreach (var condition in conditionValue)
             {
@@ -70,7 +73,8 @@ namespace ReportManagement.Application.ReportManagement.Implementations
                 {
                     case ConditionTypeEnum.String:
                         type = "nvarchar(max)";
-                        value = "'"+condition.Value + "'";
+                        if (!string.IsNullOrWhiteSpace(condition.Value))
+                            value = "'" + condition.Value + "'";
                         break;
                     case ConditionTypeEnum.Numerical:
                         type = "int";
@@ -88,8 +92,9 @@ namespace ReportManagement.Application.ReportManagement.Implementations
                         type = "nvarchar(max)";
                         break;
                 }
-                if (condition.Type == ConditionTypeEnum.DropDown || condition.Type == ConditionTypeEnum.CodingApi)
-                    value = !condition.MultiSelect ? condition.Value : "'" + condition.Value + "'";
+                if (!string.IsNullOrWhiteSpace(value))
+                    if (condition.Type == ConditionTypeEnum.DropDown || condition.Type == ConditionTypeEnum.CodingApi)
+                        value = !condition.MultiSelect ? condition.Value : "'" + condition.Value + "'";
                 if (string.IsNullOrEmpty(value))
                     value = "NULL";
                 declare += " as " + type + " = " + value;
@@ -98,30 +103,71 @@ namespace ReportManagement.Application.ReportManagement.Implementations
             string _command = widget.Command;
             if (conditionDec.Count > 0)
                 _command = " declare " + string.Join(",", conditionDec) + " " + widget.Command;
-            var result = _repository.GetReportData(_command);
-            List<ChartSeriesData> SeriDataList = new List<ChartSeriesData>();
-            ChartSeriesData seriesData = new ChartSeriesData();
-            seriesData.Data = result.SelectMany(x => x.Values).Cast<int>().ToList();
+            var _getdata = _repository.GetReportData(_command);
+            var seriDataList = new List<ChartSeriesData>();
 
-            SeriDataList.Add(seriesData);
+            if (widget.OutPutType == OutPutTypeEnum.Column)
+            {
+                var data = _getdata
+                    .Cast<IDictionary<string, object>>()
+                    .Select(x => x.ToDictionary(x => x.Key, x => x.Value)).FirstOrDefault();
+                if (data != null)
+                {
+                    categories = data.Keys.Select(x => new CategoryData()
+                    {
+                        Title = x
+                    }).ToList();
+                    seriDataList.Add(new ChartSeriesData()
+                    {
+                        Data = data.Select(x => long.Parse(x.Value.ToString()!)).ToList()
+                    });
+                }
+
+            }
+            if (widget.OutPutType == OutPutTypeEnum.Row)
+            {
+                var data = _getdata
+                    .Cast<IDictionary<string, object>>()
+                    .Select(x => x.ToDictionary(x => x.Key, x => x.Value)).ToList();
+                if (data.Count > 0)
+                {
+                    var keys = data.FirstOrDefault()!.Keys.Select(x => x)
+                        .ToList();
+                    string _category = keys[0];
+                    string _value = keys[1];
+                    categories = data.Select(x => new CategoryData()
+                    {
+                        Title = x[_category].ToString()!
+                    }).ToList();
+
+                    seriDataList.Add(new ChartSeriesData()
+                    {
+                        Data = data.Select(x => long.Parse(x[_value].ToString()!)).ToList()
+                    });
+                }
+            }
             var chartDto = new ChartDto()
             {
                 Id = widget.Id,
                 Title = widget.Title,
                 Type = widget.Type,
-                Categories = JsonConvert.DeserializeObject<List<CategoryData>>(widget.Fields),
-                Series = SeriDataList
+                Categories = categories,
+                Series = seriDataList
 
             };
             return chartDto;
 
         }
 
-        public async Task<List<DashboardWidgetDto>> GetList(int dashboardId)
+        public async Task<List<WidgetDto>> GetList(int dashboardId)
         {
-            var widgetQuery = (await _dashboardWidgetRepository.GetQueryableAsync()).AsNoTracking();
-            var widgets = widgetQuery.Include(x => x.Dashboard).Include(x => x.Widget).Where(x => x.DashboardId == dashboardId).ToList();    
-            var widgetDto = ObjectMapper.Map<List<DashboardWidget>, List<DashboardWidgetDto>>(widgets);
+            var widgets = (await _dashboardWidgetRepository.GetQueryableAsync())
+                .AsNoTracking()
+                .Include(i => i.Widget)
+                .Where(x => x.DashboardId == dashboardId)
+                .Select(x => x.Widget)
+                .ToList();
+            var widgetDto = ObjectMapper.Map<List<Widget>, List<WidgetDto>>(widgets);
             return widgetDto;
         }
 

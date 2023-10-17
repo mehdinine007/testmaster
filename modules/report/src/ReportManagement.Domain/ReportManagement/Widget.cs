@@ -1,4 +1,5 @@
-﻿using ReportManagement.Domain.Shared.ReportManagement.Enums;
+﻿using ReportManagement.Domain.Shared.ReportManagement.Dtos;
+using ReportManagement.Domain.Shared.ReportManagement.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +19,7 @@ namespace ReportManagement.Domain.ReportManagement
 
         public virtual ICollection<Dashboard> Dashboards { get; set; }
 
+        public OutPutTypeEnum OutPutType { get; set; }
 
     }
 }
