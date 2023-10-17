@@ -187,5 +187,11 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
             return organizationPosition;
         }
 
+        public async Task<AuthenticateResponseDto> Authenticate(AuthenticateReqDto input)
+        {
+           return await _userGrpcClientService.Athenticate(input);
+
+        }
+
     }
 }

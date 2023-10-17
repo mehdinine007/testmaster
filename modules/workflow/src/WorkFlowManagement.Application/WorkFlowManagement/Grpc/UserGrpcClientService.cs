@@ -73,6 +73,37 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Grpc
 
         }
 
+        public async Task<AuthenticateResponseDto> Athenticate(AuthenticateReqDto input)
+
+        {
+            AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2Support", true);
+            AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
+
+            var httpHandler = new HttpClientHandler();
+
+            httpHandler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+            var channel = GrpcChannel.ForAddress(_configuration.GetValue<string>("Grpc:UserUrl"), new GrpcChannelOptions { HttpHandler = httpHandler });
+            var client = new UserServiceGrpc.UserServiceGrpcClient(channel);
+            var auth = client.Authenticate(new AuthenticateRequest() { UserNameOrEmailAddress=input.UserNameOrEmailAddress,Password=input.Password});
+            var res = new AuthenticateResponseDto();
+            if (!auth.Success)
+            {
+                res.Success = auth.Success;
+                res.Message = auth.Message;
+                res.ErrorCode = auth.ErrorCode.Value;
+                return res;
+            }
+
+            res.Success = true;
+
+            res.Data.AccessToken = auth.Data.AccessToken;
+            res.Data.EncryptedAccessToken = auth.Data.EncryptedAccessToken;
+            res.Data.ExpireInSeconds = auth.Data.ExpireInSeconds.Value;
+
+            return res;
+
+        }
+
 
     }
 }

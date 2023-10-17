@@ -44,36 +44,52 @@ public class AuthenticateAppService : ApplicationService, IAuthenticateAppServic
         _configuration = configuration;
     }
 
-    public async Task<AuthenticateResultModel> Authenticate([FromBody] AuthenticateModel model)
+    public async Task<AuthenticateResultModel> Authenticate( AuthenticateModel model)
     {
         System.Diagnostics.Debugger.Launch();
         User loginResult;
         loginResult = await _userAppService.GetLoginInfromationuserFromCache(model.UserNameOrEmailAddress);
 
+        var res =new AuthenticateResultModel();
         if (loginResult == null)
         {
-            throw new UserFriendlyException("نام کاربری یا کلمه عبور صحیح نمی باشد");
+            res.Success = false;
+            res.Message = "نام کاربری یا کلمه عبور صحیح نمی باشد";
+            res.ErrorCode = 101;
+            return res;
+            
         }
         if (loginResult.IsActive == false)
         {
-            throw new UserFriendlyException("حساب کاربری شما غیر فعال می باشد");
+            res.Success = false;
+            res.Message = "حساب کاربری شما غیر فعال می باشد";
+            res.ErrorCode = 102;
+            return res;
+          
         }
         var passwordResult = _passwordHasher.VerifyHashedPassword(loginResult, loginResult.Password, model.Password);
         var success = passwordResult != PasswordVerificationResult.Failed;
         if (!success)
         {
-            throw new UserFriendlyException("نام کاربری یا کلمه عبور صحیح نمی باشد");
+            res.Success = false;
+            res.Message = "نام کاربری یا کلمه عبور صحیح نمی باشد";
+            res.ErrorCode = 103;
+            return res;
+           
         }
 
         // _baseInformationService.CheckWhiteList(WhiteListEnumType.WhiteListBeforeLogin, loginResult.UserName);
         var accessToken = CreateAccessToken(CreateJwtClaims(loginResult));
-        return new AuthenticateResultModel
+
+         res.Data = new AuthenticateResult
         {
             AccessToken = accessToken,
             EncryptedAccessToken = GetEncryptedAccessToken(accessToken),
-            ExpireInSeconds = (int)TimeSpan.FromDays(1).TotalSeconds,
-            UserId = loginResult.Id
+            ExpireInSeconds = (int)TimeSpan.FromDays(1).TotalSeconds
         };
+        res.Success = true;
+        return res;
+
     }
 
     private string CreateAccessToken(IEnumerable<Claim> claims, TimeSpan? expiration = null)

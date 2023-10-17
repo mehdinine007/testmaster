@@ -32,7 +32,7 @@ public class TokenAuthController : Controller
 
 
     [HttpPost]
-    public async Task<AuthenticateResultModel> Authenticate([FromBody] AuthenticateModel model)
+    public async Task<AuthenticateResultModel> Authenticate( AuthenticateModel model)
     {
         return await _authenticateAppService.Authenticate(model);
     }
