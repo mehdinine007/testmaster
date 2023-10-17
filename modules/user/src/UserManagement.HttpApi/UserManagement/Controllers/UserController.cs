@@ -42,6 +42,7 @@ public class UserController : AbpController
         => await _userAppService.ForgotPassword(forgetPasswordDto);
 
     [HttpPost]
+    [UserAuthorization]
     public async Task<bool> ChangePassword(ChangePasswordDto input)
         => await _userAppService.ChangePassword(input);
 }
