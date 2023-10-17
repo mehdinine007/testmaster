@@ -89,16 +89,23 @@ namespace UserManagement.Application.UserManagement.Implementations
                 Password = request.Password
             };
             var auth =await _authenticateAppService.Authenticate(model);
-            if (auth == null)
-                   return new AuthenticateResponse();
-
-            return new AuthenticateResponse
+            var res = new AuthenticateResponse();
+            if (!auth.Success)
             {
-                AccessToken = auth.AccessToken,
-                EncryptedAccessToken = auth.EncryptedAccessToken,
-                ExpireInSeconds = auth.ExpireInSeconds,
-                UserId = auth.UserId
-            };
+                res.Success = false;
+                res.Message = auth.Message;
+                res.ErrorCode = auth.ErrorCode;
+                return res;
+            }
+
+            res.Success = true;
+
+            res.Data.AccessToken = auth.Data.AccessToken;
+            res.Data.EncryptedAccessToken = auth.Data.EncryptedAccessToken;
+            res.Data.ExpireInSeconds = auth.Data.ExpireInSeconds;
+
+            return res;
+            
         }
 
     }
