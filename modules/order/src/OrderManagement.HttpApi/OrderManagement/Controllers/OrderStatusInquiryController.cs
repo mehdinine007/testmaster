@@ -11,7 +11,6 @@ namespace OrderManagement.HttpApi.OrderManagement.Controllers;
 [DisableAuditing]
 [RemoteService]
 [Route("api/services/app/OrderStatusInquiry/[action]")]
-[UserAuthorization]
 public class OrderStatusInquiryController : Controller // , IOrderStatusInquiryService
 {
     private readonly IOrderStatusInquiryService _orderStatusInquiryService;
@@ -20,7 +19,6 @@ public class OrderStatusInquiryController : Controller // , IOrderStatusInquiryS
         => _orderStatusInquiryService = orderStatusInquiryService;
 
     [HttpPost]
-    [UserAuthorization]
     public async Task<OrderStatusInquiryResultDto> GetOrderDeilvery(OrderStatusInquiryCommitDto orderStatusInquiryCommitDto)
         => await _orderStatusInquiryService.GetOrderDeilvery(orderStatusInquiryCommitDto);
 

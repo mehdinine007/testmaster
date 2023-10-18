@@ -1,4 +1,5 @@
 ﻿using Esale.Core.DataAccess;
+using Esale.Share.Authorize;
 using Microsoft.EntityFrameworkCore;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.OrderManagement;
@@ -32,12 +33,14 @@ public class ColorService : ApplicationService, IColorService
     
     }
 
+    [SecuredOperation(ColorServicePermissionConstants.Delete)]
     public async Task<bool> Delete(int id)
     {
         await _colorRepository.DeleteAsync(x => x.Id == id, autoSave: true);
         return true;
     }
 
+    [SecuredOperation(ColorServicePermissionConstants.GetAllColors)]
     public async Task<List<ColorDto>> GetAllColors()
     {
         var Colors = await _colorRepository.GetListAsync();
@@ -45,6 +48,7 @@ public class ColorService : ApplicationService, IColorService
         return ColorDto;
     }
 
+    [SecuredOperation(ColorServicePermissionConstants.GetColors)]
     public async Task<PagedResultDto<ColorDto>> GetColors(int pageNo, int sizeNo)
     {
         var count = await _colorRepository.CountAsync();
@@ -57,6 +61,7 @@ public class ColorService : ApplicationService, IColorService
         }; 
     }
 
+    [SecuredOperation(ColorServicePermissionConstants.Save)]
     public async Task<int> Save(ColorDto colorDto)
     {
         var color = ObjectMapper.Map<ColorDto, Domain.OrderManagement.Color>(colorDto);
@@ -64,6 +69,7 @@ public class ColorService : ApplicationService, IColorService
         return color.Id;
     }
 
+    [SecuredOperation(ColorServicePermissionConstants.Update)]
     public async Task<int> Update(ColorDto colorDto)
 
     {

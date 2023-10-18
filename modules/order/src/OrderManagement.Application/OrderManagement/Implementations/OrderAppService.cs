@@ -8,7 +8,6 @@ using OrderManagement.Application.Contracts;
 using System.Threading;
 using Microsoft.Extensions.Configuration;
 using Volo.Abp;
-using Microsoft.Extensions.Caching.Distributed;
 using OrderManagement.Application.Contracts.Services;
 using System.Collections.Generic;
 using System;
@@ -19,25 +18,15 @@ using Microsoft.EntityFrameworkCore;
 using System.Data;
 using OrderManagement.Domain.Shared;
 using OrderManagement.Application.OrderManagement.Constants;
-using Newtonsoft.Json;
-using Microsoft.Extensions.Caching.Memory;
 using Esale.Core.Utility.Results;
 using OrderManagement.Application.Helpers;
-using Grpc.Net.Client;
-using ProtoBuf.Grpc.Client;
 using Esale.Core.DataAccess;
-using Volo.Abp.Validation.StringValues;
-using Esale.Core.Caching.Redis;
-using System.Reflection;
 using Volo.Abp.ObjectMapping;
-using StackExchange.Redis;
-using Polly.Caching;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using static OrderManagement.Application.Contracts.OrderManagementPermissions;
 using Esale.Core.Caching;
 using OrderManagement.Application.Contracts.OrderManagement.Models;
 using OrderManagement.Domain.OrderManagement;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
+using Esale.Share.Authorize;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -63,7 +52,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
     private readonly ICacheManager _cacheManager;
     private readonly IAttachmentService _attachmentService;
     private readonly IProductAndCategoryService _productAndCategoryService;
-   
+
     public OrderAppService(ICommonAppService commonAppService,
                            IBaseInformationService baseInformationAppService,
                            IRepository<SaleDetail, int> saleDetailRepository,
@@ -176,6 +165,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
     [Audited]
     [UnitOfWork(isTransactional: false)]
+    [SecuredOperation(OrderManagementSertvicePermissionConstants.CommitOrder)]
     public async Task<CommitOrderResultDto> CommitOrder(CommitOrderDto commitOrderDto)
     {
         await _commonAppService.ValidateOrderStep(OrderStepEnum.SaveOrder);
@@ -312,7 +302,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         //if (activeSuccessfulOrderExists != null)
         //    throw new UserFriendlyException("جهت ثبت سفارش جدید لطفا ابتدا از جزئیات سفارش، سفارش قبلی خود که موعد تحویل آن در سال 1403 می باشد را لغو نمایید .");
         ///////////////////////////////check entekhab yek no tarh////////////
-        string EsaleTypeId = await _cacheManager.GetStringAsync( "_EsaleType", RedisConstants.CommitOrderPrefix + userId.ToString()
+        string EsaleTypeId = await _cacheManager.GetStringAsync("_EsaleType", RedisConstants.CommitOrderPrefix + userId.ToString()
             , new CacheOptions()
             {
                 Provider = CacheProviderEnum.Redis
@@ -569,7 +559,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             if (!agencyCapacityControl.Success)
                 throw new UserFriendlyException(agencyCapacityControl.Message);
         }
-     
+
         //  }
         //catch (Exception ex)
         //{
@@ -647,7 +637,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             await CurrentUnitOfWork.SaveChangesAsync();
 
         }
-          
+
         //await _distributedCache.SetStringAsync(
         // userId.ToString() + "_" +
         //    commitOrderDto.SaleDetailUId.ToString()
@@ -710,7 +700,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                            ttl.TotalSeconds);
 
 
-        
+
         }
 
         //var pspCacheKey = string.Format(RedisConstants.UserTransactionKey, nationalCode, customerOrder.Id);
@@ -768,7 +758,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         var userId = _commonAppService.GetUserId();
         var orderRejections = _orderRejectionTypeReadOnlyRepository.WithDetails().ToList();
         var orderStatusTypes = _orderStatusTypeReadOnlyRepository.WithDetails().ToList();
-        var parents =await _productAndCategoryService.GetAllParent();
+        var parents = await _productAndCategoryService.GetAllParent();
         //var customerOrder = await _commitOrderRepository.GetAllListAsync(x => x.UserId == userId);
         var customerOrders = _commitOrderRepository.WithDetails()
             .AsNoTracking()
@@ -808,7 +798,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 Product = ObjectMapper.Map<ProductAndCategory, ProductAndCategoryViewModel>(x.Product)
             }).ToList();
         var cancleableDate = _configuration.GetValue<string>("CancelableDate");
-        var attachments =await  _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, customerOrders.Select(x => x.ProductId).ToList(), attachmentType);
+        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, customerOrders.Select(x => x.ProductId).ToList(), attachmentType);
         customerOrders.ForEach(x =>
         {
 
@@ -829,17 +819,18 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 x.Cancelable = true;
             //else if (x.OrderStatusCode == 40 && x.DeliveryDateDescription.Contains(cancleableDate, StringComparison.InvariantCultureIgnoreCase)) // OrderStatusType.Winner
             //    x.Cancelable = true;
-          var Parent = parents.FirstOrDefault(y =>y.Code==x.Product.Code.Substring(0, 4));
+            var Parent = parents.FirstOrDefault(y => y.Code == x.Product.Code.Substring(0, 4));
             if (Parent is not null)
             {
                 x.CompanyName = Parent.Title;
             }
-          
+
         });
         return customerOrders.OrderByDescending(x => x.OrderId).ToList();
     }
     [Audited]
     [UnitOfWork(isTransactional: false)]
+    [SecuredOperation(OrderManagementSertvicePermissionConstants.CancelOrder)]
     public async Task<CustomerOrderDto> CancelOrder(int orderId)
     {
         Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
@@ -958,6 +949,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
 
     [Audited]
+    [SecuredOperation(OrderManagementSertvicePermissionConstants.InsertUserRejectionAdvocacyPlan)]
     public async Task InsertUserRejectionAdvocacyPlan(string userSmsCode)
     {
 
@@ -1028,6 +1020,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
 
     }
+    [SecuredOperation(OrderManagementSertvicePermissionConstants.UserRejectionStatus)]
     public async Task<bool> UserRejectionStatus()
     {
         string NationalCode = _commonAppService.GetNationalCode();
@@ -1298,6 +1291,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         }
     }
 
+    [SecuredOperation(OrderManagementSertvicePermissionConstants.GetDetail)]
     public async Task<CustomerOrder_OrderDetailDto> GetDetail(SaleDetail_Order_InquiryDto inquiryDto)
     {
         CustomerOrder_OrderDetailDto inquiryResult = new();
@@ -1322,7 +1316,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         return inquiryResult;
     }
 
-    public async Task<CustomerOrder_OrderDetailDto> GetSaleDetailByUid(Guid saleDetailUid, List<AttachmentEntityTypeEnum> attachmentEntityType=null)
+    public async Task<CustomerOrder_OrderDetailDto> GetSaleDetailByUid(Guid saleDetailUid, List<AttachmentEntityTypeEnum> attachmentEntityType = null)
     {
         if (!_commonAppService.IsInRole("Customer"))
         {
@@ -1340,7 +1334,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 ManufactureDate = y.ManufactureDate,
                 DeliveryDate = y.CarDeliverDate,
                 SalePlanEndDate = y.SalePlanEndDate,
-                ProductId=y.ProductId,
+                ProductId = y.ProductId,
                 Product = ObjectMapper.Map<ProductAndCategory, ProductAndCategoryViewModel>(y.Product)
             })
             .FirstOrDefault(x => x.SaleDetailUid == saleDetailUid);
@@ -1359,7 +1353,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         return saleDetail;
     }
 
-    public async Task<CustomerOrder_OrderDetailDto> GetOrderDetailById(int id,List<AttachmentEntityTypeEnum> attachmentType=null)
+    public async Task<CustomerOrder_OrderDetailDto> GetOrderDetailById(int id, List<AttachmentEntityTypeEnum> attachmentType = null)
     {
         if (!_commonAppService.IsInRole("Customer"))
         {
@@ -1371,7 +1365,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         PaymentInformationResponseDto paymentInformation = new();
         var customerOrder = customerOrderQuery
             .AsNoTracking()
-            .Join(_saleDetailRepository.WithDetails(x=>x.Product),
+            .Join(_saleDetailRepository.WithDetails(x => x.Product),
             x => x.SaleDetailId,
             y => y.Id,
             (x, y) => new CustomerOrder_OrderDetailDto()

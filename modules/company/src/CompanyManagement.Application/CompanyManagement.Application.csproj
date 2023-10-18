@@ -10,7 +10,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <None Remove="CompanyManagement\Protos\CompanyService.proto" GrpcServices="Client"/>
+	  <None Remove="CompanyManagement\Protos\CompanyService.proto" GrpcServices="Client" />
 	</ItemGroup>
 
     <ItemGroup>

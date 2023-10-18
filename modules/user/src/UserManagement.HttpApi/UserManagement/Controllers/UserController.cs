@@ -33,7 +33,6 @@ public class UserController : AbpController
         => await _userAppService.GetLoginInfromationuserFromCache(Username);
 
     [HttpGet]
-    [UserAuthorization]
     public async Task<UserDto> GetUserProfile()
         => await _userAppService.GetUserProfile();
 }

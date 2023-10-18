@@ -40,7 +40,7 @@ public class SaleSchemaService : ApplicationService, ISaleSchemaService
     }
 
 
-    [SecuredOperation(PermissionConstant.SaleSchemaGetList)]
+    [SecuredOperation(SaleSchemaServicePermissionConstants.GetList)]
     public async Task<List<SaleSchemaDto>> GetList(List<AttachmentEntityTypeEnum> attachmentType = null)
     {
         var count = _saleSchemaRepository.WithDetails().Count();
@@ -69,7 +69,7 @@ public class SaleSchemaService : ApplicationService, ISaleSchemaService
         return await GetById(saleSchemaDto.Id);
     }
 
-    [SecuredOperation(PermissionConstant.SaleSchemaGetById)]
+    [SecuredOperation(SaleSchemaServicePermissionConstants.GetById)]
     public async Task<SaleSchemaDto> GetById(int id, List<AttachmentEntityTypeEnum> attachmentType = null)
     {
         await Validation(id, null);

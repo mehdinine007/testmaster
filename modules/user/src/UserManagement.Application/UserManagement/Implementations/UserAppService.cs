@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Esale.Share.Authorize;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
@@ -6,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using System.Text.RegularExpressions;
+using UserManagement.Application.Constants;
 using UserManagement.Application.Contracts.Models;
 using UserManagement.Application.Contracts.Services;
 using UserManagement.Application.Contracts.UserManagement.Services;
@@ -436,6 +438,7 @@ public class UserAppService : ApplicationService, IUserAppService
         return user;
     }
 
+    [SecuredOperation(UserServicePermissionConstants.GetUserProfile)]
     public async Task<UserDto> GetUserProfile()
     {
         Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");

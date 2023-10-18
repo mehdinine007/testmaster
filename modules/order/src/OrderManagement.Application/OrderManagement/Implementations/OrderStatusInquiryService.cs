@@ -1,5 +1,6 @@
 ﻿using Esale.Core.DataAccess;
 using Esale.Core.Utility.Tools;
+using Esale.Share.Authorize;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using OrderManagement.Application.Contracts;
@@ -58,6 +59,7 @@ public class OrderStatusInquiryService : ApplicationService, IOrderStatusInquiry
         throw new NotImplementedException();
     }
 
+    [SecuredOperation(OrderStatusInquiryServicePermissionConstants.GetOrderDeilvery)]
     public async Task<OrderStatusInquiryResultDto> GetOrderDeilvery(OrderStatusInquiryCommitDto orderStatusInquiryCommitDto)
     {
         var orderDeliveries = (await _orderDeliveryStatusTypeRepository.GetQueryableAsync()).AsNoTracking().ToList();
