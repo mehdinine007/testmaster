@@ -1,22 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc.Filters;
-using System;
-using System.Linq;
-using System.Security.Claims;
-using System.IdentityModel.Tokens.Jwt;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Antiforgery;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
-using System.Net.Http;
 using Esale.Core.Caching;
 using Esale.Core.IOC;
 using Volo.Abp;
 using Esale.Core.Constant;
-using Nest;
 
 namespace Esale.Share.Authorize
 {
