@@ -348,7 +348,7 @@ public class CapacityControlAppService : ApplicationService, ICapacityControlApp
         //Validation(165, 1029);
     }
 
-    [SecuredOperation(CapacityControlServicePermissionConstants.Validation)]
+    [SecuredOperation(CapacityControlServicePermissionConstants.ValidationBySaleDetailUId)]
     public async Task<bool> ValidationBySaleDetailUId(Guid saleDetailUId)
     {
         await _commonAppService.ValidateOrderStep(OrderStepEnum.SubmitOrder);

@@ -1,0 +1,351 @@
+[
+  {
+    "title": "OrderManagement",
+    "code": "0001",
+    "children": [
+      {
+        "title": "AgencySaleDetailService",
+        "code": "0009",
+        "children": [
+          {
+            "title": "Delete",
+            "code": "000100090001",
+            "children": []
+          },
+          {
+            "title": "GetAgencySaleDetail",
+            "code": "000100090002",
+            "children": []
+          },
+          {
+            "title": "Save",
+            "code": "000100090003",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "AgencyService",
+        "code": "0008",
+        "children": [
+          {
+            "title": "Delete",
+            "code": "000100080001",
+            "children": []
+          },
+          {
+            "title": "GetAgencies",
+            "code": "000100080002",
+            "children": []
+          },
+          {
+            "title": "Save",
+            "code": "000100080003",
+            "children": []
+          },
+          {
+            "title": "Update",
+            "code": "000100080004",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "BaseInformationService",
+        "code": "0001",
+        "children": [
+          {
+            "title": "CheckAdvocacyPrice",
+            "code": "000100010001",
+            "children": []
+          },
+          {
+            "title": "CheckBlackList",
+            "code": "000100010002",
+            "children": []
+          },
+          {
+            "title": "CheckWhiteList",
+            "code": "000100010003",
+            "children": []
+          },
+          {
+            "title": "GetAgencies",
+            "code": "000100010004",
+            "children": []
+          },
+          {
+            "title": "ClearCache",
+            "code": "000100010005",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "CapacityControlAppService",
+        "code": "0002",
+        "children": [
+          {
+            "title": "ValidationBySaleDetailUId",
+            "code": "000100020001",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "ColorService",
+        "code": "0010",
+        "children": [
+          {
+            "title": "Delete",
+            "code": "000100100001",
+            "children": []
+          },
+          {
+            "title": "GetAllColors",
+            "code": "000100100002",
+            "children": []
+          },
+          {
+            "title": "GetColors",
+            "code": "000100100003",
+            "children": []
+          },
+          {
+            "title": "Save",
+            "code": "000100100004",
+            "children": []
+          },
+          {
+            "title": "Update",
+            "code": "000100100005",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "OrderAppService",
+        "code": "0003",
+        "children": [
+          {
+            "title": "CancelOrder",
+            "code": "000100030001",
+            "children": []
+          },
+          {
+            "title": "CommitOrder",
+            "code": "000100030002",
+            "children": []
+          },
+          {
+            "title": "GetCompaniesCustomerOrders",
+            "code": "000100030003",
+            "children": []
+          },
+          {
+            "title": "GetCustomerInfoPriorityUser",
+            "code": "000100030004",
+            "children": []
+          },
+          {
+            "title": "GetDetail",
+            "code": "000100030005",
+            "children": []
+          },
+          {
+            "title": "InsertUserRejectionAdvocacyPlan",
+            "code": "000100030006",
+            "children": []
+          },
+          {
+            "title": "UserRejectionStatus",
+            "code": "000100030007",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "OrderStatusInquiryService",
+        "code": "0004",
+        "children": [
+          {
+            "title": "GetOrderDeilvery",
+            "code": "000100040001",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "QuestionnaireService",
+        "code": "0005",
+        "children": [
+          {
+            "title": "LoadQuestionnaireTree",
+            "code": "000100050001",
+            "children": []
+          },
+          {
+            "title": "SubmitAnswer",
+            "code": "000100050002",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "SaleDetailService",
+        "code": "0011",
+        "children": [
+          {
+            "title": "Delete",
+            "code": "000100110001",
+            "children": []
+          },
+          {
+            "title": "GetActiveList",
+            "code": "000100110002",
+            "children": []
+          },
+          {
+            "title": "GetById",
+            "code": "000100110003",
+            "children": []
+          },
+          {
+            "title": "GetSaleDetails",
+            "code": "000100110004",
+            "children": []
+          },
+          {
+            "title": "Save",
+            "code": "000100110005",
+            "children": []
+          },
+          {
+            "title": "Update",
+            "code": "000100110006",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "SaleSchemaService",
+        "code": "0007",
+        "children": [
+          {
+            "title": "GetById",
+            "code": "000100070001",
+            "children": []
+          },
+          {
+            "title": "GetList",
+            "code": "000100070002",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "SaleService",
+        "code": "0006",
+        "children": [
+          {
+            "title": "GetPreSales",
+            "code": "000100060001",
+            "children": []
+          },
+          {
+            "title": "UserValidationByBirthDate",
+            "code": "000100060002",
+            "children": []
+          },
+          {
+            "title": "UserValidationByMobile",
+            "code": "000100060003",
+            "children": []
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "CompanyManagement",
+    "code": "0002",
+    "children": [
+      {
+        "title": "CompanyAppService",
+        "code": "0001",
+        "children": [
+          {
+            "title": "GetCustomersAndCars",
+            "code": "000200010001",
+            "children": []
+          },
+          {
+            "title": "InsertCompanyProduction",
+            "code": "000200010002",
+            "children": []
+          },
+          {
+            "title": "SubmitOrderInformations",
+            "code": "000200010003",
+            "children": []
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "UserManagement",
+    "code": "0004",
+    "children": [
+      {
+        "title": "UserAppService",
+        "code": "0001",
+        "children": [
+          {
+            "title": "GetUserProfile",
+            "code": "000400010001",
+            "children": []
+          },
+          {
+            "title": "UpdateSecuritPolicy",
+            "code": "000400010002",
+            "children": []
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "WorkFlowManagement",
+    "code": "0003",
+    "children": [
+      {
+        "title": "InboxService",
+        "code": "0001",
+        "children": [
+          {
+            "title": "GetInbox",
+            "code": "000300010001",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "ProcessService",
+        "code": "0002",
+        "children": [
+          {
+            "title": "StartProcess",
+            "code": "000300020001",
+            "children": []
+          },
+          {
+            "title": "GetOutBox",
+            "code": "000300020002",
+            "children": []
+          }
+        ]
+      }
+    ]
+  }
+]

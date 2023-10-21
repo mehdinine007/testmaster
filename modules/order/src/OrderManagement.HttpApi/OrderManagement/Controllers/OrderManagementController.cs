@@ -8,9 +8,6 @@ using Volo.Abp.Auditing;
 using System;
 using OrderManagement.Domain.Shared;
 using Esale.Core.Utility.Tools;
-using Esale.Core.Bases;
-using System.Linq;
-using System.Reflection;
 
 namespace OrderManagement.HttpApi;
 
@@ -20,8 +17,8 @@ public class OrderManagementController
 {
     private readonly IOrderAppService _orderAppService;
 
-    //public OrderManagementController(IOrderAppService orderAppService)
-    //    => _orderAppService = orderAppService;
+    public OrderManagementController(IOrderAppService orderAppService)
+        => _orderAppService = orderAppService;
 
 
     [HttpPost]
@@ -96,31 +93,5 @@ public class OrderManagementController
     [HttpPost]
     public async Task RetryPaymentForVerify()
         => await _orderAppService.RetryPaymentForVerify();
-
-    [HttpGet]
-    public string TTTT()
-    {
-        var baseType = typeof(BasePermissionConstants);
-        var appDomain = AppDomain.CurrentDomain.GetAssemblies()
-            .SelectMany(x => x.GetTypes())
-            .Where(x => baseType.IsAssignableFrom(x))
-            .ToList();
-        List<(string permission, List<KeyValuePair<string, string>> fieldInfo)> fields = new();
-        foreach (var item in appDomain)
-        {
-            var permissionName = item.Name;
-            var fieldsInfo = item.GetRuntimeFields().Select(x => new KeyValuePair<string, string>(x.Name,x.GetValue(x).ToString())).ToList();
-            fields.Add(new()
-            {
-                permission = permissionName,
-                fieldInfo = fieldsInfo
-            });
-        }
-        return Newtonsoft.Json.JsonConvert.SerializeObject(fields);
-        //return new JsonResult(appDomain.Select(x => new
-        //{
-        //    name = x.Name
-        //}).ToList());
-    }
 
 }

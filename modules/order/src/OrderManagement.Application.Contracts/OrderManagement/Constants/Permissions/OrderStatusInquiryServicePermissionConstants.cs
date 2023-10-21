@@ -5,4 +5,8 @@ namespace OrderManagement.Application.Contracts;
 public class OrderStatusInquiryServicePermissionConstants: BasePermissionConstants
 {
     public const string GetOrderDeilvery = "000100040001";
+
+    public override string ModuleIdentifier => "0001";
+
+    public override string ServiceIdentifier => "0004";
 }

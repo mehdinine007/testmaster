@@ -10,5 +10,8 @@ namespace OrderManagement.Application.Contracts
         public const string GetAgencies = "000100010004";
         public const string ClearCache = "000100010005";
 
+        public override string ModuleIdentifier => "0001";
+
+        public override string ServiceIdentifier => "0001";
     }
 }

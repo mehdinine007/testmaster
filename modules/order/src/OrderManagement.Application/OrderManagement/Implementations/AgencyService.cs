@@ -37,7 +37,7 @@ public class AgencyService : ApplicationService, IAgencyService
     }
 
 
-
+    [SecuredOperation(AgencyServicePermissionConstants.Delete)]
     public async Task<bool> Delete(int id)
     {
         await _agencyRepository.DeleteAsync(x => x.Id == id, autoSave: true);

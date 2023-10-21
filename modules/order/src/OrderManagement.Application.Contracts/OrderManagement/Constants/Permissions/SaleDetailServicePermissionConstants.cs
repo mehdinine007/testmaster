@@ -10,4 +10,8 @@ public class SaleDetailServicePermissionConstants : BasePermissionConstants
     public const string GetSaleDetails = "000100110004";
     public const string Save = "000100110005";
     public const string Update = "000100110006";
+
+    public override string ModuleIdentifier => "0001";
+
+    public override string ServiceIdentifier => "0011";
 }

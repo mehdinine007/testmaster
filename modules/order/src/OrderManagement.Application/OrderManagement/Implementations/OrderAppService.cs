@@ -165,7 +165,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
     [Audited]
     [UnitOfWork(isTransactional: false)]
-    [SecuredOperation(OrderManagementSertvicePermissionConstants.CommitOrder)]
+    [SecuredOperation(OrderAppServicePermissionConstants.CommitOrder)]
     public async Task<CommitOrderResultDto> CommitOrder(CommitOrderDto commitOrderDto)
     {
         await _commonAppService.ValidateOrderStep(OrderStepEnum.SaveOrder);
@@ -830,7 +830,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
     }
     [Audited]
     [UnitOfWork(isTransactional: false)]
-    [SecuredOperation(OrderManagementSertvicePermissionConstants.CancelOrder)]
+    [SecuredOperation(OrderAppServicePermissionConstants.CancelOrder)]
     public async Task<CustomerOrderDto> CancelOrder(int orderId)
     {
         Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
@@ -949,7 +949,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
 
     [Audited]
-    [SecuredOperation(OrderManagementSertvicePermissionConstants.InsertUserRejectionAdvocacyPlan)]
+    [SecuredOperation(OrderAppServicePermissionConstants.InsertUserRejectionAdvocacyPlan)]
     public async Task InsertUserRejectionAdvocacyPlan(string userSmsCode)
     {
 
@@ -1020,7 +1020,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
 
     }
-    [SecuredOperation(OrderManagementSertvicePermissionConstants.UserRejectionStatus)]
+    [SecuredOperation(OrderAppServicePermissionConstants.UserRejectionStatus)]
     public async Task<bool> UserRejectionStatus()
     {
         string NationalCode = _commonAppService.GetNationalCode();
@@ -1291,7 +1291,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         }
     }
 
-    [SecuredOperation(OrderManagementSertvicePermissionConstants.GetDetail)]
+    [SecuredOperation(OrderAppServicePermissionConstants.GetDetail)]
     public async Task<CustomerOrder_OrderDetailDto> GetDetail(SaleDetail_Order_InquiryDto inquiryDto)
     {
         CustomerOrder_OrderDetailDto inquiryResult = new();

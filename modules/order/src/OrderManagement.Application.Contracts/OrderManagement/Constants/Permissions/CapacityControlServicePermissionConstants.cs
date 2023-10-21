@@ -1,6 +1,12 @@
-﻿namespace OrderManagement.Application.Contracts;
+﻿using Esale.Core.Bases;
 
-public class CapacityControlServicePermissionConstants : BaseServicePermissionConstants
+namespace OrderManagement.Application.Contracts;
+
+public class CapacityControlServicePermissionConstants : BasePermissionConstants
 {
-    public const string Validation = "000100020001";
+    public const string ValidationBySaleDetailUId = "000100020001";
+
+    public override string ModuleIdentifier => "0001";
+
+    public override string ServiceIdentifier => "0002";
 }

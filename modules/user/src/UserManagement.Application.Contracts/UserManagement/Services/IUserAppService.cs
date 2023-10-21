@@ -12,4 +12,6 @@ public interface IUserAppService : IApplicationService
     Task<bool> AddRole(ObjectId userid, List<string> roleCode);
     Task<UserDto> CreateAsync(CreateUserDto input);
     Task<UserDto> GetUserProfile();
+
+    Task UpdateSecuritPolicy();
 }

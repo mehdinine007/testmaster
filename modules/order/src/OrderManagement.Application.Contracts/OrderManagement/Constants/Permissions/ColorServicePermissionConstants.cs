@@ -9,4 +9,8 @@ public class ColorServicePermissionConstants : BasePermissionConstants
     public const string GetColors = "000100100003";
     public const string Save = "000100100004";
     public const string Update = "000100100005";
+
+    public override string ModuleIdentifier => "0001";
+
+    public override string ServiceIdentifier => "0010";
 }
