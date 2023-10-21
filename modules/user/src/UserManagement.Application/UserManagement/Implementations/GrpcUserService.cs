@@ -27,7 +27,7 @@ namespace UserManagement.Application.UserManagement.Implementations
         {
             _baseInformationSevice = baseInformationService;
             _bankAppService = bankAppService;
-            _authenticateAppService= authenticateAppService;
+            _authenticateAppService = authenticateAppService;
         }
 
         public override Task<UserAdvocacy> GetUserAdvocacy(UserAdvocacyRequest request, ServerCallContext context)
@@ -88,7 +88,7 @@ namespace UserManagement.Application.UserManagement.Implementations
                 UserNameOrEmailAddress = request.UserNameOrEmailAddress,
                 Password = request.Password
             };
-            var auth =await _authenticateAppService.Authenticate(model);
+            var auth = await _authenticateAppService.Authenticate(model);
             var res = new AuthenticateResponse();
             if (!auth.Success)
             {
@@ -98,14 +98,14 @@ namespace UserManagement.Application.UserManagement.Implementations
                 return res;
             }
 
-            res.Success = true;
-
+            res.Success = auth.Success;
+            res.Data = new AuthenticateData();
             res.Data.AccessToken = auth.Data.AccessToken;
             res.Data.EncryptedAccessToken = auth.Data.EncryptedAccessToken;
             res.Data.ExpireInSeconds = auth.Data.ExpireInSeconds;
 
             return res;
-            
+
         }
 
     }
