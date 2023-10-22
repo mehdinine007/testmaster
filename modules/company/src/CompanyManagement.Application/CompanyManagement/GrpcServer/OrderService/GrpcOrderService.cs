@@ -21,7 +21,7 @@ namespace OrderManagement.Application.CompanyManagement.GrpcServer
             //var clientsOrderDeliveryDateValidation =await _baseInformationSevice.CheckOrderDeliveryDate(request.NationalCode, request.OrderId);
             //if (clientsOrderDeliveryDateValidation)
             //{
-            System.Diagnostics.Debugger.Launch();
+          
             var orderDelay = await _orderDeliveryService.GetOrderDelivary(request.NationalCode, request.OrderId);
             var ClientOrderDetail = await Task.FromResult(new ClientOrderDetailResponse()
             {

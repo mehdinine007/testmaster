@@ -46,7 +46,6 @@ public class AuthenticateAppService : ApplicationService, IAuthenticateAppServic
 
     public async Task<AuthenticateResultModel> Authenticate( AuthenticateModel model)
     {
-        System.Diagnostics.Debugger.Launch();
         User loginResult;
         loginResult = await _userAppService.GetLoginInfromationuserFromCache(model.UserNameOrEmailAddress);
 
