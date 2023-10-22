@@ -1,5 +1,6 @@
 ﻿using OrderManagement.Domain.Shared;
 using System.Collections.Generic;
+using System.ComponentModel;
 using Volo.Abp.Domain.Entities.Auditing;
 
 namespace OrderManagement.Domain;
@@ -15,6 +16,8 @@ public class Questionnaire : FullAuditedEntity<int>
     public string Description { get; set; }
 
     public int? WhitListRequirement { get; set; }
+
+    public QuestionnaireType QuestionnaireType { get; set; }
 
     public virtual ICollection<Question> Questions
     {

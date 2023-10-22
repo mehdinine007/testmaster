@@ -25,11 +25,15 @@
     </ItemGroup>
 
     <ItemGroup>
+      <None Remove="OrderManagement\Protos\GetwayService.proto" />
+    </ItemGroup>
+
+    <ItemGroup>
       <ProjectReference Include="..\..\..\..\shared\Esale.Core\Esale.Core.csproj" />
       <ProjectReference Include="..\OrderManagement.Domain.Shared\OrderManagement.Domain.Shared.csproj" />
     </ItemGroup>
     <ItemGroup>
-      <Folder Include="OrderManagement\Protos\" />
+      <Protobuf Include="OrderManagement\Protos\GetwayService.proto" GrpcServices="Client" />
     </ItemGroup>
 
 </Project>
