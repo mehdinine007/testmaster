@@ -32,9 +32,14 @@ public class TokenAuthController : Controller
 
 
     [HttpPost]
-    public async Task<AuthenticateResultModel> Authenticate( AuthenticateModel model)
+    public async Task<AuthenticateResult> Authenticate(AuthenticateModel model)
     {
-        return await _authenticateAppService.Authenticate(model);
+        var _authenticate = await _authenticateAppService.Authenticate(model);
+        if (_authenticate.Success)
+        {
+            return _authenticate.Data;
+        }
+        throw new UserFriendlyException(_authenticate.Message, _authenticate.ErrorCode.ToString());
     }
 
 

@@ -31,5 +31,7 @@ public class UserManagementApplciationMapperProfile : Profile
             .ReverseMap();
         CreateMap<UserMongo, UserMongoWrite>()
             .ReverseMap();
+        CreateMap<Menu, MenuDto>().ReverseMap();
+        CreateMap<MenuChild, MenuChildDto>().ReverseMap();
     }
 }

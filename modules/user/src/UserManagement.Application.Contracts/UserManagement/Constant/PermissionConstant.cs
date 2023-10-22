@@ -36,5 +36,8 @@ namespace UserManagement.Application.Contracts.UserManagement.Constant
         public static string PermissionNotFoundId = "1007";
 
 
+        public static string MenuNotFound = "دسترسی وجود ندارد";
+        public static string MenuNotFoundId = "1008";
+
     }
 }
