@@ -29,14 +29,9 @@ public class TokenAuthController : Controller
 
 
     [HttpPost]
-    public async Task<AuthenticateResult> Authenticate(AuthenticateReqDto model)
+    public async Task<AuthenticateResultModel> Authenticate(AuthenticateReqDto model)
     {
-        var auth = await _authenticateAppService.Authenticate(model);
-        if (auth.Success)
-        {
-            return auth.Data;
-        }
-        throw new UserFriendlyException(auth.Message, auth.ErrorCode.ToString());
+        return await _authenticateAppService.Authenticate(model);
     }
 
 

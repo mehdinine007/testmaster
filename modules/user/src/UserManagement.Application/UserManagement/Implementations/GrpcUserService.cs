@@ -99,7 +99,7 @@ namespace UserManagement.Application.UserManagement.Implementations
             }
 
             res.Success = auth.Success;
-            res.Data = new AuthenticateData();
+            res.Data = new AuthenticateDataModel();
             res.Data.AccessToken = auth.Data.AccessToken;
             res.Data.EncryptedAccessToken = auth.Data.EncryptedAccessToken;
             res.Data.ExpireInSeconds = auth.Data.ExpireInSeconds;

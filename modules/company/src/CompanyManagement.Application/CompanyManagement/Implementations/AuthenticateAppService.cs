@@ -19,9 +19,15 @@ public class AuthenticateAppService : ApplicationService, IAuthenticateAppServic
         _userGrpcClientService = userGrpcClientService;
     }
 
-    public async Task<AuthenticateResponseDto> Authenticate(AuthenticateReqDto input)
+    public async Task<AuthenticateResultModel> Authenticate(AuthenticateReqDto input)
     {
-        return await _userGrpcClientService.Athenticate(input);
+        var auth = await _userGrpcClientService.Athenticate(input);
+        if (auth.Success)
+        {
+            return auth.Data;
+        }
+        throw new UserFriendlyException(auth.Message, auth.ErrorCode.ToString());
+
     }
 
 }

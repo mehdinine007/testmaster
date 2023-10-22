@@ -12,13 +12,13 @@ namespace CompanyManagement.Application.Contracts.CompanyManagement.Dtos
 
     public class AuthenticateResponseDto
     {
-        public AuthenticateResult Data { get; set; }
+        public AuthenticateResultModel Data { get; set; }
         public string Message { get; set; }
         public bool Success { get; set; }
         public int ErrorCode { get; set; }
     }
 
-    public class AuthenticateResult
+    public class AuthenticateResultModel
     {
         public string AccessToken { get; set; }
 

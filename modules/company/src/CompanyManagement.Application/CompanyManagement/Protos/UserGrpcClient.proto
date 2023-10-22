@@ -19,11 +19,11 @@ message AuthenticateResponse{
      bool Success=1;
 	 string Message =2;
      google.protobuf.Int32Value ErrorCode =3;
-	  AuthenticateData data=4;
+	 AuthenticateDataModel data=4;
 
 }
 
-message AuthenticateData{
+message AuthenticateDataModel{
 	 string AccessToken =1;
      string EncryptedAccessToken =2;
      google.protobuf.Int32Value ExpireInSeconds=3 ;

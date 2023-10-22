@@ -6,19 +6,19 @@ using System.Threading.Tasks;
 
 namespace UserManagement.Application.Contracts.Models;
 
-public class AuthenticateResultModel
+public class AuthenticateResultDto
 {
-    public AuthenticateResultModel()
+    public AuthenticateResultDto()
     {
-        this.Data = new AuthenticateResult();
+        this.Data = new AuthenticateResultModel();
     }
-    public AuthenticateResult Data { get; set; }
+    public AuthenticateResultModel Data { get; set; }
     public string Message { get; set; }
     public bool Success { get; set; }
     public int ErrorCode { get; set; }
 }
 
-public class AuthenticateResult
+public class AuthenticateResultModel
 {
     public string AccessToken { get; set; }
 

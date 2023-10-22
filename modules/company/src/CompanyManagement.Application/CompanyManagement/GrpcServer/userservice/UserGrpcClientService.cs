@@ -25,7 +25,7 @@ namespace CompanyManagement.Application.CompanyManagement.Grpc
         {
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2Support", true);
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
-
+           
             var httpHandler = new HttpClientHandler();
                 httpHandler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
                 var channel = GrpcChannel.ForAddress(_configuration.GetValue<string>("Grpc:UserUrl"), new GrpcChannelOptions { HttpHandler = httpHandler });
@@ -41,12 +41,13 @@ namespace CompanyManagement.Application.CompanyManagement.Grpc
                 }
 
                 res.Success = auth.Success;
-                res.Data = new AuthenticateResult();
+                res.Data = new AuthenticateResultModel();
                 res.Data.AccessToken = auth.Data.AccessToken;
                 res.Data.EncryptedAccessToken = auth.Data.EncryptedAccessToken;
                 res.Data.ExpireInSeconds = auth.Data.ExpireInSeconds.Value;
 
                 return res;
+            }
         }
     }
 }

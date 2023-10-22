@@ -10,5 +10,5 @@ namespace CompanyManagement.Application.Contracts.CompanyManagement.Services;
 
 public interface IAuthenticateAppService : IApplicationService
 {
-    Task<AuthenticateResponseDto> Authenticate(AuthenticateReqDto model);
+    Task<AuthenticateResultModel> Authenticate(AuthenticateReqDto model);
 }
