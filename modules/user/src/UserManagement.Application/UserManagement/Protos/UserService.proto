@@ -11,7 +11,7 @@ package UserService;
 service UserServiceGrpc{
 	rpc GetUserAdvocacy(UserAdvocacyRequest) returns (UserAdvocacy);
 	rpc GetUserById(GetUserModel) returns (UserModel);
-	rpc CheckOrderDeliveryDate(ClientOrderDetailRequest) returns (ClientOrderDetailResponse);
+	rpc Authenticate(AuthenticateRequest) returns (AuthenticateResponse);
 
 }
 
@@ -63,19 +63,23 @@ message UserModel{
 	string Uid=16;
 
 }
-message ClientOrderDetailRequest{
-	string NationalCode = 1;
-	int64 OrderId = 2;
+message AuthenticateRequest{
+	string UserNameOrEmailAddress=1;
+	string Password =2;
+
+}
+message AuthenticateResponse{
+     bool Success=1;
+	 string Message =2;
+     google.protobuf.Int32Value ErrorCode =3;
+	  AuthenticateData data=4;
+
 }
 
-message ClientOrderDetailResponse{
-	string NationalCode = 1;
-	google.protobuf.Timestamp TranDate = 2;
-	google.protobuf.Int64Value PayedPrice = 3;
-	string ContRowId = 4;
-	string Vin = 5;
-	string BodyNumber = 6;
-	google.protobuf.Timestamp DeliveryDate = 7;
-	google.protobuf.Int64Value FinalPrice = 8;
-	string CarDesc = 9;
+message AuthenticateData{
+	 string AccessToken =1;
+     string EncryptedAccessToken =2;
+     google.protobuf.Int32Value ExpireInSeconds=3 ;
+	
+
 }

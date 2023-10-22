@@ -30,6 +30,7 @@ using OrderManagement.EfCore.MongoDb;
 using Esale.Core.Extensions;
 using Esale.Core.Utility.Security.Encyption;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using OrderManagement.Domain;
 
 namespace OrderService.Host
 {
@@ -88,6 +89,7 @@ namespace OrderService.Host
             Configure<AbpDbContextOptions>(options =>
             {
                 options.UseSqlServer();
+
             });
             Configure<AbpUnitOfWorkDefaultOptions>(options =>
             {
@@ -128,6 +130,8 @@ namespace OrderService.Host
                 options.AddDefaultRepositories(includeAllEntities: true);
             });
 
+           
+
             //var redis = ConnectionMultiplexer.Connect(configuration["Redis:Configuration"]);
             //context.Services.AddDataProtection()
             //    .PersistKeysToStackExchangeRedis(redis, "MsDemo-DataProtection-Keys");
@@ -156,7 +160,7 @@ namespace OrderService.Host
             //}
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGrpcService<EsaleGrpcClient>();
+                endpoints.MapGrpcService<CompanyGrpcClient>();
                 
 
             });

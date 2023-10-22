@@ -17,6 +17,8 @@ using UserManagement.Application.Contracts.Models;
 using Volo.Abp.Application.Services;
 using Newtonsoft.Json;
 using UserManagement.Domain.Shared;
+using MongoDB.Driver;
+using WorkingWithMongoDB.WebAPI.Services;
 #endregion
 
 namespace UserManagement.Application.UserManagement.Implementations;
@@ -42,7 +44,8 @@ public class SendBoxAppService : ApplicationService, ISendBoxAppService
         //IRepository<Logs, long> LogsRepository,
         ICacheManager cacheManager,
         IGetwayGrpcClient getwayGrpcClient,
-        ICaptchaService captchaService)
+        ICaptchaService captchaService,
+         IRepository<UserMongo, ObjectId> userMongoRepository)
     {
         _configuration = configuration;
         _commonAppService = CommonAppService;
@@ -52,6 +55,7 @@ public class SendBoxAppService : ApplicationService, ISendBoxAppService
         _cacheManager = cacheManager;
         _getwayGrpcClient = getwayGrpcClient;
         _captchaService = captchaService;
+        _userMongoRepository = userMongoRepository;
     }
 
 
@@ -137,14 +141,32 @@ public class SendBoxAppService : ApplicationService, ISendBoxAppService
             {
                 var userFromDb = (await _userMongoRepository
                                   .GetQueryableAsync())
-                                  .FirstOrDefault(a => a.NationalCode == input.NationalCode);
+                                  .FirstOrDefault(a => a.NationalCode == input.NationalCode && a.IsDeleted == false);
 
                 if (userFromDb == null || userFromDb.Mobile.Replace(" ", "") != input.Recipient)
                 {
                     throw new UserFriendlyException("کد ملی یا شماره موبایل صحیح نمی باشد");
                 }
                 PreFix = SMSType.ForgetPassword.ToString();
+                Message = _configuration.GetSection("ForgetPassText").Value.Replace("{0}", sendSMSDto.SMSCode);
+            }
+            else if (input.SMSLocation == SMSType.ChangePassword)
+            {
+                string uid = _commonAppService.GetUID().ToString();
+                var filter = Builders<UserMongo>.Filter.Where(e => e.UID == uid && e.IsDeleted == false);
+
+                var userFromDb = (await _userMongoRepository
+                                .GetQueryableAsync())
+                                .FirstOrDefault(a =>a.UID == uid && a.IsDeleted == false);
+
+                if (userFromDb == null)
+                {
+                    throw new UserFriendlyException("خطایی ");
+                }
+                PreFix = SMSType.ChangePassword.ToString();
                 Message = _configuration.GetSection("RegisterText").Value.Replace("{0}", sendSMSDto.SMSCode);
+                input.Recipient = userFromDb.Mobile;
+                input.NationalCode = userFromDb.NationalCode;
             }
             //_cacheManager.GetCache("SMS").TryGetValue(PreFix + input.Recipient + input.NationalCode, out objectSMS);
             //string objectSMSString = RedisHelper.Connection.GetDatabase().StringGet(PreFix + input.Recipient + input.NationalCode);
@@ -157,7 +179,7 @@ public class SendBoxAppService : ApplicationService, ISendBoxAppService
 
             if (sendSMSDFromCache != null)
             {
-                if (string.IsNullOrEmpty(_configuration.GetSection("SMSValidation").Value))
+                if (!string.IsNullOrEmpty(_configuration.GetSection("SMSValidation").Value))
                 {
                     if (sendSMSDFromCache != null)
                     {
@@ -167,9 +189,10 @@ public class SendBoxAppService : ApplicationService, ISendBoxAppService
                         }
                     }
                 }
-
             }
+
             IDataResult<string> _ret1 = null;
+
             SendBoxServiceDto _ret = null;
 
             if (!string.IsNullOrWhiteSpace(_configuration.GetSection("DisableSendSMS").Value))
@@ -200,7 +223,7 @@ public class SendBoxAppService : ApplicationService, ISendBoxAppService
                     await _cacheManager.SetStringAsync(input.Recipient + input.NationalCode, PreFix, JsonConvert.SerializeObject(sendSMSDto), new() { Provider = CacheProviderEnum.Redis });
                 }
 
-                //return new SuccsessResult()
+                return new SuccsessResult();
                 //grpc
 
             }

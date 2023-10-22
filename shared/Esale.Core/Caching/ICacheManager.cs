@@ -1,11 +1,4 @@
-﻿using Esale.Core.Caching;
-using Polly.Caching;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿
 namespace Esale.Core.Caching
 {
     public interface ICacheManager

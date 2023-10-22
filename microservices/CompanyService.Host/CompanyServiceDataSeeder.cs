@@ -17,10 +17,10 @@ namespace CompanyService.Host
         [UnitOfWork]
         public virtual async Task SeedAsync(DataSeedContext context)
         {
-            await AddOrdersAsync();
+            await AddCompanyAsync();
         }
 
-        private async Task AddOrdersAsync()
+        private async Task AddCompanyAsync()
         {
            
         }

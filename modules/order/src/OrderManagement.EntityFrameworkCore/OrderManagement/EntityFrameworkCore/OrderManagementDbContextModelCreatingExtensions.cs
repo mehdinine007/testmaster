@@ -7,6 +7,7 @@ using Volo.Abp.EntityFrameworkCore.Modeling;
 using OrderManagement.Domain.OrderManagement;
 using Esale.Core.DataAccess;
 using OrderManagement.Domain.Shared;
+//using OrderManagement.Domain.CompanyManagement;
 
 namespace OrderManagement.EfCore;
 
@@ -423,5 +424,25 @@ public static class OrderManagementDbContextModelCreatingExtensions
                 .HasForeignKey<Announcement>(x => x.CompanyId)
                 .HasPrincipalKey<ProductAndCategory>(x => x.Id);
         });
+
+        //builder.Entity<ClientsOrderDetailByCompany>(entity =>
+        //{
+        //    entity.ToTable(nameof(ClientsOrderDetailByCompany));
+
+        //    entity.Property(x => x.NationalCode)
+        //        .HasMaxLength(10);
+
+        //    entity.Property(x => x.SaleType)
+        //        .HasMaxLength(150);
+
+        //    entity.Property(x => x.Vin)
+        //        .HasMaxLength(50);
+
+        //    entity.Property(x => x.BodyNumber)
+        //        .HasMaxLength(50);
+
+        //    entity.Property(x => x.CarDesc)
+        //        .HasMaxLength(250);
+        //});
     }
 }

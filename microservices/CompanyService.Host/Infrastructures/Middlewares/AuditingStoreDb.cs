@@ -3,8 +3,6 @@ using Elasticsearch.Net;
 using Microsoft.Extensions.Configuration;
 using MsDemo.Shared.ExtensionsInterfaces;
 using Nest;
-using Newtonsoft.Json;
-using OrderService.Host;
 using System;
 using System.Threading.Tasks;
 using Volo.Abp.Auditing;
@@ -13,7 +11,7 @@ using Volo.Abp.DependencyInjection;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Uow;
 
-namespace OrderService.Host.Infrastructures.Middlewares
+namespace CompanyService.Host.Infrastructures.Middlewares
 {
     public class AuditingStoreDb : IAuditingStore, ITransientDependency
     {

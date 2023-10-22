@@ -232,7 +232,7 @@ public class CapacityControlAppService : ApplicationService, ICapacityControlApp
             var productpropertydto = new ProductPropertyDto()
             {
                 ProductId = x.Id,
-                PropertyCategories = ObjectMapper.Map<List<PropertyCategory>, List<PropertyCategoryDto>>(property)
+                //PropertyCategories = ObjectMapper.Map<List<PropertyCategory>, List<PropertyCategoryDto>>(property)
             };
             await _productPropertyRepository.InsertAsync(ObjectMapper.Map<ProductPropertyDto, ProductProperty>(productpropertydto));
         });

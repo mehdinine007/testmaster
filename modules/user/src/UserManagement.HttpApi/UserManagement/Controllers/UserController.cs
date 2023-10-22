@@ -36,4 +36,13 @@ public class UserController : AbpController
     [UserAuthorization]
     public async Task<UserDto> GetUserProfile()
         => await _userAppService.GetUserProfile();
+
+    [HttpPost]
+    public async Task<bool> ForgotPassword(ForgetPasswordDto forgetPasswordDto)
+        => await _userAppService.ForgotPassword(forgetPasswordDto);
+
+    [HttpPost]
+    [UserAuthorization]
+    public async Task<bool> ChangePassword(ChangePasswordDto input)
+        => await _userAppService.ChangePassword(input);
 }

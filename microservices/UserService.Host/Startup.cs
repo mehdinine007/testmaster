@@ -7,7 +7,6 @@ using UserService.Host.Infrastructures.Extensions;
 using Esale.Core.IOC;
 using Esale.Core.Caching.Redis;
 using Esale.Core.Caching;
-using OrderManagement.Application.OrderManagement.Implementations;
 using WorkingWithMongoDB.WebAPI.Services;
 using UserService.Host.Infrastructures.Hangfire.Abstract;
 using UserService.Host.Infrastructures.Hangfire.Concrete;

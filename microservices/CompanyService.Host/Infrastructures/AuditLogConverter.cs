@@ -13,7 +13,7 @@ using Volo.Abp.Guids;
 using Volo.Abp.Http;
 using Volo.Abp.Json;
 
-namespace OrderService.Host
+namespace CompanyService.Host
 {
     public class AuditLogConverter : IAuditLogInfoToAuditLogConverter, ITransientDependency
     {

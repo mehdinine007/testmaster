@@ -30,6 +30,7 @@ public class OrderStatusInquiryService : ApplicationService, IOrderStatusInquiry
     private readonly IReadOnlyRepository<OrderDeliveryStatusTypeReadOnly, int> _orderDeliveryStatusTypeRepository;
     private readonly IRepository<UserRejectionAdvocacy, int> _userRejectionAdvocacyRepository;
     private readonly IEsaleGrpcClient _esaleGrpcClient;
+    private readonly ICompanyGrpcClient _companyGrpcClient;
 
     public OrderStatusInquiryService(IRepository<OrderStatusInquiry, long> orderStatusInquiryRepository,
                                      IRepository<CustomerOrder, int> customerOrderRepository,
@@ -38,7 +39,8 @@ public class OrderStatusInquiryService : ApplicationService, IOrderStatusInquiry
                                      IRepository<ProductAndCategory, int> productAndCategoryRepository,
                                      IReadOnlyRepository<OrderDeliveryStatusTypeReadOnly, int> orderDeliveryStatusTypeRepository,
                                      IRepository<UserRejectionAdvocacy, int> userRejectionAdvocacyRepository,
-                                     IEsaleGrpcClient esaleGrpcClient)
+                                     IEsaleGrpcClient esaleGrpcClient,
+                                     ICompanyGrpcClient companyGrpcClient)
     {
         _orderStatusInquiryRepository = orderStatusInquiryRepository;
         _commonAppService = commonAppService;
@@ -48,6 +50,7 @@ public class OrderStatusInquiryService : ApplicationService, IOrderStatusInquiry
         _orderDeliveryStatusTypeRepository = orderDeliveryStatusTypeRepository;
         _userRejectionAdvocacyRepository = userRejectionAdvocacyRepository;
         _esaleGrpcClient = esaleGrpcClient;
+        _companyGrpcClient = companyGrpcClient;
     }
 
     public async Task<OrderStatusInquiryDto> GetCurrentUserOrderStatus(string nationalCode, int customerOrderId)
@@ -58,13 +61,13 @@ public class OrderStatusInquiryService : ApplicationService, IOrderStatusInquiry
     public async Task<OrderStatusInquiryResultDto> GetOrderDeilvery(OrderStatusInquiryCommitDto orderStatusInquiryCommitDto)
     {
         var orderDeliveries = (await _orderDeliveryStatusTypeRepository.GetQueryableAsync()).AsNoTracking().ToList();
-        var userId = _commonAppService.GetUserId();
-        //var userId = "20e5d14f-1c64-44d6-a80c-1a0ca2417a6e";// جهت دمو
-        //Guid userGuid = new Guid(userId);
+        //var userId = _commonAppService.GetUserId();
+        var userId = "20e5d14f-1c64-44d6-a80c-1a0ca2417a6e";// جهت دمو
+        Guid userGuid = new Guid(userId);
         var order = (await _customerOrderRepository.GetQueryableAsync())
             .Include(x => x.SaleDetail)
             .ThenInclude(x => x.Product)
-            .FirstOrDefault(x => x.Id == orderStatusInquiryCommitDto.OrderId && x.UserId == userId)
+            .FirstOrDefault(x => x.Id == orderStatusInquiryCommitDto.OrderId && x.UserId == userGuid)
             ?? throw new UserFriendlyException("سفارش یافت نشد");
         var currentOrderDeliveryStatus = order.OrderDeliveryStatus;
         var nationalCode = _commonAppService.GetNationalCode();
@@ -146,7 +149,7 @@ public class OrderStatusInquiryService : ApplicationService, IOrderStatusInquiry
             NationalCode = nationalCode,
             OrderId = orderStatusInquiryCommitDto.OrderId
         };
-        var inquiryFromCompany1 = await _esaleGrpcClient.ValidateClientOrderDeliveryDate(validateClientOrderDeliveryDate);
+        var inquiryFromCompany1 = await _companyGrpcClient.ValidateClientOrderDeliveryDate(validateClientOrderDeliveryDate);
 
         //if (!inquiryFromCompany.Succeeded)
         //    _auditingManager.Current.Log.Exceptions.Add(new Exception(inquiryFromCompany.Errors));

@@ -17,5 +17,6 @@ namespace WorkFlowManagement.Application.Contracts.WorkFlowManagement.IServices
         Task<bool> Delete(int id);
         Task<OrganizationPositionDto> GetByPersonId(Guid personId);
         Task<OrganizationPositionDto> GetByOrganizationChartId(int organizationChartId);
+        Task<AuthenticateResponseDto> Authenticate(AuthenticateReqDto input);
     }
 }

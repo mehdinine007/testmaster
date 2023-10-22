@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,6 +12,8 @@ namespace WorkFlowManagement.Application.Contracts.WorkFlowManagement.IServices
     public interface IUserGrpcClientService:IApplicationService
     {
         Task<UserDto> GetUserById(Guid userId);
+        Task<AuthenticateResponseDto> Athenticate(AuthenticateReqDto input);
+
 
 
     }

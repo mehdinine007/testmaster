@@ -1,4 +1,5 @@
-﻿using Esale.UserServiceGrpc;
+﻿using Azure.Core;
+using Esale.UserServiceGrpc;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using System;
@@ -6,7 +7,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UserManagement.Application.Contracts.Models;
 using UserManagement.Application.Contracts.Services;
+using UserManagement.Application.Contracts.UserManagement.Services;
+using UserManagement.Domain.UserManagement.Authorization;
 
 namespace UserManagement.Application.UserManagement.Implementations
 {
@@ -14,12 +18,16 @@ namespace UserManagement.Application.UserManagement.Implementations
     {
         private readonly IBaseInformationService _baseInformationSevice;
         private readonly IBankAppService _bankAppService;
+        private readonly IAuthenticateAppService _authenticateAppService;
+
 
         public GrpcUserService(IBaseInformationService baseInformationService,
-                               IBankAppService bankAppService)
+                               IBankAppService bankAppService,
+                               IAuthenticateAppService authenticateAppService)
         {
             _baseInformationSevice = baseInformationService;
             _bankAppService = bankAppService;
+            _authenticateAppService= authenticateAppService;
         }
 
         public override Task<UserAdvocacy> GetUserAdvocacy(UserAdvocacyRequest request, ServerCallContext context)
@@ -73,30 +81,32 @@ namespace UserManagement.Application.UserManagement.Implementations
 
 
         }
-        public override async Task<ClientOrderDetailResponse> CheckOrderDeliveryDate(ClientOrderDetailRequest request, ServerCallContext context)
+        public override async Task<AuthenticateResponse> Authenticate(AuthenticateRequest request, ServerCallContext context)
         {
-            //var clientsOrderDeliveryDateValidation =await _baseInformationSevice.CheckOrderDeliveryDate(request.NationalCode, request.OrderId);
-            //if (clientsOrderDeliveryDateValidation)
-            //{
-            var orderDelay = await _baseInformationSevice.GetOrderDelivery(request.NationalCode, request.OrderId);
-            System.Diagnostics.Debugger.Launch();
-            var ClientOrderDetail = await Task.FromResult(new ClientOrderDetailResponse()
+            var model = new AuthenticateModel()
             {
-                NationalCode = orderDelay.NationalCode,
-                TranDate = orderDelay.TranDate.HasValue ? Timestamp.FromDateTimeOffset(orderDelay.TranDate.Value) : new(),
-                PayedPrice = orderDelay.PayedPrice,
-                ContRowId = orderDelay.ContRowId,
-                Vin = orderDelay.Vin,
-                DeliveryDate = orderDelay.DeliveryDate.HasValue ? Timestamp.FromDateTimeOffset(orderDelay.TranDate.Value) : new(),
-                BodyNumber = orderDelay.BodyNumber,
-                FinalPrice = orderDelay.FinalPrice,
-                CarDesc = orderDelay.CarDesc
-            });
-            return ClientOrderDetail;
-            //}
-            //return null;
-        }
+                UserNameOrEmailAddress = request.UserNameOrEmailAddress,
+                Password = request.Password
+            };
+            var auth =await _authenticateAppService.Authenticate(model);
+            var res = new AuthenticateResponse();
+            if (!auth.Success)
+            {
+                res.Success = false;
+                res.Message = auth.Message;
+                res.ErrorCode = auth.ErrorCode;
+                return res;
+            }
 
+            res.Success = true;
+
+            res.Data.AccessToken = auth.Data.AccessToken;
+            res.Data.EncryptedAccessToken = auth.Data.EncryptedAccessToken;
+            res.Data.ExpireInSeconds = auth.Data.ExpireInSeconds;
+
+            return res;
+            
+        }
 
     }
 }

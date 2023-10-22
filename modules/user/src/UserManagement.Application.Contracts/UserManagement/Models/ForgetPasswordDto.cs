@@ -10,4 +10,8 @@ public class ForgetPasswordDto
     [Required]
     [MaxLength(11)]
     public string Mobile { get; set; }
+    [Required]
+    public string PassWord { get; set; }
+    [Required]
+    public string SMSCode { get; set; }
 }
