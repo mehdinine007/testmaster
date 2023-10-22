@@ -301,6 +301,11 @@
         "title": "GetUserProfile",
         "code": "000400010001",
         "children": []
+      },
+      {
+        "title": "UpdateSecuritPolicy",
+        "code": "000400010002",
+        "children": []
       }
     ]
   },
