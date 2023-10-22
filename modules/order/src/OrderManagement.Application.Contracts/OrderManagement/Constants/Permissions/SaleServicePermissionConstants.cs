@@ -11,4 +11,6 @@ public class SaleServicePermissionConstants : BasePermissionConstants
     public override string ModuleIdentifier => "0001";
 
     public override string ServiceIdentifier => "0006";
+
+    public override string ServiceDisplayName => "سرویس مدیریت نوع فروش";
 }

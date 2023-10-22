@@ -10,4 +10,6 @@ public class UserServicePermissionConstants : BasePermissionConstants
     public override string ModuleIdentifier => "0004";
 
     public override string ServiceIdentifier => "0001";
+
+    public override string ServiceDisplayName => "سرویس مدیریت کاربران";
 }

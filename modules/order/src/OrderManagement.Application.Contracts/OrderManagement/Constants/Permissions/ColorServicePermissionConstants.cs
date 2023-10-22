@@ -13,4 +13,6 @@ public class ColorServicePermissionConstants : BasePermissionConstants
     public override string ModuleIdentifier => "0001";
 
     public override string ServiceIdentifier => "0010";
+
+    public override string ServiceDisplayName => "سرویس مدیریت رنگ";
 }

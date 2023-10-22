@@ -9,4 +9,6 @@ public class OrderStatusInquiryServicePermissionConstants: BasePermissionConstan
     public override string ModuleIdentifier => "0001";
 
     public override string ServiceIdentifier => "0004";
+
+    public override string ServiceDisplayName => "سرویس استعلام وضعیت سفارشات";
 }

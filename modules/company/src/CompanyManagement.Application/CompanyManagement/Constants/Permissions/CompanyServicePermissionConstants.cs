@@ -11,4 +11,6 @@ public class CompanyServicePermissionConstants : BasePermissionConstants
     public override string ModuleIdentifier => "0002";
 
     public override string ServiceIdentifier => "0001";
+
+    public override string ServiceDisplayName => "سرویس شرکت ها";
 }

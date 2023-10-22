@@ -240,6 +240,26 @@
             "title": "GetList",
             "code": "000100070002",
             "children": []
+          },
+          {
+            "title": "Delete",
+            "code": "000100070003",
+            "children": []
+          },
+          {
+            "title": "Add",
+            "code": "000100070004",
+            "children": []
+          },
+          {
+            "title": "Update",
+            "code": "000100070005",
+            "children": []
+          },
+          {
+            "title": "UploadFile",
+            "code": "000100070006",
+            "children": []
           }
         ]
       },

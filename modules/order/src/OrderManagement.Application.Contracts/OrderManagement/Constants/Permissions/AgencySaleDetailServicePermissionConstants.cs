@@ -11,4 +11,6 @@ public class AgencySaleDetailServicePermissionConstants : BasePermissionConstant
     public override string ModuleIdentifier => "0001";
 
     public override string ServiceIdentifier => "0009";
+
+    public override string ServiceDisplayName => "سرویس برنامه فروش نمایندگی";
 }

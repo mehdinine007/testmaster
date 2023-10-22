@@ -13,5 +13,7 @@ namespace OrderManagement.Application.Contracts
         public override string ModuleIdentifier => "0001";
 
         public override string ServiceIdentifier => "0001";
+
+        public override string ServiceDisplayName => "سرویس پایه";
     }
 }

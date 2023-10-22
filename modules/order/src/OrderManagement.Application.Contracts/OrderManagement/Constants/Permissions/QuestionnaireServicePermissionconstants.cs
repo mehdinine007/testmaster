@@ -10,4 +10,6 @@ public class QuestionnaireServicePermissionconstants : BasePermissionConstants
     public override string ModuleIdentifier => "0001";
 
     public override string ServiceIdentifier => "0005";
+
+    public override string ServiceDisplayName => "سرویس مدیریت پرسشنامه";
 }

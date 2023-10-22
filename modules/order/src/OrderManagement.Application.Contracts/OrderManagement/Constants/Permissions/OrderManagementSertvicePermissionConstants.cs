@@ -15,4 +15,6 @@ public class OrderAppServicePermissionConstants : BasePermissionConstants
     public override string ModuleIdentifier => "0001";
 
     public override string ServiceIdentifier => "0003";
+
+    public override string ServiceDisplayName => "سرویس مدیریت سفارشات";
 }

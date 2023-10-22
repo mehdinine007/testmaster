@@ -9,4 +9,6 @@ public class InboxServicePermissionConstants : BasePermissionConstants
     public override string ModuleIdentifier => "0003";
 
     public override string ServiceIdentifier => "0001";
+
+    public override string ServiceDisplayName => "سرویس کارتابل جاری";
 }

@@ -31,6 +31,7 @@ public class SaleSchemaService : ApplicationService, ISaleSchemaService
         _attachmentService = attachmentService;
     }
 
+    [SecuredOperation(SaleSchemaServicePermissionConstants.Delete)]
     public async Task<bool> Delete(int id)
     {
         await Validation(id, null);
@@ -54,6 +55,8 @@ public class SaleSchemaService : ApplicationService, ISaleSchemaService
         });
         return saleSchemaDto;
     }
+
+    [SecuredOperation(SaleSchemaServicePermissionConstants.Add)]
     public async Task<SaleSchemaDto> Add(CreateSaleSchemaDto saleSchemaDto)
     {
         var saleSchema = ObjectMapper.Map<CreateSaleSchemaDto, SaleSchema>(saleSchemaDto);
@@ -61,6 +64,7 @@ public class SaleSchemaService : ApplicationService, ISaleSchemaService
         return ObjectMapper.Map<SaleSchema, SaleSchemaDto>(entity);
     }
 
+    [SecuredOperation(SaleSchemaServicePermissionConstants.Update)]
     public async Task<SaleSchemaDto> Update(CreateSaleSchemaDto saleSchemaDto)
     {
         await Validation(saleSchemaDto.Id, null);
@@ -84,6 +88,7 @@ public class SaleSchemaService : ApplicationService, ISaleSchemaService
     }
 
 
+    [SecuredOperation(SaleSchemaServicePermissionConstants.UploadFile)]
     public async Task<bool> UploadFile(UploadFileDto uploadFile)
     {
         await Validation(uploadFile.Id, null);

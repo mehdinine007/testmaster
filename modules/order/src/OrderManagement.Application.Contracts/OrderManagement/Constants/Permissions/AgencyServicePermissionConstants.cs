@@ -12,4 +12,6 @@ public class AgencyServicePermissionConstants : BasePermissionConstants
     public override string ModuleIdentifier => "0001";
 
     public override string ServiceIdentifier => "0008";
+
+    public override string ServiceDisplayName => "سرویس نمایندگان";
 }
