@@ -4,7 +4,7 @@
     "code": "0001",
     "children": [
       {
-        "title": "AgencySaleDetailService",
+        "title": "AgencySaleDetailServicePermissionConstants",
         "code": "0009",
         "children": [
           {
@@ -25,7 +25,7 @@
         ]
       },
       {
-        "title": "AgencyService",
+        "title": "AgencyServicePermissionConstants",
         "code": "0008",
         "children": [
           {
@@ -51,7 +51,7 @@
         ]
       },
       {
-        "title": "BaseInformationService",
+        "title": "BaseServicePermissionConstants",
         "code": "0001",
         "children": [
           {
@@ -82,18 +82,18 @@
         ]
       },
       {
-        "title": "CapacityControlAppService",
+        "title": "CapacityControlServicePermissionConstants",
         "code": "0002",
         "children": [
           {
-            "title": "ValidationBySaleDetailUId",
+            "title": "Validation",
             "code": "000100020001",
             "children": []
           }
         ]
       },
       {
-        "title": "ColorService",
+        "title": "ColorServicePermissionConstants",
         "code": "0010",
         "children": [
           {
@@ -124,7 +124,7 @@
         ]
       },
       {
-        "title": "OrderAppService",
+        "title": "OrderManagementSertvicePermissionConstants",
         "code": "0003",
         "children": [
           {
@@ -165,7 +165,7 @@
         ]
       },
       {
-        "title": "OrderStatusInquiryService",
+        "title": "OrderStatusInquiryServicePermissionConstants",
         "code": "0004",
         "children": [
           {
@@ -176,7 +176,7 @@
         ]
       },
       {
-        "title": "QuestionnaireService",
+        "title": "QuestionnaireServicePermissionconstants",
         "code": "0005",
         "children": [
           {
@@ -192,7 +192,7 @@
         ]
       },
       {
-        "title": "SaleDetailService",
+        "title": "SaleDetailServicePermissionConstants",
         "code": "0011",
         "children": [
           {
@@ -228,7 +228,7 @@
         ]
       },
       {
-        "title": "SaleSchemaService",
+        "title": "SaleSchemaServicePermissionConstants",
         "code": "0007",
         "children": [
           {
@@ -244,7 +244,7 @@
         ]
       },
       {
-        "title": "SaleService",
+        "title": "SaleServicePermissionConstants",
         "code": "0006",
         "children": [
           {
@@ -271,7 +271,7 @@
     "code": "0002",
     "children": [
       {
-        "title": "CompanyAppService",
+        "title": "CompanyServicePermissionConstants",
         "code": "0001",
         "children": [
           {
@@ -298,20 +298,9 @@
     "code": "0004",
     "children": [
       {
-        "title": "UserAppService",
-        "code": "0001",
-        "children": [
-          {
-            "title": "GetUserProfile",
-            "code": "000400010001",
-            "children": []
-          },
-          {
-            "title": "UpdateSecuritPolicy",
-            "code": "000400010002",
-            "children": []
-          }
-        ]
+        "title": "GetUserProfile",
+        "code": "000400010001",
+        "children": []
       }
     ]
   },
@@ -320,7 +309,7 @@
     "code": "0003",
     "children": [
       {
-        "title": "InboxService",
+        "title": "InboxServicePermissionConstants",
         "code": "0001",
         "children": [
           {
@@ -331,7 +320,7 @@
         ]
       },
       {
-        "title": "ProcessService",
+        "title": "ProccessServicePermissionConstants",
         "code": "0002",
         "children": [
           {
