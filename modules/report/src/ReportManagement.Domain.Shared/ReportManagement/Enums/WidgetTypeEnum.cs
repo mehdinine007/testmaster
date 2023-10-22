@@ -18,6 +18,6 @@ namespace ReportManagement.Domain.Shared.ReportManagement.Enums
         [EnumProperty(Description = "خطی")]
         Line = 4,
         [EnumProperty(Description = "گرید")]
-        Grid = 4
+        Grid = 5
     }
 }

@@ -9,7 +9,7 @@ using Volo.Abp.Application.Services;
 
 namespace ReportManagement.Application.Contracts.ReportManagement.IServices
 {
-    public interface IWidgetService:IApplicationService
+    public interface IWidgetService : IApplicationService
     {
 
         Task<WidgetDto> GetById(int id);
@@ -17,8 +17,7 @@ namespace ReportManagement.Application.Contracts.ReportManagement.IServices
         Task<WidgetDto> Update(WidgetCreateOrUpdateDto widgetCreateOrUpdateDto);
         Task<List<WidgetDto>> GetList(int dashboardId);
         Task<ChartDto> GetChart(int widgetId, List<ConditionValue> conditionValue);
-
         Task<bool> Delete(int id);
-
-    }
+        Task<GridDto> GetGrid(int widgetId, List<ConditionValue> conditionValue);
+    }  
 }

@@ -42,5 +42,8 @@ namespace ReportManagement.HttpApi.ReportManagement.Controllers
         [HttpPut]
         public Task<WidgetDto> Update(WidgetCreateOrUpdateDto widgetCreateOrUpdateDto)
         =>_widgetService.Update(widgetCreateOrUpdateDto);
+        [HttpPost]
+        public Task<GridDto> GetGrid(ChartInputDto chartInputDto)
+      => _widgetService.GetGrid(chartInputDto.WidgetId, chartInputDto.ConditionValue);
     }
 }
