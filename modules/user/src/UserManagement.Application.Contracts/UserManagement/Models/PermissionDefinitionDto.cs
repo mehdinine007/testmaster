@@ -11,6 +11,7 @@ public class PermissionDefinitionDto
     [BsonRepresentation(BsonType.ObjectId)]
     public string Id { get; set; }
     public string Title { get; set; }
+    public string DisplayName { get; set; }
     public string Code { get; set; }
     public List<PermissionDefinitionChildDto> Children { get; set; }
 }

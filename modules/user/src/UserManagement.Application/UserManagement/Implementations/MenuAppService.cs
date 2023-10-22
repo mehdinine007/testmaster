@@ -29,6 +29,7 @@ using UserManagement.Domain.UserManagement.bases;
 using UserManagement.Application.Contracts.UserManagement;
 using UserManagement.Application.Contracts.UserManagement.Constant;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Model;
+using UserManagement.Domain.UserManagement.Enums;
 
 namespace UserManagement.Application.UserManagement.Implementations;
 
@@ -72,15 +73,15 @@ public class MenuAppService : ApplicationService, IMenuAppService
 
     public async Task<MenuDto> Update(MenuDto input)
     {
-      var menu = (await _menuRepository.GetQueryableAsync()).FirstOrDefault(x => x.Id == ObjectId.Parse(input.Id));
-         if (menu is null)
+        var menu = (await _menuRepository.GetQueryableAsync()).FirstOrDefault(x => x.Id == ObjectId.Parse(input.Id));
+        if (menu is null)
             throw new UserFriendlyException(PermissionConstant.MenuNotFound, PermissionConstant.MenuNotFoundId);
 
         if (!string.IsNullOrEmpty(input.Title))
             menu.Title = input.Title;
         if (!string.IsNullOrEmpty(input.Code))
             menu.Code = input.Code;
-        if (input.Type >0 && input.Type != menu.Type)
+        if (input.Type > 0 && input.Type != menu.Type)
             menu.Type = input.Type;
         if (!string.IsNullOrEmpty(input.Url))
             menu.Url = input.Url;
@@ -118,42 +119,81 @@ public class MenuAppService : ApplicationService, IMenuAppService
             Title = "اطلاعات پایه",
             Icon = string.Empty,
             Url = string.Empty,
-            Type = 1,
+            Type = (int)MenuEnum.Category,
             Children = new List<MenuChildDto>()
             {
                  new MenuChildDto()
                 {
                 Code = "00010001",
-                    Title = "استان",
+                    Title = "تعریف خودرو",
                     Icon = string.Empty,
-                    Type = 2,
+                    Type = (int)MenuEnum.Category,
                     Url = string.Empty ,
                     Children= new List<MenuChildDto>()
                     {
                         new MenuChildDto() {
                         Code = "000100010001",
-                        Title = "خراسان",
+                        Title = "نمایش",
                         Icon = string.Empty,
-                        Type = 4,
-                        Url = string.Empty
+                        Type = (int)MenuEnum.Form,
+                        Url = string.Empty,
+                        Permissions=new List<PermissionDefinitionChildDto>() {
+                                  new PermissionDefinitionChildDto()
+                                  {
+                                     Code="",
+                                     DisplayName="",
+                                     Title=""
+                                  }
+                        }
                         } ,
                          new MenuChildDto() {
                         Code = "000100010002",
-                        Title = "مرکزی",
+                        Title = "ایجاد",
                         Icon = string.Empty,
-                        Type = 4,
-                        Url = string.Empty
+                        Type = (int)MenuEnum.Form,
+                        Url = string.Empty ,
+                          Permissions=new List<PermissionDefinitionChildDto>() {
+                                  new PermissionDefinitionChildDto()
+                                  {
+                                     Code="",
+                                     DisplayName="",
+                                     Title=""
+                                  }
+                        }
                         } ,
+                          new MenuChildDto() {
+                        Code = "000100010003",
+                        Title = "ویرایش",
+                        Icon = string.Empty,
+                        Type = (int)MenuEnum.Form,
+                        Url = string.Empty ,
+                          Permissions=new List<PermissionDefinitionChildDto>() {
+                                  new PermissionDefinitionChildDto()
+                                  {
+                                     Code="",
+                                     DisplayName="",
+                                     Title=""
+                                  }
+                        }
+                          },
+                        new MenuChildDto() {
+                        Code = "000100010004",
+                        Title = "حذف",
+                        Icon = string.Empty,
+                        Type = (int)MenuEnum.Form,
+                        Url = string.Empty ,
+                          Permissions=new List<PermissionDefinitionChildDto>() {
+                                  new PermissionDefinitionChildDto()
+                                  {
+                                     Code="",
+                                     DisplayName="",
+                                     Title=""
+                                  }
+                        }
+                        }
                     }
                   } ,
-                         new MenuChildDto()
-                {
-                Code = "00010002",
-                    Title = "شهر",
-                    Icon = string.Empty,
-                    Type = 3,
-                    Url = string.Empty
-                  }
+
             }
         };
 
