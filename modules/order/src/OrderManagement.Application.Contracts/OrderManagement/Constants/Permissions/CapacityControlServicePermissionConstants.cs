@@ -5,6 +5,7 @@ namespace OrderManagement.Application.Contracts;
 public class CapacityControlServicePermissionConstants : BasePermissionConstants
 {
     public const string ValidationBySaleDetailUId = "000100020001";
+    public const string ValidationBySaleDetailUId_DisplayName = "اعتبارسنجی توسط UID برنامه فروش";
 
     public override string ModuleIdentifier => "0001";
 
