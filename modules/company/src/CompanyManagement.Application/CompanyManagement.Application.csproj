@@ -10,7 +10,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <None Remove="CompanyManagement\Protos\CompanyService.proto" GrpcServices="Client"/>
+	  <None Remove="CompanyManagement\Protos\CompanyService.proto" GrpcServices="Client" />
 	</ItemGroup>
 
     <ItemGroup>
@@ -38,6 +38,7 @@
     <ItemGroup>
       <ProjectReference Include="..\..\..\..\shared\Authorization\Authorization.csproj" />
       <ProjectReference Include="..\..\..\..\shared\Extensions\Extensions.csproj" />
+      <ProjectReference Include="..\..\..\user\src\UserManagement.Application\UserManagement.Application.csproj" />
       <ProjectReference Include="..\CompanyManagement.Application.Contracts\CompanyManagement.Application.Contracts.csproj" />
       <ProjectReference Include="..\CompanyManagement.Domain\CompanyManagement.Domain.csproj" />
       <ProjectReference Include="..\CompanyManagement.EntityFrameworkCore\CompanyManagement.EntityFrameworkCore.csproj" />
@@ -49,6 +50,7 @@
 
 	<ItemGroup>
 		<Protobuf Include="CompanyManagement\Protos\CompanyService.proto" GrpcServices="Server" />
+		<Protobuf Include="CompanyManagement\Protos\UserGrpcClient.proto" GrpcServices="Client" />
 	</ItemGroup>
 
 </Project>

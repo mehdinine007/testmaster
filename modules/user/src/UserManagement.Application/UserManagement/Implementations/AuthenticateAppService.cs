@@ -44,13 +44,12 @@ public class AuthenticateAppService : ApplicationService, IAuthenticateAppServic
         _configuration = configuration;
     }
 
-    public async Task<AuthenticateResultModel> Authenticate( AuthenticateModel model)
+    public async Task<AuthenticateResultDto> Authenticate( AuthenticateModel model)
     {
-        System.Diagnostics.Debugger.Launch();
         User loginResult;
         loginResult = await _userAppService.GetLoginInfromationuserFromCache(model.UserNameOrEmailAddress);
 
-        var res =new AuthenticateResultModel();
+        var res =new AuthenticateResultDto();
         if (loginResult == null)
         {
             res.Success = false;
@@ -81,7 +80,7 @@ public class AuthenticateAppService : ApplicationService, IAuthenticateAppServic
         // _baseInformationService.CheckWhiteList(WhiteListEnumType.WhiteListBeforeLogin, loginResult.UserName);
         var accessToken = CreateAccessToken(CreateJwtClaims(loginResult));
 
-         res.Data = new AuthenticateResult
+         res.Data = new AuthenticateResultModel
         {
             AccessToken = accessToken,
             EncryptedAccessToken = GetEncryptedAccessToken(accessToken),
