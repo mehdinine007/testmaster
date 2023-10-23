@@ -309,15 +309,15 @@ public class CapacityControlAppService : ApplicationService, ICapacityControlApp
         var propertyQuery = await _propertyDefinitionRepository.GetQueryableAsync();
         var property = propertyQuery.ToList();
         var products = (await _productAndCategoryRepository.GetQueryableAsync()).Where(x => x.Type == ProductAndCategoryType.Product).ToList();
-        products.ForEach(async x =>
-        {
-            var productpropertydto = new ProductPropertyDto()
-            {
-                ProductId = x.Id,
-                PropertyCategories = ObjectMapper.Map<List<PropertyCategory>, List<PropertyCategoryDto>>(property)
-            };
-            await _productPropertyRepository.InsertAsync(ObjectMapper.Map<ProductPropertyDto, ProductProperty>(productpropertydto));
-        });
+        //products.ForEach(async x =>
+        //{
+        //    var productpropertydto = new ProductPropertyDto()
+        //    {
+        //        ProductId = x.Id,
+        //        PropertyCategories = ObjectMapper.Map<List<PropertyCategory>, List<PropertyCategoryDto>>(property)
+        //    };
+        //    await _productPropertyRepository.InsertAsync(ObjectMapper.Map<ProductPropertyDto, ProductProperty>(productpropertydto));
+        //});
     }
 
     public async Task GrpcPaymentTest()
