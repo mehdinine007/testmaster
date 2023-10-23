@@ -55,7 +55,7 @@ public class UserAppService : ApplicationService, IUserAppService
                           IRolePermissionService rolePermissionService,
                           IRepository<UserMongo, ObjectId> userMongoRepository,
                           IRepository<UserMongoWrite, ObjectId> userMongoWriteRepository,
-                          ICaptchaService captchaServiceو                 
+                          ICaptchaService captchaService,                 
                           IDistributedEventBus distributedEventBus,
                           IRepository<UserSQL, long> UserSQLRepository
         )
@@ -106,7 +106,7 @@ public class UserAppService : ApplicationService, IUserAppService
     //        var productId = eventData.ProductId;
     //    }
     //}
-    public async Task CreateUserIntoSqlServer(UserSQL input)
+    public async Task UpsertUserIntoSqlServer(UserSQL input)
     {
         if(input.Id > 0)
         {
@@ -555,6 +555,9 @@ public class UserAppService : ApplicationService, IUserAppService
 
         (await _userMongoRepository.GetCollectionAsync())
             .UpdateOne(filter, update);
+        await _distributedEventBus.PublishAsync<UserSQL>(
+                ObjectMapper.Map<UserMongo, UserSQL>(user)
+               );
 
         return true;
     }
@@ -609,7 +612,9 @@ public class UserAppService : ApplicationService, IUserAppService
             .Set(_ => _.LastModificationTime, DateTime.Now);
         (await _userMongoRepository.GetCollectionAsync())
             .UpdateOne(filter, update);
-
+        await _distributedEventBus.PublishAsync<UserSQL>(
+                  ObjectMapper.Map<UserMongo, UserSQL>(user)
+                 );
         return true;
 
     }

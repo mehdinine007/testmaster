@@ -3,7 +3,6 @@ using Volo.Abp.EventBus.Distributed;
 using Volo.Abp.DependencyInjection;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Uow;
-using OrderManagement.Domain;
 using UserManagement.Application.Contracts.UserManagement.Services;
 using UserManagement.Application.Contracts.Models;
 using Volo.Abp.EventBus;
