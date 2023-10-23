@@ -44,11 +44,19 @@ namespace OrderManagement.Application
             var getProductProperty = ObjectMapper.Map<List<ProductProperty>, List<ProductPropertyDto>>(productProperty);
             return getProductProperty;
         }
-        public async Task<ProductPropertyDto> GetById(ObjectId id)
+        public async Task<ProductPropertyDto> GetById(string Id)
         {
-            var productLevel = (await _productPropertyRepository.GetQueryableAsync())
-                .FirstOrDefault(x => x.Id == id);
-            return ObjectMapper.Map<ProductProperty, ProductPropertyDto>(productLevel);
+            ObjectId objectId;
+            if (ObjectId.TryParse(Id, out objectId))
+            {
+                var productLevel = (await _productPropertyRepository.GetQueryableAsync())
+               .FirstOrDefault(x => x.Id == objectId);
+                return ObjectMapper.Map<ProductProperty, ProductPropertyDto>(productLevel);
+            }
+            else
+            {
+                throw new UserFriendlyException(OrderConstant.NotValid, OrderConstant.NotValidId);
+            }
         }
         public async Task<ProductPropertyDto> Add(ProductPropertyDto productPropertyDto)
         {
@@ -91,10 +99,19 @@ namespace OrderManagement.Application
 
             return ObjectMapper.Map<ProductProperty, ProductPropertyDto>(existingEntity);
         }
-        public async Task<bool> Delete(ObjectId id)
+        public async Task<bool> Delete(string Id)
         {
-            await _productPropertyRepository.DeleteAsync(x => x.Id == id, autoSave: true);
-            return true;
+            ObjectId objectId;
+            if (ObjectId.TryParse(Id, out objectId))
+            {
+                await _productPropertyRepository.DeleteAsync(x => x.Id == objectId, autoSave: true);
+                return true;
+            }
+            else
+            {
+                throw new UserFriendlyException(OrderConstant.NotValid, OrderConstant.NotValidId);
+
+            }
         }
     }
 }

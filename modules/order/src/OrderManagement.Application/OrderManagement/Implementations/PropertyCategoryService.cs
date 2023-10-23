@@ -32,11 +32,20 @@ public class PropertyCategoryService : ApplicationService, IPropertyCategoryServ
         var getPropertyCategory = ObjectMapper.Map<List<PropertyCategory>, List<PropertyCategoryDto>>(propertyCategory);
         return getPropertyCategory;
     }
-    public async Task<PropertyCategoryDto> GetById(ObjectId Id)
+    public async Task<PropertyCategoryDto> GetById(string Id)
     {
-        var propertyCategory = (await _propertyCategoryRepository.GetQueryableAsync())
-           .FirstOrDefault(x => x.Id == Id);
-        return ObjectMapper.Map<PropertyCategory, PropertyCategoryDto>(propertyCategory);
+        ObjectId objectId;
+        if (ObjectId.TryParse(Id, out objectId))
+        {
+            var propertyCategory = (await _propertyCategoryRepository.GetQueryableAsync())
+           .FirstOrDefault(x => x.Id == objectId);
+            return ObjectMapper.Map<PropertyCategory, PropertyCategoryDto>(propertyCategory);
+        }
+        else
+        {
+            throw new UserFriendlyException(OrderConstant.NotValid, OrderConstant.NotValidId);
+        }
+        
     }
     public async Task<PropertyCategoryDto> Add(PropertyCategoryDto propertyCategoryDto)
     {
@@ -77,10 +86,19 @@ public class PropertyCategoryService : ApplicationService, IPropertyCategoryServ
         await _propertyCategoryRepository.UpdateAsync(existingEntity, autoSave: true);
         return ObjectMapper.Map<PropertyCategory, PropertyCategoryDto>(existingEntity);
     }
-    public async Task<bool> Delete(ObjectId Id)
+    public async Task<bool> Delete(string Id)
     {
-        await _propertyCategoryRepository.DeleteAsync(x => x.Id == Id, autoSave: true);
-        return true;
+        ObjectId objectId;
+        if (ObjectId.TryParse(Id, out objectId))
+        {
+            await _propertyCategoryRepository.DeleteAsync(x => x.Id == objectId, autoSave: true);
+            return true;
+        }
+        else
+        {
+            throw new UserFriendlyException(OrderConstant.NotValid, OrderConstant.NotValidId);
+
+        }
     }
 }
 
