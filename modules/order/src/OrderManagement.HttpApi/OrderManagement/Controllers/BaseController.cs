@@ -56,10 +56,6 @@ public class BaseController : IBaseInformationService
     public List<PublicDto> GetProvince()
         => _baseInformationService.GetProvince();
 
-    [HttpPost]
-    
-    public async Task RegistrationValidation()
-        => await _baseInformationService.RegistrationValidation();
 
     [HttpGet]
     [RemoteService(false)]

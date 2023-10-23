@@ -11,7 +11,6 @@ namespace OrderManagement.Application.Contracts.Services
         List<CompanyDto> GetCompanies();
 
         //Task<List<CarTipDto>> GetCarTipsByCompanyId(int companyId);
-        Task RegistrationValidation();
         List<PublicDto> GetProvince();
         List<PublicDto> GetCities(int ProvienceId);
         void CheckBlackList(int esaleTypeId);

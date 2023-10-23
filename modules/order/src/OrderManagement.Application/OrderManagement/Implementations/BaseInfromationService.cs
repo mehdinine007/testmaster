@@ -46,7 +46,6 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
     private readonly IRepository<AgencySaleDetail, int> _agencySaleDetailRepository;
     private readonly ICapacityControlAppService _capacityControlAppService;
     private readonly IHybridCachingProvider _hybridCache;
-    private readonly IRepository<UserMongo, ObjectId> _userMongo;
 
     private readonly ICacheManager _cacheManager;
     public BaseInformationService(IRepository<Company, int> companyRepository,
@@ -67,7 +66,6 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
                                   IRepository<ESaleType, int> esaleTypeRepository,
                                   ICapacityControlAppService capacityControlAppService,
                                   IHybridCachingProvider hybridCache,
-                                  IRepository<UserMongo, ObjectId> UserMongo,
                                   ICacheManager cacheManager)
     {
         _esaleGrpcClient = esaleGrpcClient;
@@ -89,7 +87,6 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
         _esaleTypeRepository = esaleTypeRepository;
         _capacityControlAppService = capacityControlAppService;
         _hybridCache = hybridCache;
-        _userMongo = UserMongo;
         _cacheManager = cacheManager;
     }
 
@@ -198,47 +195,6 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
         {
             throw new UserFriendlyException("شما در گذشته از خودروسازان خرید داشته اید و امکان سفارش مجدد ندارید");
         }
-
-    }
-
-    public async Task RegistrationValidation()
-    {
-        UserMongo user = new UserMongo();
-
-        await _userMongo.InsertAsync(user);
-        var x = await _userMongo.ToListAsync();
-
-
-        //await _commonAppService.ValidateVisualizeCaptcha(new CommonService.Dto.VisualCaptchaInput(input.CK, input.CIT));
-
-        //// await _commonAppService.ValidateVisualizeCaptcha(new CommonService.Dto.VisualCaptchaInput(input.CT,input.CK, input.CIT));
-
-
-        //var advocacyuser = _advocacyUsersRepository.WithDetails()
-        //    .Select(x => new
-        //    {
-        //        x.shabaNumber,
-        //        x.accountNumber,
-        //        x.Id,
-        //        x.nationalcode,
-        //        x.BanksId
-        //    })
-        //    .OrderByDescending(x => x.Id).FirstOrDefault(x => x.nationalcode == input.Nationalcode);
-        //if (advocacyuser == null)
-        //{
-        //    throw new UserFriendlyException("اطلاعات حساب وکالتی یافت نشد");
-        //}
-
-
-        //var user = _userRepository.GetAll()
-        // .Select(x => x.NationalCode)
-        // .FirstOrDefault(x => x == input.Nationalcode);
-        //if (user != null)
-        //{
-
-        //    throw new UserFriendlyException("این کد ملی قبلا ثبت نام شده است");
-        //}
-
 
     }
     public void RegistrationValidationWithoutCaptcha(RegistrationValidationDto input)
