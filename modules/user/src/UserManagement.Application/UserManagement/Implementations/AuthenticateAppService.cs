@@ -44,19 +44,19 @@ public class AuthenticateAppService : ApplicationService, IAuthenticateAppServic
         _configuration = configuration;
     }
 
-    public async Task<AuthenticateResultDto> Authenticate( AuthenticateModel model)
+    public async Task<AuthenticateResultDto> Authenticate(AuthenticateModel model)
     {
         User loginResult;
         loginResult = await _userAppService.GetLoginInfromationuserFromCache(model.UserNameOrEmailAddress);
 
-        var res =new AuthenticateResultDto();
+        var res = new AuthenticateResultDto();
         if (loginResult == null)
         {
             res.Success = false;
             res.Message = "نام کاربری یا کلمه عبور صحیح نمی باشد";
             res.ErrorCode = 101;
             return res;
-            
+
         }
         if (loginResult.IsActive == false)
         {
@@ -64,7 +64,7 @@ public class AuthenticateAppService : ApplicationService, IAuthenticateAppServic
             res.Message = "حساب کاربری شما غیر فعال می باشد";
             res.ErrorCode = 102;
             return res;
-          
+
         }
         var passwordResult = _passwordHasher.VerifyHashedPassword(loginResult, loginResult.Password, model.Password);
         var success = passwordResult != PasswordVerificationResult.Failed;
@@ -74,13 +74,13 @@ public class AuthenticateAppService : ApplicationService, IAuthenticateAppServic
             res.Message = "نام کاربری یا کلمه عبور صحیح نمی باشد";
             res.ErrorCode = 103;
             return res;
-           
+
         }
 
         // _baseInformationService.CheckWhiteList(WhiteListEnumType.WhiteListBeforeLogin, loginResult.UserName);
         var accessToken = CreateAccessToken(CreateJwtClaims(loginResult));
 
-         res.Data = new AuthenticateResultModel
+        res.Data = new AuthenticateResultModel
         {
             AccessToken = accessToken,
             EncryptedAccessToken = GetEncryptedAccessToken(accessToken),
@@ -117,12 +117,13 @@ public class AuthenticateAppService : ApplicationService, IAuthenticateAppServic
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new Claim(ClaimTypes.Role, (user?.RolesM ?? new()).Any() ? string.Join(",",user.RolesM) : string.Empty),
             new Claim("UBP", user.UID.ToString()),
+            new Claim("CompanyId" , user.UserName.StartsWith("C") ? user.CompanyId.ToString() : string.Empty),
 
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
 
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new Claim(JwtRegisteredClaimNames.Iat, DateTimeOffset.Now.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64),
-        });
+        });    
         return claims;
     }
     private string GetEncryptedAccessToken(string accessToken)
