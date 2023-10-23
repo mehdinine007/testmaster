@@ -17,6 +17,7 @@ using UserManagement.Application.Contracts.Models;
 using Volo.Abp.Application.Services;
 using Newtonsoft.Json;
 using UserManagement.Domain.Shared;
+using Volo.Abp.Json.SystemTextJson.Modifiers;
 #endregion
 
 namespace UserManagement.Application.UserManagement.Implementations;
@@ -132,6 +133,14 @@ public class SendBoxAppService : ApplicationService, ISendBoxAppService
                 input.Recipient = userFromDb.Mobile;
                 PreFix = SMSType.UpdateProfile.ToString();
                 Message = _configuration.GetSection("RegisterText").Value.Replace("{0}", sendSMSDto.SMSCode);
+            }
+            if(input.SMSLocation == SMSType.AnonymousQuestionnaireSubmitation)
+            {
+                PreFix = SMSType.AnonymousQuestionnaireSubmitation.ToString();
+                Message = _configuration.GetSection("RegisterText").Value.Replace("{0}", sendSMSDto.SMSCode);
+
+                if (input.Recipient.AsParallel().Any(x => !char.IsDigit(x)) && input.Recipient.Length != 11)
+                    throw new UserFriendlyException("شماره موبایل معتبر نیست");
             }
             else if (input.SMSLocation == SMSType.ForgetPassword)
             {

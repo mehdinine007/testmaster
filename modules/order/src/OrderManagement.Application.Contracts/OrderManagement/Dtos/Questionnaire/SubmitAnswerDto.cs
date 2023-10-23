@@ -9,7 +9,28 @@ namespace OrderManagement.Application.Contracts.Dtos
 
         public long? RelatedEntity { get; set; }
 
+        public UnregisteredUserInformation UnregisteredUserInformation { get; set; }
     }
+
+    public class UnregisteredUserInformation
+    {
+        public string FirstName { get; set; }
+
+        public string LastName { get; set; }
+
+        public string NationalCode { get; set; }
+
+        public string MobileNumber { get; set; }
+
+        public string VehicleName { get; set; }
+
+        public string ManufactureDate { get; set; }
+
+        public string Vin { get; set; }
+
+        public string SmsCode { get; set; }
+    }
+
 
     public class QuestionnaireAnalysisDto
     {

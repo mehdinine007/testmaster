@@ -430,6 +430,14 @@ public static class OrderManagementDbContextModelCreatingExtensions
             entity.AddEnumChangeTracker<QuestionnaireTypeReadOnly, QuestionnaireType>();
         });
 
+        builder.Entity<UnAuthorizedUser>(entity =>
+        {
+            entity.ToTable(nameof(UnAuthorizedUser));
+
+            entity.HasOne(x => x.Questionnaire)
+                .WithMany(x => x.UnAuthorizedUsers)
+                .HasForeignKey(x => x.QuestionnaireId);
+        });
         //builder.Entity<ClientsOrderDetailByCompany>(entity =>
         //{
         //    entity.ToTable(nameof(ClientsOrderDetailByCompany));

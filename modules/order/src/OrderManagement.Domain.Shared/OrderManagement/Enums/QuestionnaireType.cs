@@ -10,5 +10,3 @@ public enum QuestionnaireType
     [Display(Name = "احراض اجباری")]
     AuthorizedOnly = 2
 }
-
-

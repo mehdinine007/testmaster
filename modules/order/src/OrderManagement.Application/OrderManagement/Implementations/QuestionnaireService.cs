@@ -30,6 +30,7 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
     private readonly IRepository<QuestionAnswer, long> _answerRepository;
     private readonly IAttachmentService _attachmentService;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IRepository<UnAuthorizedUser, long> _unAuthorizedUserRepository;
 
     public QuestionnaireService(IRepository<Questionnaire, int> questionnaireRepository,
                                 IBaseInformationService baseInformationService,
@@ -39,7 +40,8 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
                                 IRepository<Question, int> questionRepository,
                                 IRepository<QuestionAnswer, long> answerRepository,
                                 IAttachmentService attachmentService,
-                                IHttpContextAccessor httpContextAccessor
+                                IHttpContextAccessor httpContextAccessor,
+                                IRepository<UnAuthorizedUser, long> unAuthorizedUserRepository
         )
     {
         _questionnaireRepository = questionnaireRepository;
@@ -51,6 +53,7 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
         _answerRepository = answerRepository;
         _attachmentService = attachmentService;
         _httpContextAccessor = httpContextAccessor;
+        _unAuthorizedUserRepository = unAuthorizedUserRepository;
     }
 
     public async Task<QuestionnaireTreeDto> LoadQuestionnaireTree(int questionnaireId, long? relatedEntityId = null)
@@ -154,10 +157,27 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
 
         if (questionnaire.QuestionnaireType == QuestionnaireType.AnonymousAllowed)
         {
-            var smsValidation =  await _commonAppService.ValidateSMS("", "", "", SMSType.AnonymousSurvey);
-            if (!smsValidation)
-                throw new UserFriendlyException("کد ارسالی صحیح نیست");
+            if (string.IsNullOrWhiteSpace(submitAnswerTreeDto.UnregisteredUserInformation.Vin) &&
+                string.IsNullOrWhiteSpace(submitAnswerTreeDto.UnregisteredUserInformation.FirstName) &&
+                string.IsNullOrWhiteSpace(submitAnswerTreeDto.UnregisteredUserInformation.ManufactureDate) &&
+                string.IsNullOrWhiteSpace(submitAnswerTreeDto.UnregisteredUserInformation.LastName) &&
+                string.IsNullOrWhiteSpace(submitAnswerTreeDto.UnregisteredUserInformation.VehicleName) &&
+                string.IsNullOrWhiteSpace(submitAnswerTreeDto.UnregisteredUserInformation.MobileNumber) &&
+                string.IsNullOrWhiteSpace(submitAnswerTreeDto.UnregisteredUserInformation.SmsCode) &&
+                string.IsNullOrWhiteSpace(submitAnswerTreeDto.UnregisteredUserInformation.NationalCode))
+                throw new UserFriendlyException("لطفا نمام فیلد ها را پر کنید");
+            if (!_httpContextAccessor.HttpContext.User.Identity.IsAuthenticated)
+            {
+                var smsCodeIsValid = await _commonAppService.ValidateSMS(submitAnswerTreeDto.UnregisteredUserInformation.SmsCode,
+                    submitAnswerTreeDto.UnregisteredUserInformation.NationalCode,
+                    submitAnswerTreeDto.UnregisteredUserInformation.SmsCode,
+                    SMSType.AnonymousQuestionnaireSubmitation);
+                if (!smsCodeIsValid)
+                    throw new UserFriendlyException("کد ارسالی صحیح نیست");
+            }
 
+            var unAuthorizedUser = await _unAuthorizedUserRepository.InsertAsync(
+                ObjectMapper.Map<UnregisteredUserInformation, UnAuthorizedUser>(submitAnswerTreeDto.UnregisteredUserInformation));
         }
         else if (questionnaire.QuestionnaireType == QuestionnaireType.AuthorizedOnly)
         {
