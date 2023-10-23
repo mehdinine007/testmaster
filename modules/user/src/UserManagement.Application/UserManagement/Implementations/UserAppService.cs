@@ -455,7 +455,7 @@ public class UserAppService : ApplicationService, IUserAppService
         return null;
     }
 
-    //[SecuredOperation(UserServicePermissionConstants.UpdateSecuritPolicy)]
+    [SecuredOperation(UserServicePermissionConstants.UpdateSecuritPolicy)]
     public async Task UpdateSecurityPolicy()
     {
         var currentDirectory = Environment.CurrentDirectory;
