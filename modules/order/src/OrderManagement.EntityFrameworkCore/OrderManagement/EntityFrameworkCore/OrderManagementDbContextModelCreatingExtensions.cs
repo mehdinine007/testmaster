@@ -7,7 +7,6 @@ using Volo.Abp.EntityFrameworkCore.Modeling;
 using OrderManagement.Domain.OrderManagement;
 using Esale.Core.DataAccess;
 using OrderManagement.Domain.Shared;
-//using OrderManagement.Domain.CompanyManagement;
 
 namespace OrderManagement.EfCore;
 
@@ -425,6 +424,20 @@ public static class OrderManagementDbContextModelCreatingExtensions
                 .HasPrincipalKey<ProductAndCategory>(x => x.Id);
         });
 
+        builder.Entity<QuestionnaireTypeReadOnly>(entity =>
+        {
+            entity.ToTable(nameof(QuestionnaireTypeReadOnly));
+            entity.AddEnumChangeTracker<QuestionnaireTypeReadOnly, QuestionnaireType>();
+        });
+
+        builder.Entity<UnAuthorizedUser>(entity =>
+        {
+            entity.ToTable(nameof(UnAuthorizedUser));
+
+            entity.HasOne(x => x.Questionnaire)
+                .WithMany(x => x.UnAuthorizedUsers)
+                .HasForeignKey(x => x.QuestionnaireId);
+        });
         //builder.Entity<ClientsOrderDetailByCompany>(entity =>
         //{
         //    entity.ToTable(nameof(ClientsOrderDetailByCompany));

@@ -1,18 +1,18 @@
-﻿using OrderManagement.Application.Contracts.Dtos;
-using OrderManagement.Domain.Shared;
+﻿using OrderManagement.Domain.Shared;
 
-namespace OrderManagement.Application.Contracts
+namespace OrderManagement.Application.Contracts;
+
+public class QuestionnaireTreeDto
 {
-    public class QuestionnaireTreeDto
-    {
-        public int Id { get; set; }
+    public int Id { get; set; }
 
-        public string Title { get; set; }
+    public string Title { get; set; }
 
-        public string Description { get; set; }
+    public string Description { get; set; }
 
-        public int? WhitListRequirement { get; set; }
+    public QuestionnaireType QuestionnaireType { get; set; }
 
-        public virtual ICollection<FullQuestionDto> Questions { get; set; }
-    }
+    public int? WhitListRequirement { get; set; }
+
+    public virtual ICollection<FullQuestionDto> Questions { get; set; }
 }

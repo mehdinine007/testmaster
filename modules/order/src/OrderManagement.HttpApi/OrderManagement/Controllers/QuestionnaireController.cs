@@ -30,7 +30,7 @@ public class QuestionnaireController : Controller //, IQuestionnaireService
     public async Task<QuestionnaireTreeDto> LoadQuestionnaireTree(int questionnaireId, long? relatedEntityId)
         => await _questionnaireService.LoadQuestionnaireTree(questionnaireId, relatedEntityId);
 
-    [UserAuthorization]
+    //[UserAuthorization]
     [HttpPost]
     public async Task<bool> SubmitAnswer(SubmitAnswerTreeDto submitAnswerTreeDto)
     {
