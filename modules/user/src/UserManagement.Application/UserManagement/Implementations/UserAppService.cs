@@ -159,16 +159,6 @@ public class UserAppService : ApplicationService, IUserAppService
                 throw new UserFriendlyException("پیش شماره تلفن را وارد نمایید");
 
             }
-            if (string.IsNullOrEmpty(input.Street))
-            {
-                throw new UserFriendlyException("خیابان را وارد نمایید");
-
-            }
-            if (string.IsNullOrEmpty(input.Pelaq))
-            {
-                throw new UserFriendlyException("پلاک را وارد نمایید");
-
-            }
             if (DateTime.Now.Subtract(input.BirthDate).TotalDays > 73200)
             {
                 throw new UserFriendlyException("تاریخ تولد صحیح نمی باشد");
@@ -177,11 +167,6 @@ public class UserAppService : ApplicationService, IUserAppService
             {
                 throw new UserFriendlyException("تاریخ صدور شناسنامه صحیح نمی باشد");
 
-            }
-
-            if (string.IsNullOrEmpty(input.Alley))
-            {
-                throw new UserFriendlyException("کوچه را وارد نمایید");
             }
             if (!input.IssuingDate.HasValue)
             {
