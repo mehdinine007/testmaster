@@ -1,6 +1,7 @@
 ﻿using MongoDB.Bson;
 using UserManagement.Application.Contracts.Models;
 using UserManagement.Domain.Authorization.Users;
+using UserManagement.Domain.UserManagement.Authorization.Users;
 using Volo.Abp.Application.Services;
 
 namespace UserManagement.Application.Contracts.UserManagement.Services;
@@ -12,4 +13,5 @@ public interface IUserAppService : IApplicationService
     Task<bool> AddRole(ObjectId userid, List<string> roleCode);
     Task<UserDto> CreateAsync(CreateUserDto input);
     Task<UserDto> GetUserProfile();
+    Task UpsertUserIntoSqlServer(UserSQL input);
 }

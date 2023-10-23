@@ -12,6 +12,8 @@ using UserManagement.Application.Contracts.Services;
 using UserManagement.Application.Contracts.UserManagement.Services;
 using UserManagement.Domain.Authorization.Users;
 using UserManagement.Domain.Shared;
+using UserManagement.Domain.UserManagement.Advocacy;
+using UserManagement.Domain.UserManagement.Authorization.Users;
 using Volo.Abp;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
@@ -27,6 +29,8 @@ public class UserAppService : ApplicationService, IUserAppService
 
     private readonly IRolePermissionService _rolePermissionService;
     private readonly IRepository<UserMongo, ObjectId> _userMongoRepository;
+    private readonly IRepository<UserSQL, long> _userSQLRepository;
+
     private readonly IConfiguration _configuration;
     private readonly IBankAppService _bankAppService;
     private readonly ICommonAppService _commonAppService;
@@ -34,6 +38,7 @@ public class UserAppService : ApplicationService, IUserAppService
     private readonly IPasswordHasher<User> _passwordHasher;
     private readonly IBaseInformationService _baseInformationService;
     private readonly IDistributedEventBus _distributedEventBus;
+
 
     public UserAppService(IConfiguration configuration,
                           IBankAppService bankAppService,
@@ -43,7 +48,8 @@ public class UserAppService : ApplicationService, IUserAppService
                           IBaseInformationService baseInformationService,
                           IRolePermissionService rolePermissionService,
                           IRepository<UserMongo, ObjectId> userMongoRepository,
-                          IDistributedEventBus distributedEventBus
+                          IDistributedEventBus distributedEventBus,
+                          IRepository<UserSQL, long> UserSQLRepository
         )
     {
         _rolePermissionService = rolePermissionService;
@@ -55,6 +61,7 @@ public class UserAppService : ApplicationService, IUserAppService
         _passwordHasher = passwordHasher;
         _baseInformationService = baseInformationService;
         _distributedEventBus = distributedEventBus;
+        _userSQLRepository = UserSQLRepository;
     }
 
     public async Task<bool> AddRole(ObjectId userid, List<string> roleCode)
@@ -73,34 +80,39 @@ public class UserAppService : ApplicationService, IUserAppService
         await _userMongoRepository.UpdateAsync(user);
         return true;
     }
-    [EventName("MyApp.Product.StockChange")]
+   
     public class StockCountChangedEto
     {
         public Guid ProductId { get; set; }
 
         public int NewCount { get; set; }
     }
-    public class MyHandler
-      : IDistributedEventHandler<StockCountChangedEto>,
-        ITransientDependency
+    //public class MyHandler
+    //  : IDistributedEventHandler<StockCountChangedEto>,
+    //    ITransientDependency
+    //{
+    //    public async Task HandleEventAsync(StockCountChangedEto eventData)
+    //    {
+    //        var productId = eventData.ProductId;
+    //    }
+    //}
+    public async Task CreateUserIntoSqlServer(UserSQL input)
     {
-        public async Task HandleEventAsync(StockCountChangedEto eventData)
+        if(input.Id > 0)
         {
-            var productId = eventData.ProductId;
+            await _userSQLRepository.UpdateAsync(input);
         }
+        else
+        {
+            await _userSQLRepository.InsertAsync(input);
+
+        }
+        // await CurrentUnitOfWork.CompleteAsync();
     }
     public async Task<UserDto> CreateAsync(CreateUserDto input)
     {
-         await _distributedEventBus.PublishAsync<StockCountChangedEto>(
-                new StockCountChangedEto
-                {
-                    ProductId = Guid.NewGuid(),
-                    NewCount = 20
-                }
-            );
-        await CurrentUnitOfWork.SaveChangesAsync();
-
-        return null;
+         
+    
 
         if (!string.IsNullOrEmpty(_configuration.GetSection("CloseRegisterDate").Value)
             && DateTime.Now > DateTime.Parse(_configuration.GetSection("CloseRegisterDate").Value))
@@ -269,7 +281,7 @@ public class UserAppService : ApplicationService, IUserAppService
             {
                 input.Shaba = "...";
                 input.AccountNumber = "...";
-                input.BankId = 3;
+                input.BankId = null;
             }
 
             //if (!ValidationHelper.IsShaba(input.Shaba))
@@ -380,6 +392,7 @@ public class UserAppService : ApplicationService, IUserAppService
 
         //if (userFromCache == null)
         {
+         
             var user = ObjectMapper.Map<CreateUserDto, UserMongo>(input);
             user.IsActive = true;
             //user.TenantId = CurrentTenant.Id;
@@ -399,10 +412,18 @@ public class UserAppService : ApplicationService, IUserAppService
             user.Address = useInquiryForUserAddress
                 ? user.Address = await _commonAppService.GetAddressByZipCode(user.PostalCode, user.NationalCode)
                 : user.Address = input.Address;
+            if(user.BankId == 0)
+            {
+                user.BankId = null;
+            }
             try
             {
                 //user._Id = ObjectId.GenerateNewId().ToString();
                 await _userMongoRepository.InsertAsync(user);
+           
+                await _distributedEventBus.PublishAsync<UserSQL>(
+                     ObjectMapper.Map<UserMongo, UserSQL>(user)
+                    );
             }
             catch (Exception ex)
             {

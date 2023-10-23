@@ -47,7 +47,7 @@ namespace UserManagement.Application.UserManagement.Implementations
                 return new UserModel()
                 {
                     AccountNumber = user.AccountNumber,
-                    BankId = user.BankId,
+                    BankId = user.BankId == null? 0: (int)user.BankId,
                     BirthCityId = user.BirthCityId,
                     BirthProvinceId = user.BirthProvinceId,
                     HabitationCityId = user.HabitationCityId,
