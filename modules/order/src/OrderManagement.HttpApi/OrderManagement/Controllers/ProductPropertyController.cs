@@ -14,7 +14,7 @@ namespace OrderManagement.HttpApi.OrderManagement.Controllers
     [RemoteService]
     [Route("api/services/app/ProductPropertyService/[action]")]
     //[UserAuthorization]
-    public class ProductPropertyController : Controller , IProductPropertyService
+    public class ProductPropertyController : Controller 
     {
         private readonly IProductPropertyService _productPropertyService;
         public ProductPropertyController(IProductPropertyService productPropertyService)
@@ -29,8 +29,8 @@ namespace OrderManagement.HttpApi.OrderManagement.Controllers
         => await _productPropertyService.GetList();
 
         [HttpGet]
-        public async Task<ProductPropertyDto> GetById(ObjectId id)
-        => await _productPropertyService.GetById(id);
+        public async Task<ProductPropertyDto> GetById(string Id)
+        => await _productPropertyService.GetById(Id);
 
         [HttpPost]
         public async Task<ProductPropertyDto> Add(ProductPropertyDto productPropertylDto)
@@ -41,7 +41,7 @@ namespace OrderManagement.HttpApi.OrderManagement.Controllers
         => await _productPropertyService.Update(productPropertylDto);
 
         [HttpDelete]
-        public async Task<bool> Delete(ObjectId id)
-        => await _productPropertyService.Delete(id);
+        public async Task<bool> Delete(string Id)
+        => await _productPropertyService.Delete(Id);
     }
 }
