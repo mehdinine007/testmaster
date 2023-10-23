@@ -455,8 +455,8 @@ public class UserAppService : ApplicationService, IUserAppService
         return null;
     }
 
-    [SecuredOperation(UserServicePermissionConstants.UpdateSecuritPolicy)]
-    public async Task UpdateSecuritPolicy()
+    //[SecuredOperation(UserServicePermissionConstants.UpdateSecuritPolicy)]
+    public async Task UpdateSecurityPolicy()
     {
         var currentDirectory = Environment.CurrentDirectory;
         const string  fileName = "SecureOperationSettings.json";
