@@ -32,10 +32,14 @@ public class UserController : AbpController
     public async Task<User> GetLoginInfromationuserFromCache(string Username)
         => await _userAppService.GetLoginInfromationuserFromCache(Username);
 
-    [HttpGet]
+    [HttpPost]
     [UserAuthorization]
     public async Task<UserDto> GetUserProfile()
         => await _userAppService.GetUserProfile();
+    [HttpPost]
+    [UserAuthorization]
+    public async Task<bool> UpdateUserProfile(UserDto inputUser)
+        => await _userAppService.UpdateUserProfile(inputUser);
 
     [HttpPost]
     public async Task<bool> ForgotPassword(ForgetPasswordDto forgetPasswordDto)
@@ -45,4 +49,6 @@ public class UserController : AbpController
     [UserAuthorization]
     public async Task<bool> ChangePassword(ChangePasswordDto input)
         => await _userAppService.ChangePassword(input);
+
+    
 }
