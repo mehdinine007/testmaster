@@ -11,7 +11,7 @@ public static class RedisHelper
 		{
 			try
 			{
-				return ConnectionMultiplexer.Connect(UserManagementApplicationModule.StaticConfig["RedisCache:ConnectionStringUser"]);
+				return ConnectionMultiplexer.Connect(UserManagementApplicationModule.StaticConfig["Redis:Configuration"]);
 			}
 			catch (Exception ex)
 			{

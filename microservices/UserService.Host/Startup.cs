@@ -7,7 +7,6 @@ using UserService.Host.Infrastructures.Extensions;
 using Esale.Core.IOC;
 using Esale.Core.Caching.Redis;
 using Esale.Core.Caching;
-using OrderManagement.Application.OrderManagement.Implementations;
 using WorkingWithMongoDB.WebAPI.Services;
 using UserService.Host.Infrastructures.Hangfire.Abstract;
 using UserService.Host.Infrastructures.Hangfire.Concrete;
@@ -40,6 +39,7 @@ namespace UserService.Host
             services.AddControllers();
             services.AddSingleton<UserMongoService>();
             services.AddSingleton<IRolePermissionJob, RolePermissionJob>();
+            
             ServiceTool.Create(services);
         }
 

@@ -4,6 +4,7 @@ using UserManagement.EfCore.UserManagement.EntityFrameworkCore;
 using UserManagement.Domain.UserManagement.Bases;
 using UserManagement.Domain.UserManagement.Authorization.Users;
 using System.Reflection.Emit;
+using UserManagement.Domain.UserManagement.CompanyService;
 
 namespace UserManagement.EfCore.EntityFrameworkCore
 {
@@ -39,7 +40,29 @@ namespace UserManagement.EfCore.EntityFrameworkCore
 
               
 
+            builder.Entity<CompanyPaypaidPrices>(entity =>
+            {
+                entity.ToTable(nameof(CompanyPaypaidPrices));
+            });
+            builder.Entity<ClientsOrderDetailByCompany>(entity =>
+            {
+                entity.ToTable(nameof(ClientsOrderDetailByCompany));
 
+                entity.Property(x => x.NationalCode)
+                    .HasMaxLength(10);
+
+                entity.Property(x => x.SaleType)
+                    .HasMaxLength(150);
+
+                entity.Property(x => x.Vin)
+                    .HasMaxLength(50);
+
+                entity.Property(x => x.BodyNumber)
+                    .HasMaxLength(50);
+
+                entity.Property(x => x.CarDesc)
+                    .HasMaxLength(250);
+            });
         }
     }
 }

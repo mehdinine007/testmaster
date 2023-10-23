@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.Linq;
 using OrderManagement.Application.PaymentServiceGrpc;
 using System.Net.Http;
+using OrderManagement.Application.CompanyService;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -32,45 +33,37 @@ public class EsaleGrpcClient : ApplicationService, IEsaleGrpcClient
     public async Task<UserDto> GetUserId(string userId)
     {
 
-        try
+        AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2Support", true);
+        AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
+        var httpHandler = new HttpClientHandler();
+        httpHandler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+        var channel = GrpcChannel.ForAddress(_configuration.GetValue<string>("Esale:GrpcAddress"), new GrpcChannelOptions { HttpHandler = httpHandler });
+
+
+        var client = new UserServiceGrpc.UserServiceGrpcClient(channel);
+
+        var user = client.GetUserById(new GetUserModel() { UserId = userId });
+
+        if (user.BankId == 0)
+            return null;
+        return new UserDto
         {
-            AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2Support", true);
-            AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
-            var httpHandler = new HttpClientHandler();
-            httpHandler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
-            var channel = GrpcChannel.ForAddress(_configuration.GetValue<string>("Esale:GrpcAddress"), new GrpcChannelOptions { HttpHandler = httpHandler });
+            AccountNumber = user.AccountNumber,
+            BankId = user.BankId,
+            BirthCityId = user.BirthCityId,
+            BirthProvinceId = user.BirthProvinceId,
+            HabitationCityId = user.HabitationCityId,
+            HabitationProvinceId = user.HabitationProvinceId,
+            IssuingCityId = user.IssuingCityId,
+            IssuingProvinceId = user.IssuingProvinceId,
+            NationalCode = user.NationalCode,
+            Shaba = user.Shaba,
+            MobileNumber = user.MobileNumber,
+            CompanyId = user.CompanyId,
+            Name = user.Name,
+            SurName = user.SurName
+        };
 
-
-            var client = new UserServiceGrpc.UserServiceGrpcClient(channel);
-
-            var user = client.GetUserById(new GetUserModel() { UserId = userId });
-
-            if (user.BankId == 0)
-                return null;
-            return new UserDto
-            {
-                AccountNumber = user.AccountNumber,
-                BankId = user.BankId,
-                BirthCityId = user.BirthCityId,
-                BirthProvinceId = user.BirthProvinceId,
-                HabitationCityId = user.HabitationCityId,
-                HabitationProvinceId = user.HabitationProvinceId,
-                IssuingCityId = user.IssuingCityId,
-                IssuingProvinceId = user.IssuingProvinceId,
-                NationalCode = user.NationalCode,
-                Shaba = user.Shaba,
-                MobileNumber = user.MobileNumber,
-                CompanyId = user.CompanyId,
-                Name = user.Name,
-                SurName = user.SurName
-            };
-        }
-        catch (Exception)
-        {
-
-            throw;
-        }
-       
     }
     public async Task<AdvocacyUserDto> GetUserAdvocacyByNationalCode(string nationlCode)
     {
@@ -166,7 +159,7 @@ public class EsaleGrpcClient : ApplicationService, IEsaleGrpcClient
             Count = x.Count,
             Message = x.Message,
             Status = x.Status,
-            F1= x.F1,
+            F1 = x.F1,
             F2 = x.F2,
             F3 = x.F3,
             F4 = x.F4
@@ -204,7 +197,7 @@ public class EsaleGrpcClient : ApplicationService, IEsaleGrpcClient
             FilterParam1 = handShakeDto.FilterParam1,
             FilterParam2 = handShakeDto.FilterParam2,
             FilterParam3 = handShakeDto.FilterParam3,
-            FilterParam4 = handShakeDto.FilterParam4 
+            FilterParam4 = handShakeDto.FilterParam4
         });
         if (handShake == null)
         {
@@ -258,4 +251,39 @@ public class EsaleGrpcClient : ApplicationService, IEsaleGrpcClient
             StatusCode = reverse.StatusCode,
         };
     }
+    //public async Task<ClientOrderDeliveryInformationDto> ValidateClientOrderDeliveryDate(ClientOrderDeliveryInformationRequestDto clientOrderRequest)
+    //{
+    //    try
+    //    {
+    //        System.Diagnostics.Debugger.Launch();
+    //        var httpHandler = new HttpClientHandler();
+    //        httpHandler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+    //        var channel = GrpcChannel.ForAddress(_configuration.GetValue<string>("Company:GrpcAddress"), new GrpcChannelOptions { HttpHandler = httpHandler });
+    //        var client1 = new UserServiceGrpc.UserServiceGrpcClient(channel);
+    //        var client = new CompanyServiceGrpc.CompanyServiceGrpcBase(channel);
+
+    //        var deliverDateValidation = await client.CheckOrderDeliveryDateAsync(new ClientOrderDetailRequest
+    //        {
+    //            NationalCode = clientOrderRequest.NationalCode,
+    //            OrderId = clientOrderRequest.OrderId
+    //        });
+    //        return new ClientOrderDeliveryInformationDto
+    //        {
+    //            NationalCode = deliverDateValidation.NationalCode,
+    //            TranDate = deliverDateValidation.TranDate.ToDateTime(),// ? Timestamp.FromDateTime(deliverDateValidation.TranDate) : new,
+    //            PayedPrice = deliverDateValidation.PayedPrice,
+    //            ContRowId = deliverDateValidation.ContRowId,
+    //            Vin = deliverDateValidation.Vin,
+    //            BodyNumber = deliverDateValidation.BodyNumber,
+    //            DeliveryDate = deliverDateValidation.DeliveryDate.ToDateTime(),
+    //            FinalPrice = deliverDateValidation.FinalPrice,
+    //            CarDesc = deliverDateValidation.CarDesc
+    //        };
+    //    }
+    //    catch (Exception e)
+    //    {
+
+    //        throw;
+    //    }
+    //}
 }

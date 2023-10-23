@@ -1,4 +1,5 @@
-﻿using Abp.Domain.Uow;
+﻿#region NS
+using Esale.Core.Caching;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
@@ -8,9 +9,9 @@ using UserManagement.Application.Contracts.Models;
 using UserManagement.Application.Contracts.Services;
 using UserManagement.Application.InquiryService;
 using UserManagement.Domain.Shared;
-using UserManagement.Domain.UserManagement.CommonService.Dto;
 using Volo.Abp;
 using Volo.Abp.Application.Services;
+#endregion
 
 namespace UserManagement.Application.UserManagement.Implementations;
 
@@ -19,15 +20,17 @@ public class CommonAppService : ApplicationService, ICommonAppService
     private readonly IConfiguration _configuration;
     private readonly IDistributedCache _distributedCache;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly ICacheManager _cacheManager;
 
     public CommonAppService(IConfiguration configuration,
                             IDistributedCache distributedCache,
-                            IHttpContextAccessor httpContextAccessor
-        )
+                            IHttpContextAccessor httpContextAccessor,
+                            ICacheManager cacheManager)
     {
         _configuration = configuration;
         _distributedCache = distributedCache;
         _httpContextAccessor = httpContextAccessor;
+        _cacheManager = cacheManager;
     }
 
     public Guid GetUID()
@@ -38,72 +41,6 @@ public class CommonAppService : ApplicationService, ICommonAppService
 
         Guid.TryParse(userIdStr, out var userId);
         return userId;
-    }
-
-    public async Task<RecaptchaResponse> CheckCaptcha(CaptchaInputDto input)
-    {
-        var dictionary = new Dictionary<string, string>
-                    {
-                        { "secret", _configuration.GetSection("RecaptchaSiteKey").Value },
-                        { "response", input.Token }
-                    };
-        RecaptchaResponse signupResponse = null;
-        var postContent = new FormUrlEncodedContent(dictionary);
-        HttpResponseMessage recaptchaResponse = null;
-        string stringContent = "";
-
-        using (var http = new HttpClient())
-        {
-            http.Timeout = TimeSpan.FromSeconds(30);
-            recaptchaResponse = await http.PostAsync("https://www.google.com/recaptcha/api/siteverify", postContent);
-            try
-            {
-                stringContent = await recaptchaResponse.Content.ReadAsStringAsync();
-
-            }
-            catch (Exception ex)
-            {
-                //Logs logs = new Logs();
-
-                //logs.EndDate = DateTime.Now;
-                //logs.Type = 0;
-                //logs.Message = ex.Message;
-                UnitOfWorkOptions unitOfWorkOptions = new UnitOfWorkOptions();
-                unitOfWorkOptions.IsTransactional = false;
-                unitOfWorkOptions.Scope = System.Transactions.TransactionScopeOption.RequiresNew;
-                //using (var unitOfWork = _unitOfWorkManager.Begin(unitOfWorkOptions))
-                //{
-                //_logsRespository.Insert(logs);
-                //unitOfWork.Complete();
-                //}
-                signupResponse = new RecaptchaResponse() { Success = false, Error = "captcha error", ErrorCode = "S07" };
-                return signupResponse;
-            }
-        }
-        if (!recaptchaResponse.IsSuccessStatusCode)
-        {
-            signupResponse = new RecaptchaResponse() { Success = false, Error = "Unable to verify recaptcha token", ErrorCode = "S03" };
-            return signupResponse;
-        }
-        if (string.IsNullOrEmpty(stringContent))
-        {
-            signupResponse = new RecaptchaResponse() { Success = false, Error = "Invalid reCAPTCHA verification response", ErrorCode = "S04" };
-            return signupResponse;
-        }
-        var googleReCaptchaResponse = JsonConvert.DeserializeObject<ReCaptchaResponse>(stringContent);
-        if (!googleReCaptchaResponse.Success)
-        {
-            var errors = string.Join(",", googleReCaptchaResponse.ErrorCodes);
-            signupResponse = new RecaptchaResponse() { Success = false, Error = errors, ErrorCode = "S05" };
-            return signupResponse;
-        }
-
-        if (googleReCaptchaResponse.Score < 0.5)
-        {
-            signupResponse = new RecaptchaResponse() { Success = false, Error = "This is a potential bot. Signup request rejected", ErrorCode = "S07" };
-            return signupResponse;
-        }
-        return new RecaptchaResponse() { Success = true };
     }
 
     public async Task<string> GetAddressByZipCode(string zipCode, string nationalCode)
@@ -139,7 +76,6 @@ public class CommonAppService : ApplicationService, ICommonAppService
         }
         return zipCache;
     }
-
 
     public async Task<bool> ValidateMobileNumber(string nationalCode, string mobileNo)
     {
@@ -191,7 +127,10 @@ public class CommonAppService : ApplicationService, ICommonAppService
             return true;
 
         //string ObjectSMSCode = RedisHelper.GetDatabase().StringGet(sMSType.ToString() + Mobile + NationalCode);
-        var ObjectSMSCode = await _distributedCache.GetStringAsync(sMSType.ToString() + Mobile + NationalCode);
+        //var ObjectSMSCode = await _distributedCache.GetStringAsync(sMSType.ToString() + Mobile + NationalCode);
+        var ObjectSMSCode = await _cacheManager.GetStringAsync(Mobile + NationalCode, sMSType.ToString(), new() { Provider = CacheProviderEnum.Redis });
+
+
         if (ObjectSMSCode == null)
         {
             throw new UserFriendlyException("کد پیامک ارسالی صحیح نمی باشد");

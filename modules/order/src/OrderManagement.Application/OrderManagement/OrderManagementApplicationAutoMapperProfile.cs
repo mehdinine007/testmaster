@@ -45,7 +45,8 @@ namespace OrderManagement
                 .ReverseMap();
 
             CreateMap<CustomerOrder, CustomerOrderDto>()
-                .ForMember(x => x.OrderStatus, opt => opt.MapFrom(y => y.OrderStatus.GetDisplayName()))
+                .ForMember(x => x.OrderStatusDescription, opt => opt.MapFrom(y => y.OrderStatus.GetDisplayName()))
+                .ForMember(x => x.OrderStatus, opt => opt.MapFrom(y => (int)y.OrderStatus))
                 .ReverseMap();
 
 
@@ -87,16 +88,20 @@ namespace OrderManagement
             CreateMap<ChartStructure, ChartStructureCreateOrUpdateDto>()
                 .ReverseMap()
                 .ForMember(x => x.Categories, c => c.MapFrom(m => JsonConvert.SerializeObject(m.Categories)))
-                .ForMember(x => x.Series, c => c.MapFrom(m =>  JsonConvert.SerializeObject(m.Series)));
-                
+                .ForMember(x => x.Series, c => c.MapFrom(m => JsonConvert.SerializeObject(m.Series)));
+
 
             CreateMap<Property, PropertyDto>()
                 .ForMember(x => x.TypeTitle, c => c.MapFrom(m => m.Type != 0 ? EnumHelper.GetDescription(m.Type) : ""))
                 .ReverseMap();
             CreateMap<PropertyCategory, PropertyCategoryDto>()
                 .ReverseMap();
+            CreateMap<PropertyCategory, ProductPropertyCategoryDto>()
+                .ReverseMap();
+
             CreateMap<ProductProperty, ProductPropertyDto>()
                 .ReverseMap();
+
             CreateMap<DropDownItem, DropDownItemDto>()
                 .ReverseMap();
 
@@ -146,7 +151,7 @@ namespace OrderManagement
             CreateMap<CarClass, CarClassCreateDto>().ReverseMap();
             CreateMap<Questionnaire, QuestionnaireTreeDto>();
             CreateMap<Questionnaire, QuestionnaireDto>()
-                .ForMember(x => x.Attachments ,opt => opt.Ignore())
+                .ForMember(x => x.Attachments, opt => opt.Ignore())
                 .ReverseMap()
                 .IgnoreFullAuditedObjectProperties();
             CreateMap<Question, FullQuestionDto>();

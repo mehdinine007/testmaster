@@ -13,5 +13,7 @@ namespace OrderManagement.Application.Contracts.Services
         Task<PaymentHandShakeViewModel> HandShake(PaymentHandShakeDto handShakeDto);
         Task<PaymentResultViewModel> Verify(int paymentId);
         Task<PaymentResultViewModel> Reverse(int paymentId);
+        //Task<ClientOrderDeliveryInformationDto> ValidateClientOrderDeliveryDate(ClientOrderDeliveryInformationRequestDto clientOrderRequest);
+
     }
 }

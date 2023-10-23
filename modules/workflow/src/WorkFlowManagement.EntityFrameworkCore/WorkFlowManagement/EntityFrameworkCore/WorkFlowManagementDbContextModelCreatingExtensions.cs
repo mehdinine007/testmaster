@@ -45,6 +45,10 @@ namespace WorkFlowManagement.EntityFrameworkCore
                 entity.HasOne<OrganizationChart>(x => x.OrganizationChart)
                     .WithMany(x => x.OrganizationPositions)
                     .HasForeignKey(x => x.OrganizationChartId);
+
+                entity.HasOne<Person>(x => x.Person)
+                    .WithMany(x => x.OrganizationPositions)
+                    .HasForeignKey(x => x.PersonId);
             });
 
             builder.Entity<RoleOrganizationChart>(entity =>
@@ -135,6 +139,17 @@ namespace WorkFlowManagement.EntityFrameworkCore
               .WithMany(x => x.Processes)
               .HasForeignKey(x => x.OrganizationPositionId)
                .OnDelete(DeleteBehavior.ClientCascade);
+
+                entity.HasOne<Person>(x => x.Person)
+             .WithMany(x => x.Processes)
+             .HasForeignKey(x => x.PersonId)
+              .OnDelete(DeleteBehavior.ClientCascade);
+
+                entity.HasOne<Person>(x => x.PreviousPerson)
+           .WithMany(x => x.PreviousProcesses)
+           .HasForeignKey(x => x.PreviousPersonId)
+            .OnDelete(DeleteBehavior.ClientCascade);
+
             });
             builder.Entity<Inbox>(entity =>
             {
@@ -154,6 +169,11 @@ namespace WorkFlowManagement.EntityFrameworkCore
                    .WithMany(x => x.Inboxes)
                    .HasForeignKey(x => x.OrganizationPositionId)
                    .OnDelete(DeleteBehavior.ClientCascade);
+
+                entity.HasOne<Person>(x => x.Person)
+                  .WithMany(x => x.Inboxes)
+                  .HasForeignKey(x => x.PersonId)
+                  .OnDelete(DeleteBehavior.ClientCascade);
 
             });
 

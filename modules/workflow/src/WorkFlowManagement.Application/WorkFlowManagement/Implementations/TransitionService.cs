@@ -96,6 +96,14 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
                     throw new UserFriendlyException(WorkFlowConstant.ActivityTargetNotFound, WorkFlowConstant.ActivityTargetNotFoundId);
                 }
 
+                    var duplicate= transitionQuery.FirstOrDefault(x=>x.ActivitySourceId == transitionCreateOrUpdateDto.ActivitySourceId
+                    && x.ActivityTargetId==transitionCreateOrUpdateDto.ActivityTargetId 
+                    && !x.IsDeleted && x.Id!= transitionCreateOrUpdateDto.Id);
+                if (duplicate is not null)
+                {
+                    throw new UserFriendlyException(WorkFlowConstant.TransitionDuplicate, WorkFlowConstant.TransitionDuplicateId);
+                }  
+
             }
             return transition;
         }

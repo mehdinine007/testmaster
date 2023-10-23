@@ -12,5 +12,5 @@ public static class Messages
     public static string NationalCodeExistsId = "1005";
     public static string UserInsertError = "خطا در ثبت کاربر";
     public static string UserInsertErrorId = "1006";
-
+    public static string IsMobileNumberMessage = "شماره موبایل صحیح نمی باشد";
 }

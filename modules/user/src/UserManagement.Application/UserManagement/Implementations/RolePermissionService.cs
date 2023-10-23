@@ -15,12 +15,16 @@ namespace UserManagement.Application.UserManagement.Implementations
     public class RolePermissionService : ApplicationService, IRolePermissionService
     {
         private readonly IRepository<RolePermission, ObjectId> _rolePermissionRepository;
+        private readonly IRepository<RolePermissionWrite, ObjectId> _rolePermissionWritRepository;
         private readonly ICacheManager _cacheManager;
 
-        public RolePermissionService(IRepository<RolePermission, ObjectId> rolePermissionRepository, ICacheManager cacheManager)
+        public RolePermissionService(IRepository<RolePermission, ObjectId> rolePermissionRepository, 
+                                     ICacheManager cacheManager,
+                                     IRepository<RolePermissionWrite, ObjectId> rolePermissionWritRepository)
         {
             _rolePermissionRepository = rolePermissionRepository;
             _cacheManager = cacheManager;
+            _rolePermissionWritRepository = rolePermissionWritRepository;
         }
 
 
@@ -64,13 +68,16 @@ namespace UserManagement.Application.UserManagement.Implementations
 
         public async Task<RolePermissionDto> Add(RolePermissionDto dto)
         {
-            var role =await _rolePermissionRepository.GetQueryableAsync();
-            var maxcode= role.Max(x => x.Code);
-            dto.Code= StringHelper.GenerateTreeNodePath(maxcode, null, 4);
-            var rolePermission = ObjectMapper.Map<RolePermissionDto, RolePermission>(dto);
-            
-            var entity = await _rolePermissionRepository.InsertAsync(rolePermission, autoSave: true);
-            return ObjectMapper.Map<RolePermission, RolePermissionDto>(entity);
+            var role = await _rolePermissionRepository.GetQueryableAsync();
+            string maxcode = default;
+            if (role.Any())
+                maxcode = role.Max(x => x.Code);
+
+            dto.Code = StringHelper.GenerateTreeNodePath(maxcode, null, 4);
+            var rolePermission = ObjectMapper.Map<RolePermissionDto, RolePermissionWrite>(dto);
+
+            var entity = await _rolePermissionWritRepository.InsertAsync(rolePermission, autoSave: true);
+            return ObjectMapper.Map<RolePermissionWrite, RolePermissionDto>(entity);
         }
 
         public async Task<RolePermissionDto> Update(RolePermissionDto dto)
@@ -90,7 +97,7 @@ namespace UserManagement.Application.UserManagement.Implementations
 
                 }
             }
-            await _rolePermissionRepository.UpdateAsync(rolepermission, autoSave: true);
+            await _rolePermissionWritRepository.UpdateAsync(ObjectMapper.Map<RolePermission, RolePermissionWrite>(rolepermission), autoSave: true);
             return await GetById(rolepermission.Id);
 
         }
@@ -104,7 +111,7 @@ namespace UserManagement.Application.UserManagement.Implementations
         public async Task<bool> Delete(ObjectId id)
         {
             await Validation(id, null);
-            await _rolePermissionRepository.DeleteAsync(x => x.Id == id);
+            await _rolePermissionWritRepository.DeleteAsync(x => x.Id == id);
             return true;
         }
 

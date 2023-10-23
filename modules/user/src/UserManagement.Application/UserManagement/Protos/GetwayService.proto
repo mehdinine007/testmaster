@@ -2,7 +2,6 @@
 
 option csharp_namespace = "Esale.GetwayServiceGrpc";
 
-
 package GetwayService;
 
 enum ProviderSmsTypeEnum
@@ -18,7 +17,7 @@ enum TypeMessageEnum
 }
 
 service GetwayServiceGrpc{
-	rpc GetCaptcha(ContentInputDto) returns (HttpResponseMessageDto);
+	rpc ReCaptcha(ContentInputDto) returns (HttpResponseMessageDto);
 	rpc SendService(SendBoxServiceInput) returns (SendBoxServiceDto);
 } 
 message ContentInputDto{
@@ -26,8 +25,9 @@ message ContentInputDto{
 	string KeyValue = 2;
 }
 message HttpResponseMessageDto{
-   bool IsSuccessStatusCode =1;
-   string StringContent = 2;
+   bool Success =1;
+   string Error = 2;
+   string ErrorCode = 3;
 }
 
 message SendBoxServiceInput{
@@ -42,6 +42,5 @@ message SendBoxServiceDto{
 	string DataResult = 2;
 	string Message = 3;
 	int32 MessageCode = 4;
-
 }
 

@@ -62,18 +62,18 @@ public class BankAppService : ApplicationService, IBankAppService
     public async Task DeleteAdvocayUserFromBank(string nationalCode)
     {
         var userId = CurrentUser.Id;
-        //var ad = await _advocacyUsersFromBank.GetAll().Select(x => new
-        //{
-        //    x.nationalcode,
-        //    x.UserId,
-        //    x.Id
-        //}).FirstOrDefaultAsync(x => x.nationalcode == nationalCode
-        //&& x.UserId == userId);
-        //if (ad == null)
-        //{
-        //    throw new UserFriendlyException("رکورد مورد نظر یافت نشد");
-        //}
-        //await _advocacyUsersFromBank.DeleteAsync(ad.Id);
+        var ad = (await _advocacyUsersFromBank.GetQueryableAsync()).Select(x => new
+        {
+            x.nationalcode,
+            x.UserId,
+            x.Id
+        }).FirstOrDefault(x => x.nationalcode == nationalCode
+        && x.UserId == userId);
+        if (ad == null)
+        {
+            throw new UserFriendlyException("رکورد مورد نظر یافت نشد");
+        }
+        await _advocacyUsersFromBank.DeleteAsync(ad.Id);
     }
 
     public async Task<List<AdvocacyUsersFromBankWithCompanyDto>> GetAdvocacyUserByCompanyId()
@@ -140,6 +140,7 @@ public class BankAppService : ApplicationService, IBankAppService
         var usersNationalCode = users.Select(x => x.NationalCode).ToList();
         var userRejectionAdvocacyList = (await _userRejectionAdcocacyRepository.GetQueryableAsync()).Where(x => usersNationalCode.Any(y => y == x.NationalCode))
             .ToList();
+        //TODO: Add refctor user rejection advocacy and add bank id so we can skip this massive join simulation
         var joinResult = userRejectionAdvocacyList.Select(x => new UserRejectionAdvocacyDto
         {
             NationalCode = x.NationalCode,
@@ -157,15 +158,6 @@ public class BankAppService : ApplicationService, IBankAppService
     public async Task<AdvocacyUserFromBankExportDto> InquiryAdvocacyUserReport(string nationalCode)
     {
         var userId = _commonAppService.GetUID();
-        //var ad = await _advocacyUsersFromBank.GetAll().Select(x => new
-        //{
-        //    x.accountNumber,
-        //    x.nationalcode,
-        //    x.shabaNumber,
-        //    x.UserId,
-        //    x.price
-        //}).FirstOrDefaultAsync(x => x.nationalcode == nationalCode
-        //&& x.UserId == userId);
         var ad = (await _advocacyUsersFromBank.GetQueryableAsync())
             .Select(x => new
             {

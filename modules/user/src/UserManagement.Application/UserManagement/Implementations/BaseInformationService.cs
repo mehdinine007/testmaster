@@ -1,11 +1,11 @@
-﻿using Volo.Abp.Domain.Repositories;
+﻿#region NS
+using Volo.Abp.Domain.Repositories;
 using Microsoft.Extensions.Configuration;
 using UserManagement.Application.Contracts.Models;
 using UserManagement.Application.Contracts.Services;
 using Volo.Abp.Application.Services;
 using UserManagement.Domain.UserManagement.Advocacy;
 using Volo.Abp;
-using WorkingWithMongoDB.WebAPI.Services;
 using MongoDB.Driver;
 using System.Security.Claims;
 using UserManagement.Domain.UserManagement.Bases;
@@ -15,7 +15,9 @@ using MongoDB.Bson;
 using Volo.Abp.Uow;
 using Volo.Abp.Auditing;
 using Microsoft.EntityFrameworkCore;
-using UserManagement.Domain.UserManagement.CommonService.Dto;
+using UserManagement.Domain.Shared;
+using UserManagement.Domain.UserManagement.CompanyService;
+#endregion
 
 namespace UserManagement.Application.Implementations;
 
@@ -27,6 +29,8 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IRepository<WhiteList, int> _whiteListRepository;
     private readonly ICommonAppService _commonAppService;
+    private readonly IRepository<ClientsOrderDetailByCompany, long> _clientsOrderDetailByCompany;
+    private readonly IRepository<CompanyPaypaidPrices, long> _companyPaypaidPricesRepository;
 
 
     public BaseInformationService(IConfiguration configuration,
@@ -34,8 +38,9 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
                                   IHttpContextAccessor httpContextAccessor,
                                   IRepository<WhiteList, int> whiteListRepository,
                                   IRepository<UserMongo, ObjectId> userMongoRepository,
-                                  ICommonAppService commonAppService
-        )
+                                  ICommonAppService commonAppService,
+                                  IRepository<ClientsOrderDetailByCompany, long> clientsOrderDetailByCompany,
+                                  IRepository<CompanyPaypaidPrices, long> companyPaypaidPricesRepository)
     {
         _configuration = configuration;
         _advocacyUsersRepository = advocacyUsersRepository;
@@ -43,10 +48,16 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
         _httpContextAccessor = httpContextAccessor;
         _whiteListRepository = whiteListRepository;
         _commonAppService = commonAppService;
+        _clientsOrderDetailByCompany = clientsOrderDetailByCompany;
+        _companyPaypaidPricesRepository = companyPaypaidPricesRepository;
     }
 
-    public async void RegistrationValidationWithoutCaptcha(RegistrationValidationDto input)
+    public async Task RegistrationValidationWithoutCaptcha(RegistrationValidationDto input)
     {
+        if (!ValidationHelper.IsNationalCode(input.Nationalcode))
+        {
+            throw new UserFriendlyException(Messages.NationalCodeNotValid);
+        }
         if (_configuration.GetSection("IsCheckAdvocacy").Value == "1")
         {
             var advocacyuser = _advocacyUsersRepository.WithDetails()
@@ -158,50 +169,72 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
             GenderCode = (int)user.Gender,
             CompanyId = user.CompanyId,
             SurName = user.Surname,
-            Name = user.Name
+            Name = user.Name,
+            Uid=user.UID
         };
     }
 
     [Audited]
-    public async Task RegistrationValidation(RegistrationValidationDto input)
+    public async Task<bool> RegistrationValidationAsync(RegistrationValidationDto input)
     {
         await _commonAppService.ValidateVisualizeCaptcha(new VisualCaptchaInput(input.CK, input.CIT));
         Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
+        if (!ValidationHelper.IsNationalCode(input.Nationalcode))
+        {
+            throw new UserFriendlyException(Messages.NationalCodeNotValid);
+        }
         if (!string.IsNullOrEmpty(_configuration.GetSection("CloseRegisterDate").Value)
             && DateTime.Now > DateTime.Parse(_configuration.GetSection("CloseRegisterDate").Value))
         {
             throw new UserFriendlyException("زمان ثبت نام به پایان رسیده است");
         }
-         //await _commonAppService.ValidateVisualizeCaptcha(new VisualCaptchaInput(input.CT,input.CK, input.CIT));
 
         if (_configuration.GetSection("IsCheckAdvocacy").Value == "1")
         {
-            var advocacyuser = _advocacyUsersRepository.WithDetails()
-                .AsNoTracking()
-                .Select(x => new
-                {
-                    x.shabaNumber,
-                    x.accountNumber,
-                    x.Id,
-                    x.nationalcode,
-                    x.BanksId
-                })
-                .OrderByDescending(x => x.Id).FirstOrDefault(x => x.nationalcode == input.Nationalcode);
+            var advocacyuser =(await _advocacyUsersRepository.GetQueryableAsync())
+           .Select(x => new
+           {
+               x.shabaNumber,
+               x.accountNumber,
+               x.Id,
+               x.nationalcode,
+               x.BanksId
+           })
+           .FirstOrDefault(x => x.nationalcode == input.Nationalcode);
+
             if (advocacyuser == null)
-                throw new UserFriendlyException("حساب وکالتی یافت نشد");
             {
+                throw new UserFriendlyException("حساب وکالتی یافت نشد");
             }
         }
 
         var user = (await _userMongoRepository.GetQueryableAsync())
             .FirstOrDefault(x => x.NormalizedUserName == input.Nationalcode);
+
         if (user != null)
         {
-
             throw new UserFriendlyException("این کد ملی قبلا ثبت نام شده است");
         }
-        
 
-
+        return true;
     }
+
+    public async Task<string> AddressInquiry(AddressInquiryDto input)
+
+    {
+        if (input.nationalCode == null)
+        {
+            throw new UserFriendlyException("کد ملی را وارد نمایید");
+        }
+        if (input.zipCod == null)
+        {
+            throw new UserFriendlyException("کدپستی را وارد نمایید");
+        }
+        var useInquiryForUserAddress = _configuration.GetValue<bool?>("UseInquiryForUserAddress") ?? false;
+        if (useInquiryForUserAddress)
+            throw new UserFriendlyException("استعلام شماره موبایل ممکن نیست");
+        var zipCodeInquiry =await _commonAppService.GetAddressByZipCode(input.zipCod, input.nationalCode);
+        return zipCodeInquiry;
+    }
+
 }

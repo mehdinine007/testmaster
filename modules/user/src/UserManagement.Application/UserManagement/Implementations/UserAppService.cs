@@ -1,5 +1,8 @@
 ﻿using Abp.Dependency;
+using Abp.Authorization;
+using Abp.Domain.Uow;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
@@ -21,6 +24,7 @@ using Volo.Abp.EventBus;
 using Volo.Abp.EventBus.Distributed;
 using Volo.Abp.ObjectMapping;
 using WorkingWithMongoDB.WebAPI.Services;
+using wsFava;
 
 namespace UserManagement.Application.UserManagement.Implementations;
 
@@ -37,6 +41,8 @@ public class UserAppService : ApplicationService, IUserAppService
     private readonly IDistributedCache _distributedCache;
     private readonly IPasswordHasher<User> _passwordHasher;
     private readonly IBaseInformationService _baseInformationService;
+    private readonly ICaptchaService _captchaService;
+    private readonly IRepository<UserMongoWrite, ObjectId> _userMongoWriteRepository;
     private readonly IDistributedEventBus _distributedEventBus;
 
 
@@ -48,6 +54,8 @@ public class UserAppService : ApplicationService, IUserAppService
                           IBaseInformationService baseInformationService,
                           IRolePermissionService rolePermissionService,
                           IRepository<UserMongo, ObjectId> userMongoRepository,
+                          IRepository<UserMongoWrite, ObjectId> userMongoWriteRepository,
+                          ICaptchaService captchaServiceو                 
                           IDistributedEventBus distributedEventBus,
                           IRepository<UserSQL, long> UserSQLRepository
         )
@@ -60,6 +68,8 @@ public class UserAppService : ApplicationService, IUserAppService
         _distributedCache = distributedCache;
         _passwordHasher = passwordHasher;
         _baseInformationService = baseInformationService;
+        _userMongoWriteRepository = userMongoWriteRepository;
+        _captchaService = captchaService;
         _distributedEventBus = distributedEventBus;
         _userSQLRepository = UserSQLRepository;
     }
@@ -77,7 +87,7 @@ public class UserAppService : ApplicationService, IUserAppService
             if (await _rolePermissionService.ValidationByCode(cod))
                 user.Roles.Add(cod);
         }
-        await _userMongoRepository.UpdateAsync(user);
+        await _userMongoWriteRepository.UpdateAsync(ObjectMapper.Map<UserMongo, UserMongoWrite>(user));
         return true;
     }
    
@@ -149,7 +159,7 @@ public class UserAppService : ApplicationService, IUserAppService
 
         if (_configuration.GetSection("IsIranCellActive").Value == "1")
         {
-            _baseInformationService.RegistrationValidationWithoutCaptcha(new RegistrationValidationDto()
+            await _baseInformationService.RegistrationValidationWithoutCaptcha(new RegistrationValidationDto()
             {
                 Nationalcode = input.NationalCode
             });
@@ -159,9 +169,11 @@ public class UserAppService : ApplicationService, IUserAppService
                 throw new UserFriendlyException("شهر محل تولد رو انتخاب نمایید");
             }
             if (input.BirthDate >= DateTime.Now)
-                throw new UserFriendlyException("تارخ تولد نمیتواند با تاریخ جاری برابر یا بزرگتر باشد");
+                throw new UserFriendlyException("تاریخ تولد نمیتواند با تاریخ جاری برابر یا بزرگتر باشد");
             if (input.IssuingDate >= DateTime.Now)
-                throw new UserFriendlyException("تارخ صدور شناسنامه نمیتواند با تاریخ جاری برابر یا بزرگتر باشد");
+                throw new UserFriendlyException("تاریخ صدور شناسنامه نمیتواند با تاریخ جاری برابر یا بزرگتر باشد");
+            if (input.BirthDate > input.IssuingDate)
+                throw new UserFriendlyException("تاریخ تولد نمیتواند با صدور شناسنامه بزرگتر باشد");
             if (!input.IssuingCityId.HasValue)
             {
                 throw new UserFriendlyException("شهر محل صدور شناسنامه رو انتخاب نمایید");
@@ -232,11 +244,13 @@ public class UserAppService : ApplicationService, IUserAppService
             {
                 throw new UserFriendlyException("شناسه محل تولد خالی است یا محدودیت تعداد کارکتر را نقض کرده است");
             }
-            if (string.IsNullOrWhiteSpace(input.PostalCode) || input.PostalCode.Length > 10)
+            if (string.IsNullOrWhiteSpace(input.PostalCode) || input.PostalCode.Length != 10)
             {
                 throw new UserFriendlyException("کد پستی خالی است یا محدودیت تعداد کارکتر را نقض کرده است");
             }
-            if (string.IsNullOrWhiteSpace(input.Mobile) || input.Mobile.Length > 11)
+
+            var mob = new Regex(@"^09[0-39][0-9]{8}$");
+            if (string.IsNullOrWhiteSpace(input.Mobile) || !mob.IsMatch(input.Mobile)) //(input.Mobile.Length != 11 && input.Mobile.StartsWith("09")))
             {
                 throw new UserFriendlyException("شماره موبایل خالی است یا محدودیت تعداد کارکتر را نقض کرده است");
             }
@@ -294,7 +308,7 @@ public class UserAppService : ApplicationService, IUserAppService
 
             if (_configuration.GetSection("IsRecaptchaEnabled").Value == "1")
             {
-                var response = await _commonAppService.CheckCaptcha(new CaptchaInputDto(input.ck, "CreateUser"));
+                var response = await _captchaService.ReCaptcha(new CaptchaInputDto(input.ck, "CreateUser"));
                 if (response.Success == false)
                 {
                     throw new UserFriendlyException("خطای کپچا");
@@ -318,7 +332,7 @@ public class UserAppService : ApplicationService, IUserAppService
 
             if (_configuration.GetSection("IsRecaptchaEnabled").Value == "1")
             {
-                var response = await _commonAppService.CheckCaptcha(new CaptchaInputDto(input.ck, "CreateUser"));
+                var response = await _captchaService.ReCaptcha(new CaptchaInputDto(input.ck, "CreateUser"));
                 if (response.Success == false)
                 {
                     throw new UserFriendlyException("خطای کپچا");
@@ -332,6 +346,12 @@ public class UserAppService : ApplicationService, IUserAppService
         var hasUpperChar = new Regex(@"[A-Z]+");
         var hasLowerChar = new Regex(@"[a-z]+");
         var hasSymbols = new Regex(@"[!@#$%^&*()_+=\[{\]};:<>|./?,-]");
+
+        if (!hasNumber.IsMatch(input.PostalCode))
+        {
+            throw new UserFriendlyException("ساختار کدپستی صحیح نمی باشد");
+        }
+
 
         if (!hasLowerChar.IsMatch(input.Password))
         {
@@ -351,10 +371,6 @@ public class UserAppService : ApplicationService, IUserAppService
         {
             throw new UserFriendlyException("ساختار کلمه عبور صحیح نمی باشد");
         }
-
-
-
-
 
         if (!ValidationHelper.IsNationalCode(input.NationalCode))
         {
@@ -419,7 +435,8 @@ public class UserAppService : ApplicationService, IUserAppService
             try
             {
                 //user._Id = ObjectId.GenerateNewId().ToString();
-                await _userMongoRepository.InsertAsync(user);
+                await _userMongoWriteRepository.InsertAsync(ObjectMapper.Map<UserMongo, UserMongoWrite>(user));
+              
            
                 await _distributedEventBus.PublishAsync<UserSQL>(
                      ObjectMapper.Map<UserMongo, UserSQL>(user)
@@ -448,9 +465,6 @@ public class UserAppService : ApplicationService, IUserAppService
 
         return null;
     }
-
-
-
 
     public async Task<User> GetLoginInfromationuserFromCache(string Username)
     {
@@ -490,5 +504,113 @@ public class UserAppService : ApplicationService, IUserAppService
             return userDto;
         }
         return null;
+    }
+
+    public async Task<bool> ForgotPassword(ForgetPasswordDto forgetPasswordDto)
+    {
+        Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
+
+        var hasNumber = new Regex(@"[0-9]+");
+        var hasUpperChar = new Regex(@"[A-Z]+");
+        var hasLowerChar = new Regex(@"[a-z]+");
+        var hasSymbols = new Regex(@"[!@#$%^&*()_+=\[{\]};:<>|./?,-]");
+
+        if (!hasLowerChar.IsMatch(forgetPasswordDto.PassWord))
+        {
+            throw new UserFriendlyException("ساختار کلمه عبور صحیح نمی باشد");
+        }
+        else if (!hasUpperChar.IsMatch(forgetPasswordDto.PassWord))
+        {
+            throw new UserFriendlyException("ساختار کلمه عبور صحیح نمی باشد");
+
+        }
+
+        else if (!hasNumber.IsMatch(forgetPasswordDto.PassWord))
+        {
+            throw new UserFriendlyException("ساختار کلمه عبور صحیح نمی باشد");
+
+        }
+
+        else if (!hasSymbols.IsMatch(forgetPasswordDto.PassWord))
+        {
+            throw new UserFriendlyException("ساختار کلمه عبور صحیح نمی باشد");
+
+        }
+
+
+        await _commonAppService.ValidateSMS(forgetPasswordDto.Mobile, forgetPasswordDto.NationalCode, forgetPasswordDto.SMSCode, SMSType.ForgetPassword);
+        var userFromDb = (await _userMongoRepository.GetQueryableAsync())
+            .SingleOrDefault(x => x.NationalCode == forgetPasswordDto.NationalCode && x.IsDeleted == false);
+        
+
+
+        if (userFromDb == null || userFromDb.Mobile.Replace(" ", "") != forgetPasswordDto.Mobile)
+        {
+            throw new UserFriendlyException("کد ملی یا شماره موبایل صحیح نمی باشد");
+        }
+        userFromDb.Password = _passwordHasher.HashPassword(new User(), forgetPasswordDto.PassWord);
+        var filter = Builders<UserMongo>.Filter.Where(_ => _.NationalCode == forgetPasswordDto.NationalCode && _.IsDeleted == false);
+        var update = Builders<UserMongo>.Update.Set(_ => _.Password, userFromDb.Password)
+            .Set(_ => _.LastModificationTime, DateTime.Now);
+
+        (await _userMongoRepository.GetCollectionAsync())
+            .UpdateOne(filter, update);
+
+        return true;
+    }
+
+    public async Task<bool> ChangePassword(ChangePasswordDto input)
+    {
+        Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
+
+        var hasNumber = new Regex(@"[0-9]+");
+        var hasUpperChar = new Regex(@"[A-Z]+");
+        var hasLowerChar = new Regex(@"[a-z]+");
+        var hasSymbols = new Regex(@"[!@#$%^&*()_+=\[{\]};:<>|./?,-]");
+
+        if (!hasLowerChar.IsMatch(input.NewPassWord))
+        {
+            throw new UserFriendlyException("ساختار کلمه عبور صحیح نمی باشد");
+        }
+        else if (!hasUpperChar.IsMatch(input.NewPassWord))
+        {
+            throw new UserFriendlyException("ساختار کلمه عبور صحیح نمی باشد");
+
+        }
+
+        else if (!hasNumber.IsMatch(input.NewPassWord))
+        {
+            throw new UserFriendlyException("ساختار کلمه عبور صحیح نمی باشد");
+
+        }
+
+        else if (!hasSymbols.IsMatch(input.NewPassWord))
+        {
+            throw new UserFriendlyException("ساختار کلمه عبور صحیح نمی باشد");
+
+        }
+        string uid = _commonAppService.GetUID().ToString();
+
+        if (uid == null)
+        {
+            throw new UserFriendlyException("خطایی پیش آمده است،لطفا با پشتیبانی تماس بگیرید. کد خطا 1");
+        }
+
+        UserMongo userFromDb = await (await _userMongoRepository.GetCollectionAsync())
+       .Find(x => x.UID == uid
+          && x.IsDeleted == false)
+       .FirstOrDefaultAsync();
+
+        await _commonAppService.ValidateSMS(userFromDb.Mobile, userFromDb.NationalCode, input.SMSCode, SMSType.ChangePassword);
+
+        userFromDb.Password = _passwordHasher.HashPassword(new User(), input.NewPassWord);
+        var filter = Builders<UserMongo>.Filter.Where(_ => _.UID == uid && _.IsDeleted == false);
+        var update = Builders<UserMongo>.Update.Set(_ => _.Password, userFromDb.Password)
+            .Set(_ => _.LastModificationTime, DateTime.Now);
+        (await _userMongoRepository.GetCollectionAsync())
+            .UpdateOne(filter, update);
+
+        return true;
+
     }
 }

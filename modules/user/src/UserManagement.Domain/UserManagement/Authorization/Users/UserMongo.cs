@@ -177,51 +177,51 @@ namespace UserManagement.Domain.Authorization.Users
         /// </summary>
         public const int MaxEmailAddressLength = 256;
 
-        /// <summary>
-        /// Maximum length of the <see cref="Name"/> property.
-        /// </summary>
-        public const int MaxNameLength = 64;
+    /// <summary>
+    /// Maximum length of the <see cref="Name"/> property.
+    /// </summary>
+    public const int MaxNameLength = 64;
 
-        /// <summary>
-        /// Maximum length of the <see cref="Surname"/> property.
-        /// </summary>
-        public const int MaxSurnameLength = 64;
+    /// <summary>
+    /// Maximum length of the <see cref="Surname"/> property.
+    /// </summary>
+    public const int MaxSurnameLength = 64;
 
-        /// <summary>
-        /// Maximum length of the <see cref="AuthenticationSource"/> property.
-        /// </summary>
-        public const int MaxAuthenticationSourceLength = 64;
+    /// <summary>
+    /// Maximum length of the <see cref="AuthenticationSource"/> property.
+    /// </summary>
+    public const int MaxAuthenticationSourceLength = 64;
 
-        /// <summary>
-        /// UserName of the admin.
-        /// admin can not be deleted and UserName of the admin can not be changed.
-        /// </summary>
-        public const string AdminUserName = "admin";
+    /// <summary>
+    /// UserName of the admin.
+    /// admin can not be deleted and UserName of the admin can not be changed.
+    /// </summary>
+    public const string AdminUserName = "admin";
 
-        /// <summary>
-        /// Maximum length of the <see cref="Password"/> property.
-        /// </summary>
-        public const int MaxPasswordLength = 128;
+    /// <summary>
+    /// Maximum length of the <see cref="Password"/> property.
+    /// </summary>
+    public const int MaxPasswordLength = 128;
 
-        /// <summary>
-        /// Maximum length of the <see cref="Password"/> without hashed.
-        /// </summary>
-        public const int MaxPlainPasswordLength = 32;
+    /// <summary>
+    /// Maximum length of the <see cref="Password"/> without hashed.
+    /// </summary>
+    public const int MaxPlainPasswordLength = 32;
 
-        /// <summary>
-        /// Maximum length of the <see cref="EmailConfirmationCode"/> property.
-        /// </summary>
-        public const int MaxEmailConfirmationCodeLength = 328;
+    /// <summary>
+    /// Maximum length of the <see cref="EmailConfirmationCode"/> property.
+    /// </summary>
+    public const int MaxEmailConfirmationCodeLength = 328;
 
-        /// <summary>
-        /// Maximum length of the <see cref="PasswordResetCode"/> property.
-        /// </summary>
-        public const int MaxPasswordResetCodeLength = 328;
+    /// <summary>
+    /// Maximum length of the <see cref="PasswordResetCode"/> property.
+    /// </summary>
+    public const int MaxPasswordResetCodeLength = 328;
 
-        /// <summary>
-        /// Maximum length of the <see cref="PhoneNumber"/> property.
-        /// </summary>
-        public const int MaxPhoneNumberLength = 32;
+    /// <summary>
+    /// Maximum length of the <see cref="PhoneNumber"/> property.
+    /// </summary>
+    public const int MaxPhoneNumberLength = 32;
 
         /// <summary>
         /// Maximum length of the <see cref="SecurityStamp"/> property.

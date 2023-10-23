@@ -45,5 +45,10 @@ namespace WorkFlowManagement.HttpApi.WorkFlowManagement.Controllers
         => _organizationPositionService.Delete(id);
 
 
+        [HttpPost]
+        public Task<AuthenticateResponseDto> Authenticate(AuthenticateReqDto input)
+            =>_organizationPositionService.Authenticate(input);
+
+
     }
 }

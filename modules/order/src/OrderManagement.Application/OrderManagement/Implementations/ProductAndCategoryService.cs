@@ -229,7 +229,7 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
                 attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, parent.Select(x => x.Id).ToList(), EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(input.attachmentType));
                 ls = string.IsNullOrWhiteSpace(input.NodePath)
                     ? parent.Where(x => x.ParentId == null).ToList()
-                    : parent.Where(x => x.Code == input.NodePath).ToList();
+                    : parent.Where(x => x.Code != input.NodePath).ToList();
                 if (input.ProductLevelId != null && input.ProductLevelId > 0)
                     ls = ls.Where(x => x.ProductLevelId == input.ProductLevelId)
                         .ToList();

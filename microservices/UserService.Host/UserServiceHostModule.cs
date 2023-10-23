@@ -23,6 +23,7 @@ using Esale.Core.Extensions;
 using UserManagement.EfCore.MongoDb;
 using Hangfire;
 using Microsoft.EntityFrameworkCore;
+using UserManagement.Application.UserManagement.Implementations;
 using Volo.Abp.RabbitMQ;
 using Volo.Abp.EventBus.RabbitMq;
 #endregion
@@ -84,10 +85,8 @@ public class UserServiceHostModule : AbpModule
         context.Services.AddEsaleResultWrapper();
         IdentityModelEventSource.ShowPII = true;
         //ConfigureHangfire(context, configuration);
-        context.Services.AddMongoDbContext<UserManagementMongoDbContext>(options =>
-        {
-            options.AddDefaultRepositories(includeAllEntities: true);
-        });
+        context.Services.AddMongoDbContext<UserManagementMongoDbContext>(options => options.AddDefaultRepositories(includeAllEntities: true));
+        context.Services.AddMongoDbContext<UserManagementMongoDbContextWriteOnly>(options => options.AddDefaultRepositories(includeAllEntities: true));
         ConfigureHangfire(context, configuration);
         context.Services.AddGrpc();
         context.Services.EasyCaching(configuration, "RedisCache:ConnectionString");
@@ -114,12 +113,12 @@ public class UserServiceHostModule : AbpModule
 
         app.UseEndpoints(endpoints =>
         {
-            
+            endpoints.MapGrpcService<GetwayGrpcClient>();
 
-            endpoints.MapGet("/", async context =>
-            {
-                await context.Response.WriteAsync("Communication with gRPC endpoints must be made through a gRPC client. To learn how to create a client, visit: https://go.microsoft.com/fwlink/?linkid=2086909");
-            });
+            //endpoints.MapGet("/", async context =>
+            //{
+            //    await context.Response.WriteAsync("Communication with gRPC endpoints must be made through a gRPC client. To learn how to create a client, visit: https://go.microsoft.com/fwlink/?linkid=2086909");
+            //});
         });
 
         app.UseAuthentication();

@@ -211,6 +211,8 @@ namespace WorkFlowManagement.EntityFrameworkCore.Migrations
 
                     b.HasIndex("ParentId");
 
+                    b.HasIndex("PersonId");
+
                     b.HasIndex("ProcessId");
 
                     b.ToTable("Inbox", "Flow");
@@ -338,7 +340,55 @@ namespace WorkFlowManagement.EntityFrameworkCore.Migrations
 
                     b.HasIndex("OrganizationChartId");
 
+                    b.HasIndex("PersonId");
+
                     b.ToTable("OrganizationPositions", "Flow");
+                });
+
+            modelBuilder.Entity("WorkFlowManagement.Domain.WorkFlowManagement.Person", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("CreationTime");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("CreatorId");
+
+                    b.Property<Guid?>("DeleterId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("DeleterId");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("DeletionTime");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false)
+                        .HasColumnName("IsDeleted");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("LastModificationTime");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("LastModifierId");
+
+                    b.Property<string>("NationalCode")
+                        .HasColumnType("NCHAR(10)");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("NVARCHAR(300)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Person", "Flow");
                 });
 
             modelBuilder.Entity("WorkFlowManagement.Domain.WorkFlowManagement.Process", b =>
@@ -436,9 +486,13 @@ namespace WorkFlowManagement.EntityFrameworkCore.Migrations
 
                     b.HasIndex("ParentId");
 
+                    b.HasIndex("PersonId");
+
                     b.HasIndex("PreviousActivityId");
 
                     b.HasIndex("PreviousOrganizationChartId");
+
+                    b.HasIndex("PreviousPersonId");
 
                     b.HasIndex("SchemeId");
 
@@ -703,6 +757,12 @@ namespace WorkFlowManagement.EntityFrameworkCore.Migrations
                         .WithMany()
                         .HasForeignKey("ParentId");
 
+                    b.HasOne("WorkFlowManagement.Domain.WorkFlowManagement.Person", "Person")
+                        .WithMany("Inboxes")
+                        .HasForeignKey("PersonId")
+                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .IsRequired();
+
                     b.HasOne("WorkFlowManagement.Domain.WorkFlowManagement.Process", "Process")
                         .WithMany("Inboxes")
                         .HasForeignKey("ProcessId")
@@ -714,6 +774,8 @@ namespace WorkFlowManagement.EntityFrameworkCore.Migrations
                     b.Navigation("OrganizationPosition");
 
                     b.Navigation("Parent");
+
+                    b.Navigation("Person");
 
                     b.Navigation("Process");
                 });
@@ -736,7 +798,15 @@ namespace WorkFlowManagement.EntityFrameworkCore.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("WorkFlowManagement.Domain.WorkFlowManagement.Person", "Person")
+                        .WithMany("OrganizationPositions")
+                        .HasForeignKey("PersonId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("OrganizationChart");
+
+                    b.Navigation("Person");
                 });
 
             modelBuilder.Entity("WorkFlowManagement.Domain.WorkFlowManagement.Process", b =>
@@ -769,6 +839,12 @@ namespace WorkFlowManagement.EntityFrameworkCore.Migrations
                         .WithMany()
                         .HasForeignKey("ParentId");
 
+                    b.HasOne("WorkFlowManagement.Domain.WorkFlowManagement.Person", "Person")
+                        .WithMany("Processes")
+                        .HasForeignKey("PersonId")
+                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .IsRequired();
+
                     b.HasOne("WorkFlowManagement.Domain.WorkFlowManagement.Activity", "PreviousActivity")
                         .WithMany("PreviousProcesses")
                         .HasForeignKey("PreviousActivityId");
@@ -776,6 +852,11 @@ namespace WorkFlowManagement.EntityFrameworkCore.Migrations
                     b.HasOne("WorkFlowManagement.Domain.WorkFlowManagement.OrganizationChart", "PreviousOrganizationChart")
                         .WithMany("PreviousProcesses")
                         .HasForeignKey("PreviousOrganizationChartId")
+                        .OnDelete(DeleteBehavior.ClientCascade);
+
+                    b.HasOne("WorkFlowManagement.Domain.WorkFlowManagement.Person", "PreviousPerson")
+                        .WithMany("PreviousProcesses")
+                        .HasForeignKey("PreviousPersonId")
                         .OnDelete(DeleteBehavior.ClientCascade);
 
                     b.HasOne("WorkFlowManagement.Domain.WorkFlowManagement.Scheme", "Scheme")
@@ -794,9 +875,13 @@ namespace WorkFlowManagement.EntityFrameworkCore.Migrations
 
                     b.Navigation("Parent");
 
+                    b.Navigation("Person");
+
                     b.Navigation("PreviousActivity");
 
                     b.Navigation("PreviousOrganizationChart");
+
+                    b.Navigation("PreviousPerson");
 
                     b.Navigation("Scheme");
                 });
@@ -872,6 +957,17 @@ namespace WorkFlowManagement.EntityFrameworkCore.Migrations
             modelBuilder.Entity("WorkFlowManagement.Domain.WorkFlowManagement.OrganizationPosition", b =>
                 {
                     b.Navigation("Inboxes");
+
+                    b.Navigation("Processes");
+                });
+
+            modelBuilder.Entity("WorkFlowManagement.Domain.WorkFlowManagement.Person", b =>
+                {
+                    b.Navigation("Inboxes");
+
+                    b.Navigation("OrganizationPositions");
+
+                    b.Navigation("PreviousProcesses");
 
                     b.Navigation("Processes");
                 });

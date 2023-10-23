@@ -15,7 +15,7 @@ namespace UserManagement.HttpApi.UserManagement.Controllers
     [RemoteService]
     [Route("api/services/app/BaseInformationService/[action]")]
     //[UserAuthorization]
-    public class BaseInformationController : Controller, IBaseInformationService
+    public class BaseInformationController : Controller
     {
         private readonly IBaseInformationService _baseInformationService;
         public BaseInformationController(IBaseInformationService baseInformationService)
@@ -23,24 +23,27 @@ namespace UserManagement.HttpApi.UserManagement.Controllers
             _baseInformationService = baseInformationService;
         }
 
-        [HttpGet]
+        [HttpPost]
         public Task<bool> CheckWhiteListAsync(WhiteListEnumType whiteListEnumType, string Nationalcode)
         {
             throw new NotImplementedException();
         }
-        [HttpGet]
+        [HttpPost]
         public Task<UserGrpcDto> GetUserByIdAsync(string userId)
         {
             throw new NotImplementedException();
         }
-        [HttpGet]
-        public async Task RegistrationValidation(RegistrationValidationDto input)
-         => await _baseInformationService.RegistrationValidation(input);
+        [HttpPost]
+        public async Task<bool> RegistrationValidationAsync(RegistrationValidationDto input)
+         => await _baseInformationService.RegistrationValidationAsync(input);
         
-        [HttpGet]
+        [HttpPost]
         public void RegistrationValidationWithoutCaptcha(RegistrationValidationDto input)
         {
             throw new NotImplementedException();
         }
+        [HttpGet]
+        public async Task<string> AddressInquiry(AddressInquiryDto input)
+            => await _baseInformationService.AddressInquiry(input);
     }
 }

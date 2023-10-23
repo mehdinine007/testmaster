@@ -35,7 +35,7 @@
 	  <ProjectReference Include="..\UserManagement.Domain\UserManagement.Domain.csproj" />
 	</ItemGroup>
 	<ItemGroup>
-	  <Protobuf Include="UserManagement\Protos\GetwayService.proto" GrpcServices="Client" />
+	  <Protobuf Include="UserManagement\Protos\GetwayService.proto" GrpcServices="Both" />
 	  <Protobuf Include="UserManagement\Protos\UserService.proto" GrpcServices="Server" />
 	</ItemGroup>
 

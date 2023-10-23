@@ -1,89 +1,64 @@
-﻿using Esale.GetwayServiceGrpc;
+﻿#region NS
 using Grpc.Net.Client;
 using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using UserManagement.Application.Contracts.Models.SendBox;
 using UserManagement.Application.Contracts.UserManagement.Services;
 using Volo.Abp.Application.Services;
+#endregion
 
 namespace UserManagement.Application.UserManagement.Implementations
 {
-    public class GetwayGrpcClient : ApplicationService , IGetwayGrpcClient
+    public class GetwayGrpcClient : ApplicationService, IGetwayGrpcClient
     {
         private IConfiguration _configuration { get; set; }
         public GetwayGrpcClient(IConfiguration configuration)
         {
-                _configuration = configuration;
+            _configuration = configuration;
         }
 
-        private GetwayServiceGrpc.GetwayServiceGrpcClient PostCaptchaServiceGrpcClient()
+        private Esale.GetwayServiceGrpc.GetwayServiceGrpc.GetwayServiceGrpcClient PostCaptchaServiceGrpcClient()
         {
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2Support", true);
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
             var httpHandler = new HttpClientHandler();
             httpHandler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
-            var channel = GrpcChannel.ForAddress(_configuration.GetValue<string>("GatewayManagement:GrpcAddress"));
-            return new GetwayServiceGrpc.GetwayServiceGrpcClient(channel);
+            var channel = GrpcChannel.ForAddress(_configuration.GetValue<string>("GatewayManagement:GrpcAddress"),new GrpcChannelOptions { HttpHandler = httpHandler});
+            return new Esale.GetwayServiceGrpc.GetwayServiceGrpc.GetwayServiceGrpcClient(channel);
         }
 
-
-
-        public async Task<Domain.UserManagement.CommonService.Dto.Getway.HttpResponseMessageDto> GetCaptcha(Domain.UserManagement.CommonService.Dto.Getway.ContentInputDto Content)
+        public async Task<HttpResponseMessageDto> ReCaptcha(ContentInputDto Content)
         {
-            try
+            var getCatcha = PostCaptchaServiceGrpcClient().ReCaptcha(new()
             {
-                //ContentInputDto ContentInput1 = new()
-                //{
-                //    ContentValue = Content.ContentValue,
-                //    KeyValue = Content.KeyValue
-                //};
-                var getCatcha = PostCaptchaServiceGrpcClient().GetCaptcha(new()
-                {
-                    ContentValue = Content.ContentValue,
-                    KeyValue = Content.KeyValue
-                });
-                return await Task.FromResult(new Domain.UserManagement.CommonService.Dto.Getway.HttpResponseMessageDto
-                {
-                    IsSuccessStatusCode = getCatcha.IsSuccessStatusCode,
-                    StringContent = getCatcha.StringContent
-                });
-            }
-            catch (Exception ex)
+                ContentValue = Content.ContentValue,
+                KeyValue = Content.KeyValue
+            });
+            return await Task.FromResult(new HttpResponseMessageDto
             {
-
-                throw ex;
-            }
+                Success = getCatcha.Success,
+                Error = getCatcha.Error,
+                ErrorCode = getCatcha.ErrorCode
+            });
         }
 
-        public async Task<Domain.UserManagement.CommonService.Dto.Getway.SendBoxServiceDto> SendService(Domain.UserManagement.CommonService.Dto.Getway.SendBoxServiceInput input)
+        public async Task<SendBoxServiceDto> SendService(SendBoxServiceInput input)
         {
-            try
-            {
 
-                var sendSeivice = PostCaptchaServiceGrpcClient().SendService(new()
-                {
-                    Recipient = input.Recipient,
-                    Text = input.Text,
-                    Provider = (Esale.GetwayServiceGrpc.ProviderSmsTypeEnum)input.Provider,
-                    Type = (Esale.GetwayServiceGrpc.TypeMessageEnum)input.Type
-                });
-                return await Task.FromResult(new Domain.UserManagement.CommonService.Dto.Getway.SendBoxServiceDto
-                {
-                    Success = sendSeivice.Success,
-                    DataResult = sendSeivice.DataResult,
-                    Message = sendSeivice.Message,
-                    MessageCode = sendSeivice.MessageCode
-                });
-            }
-            catch (Exception ex)
+            var sendSeivice = PostCaptchaServiceGrpcClient().SendService(new()
             {
+                Recipient = input.Recipient,
+                Text = input.Text,
+                Provider = (Esale.GetwayServiceGrpc.ProviderSmsTypeEnum)input.Provider,
+                Type = (Esale.GetwayServiceGrpc.TypeMessageEnum)input.Type
+            });
+            return await Task.FromResult(new SendBoxServiceDto
+            {
+                Success = sendSeivice.Success,
+                DataResult = sendSeivice.DataResult,
+                Message = sendSeivice.Message,
+                MessageCode = sendSeivice.MessageCode
+            });
 
-                throw ex;
-            }
         }
-    
     }
 }

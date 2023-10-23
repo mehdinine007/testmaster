@@ -115,59 +115,26 @@ namespace OrderManagement.Application.OrderManagement.Implementations
                 x.Attachments = ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(attachment);
                 if (x.Type == SiteStructureTypeEnum.ProductCarousel)
                 {
-                    var products = await _productAndCategoryService.GetList(JsonConvert.DeserializeObject<ProductAndCategoryGetListQueryDto>(x.Content));
-                    x.CarouselData = products.Select(x => new CarouselData()
-                    {
-                        Id = x.Id,
-                        Code = x.Code,
-                        Title = x.Title,
-                        Attachments = x.Attachments
-                    }).ToList();
+                    x.CarouselData = await _productAndCategoryService.GetList(JsonConvert.DeserializeObject<ProductAndCategoryGetListQueryDto>(x.Content));
                 }
                 if (x.Type == SiteStructureTypeEnum.CarClassCarousel)
                 {
-                    var carclass = await _carClassService.GetList(EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(siteStructureQuery.AttachmentType));
-                    x.CarouselData = carclass.Select(x => new CarouselData()
-                    {
-                        Id = x.Id,
-                        Title = x.Title,
-                        Attachments = x.Attachments
-                    }).ToList();
+                    x.CarouselData = await _carClassService.GetList(EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(siteStructureQuery.AttachmentType));
                 }
                 if (x.Type == SiteStructureTypeEnum.EsaleType)
 
                 {
-                    var eslaType = (await _eSaleTypeRepository.GetQueryableAsync()).ToList();
-                    x.CarouselData = eslaType.Select(x => new CarouselData()
-                    {
-                        Id = x.Id,
-                        Title = x.SaleTypeName,
-                    }).ToList();
+                    x.CarouselData = (await _eSaleTypeRepository.GetQueryableAsync()).ToList();
                 }
                 if (x.Type == SiteStructureTypeEnum.Bank)
 
                 {
-                    var banks = await _bankAppServiceService.GetList(new List<AttachmentEntityTypeEnum> { AttachmentEntityTypeEnum.Logo });
-                    x.CarouselData = banks.Select(x => new CarouselData()
-                    {
-                        Id = x.Id,
-                        Title = x.Title,
-                        AdditionalFields = new Dictionary<string, object> { { "PhoneNumber", x.PhoneNumber }, { "Url", x.Url } },
-                        Attachments = x.Attachments,
-
-
-                    }).ToList();
+                    x.CarouselData = await _bankAppServiceService.GetList(new List<AttachmentEntityTypeEnum> { AttachmentEntityTypeEnum.Logo });
                 }
                 if (x.Type == SiteStructureTypeEnum.Announcement)
                 {
                     var announcement = await _announcementService.GetPagination(JsonConvert.DeserializeObject<AnnouncementGetListDto>(x.Content));
-                    x.CarouselData = announcement.Items.Select(x => new CarouselData()
-                    {
-                        Id = x.Id,
-                        Title = x.Title,
-                        Attachments = x.Attachments,
-                        AdditionalFields = new Dictionary<string, object> { { "id", x.Id }, { "date", x.Date }, { "notice", x.Notice }, { "description", x.Description } },
-                    }).ToList();
+                    x.CarouselData = announcement.Items;
                 };
 
                 x.Content = null;

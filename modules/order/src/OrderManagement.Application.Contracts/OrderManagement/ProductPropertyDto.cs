@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,7 +10,8 @@ namespace OrderManagement.Application.Contracts
     public class ProductPropertyDto
     {
         public int ProductId { get; set; }
-        public List<PropertyCategoryDto> PropertyCategories { get; set; }
+        public string ConcurrencyStamp { get; set; }
+        public List<ProductPropertyCategoryDto> PropertyCategories { get; set; }
 
     }
 }

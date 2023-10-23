@@ -5,14 +5,9 @@ namespace UserManagement.Application.Contracts.Models;
 public class ChangePasswordDto
 {
     [Required]
-    [MaxLength(10)]
-    public string NationalCode { get; set; }
-    [Required]
-    [MaxLength(11)]
-    public string Mobile { get; set; }
-    [Required]
-    public string PassWord { get; set; }
+    public string NewPassWord { get; set; }
     [Required]
     public string SMSCode { get; set; }
+    public SMSType SMSLocation { get; set; }
 
 }

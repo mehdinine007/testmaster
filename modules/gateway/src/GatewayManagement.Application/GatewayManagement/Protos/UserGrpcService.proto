@@ -1,0 +1,44 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "Esale.GetwayServiceGrpc";
+
+package GetwayService;
+
+enum ProviderSmsTypeEnum
+{
+	None = 0;
+	Magfa = 1;
+}
+enum TypeMessageEnum
+{
+	Unknown = 0;
+	Sms = 1;
+	Email = 2;
+}
+
+service GetwayServiceGrpc{
+	rpc ReCaptcha(ContentInputDto) returns (HttpResponseMessageDto);
+	rpc SendService(SendBoxServiceInput) returns (SendBoxServiceDto);
+} 
+message ContentInputDto{
+	string ContentValue  =1;
+	string KeyValue = 2;
+}
+message HttpResponseMessageDto{
+   bool Success =1;
+   string Error = 2;
+   string ErrorCode = 3;
+}
+
+message SendBoxServiceInput{
+	string Recipient = 1;
+	string Text = 2;
+	ProviderSmsTypeEnum Provider = 3;
+	TypeMessageEnum Type = 4;
+}
+message SendBoxServiceDto{
+	bool Success = 1;
+	string DataResult = 2;
+	string Message = 3;
+	int32 MessageCode = 4;
+}

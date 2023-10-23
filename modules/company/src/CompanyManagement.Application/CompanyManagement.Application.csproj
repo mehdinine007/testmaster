@@ -1,0 +1,56 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net7.0</TargetFramework>
+        <RootNamespace />
+    </PropertyGroup>
+
+	<PropertyGroup>
+		<RootNamespace>CompanyManagement.Application</RootNamespace>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <None Remove="CompanyManagement\Protos\CompanyService.proto" GrpcServices="Client" />
+	</ItemGroup>
+
+    <ItemGroup>
+		<PackageReference Include="google.protobuf" Version="3.22.4" />
+		<PackageReference Include="grpc.net.client" Version="2.53.0" />
+		<PackageReference Include="grpc.tools" Version="2.54.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
+        <PackageReference Include="Volo.Abp.AutoMapper" Version="7.2.1" />
+		<PackageReference Include="restsharp" Version="110.2.0" />
+		<PackageReference Include="StackExchange.Redis.Extensions.Newtonsoft" Version="9.1.0" />
+		<PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="7.0.1" />
+		<PackageReference Include="grpc.aspnetcore" Version="2.53.0" />
+		<PackageReference Include="protobuf-net.Grpc" Version="1.0.177" />
+	</ItemGroup>
+
+	<!--<ItemGroup>
+		<Protobuf Include="CompanyManagement\Protos\CompanyServiceClient.proto" GrpcServices="Client" />
+		<Protobuf Include="CompanyManagement\Protos\EsaleUserService.proto" GrpcService="Client" />
+		<Protobuf Include="CompanyManagement\Protos\PaymentGrpcService.proto" GrpcService="Client">
+		  <GrpcService>Server</GrpcService>
+		</Protobuf>
+		<Protobuf Include="OrderManagement\Protos\TestOrder.proto" GrpcService="Server" />
+	</ItemGroup>-->
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\..\shared\Authorization\Authorization.csproj" />
+      <ProjectReference Include="..\..\..\..\shared\Extensions\Extensions.csproj" />
+      <ProjectReference Include="..\..\..\user\src\UserManagement.Application\UserManagement.Application.csproj" />
+      <ProjectReference Include="..\CompanyManagement.Application.Contracts\CompanyManagement.Application.Contracts.csproj" />
+      <ProjectReference Include="..\CompanyManagement.Domain\CompanyManagement.Domain.csproj" />
+      <ProjectReference Include="..\CompanyManagement.EntityFrameworkCore\CompanyManagement.EntityFrameworkCore.csproj" />
+    </ItemGroup>
+
+    <!--<ItemGroup>
+      <Protobuf Include="CompanyManagement\Protos\CompanyService.proto" GrpcServices="Server" />
+    </ItemGroup>-->
+
+	<ItemGroup>
+		<Protobuf Include="CompanyManagement\Protos\CompanyService.proto" GrpcServices="Server" />
+		<Protobuf Include="CompanyManagement\Protos\UserGrpcClient.proto" GrpcServices="Client" />
+	</ItemGroup>
+
+</Project>

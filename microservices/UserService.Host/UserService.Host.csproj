@@ -36,7 +36,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\modules\order\src\OrderManagement.Application\OrderManagement.Application.csproj" />
 		<ProjectReference Include="..\..\shared\Esale.Core\Esale.Core.csproj" />
 		<ProjectReference Include="..\..\shared\Extensions\Extensions.csproj" />
 		<ProjectReference Include="..\..\modules\user\src\UserManagement.Application\UserManagement.Application.csproj" />

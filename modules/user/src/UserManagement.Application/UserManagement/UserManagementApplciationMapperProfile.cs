@@ -6,6 +6,7 @@ using UserManagement.Domain.UserManagement.Advocacy;
 using UserManagement.Domain.UserManagement.Authorization.RolePermissions;
 using UserManagement.Domain.UserManagement.Authorization.Users;
 using UserManagement.Domain.UserManagement.bases;
+using Volo.Abp.AutoMapper;
 
 namespace UserManagement.Application;
 
@@ -33,5 +34,16 @@ public class UserManagementApplciationMapperProfile : Profile
 
 
 
+        CreateMap<PermissionDefinition, PermissionDefinitionWrite>()
+    .ReverseMap();
+        CreateMap<PermissionDefinitionDto, PermissionDefinitionWrite>()
+            .ReverseMap();
+        CreateMap<RolePermissionWrite, RolePermissionDto>()
+            .ReverseMap()
+            .IgnoreFullAuditedObjectProperties();
+        CreateMap<RolePermission, RolePermissionWrite>()
+            .ReverseMap();
+        CreateMap<UserMongo, UserMongoWrite>()
+            .ReverseMap();
     }
 }

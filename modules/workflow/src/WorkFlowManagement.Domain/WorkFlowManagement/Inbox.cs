@@ -17,6 +17,7 @@ namespace WorkFlowManagement.Domain.WorkFlowManagement
         public virtual Process Process { get; set; }
 
         public Guid PersonId { get; set; }
+        public virtual Person Person { get; protected set; }
         public int OrganizationChartId { get; set; }
         public virtual OrganizationChart OrganizationChart { get; set; }
 

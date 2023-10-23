@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using GatewayManagement.Application.Contracts.GatewayManagement.Dtos;
+using Volo.Abp.Authorization.Permissions;
 
 namespace GatewayManagement.Application
 {
@@ -6,6 +8,7 @@ namespace GatewayManagement.Application
     {
         public GatewayManagementApplicationAutoMapperProfile()
         {
+            
         }
     }
 }
