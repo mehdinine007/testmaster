@@ -27,7 +27,7 @@ namespace Esale.Share.Authorize
             var _cacheManager = ServiceTool.Resolve<ICacheManager>();
             foreach (var role in roles)
             {
-                var rolePermission = _cacheManager.Get<List<string>>(role.ToString(),
+                var rolePermission = _cacheManager.Get<List<string>>("Role"+role.ToString(),
                 RedisCoreConstant.RolePermissionPrefix,
                 new CacheOptions()
                 {
