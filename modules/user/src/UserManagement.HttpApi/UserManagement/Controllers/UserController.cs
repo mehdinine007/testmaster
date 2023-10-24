@@ -36,7 +36,6 @@ public class UserController : AbpController
     public async Task<UserDto> GetUserProfile()
         => await _userAppService.GetUserProfile();
     [HttpPost]
-    [UserAuthorization]
     public async Task<bool> UpdateUserProfile(UserDto inputUser)
         => await _userAppService.UpdateUserProfile(inputUser);
 
@@ -45,7 +44,6 @@ public class UserController : AbpController
         => await _userAppService.ForgotPassword(forgetPasswordDto);
 
     [HttpPost]
-    [UserAuthorization]
     public async Task<bool> ChangePassword(ChangePasswordDto input)
         => await _userAppService.ChangePassword(input);
 
