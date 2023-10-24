@@ -7,7 +7,7 @@ using Esale.Core.Constant;
 
 namespace Esale.Share.Authorize
 {
-    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false )]
     public class SecuredOperation : Attribute
     {
         private string _permission;
