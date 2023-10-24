@@ -1,341 +1,367 @@
 [
   {
-    "title": "OrderManagement",
+    "title": "UserManagement",
     "code": "0001",
-    "displaName": "ماژول سفارشات",
+    "displayName": "ماژول کاربران",
     "children": [
       {
-        "title": "AgencySaleDetailService",
-        "code": "0009",
-        "displaName": "سرویس برنامه فروش نمایندگی",
+        "title": null,
+        "code": "0001",
+        "displayName": "سرویس مدیریت کاربران",
         "children": [
           {
-            "title": "Delete",
-            "code": "000100090001",
-            "displayName": "حذف",
-            "children": []
+            "title": "GetUserProfile",
+            "code": "000100010001",
+            "displayName": "نمایش پروفایل کاربر",
+            "children": null
           },
           {
-            "title": "GetAgencySaleDetail",
-            "code": "000100090002",
-            "displayName": "نمایش نمایندگی های برنامه فروش",
-            "children": []
-          },
-          {
-            "title": "Save",
-            "code": "000100090003",
-            "displayName": "ذخیره",
-            "children": []
+            "title": "UpdateSecuritPolicy",
+            "code": "000100010002",
+            "displayName": "بروزرسانی قراردادهای امنیتی",
+            "children": null
           }
         ]
-      },
-      {
-        "title": "AgencyService",
-        "code": "0008",
-        "displaName": "سرویس نمایندگان",
-        "children": [
-          {
-            "title": "Delete",
-            "code": "000100080001",
-            "displayName": "حذف",
-            "children": []
-          },
-          {
-            "title": "GetAgencies",
-            "code": "000100080002",
-            "displayName": "نمایش نمایندگی ها",
-            "children": []
-          },
-          {
-            "title": "Save",
-            "code": "000100080003",
-            "displayName": "ثبت",
-            "children": []
-          },
-          {
-            "title": "Update",
-            "code": "000100080004",
-            "displayName": "بروزرسانی",
-            "children": []
-          }
-        ]
-      },
+      }
+    ]
+  },
+  {
+    "title": "OrderManagement",
+    "code": "0002",
+    "displayName": "ماژول سفارشات",
+    "children": [
       {
         "title": "BaseInformationService",
         "code": "0001",
-        "displaName": "سرویس پایه",
+        "displayName": "سرویس پایه",
         "children": [
           {
             "title": "CheckAdvocacyPrice",
-            "code": "000100010001",
+            "code": "000200010001",
             "displayName": "چک حساب وکالتی با مبلغ",
-            "children": []
+            "children": null
           },
           {
             "title": "CheckBlackList",
-            "code": "000100010002",
+            "code": "000200010002",
             "displayName": "چک کردن بلک لیست",
-            "children": []
+            "children": null
           },
           {
             "title": "CheckWhiteList",
-            "code": "000100010003",
+            "code": "000200010003",
             "displayName": "چک کردن وایت لیست",
-            "children": []
+            "children": null
           },
           {
             "title": "GetAgencies",
-            "code": "000100010004",
+            "code": "000200010004",
             "displayName": "نمایش نمایندگی ها",
-            "children": []
+            "children": null
           },
           {
             "title": "ClearCache",
-            "code": "000100010005",
+            "code": "000200010005",
             "displayName": "پاک کردن کش",
-            "children": []
+            "children": null
           }
         ]
       },
       {
         "title": "CapacityControlAppService",
         "code": "0002",
-        "displaName": "سرویس کنترل ظرفیت",
+        "displayName": "سرویس کنترل ظرفیت",
         "children": [
           {
             "title": "ValidationBySaleDetailUId",
-            "code": "000100020001",
+            "code": "000200020001",
             "displayName": "اعتبارسنجی توسط UID برنامه فروش",
-            "children": []
-          }
-        ]
-      },
-      {
-        "title": " ColorService",
-        "code": "0010",
-        "displaName": "سرویس مدیریت رنگ",
-        "children": [
-          {
-            "title": "Delete",
-            "code": "000100100001",
-            "displayName": "حذف",
-            "children": []
-          },
-          {
-            "title": "GetAllColors",
-            "code": "000100100002",
-            "displayName": "نمایش همه رنگ ها",
-            "children": []
-          },
-          {
-            "title": "GetColors",
-            "code": "000100100003",
-            "displayName": "نمایش رنگ",
-            "children": []
-          },
-          {
-            "title": "Save",
-            "code": "000100100004",
-            "displayName": "ثبت",
-            "children": []
-          },
-          {
-            "title": "Update",
-            "code": "000100100005",
-            "displayName": "بروزرسانی",
-            "children": []
+            "children": null
           }
         ]
       },
       {
         "title": "OrderAppService",
         "code": "0003",
-        "displaName": "سرویس مدیریت سفارشات",
+        "displayName": "سرویس مدیریت سفارشات",
         "children": [
           {
             "title": "CancelOrder",
-            "code": "000100030001",
+            "code": "000200030001",
             "displayName": "لغو سفارش",
-            "children": []
+            "children": null
           },
           {
             "title": "CommitOrder",
-            "code": "000100030002",
+            "code": "000200030002",
             "displayName": "ثبت سفارش",
-            "children": []
+            "children": null
           },
           {
             "title": "GetCompaniesCustomerOrders",
-            "code": "000100030003",
+            "code": "000200030003",
             "displayName": "نمایش سفارشات مشتریان خودروساز",
-            "children": []
+            "children": null
           },
           {
             "title": "GetCustomerInfoPriorityUser",
-            "code": "000100030004",
+            "code": "000200030004",
             "displayName": "نمایش اطلاعات الویت بندی مشتریان",
-            "children": []
+            "children": null
           },
           {
             "title": "GetDetail",
-            "code": "000100030005",
+            "code": "000200030005",
             "displayName": "نمایش برنامه فروش",
-            "children": []
+            "children": null
           },
           {
             "title": "InsertUserRejectionAdvocacyPlan",
-            "code": "000100030006",
+            "code": "000200030006",
             "displayName": "ثبت انصراف از طرح",
-            "children": []
+            "children": null
           },
           {
             "title": "UserRejectionStatus",
-            "code": "000100030007",
+            "code": "000200030007",
             "displayName": "وضعیت انصراف مشتری",
-            "children": []
+            "children": null
           }
         ]
       },
       {
         "title": "OrderStatusInquiryService",
         "code": "0004",
-        "displaName": "سرویس استعلام وضعیت سفارشات",
+        "displayName": "سرویس استعلام وضعیت سفارشات",
         "children": [
           {
             "title": "GetOrderDeilvery",
-            "code": "000100040001",
+            "code": "000200040001",
             "displayName": "نمایش روند سفارش",
-            "children": []
+            "children": null
           }
         ]
       },
       {
         "title": "QuestionnaireService",
         "code": "0005",
-        "displaName": "سرویس مدیریت پرسشنامه",
+        "displayName": "سرویس مدیریت پرسشنامه",
         "children": [
           {
             "title": "LoadQuestionnaireTree",
-            "code": "000100050001",
+            "code": "000200050001",
             "displayName": "بارگذاری درخت پرسشنامه",
-            "children": []
+            "children": null
           },
           {
             "title": "SubmitAnswer",
-            "code": "000100050002",
+            "code": "000200050002",
             "displayName": "ثبت پاسخ",
-            "children": []
-          }
-        ]
-      },
-      {
-        "title": "SaleDetailService",
-        "code": "0011",
-        "displaName": "سرویس مدیریت برنامه فروش",
-        "children": [
-          {
-            "title": "Delete",
-            "code": "000100110001",
-            "displayName": "حذف",
-            "children": []
-          },
-          {
-            "title": "GetActiveList",
-            "code": "000100110002",
-            "displayName": "نمایش برنامه فروش های فعال",
-            "children": []
-          },
-          {
-            "title": "GetById",
-            "code": "000100110003",
-            "displayName": "نمایش برنامه فروش توسط شناسه",
-            "children": []
-          },
-          {
-            "title": "GetSaleDetails",
-            "code": "000100110004",
-            "displayName": "نمایش برنامه فروش ها",
-            "children": []
-          },
-          {
-            "title": "Save",
-            "code": "000100110005",
-            "displayName": "ثبت",
-            "children": []
-          },
-          {
-            "title": "Update",
-            "code": "000100110006",
-            "displayName": "بروزرسانی",
-            "children": []
-          }
-        ]
-      },
-      {
-        "title": "SaleSchemaService",
-        "code": "0007",
-        "displaName": "سرویس مدیریت بخش نامه های فروش",
-        "children": [
-          {
-            "title": "GetById",
-            "code": "000100070001",
-            "displayName": "نمایش بخشنامه توسط شناسه",
-            "children": []
-          },
-          {
-            "title": "GetList",
-            "code": "000100070002",
-            "displayName": "نمایش بخشنامه ها",
-            "children": []
-          },
-          {
-            "title": "Delete",
-            "code": "000100070003",
-            "displayName": "حذف",
-            "children": []
-          },
-          {
-            "title": "Add",
-            "code": "000100070004",
-            "displayName": "ثبت",
-            "children": []
-          },
-          {
-            "title": "Update",
-            "code": "000100070005",
-            "displayName": "بروزرسانی",
-            "children": []
-          },
-          {
-            "title": "UploadFile",
-            "code": "000100070006",
-            "displayName": "بروزرسانی فایل",
-            "children": []
+            "children": null
           }
         ]
       },
       {
         "title": "SaleService",
         "code": "0006",
-        "displaName": "سرویس مدیریت نوع فروش",
+        "displayName": "سرویس مدیریت نوع فروش",
         "children": [
           {
             "title": "GetPreSales",
-            "code": "000100060001",
+            "code": "000200060001",
             "displayName": "",
-            "children": []
+            "children": null
           },
           {
             "title": "UserValidationByBirthDate",
-            "code": "000100060002",
+            "code": "000200060002",
             "displayName": "اعتبارسنجی تاریخ تولد کاربر",
-            "children": []
+            "children": null
           },
           {
             "title": "UserValidationByMobile",
-            "code": "000100060003",
+            "code": "000200060003",
             "displayName": "اعتبارسنجی موبایل کاربر",
-            "children": []
+            "children": null
+          }
+        ]
+      },
+      {
+        "title": "SaleSchemaService",
+        "code": "0007",
+        "displayName": "سرویس مدیریت بخش نامه های فروش",
+        "children": [
+          {
+            "title": "GetById",
+            "code": "000200070001",
+            "displayName": "نمایش بخشنامه توسط شناسه",
+            "children": null
+          },
+          {
+            "title": "GetList",
+            "code": "000200070002",
+            "displayName": "نمایش بخشنامه ها",
+            "children": null
+          },
+          {
+            "title": "Delete",
+            "code": "000200070003",
+            "displayName": "حذف",
+            "children": null
+          },
+          {
+            "title": "Add",
+            "code": "000200070004",
+            "displayName": "ثبت",
+            "children": null
+          },
+          {
+            "title": "Update",
+            "code": "000200070005",
+            "displayName": "بروزرسانی",
+            "children": null
+          },
+          {
+            "title": "UploadFile",
+            "code": "000200070006",
+            "displayName": "بروزرسانی فایل",
+            "children": null
+          }
+        ]
+      },
+      {
+        "title": "AgencyService",
+        "code": "0008",
+        "displayName": "سرویس نمایندگان",
+        "children": [
+          {
+            "title": "Delete",
+            "code": "000200080001",
+            "displayName": "حذف",
+            "children": null
+          },
+          {
+            "title": "GetAgencies",
+            "code": "000200080002",
+            "displayName": "نمایش نمایندگی ها",
+            "children": null
+          },
+          {
+            "title": "Save",
+            "code": "000200080003",
+            "displayName": "ثبت",
+            "children": null
+          },
+          {
+            "title": "Update",
+            "code": "000200080004",
+            "displayName": "بروزرسانی",
+            "children": null
+          }
+        ]
+      },
+      {
+        "title": "AgencySaleDetailService",
+        "code": "0009",
+        "displayName": "سرویس برنامه فروش نمایندگی",
+        "children": [
+          {
+            "title": "Delete",
+            "code": "000200090001",
+            "displayName": "حذف",
+            "children": null
+          },
+          {
+            "title": "GetAgencySaleDetail",
+            "code": "000200090002",
+            "displayName": "نمایش نمایندگی های برنامه فروش",
+            "children": null
+          },
+          {
+            "title": "Save",
+            "code": "000200090003",
+            "displayName": "ذخیره",
+            "children": null
+          }
+        ]
+      },
+      {
+        "title": " ColorService",
+        "code": "0010",
+        "displayName": "سرویس مدیریت رنگ",
+        "children": [
+          {
+            "title": "Delete",
+            "code": "000200100001",
+            "displayName": "حذف",
+            "children": null
+          },
+          {
+            "title": "GetAllColors",
+            "code": "000200100002",
+            "displayName": "نمایش همه رنگ ها",
+            "children": null
+          },
+          {
+            "title": "GetColors",
+            "code": "000200100003",
+            "displayName": "نمایش رنگ",
+            "children": null
+          },
+          {
+            "title": "Save",
+            "code": "000200100004",
+            "displayName": "ثبت",
+            "children": null
+          },
+          {
+            "title": "Update",
+            "code": "000200100005",
+            "displayName": "بروزرسانی",
+            "children": null
+          }
+        ]
+      },
+      {
+        "title": "SaleDetailService",
+        "code": "0011",
+        "displayName": "سرویس مدیریت برنامه فروش",
+        "children": [
+          {
+            "title": "Delete",
+            "code": "000200110001",
+            "displayName": "حذف",
+            "children": null
+          },
+          {
+            "title": "GetActiveList",
+            "code": "000200110002",
+            "displayName": "نمایش برنامه فروش های فعال",
+            "children": null
+          },
+          {
+            "title": "GetById",
+            "code": "000200110003",
+            "displayName": "نمایش برنامه فروش توسط شناسه",
+            "children": null
+          },
+          {
+            "title": "GetSaleDetails",
+            "code": "000200110004",
+            "displayName": "نمایش برنامه فروش ها",
+            "children": null
+          },
+          {
+            "title": "Save",
+            "code": "000200110005",
+            "displayName": "ثبت",
+            "children": null
+          },
+          {
+            "title": "Update",
+            "code": "000200110006",
+            "displayName": "بروزرسانی",
+            "children": null
           }
         ]
       }
@@ -343,96 +369,71 @@
   },
   {
     "title": "CompanyManagement",
-    "code": "0002",
-    "displaName": "ماژول شرکت ها",
+    "code": "0003",
+    "displayName": "ماژول شرکت ها",
     "children": [
       {
-        "title": [],
+        "title": null,
         "code": "0001",
-        "displaName": "سرویس شرکت ها",
+        "displayName": "سرویس شرکت ها",
         "children": [
           {
             "title": "GetCustomersAndCars",
-            "code": "000200010001",
+            "code": "000300010001",
             "displayName": "نمایش مشتری ها و خودروها",
-            "children": []
+            "children": null
           },
           {
             "title": "InsertCompanyProduction",
-            "code": "000200010002",
+            "code": "000300010002",
             "displayName": "ایجاد برنامه تولید خودرو ساز",
-            "children": []
+            "children": null
           },
           {
             "title": "SubmitOrderInformations",
-            "code": "000200010003",
+            "code": "000300010003",
             "displayName": "ثبت اطلاعات سفارش",
-            "children": []
+            "children": null
           }
         ]
       }
     ]
   },
-  {
-    "title": "UserManagement",
-    "code": "0004",
-    "displaName": "ماژول کاربران",
-    "children": [
-      {
-        "title": [],
-        "code": "0001",
-        "displaName": "سرویس مدیریت کاربران",
-        "children": [
-          {
-            "title": "GetUserProfile",
-            "code": "000400010001",
-            "displayName": "نمایش پروفایل کاربر",
-            "children": []
-          },
-          {
-            "title": "UpdateSecuritPolicy",
-            "code": "000400010002",
-            "displayName": "بروزرسانی قراردادهای امنیتی",
-            "children": []
-          }
-        ]
-      }
-    ]
-  },
+
   {
     "title": "WorkFlowManagement",
-    "code": "0003",
-    "displaName": "ماژول مدیریت فرآیند ها",
+    "code": "0004",
+    "displayName": "ماژول مدیریت فرآیند ها",
     "children": [
       {
-        "title": [],
+        "title": null,
         "code": "0001",
-        "displaName": "سرویس کارتابل جاری",
+        "displayName": "سرویس کارتابل جاری",
         "children": [
           {
             "title": "GetInbox",
-            "code": "000300010001",
+            "code": "000400010001",
             "displayName": "نمایش کارتابل جاری",
-            "children": []
+            "children": null
           }
         ]
       },
       {
-        "title": [],
+        "title": null,
         "code": "0002",
-        "displaName": "سرویس کارتابل ارسال شده",
+        "displayName": "سرویس کارتابل ارسال شده",
         "children": [
           {
             "title": "StartProcess",
-            "code": "000300020001",
+            "code": "000400020001",
             "displayName": "شروع پردازش",
-            "children": []
+            "children": null
           },
           {
             "title": "GetOutBox",
-            "code": "000300020002",
+            "code": "000400020002",
             "displayName": "نمایش کارتابل ارسال شده",
-            "children": []
+            "children": null
           }
         ]
       }

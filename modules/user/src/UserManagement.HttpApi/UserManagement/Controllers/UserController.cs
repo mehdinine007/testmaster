@@ -36,7 +36,5 @@ public class UserController : AbpController
     public async Task<UserDto> GetUserProfile()
         => await _userAppService.GetUserProfile();
 
-    [HttpPost]
-    public async Task UpdateSecurityPolicy()
-        => await _userAppService.UpdateSecurityPolicy();
+
 }

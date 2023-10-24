@@ -455,14 +455,5 @@ public class UserAppService : ApplicationService, IUserAppService
         return null;
     }
 
-    [SecuredOperation(UserServicePermissionConstants.UpdateSecuritPolicy)]
-    public async Task UpdateSecurityPolicy()
-    {
-        var currentDirectory = Environment.CurrentDirectory;
-        const string  fileName = "SecureOperationSettings.json";
-        var fullPath = Path.Combine(currentDirectory, fileName);
-        var content = File.ReadAllText(fullPath);
-        var ls = new List<PermissionDefinitionWrite>(JsonConvert.DeserializeObject<List<PermissionDefinitionWrite>>(content));
-        await _permissionDefinationRepository.InsertManyAsync(ls);
-    }
+    
 }

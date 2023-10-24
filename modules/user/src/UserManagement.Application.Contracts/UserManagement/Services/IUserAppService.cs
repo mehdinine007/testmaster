@@ -13,5 +13,5 @@ public interface IUserAppService : IApplicationService
     Task<UserDto> CreateAsync(CreateUserDto input);
     Task<UserDto> GetUserProfile();
 
-    Task UpdateSecurityPolicy();
+
 }
