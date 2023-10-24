@@ -19,6 +19,7 @@ using Microsoft.Extensions.Configuration;
 using EasyCaching.Core;
 using MongoDB.Bson;
 using Esale.Core.Caching;
+using Esale.Share.Authorize;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -91,6 +92,7 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
     }
 
     [RemoteService(false)]
+    [SecuredOperation(BaseServicePermissionConstants.CheckAdvocacyPrice)]
     public async Task CheckAdvocacyPrice(decimal MinimumAmountOfProxyDeposit)
     {
         var identity = (ClaimsPrincipal)Thread.CurrentPrincipal;
@@ -133,6 +135,7 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
 
     }
     [RemoteService(false)]
+    [SecuredOperation(BaseServicePermissionConstants.CheckWhiteList)]
     public void CheckWhiteList(WhiteListEnumType whiteListEnumType, string Nationalcode = "")
     {
         if (_configuration.GetSection(whiteListEnumType.ToString()).Value == "1")
@@ -174,6 +177,7 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
     }
 
     //[UnitOfWork(System.Transactions.IsolationLevel.Unspecified)]
+    [SecuredOperation(BaseServicePermissionConstants.CheckBlackList)]
     public void CheckBlackList(int esaleTypeId)
     {
         var identity = (ClaimsPrincipal)Thread.CurrentPrincipal;
@@ -281,6 +285,7 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
         return ObjectMapper.Map<List<Agency>, List<AgencyDto>>(agencies);
     }
 
+    [SecuredOperation(BaseServicePermissionConstants.GetAgencies)]
     public async Task<List<AgencyDto>> GetAgencies(Guid saleDetailUid)
     {
         var user = await _esaleGrpcClient.GetUserId(_commonAppService.GetUserId().ToString());
@@ -326,6 +331,7 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
         return ObjectMapper.Map<List<ESaleType>, List<ESaleTypeDto>>(esaleTypes);
     }
 
+    [SecuredOperation(BaseServicePermissionConstants.ClearCache)]
     public async Task ClearCache(string prefix)
     {
         var cacheKeyPrefix = string.IsNullOrWhiteSpace(prefix) ? "**" : prefix;

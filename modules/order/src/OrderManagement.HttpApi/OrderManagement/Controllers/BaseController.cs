@@ -22,19 +22,16 @@ public class BaseController : IBaseInformationService
         => _baseInformationService = baseInformationService;
 
     [HttpGet]
-    [UserAuthorization]
     [RemoteService(IsEnabled = false)]
     public async Task CheckAdvocacyPrice(decimal MinimumAmountOfProxyDeposit)
         => await _baseInformationService.CheckAdvocacyPrice(MinimumAmountOfProxyDeposit);
 
-    [UserAuthorization]
     [HttpGet]
     [RemoteService(IsEnabled = false)]
     public void CheckBlackList(int esaleTypeId)
         => _baseInformationService.CheckBlackList(esaleTypeId);
 
     [HttpGet]
-    [UserAuthorization]
     [RemoteService(IsEnabled = false)]
     public void CheckWhiteList(WhiteListEnumType whiteListEnumType, string Nationalcode = "")
         => _baseInformationService.CheckWhiteList(whiteListEnumType, Nationalcode);
@@ -63,7 +60,6 @@ public class BaseController : IBaseInformationService
         => _baseInformationService.RegistrationValidationWithoutCaptcha(input);
 
     [HttpGet]
-    [UserAuthorization]
     public async Task<UserDto> GrpcTest()
         => await _baseInformationService.GrpcTest();
 
@@ -72,13 +68,11 @@ public class BaseController : IBaseInformationService
         => _baseInformationService.GetSaleTypes();
 
     [HttpGet]
-    [UserAuthorization]
     public async Task<List<AgencyDto>> GetAgencies(Guid saleDetailUid)
         => await _baseInformationService.GetAgencies(saleDetailUid);
 
 
     [HttpGet]
-    [UserAuthorization]
     public async Task ClearCache(string prefix)
         => await _baseInformationService.ClearCache(prefix);
 }

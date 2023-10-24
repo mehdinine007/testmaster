@@ -1,5 +1,5 @@
-﻿using Abp.Authorization;
-using Abp.Domain.Uow;
+﻿using Newtonsoft.Json;
+using Esale.Share.Authorize;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
@@ -10,11 +10,13 @@ using Microsoft.Extensions.Configuration;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using System.Text.RegularExpressions;
+using UserManagement.Application.Constants;
 using UserManagement.Application.Contracts.Models;
 using UserManagement.Application.Contracts.Services;
 using UserManagement.Application.Contracts.UserManagement.Services;
 using UserManagement.Domain.Authorization.Users;
 using UserManagement.Domain.Shared;
+using UserManagement.Domain.UserManagement.bases;
 using Volo.Abp;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
@@ -37,6 +39,7 @@ public class UserAppService : ApplicationService, IUserAppService
     private readonly IBaseInformationService _baseInformationService;
     private readonly ICaptchaService _captchaService;
     private readonly IRepository<UserMongoWrite, ObjectId> _userMongoWriteRepository;
+    private readonly IRepository<PermissionDefinitionWrite, ObjectId> _permissionDefinationRepository;
 
     public UserAppService(IConfiguration configuration,
                           IBankAppService bankAppService,
@@ -47,7 +50,8 @@ public class UserAppService : ApplicationService, IUserAppService
                           IRolePermissionService rolePermissionService,
                           IRepository<UserMongo, ObjectId> userMongoRepository,
                           IRepository<UserMongoWrite, ObjectId> userMongoWriteRepository,
-                          ICaptchaService captchaService
+                          ICaptchaService captchaService,
+                          IRepository<PermissionDefinitionWrite, ObjectId> permissionDefinationRepository
         )
     {
         _rolePermissionService = rolePermissionService;
@@ -60,6 +64,7 @@ public class UserAppService : ApplicationService, IUserAppService
         _baseInformationService = baseInformationService;
         _userMongoWriteRepository = userMongoWriteRepository;
         _captchaService = captchaService;
+        _permissionDefinationRepository = permissionDefinationRepository;
     }
 
     public async Task<bool> AddRole(ObjectId userid, List<string> roleCode)
@@ -426,6 +431,7 @@ public class UserAppService : ApplicationService, IUserAppService
         return user;
     }
 
+    [SecuredOperation(UserServicePermissionConstants.GetUserProfile)]
     public async Task<UserDto> GetUserProfile()
     {
         Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");

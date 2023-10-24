@@ -1,7 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Esale.Share.Authorize;
+using Microsoft.EntityFrameworkCore;
 using Volo.Abp;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp.ObjectMapping;
+using Volo.Abp.Users;
+using WorkFlowManagement.Application.Contracts;
 using WorkFlowManagement.Application.Contracts.WorkFlowManagement.Constants;
 using WorkFlowManagement.Application.Contracts.WorkFlowManagement.Dtos;
 using WorkFlowManagement.Application.Contracts.WorkFlowManagement.IServices;
@@ -127,6 +131,7 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Implementations
             return inbox;
         }
 
+        [SecuredOperation(InboxServicePermissionConstants.GetInbox)]
         public async Task<List<InboxDto>> GetInbox()
         {
             var currentUserId = _commonAppService.GetUserId();

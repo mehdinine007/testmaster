@@ -16,6 +16,9 @@ using UserManagement.Domain.UserManagement.Authorization.RolePermissions;
 using UserManagement.Domain.UserManagement.bases;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
+using Esale.Share.Authorize;
+using UserManagement.Application.Constants;
+using Newtonsoft.Json;
 
 namespace UserManagement.Application.UserManagement.Implementations
 {
@@ -243,6 +246,17 @@ namespace UserManagement.Application.UserManagement.Implementations
             await _permissionRepository.DeleteAsync(Id);
             return true;
 
+        }
+
+        //[SecuredOperation(UserServicePermissionConstants.UpdateSecuritPolicy)]
+        public async Task UpdateSecurityPolicy()
+        {
+            var currentDirectory = Environment.CurrentDirectory;
+            const string fileName = "SecureOperationSettings.json";
+            var fullPath = Path.Combine(currentDirectory, fileName);
+            var content = File.ReadAllText(fullPath);
+            var ls = new List<PermissionDefinitionWrite>(JsonConvert.DeserializeObject<List<PermissionDefinitionWrite>>(content));
+            await _permissionWriteRepository.InsertManyAsync(ls);
         }
     }
 }

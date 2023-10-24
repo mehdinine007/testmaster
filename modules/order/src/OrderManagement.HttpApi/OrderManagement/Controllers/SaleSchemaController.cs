@@ -1,19 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp.Auditing;
 using Volo.Abp;
 using Microsoft.AspNetCore.Mvc;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
 using OrderManagement.Application.Contracts.OrderManagement;
-using Volo.Abp.Application.Dtos;
-using Esale.Share.Authorize;
-using Microsoft.AspNetCore.Http;
 using OrderManagement.Domain.Shared;
-using NUglify.JavaScript;
-using Nest;
 using Esale.Core.Utility.Tools;
 
 namespace OrderManagement.HttpApi.OrderManagement.Controllers;
@@ -21,7 +13,6 @@ namespace OrderManagement.HttpApi.OrderManagement.Controllers;
 [DisableAuditing]
 [RemoteService]
 [Route("api/services/app/SaleSchemaService/[action]")]
-//[UserAuthorization]
 public class SaleSchemaController : Controller
 {
     private readonly ISaleSchemaService _saleSchemaService;
@@ -36,7 +27,7 @@ public class SaleSchemaController : Controller
 
     [HttpGet]
     public Task<List<SaleSchemaDto>> GetList(string attachmentType)
-      =>    _saleSchemaService.GetList(EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(attachmentType));
+      => _saleSchemaService.GetList(EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(attachmentType));
     
     
 

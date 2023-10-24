@@ -32,8 +32,7 @@ public class UserController : AbpController
     public async Task<User> GetLoginInfromationuserFromCache(string Username)
         => await _userAppService.GetLoginInfromationuserFromCache(Username);
 
-    [HttpPost]
-    [UserAuthorization]
+    [HttpGet]
     public async Task<UserDto> GetUserProfile()
         => await _userAppService.GetUserProfile();
     [HttpPost]

@@ -44,7 +44,6 @@ public class CapacityControlController :Controller
     //      => await _attachmentService.UploadFile(uploadFileDto);
 
     [HttpPost]
-    [UserAuthorization]
     public async Task<bool> Validation(Guid saleDetailUId)
           => await _capacityControlAppService.ValidationBySaleDetailUId(saleDetailUId);
 }

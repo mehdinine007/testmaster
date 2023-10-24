@@ -1,4 +1,5 @@
 ﻿using EasyCaching.Core;
+using Esale.Share.Authorize;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using OrderManagement.Application.Contracts;
@@ -56,6 +57,7 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
         _unAuthorizedUserRepository = unAuthorizedUserRepository;
     }
 
+    [SecuredOperation(QuestionnaireServicePermissionconstants.LoadQuestionnaireTree)]
     public async Task<QuestionnaireTreeDto> LoadQuestionnaireTree(int questionnaireId, long? relatedEntityId = null)
     {
         var questionnaireWhitListType = (await _questionnaireRepository.GetQueryableAsync())
@@ -147,6 +149,7 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
         return surveyReport;
     }
 
+    [SecuredOperation(QuestionnaireServicePermissionconstants.SubmitAnswer)]
     public async Task SubmitAnswer(SubmitAnswerTreeDto submitAnswerTreeDto)
     {
         if (submitAnswerTreeDto.SubmitAnswerDto == null || !submitAnswerTreeDto.SubmitAnswerDto.Any())

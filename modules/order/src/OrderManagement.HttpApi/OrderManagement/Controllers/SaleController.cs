@@ -22,7 +22,6 @@ public class SaleController : Controller,ISaleService
 
 
     [HttpGet]
-    [UserAuthorization]
     public async Task<List<PreSaleDto>> GetPreSales()
           => await _saleService.GetPreSales();
 
@@ -46,13 +45,11 @@ public class SaleController : Controller,ISaleService
 
     [HttpGet]
     [RemoteService(IsEnabled = false)]
-    [UserAuthorization]
     public async Task UserValidationByBirthDate(int saleId)
         => await _saleService.UserValidationByBirthDate(saleId);
 
     [HttpGet]
     [RemoteService(IsEnabled = false)]
-    [UserAuthorization]
     public async Task UserValidationByMobile(int saleId)
         => await _saleService.UserValidationByMobile(saleId);
 

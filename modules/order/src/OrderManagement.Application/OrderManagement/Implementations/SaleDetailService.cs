@@ -1,6 +1,7 @@
 ﻿using EasyCaching.Core;
 using Esale.Core.Caching;
 using Esale.Core.DataAccess;
+using Esale.Share.Authorize;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using OrderManagement.Application.Contracts;
@@ -61,7 +62,7 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
     }
 
 
-
+    [SecuredOperation(SaleDetailServicePermissionConstants.Delete)]
     public async Task<bool> Delete(int id)
     {
         var saleDetail = await _saleDetailRepository.FirstOrDefaultAsync(x => x.Id == id);
@@ -75,6 +76,7 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
 
     }
 
+    [SecuredOperation(SaleDetailServicePermissionConstants.GetActiveList)]
     public List<SaleDetailDto> GetActiveList()
     {
         var currentTime = DateTime.Now;
@@ -86,6 +88,7 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
         return ObjectMapper.Map<List<SaleDetail>, List<SaleDetailDto>>(saledetails);
     }
 
+    [SecuredOperation(SaleDetailServicePermissionConstants.GetById)]
     public SaleDetailDto GetById(int id)
     {
         var saleDetail = _saleDetailRepository
@@ -96,6 +99,7 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
         return result;
     }
 
+    [SecuredOperation(SaleDetailServicePermissionConstants.GetSaleDetails)]
     public async Task<PagedResultDto<SaleDetailDto>> GetSaleDetails(BaseInquery input)
     {
         var count = await _saleDetailRepository.CountAsync();
@@ -159,6 +163,7 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
     }
 
     [UnitOfWork(isTransactional: false)]
+    [SecuredOperation(SaleDetailServicePermissionConstants.Save)]
     public async Task<int> Save(CreateSaleDetailDto createSaleDetailDto)
     {
 
@@ -213,6 +218,7 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
         return saleDetail.Id;
     }
 
+    [SecuredOperation(SaleDetailServicePermissionConstants.Update)]
     public async Task<int> Update(CreateSaleDetailDto createSaleDetailDto)
     {
         var result = await _saleDetailRepository.WithDetails().AsNoTracking().FirstOrDefaultAsync(x => x.Id == createSaleDetailDto.Id);
@@ -239,9 +245,4 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
         await _cacheManager.RemoveAsync(saleDetail.UID.ToString(), RedisConstants.SaleDetailPrefix, new CacheOptions() { Provider = CacheProviderEnum.Hybrid });
         return saleDetail.Id;
     }
-
-
-
-
 }
-

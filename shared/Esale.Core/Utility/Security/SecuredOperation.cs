@@ -1,26 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc.Filters;
-using System;
-using System.Linq;
-using System.Security.Claims;
-using System.IdentityModel.Tokens.Jwt;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Antiforgery;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
-using System.Net.Http;
 using Esale.Core.Caching;
 using Esale.Core.IOC;
 using Volo.Abp;
 using Esale.Core.Constant;
-using Nest;
 
 namespace Esale.Share.Authorize
 {
-    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class | AttributeTargets.Interface)]
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false )]
     public class SecuredOperation : Attribute
     {
         private string _permission;
@@ -32,15 +19,17 @@ namespace Esale.Share.Authorize
                 throw new UserFriendlyException(CoreMessage.AuthenticationDenied, CoreMessage.AuthenticationDeniedId);
             var roles = _httpContextAccessor.HttpContext.User.Claims
                 .Where(x => x.Type.Equals(ClaimTypes.Role))
-                .ToList();
-            if (roles is null || roles.Count == 0)
+                .Select(x => x.Value)
+                .FirstOrDefault();
+            if (roles is null)
             {
                 throw new UserFriendlyException(CoreMessage.AuthenticationDenied, CoreMessage.AuthenticationDeniedId);
             }
-            var _cacheManager = ServiceTool.Resolve<ICacheManager>();
-            foreach (var role in roles)
+            var _cacheManager = ServiceTool.Resolve<ICacheManager>();       
+
+            foreach (var role in roles.Split(","))
             {
-                var rolePermission = _cacheManager.Get<List<string>>(role.ToString(),
+                var rolePermission = _cacheManager.Get<List<string>>("Role"+role.ToString(),
                 RedisCoreConstant.RolePermissionPrefix,
                 new CacheOptions()
                 {
