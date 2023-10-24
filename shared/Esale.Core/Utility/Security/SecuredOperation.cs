@@ -19,14 +19,15 @@ namespace Esale.Share.Authorize
                 throw new UserFriendlyException(CoreMessage.AuthenticationDenied, CoreMessage.AuthenticationDeniedId);
             var roles = _httpContextAccessor.HttpContext.User.Claims
                 .Where(x => x.Type.Equals(ClaimTypes.Role))
-                .ToList();
-            if (roles is null || roles.Count == 0)
+                .Select(x => x.Value)
+                .FirstOrDefault();
+            if (roles is null)
             {
                 throw new UserFriendlyException(CoreMessage.AuthenticationDenied, CoreMessage.AuthenticationDeniedId);
             }
-            var _cacheManager = ServiceTool.Resolve<ICacheManager>();
-            var rolevalue = roles.Select(x => x.Value).ToList();
-            foreach (var role in rolevalue)
+            var _cacheManager = ServiceTool.Resolve<ICacheManager>();       
+
+            foreach (var role in roles.Split(","))
             {
                 var rolePermission = _cacheManager.Get<List<string>>("Role"+role.ToString(),
                 RedisCoreConstant.RolePermissionPrefix,
