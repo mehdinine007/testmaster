@@ -25,7 +25,8 @@ namespace Esale.Share.Authorize
                 throw new UserFriendlyException(CoreMessage.AuthenticationDenied, CoreMessage.AuthenticationDeniedId);
             }
             var _cacheManager = ServiceTool.Resolve<ICacheManager>();
-            foreach (var role in roles)
+            var rolevalue = roles.Select(x => x.Value).ToList();
+            foreach (var role in rolevalue)
             {
                 var rolePermission = _cacheManager.Get<List<string>>("Role"+role.ToString(),
                 RedisCoreConstant.RolePermissionPrefix,
