@@ -1,7 +1,5 @@
-﻿using Nest;
-using OrderManagement.Domain.Shared;
+﻿using OrderManagement.Domain.Shared;
 using System.Collections.Generic;
-using System.ComponentModel;
 using Volo.Abp.Domain.Entities.Auditing;
 
 namespace OrderManagement.Domain;
@@ -37,7 +35,7 @@ public class Questionnaire : FullAuditedEntity<int>
     public ICollection<UnAuthorizedUser> UnAuthorizedUsers
     {
         get => _unAuthorizedUsers ?? (_unAuthorizedUsers = new List<UnAuthorizedUser>());
-        set => _unAuthorizedUsers = value;
+        protected set => _unAuthorizedUsers = value;
     }
 
     public Questionnaire()
