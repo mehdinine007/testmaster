@@ -2,6 +2,7 @@
 using MongoDB.Bson;
 using UserManagement.Application.Contracts.Models;
 using UserManagement.Domain.Authorization.Users;
+using UserManagement.Domain.UserManagement.Authorization.Users;
 using Volo.Abp.Application.Services;
 #endregion
 
@@ -18,5 +19,7 @@ public interface IUserAppService : IApplicationService
     Task<bool> UpdateUserProfile(UserDto inputUser);
     Task<bool> ForgotPassword(ForgetPasswordDto forgetPasswordDto);
     Task<bool> ChangePassword(ChangePasswordDto input);
+
+    Task UpsertUserIntoSqlServer(UserSQL input);
 }
 
