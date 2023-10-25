@@ -57,17 +57,20 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
         _unAuthorizedUserRepository = unAuthorizedUserRepository;
     }
 
-    [SecuredOperation(QuestionnaireServicePermissionconstants.LoadQuestionnaireTree)]
+    //[SecuredOperation(QuestionnaireServicePermissionconstants.LoadQuestionnaireTree)]
     public async Task<QuestionnaireTreeDto> LoadQuestionnaireTree(int questionnaireId, long? relatedEntityId = null)
     {
         var questionnaireWhitListType = (await _questionnaireRepository.GetQueryableAsync())
             .Select(x => new
             {
                 x.Id,
-                x.WhitListRequirement
+                x.WhitListRequirement,
+                x.QuestionnaireType
             })
             .FirstOrDefault(x => x.Id == questionnaireId)
             ?? throw new UserFriendlyException("پرسشنامه مورد نظر پیدا نشد");
+        if (questionnaireWhitListType.QuestionnaireType == QuestionnaireType.AuthorizedOnly)
+            throw new UserFriendlyException("لطفا لاگین کنید");
 
         var currentUserId = _commonAppService.GetUserId();
         var currentUserNationalCode = _commonAppService.GetNationalCode();
