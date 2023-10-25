@@ -1,6 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 	<ItemGroup>
+	  <Compile Remove="UserManagement\Models\User\UserMapProfile.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<ProjectReference Include="..\UserManagement.Domain.Shared\UserManagement.Domain.Shared.csproj" />
 		<ProjectReference Include="..\..\..\..\shared\Esale.Core\Esale.Core.csproj" />
 		<ProjectReference Include="..\UserManagement.Domain\UserManagement.Domain.csproj" />

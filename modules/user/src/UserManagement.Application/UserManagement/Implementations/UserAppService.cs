@@ -1,5 +1,8 @@
 ﻿using Newtonsoft.Json;
 using Esale.Share.Authorize;
+using Abp.Dependency;
+using Abp.Authorization;
+using Abp.Domain.Uow;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
@@ -17,9 +20,13 @@ using UserManagement.Application.Contracts.UserManagement.Services;
 using UserManagement.Domain.Authorization.Users;
 using UserManagement.Domain.Shared;
 using UserManagement.Domain.UserManagement.bases;
+using UserManagement.Domain.UserManagement.Advocacy;
+using UserManagement.Domain.UserManagement.Authorization.Users;
 using Volo.Abp;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp.EventBus;
+using Volo.Abp.EventBus.Distributed;
 using Volo.Abp.ObjectMapping;
 using WorkingWithMongoDB.WebAPI.Services;
 using wsFava;
@@ -31,6 +38,8 @@ public class UserAppService : ApplicationService, IUserAppService
 
     private readonly IRolePermissionService _rolePermissionService;
     private readonly IRepository<UserMongo, ObjectId> _userMongoRepository;
+    private readonly IRepository<UserSQL, long> _userSQLRepository;
+
     private readonly IConfiguration _configuration;
     private readonly IBankAppService _bankAppService;
     private readonly ICommonAppService _commonAppService;
@@ -40,6 +49,8 @@ public class UserAppService : ApplicationService, IUserAppService
     private readonly ICaptchaService _captchaService;
     private readonly IRepository<UserMongoWrite, ObjectId> _userMongoWriteRepository;
     private readonly IRepository<PermissionDefinitionWrite, ObjectId> _permissionDefinationRepository;
+    private readonly IDistributedEventBus _distributedEventBus;
+
 
     public UserAppService(IConfiguration configuration,
                           IBankAppService bankAppService,
@@ -50,6 +61,9 @@ public class UserAppService : ApplicationService, IUserAppService
                           IRolePermissionService rolePermissionService,
                           IRepository<UserMongo, ObjectId> userMongoRepository,
                           IRepository<UserMongoWrite, ObjectId> userMongoWriteRepository,
+                          ICaptchaService captchaService,                 
+                          IDistributedEventBus distributedEventBus,
+                          IRepository<UserSQL, long> UserSQLRepository
                           ICaptchaService captchaService,
                           IRepository<PermissionDefinitionWrite, ObjectId> permissionDefinationRepository
         )
@@ -64,6 +78,8 @@ public class UserAppService : ApplicationService, IUserAppService
         _baseInformationService = baseInformationService;
         _userMongoWriteRepository = userMongoWriteRepository;
         _captchaService = captchaService;
+        _distributedEventBus = distributedEventBus;
+        _userSQLRepository = UserSQLRepository;
         _permissionDefinationRepository = permissionDefinationRepository;
     }
 
@@ -83,10 +99,44 @@ public class UserAppService : ApplicationService, IUserAppService
         await _userMongoWriteRepository.UpdateAsync(ObjectMapper.Map<UserMongo, UserMongoWrite>(user));
         return true;
     }
+   
+    public class StockCountChangedEto
+    {
+        public Guid ProductId { get; set; }
 
+        public int NewCount { get; set; }
+    }
+    //public class MyHandler
+    //  : IDistributedEventHandler<StockCountChangedEto>,
+    //    ITransientDependency
+    //{
+    //    public async Task HandleEventAsync(StockCountChangedEto eventData)
+    //    {
+    //        var productId = eventData.ProductId;
+    //    }
+    //}
+    public async Task UpsertUserIntoSqlServer(UserSQL input)
+    {
+        if(input.EditMode == true)
+        {
+            var iqUser = await _userSQLRepository.GetQueryableAsync();
+                
+            var user = iqUser.AsNoTracking()
+                .Select(x => new { x.Id, x.UID}).FirstOrDefault(x => x.UID == input.UID);
+            input.SetId(user.Id);
+            await _userSQLRepository.UpdateAsync(input);
+        }
+        else
+        {
+            await _userSQLRepository.InsertAsync(input);
+
+        }
+        // await CurrentUnitOfWork.CompleteAsync();
+    }
     public async Task<UserDto> CreateAsync(CreateUserDto input)
     {
-
+         
+    
 
         if (!string.IsNullOrEmpty(_configuration.GetSection("CloseRegisterDate").Value)
             && DateTime.Now > DateTime.Parse(_configuration.GetSection("CloseRegisterDate").Value))
@@ -244,7 +294,7 @@ public class UserAppService : ApplicationService, IUserAppService
             {
                 input.Shaba = "...";
                 input.AccountNumber = "...";
-                input.BankId = 3;
+                input.BankId = null;
             }
 
             //if (!ValidationHelper.IsShaba(input.Shaba))
@@ -357,6 +407,7 @@ public class UserAppService : ApplicationService, IUserAppService
 
         //if (userFromCache == null)
         {
+         
             var user = ObjectMapper.Map<CreateUserDto, UserMongo>(input);
             user.IsActive = true;
             //user.TenantId = CurrentTenant.Id;
@@ -376,10 +427,19 @@ public class UserAppService : ApplicationService, IUserAppService
             user.Address = useInquiryForUserAddress
                 ? user.Address = await _commonAppService.GetAddressByZipCode(user.PostalCode, user.NationalCode)
                 : user.Address = input.Address;
+            if(user.BankId == 0)
+            {
+                user.BankId = null;
+            }
             try
             {
                 //user._Id = ObjectId.GenerateNewId().ToString();
                 await _userMongoWriteRepository.InsertAsync(ObjectMapper.Map<UserMongo, UserMongoWrite>(user));
+              
+           
+                await _distributedEventBus.PublishAsync<UserSQL>(
+                     ObjectMapper.Map<UserMongo, UserSQL>(user)
+                    );
             }
             catch (Exception ex)
             {
@@ -495,6 +555,11 @@ public class UserAppService : ApplicationService, IUserAppService
 
         (await _userMongoRepository.GetCollectionAsync())
             .UpdateOne(filter, update);
+        var userSql = ObjectMapper.Map<UserMongo, UserSQL>(userFromDb);
+        userSql.EditMode = true;
+        await _distributedEventBus.PublishAsync<UserSQL>(
+               userSql
+               );
 
         return true;
     }
@@ -549,7 +614,11 @@ public class UserAppService : ApplicationService, IUserAppService
             .Set(_ => _.LastModificationTime, DateTime.Now);
         (await _userMongoRepository.GetCollectionAsync())
             .UpdateOne(filter, update);
-
+        var userSql =  ObjectMapper.Map<UserMongo, UserSQL>(userFromDb);
+        userSql.EditMode = true;
+        await _distributedEventBus.PublishAsync<UserSQL>(
+                  userSql
+                 );
         return true;
 
     }

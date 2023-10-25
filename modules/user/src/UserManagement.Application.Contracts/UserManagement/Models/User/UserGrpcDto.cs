@@ -3,7 +3,7 @@
 public class UserGrpcDto
 {
     public string AccountNumber { get; set; }
-    public int BankId { get; set; }
+    public int? BankId { get; set; }
     public int? BirthCityId { get; set; }
     public int? BirthProvinceId { get; set; }
     public int? HabitationCityId { get; set; }
