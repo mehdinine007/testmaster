@@ -10,6 +10,12 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Compile Remove="CompanyManagement\**" />
+	  <EmbeddedResource Remove="CompanyManagement\**" />
+	  <None Remove="CompanyManagement\**" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <None Remove="OrderManagement\Protos\CompanyServiceClient.proto" />
 	  <None Remove="OrderManagement\Protos\PaymentGrpcService.proto" />
 	</ItemGroup>
@@ -42,10 +48,6 @@
       <ProjectReference Include="..\OrderManagement.Application.Contracts\OrderManagement.Application.Contracts.csproj" />
       <ProjectReference Include="..\OrderManagement.Domain\OrderManagement.Domain.csproj" />
       <ProjectReference Include="..\OrderManagement.EntityFrameworkCore\OrderManagement.EntityFrameworkCore.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="CompanyManagement\" />
     </ItemGroup>
 
 	<!--<ItemGroup>

@@ -99,5 +99,7 @@ namespace OrderManagement.EfCore
         DbSet<QuestionnaireTypeReadOnly> QuestionnaireTypeReadOnly { get; set; }
 
         DbSet<UnAuthorizedUser> UnAuthorizedUser { get; set; }
+
+        DbSet<GenderTypeReadOnly> GenderTypeReadOnly { get; set; }
     }
 }
