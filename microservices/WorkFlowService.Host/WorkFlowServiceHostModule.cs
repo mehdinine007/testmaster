@@ -26,6 +26,8 @@ using GatewayManagement.HttpApi;
 using WorkFlowManagement.EntityFrameworkCore;
 using WorkFlowService.Host.Infrastructures;
 using WorkFlowManagement.Application.WorkFlowManagement.Grpc;
+using Esale.Core.Utility.Security.Encyption;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace WorkFlowService.Host
 {
@@ -52,6 +54,21 @@ namespace WorkFlowService.Host
             var configuration = context.Services.GetConfiguration();
 
             context.Services.Configure<AppSecret>(configuration.GetSection("Authentication:JwtBearer"));
+
+            context.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                        .AddJwtBearer(opt =>
+                        {
+                            opt.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+                            {
+                                ValidateIssuer = true,
+                                ValidateAudience = true,
+                                ValidateLifetime = true,
+                                ValidIssuer = configuration["Authentication:JwtBearer:Issuer"],
+                                ValidAudience = configuration["Authentication:JwtBearer:Audience"],
+                                ValidateIssuerSigningKey = true,
+                                IssuerSigningKey = SecurityKeyHelper.CreateSecurityKey(configuration["Authentication:JwtBearer:SecurityKey"])
+                            };
+                        });
 
             context.Services.AddSwaggerGen(options =>
                 {

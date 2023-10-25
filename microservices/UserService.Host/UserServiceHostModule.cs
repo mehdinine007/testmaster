@@ -24,6 +24,9 @@ using UserManagement.EfCore.MongoDb;
 using Hangfire;
 using Microsoft.EntityFrameworkCore;
 using UserManagement.Application.UserManagement.Implementations;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Esale.Core.Utility.Security.Encyption;
+using Volo.Abp.BackgroundJobs.Hangfire;
 #endregion
 
 
@@ -38,7 +41,8 @@ namespace UserService.Host;
     typeof(UserManagementHttpApiModule),
     typeof(UserManagementEfCoreModule),
     typeof(AbpTenantManagementEntityFrameworkCoreModule),
-    typeof(AbpMongoDbModule)
+    typeof(AbpMongoDbModule),
+    typeof(AbpBackgroundJobsHangfireModule)
     )]
     
 public class UserServiceHostModule : AbpModule
@@ -47,6 +51,20 @@ public class UserServiceHostModule : AbpModule
     {
         var configuration = context.Services.GetConfiguration();
         context.Services.Configure<AppSecret>(configuration.GetSection("Authentication:JwtBearer"));
+        context.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+           .AddJwtBearer(opt =>
+           {
+               opt.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+               {
+                   ValidateIssuer = true,
+                   ValidateAudience = true,
+                   ValidateLifetime = true,
+                   ValidIssuer = configuration["Authentication:JwtBearer:Issuer"],
+                   ValidAudience = configuration["Authentication:JwtBearer:Audience"],
+                   ValidateIssuerSigningKey = true,
+                   IssuerSigningKey = SecurityKeyHelper.CreateSecurityKey(configuration["Authentication:JwtBearer:SecurityKey"])
+               };
+           });
 
         if (configuration.GetValue<bool?>("SwaggerIsEnable") ?? false)
         {
@@ -105,32 +123,24 @@ public class UserServiceHostModule : AbpModule
         app.UseCorrelationId();
         app.UseStaticFiles();
         app.UseRouting();
-
+        app.UseAuthentication();
+        app.UseAbpClaimsMap();
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapGrpcService<GetwayGrpcClient>();
 
-            //endpoints.MapGet("/", async context =>
-            //{
-            //    await context.Response.WriteAsync("Communication with gRPC endpoints must be made through a gRPC client. To learn how to create a client, visit: https://go.microsoft.com/fwlink/?linkid=2086909");
-            //});
+
         });
-
-        app.UseAuthentication();
-        app.UseAbpClaimsMap();
-
-
         app.UseAbpRequestLocalization(); //TODO: localization?
         app.UseSwagger();
-        app.UseHangfireDashboard("/hangfire");
         app.UseSwaggerUI(options =>
         {
-            options.SwaggerEndpoint("/swagger/v1/swagger.json", "User Service API");
+            options.SwaggerEndpoint("/swagger/v1/swagger.json", "Order Service API");
         });
 
         app.UseAuditing();
+        app.UseHangfireDashboard("/hangfire");
         app.UseConfiguredEndpoints();
-        //TODO: Problem on a clustered environment
         AsyncHelper.RunSync(async () =>
         {
             using (var scope = context.ServiceProvider.CreateScope())
