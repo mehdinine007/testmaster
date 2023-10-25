@@ -1,4 +1,6 @@
-﻿using MongoDB.Bson;
+﻿using Microsoft.AspNetCore.Http;
+using MongoDB.Bson;
+using OrderManagement.Domain.Shared.OrderManagement.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,5 +18,7 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Services
         Task<ProductPropertyDto> Add(ProductPropertyDto productPropertylDto);
         Task<ProductPropertyDto> Update(ProductPropertyDto productPropertylDto);
         Task<bool> Delete(string Id);
+        Task SeedPeroperty(SaleTypeEnum type);
+        Task Import(IFormFile file, SaleTypeEnum type);
     }
 }
