@@ -499,6 +499,7 @@ public class UserAppService : ApplicationService, IUserAppService
         return true;
     }
 
+    [SecuredOperation(UserServicePermissionConstants.ChangePassword)]
     public async Task<bool> ChangePassword(ChangePasswordDto input)
     {
         Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
@@ -554,6 +555,7 @@ public class UserAppService : ApplicationService, IUserAppService
 
     }
 
+    [SecuredOperation(UserServicePermissionConstants.UpdateUserProfile)]
     public async Task<bool> UpdateUserProfile(UserDto inputUser)
     {
         Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");

@@ -8,6 +8,9 @@ using Volo.Abp.Uow;
 using Volo.Abp;
 using UserManagement.Domain.Authorization.Users;
 using MongoDB.Bson;
+using Esale.Share.Authorize;
+using UserManagement.Application.Constants;
+using Abp.Auditing;
 
 namespace UserManagement.Application.UserManagement.Implementations;
 
@@ -76,6 +79,7 @@ public class BankAppService : ApplicationService, IBankAppService
         await _advocacyUsersFromBank.DeleteAsync(ad.Id);
     }
 
+    [SecuredOperation(BankAppServicePermissionconstants.GetAdvocacyUserByCompanyId)]
     public async Task<List<AdvocacyUsersFromBankWithCompanyDto>> GetAdvocacyUserByCompanyId()
     {
         if (!_commonAppService.IsInRole("Company"))
@@ -99,6 +103,7 @@ public class BankAppService : ApplicationService, IBankAppService
         return advocacyUsersFromBankDto;
     }
 
+    [SecuredOperation(BankAppServicePermissionconstants.GetUserRejecttionAdvocacyList)]
     public async Task<List<UserRejectionAdvocacyDto>> GetUserRejecttionAdvocacyList()
     {
         if (_commonAppService.GetRole() != "Bank")
@@ -155,6 +160,7 @@ public class BankAppService : ApplicationService, IBankAppService
 
     }
 
+    [SecuredOperation(BankAppServicePermissionconstants.InquiryAdvocacyUserReport)]
     public async Task<AdvocacyUserFromBankExportDto> InquiryAdvocacyUserReport(string nationalCode)
     {
         var userId = _commonAppService.GetUID();
@@ -186,7 +192,7 @@ public class BankAppService : ApplicationService, IBankAppService
 
     }
 
-
+    [SecuredOperation(BankAppServicePermissionconstants.InquiryUserRejectionFromBank)]
     public async Task<UserRejecgtionFromBankExportDto> InquiryUserRejectionFromBank(string nationalCode)
     {
         if (_commonAppService.GetRole() != "Bank")
@@ -226,6 +232,7 @@ public class BankAppService : ApplicationService, IBankAppService
 
     }
 
+    [SecuredOperation(BankAppServicePermissionconstants.SaveAdvocacyUsersFromBank)]
     public async Task SaveAdvocacyUsersFromBank(List<AdvocacyUsersFromBankDto> advocacyUsersFromBankDto)
     {
         if (!advocacyUsersFromBankDto.Any())
@@ -257,6 +264,7 @@ public class BankAppService : ApplicationService, IBankAppService
 
     }
 
+    [SecuredOperation(BankAppServicePermissionconstants.SaveUserRejectionFromBank)]
     public async Task SaveUserRejectionFromBank(UserRejectionFromBankDto userRejectionFromBankDto)
     {
         if (_commonAppService.GetRole() != "Bank")
