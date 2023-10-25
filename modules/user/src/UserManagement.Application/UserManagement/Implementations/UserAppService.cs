@@ -63,8 +63,7 @@ public class UserAppService : ApplicationService, IUserAppService
                           IRepository<UserMongoWrite, ObjectId> userMongoWriteRepository,
                           ICaptchaService captchaService,                 
                           IDistributedEventBus distributedEventBus,
-                          IRepository<UserSQL, long> UserSQLRepository
-                          ICaptchaService captchaService,
+                          IRepository<UserSQL, long> UserSQLRepository,
                           IRepository<PermissionDefinitionWrite, ObjectId> permissionDefinationRepository
         )
     {
