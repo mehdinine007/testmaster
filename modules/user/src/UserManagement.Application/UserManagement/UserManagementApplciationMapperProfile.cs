@@ -24,6 +24,8 @@ public class UserManagementApplciationMapperProfile : Profile
             .ForMember(x => x.MongoId, y => y.MapFrom(z => z.Id.ToString()))
             .ForMember(x => x.Id, y => y.Ignore())
             .ForMember(x => x.AllRoles, y => y.MapFrom(z => z.Roles.JoinAsString(",")))
+            .ForMember(x => x.UID, y => y.MapFrom(z => new Guid(z.UID)))
+
             .ReverseMap()
             .ForMember(x => x.Id, y => y.MapFrom(z => z.MongoId))
             .ForMember(x => x.Id, y => y.Ignore());

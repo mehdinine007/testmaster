@@ -11,6 +11,7 @@ namespace UserManagement.Domain.UserManagement.Authorization.Users
     [EventName("UserSQL")]
     public class UserSQL : FullAuditedEntity<long>, IUsers
     {
+        
         public const int MaxUserNameLength = 256;
         //public DateTime CreationTime { get;set; }
         //public Guid? CreatorId ;
@@ -71,12 +72,14 @@ namespace UserManagement.Domain.UserManagement.Authorization.Users
         /// <summary>
         /// Maximum length of the <see cref="SecurityStamp"/> property.
         /// </summary>
+        
         public string MongoId { get;set; }
         public const int MaxSecurityStampLength = 128;
         public string NationalCode { get; set; }
         public string FatherName { get; set; }
         public string BirthCertId { get; set; }
         public DateTime BirthDate { get; set; }
+        [Column(TypeName = "TINYINT")]
         public Gender Gender { get; set; }
         public string PostalCode { get; set; }
         public string Mobile { get; set; }
@@ -101,7 +104,7 @@ namespace UserManagement.Domain.UserManagement.Authorization.Users
         public string NormalizedUserName { get; set; }
         public string ConcurrencyStamp { get; set; }
         public int? CompanyId { get; set; }
-        public string UID { get; set; }
+        public Guid UID { get; set; }
         public string ChassiNo { get; set; }
         public string Vin { get; set; }
         public string EngineNo { get; set; }
@@ -126,5 +129,10 @@ namespace UserManagement.Domain.UserManagement.Authorization.Users
         public bool IsActive { get; set; }
         public List<string> Roles { get; set; }
         public string AllRoles { get;set; }
+        public bool EditMode { get;set; }   
+        public void SetId(long _id)
+        {
+            this.Id = _id;
+        }
     }
 }

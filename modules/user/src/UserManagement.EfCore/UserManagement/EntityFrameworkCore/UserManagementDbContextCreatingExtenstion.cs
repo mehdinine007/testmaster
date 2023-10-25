@@ -34,11 +34,15 @@ namespace UserManagement.EfCore.EntityFrameworkCore
                     b.Property(e => e.MongoId).HasMaxLength(64);
                     b.Property(e => e.Roles).HasMaxLength(256);
                     b.Ignore(e => e.Roles);
+                    b.Ignore(e => e.EditMode);
+                    b.Property(t => t.UID).HasColumnType("UniqueIdentifier");
+
+
                 });
-             
 
 
-              
+
+
 
             builder.Entity<CompanyPaypaidPrices>(entity =>
             {

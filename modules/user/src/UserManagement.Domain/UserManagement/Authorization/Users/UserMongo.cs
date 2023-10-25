@@ -295,7 +295,7 @@ namespace UserManagement.Domain.Authorization.Users
         public string NormalizedUserName  { get; set; }
         public string ConcurrencyStamp  { get; set; }
         public int? CompanyId  { get; set; }
-        public string UID  { get; set; }
+       // public string UID  { get; set; }
         // public bool IsDeleted { get { get; set; }set { get; set; } }
         public string ChassiNo  { get; set; }
         public string Vin  { get; set; }

@@ -109,8 +109,13 @@ public class UserAppService : ApplicationService, IUserAppService
     //}
     public async Task UpsertUserIntoSqlServer(UserSQL input)
     {
-        if(input.Id > 0)
+        if(input.EditMode == true)
         {
+            var iqUser = await _userSQLRepository.GetQueryableAsync();
+                
+            var user = iqUser.AsNoTracking()
+                .Select(x => new { x.Id, x.UID}).FirstOrDefault(x => x.UID == input.UID);
+            input.SetId(user.Id);
             await _userSQLRepository.UpdateAsync(input);
         }
         else
@@ -541,8 +546,10 @@ public class UserAppService : ApplicationService, IUserAppService
 
         (await _userMongoRepository.GetCollectionAsync())
             .UpdateOne(filter, update);
+        var userSql = ObjectMapper.Map<UserMongo, UserSQL>(userFromDb);
+        userSql.EditMode = true;
         await _distributedEventBus.PublishAsync<UserSQL>(
-                ObjectMapper.Map<UserMongo, UserSQL>(user)
+               userSql
                );
 
         return true;
@@ -598,8 +605,10 @@ public class UserAppService : ApplicationService, IUserAppService
             .Set(_ => _.LastModificationTime, DateTime.Now);
         (await _userMongoRepository.GetCollectionAsync())
             .UpdateOne(filter, update);
+        var userSql =  ObjectMapper.Map<UserMongo, UserSQL>(userFromDb);
+        userSql.EditMode = true;
         await _distributedEventBus.PublishAsync<UserSQL>(
-                  ObjectMapper.Map<UserMongo, UserSQL>(user)
+                  userSql
                  );
         return true;
 
