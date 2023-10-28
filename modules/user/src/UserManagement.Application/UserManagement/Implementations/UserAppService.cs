@@ -30,6 +30,8 @@ using Volo.Abp.EventBus.Distributed;
 using Volo.Abp.ObjectMapping;
 using WorkingWithMongoDB.WebAPI.Services;
 using wsFava;
+using UserManagement.Application.Contracts.UserManagement.Constant;
+using UserManagement.Application.Contracts;
 
 namespace UserManagement.Application.UserManagement.Implementations;
 
@@ -420,7 +422,10 @@ public class UserAppService : ApplicationService, IUserAppService
             user.IsDeleted = false;
             user.Password = _passwordHasher.HashPassword(new User(), input.Password);
             List<string> lsRols = new List<string>();
-            lsRols.Add(_configuration.GetValue<string>("CreateUser"));
+            var defultRoleCode = _configuration.GetValue<string>("CreateUser:RoleCode");
+           if (string.IsNullOrWhiteSpace(defultRoleCode))
+                throw new UserFriendlyException(UserMessageConstant.CreateUserDefultRoleCodeNotFound,UserMessageConstant.CreateUserDefultRoleCodeNotFoundId);
+            lsRols.Add(defultRoleCode);
             user.Roles = lsRols;
             //_userManager.InitializeOptions(AbpSession.TenantId);
             user.Address = useInquiryForUserAddress
