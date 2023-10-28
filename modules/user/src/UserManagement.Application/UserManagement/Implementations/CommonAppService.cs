@@ -44,7 +44,6 @@ public class CommonAppService : ApplicationService, ICommonAppService
     }
 
     public async Task<string> GetAddressByZipCode(string zipCode, string nationalCode)
-
     {
         if (zipCode.Length != 10 || zipCode.AsParallel().Any(x => !char.IsDigit(x)))
             throw new UserFriendlyException("کد پستی صحیح نیست");
@@ -56,7 +55,7 @@ public class CommonAppService : ApplicationService, ICommonAppService
         var zipCache = await _distributedCache.GetStringAsync(string.Format(cacheKey, zipCode, nationalCode));
         if (string.IsNullOrWhiteSpace(zipCache))
         {
-            if (_configuration.GetValue<bool?>("FakeAddressInquiryMode") ?? false)
+            if (_configuration.GetValue<bool?>("Inquiry:FakeAddressInquiryMode") ?? false)
             {
                 return "sample address to bypass inquiry for temporary usage";
             }

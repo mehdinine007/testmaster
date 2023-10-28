@@ -1,5 +1,4 @@
 ﻿using EasyCaching.Core;
-using Esale.Share.Authorize;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using OrderManagement.Application.Contracts;
@@ -152,7 +151,7 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
         return surveyReport;
     }
 
-    [SecuredOperation(QuestionnaireServicePermissionconstants.SubmitAnswer)]
+    //[SecuredOperation(QuestionnaireServicePermissionconstants.SubmitAnswer)]
     public async Task SubmitAnswer(SubmitAnswerTreeDto submitAnswerTreeDto)
     {
         if (submitAnswerTreeDto.SubmitAnswerDto == null || !submitAnswerTreeDto.SubmitAnswerDto.Any())
@@ -163,17 +162,6 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
 
         if (questionnaire.QuestionnaireType == QuestionnaireType.AnonymousAllowed)
         {
-            if (string.IsNullOrWhiteSpace(submitAnswerTreeDto.UnregisteredUserInformation.Vin) &&
-                string.IsNullOrWhiteSpace(submitAnswerTreeDto.UnregisteredUserInformation.FirstName) &&
-                string.IsNullOrWhiteSpace(submitAnswerTreeDto.UnregisteredUserInformation.ManufactureDate) &&
-                string.IsNullOrWhiteSpace(submitAnswerTreeDto.UnregisteredUserInformation.LastName) &&
-                string.IsNullOrWhiteSpace(submitAnswerTreeDto.UnregisteredUserInformation.VehicleName) &&
-                string.IsNullOrWhiteSpace(submitAnswerTreeDto.UnregisteredUserInformation.MobileNumber) &&
-                string.IsNullOrWhiteSpace(submitAnswerTreeDto.UnregisteredUserInformation.SmsCode) &&
-                string.IsNullOrWhiteSpace(submitAnswerTreeDto.UnregisteredUserInformation.EducationLevel) &&
-                string.IsNullOrWhiteSpace(submitAnswerTreeDto.UnregisteredUserInformation.Occupation) &&
-                string.IsNullOrWhiteSpace(submitAnswerTreeDto.UnregisteredUserInformation.NationalCode))
-                throw new UserFriendlyException("لطفا نمام فیلد ها را پر کنید");
             if (!_httpContextAccessor.HttpContext.User.Identity.IsAuthenticated)
             {
                 var smsCodeIsValid = await _commonAppService.ValidateSMS(submitAnswerTreeDto.UnregisteredUserInformation.SmsCode,
@@ -184,8 +172,6 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
                     throw new UserFriendlyException("کد ارسالی صحیح نیست");
             }
 
-            var unAuthorizedUser = await _unAuthorizedUserRepository.InsertAsync(
-                ObjectMapper.Map<UnregisteredUserInformation, UnAuthorizedUser>(submitAnswerTreeDto.UnregisteredUserInformation));
         }
         else if (questionnaire.QuestionnaireType == QuestionnaireType.AuthorizedOnly)
         {
@@ -212,6 +198,22 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
         }
         else
             throw new InvalidOperationException();
+
+
+        if (string.IsNullOrWhiteSpace(submitAnswerTreeDto.UnregisteredUserInformation.Vin) &&
+            string.IsNullOrWhiteSpace(submitAnswerTreeDto.UnregisteredUserInformation.FirstName) &&
+            string.IsNullOrWhiteSpace(submitAnswerTreeDto.UnregisteredUserInformation.ManufactureDate) &&
+            string.IsNullOrWhiteSpace(submitAnswerTreeDto.UnregisteredUserInformation.LastName) &&
+            string.IsNullOrWhiteSpace(submitAnswerTreeDto.UnregisteredUserInformation.VehicleName) &&
+            string.IsNullOrWhiteSpace(submitAnswerTreeDto.UnregisteredUserInformation.MobileNumber) &&
+            string.IsNullOrWhiteSpace(submitAnswerTreeDto.UnregisteredUserInformation.SmsCode) &&
+            string.IsNullOrWhiteSpace(submitAnswerTreeDto.UnregisteredUserInformation.EducationLevel) &&
+            string.IsNullOrWhiteSpace(submitAnswerTreeDto.UnregisteredUserInformation.Occupation) &&
+            string.IsNullOrWhiteSpace(submitAnswerTreeDto.UnregisteredUserInformation.NationalCode))
+            throw new UserFriendlyException("لطفا نمام فیلد ها را پر کنید");
+
+        var unAuthorizedUser = await _unAuthorizedUserRepository.InsertAsync(
+            ObjectMapper.Map<UnregisteredUserInformation, UnAuthorizedUser>(submitAnswerTreeDto.UnregisteredUserInformation));
 
         //check all available questions in questionnaire being completed
         var questionIds = questionnaire.Questions.Select(x => x.Id).OrderBy(x => x).ToList();

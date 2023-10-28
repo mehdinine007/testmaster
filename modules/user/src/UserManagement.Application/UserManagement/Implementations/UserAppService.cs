@@ -161,7 +161,7 @@ public class UserAppService : ApplicationService, IUserAppService
         //        throw new UserFriendlyException("کپچا صحیح نمی باشد");
         //    }
         //}
-        var useInquiryForUserAddress = _configuration.GetValue<bool?>("UseInquiryForUserAddress") ?? false;
+        var useInquiryForUserAddress = _configuration.GetValue<bool?>("Inquiry:UseInquiryForUserAddress") ?? false;
         //if (!string.IsNullOrWhiteSpace(input.Vin) &&
         //    !string.IsNullOrWhiteSpace(input.ChassiNo) &&
         //    !string.IsNullOrWhiteSpace(input.EngineNo) &&
@@ -376,7 +376,7 @@ public class UserAppService : ApplicationService, IUserAppService
         {
             throw new UserFriendlyException(Messages.NationalCodeNotValid);
         }
-        var useShahkarInquiry = _configuration.GetValue<bool?>("UseShahkarInquiryInRegister") ?? false;
+        var useShahkarInquiry = _configuration.GetValue<bool?>("Inquiry:UseShahkarInquiryInRegister") ?? false;
         var shahkarResult = useShahkarInquiry
             ? await _commonAppService.ValidateMobileNumber(input.NationalCode, input.Mobile)
             : false;
@@ -674,7 +674,7 @@ public class UserAppService : ApplicationService, IUserAppService
             userFromDb.Mobile = inputUser.Mobile;
         }
 
-        var useInquiryForUserAddress = _configuration.GetValue<bool?>("UseInquiryForUserAddress") ?? false;
+        var useInquiryForUserAddress = _configuration.GetValue<bool?>("Inquiry:UseInquiryForUserAddress") ?? false;
 
         if (_configuration.GetSection("IsIranCellActive").Value == "0")
         {
@@ -794,7 +794,7 @@ public class UserAppService : ApplicationService, IUserAppService
                 throw new UserFriendlyException("فرمت شماره شاسی صحیح نیست");
             //if (!string.IsNullOrWhiteSpace(inputUser.Vehicle))
             //    throw new UserFriendlyException("نام خودرو به درستی وارد نشده است");
-            var useShahkarInquiry = _configuration.GetValue<bool?>("UseShahkarInquiryInRegister") ?? false;
+            var useShahkarInquiry = _configuration.GetValue<bool?>("Inquiry:UseShahkarInquiryInRegister") ?? false;
             var shahkarResult = useShahkarInquiry
             ? await _commonAppService.ValidateMobileNumber(inputUser.NationalCode, inputUser.Mobile)
             : false;
