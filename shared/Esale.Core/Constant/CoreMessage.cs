@@ -9,7 +9,7 @@ namespace Esale.Core.Constant
     public static class CoreMessage
     {
         public static string AuthenticationDenied = "خطای دسترسی";
-        public static string AuthenticationDeniedId = "301";
+        public static string AuthenticationDeniedId = "401";
 
     }
 }
