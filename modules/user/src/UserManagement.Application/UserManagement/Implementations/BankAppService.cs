@@ -82,10 +82,10 @@ public class BankAppService : ApplicationService, IBankAppService
     [SecuredOperation(BankAppServicePermissionconstants.GetAdvocacyUserByCompanyId)]
     public async Task<List<AdvocacyUsersFromBankWithCompanyDto>> GetAdvocacyUserByCompanyId()
     {
-        if (!_commonAppService.IsInRole("Company"))
-        {
-            throw new UserFriendlyException("دسترسی شما کافی نمی باشد");
-        }
+        //if (!_commonAppService.IsInRole("Company"))
+        //{
+        //    throw new UserFriendlyException("دسترسی شما کافی نمی باشد");
+        //}
         List<AdvocacyUsersFromBankWithCompanyDto> advocacyUsersFromBankDto = null;
         List<AdvocacyUsersFromBankWithCompanyDto> advocacyUsersFromBanksDto = new List<AdvocacyUsersFromBankWithCompanyDto>();
         var userId = _commonAppService.GetUID();

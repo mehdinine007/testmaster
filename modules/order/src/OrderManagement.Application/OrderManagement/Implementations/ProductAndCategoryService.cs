@@ -68,7 +68,7 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
     {
         await Validation(id, null);
         var query = await _productAndCategoryRepository.GetQueryableAsync();
-        if (!_commonAppService.IsInRole("Admin"))
+        //if (!_commonAppService.IsInRole("Admin"))
             query = query.Where(x => x.Active);
         var productCategory = query
             .FirstOrDefault(x => x.Id == id) ??
@@ -181,7 +181,7 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
     public async Task<CustomPagedResultDto<ProductAndCategoryDto>> GetListWithPagination(ProductAndCategoryQueryDto input)
     {
         var productCategoryQuery = await _productAndCategoryRepository.WithDetailsAsync(x => x.Childrens);
-        if (!_commonAppService.IsInRole("Admin"))
+        //if (!_commonAppService.IsInRole("Admin"))
             productCategoryQuery = productCategoryQuery.Where(x => x.Active);
 
         productCategoryQuery = productCategoryQuery.AsSingleQuery();
@@ -216,7 +216,7 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
     {
         List<ProductAndCategory> ls = new();
         var productAndCategoryQuery = await _productAndCategoryRepository.GetQueryableAsync();
-        if (!_commonAppService.IsInRole("Admin"))
+        //if (!_commonAppService.IsInRole("Admin"))
             productAndCategoryQuery = productAndCategoryQuery.Include(x => x.ProductLevel).Where(x => x.Active);
         var attachments = new List<AttachmentDto>();
         switch (input.Type)

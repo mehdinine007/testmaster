@@ -420,7 +420,7 @@ public class UserAppService : ApplicationService, IUserAppService
             user.IsDeleted = false;
             user.Password = _passwordHasher.HashPassword(new User(), input.Password);
             List<string> lsRols = new List<string>();
-            lsRols.Add("Customer");
+            lsRols.Add(_configuration.GetValue<string>("CreateUser"));
             user.Roles = lsRols;
             //_userManager.InitializeOptions(AbpSession.TenantId);
             user.Address = useInquiryForUserAddress
