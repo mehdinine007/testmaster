@@ -144,43 +144,61 @@
             "title": "CancelOrder",
             "code": "000200030001",
             "displayName": "لغو سفارش",
-            "children":[]
+            "children": []
           },
           {
             "title": "CommitOrder",
             "code": "000200030002",
             "displayName": "ثبت سفارش",
-            "children":[]
+            "children": []
           },
           {
             "title": "GetCompaniesCustomerOrders",
             "code": "000200030003",
             "displayName": "نمایش سفارشات مشتریان خودروساز",
-            "children":[]
+            "children": []
           },
           {
             "title": "GetCustomerInfoPriorityUser",
             "code": "000200030004",
             "displayName": "نمایش اطلاعات الویت بندی مشتریان",
-            "children":[]
+            "children": []
           },
           {
             "title": "GetDetail",
             "code": "000200030005",
             "displayName": "نمایش برنامه فروش",
-            "children":[]
+            "children": []
           },
           {
             "title": "InsertUserRejectionAdvocacyPlan",
             "code": "000200030006",
             "displayName": "ثبت انصراف از طرح",
-            "children":[]
+            "children": []
           },
           {
             "title": "UserRejectionStatus",
             "code": "000200030007",
             "displayName": "وضعیت انصراف مشتری",
-            "children":[]
+            "children": []
+          },
+          {
+            "title": "GetCustomerOrderList",
+            "code": "000200030008",
+            "displayName": "نمایش لیست سفارشات",
+            "children": []
+          },
+          {
+            "title": "GetSaleDetailByUid",
+            "code": "000200030009",
+            "displayName": "نمایش برنامه فروش توسط UID",
+            "children": []
+          },
+          {
+            "title": "GetOrderDetailById",
+            "code": "000200030010",
+            "displayName": "نمایش جزییات سفارش توسط شناسه",
+            "children": []
           }
         ]
       },

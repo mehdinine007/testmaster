@@ -18,6 +18,15 @@ public class OrderAppServicePermissionConstants : BasePermissionConstants
     public const string InsertUserRejectionAdvocacyPlan_DisplayName = "ثبت انصراف از طرح";
     public const string UserRejectionStatus = "000200030007";
     public const string UserRejectionStatus_DisplayName = "وضعیت انصراف مشتری";
+    public const string GetCustomerOrderList = "000200030008";
+    public const string GetCustomerOrderList_DisplayName = "نمایش لیست سفارشات";
+    public const string GetSaleDetailByUid = "000200030009";
+    public const string GetSaleDetailByUid_DisplayName = "نمایش برنامه فروش توسط UID";
+    public const string GetOrderDetailById = "000200030010";
+    public const string GetOrderDetailById_DisplayName = "نمایش جزییات سفارش توسط شناسه";
+
+    
+
 
     public override string ModuleIdentifier => "0002";
 

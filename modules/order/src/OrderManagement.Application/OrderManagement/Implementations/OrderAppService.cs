@@ -174,8 +174,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
         Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
         TimeSpan ttl = DateTime.Now.Subtract(DateTime.Now);
 
-        if (!_commonAppService.IsInRole("Customer"))
-            throw new UserFriendlyException("دسترسی شما کافی نمی باشد");
+        //if (!_commonAppService.IsInRole("Customer"))
+        //    throw new UserFriendlyException("دسترسی شما کافی نمی باشد");
 
         if (_configuration.GetSection("IsIranCellActive").Value == "1")
         {
@@ -749,12 +749,13 @@ public class OrderAppService : ApplicationService, IOrderAppService
         }
     }
     [UnitOfWork(false, IsolationLevel.ReadUncommitted)]
+    [SecuredOperation(OrderAppServicePermissionConstants.GetCustomerOrderList)]
     public async Task<List<CustomerOrder_OrderDetailDto>> GetCustomerOrderList(List<AttachmentEntityTypeEnum> attachmentType = null)
     {
-        if (!_commonAppService.IsInRole("Customer"))
-        {
-            throw new UserFriendlyException("دسترسی شما کافی نمی باشد");
-        }
+        //if (!_commonAppService.IsInRole("Customer"))
+        //{
+        //    throw new UserFriendlyException("دسترسی شما کافی نمی باشد");
+        //}
         var userId = _commonAppService.GetUserId();
         var orderRejections = _orderRejectionTypeReadOnlyRepository.WithDetails().ToList();
         var orderStatusTypes = _orderStatusTypeReadOnlyRepository.WithDetails().ToList();
@@ -835,10 +836,10 @@ public class OrderAppService : ApplicationService, IOrderAppService
     {
         Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
         var userId = _commonAppService.GetUserId();
-        if (!_commonAppService.IsInRole("Customer"))
-        {
-            throw new UserFriendlyException("دسترسی شما کافی نمی باشد");
-        }
+        //if (!_commonAppService.IsInRole("Customer"))
+        //{
+        //    throw new UserFriendlyException("دسترسی شما کافی نمی باشد");
+        //}
         //_baseInformationAppService.CheckWhiteList(WhiteListEnumType.WhiteListOrder);
         var customerOrder = _commitOrderRepository.WithDetails().FirstOrDefault(x => x.Id == orderId);
         if (customerOrder == null)
@@ -953,10 +954,10 @@ public class OrderAppService : ApplicationService, IOrderAppService
     public async Task InsertUserRejectionAdvocacyPlan(string userSmsCode)
     {
 
-        if (!_commonAppService.IsInRole("Customer"))
-        {
-            throw new UserFriendlyException("دسترسی شما کافی نمی باشد");
-        }
+        //if (!_commonAppService.IsInRole("Customer"))
+        //{
+        //    throw new UserFriendlyException("دسترسی شما کافی نمی باشد");
+        //}
         //var userId = _abpSession.UserId ?? throw new UserFriendlyException("لطفا لاگین کنید");
         //var user = _userRepository.FirstOrDefault(userId);
         var userNationalCode = _commonAppService.GetNationalCode();
@@ -1316,12 +1317,13 @@ public class OrderAppService : ApplicationService, IOrderAppService
         return inquiryResult;
     }
 
+    [SecuredOperation(OrderAppServicePermissionConstants.GetSaleDetailByUid)]
     public async Task<CustomerOrder_OrderDetailDto> GetSaleDetailByUid(Guid saleDetailUid, List<AttachmentEntityTypeEnum> attachmentEntityType = null)
     {
-        if (!_commonAppService.IsInRole("Customer"))
-        {
-            throw new UserFriendlyException("دسترسی شما کافی نمی باشد");
-        }
+        //if (!_commonAppService.IsInRole("Customer"))
+        //{
+        //    throw new UserFriendlyException("دسترسی شما کافی نمی باشد");
+        //}
         var userId = _commonAppService.GetUserId();
         var saleDetailQuery = (await _saleDetailRepository.GetQueryableAsync()).Include(x => x.Product);
         var saleDetail = saleDetailQuery.AsNoTracking()
@@ -1353,12 +1355,13 @@ public class OrderAppService : ApplicationService, IOrderAppService
         return saleDetail;
     }
 
+    [SecuredOperation(OrderAppServicePermissionConstants.GetOrderDetailById)]
     public async Task<CustomerOrder_OrderDetailDto> GetOrderDetailById(int id, List<AttachmentEntityTypeEnum> attachmentType = null)
     {
-        if (!_commonAppService.IsInRole("Customer"))
-        {
-            throw new UserFriendlyException("دسترسی شما کافی نمی باشد");
-        }
+        //if (!_commonAppService.IsInRole("Customer"))
+        //{
+        //    throw new UserFriendlyException("دسترسی شما کافی نمی باشد");
+        //}
         var userId = _commonAppService.GetUserId();
         var orderStatusTypes = _orderStatusTypeReadOnlyRepository.WithDetails().ToList();
         var customerOrderQuery = await _commitOrderRepository.GetQueryableAsync();
