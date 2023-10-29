@@ -122,6 +122,10 @@ public class UserAppService : ApplicationService, IUserAppService
                 
             var user = iqUser.AsNoTracking()
                 .Select(x => new { x.Id, x.UID}).FirstOrDefault(x => x.UID == input.UID);
+            if(user == null)
+            {
+                throw new UserFriendlyException("کاربر وجود ندارد");
+            }
             input.SetId(user.Id);
             await _userSQLRepository.UpdateAsync(input);
         }
