@@ -116,12 +116,13 @@ namespace Esale.Core.Caching
 
         public async Task SetWithPrefixKeyAsync(string key, string prefix, string value, double ttl)
         {
+            string cacheKeyName = prefix + key;
+            await _redisCacheManager.StringAppendAsync(prefix, cacheKeyName + ",");
             await SetStringAsync(key, prefix, value, new CacheOptions()
             {
                 Provider = CacheProviderEnum.Redis
             }, ttl);
-            string cacheKeyName = prefix + key;
-            await _redisCacheManager.StringAppendAsync(prefix, cacheKeyName + ",");
+           
         }
 
         public async Task<long> StringIncrementAsync(string key)
