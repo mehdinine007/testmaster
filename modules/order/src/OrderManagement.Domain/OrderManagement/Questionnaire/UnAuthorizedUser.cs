@@ -1,4 +1,6 @@
-﻿using Volo.Abp.Domain.Entities.Auditing;
+﻿using OrderManagement.Domain.Shared;
+using System;
+using Volo.Abp.Domain.Entities.Auditing;
 
 namespace OrderManagement.Domain;
 
@@ -23,4 +25,12 @@ public class UnAuthorizedUser : FullAuditedEntity<long>
     public Questionnaire Questionnaire { get; set; }
 
     public int QuestionnaireId { get; set; }
+
+    public DateTime Age { get; set; }
+
+    public GenderType Gender { get; set; }
+
+    public string EducationLevel { get; set; }
+
+    public string Occupation { get; set; }
 }

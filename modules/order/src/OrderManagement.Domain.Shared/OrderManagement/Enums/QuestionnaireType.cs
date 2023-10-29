@@ -4,9 +4,10 @@ namespace OrderManagement.Domain.Shared;
 
 public enum QuestionnaireType
 {
-    [Display(Name = "احراض اختیاری")]
-    AnonymousAllowed = 1,
-
     [Display(Name = "احراض اجباری")]
-    AuthorizedOnly = 2
+    AuthorizedOnly = 0,
+
+    [Display(Name = "احراض اختیاری")]
+    AnonymousAllowed = 1
+
 }

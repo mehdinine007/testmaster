@@ -230,8 +230,8 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
         {
             throw new UserFriendlyException("کدپستی را وارد نمایید");
         }
-        var useInquiryForUserAddress = _configuration.GetValue<bool?>("UseInquiryForUserAddress") ?? false;
-        if (useInquiryForUserAddress)
+        var useInquiryForUserAddress = _configuration.GetValue<bool?>("Inquiry:UseInquiryForUserAddress") ?? false;
+        if (!useInquiryForUserAddress)
             throw new UserFriendlyException("استعلام شماره موبایل ممکن نیست");
         var zipCodeInquiry =await _commonAppService.GetAddressByZipCode(input.zipCod, input.nationalCode);
         return zipCodeInquiry;

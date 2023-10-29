@@ -30,6 +30,8 @@ using Volo.Abp.EventBus.Distributed;
 using Volo.Abp.ObjectMapping;
 using WorkingWithMongoDB.WebAPI.Services;
 using wsFava;
+using UserManagement.Application.Contracts.UserManagement.Constant;
+using UserManagement.Application.Contracts;
 
 namespace UserManagement.Application.UserManagement.Implementations;
 
@@ -163,7 +165,7 @@ public class UserAppService : ApplicationService, IUserAppService
         //        throw new UserFriendlyException("کپچا صحیح نمی باشد");
         //    }
         //}
-        var useInquiryForUserAddress = _configuration.GetValue<bool?>("UseInquiryForUserAddress") ?? false;
+        var useInquiryForUserAddress = _configuration.GetValue<bool?>("Inquiry:UseInquiryForUserAddress") ?? false;
         //if (!string.IsNullOrWhiteSpace(input.Vin) &&
         //    !string.IsNullOrWhiteSpace(input.ChassiNo) &&
         //    !string.IsNullOrWhiteSpace(input.EngineNo) &&
@@ -378,7 +380,7 @@ public class UserAppService : ApplicationService, IUserAppService
         {
             throw new UserFriendlyException(Messages.NationalCodeNotValid);
         }
-        var useShahkarInquiry = _configuration.GetValue<bool?>("UseShahkarInquiryInRegister") ?? false;
+        var useShahkarInquiry = _configuration.GetValue<bool?>("Inquiry:UseShahkarInquiryInRegister") ?? false;
         var shahkarResult = useShahkarInquiry
             ? await _commonAppService.ValidateMobileNumber(input.NationalCode, input.Mobile)
             : false;
@@ -424,7 +426,10 @@ public class UserAppService : ApplicationService, IUserAppService
             user.IsDeleted = false;
             user.Password = _passwordHasher.HashPassword(new User(), input.Password);
             List<string> lsRols = new List<string>();
-            lsRols.Add("Customer");
+            var defultRoleCode = _configuration.GetValue<string>("CreateUser:RoleCode");
+           if (string.IsNullOrWhiteSpace(defultRoleCode))
+                throw new UserFriendlyException(UserMessageConstant.CreateUserDefultRoleCodeNotFound,UserMessageConstant.CreateUserDefultRoleCodeNotFoundId);
+            lsRols.Add(defultRoleCode);
             user.Roles = lsRols;
             //_userManager.InitializeOptions(AbpSession.TenantId);
             user.Address = useInquiryForUserAddress
@@ -567,6 +572,7 @@ public class UserAppService : ApplicationService, IUserAppService
         return true;
     }
 
+    [SecuredOperation(UserServicePermissionConstants.ChangePassword)]
     public async Task<bool> ChangePassword(ChangePasswordDto input)
     {
         Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
@@ -626,6 +632,7 @@ public class UserAppService : ApplicationService, IUserAppService
 
     }
 
+    [SecuredOperation(UserServicePermissionConstants.UpdateUserProfile)]
     public async Task<bool> UpdateUserProfile(UserDto inputUser)
     {
         Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
@@ -671,7 +678,7 @@ public class UserAppService : ApplicationService, IUserAppService
             userFromDb.Mobile = inputUser.Mobile;
         }
 
-        var useInquiryForUserAddress = _configuration.GetValue<bool?>("UseInquiryForUserAddress") ?? false;
+        var useInquiryForUserAddress = _configuration.GetValue<bool?>("Inquiry:UseInquiryForUserAddress") ?? false;
 
         if (_configuration.GetSection("IsIranCellActive").Value == "0")
         {
@@ -791,7 +798,7 @@ public class UserAppService : ApplicationService, IUserAppService
                 throw new UserFriendlyException("فرمت شماره شاسی صحیح نیست");
             //if (!string.IsNullOrWhiteSpace(inputUser.Vehicle))
             //    throw new UserFriendlyException("نام خودرو به درستی وارد نشده است");
-            var useShahkarInquiry = _configuration.GetValue<bool?>("UseShahkarInquiryInRegister") ?? false;
+            var useShahkarInquiry = _configuration.GetValue<bool?>("Inquiry:UseShahkarInquiryInRegister") ?? false;
             var shahkarResult = useShahkarInquiry
             ? await _commonAppService.ValidateMobileNumber(inputUser.NationalCode, inputUser.Mobile)
             : false;

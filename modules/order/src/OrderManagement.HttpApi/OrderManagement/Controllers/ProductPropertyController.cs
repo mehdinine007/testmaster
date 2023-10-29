@@ -7,6 +7,8 @@ using OrderManagement.Application.Contracts.OrderManagement.Services;
 using OrderManagement.Application.Contracts.OrderManagement;
 using OrderManagement.Application.Contracts;
 using MongoDB.Bson;
+using Microsoft.AspNetCore.Http;
+using OrderManagement.Domain.Shared.OrderManagement.Enums;
 
 namespace OrderManagement.HttpApi.OrderManagement.Controllers
 {
@@ -43,5 +45,11 @@ namespace OrderManagement.HttpApi.OrderManagement.Controllers
         [HttpDelete]
         public async Task<bool> Delete(string Id)
         => await _productPropertyService.Delete(Id);
+        [HttpPost]
+        public async Task SeedPeroperty(SaleTypeEnum type)
+        => await _productPropertyService.SeedPeroperty(type);
+        [HttpPost]
+        public async Task Import(IFormFile file, SaleTypeEnum type)
+        => await _productPropertyService.Import(file, type);
     }
 }

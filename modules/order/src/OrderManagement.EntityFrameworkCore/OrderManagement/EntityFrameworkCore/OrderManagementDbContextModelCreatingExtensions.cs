@@ -437,6 +437,9 @@ public static class OrderManagementDbContextModelCreatingExtensions
             entity.HasOne(x => x.Questionnaire)
                 .WithMany(x => x.UnAuthorizedUsers)
                 .HasForeignKey(x => x.QuestionnaireId);
+
+            entity.Property(x => x.Age)
+                .HasColumnType("Date");
         });
         //builder.Entity<ClientsOrderDetailByCompany>(entity =>
         //{
@@ -457,5 +460,10 @@ public static class OrderManagementDbContextModelCreatingExtensions
         //    entity.Property(x => x.CarDesc)
         //        .HasMaxLength(250);
         //});
+        builder.Entity<GenderTypeReadOnly>(entity =>
+        {
+            entity.ToTable(nameof(GenderTypeReadOnly));
+            entity.AddEnumChangeTracker<GenderTypeReadOnly, GenderType>();
+        });
     }
 }
