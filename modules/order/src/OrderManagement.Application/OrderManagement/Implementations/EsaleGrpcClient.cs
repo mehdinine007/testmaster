@@ -44,7 +44,7 @@ public class EsaleGrpcClient : ApplicationService, IEsaleGrpcClient
 
         var user = client.GetUserById(new GetUserModel() { UserId = userId });
 
-        if (user.BankId == 0)
+        if (string.IsNullOrEmpty(user.NationalCode))
             return null;
         return new UserDto
         {
