@@ -1,14 +1,19 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using MongoDB.Bson;
 using Nest;
+using OfficeOpenXml;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.OrderManagement;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
 using OrderManagement.Domain;
 using OrderManagement.Domain.OrderManagement;
+using OrderManagement.Domain.Shared;
+using OrderManagement.Domain.Shared.OrderManagement.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,14 +22,22 @@ using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.ObjectMapping;
 
+
 namespace OrderManagement.Application
 {
     public class ProductPropertyService : ApplicationService, IProductPropertyService
     {
         private readonly IRepository<ProductProperty, ObjectId> _productPropertyRepository;
-        public ProductPropertyService(IRepository<ProductProperty, ObjectId> productPropertyRepository)
+        private readonly IRepository<PropertyCategory, ObjectId> _propertyDefinitionRepository;
+        private readonly IRepository<ProductAndCategory, int> _productAndCategoryRepository;
+
+
+        public ProductPropertyService(IRepository<ProductProperty, ObjectId> productPropertyRepository, IRepository<PropertyCategory, ObjectId> propertyDefinitionRepository
+            , IRepository<ProductAndCategory, int> productAndCategoryRepository)
         {
             _productPropertyRepository = productPropertyRepository;
+            _propertyDefinitionRepository = propertyDefinitionRepository;
+            _productAndCategoryRepository = productAndCategoryRepository;
         }
 
         public async Task<List<PropertyCategoryDto>> GetByProductId(int productId)
@@ -34,7 +47,7 @@ namespace OrderManagement.Application
                 .FirstOrDefault(x => x.ProductId == productId);
             if (productProperty == null)
                 return null;
-            return ObjectMapper.Map<List<PropertyCategory>, List<PropertyCategoryDto>>(productProperty.PropertyCategories); 
+            return ObjectMapper.Map<List<PropertyCategory>, List<PropertyCategoryDto>>(productProperty.PropertyCategories);
         }
         public async Task<List<ProductPropertyDto>> GetList()
         {
@@ -44,11 +57,19 @@ namespace OrderManagement.Application
             var getProductProperty = ObjectMapper.Map<List<ProductProperty>, List<ProductPropertyDto>>(productProperty);
             return getProductProperty;
         }
-        public async Task<ProductPropertyDto> GetById(ObjectId id)
+        public async Task<ProductPropertyDto> GetById(string Id)
         {
-            var productLevel = (await _productPropertyRepository.GetQueryableAsync())
-                .FirstOrDefault(x => x.Id == id);
-            return ObjectMapper.Map<ProductProperty, ProductPropertyDto>(productLevel);
+            ObjectId objectId;
+            if (ObjectId.TryParse(Id, out objectId))
+            {
+                var productLevel = (await _productPropertyRepository.GetQueryableAsync())
+               .FirstOrDefault(x => x.Id == objectId);
+                return ObjectMapper.Map<ProductProperty, ProductPropertyDto>(productLevel);
+            }
+            else
+            {
+                throw new UserFriendlyException(OrderConstant.NotValid, OrderConstant.NotValidId);
+            }
         }
         public async Task<ProductPropertyDto> Add(ProductPropertyDto productPropertyDto)
         {
@@ -91,10 +112,952 @@ namespace OrderManagement.Application
 
             return ObjectMapper.Map<ProductProperty, ProductPropertyDto>(existingEntity);
         }
-        public async Task<bool> Delete(ObjectId id)
+        public async Task<bool> Delete(string Id)
         {
-            await _productPropertyRepository.DeleteAsync(x => x.Id == id, autoSave: true);
-            return true;
+            ObjectId objectId;
+            if (ObjectId.TryParse(Id, out objectId))
+            {
+                await _productPropertyRepository.DeleteAsync(x => x.Id == objectId, autoSave: true);
+                return true;
+            }
+            else
+            {
+                throw new UserFriendlyException(OrderConstant.NotValid, OrderConstant.NotValidId);
+
+            }
         }
+
+
+        public async Task SeedPeroperty(SaleTypeEnum type)
+        {
+            var propertydto = new PropertyCategoryDto();
+
+            if (type == SaleTypeEnum.esalecar)
+            {
+                propertydto = new PropertyCategoryDto()
+                {
+                    Title = "مشخصات اصلی",
+                    Display = true,
+                    Properties = new List<PropertyDto>()
+            {
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "مورد علاقه",
+                    Key = "isfavorite",
+                    Type = PropertyTypeEnum.Boolean,
+                    Value = ""
+                },
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "کلاس خودرو",
+                    Key = "carclass",
+                    Type = PropertyTypeEnum.Coding,
+                    CodingType = CodingTypeEnum.CarClass,
+                    Value = "",
+                },
+            }
+                };
+                await _propertyDefinitionRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto, PropertyCategory>(propertydto));
+                propertydto = new PropertyCategoryDto()
+                {
+                    Title = "مشخصات فنی",
+                    Display = true,
+                    Properties = new List<PropertyDto>()
+            {
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "محور محرک",
+                    Key = "P001",
+                    Type = PropertyTypeEnum.Text,
+                    Value = ""
+                },
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "گیربکس",
+                    Key = "P002",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                },
+                 new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "حجم موتور",
+                    Key = "P003",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                },
+                 new PropertyDto()
+                {
+
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "تنفس موتور",
+                    Key = "P004",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                },
+
+                 new PropertyDto()
+                {
+
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "پیشرانه",
+                    Key = "P005",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                },
+            }
+                };
+                await _propertyDefinitionRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto, PropertyCategory>(propertydto));
+                propertydto = new PropertyCategoryDto()
+                {
+                    Title = "عملکرد خودرو",
+                    Display = true,
+                    Properties = new List<PropertyDto>()
+            {
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "توان موتور",
+                    Key = "P006",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                },
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "سرعت",
+                    Key = "P007",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                },
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "شتاب",
+                    Key = "P008",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                },
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "مصرف سوخت",
+                    Key = "P009",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                },
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "گشتاور",
+                    Key = "P010",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                },
+            }
+                };
+                await _propertyDefinitionRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto, PropertyCategory>(propertydto));
+                propertydto = new PropertyCategoryDto()
+                {
+                    Title = "بدنه و شاسی",
+                    Display = true,
+                    Properties = new List<PropertyDto>()
+            {
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "(طول(میلیمتر",
+                    Key = "P011",
+                    Type = PropertyTypeEnum.Number,
+                    Value = "",
+                },
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "(عرض(میلیمتر",
+                    Key = "P012",
+                    Type = PropertyTypeEnum.Number,
+                    Value = "",
+                },
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "(ارتفاع (میلیمتر",
+                    Key = "P013",
+                    Type = PropertyTypeEnum.Number,
+                    Value = "",
+                },
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "حجم باک",
+                    Key = "P014",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                },
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "نوع شاسی ",
+                    Key = "P015",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                },
+                 new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "سیستم تعلیق جلو",
+                    Key = "P016",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                },
+                 new PropertyDto()
+                 {
+                   Id = ObjectId.GenerateNewId(),
+                    Title = "سیستم تعلیق عقب",
+                    Key = "P017",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+
+                 },
+                 new PropertyDto()
+                 {
+                   Id = ObjectId.GenerateNewId(),
+                    Title = "فرمان",
+                    Key = "P018",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+
+                 }
+
+            },
+
+                };
+                await _propertyDefinitionRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto, PropertyCategory>(propertydto));
+                propertydto = new PropertyCategoryDto()
+                {
+                    Title = "ایمنی و امنیت",
+                    Display = true,
+                    Properties = new List<PropertyDto>()
+            {
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "سیستم کروز کنترل",
+                    Key = "P019",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                },
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "ایربگ راننده",
+                    Key = "P020",
+                    Type = PropertyTypeEnum.Boolean,
+                    Value = "",
+                },
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "ایربگ سرنشین جلو",
+                    Key = "P021",
+                    Type = PropertyTypeEnum.Boolean,
+                    Value = "",
+                },
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "ترمز  ABS",
+                    Key = "P022",
+                    Type = PropertyTypeEnum.Boolean,
+                    Value = "",
+                },
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "ترمز  EBD",
+                    Key = "P023",
+                    Type = PropertyTypeEnum.Boolean,
+                    Value = "",
+                },
+                 new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "کنترل پایداری ESP",
+                    Key = "P024",
+                    Type = PropertyTypeEnum.Boolean,
+                    Value = "",
+                },
+                 new PropertyDto()
+                 {
+                   Id = ObjectId.GenerateNewId(),
+                    Title = "ترمز جلو",
+                    Key = "P025",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+
+                 },
+                 new PropertyDto()
+                 {
+                   Id = ObjectId.GenerateNewId(),
+                    Title = "ترمز عقب",
+                    Key = "P026",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+
+                 }
+
+            },
+
+                };
+                await _propertyDefinitionRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto, PropertyCategory>(propertydto));
+                propertydto = new PropertyCategoryDto()
+                {
+                    Title = "تجهیزات و امکانات",
+                    Display = true,
+                    Properties = new List<PropertyDto>()
+            {
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "استارت",
+                    Key = "P027",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                },
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "صفحه نمایش مرکزی",
+                    Key = "P028",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                },
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "دوربین عقب",
+                    Key = "P029",
+                    Type = PropertyTypeEnum.Boolean,
+                    Value = "",
+                },
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "مه شکن عقب",
+                    Key = "P030",
+                    Type = PropertyTypeEnum.Boolean,
+                    Value = "",
+                },
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "سنسور پارک جلو",
+                    Key = "P031",
+                    Type = PropertyTypeEnum.Boolean,
+                    Value = "",
+                },
+                 new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "سنسور پارک عقب",
+                    Key = "P032",
+                    Type = PropertyTypeEnum.Boolean,
+                    Value = "",
+                },
+                 new PropertyDto()
+                {
+                   Id = ObjectId.GenerateNewId(),
+                    Title = "سنسور باران",
+                    Key = "P033",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+
+                },
+                 new PropertyDto()
+                {
+                   Id = ObjectId.GenerateNewId(),
+                    Title = "تعداد بلندگو ",
+                    Key = "P034",
+                    Type = PropertyTypeEnum.Number,
+                    Value = "",
+
+                },
+                 new PropertyDto()
+                {
+                   Id = ObjectId.GenerateNewId(),
+                    Title = "صندلی راننده",
+                    Key = "P035",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+
+                },
+                 new PropertyDto()
+                {
+                   Id = ObjectId.GenerateNewId(),
+                    Title = "تعداد صندلی ",
+                    Key = "P036",
+                    Type = PropertyTypeEnum.Number,
+                    Value = "",
+
+                },
+                 new PropertyDto()
+                {
+                   Id = ObjectId.GenerateNewId(),
+                    Title = "تهویه خودکار",
+                    Key = "P037",
+                    Type = PropertyTypeEnum.Boolean,
+                    Value = "",
+
+                },
+                  new PropertyDto()
+                {
+                   Id = ObjectId.GenerateNewId(),
+                    Title = "GPS",
+                    Key = "P038",
+                    Type = PropertyTypeEnum.Boolean,
+                    Value = "",
+
+                },
+                   new PropertyDto()
+                {
+                   Id = ObjectId.GenerateNewId(),
+                    Title = "بلوتوث",
+                    Key = "P039",
+                    Type = PropertyTypeEnum.Boolean,
+                    Value = "",
+
+                },
+                    new PropertyDto()
+                {
+                   Id = ObjectId.GenerateNewId(),
+                    Title = "USB",
+                    Key = "P040",
+                    Type = PropertyTypeEnum.Boolean,
+                    Value = "",
+
+                }
+
+            },
+
+                };
+            }
+
+            else if (type == SaleTypeEnum.saleauto)
+            {
+                propertydto = new PropertyCategoryDto()
+                {
+                    Title = "مشخصات اصلی",
+                    Display = true,
+                    Properties = new List<PropertyDto>()
+            {
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "مورد علاقه",
+                    Key = "isfavorite",
+                    Type = PropertyTypeEnum.Boolean,
+                    Value = ""
+                },
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "کلاس خودرو",
+                    Key = "carclass",
+                    Type = PropertyTypeEnum.Coding,
+                    CodingType = CodingTypeEnum.CarClass,
+                    Value = "",
+                },
+            }
+                };
+                await _propertyDefinitionRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto, PropertyCategory>(propertydto));
+                propertydto = new PropertyCategoryDto()
+                {
+                    Title = "مشخصات فنی",
+                    Display = true,
+                    Properties = new List<PropertyDto>()
+            {
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "محور محرک",
+                    Key = "P001",
+                    Type = PropertyTypeEnum.Text,
+                    Value = ""
+                },
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "گیربکس",
+                    Key = "P002",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                },
+                 new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "حجم موتور",
+                    Key = "P003",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                },
+                 new PropertyDto()
+                {
+
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "تنفس موتور",
+                    Key = "P004",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                },
+
+                 new PropertyDto()
+                {
+
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "پیشرانه",
+                    Key = "P005",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                },
+            }
+                };
+                await _propertyDefinitionRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto, PropertyCategory>(propertydto));
+                propertydto = new PropertyCategoryDto()
+                {
+                    Title = "عملکرد خودرو",
+                    Display = true,
+                    Properties = new List<PropertyDto>()
+            {
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "توان موتور",
+                    Key = "P006",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                },
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "سرعت",
+                    Key = "P007",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                },
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "شتاب",
+                    Key = "P008",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                },
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "مصرف سوخت",
+                    Key = "P009",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                },
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "گشتاور",
+                    Key = "P010",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                },
+            }
+                };
+                await _propertyDefinitionRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto, PropertyCategory>(propertydto));
+                propertydto = new PropertyCategoryDto()
+                {
+                    Title = "بدنه و شاسی",
+                    Display = true,
+                    Properties = new List<PropertyDto>()
+            {
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "(طول(میلیمتر",
+                    Key = "P011",
+                    Type = PropertyTypeEnum.Number,
+                    Value = "",
+                },
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "(عرض(میلیمتر",
+                    Key = "P012",
+                    Type = PropertyTypeEnum.Number,
+                    Value = "",
+                },
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "(ارتفاع (میلیمتر",
+                    Key = "P013",
+                    Type = PropertyTypeEnum.Number,
+                    Value = "",
+                },
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "حجم باک",
+                    Key = "P014",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                },
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "نوع شاسی ",
+                    Key = "P015",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                },
+                 new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "سیستم تعلیق جلو",
+                    Key = "P016",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                },
+                 new PropertyDto()
+                 {
+                   Id = ObjectId.GenerateNewId(),
+                    Title = "سیستم تعلیق عقب",
+                    Key = "P017",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+
+                 },
+                 new PropertyDto()
+                 {
+                   Id = ObjectId.GenerateNewId(),
+                    Title = "فرمان",
+                    Key = "P018",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+
+                 }
+
+            },
+
+                };
+                await _propertyDefinitionRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto, PropertyCategory>(propertydto));
+                propertydto = new PropertyCategoryDto()
+                {
+                    Title = "ایمنی و امنیت",
+                    Display = true,
+                    Properties = new List<PropertyDto>()
+            {
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "سیستم کروز کنترل",
+                    Key = "P019",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                },
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "ایربگ راننده",
+                    Key = "P020",
+                    Type = PropertyTypeEnum.Boolean,
+                    Value = "",
+                },
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "ایربگ سرنشین جلو",
+                    Key = "P021",
+                    Type = PropertyTypeEnum.Boolean,
+                    Value = "",
+                },
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "ترمز  ABS",
+                    Key = "P022",
+                    Type = PropertyTypeEnum.Boolean,
+                    Value = "",
+                },
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "ترمز  EBD",
+                    Key = "P023",
+                    Type = PropertyTypeEnum.Boolean,
+                    Value = "",
+                },
+                 new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "کنترل پایداری ESP",
+                    Key = "P024",
+                    Type = PropertyTypeEnum.Boolean,
+                    Value = "",
+                },
+                 new PropertyDto()
+                 {
+                   Id = ObjectId.GenerateNewId(),
+                    Title = "ترمز جلو",
+                    Key = "P025",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+
+                 },
+                 new PropertyDto()
+                 {
+                   Id = ObjectId.GenerateNewId(),
+                    Title = "ترمز عقب",
+                    Key = "P026",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+
+                 }
+
+            },
+
+                };
+                await _propertyDefinitionRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto, PropertyCategory>(propertydto));
+                propertydto = new PropertyCategoryDto()
+                {
+                    Title = "تجهیزات و امکانات",
+                    Display = true,
+                    Properties = new List<PropertyDto>()
+            {
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "استارت",
+                    Key = "P027",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                },
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "صفحه نمایش مرکزی",
+                    Key = "P028",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                },
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "دوربین عقب",
+                    Key = "P029",
+                    Type = PropertyTypeEnum.Boolean,
+                    Value = "",
+                },
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "مه شکن عقب",
+                    Key = "P030",
+                    Type = PropertyTypeEnum.Boolean,
+                    Value = "",
+                },
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "سنسور پارک جلو",
+                    Key = "P031",
+                    Type = PropertyTypeEnum.Boolean,
+                    Value = "",
+                },
+                 new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "سنسور پارک عقب",
+                    Key = "P032",
+                    Type = PropertyTypeEnum.Boolean,
+                    Value = "",
+                },
+                 new PropertyDto()
+                {
+                   Id = ObjectId.GenerateNewId(),
+                    Title = "سنسور باران",
+                    Key = "P033",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+
+                },
+                 new PropertyDto()
+                {
+                   Id = ObjectId.GenerateNewId(),
+                    Title = "تعداد بلندگو ",
+                    Key = "P034",
+                    Type = PropertyTypeEnum.Number,
+                    Value = "",
+
+                },
+                 new PropertyDto()
+                {
+                   Id = ObjectId.GenerateNewId(),
+                    Title = "صندلی راننده",
+                    Key = "P035",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+
+                },
+                 new PropertyDto()
+                {
+                   Id = ObjectId.GenerateNewId(),
+                    Title = "تعداد صندلی ",
+                    Key = "P036",
+                    Type = PropertyTypeEnum.Number,
+                    Value = "",
+
+                },
+                 new PropertyDto()
+                {
+                   Id = ObjectId.GenerateNewId(),
+                    Title = "تهویه خودکار",
+                    Key = "P037",
+                    Type = PropertyTypeEnum.Boolean,
+                    Value = "",
+
+                },
+                  new PropertyDto()
+                {
+                   Id = ObjectId.GenerateNewId(),
+                    Title = "GPS",
+                    Key = "P038",
+                    Type = PropertyTypeEnum.Boolean,
+                    Value = "",
+
+                },
+                   new PropertyDto()
+                {
+                   Id = ObjectId.GenerateNewId(),
+                    Title = "بلوتوث",
+                    Key = "P039",
+                    Type = PropertyTypeEnum.Boolean,
+                    Value = "",
+
+                },
+                    new PropertyDto()
+                {
+                   Id = ObjectId.GenerateNewId(),
+                    Title = "USB",
+                    Key = "P040",
+                    Type = PropertyTypeEnum.Boolean,
+                    Value = "",
+
+                }
+
+            },
+
+                };
+            }
+            await _propertyDefinitionRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto, PropertyCategory>(propertydto));
+        }
+
+
+        public async Task Import(IFormFile file, SaleTypeEnum type)
+        {
+            if (type == SaleTypeEnum.esalecar)
+            {
+                using (var stream = new MemoryStream())
+                {
+                    await file.CopyToAsync(stream);
+                    using (var package = new ExcelPackage(stream))
+                    {
+                        foreach (var item in package.Workbook.Worksheets)
+                        {
+                            ExcelWorksheet worksheet = item;
+                            var rowcount = worksheet.Dimension.Rows;
+                            var colcount = worksheet.Dimension.Columns;
+                            var productQuery = await _productAndCategoryRepository.GetQueryableAsync();
+                            var product = productQuery.FirstOrDefault(x => x.Code == item.Name);
+                            if (product is null)
+                            {
+                                throw new UserFriendlyException("محصول وجود ندارد");
+                            };
+                            var propertyCategories = (await _propertyDefinitionRepository.GetMongoQueryableAsync()).ToList();
+                            List<PropertyDto> propertyList = new List<PropertyDto>();
+                            for (int row = 2; row < rowcount; row++)
+                            {
+
+                                var key = item.Cells[row, 1].Value.ToString();
+                                var title = item.Cells[row, 2].Value.ToString();
+                                var value = item.Cells[row, 3].Value.ToString();
+                                foreach (var category in propertyCategories)
+                                {
+                                    foreach (var property in category.Properties)
+                                    {
+                                        if (property.Key == key)
+                                            property.Value = value;
+                                    }
+                                }
+                            }
+                            var productPropertyDto = new ProductPropertyDto()
+                            {
+                                ProductId = product.Id,
+                                PropertyCategories = ObjectMapper.Map<List<PropertyCategory>, List<ProductPropertyCategoryDto>>(propertyCategories)
+                            };
+                            await _productPropertyRepository.InsertAsync(ObjectMapper.Map<ProductPropertyDto, ProductProperty>(productPropertyDto));
+                        }
+                    }
+                }
+            }
+            else if (type == SaleTypeEnum.saleauto)
+            {
+                using (var stream = new MemoryStream())
+                {
+                    await file.CopyToAsync(stream);
+                    using (var package = new ExcelPackage(stream))
+                    {
+                        foreach (var item in package.Workbook.Worksheets)
+                        {
+                            ExcelWorksheet worksheet = item;
+                            var rowcount = worksheet.Dimension.Rows;
+                            var colcount = worksheet.Dimension.Columns;
+                            var productQuery = await _productAndCategoryRepository.GetQueryableAsync();
+                            var product = productQuery.FirstOrDefault(x => x.Code == item.Name);
+                            if (product is null)
+                            {
+                                throw new UserFriendlyException("محصول وجود ندارد");
+                            };
+                            var propertyCategories = (await _propertyDefinitionRepository.GetMongoQueryableAsync()).ToList();
+                            List<PropertyDto> propertyList = new List<PropertyDto>();
+                            for (int row = 2; row < rowcount; row++)
+                            {
+
+                                var key = item.Cells[row, 1].Value.ToString();
+                                var title = item.Cells[row, 2].Value.ToString();
+                                var value = item.Cells[row, 3].Value.ToString();
+                                foreach (var category in propertyCategories)
+                                {
+                                    foreach (var property in category.Properties)
+                                    {
+                                        if (property.Key == key)
+                                            property.Value = value;
+                                    }
+                                }
+                            }
+                            var productPropertyDto = new ProductPropertyDto()
+                            {
+                                ProductId = product.Id,
+                                PropertyCategories = ObjectMapper.Map<List<PropertyCategory>, List<ProductPropertyCategoryDto>>(propertyCategories)
+                            };
+                            await _productPropertyRepository.InsertAsync(ObjectMapper.Map<ProductPropertyDto, ProductProperty>(productPropertyDto));
+                        }
+                    }
+                }
+            }
+        }
+
     }
 }

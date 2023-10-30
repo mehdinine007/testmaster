@@ -10,11 +10,18 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Compile Remove="CompanyManagement\**" />
+	  <EmbeddedResource Remove="CompanyManagement\**" />
+	  <None Remove="CompanyManagement\**" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <None Remove="OrderManagement\Protos\CompanyServiceClient.proto" />
 	  <None Remove="OrderManagement\Protos\PaymentGrpcService.proto" />
 	</ItemGroup>
 
     <ItemGroup>
+		<PackageReference Include="EPPlus" Version="6.2.10" />
 		<PackageReference Include="google.protobuf" Version="3.22.4" />
 		<PackageReference Include="grpc.net.client" Version="2.53.0" />
 		<PackageReference Include="grpc.tools" Version="2.54.0" />
@@ -42,10 +49,6 @@
       <ProjectReference Include="..\OrderManagement.Application.Contracts\OrderManagement.Application.Contracts.csproj" />
       <ProjectReference Include="..\OrderManagement.Domain\OrderManagement.Domain.csproj" />
       <ProjectReference Include="..\OrderManagement.EntityFrameworkCore\OrderManagement.EntityFrameworkCore.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="CompanyManagement\" />
     </ItemGroup>
 
 	<!--<ItemGroup>

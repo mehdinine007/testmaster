@@ -17,7 +17,6 @@ namespace OrderManagement.HttpApi.OrderManagement.Controllers;
 [DisableAuditing]
 [RemoteService]
 [Route("api/services/app/AgencyService/[action]")]
-[UserAuthorization]
 public class AgencyController : Controller, IAgencyService
 {
 

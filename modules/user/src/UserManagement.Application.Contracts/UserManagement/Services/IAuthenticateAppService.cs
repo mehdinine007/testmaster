@@ -10,6 +10,6 @@ namespace UserManagement.Application.Contracts.UserManagement.Services;
 public interface IAuthenticateAppService : IApplicationService
 {
 
-    Task<AuthenticateResultModel> Authenticate( AuthenticateModel model);
+    Task<AuthenticateResultDto> Authenticate( AuthenticateModel model);
   
 }

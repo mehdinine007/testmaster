@@ -6,6 +6,7 @@ using UserManagement.Application.Contracts.UserManagement.Services;
 using UserManagement.Application.Contracts.UserManagement;
 using UserManagement.Application.Contracts.Models;
 using MongoDB.Bson;
+using UserManagement.Application.UserManagement.Implementations;
 
 namespace UserManagement.HttpApi.UserManagement.Controllers
 {
@@ -13,7 +14,7 @@ namespace UserManagement.HttpApi.UserManagement.Controllers
     [RemoteService]
     [Route("api/services/app/PermissionDefinitionController/[action]")]
     //[UserAuthorization]
-    public class PermissionDefinitionController : Controller, IPermissionDefinitionService
+    public class PermissionDefinitionController : Controller
     {
         private readonly IPermissionDefinitionService _permission;
 
@@ -43,5 +44,9 @@ namespace UserManagement.HttpApi.UserManagement.Controllers
         [HttpPut]
         public async Task<PermissionDefinitionDto> Update(PermissionDefinitionDto input)
             => await _permission.Update(input);
+
+        [HttpPost]
+        public async Task UpdateSecurityPolicy()
+          => await _permission.UpdateSecurityPolicy();
     }
 }

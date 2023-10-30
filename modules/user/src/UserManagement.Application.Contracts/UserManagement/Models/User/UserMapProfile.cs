@@ -14,6 +14,11 @@ public class UserMapProfile : Profile
             .ForMember(x => x.CreationTime, opt => opt.Ignore());
 
         CreateMap<CreateUserDto, User>();
+        CreateMap<CreateUserDto, User>();
+        CreateMap<UserMongo, UserMongoETO>().ForMember(x => x.MongoId, opt => opt.MapFrom(y => y.Id.ToString())).IgnoreAllSourcePropertiesWithAnInaccessibleSetter().IgnoreAllPropertiesWithAnInaccessibleSetter();            
+
+
+
         CreateMap<CreateUserDto, User>().ForMember(x => x.Roles, opt => opt.Ignore());
 
 

@@ -1,0 +1,32 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "CompanyManagement.Application.Grpc.UserGrpcClient";
+
+import "google/protobuf/wrappers.proto";
+
+package UserService;
+
+service UserServiceGrpc{
+	rpc Authenticate(AuthenticateRequest) returns (AuthenticateResponse);
+}
+
+message AuthenticateRequest{
+	string UserNameOrEmailAddress=1;
+	string Password =2;
+
+}
+message AuthenticateResponse{
+     bool Success=1;
+	 string Message =2;
+     google.protobuf.Int32Value ErrorCode =3;
+	 AuthenticateDataModel data=4;
+
+}
+
+message AuthenticateDataModel{
+	 string AccessToken =1;
+     string EncryptedAccessToken =2;
+     google.protobuf.Int32Value ExpireInSeconds=3 ;
+	
+
+}

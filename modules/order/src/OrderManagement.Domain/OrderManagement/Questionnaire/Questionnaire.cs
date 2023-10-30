@@ -10,11 +10,15 @@ public class Questionnaire : FullAuditedEntity<int>
 
     private ICollection<QuestionAnswer> _answers;
 
+    private ICollection<UnAuthorizedUser> _unAuthorizedUsers;
+
     public string Title { get; set; }
 
     public string Description { get; set; }
 
     public int? WhitListRequirement { get; set; }
+
+    public QuestionnaireType QuestionnaireType { get; set; }
 
     public virtual ICollection<Question> Questions
     {
@@ -26,6 +30,12 @@ public class Questionnaire : FullAuditedEntity<int>
     {
         get => _answers ?? (_answers = new List<QuestionAnswer>());
         protected set => _answers = value;
+    }
+
+    public ICollection<UnAuthorizedUser> UnAuthorizedUsers
+    {
+        get => _unAuthorizedUsers ?? (_unAuthorizedUsers = new List<UnAuthorizedUser>());
+        protected set => _unAuthorizedUsers = value;
     }
 
     public Questionnaire()

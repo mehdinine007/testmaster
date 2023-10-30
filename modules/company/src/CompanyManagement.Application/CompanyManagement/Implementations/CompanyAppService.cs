@@ -1,9 +1,11 @@
 ﻿using AutoMapper.Internal.Mappers;
+using CompanyManagement.Application.Contracts;
 using CompanyManagement.Application.Contracts.CompanyManagement;
 using CompanyManagement.Application.Contracts.CompanyManagement.Services;
 using CompanyManagement.Domain.CompanyManagement;
 using CompanyManagement.Domain.Shared.CompanyManagement;
 using CompanyManagement.EfCore.CompanyManagement.Repositories;
+using Esale.Share.Authorize;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -49,7 +51,7 @@ namespace CompanyManagement.Application.CompanyManagement.Implementations
             _httpContextAccessor = HttpContextAccessor;
         }
 
-
+        [SecuredOperation(CompanyServicePermissionConstants.GetCustomersAndCars)]
         public List<CustomersWithCars> GetCustomersAndCars(GetCustomersAndCarsDto input)
         {
             if (!IsInRole("Company"))
@@ -69,6 +71,7 @@ namespace CompanyManagement.Application.CompanyManagement.Implementations
             return lsCustomersWithCars;
         }
 
+        [SecuredOperation(CompanyServicePermissionConstants.InsertCompanyProduction)]
         public async Task<bool> InsertCompanyProduction(List<CompanyProductionDto> companyProductionsDto)
         {
             if (!IsInRole("Company"))
@@ -78,6 +81,7 @@ namespace CompanyManagement.Application.CompanyManagement.Implementations
             return true;
         }
 
+        [SecuredOperation(CompanyServicePermissionConstants.SubmitOrderInformations)]
         public async Task<bool> SubmitOrderInformations(List<ClientsOrderDetailByCompanyDto> clientsOrderDetailByCompnayDtos)
         {
             if (!IsInRole("Company"))

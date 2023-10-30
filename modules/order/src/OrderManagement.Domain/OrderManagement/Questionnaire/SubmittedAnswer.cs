@@ -16,7 +16,7 @@ public class SubmittedAnswer : FullAuditedEntity<long>
 
     public string CustomAnswerValue { get; set; }
 
-    public Guid UserId { get; set; }
+    public Guid? UserId { get; set; }
 
     public long? RelatedEntityId { get; set; }
 }

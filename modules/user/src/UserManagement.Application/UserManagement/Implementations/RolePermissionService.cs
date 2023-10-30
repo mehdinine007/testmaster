@@ -17,14 +17,18 @@ namespace UserManagement.Application.UserManagement.Implementations
         private readonly IRepository<RolePermission, ObjectId> _rolePermissionRepository;
         private readonly IRepository<RolePermissionWrite, ObjectId> _rolePermissionWritRepository;
         private readonly ICacheManager _cacheManager;
+        private readonly IPermissionDefinitionService _permissionDefinitionService;
 
-        public RolePermissionService(IRepository<RolePermission, ObjectId> rolePermissionRepository, 
+
+        public RolePermissionService(IRepository<RolePermission, ObjectId> rolePermissionRepository,
                                      ICacheManager cacheManager,
-                                     IRepository<RolePermissionWrite, ObjectId> rolePermissionWritRepository)
+                                     IRepository<RolePermissionWrite, ObjectId> rolePermissionWritRepository,
+                                     IPermissionDefinitionService permissionDefinitionService)
         {
             _rolePermissionRepository = rolePermissionRepository;
             _cacheManager = cacheManager;
             _rolePermissionWritRepository = rolePermissionWritRepository;
+            _permissionDefinitionService = permissionDefinitionService;
         }
 
 
@@ -33,7 +37,7 @@ namespace UserManagement.Application.UserManagement.Implementations
             var roleperm = await GetList();
             foreach (var role in roleperm)
             {
-                await _cacheManager.SetAsync(role.Code, RedisCoreConstant.RolePermissionPrefix + "Role", role.Permissions, 2000, new CacheOptions { Provider = CacheProviderEnum.Hybrid });
+                await _cacheManager.SetAsync("Role"+role.Code, RedisCoreConstant.RolePermissionPrefix,role.Permissions, 90000, new CacheOptions { Provider = CacheProviderEnum.Hybrid });
             }
         }
 
@@ -47,17 +51,27 @@ namespace UserManagement.Application.UserManagement.Implementations
             return getRolePermission;
         }
 
-        public async Task InsertList()
+        public async Task InsertList(RolePermissionDto dto)
         {
-
-            //var permis= new List<string>() { "00010001", "000100020001", "000100020002", "000100020003", "000100020004" , "000100020005" , "000100020006" };
+            var srviceCodeList =new  List<string>();
+            var permissions =await _permissionDefinitionService.GetList();
+            foreach (var madule in permissions)
+            {
+                foreach (var service in madule.Children)
+                {
+                    srviceCodeList.AddRange(service.Children.Select(x=>x.Code).ToList());
+                }  
+            }
+            dto.Permissions = srviceCodeList;
+            await Add(dto);
+           // var permis = new List<string>() { "00010001", "000100020001", "000100020002", "000100020003", "000100020004", "000100020005", "000100020006" };
             //var rolePermissionDto = new RolePermissionDto()
             //{
 
-            //    Title = "Company",
+            //    Title = "Customer",
             //    Code = "0001",
-            //    Permissions= permis
-              
+            //    Permissions = permis
+
             //};
 
             //var b = ObjectMapper.Map<RolePermissionDto, RolePermission>(rolePermissionDto);

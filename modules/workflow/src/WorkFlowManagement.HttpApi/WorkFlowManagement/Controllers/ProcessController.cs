@@ -18,24 +18,22 @@ namespace WorkFlowManagement.HttpApi.WorkFlowManagement.Controllers
     [RemoteService]
     [Route("api/services/app/ProcessService/[action]")]
 
-    public class ProcessController: Controller
+    public class ProcessController : Controller
     {
         private readonly IProcessService _processService;
-        public  ProcessController(IProcessService processService)
+        public ProcessController(IProcessService processService)
         => _processService = processService;
-       
 
-        [UserAuthorization]
+
         [HttpGet]
-        public async  Task<ProcessDto> StartProcess(int schemeId)
-        =>await _processService.StartProcess(schemeId);
+        public async Task<ProcessDto> StartProcess(int schemeId)
+        => await _processService.StartProcess(schemeId);
 
 
         [HttpPost]
         public async Task<ProcessDto> Execute(ExecuteQueryDto executeQueryDto)
         => await _processService.Execute(executeQueryDto);
 
-        [UserAuthorization]
         [HttpGet]
         public Task<List<InboxDto>> GetOutBox()
       => _processService.GetOutBox();

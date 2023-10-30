@@ -1,4 +1,5 @@
 ﻿using EasyCaching.Core;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.Dtos;
@@ -8,6 +9,7 @@ using OrderManagement.Application.Contracts.Services;
 using OrderManagement.Application.OrderManagement.Constants;
 using OrderManagement.Domain;
 using OrderManagement.Domain.Shared;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -27,6 +29,8 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
     private readonly IRepository<Question, int> _questionRepository;
     private readonly IRepository<QuestionAnswer, long> _answerRepository;
     private readonly IAttachmentService _attachmentService;
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IRepository<UnAuthorizedUser, long> _unAuthorizedUserRepository;
 
     public QuestionnaireService(IRepository<Questionnaire, int> questionnaireRepository,
                                 IBaseInformationService baseInformationService,
@@ -35,7 +39,9 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
                                 IHybridCachingProvider hybridCachingProvider,
                                 IRepository<Question, int> questionRepository,
                                 IRepository<QuestionAnswer, long> answerRepository,
-                                IAttachmentService attachmentService
+                                IAttachmentService attachmentService,
+                                IHttpContextAccessor httpContextAccessor,
+                                IRepository<UnAuthorizedUser, long> unAuthorizedUserRepository
         )
     {
         _questionnaireRepository = questionnaireRepository;
@@ -46,18 +52,24 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
         _questionRepository = questionRepository;
         _answerRepository = answerRepository;
         _attachmentService = attachmentService;
+        _httpContextAccessor = httpContextAccessor;
+        _unAuthorizedUserRepository = unAuthorizedUserRepository;
     }
 
+    //[SecuredOperation(QuestionnaireServicePermissionconstants.LoadQuestionnaireTree)]
     public async Task<QuestionnaireTreeDto> LoadQuestionnaireTree(int questionnaireId, long? relatedEntityId = null)
     {
         var questionnaireWhitListType = (await _questionnaireRepository.GetQueryableAsync())
             .Select(x => new
             {
                 x.Id,
-                x.WhitListRequirement
+                x.WhitListRequirement,
+                x.QuestionnaireType
             })
             .FirstOrDefault(x => x.Id == questionnaireId)
             ?? throw new UserFriendlyException("پرسشنامه مورد نظر پیدا نشد");
+        if (questionnaireWhitListType.QuestionnaireType == QuestionnaireType.AuthorizedOnly)
+            throw new UserFriendlyException("لطفا لاگین کنید");
 
         var currentUserId = _commonAppService.GetUserId();
         var currentUserNationalCode = _commonAppService.GetNationalCode();
@@ -71,12 +83,12 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
         if (!relatedEntityId.HasValue)
         {
             questionnaireQuery = questionnaireQuery.Include(x => x.Questions)
-                .ThenInclude(x => x.SubmittedAnswers.Where(y => y.UserId == currentUserId));
+                .ThenInclude(x => x.SubmittedAnswers.Where(y => y.UserId.Value == currentUserId));
         }
         else
         {
             questionnaireQuery = questionnaireQuery.Include(x => x.Questions)
-                .ThenInclude(x => x.SubmittedAnswers.Where(y => y.UserId == currentUserId && y.RelatedEntityId.Value == relatedEntityId.Value));
+                .ThenInclude(x => x.SubmittedAnswers.Where(y => y.UserId.Value == currentUserId && y.RelatedEntityId.Value == relatedEntityId.Value));
         }
 
         var questionnaireResult = questionnaireQuery.FirstOrDefault(x => x.Id == questionnaireId)
@@ -139,6 +151,7 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
         return surveyReport;
     }
 
+    //[SecuredOperation(QuestionnaireServicePermissionconstants.SubmitAnswer)]
     public async Task SubmitAnswer(SubmitAnswerTreeDto submitAnswerTreeDto)
     {
         if (submitAnswerTreeDto.SubmitAnswerDto == null || !submitAnswerTreeDto.SubmitAnswerDto.Any())
@@ -146,27 +159,64 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
         var questionnaire = await LoadQuestionnaireTree(submitAnswerTreeDto.QuestionnaireId);
         if (!questionnaire.Questions.Any())
             throw new UserFriendlyException("برای این پرسشنامه سوالی تعریف نشده است");
-        var currentUserUserId = _commonAppService.GetUserId();
-        //check quesionnaire has not beeing completed by user
-        //var answerSubmitted = questionnaire.Questions.Any(x => x.SubmittedAnswers.Any());
-        var answerSubmittedQuery = (await _submittedAnswerRepository.GetQueryableAsync())
-            .Include(x => x.Question)
-            .Select(x => new
-            {
-                x.UserId,
-                x.Question.QuestionnaireId,
-                x.RelatedEntityId
-            })
-            .Where(x => x.UserId == currentUserUserId && x.QuestionnaireId == submitAnswerTreeDto.QuestionnaireId);
-        var submittedAnswer = submitAnswerTreeDto.RelatedEntity.HasValue
-            ? answerSubmittedQuery.FirstOrDefault(x => x.RelatedEntityId.Value == submitAnswerTreeDto.RelatedEntity.Value)
-            : answerSubmittedQuery.FirstOrDefault();
 
-        if (submittedAnswer != null)
-            throw new UserFriendlyException("این پرسشنامه قبلا توسط شما تکمیل شده است");
+        if (questionnaire.QuestionnaireType == QuestionnaireType.AnonymousAllowed)
+        {
+            if (!_httpContextAccessor.HttpContext.User.Identity.IsAuthenticated)
+            {
+                var smsCodeIsValid = await _commonAppService.ValidateSMS(submitAnswerTreeDto.UnregisteredUserInformation.SmsCode,
+                    submitAnswerTreeDto.UnregisteredUserInformation.NationalCode,
+                    submitAnswerTreeDto.UnregisteredUserInformation.SmsCode,
+                    SMSType.AnonymousQuestionnaireSubmitation);
+                if (!smsCodeIsValid)
+                    throw new UserFriendlyException("کد ارسالی صحیح نیست");
+            }
+
+        }
+        else if (questionnaire.QuestionnaireType == QuestionnaireType.AuthorizedOnly)
+        {
+            if (!_httpContextAccessor.HttpContext.User.Identity.IsAuthenticated)
+                throw new UserFriendlyException("لطفا لاگین کنید");
+
+            var currentUserUserId = _commonAppService.GetUserId();
+            var answerSubmittedQuery = (await _submittedAnswerRepository.GetQueryableAsync())
+                .Include(x => x.Question)
+                .Select(x => new
+                {
+                    x.UserId,
+                    x.Question.QuestionnaireId,
+                    x.RelatedEntityId
+                })
+                .Where(x => x.UserId.Value == currentUserUserId && x.QuestionnaireId == submitAnswerTreeDto.QuestionnaireId);
+
+            var submittedAnswer = submitAnswerTreeDto.RelatedEntity.HasValue
+                ? answerSubmittedQuery.FirstOrDefault(x => x.RelatedEntityId.Value == submitAnswerTreeDto.RelatedEntity.Value)
+                : answerSubmittedQuery.FirstOrDefault();
+
+            if (submittedAnswer != null)
+                throw new UserFriendlyException("این پرسشنامه قبلا توسط شما تکمیل شده است");
+        }
+        else
+            throw new InvalidOperationException();
+
+
+        if (string.IsNullOrWhiteSpace(submitAnswerTreeDto.UnregisteredUserInformation.Vin) &&
+            string.IsNullOrWhiteSpace(submitAnswerTreeDto.UnregisteredUserInformation.FirstName) &&
+            string.IsNullOrWhiteSpace(submitAnswerTreeDto.UnregisteredUserInformation.ManufactureDate) &&
+            string.IsNullOrWhiteSpace(submitAnswerTreeDto.UnregisteredUserInformation.LastName) &&
+            string.IsNullOrWhiteSpace(submitAnswerTreeDto.UnregisteredUserInformation.VehicleName) &&
+            string.IsNullOrWhiteSpace(submitAnswerTreeDto.UnregisteredUserInformation.MobileNumber) &&
+            string.IsNullOrWhiteSpace(submitAnswerTreeDto.UnregisteredUserInformation.SmsCode) &&
+            string.IsNullOrWhiteSpace(submitAnswerTreeDto.UnregisteredUserInformation.EducationLevel) &&
+            string.IsNullOrWhiteSpace(submitAnswerTreeDto.UnregisteredUserInformation.Occupation) &&
+            string.IsNullOrWhiteSpace(submitAnswerTreeDto.UnregisteredUserInformation.NationalCode))
+            throw new UserFriendlyException("لطفا نمام فیلد ها را پر کنید");
+
+        var unAuthorizedUser = await _unAuthorizedUserRepository.InsertAsync(
+            ObjectMapper.Map<UnregisteredUserInformation, UnAuthorizedUser>(submitAnswerTreeDto.UnregisteredUserInformation));
 
         //check all available questions in questionnaire being completed
-        var questionIds = questionnaire.Questions.Select(x => x.Id).OrderBy(x => x).ToList();   
+        var questionIds = questionnaire.Questions.Select(x => x.Id).OrderBy(x => x).ToList();
         var incomigAnswerIds = submitAnswerTreeDto.SubmitAnswerDto.Select(x => x.QuestionId).OrderBy(x => x).ToList();
         var missedQuestionExists = !questionIds.SequenceEqual(incomigAnswerIds);
         if (missedQuestionExists)
@@ -175,6 +225,8 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
         //submit answer base on question type
         var qeustionAnswers = questionnaire.Questions.SelectMany(x => x.Answers).ToList();
         List<SubmittedAnswer> submitAnswerList = new(questionIds.Count);
+        var userAuthenticated = _httpContextAccessor.HttpContext.User.Identity.IsAuthenticated;
+        Guid? currrentUserId = userAuthenticated ? _commonAppService.GetUserId() : null;
         submitAnswerTreeDto.SubmitAnswerDto.ForEach(x =>
         {
             var question = questionnaire.Questions.First(y => y.Id == x.QuestionId);
@@ -188,7 +240,7 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
                         throw new UserFriendlyException($"لطفا برای این سوال یک گزینه را انتخاب کنید : {question.Title}");
                     submitAnswerList.Add(new SubmittedAnswer()
                     {
-                        UserId = currentUserUserId,
+                        UserId = userAuthenticated ? currrentUserId.Value : null,
                         QuestionId = x.QuestionId,
                         QuestionAnswerId = x.QuestionAnswerId,
                         RelatedEntityId = submitAnswerTreeDto.RelatedEntity.HasValue
@@ -205,7 +257,7 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
                     {
                         QuestionAnswerId = y.Id,
                         QuestionId = x.QuestionId,
-                        UserId = currentUserUserId,
+                        UserId = userAuthenticated ? currrentUserId.Value : null,
                         RelatedEntityId = submitAnswerTreeDto.RelatedEntity.HasValue
                             ? submitAnswerTreeDto.RelatedEntity.Value
                             : null
@@ -218,7 +270,7 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
                     {
                         CustomAnswerValue = x.CustomAnswerValue,
                         QuestionId = x.QuestionId,
-                        UserId = currentUserUserId,
+                        UserId = userAuthenticated ? currrentUserId.Value : null,
                         RelatedEntityId = submitAnswerTreeDto.RelatedEntity.HasValue
                             ? submitAnswerTreeDto.RelatedEntity.Value
                             : null

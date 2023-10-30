@@ -23,7 +23,6 @@ namespace WorkFlowManagement.HttpApi.WorkFlowManagement.Controllers
         public InboxController(IInboxService inboxService)
         => _inboxService = inboxService;
        
-        [UserAuthorization]
         [HttpGet]
         public Task<List<InboxDto>> GetInbox()
        => _inboxService.GetInbox();

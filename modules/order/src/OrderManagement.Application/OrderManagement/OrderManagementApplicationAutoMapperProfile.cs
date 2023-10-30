@@ -2,6 +2,7 @@
 using Esale.Core.Utility.Tools;
 using Newtonsoft.Json;
 using OrderManagement.Application.Contracts;
+using OrderManagement.Application.Contracts.Dtos;
 using OrderManagement.Application.Contracts.OrderManagement;
 using OrderManagement.Application.Contracts.OrderManagement.Models;
 using OrderManagement.Domain;
@@ -170,7 +171,11 @@ namespace OrderManagement
             CreateMap<Bank, BankCreateOrUpdateDto>().ReverseMap();
 
 
-
+            CreateMap<UnAuthorizedUser, UnregisteredUserInformation>()
+                .ForMember(x => x.SmsCode, opt => opt.Ignore())
+                .ReverseMap()
+                .ForMember(x => x.QuestionnaireId, opt => opt.Ignore())
+                .IgnoreFullAuditedObjectProperties();
         }
     }
 }

@@ -19,6 +19,7 @@ using Microsoft.Extensions.Configuration;
 using EasyCaching.Core;
 using MongoDB.Bson;
 using Esale.Core.Caching;
+using Esale.Share.Authorize;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -46,7 +47,6 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
     private readonly IRepository<AgencySaleDetail, int> _agencySaleDetailRepository;
     private readonly ICapacityControlAppService _capacityControlAppService;
     private readonly IHybridCachingProvider _hybridCache;
-    private readonly IRepository<UserMongo, ObjectId> _userMongo;
 
     private readonly ICacheManager _cacheManager;
     public BaseInformationService(IRepository<Company, int> companyRepository,
@@ -67,7 +67,6 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
                                   IRepository<ESaleType, int> esaleTypeRepository,
                                   ICapacityControlAppService capacityControlAppService,
                                   IHybridCachingProvider hybridCache,
-                                  IRepository<UserMongo, ObjectId> UserMongo,
                                   ICacheManager cacheManager)
     {
         _esaleGrpcClient = esaleGrpcClient;
@@ -89,11 +88,11 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
         _esaleTypeRepository = esaleTypeRepository;
         _capacityControlAppService = capacityControlAppService;
         _hybridCache = hybridCache;
-        _userMongo = UserMongo;
         _cacheManager = cacheManager;
     }
 
     [RemoteService(false)]
+    [SecuredOperation(BaseServicePermissionConstants.CheckAdvocacyPrice)]
     public async Task CheckAdvocacyPrice(decimal MinimumAmountOfProxyDeposit)
     {
         var identity = (ClaimsPrincipal)Thread.CurrentPrincipal;
@@ -136,6 +135,7 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
 
     }
     [RemoteService(false)]
+    [SecuredOperation(BaseServicePermissionConstants.CheckWhiteList)]
     public void CheckWhiteList(WhiteListEnumType whiteListEnumType, string Nationalcode = "")
     {
         if (_configuration.GetSection(whiteListEnumType.ToString()).Value == "1")
@@ -177,6 +177,7 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
     }
 
     //[UnitOfWork(System.Transactions.IsolationLevel.Unspecified)]
+    [SecuredOperation(BaseServicePermissionConstants.CheckBlackList)]
     public void CheckBlackList(int esaleTypeId)
     {
         var identity = (ClaimsPrincipal)Thread.CurrentPrincipal;
@@ -198,47 +199,6 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
         {
             throw new UserFriendlyException("شما در گذشته از خودروسازان خرید داشته اید و امکان سفارش مجدد ندارید");
         }
-
-    }
-
-    public async Task RegistrationValidation()
-    {
-        UserMongo user = new UserMongo();
-
-        await _userMongo.InsertAsync(user);
-        var x = await _userMongo.ToListAsync();
-
-
-        //await _commonAppService.ValidateVisualizeCaptcha(new CommonService.Dto.VisualCaptchaInput(input.CK, input.CIT));
-
-        //// await _commonAppService.ValidateVisualizeCaptcha(new CommonService.Dto.VisualCaptchaInput(input.CT,input.CK, input.CIT));
-
-
-        //var advocacyuser = _advocacyUsersRepository.WithDetails()
-        //    .Select(x => new
-        //    {
-        //        x.shabaNumber,
-        //        x.accountNumber,
-        //        x.Id,
-        //        x.nationalcode,
-        //        x.BanksId
-        //    })
-        //    .OrderByDescending(x => x.Id).FirstOrDefault(x => x.nationalcode == input.Nationalcode);
-        //if (advocacyuser == null)
-        //{
-        //    throw new UserFriendlyException("اطلاعات حساب وکالتی یافت نشد");
-        //}
-
-
-        //var user = _userRepository.GetAll()
-        // .Select(x => x.NationalCode)
-        // .FirstOrDefault(x => x == input.Nationalcode);
-        //if (user != null)
-        //{
-
-        //    throw new UserFriendlyException("این کد ملی قبلا ثبت نام شده است");
-        //}
-
 
     }
     public void RegistrationValidationWithoutCaptcha(RegistrationValidationDto input)
@@ -325,6 +285,7 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
         return ObjectMapper.Map<List<Agency>, List<AgencyDto>>(agencies);
     }
 
+    [SecuredOperation(BaseServicePermissionConstants.GetAgencies)]
     public async Task<List<AgencyDto>> GetAgencies(Guid saleDetailUid)
     {
         var user = await _esaleGrpcClient.GetUserId(_commonAppService.GetUserId().ToString());
@@ -370,6 +331,7 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
         return ObjectMapper.Map<List<ESaleType>, List<ESaleTypeDto>>(esaleTypes);
     }
 
+    [SecuredOperation(BaseServicePermissionConstants.ClearCache)]
     public async Task ClearCache(string prefix)
     {
         var cacheKeyPrefix = string.IsNullOrWhiteSpace(prefix) ? "**" : prefix;

@@ -107,6 +107,10 @@ namespace OrderManagement.EfCore
 
         public DbSet<QuestionTypeReadOnly> QuestionTypeReadOnly { get; set; }
         public DbSet<ChartStructure> ChartStructure { get; set; }
+        public DbSet<QuestionnaireTypeReadOnly> QuestionnaireTypeReadOnly { get; set; }
+        public DbSet<UnAuthorizedUser> UnAuthorizedUser { get; set; }
+
+        public DbSet<GenderTypeReadOnly> GenderTypeReadOnly { get; set; }
 
         public OrderManagementDbContext(DbContextOptions<OrderManagementDbContext> options)
             : base(options)

@@ -5,7 +5,7 @@ namespace OrderManagement.Domain
 {
     public class QuestionnaireAnswer : FullAuditedEntity<int>
     {
-        private ICollection<SubmittedAnswers> _submittedAnswers;
+        private ICollection<SubmittedAnswer> _submittedAnswers;
 
         public string Description { get; set; }
 
@@ -13,9 +13,9 @@ namespace OrderManagement.Domain
 
         public virtual Questionnaire Questionnaire { get; protected set; }
 
-        public virtual ICollection<SubmittedAnswers> SubmittedAnswers
+        public virtual ICollection<SubmittedAnswer> SubmittedAnswers
         {
-            get => _submittedAnswers ?? (_submittedAnswers = new List<SubmittedAnswers>());
+            get => _submittedAnswers ?? (_submittedAnswers = new List<SubmittedAnswer>());
             protected set => _submittedAnswers = value;
         }
     }

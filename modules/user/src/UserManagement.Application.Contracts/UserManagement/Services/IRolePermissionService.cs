@@ -7,7 +7,8 @@ namespace UserManagement.Application.Contracts.UserManagement.Services
     public interface IRolePermissionService : IApplicationService
     {
         Task<List<RolePermissionDto>> GetList();
-        Task InsertList();
+       
+        Task InsertList(RolePermissionDto dto);
         Task AddToRedis();
         Task<RolePermissionDto> Add(RolePermissionDto dto);
         Task<RolePermissionDto> Update(RolePermissionDto dto);

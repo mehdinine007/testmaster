@@ -20,5 +20,6 @@ namespace UserManagement.Application.Contracts.UserManagement.Services
         Task<PermissionDefinitionDto> Add(PermissionDefinitionDto permission);
         Task<PermissionDefinitionDto> Update(PermissionDefinitionDto permission);
         Task<bool> Delete(ObjectId Id);
+        Task UpdateSecurityPolicy();
     }
 }

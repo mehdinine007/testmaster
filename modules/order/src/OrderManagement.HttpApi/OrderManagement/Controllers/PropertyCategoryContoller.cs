@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using MongoDB.Bson;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
-using OrderManagement.HttpApi;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp;
@@ -13,7 +11,7 @@ namespace OrderManagement.HttpApi.OrderManagement.Controllers;
 [DisableAuditing]
 [RemoteService]
 [Route("api/services/app/[controller]/[action]")]
-public class PropertyCategoryController : Controller, IPropertyCategoryService
+public class PropertyCategoryController : Controller
 {
     private readonly IPropertyCategoryService _propertyCategoryService;
     public PropertyCategoryController(IPropertyCategoryService propertyCategoryService)
@@ -26,8 +24,8 @@ public class PropertyCategoryController : Controller, IPropertyCategoryService
     => await _propertyCategoryService.GetList();
 
     [HttpGet]
-    public async Task<PropertyCategoryDto> GetById(ObjectId id)
-    => await _propertyCategoryService.GetById(id);
+    public async Task<PropertyCategoryDto> GetById(string Id)
+    => await _propertyCategoryService.GetById(Id);
 
     [HttpPost]
     public async Task<PropertyCategoryDto> Add(PropertyCategoryDto propertyCategoryDto)
@@ -38,6 +36,6 @@ public class PropertyCategoryController : Controller, IPropertyCategoryService
     => await _propertyCategoryService.Update(propertyCategoryDto);
 
     [HttpDelete]
-    public async Task<bool> Delete(ObjectId Id)
+    public async Task<bool> Delete(string Id)
     => await _propertyCategoryService.Delete(Id);
 }

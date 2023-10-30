@@ -28,7 +28,6 @@ namespace CompanyManagement.Application.CompanyManagement.Implementations
         [RemoteService(false)]
         public async Task<OrderDelivaryDto> GetOrderDelivary(string nationalCode, long orderId)
         {
-            System.Diagnostics.Debugger.Launch();
             var OrderDetailByCompany = await _clientsOrderDetailByCompany.GetQueryableAsync();
             var orderDelay = OrderDetailByCompany.GroupJoin((await _companyPaypaidPricesRepository.GetQueryableAsync()),
                    x => x.Id,

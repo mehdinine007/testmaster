@@ -18,7 +18,6 @@ namespace OrderManagement.HttpApi.OrderManagement.Controllers;
 [DisableAuditing]
 [RemoteService]
 [Route("api/services/app/AgencySaleDetailService/[action]")]
-[UserAuthorization]
 public class AgencySaleDetailController : Controller
 {
     private readonly IAgencySaleDetailService _agencySaleDetailService;

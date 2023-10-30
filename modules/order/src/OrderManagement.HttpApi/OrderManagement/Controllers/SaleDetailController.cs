@@ -21,7 +21,6 @@ namespace OrderManagement.HttpApi.OrderManagement.Controllers;
 [DisableAuditing]
 [RemoteService]
 [Route("api/services/app/SaleDetailService/[action]")]
-[UserAuthorization]
 public class SaleDetailController:Controller, ISaleDetailService
 {
     private readonly ISaleDetailService _saleDetailService;
