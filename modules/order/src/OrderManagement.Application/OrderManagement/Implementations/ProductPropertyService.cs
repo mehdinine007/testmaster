@@ -441,7 +441,7 @@ namespace OrderManagement.Application
                     Key = "P026",
                     Type = PropertyTypeEnum.Text,
                     Value = "",
-                    Priority=7
+                    Priority=8
 
                  }
 
@@ -603,6 +603,7 @@ namespace OrderManagement.Application
                 {
                     Title = "مشخصات اصلی",
                     Display = false,
+                    Priority = 6,
                     Properties = new List<PropertyDto>()
             {
                 new PropertyDto()
@@ -611,7 +612,8 @@ namespace OrderManagement.Application
                     Title = "مورد علاقه",
                     Key = "isfavorite",
                     Type = PropertyTypeEnum.Boolean,
-                    Value = ""
+                    Value = "",
+                    Priority=1
                 },
                 new PropertyDto()
                 {
@@ -621,6 +623,7 @@ namespace OrderManagement.Application
                     Type = PropertyTypeEnum.Coding,
                     CodingType = CodingTypeEnum.CarClass,
                     Value = "",
+                    Priority=2
                 },
             }
                 };
@@ -678,6 +681,7 @@ namespace OrderManagement.Application
                     Key = "P005",
                     Type = PropertyTypeEnum.Text,
                     Value = "",
+                    Priority=5
                 },
             }
                 };
@@ -751,6 +755,7 @@ namespace OrderManagement.Application
                     Key = "P011",
                     Type = PropertyTypeEnum.Number,
                     Value = "",
+                    Priority=1
                 },
                 new PropertyDto()
                 {
@@ -759,6 +764,7 @@ namespace OrderManagement.Application
                     Key = "P012",
                     Type = PropertyTypeEnum.Number,
                     Value = "",
+                    Priority=2
                 },
                 new PropertyDto()
                 {
@@ -767,6 +773,7 @@ namespace OrderManagement.Application
                     Key = "P013",
                     Type = PropertyTypeEnum.Number,
                     Value = "",
+                    Priority=3
                 },
                 new PropertyDto()
                 {
@@ -775,6 +782,7 @@ namespace OrderManagement.Application
                     Key = "P014",
                     Type = PropertyTypeEnum.Text,
                     Value = "",
+                    Priority=4
                 },
                 new PropertyDto()
                 {
@@ -783,6 +791,7 @@ namespace OrderManagement.Application
                     Key = "P015",
                     Type = PropertyTypeEnum.Text,
                     Value = "",
+                    Priority=5
                 },
                  new PropertyDto()
                 {
@@ -791,6 +800,7 @@ namespace OrderManagement.Application
                     Key = "P016",
                     Type = PropertyTypeEnum.Text,
                     Value = "",
+                    Priority=6
                 },
                  new PropertyDto()
                  {
@@ -799,6 +809,7 @@ namespace OrderManagement.Application
                     Key = "P017",
                     Type = PropertyTypeEnum.Text,
                     Value = "",
+                    Priority=7
 
                  },
                  new PropertyDto()
@@ -808,6 +819,7 @@ namespace OrderManagement.Application
                     Key = "P018",
                     Type = PropertyTypeEnum.Text,
                     Value = "",
+                    Priority=8
 
                  }
 
@@ -819,7 +831,9 @@ namespace OrderManagement.Application
                 {
                     Title = "ایمنی و امنیت",
                     Display = true,
+                    Priority = 5,
                     Properties = new List<PropertyDto>()
+
             {
                 new PropertyDto()
                 {
@@ -828,6 +842,7 @@ namespace OrderManagement.Application
                     Key = "P019",
                     Type = PropertyTypeEnum.Text,
                     Value = "",
+                    Priority=1
                 },
                 new PropertyDto()
                 {
@@ -836,6 +851,7 @@ namespace OrderManagement.Application
                     Key = "P020",
                     Type = PropertyTypeEnum.Boolean,
                     Value = "",
+                    Priority=2
                 },
                 new PropertyDto()
                 {
@@ -844,6 +860,7 @@ namespace OrderManagement.Application
                     Key = "P021",
                     Type = PropertyTypeEnum.Boolean,
                     Value = "",
+                    Priority=3
                 },
                 new PropertyDto()
                 {
@@ -852,6 +869,7 @@ namespace OrderManagement.Application
                     Key = "P022",
                     Type = PropertyTypeEnum.Boolean,
                     Value = "",
+                    Priority=4
                 },
                 new PropertyDto()
                 {
@@ -860,6 +878,7 @@ namespace OrderManagement.Application
                     Key = "P023",
                     Type = PropertyTypeEnum.Boolean,
                     Value = "",
+                    Priority=5
                 },
                  new PropertyDto()
                 {
@@ -868,6 +887,7 @@ namespace OrderManagement.Application
                     Key = "P024",
                     Type = PropertyTypeEnum.Boolean,
                     Value = "",
+                    Priority=6
                 },
                  new PropertyDto()
                  {
@@ -876,6 +896,7 @@ namespace OrderManagement.Application
                     Key = "P025",
                     Type = PropertyTypeEnum.Text,
                     Value = "",
+                    Priority=7
 
                  },
                  new PropertyDto()
@@ -885,6 +906,7 @@ namespace OrderManagement.Application
                     Key = "P026",
                     Type = PropertyTypeEnum.Text,
                     Value = "",
+                    Priority=8
 
                  }
 
@@ -970,7 +992,7 @@ namespace OrderManagement.Application
                     Key = "P034",
                     Type = PropertyTypeEnum.Number,
                     Value = "",
-                    Priority=7
+                    Priority=8
 
                 },
                  new PropertyDto()
@@ -980,7 +1002,7 @@ namespace OrderManagement.Application
                     Key = "P035",
                     Type = PropertyTypeEnum.Text,
                     Value = "",
-                    Priority=8
+                    Priority=9
 
                 },
                  new PropertyDto()
@@ -990,7 +1012,7 @@ namespace OrderManagement.Application
                     Key = "P036",
                     Type = PropertyTypeEnum.Number,
                     Value = "",
-                    Priority=9
+                    Priority=10
 
                 },
                  new PropertyDto()
@@ -1000,7 +1022,7 @@ namespace OrderManagement.Application
                     Key = "P037",
                     Type = PropertyTypeEnum.Boolean,
                     Value = "",
-                    Priority=10
+                    Priority=11
 
                 },
                   new PropertyDto()
@@ -1010,7 +1032,7 @@ namespace OrderManagement.Application
                     Key = "P038",
                     Type = PropertyTypeEnum.Boolean,
                     Value = "",
-                    Priority=11
+                    Priority=12
 
                 },
                    new PropertyDto()
@@ -1020,7 +1042,7 @@ namespace OrderManagement.Application
                     Key = "P039",
                     Type = PropertyTypeEnum.Boolean,
                     Value = "",
-                    Priority=12
+                    Priority=13
 
                 },
                     new PropertyDto()
@@ -1030,7 +1052,7 @@ namespace OrderManagement.Application
                     Key = "P040",
                     Type = PropertyTypeEnum.Boolean,
                     Value = "",
-                    Priority=13
+                    Priority=14
 
                 }
 
