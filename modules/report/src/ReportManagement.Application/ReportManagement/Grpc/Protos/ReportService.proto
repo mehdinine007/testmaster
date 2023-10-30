@@ -1,0 +1,155 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "ReportManagement.Application.Grpc.ReportServiceGrpc";
+
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/any.proto";
+import "google/protobuf/descriptor.proto";
+
+
+package ReportService;
+
+
+
+service ReportServiceGrpc{
+	rpc GetAllDashboard(DashboardRequestModel) returns (DashboardModel);
+	rpc GetWidgetByDashboardId(WidgetRequestModel) returns (WidgetModel);
+	rpc GetChart(ChartRequestModel) returns (ChartModel);
+	rpc GetGrid(GridRequestModel) returns (GridModel);
+}
+
+
+message DashboardModel
+{
+   int32  Id =1;
+   string Title =2;
+   int32  Priority =3;
+       
+}
+
+
+message DashboardRequestModel {}
+
+
+message WidgetRequestModel
+{
+   int32 dashboardId =1;
+  
+}
+message WidgetModelInput
+{
+repeated WidgetModel WidgetModel =1;
+}
+
+message WidgetModel
+{
+int32 Id =1;
+string Title =2;
+string Type =3;
+repeated ConditionModel Condition =4;
+}
+message ConditionModel
+{
+	    string Title =1;
+         WidgetTypeEnum Type =2;
+         string Name =3;
+         string Default =4;
+         int32 Priority =5;
+         repeated DrowpDownItem DrowpDownItems =6;
+         bool MultiSelect=7;
+         ApiContent ApiContent =8;
+}
+
+
+message DrowpDownItem
+{
+ int32 Value =1;
+ string Title =2;
+}
+
+message ApiContent
+{
+   ApiType Type =1;
+   string Url =2;
+   string Body =3;
+   enum ApiType
+   {
+      Get = 0;
+      Post = 1;
+   }
+   
+}
+
+enum WidgetTypeEnum
+    {
+        Bar = 0;
+        Column = 1;
+        Pie = 2;
+        Line = 3;
+        Grid = 4;
+    }
+
+message ChartModel{
+         int32 Id =1;
+         string Title =2;
+         int32 Type =3;
+         repeated  CategoryData Categories =4;
+         repeated ChartSeriesData Series =5;
+        
+}
+
+message ConditionValueModel{
+         string Name =1;
+         string Value =2;
+         ConditionTypeEnum Type =3;
+         bool MultiSelect =4;
+}
+
+
+message ChartRequestModel{
+   int32  widgetId =1;
+   repeated ConditionValueModel ConditionValue =2 ;
+}
+
+message CategoryData{
+   string Title =1;
+   string Color =2;
+}
+
+
+message ChartSeriesData{
+   string Name =1;
+   string Color=2;
+   repeated  sint64 Data =3;
+}
+
+
+ enum ConditionTypeEnum
+    {
+        String = 0;
+        Numerical = 1;
+        DropDown = 2;
+        CodingApi = 3;
+        Date = 4;
+    }
+message GridModel
+          {
+         int32 Id =1;
+         string Title =2;
+         repeated CategoryData Categories =3;
+         repeated KeyValue  Data =4;
+         }
+   
+message KeyValue 
+{
+  string key = 1;
+  google.protobuf.Any value = 2;
+}
+message GridRequestModel 
+{
+
+
+}
+
+
+    
