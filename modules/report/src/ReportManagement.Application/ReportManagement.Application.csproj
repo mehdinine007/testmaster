@@ -16,6 +16,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="ReportManagement\Grpc\Protos\ReportService.proto" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Google.Protobuf" Version="3.22.4" />
     <PackageReference Include="Grpc.AspNetCore" Version="2.53.0" />
     <PackageReference Include="Grpc.Net.Client" Version="2.53.0" />
@@ -39,6 +43,10 @@
     <ProjectReference Include="..\ReportManagement.Application.Contracts\ReportManagement.Application.Contracts.csproj" />
     <ProjectReference Include="..\ReportManagement.Domain\ReportManagement.Domain.csproj" />
     <ProjectReference Include="..\ReportManagement.EntityFrameworkCore\ReportManagement.EntityFrameworkCore.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Protobuf Include="ReportManagement\Grpc\Protos\ReportService.proto" GrpcServices="Both" />
   </ItemGroup>
 
 </Project>
