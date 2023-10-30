@@ -16,5 +16,6 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Services
         Task<int> Save(CreateSaleDetailDto createSaleDetailDto);
         Task<int> Update(CreateSaleDetailDto createSaleDetailDto);
         Task<bool> Delete(int id);
+        List<SaleDetailForDropDownDto> GetAll();
     }
 }

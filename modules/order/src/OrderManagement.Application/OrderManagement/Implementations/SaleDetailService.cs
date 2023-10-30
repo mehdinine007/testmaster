@@ -245,4 +245,18 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
         await _cacheManager.RemoveAsync(saleDetail.UID.ToString(), RedisConstants.SaleDetailPrefix, new CacheOptions() { Provider = CacheProviderEnum.Hybrid });
         return saleDetail.Id;
     }
+
+
+    public List<SaleDetailForDropDownDto> GetAll()
+    {
+        var saledetails = _saleDetailRepository
+            .WithDetails()
+            .AsNoTracking()
+            .ToList();
+        return ObjectMapper.Map<List<SaleDetail>, List<SaleDetailForDropDownDto>>(saledetails);
+    }
+
+
+
+
 }
