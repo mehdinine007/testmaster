@@ -13,7 +13,7 @@ using Esale.Share.Authorize;
 using Microsoft.AspNetCore.Http;
 using OrderManagement.Domain.Shared;
 using OrderManagement.Application.Contracts;
-using Esale.Core.Utility.Tools;
+using IFG.Core.Utility.Tools;
 
 namespace OrderManagement.HttpApi.OrderManagement.Controllers;
 

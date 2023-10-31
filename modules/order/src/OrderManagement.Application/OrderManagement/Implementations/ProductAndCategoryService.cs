@@ -19,7 +19,7 @@ using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Bson.Serialization;
 using System.ComponentModel;
-using Esale.Core.Utility.Tools;
+using IFG.Core.Utility.Tools;
 using Volo.Abp.ObjectMapping;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;

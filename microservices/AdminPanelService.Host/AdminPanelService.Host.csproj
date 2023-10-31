@@ -40,8 +40,8 @@
         <ProjectReference Include="..\..\modules\adminPanel\src\AdminPanelManagement.Application\AdminPanelManagement.Application.csproj" />
         <ProjectReference Include="..\..\modules\adminPanel\src\AdminPanelManagement.EntityFrameworkCore\AdminPanelManagement.EntityFrameworkCore.csproj" />
         <ProjectReference Include="..\..\modules\adminPanel\src\AdminPanelManagement.HttpApi\AdminPanelManagement.HttpApi.csproj" />
-        <ProjectReference Include="..\..\shared\Esale.Core\Esale.Core.csproj" />
         <ProjectReference Include="..\..\shared\Extensions\Extensions.csproj" />
+        <ProjectReference Include="..\..\shared\IFG.Core\IFG.Core.csproj" />
         <ProjectReference Include="..\..\shared\MsDemo.Shared\MsDemo.Shared.csproj" />
     </ItemGroup>
 

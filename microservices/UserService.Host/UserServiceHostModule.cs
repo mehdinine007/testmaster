@@ -1,5 +1,5 @@
 #region NS
-using EasyCaching.Host.Extensions;
+using IFG.Core.Caching;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.OpenApi.Models;
 using UserManagement.Application;
@@ -19,7 +19,7 @@ using Volo.Abp.Threading;
 using Volo.Abp;
 using Volo.Abp.Data;
 using Volo.Abp.MongoDB;
-using Esale.Core.Extensions;
+using IFG.Core.Extensions;
 using UserManagement.EfCore.MongoDb;
 using Hangfire;
 using Microsoft.EntityFrameworkCore;
@@ -27,7 +27,7 @@ using UserManagement.Application.UserManagement.Implementations;
 using Volo.Abp.RabbitMQ;
 using Volo.Abp.EventBus.RabbitMq;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Esale.Core.Utility.Security.Encyption;
+using IFG.Core.Utility.Security.Encyption;
 using Volo.Abp.BackgroundJobs.Hangfire;
 #endregion
 

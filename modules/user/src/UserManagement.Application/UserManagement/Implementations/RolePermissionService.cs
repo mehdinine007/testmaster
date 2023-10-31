@@ -3,10 +3,10 @@ using UserManagement.Application.Contracts.UserManagement.Services;
 using UserManagement.Domain.UserManagement.Authorization.RolePermissions;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
-using Esale.Core.Caching;
+using IFG.Core.Caching;
 using Abp.UI;
 using UserManagement.Application.Contracts.UserManagement.Constant;
-using Esale.Core.Constant;
+using IFG.Core.Constant;
 using Core.Utility.Tools;
 using UserManagement.Application.Contracts.Models;
 

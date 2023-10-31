@@ -31,7 +31,7 @@ using PaymentService.Host.Infrastructures;
 using PaymentManagement.Application.PaymentManagement.Services;
 using Volo.Abp.Uow;
 using Microsoft.EntityFrameworkCore;
-using Esale.Core.Extensions;
+using IFG.Core.Extensions;
 
 namespace PaymentService.Host
 {

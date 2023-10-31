@@ -1,4 +1,4 @@
-﻿using Esale.Core.Attributes;
+﻿using IFG.Core.Attributes;
 
 
 namespace UserManagement.Domain.UserManagement.Enums

@@ -1,5 +1,5 @@
-﻿using Esale.Core.DataAccess;
-using Esale.Core.Utility.Tools;
+﻿using IFG.Core.DataAccess;
+using IFG.Core.Utility.Tools;
 using Microsoft.EntityFrameworkCore;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.OrderManagement;

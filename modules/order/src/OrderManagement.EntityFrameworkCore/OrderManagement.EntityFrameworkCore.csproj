@@ -24,7 +24,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\..\..\shared\Esale.Core\Esale.Core.csproj" />
+      <ProjectReference Include="..\..\..\..\shared\IFG.Core\IFG.Core.csproj" />
       <ProjectReference Include="..\OrderManagement.Domain\OrderManagement.Domain.csproj" />
     </ItemGroup>
 

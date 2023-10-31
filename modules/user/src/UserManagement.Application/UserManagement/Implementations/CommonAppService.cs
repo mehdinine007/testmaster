@@ -1,5 +1,5 @@
 ﻿#region NS
-using Esale.Core.Caching;
+using IFG.Core.Caching;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;

@@ -19,12 +19,12 @@ using Volo.Abp.Threading;
 using Volo.Abp.Uow;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.Extensions.Configuration;
-using EasyCaching.Host.Extensions;
 using Microsoft.EntityFrameworkCore;
 using AdminPanelManagement.HttpApi;
 using AdminPanelManagement.EntityFrameworkCore;
 using AdminPanelManagement.Application;
 using AdminPanelService.Host.Infrastructures;
+using IFG.Core.Caching;
 
 namespace WorkFlowService.Host
 {

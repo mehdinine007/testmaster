@@ -18,7 +18,7 @@
       "AsyncKeyedLock, {AsyncKeyedLock, 6.2.1}",
       "AutoMapper, {AutoMapper, 12.0.0}",
       "C:\\dev\\w_esalemicro4\\esalecarmicroservice-backend\\modules\\user\\src\\UserManagement.Application\\bin\\Debug\\net7.0\\Authorization.dll",
-      "C:\\dev\\w_esalemicro4\\esalecarmicroservice-backend\\modules\\user\\src\\UserManagement.Application\\bin\\Debug\\net7.0\\Esale.Core.dll",
+      "C:\\dev\\w_esalemicro4\\esalecarmicroservice-backend\\modules\\user\\src\\UserManagement.Application\\bin\\Debug\\net7.0\\IFG.Core.dll",
       "C:\\dev\\w_esalemicro4\\esalecarmicroservice-backend\\modules\\user\\src\\UserManagement.Application\\bin\\Debug\\net7.0\\Extensions.dll",
       "C:\\dev\\w_esalemicro4\\esalecarmicroservice-backend\\modules\\user\\src\\UserManagement.Application\\bin\\Debug\\net7.0\\UserManagement.Application.Contracts.dll",
       "C:\\dev\\w_esalemicro4\\esalecarmicroservice-backend\\modules\\user\\src\\UserManagement.Application\\bin\\Debug\\net7.0\\UserManagement.Domain.dll",
