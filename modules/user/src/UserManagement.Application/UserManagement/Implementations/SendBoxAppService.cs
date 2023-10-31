@@ -62,15 +62,14 @@ public class SendBoxAppService : ApplicationService, ISendBoxAppService
     [Audited]
     public async Task<Esale.Core.Utility.Results.IResult> SendSms(SendSMSDto input)
     {
-        if (!ValidationHelper.IsNationalCode(input.NationalCode))
+        if (!string.IsNullOrEmpty(input.NationalCode) && !ValidationHelper.IsNationalCode(input.NationalCode))
         {
             throw new UserFriendlyException(Messages.NationalCodeNotValid);
         }
-        if (!ValidationHelper.IsMobileNumber(input.Recipient))
+        if (!string.IsNullOrEmpty(input.Recipient) && !ValidationHelper.IsMobileNumber(input.Recipient))
         {
             throw new UserFriendlyException(Messages.IsMobileNumberMessage);
         }
-
         Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
         RegistrationSMSDto sendSMSDto = new RegistrationSMSDto();
         //Logs logs = new Logs();
