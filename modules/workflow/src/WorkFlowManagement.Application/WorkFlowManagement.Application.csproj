@@ -36,7 +36,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\shared\Esale.Core\Esale.Core.csproj" />
+    <ProjectReference Include="..\..\..\..\shared\IFG.Core\IFG.Core.csproj" />
     <ProjectReference Include="..\WorkFlowManagement.Application.Contracts\WorkFlowManagement.Application.Contracts.csproj" />
     <ProjectReference Include="..\WorkFlowManagement.Domain\WorkFlowManagement.Domain.csproj" />
   </ItemGroup>

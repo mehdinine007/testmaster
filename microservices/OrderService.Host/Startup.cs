@@ -11,9 +11,9 @@ using OrderService.Host.Infrastructures.Middlewares;
 using OrderService.Host.Infrastructures.Extensions;
 using OrderService.Host.Infrastructures.Hangfire.Abstract;
 using OrderService.Host.Infrastructures.Hangfire.Concrete;
-using Esale.Core.IOC;
-using Esale.Core.Caching.Redis;
-using Esale.Core.Caching;
+using IFG.Core.IOC;
+using IFG.Core.Caching.Redis;
+using IFG.Core.Caching;
 #endregion
 
 

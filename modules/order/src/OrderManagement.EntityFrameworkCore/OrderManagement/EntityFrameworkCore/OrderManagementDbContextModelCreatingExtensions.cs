@@ -5,7 +5,7 @@ using OrderManagement.Domain;
 using OrderManagement.Domain.Bases;
 using Volo.Abp.EntityFrameworkCore.Modeling;
 using OrderManagement.Domain.OrderManagement;
-using Esale.Core.DataAccess;
+using IFG.Core.DataAccess;
 using OrderManagement.Domain.Shared;
 
 namespace OrderManagement.EfCore;

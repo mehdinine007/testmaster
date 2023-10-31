@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="StackExchange.Redis.Extensions.AspNetCore" Version="9.1.0" />
+    <PackageReference Include="StackExchange.Redis.Extensions.Newtonsoft" Version="9.1.0" />
+	  <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.0">
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+	  </PackageReference>
+	  <PackageReference Include="Volo.Abp.EntityFrameworkCore" Version="5.0.0" />
+	  <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.11.1" />
+	  <PackageReference Include="EasyCaching.Bus.Redis" Version="1.9.1" />
+	  <PackageReference Include="EasyCaching.HybridCache" Version="1.9.0" />
+	  <PackageReference Include="EasyCaching.InMemory" Version="1.9.0" />
+	  <PackageReference Include="EasyCaching.Redis" Version="1.9.0" />
+	  <PackageReference Include="EasyCaching.Serialization.Json" Version="1.9.0" />
+  </ItemGroup>
+
+</Project>

@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 using System.Net;
 using GatewayManagement.Application.Contracts.GatewayManagement.Dtos.Esale;
 using GatewayManagement.Application.Contracts.GatewayManagement.Dtos;
-using Esale.Core.Utility.Results;
+using IFG.Core.Utility.Results;
 
 namespace Esale.SendBox.Providers.Magfa
 {

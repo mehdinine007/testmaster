@@ -1,4 +1,4 @@
-﻿using Esale.Core.Bases;
+﻿using IFG.Core.Bases;
 
 namespace OrderManagement.Domain.Bases;
 

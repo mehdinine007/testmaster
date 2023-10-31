@@ -109,7 +109,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PaymentManagement.HttpApi",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PaymentService.Host", "microservices\PaymentService.Host\PaymentService.Host.csproj", "{4D07A8F1-9E7B-499C-A1C4-B9387D57FCAD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Esale.Core", "shared\Esale.Core\Esale.Core.csproj", "{B3FDBD00-C529-4B5C-A75B-235936F266D3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IFG.Core", "shared\IFG.Core\IFG.Core.csproj", "{B3FDBD00-C529-4B5C-A75B-235936F266D3}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "gateway", "gateway", "{E20F9054-8339-4B43-97A2-F7F39A68B23F}"
 EndProject

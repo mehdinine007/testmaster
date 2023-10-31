@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
 using OrderManagement.Application.Contracts.OrderManagement;
 using OrderManagement.Domain.Shared;
-using Esale.Core.Utility.Tools;
+using IFG.Core.Utility.Tools;
 
 namespace OrderManagement.HttpApi.OrderManagement.Controllers;
 

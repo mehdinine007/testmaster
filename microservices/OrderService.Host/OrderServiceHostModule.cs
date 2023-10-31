@@ -23,12 +23,12 @@ using Microsoft.IdentityModel.Logging;
 using Volo.Abp.BackgroundJobs.Hangfire;
 using Hangfire;
 using Microsoft.Extensions.Configuration;
-using EasyCaching.Host.Extensions;
+using IFG.Core.Caching;
 using Volo.Abp.MongoDB;
 using Microsoft.EntityFrameworkCore;
 using OrderManagement.EfCore.MongoDb;
-using Esale.Core.Extensions;
-using Esale.Core.Utility.Security.Encyption;
+using IFG.Core.Extensions;
+using IFG.Core.Utility.Security.Encyption;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using OrderManagement.Domain;
 

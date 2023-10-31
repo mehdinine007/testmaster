@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Esale.Core.Utility.Tools;
+using IFG.Core.Utility.Tools;
 using Newtonsoft.Json;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.Dtos;

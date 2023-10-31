@@ -1,4 +1,4 @@
-﻿using Esale.Core.Utility.Tools;
+﻿using IFG.Core.Utility.Tools;
 using Nest;
 using Newtonsoft.Json;
 using OrderManagement.Application.Contracts;

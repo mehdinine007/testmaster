@@ -1,4 +1,4 @@
-﻿using Esale.Core.Utility.Results;
+﻿using IFG.Core.Utility.Results;
 using Microsoft.Extensions.Configuration;
 using Volo.Abp;
 using Newtonsoft.Json;

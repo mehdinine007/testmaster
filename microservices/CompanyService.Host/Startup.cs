@@ -9,9 +9,9 @@ using ProductService.Host.Infrastructure.Middlewares;
 using Volo.Abp.Auditing;
 using CompanyService.Host.Infrastructures.Middlewares;
 using CompanyService.Host.Infrastructures.Extensions;
-using Esale.Core.IOC;
-using Esale.Core.Caching.Redis;
-using Esale.Core.Caching;
+using IFG.Core.IOC;
+using IFG.Core.Caching.Redis;
+using IFG.Core.Caching;
 using CompanyManagement.Application.CompanyManagement.Implementations;
 using OrderManagement.Application.CompanyManagement.GrpcServer;
 #endregion

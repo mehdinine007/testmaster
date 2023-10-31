@@ -1,6 +1,6 @@
 ﻿#region NS
-using Esale.Core.Caching;
-using Esale.Core.Utility.Results;
+using IFG.Core.Caching;
+using IFG.Core.Utility.Results;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Bson;
@@ -60,7 +60,7 @@ public class SendBoxAppService : ApplicationService, ISendBoxAppService
 
 
     [Audited]
-    public async Task<Esale.Core.Utility.Results.IResult> SendSms(SendSMSDto input)
+    public async Task<IFG.Core.Utility.Results.IResult> SendSms(SendSMSDto input)
     {
         if (!string.IsNullOrEmpty(input.NationalCode) && !ValidationHelper.IsNationalCode(input.NationalCode))
         {

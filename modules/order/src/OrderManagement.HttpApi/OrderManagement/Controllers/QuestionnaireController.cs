@@ -9,7 +9,7 @@ using Esale.Share.Authorize;
 using OrderManagement.Application.Contracts.OrderManagement;
 using System.Collections.Generic;
 using OrderManagement.Domain.Shared;
-using Esale.Core.Utility.Tools;
+using IFG.Core.Utility.Tools;
 
 namespace OrderManagement.HttpApi.OrderManagement.Controllers;
 

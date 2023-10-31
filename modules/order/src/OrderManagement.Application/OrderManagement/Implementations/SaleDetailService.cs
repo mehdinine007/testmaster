@@ -1,6 +1,6 @@
 ﻿using EasyCaching.Core;
-using Esale.Core.Caching;
-using Esale.Core.DataAccess;
+using IFG.Core.Caching;
+using IFG.Core.DataAccess;
 using Esale.Share.Authorize;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;

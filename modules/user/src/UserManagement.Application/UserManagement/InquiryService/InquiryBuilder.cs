@@ -1,4 +1,4 @@
-﻿using Esale.Core.Utility.Results;
+﻿using IFG.Core.Utility.Results;
 using Newtonsoft.Json;
 using UserManagement.Application.Contracts.Models;
 using UserManagement.Application.Utility;
