@@ -489,7 +489,8 @@ public class UserAppService : ApplicationService, IUserAppService
                     Password = x.Password,
                     IsActive = x.IsActive,
                     RolesM = x.Roles,
-                    NormalizedUserName = x.NormalizedUserName
+                    NormalizedUserName = x.NormalizedUserName,
+                    CompanyId = x.CompanyId,
                 })
                 .FirstOrDefault();
         if (user != null)
