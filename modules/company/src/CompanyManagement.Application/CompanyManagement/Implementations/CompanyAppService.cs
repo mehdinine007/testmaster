@@ -54,14 +54,10 @@ namespace CompanyManagement.Application.CompanyManagement.Implementations
         [SecuredOperation(CompanyServicePermissionConstants.GetCustomersAndCars)]
         public List<CustomersWithCars> GetCustomersAndCars(GetCustomersAndCarsDto input)
         {
-            if (!IsInRole("Company"))
-            {
-                throw new UserFriendlyException("دسترسی کافی نمی باشد");
-            }
             var customersAndCarsInputDto = new CustomersAndCarsInputDto()
             {
                 SaleId = input.SaleId,
-                CompanyId =int.Parse(GetCompanyId())
+                CompanyId = int.Parse(GetCompanyId())
             };
 
             _companyRepository.GetCustomerOrderList(customersAndCarsInputDto);
@@ -74,8 +70,6 @@ namespace CompanyManagement.Application.CompanyManagement.Implementations
         [SecuredOperation(CompanyServicePermissionConstants.InsertCompanyProduction)]
         public async Task<bool> InsertCompanyProduction(List<CompanyProductionDto> companyProductionsDto)
         {
-            if (!IsInRole("Company"))
-                throw new UserFriendlyException("عدم دسترسی کافی");
             var companyProductions = ObjectMapper.Map(companyProductionsDto, new List<CompanyProduction>());
             await _companyProductionRepository.InsertManyAsync(companyProductions);
             return true;
@@ -84,8 +78,6 @@ namespace CompanyManagement.Application.CompanyManagement.Implementations
         [SecuredOperation(CompanyServicePermissionConstants.SubmitOrderInformations)]
         public async Task<bool> SubmitOrderInformations(List<ClientsOrderDetailByCompanyDto> clientsOrderDetailByCompnayDtos)
         {
-            if (!IsInRole("Company"))
-                throw new UserFriendlyException("عدم دسترسی کافی");
             var x = ObjectMapper.Map<List<ClientsOrderDetailByCompanyDto>, List<ClientsOrderDetailByCompany>>(clientsOrderDetailByCompnayDtos, new List<ClientsOrderDetailByCompany>());
 
             await _clientsOrderDetailByCompanyRepository.InsertManyAsync(
