@@ -13,6 +13,8 @@ namespace UserManagement.Domain.UserManagement.bases
         public int Type { get; set; }
         public string Icon { get; set; }
         public string Url { get; set; }
+        public List<PermissionDefinitionChild> Permissions { get; set; }
+
         public List<MenuChild> Children { get; set; }
     }
 }

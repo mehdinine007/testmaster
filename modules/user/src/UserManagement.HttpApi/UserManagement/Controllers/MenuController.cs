@@ -22,7 +22,7 @@ namespace UserManagement.HttpApi.UserManagement.Controllers
 
 
         [HttpGet]
-        public async Task<List<MenuDto>> GetList()
+        public async Task<MenuDto> GetList()
             => await _menuAppService.GetList();
 
         [HttpGet]

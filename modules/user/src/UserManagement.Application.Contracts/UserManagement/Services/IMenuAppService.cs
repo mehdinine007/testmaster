@@ -9,7 +9,7 @@ namespace UserManagement.Application.Contracts.UserManagement.Services;
 
 public interface IMenuAppService : IApplicationService
 {
-    Task<List<MenuDto>> GetList();
+    Task<MenuDto> GetList();
     Task<MenuDto> GetById(ObjectId Id);
 
     Task<MenuDto> Add(MenuDto input);

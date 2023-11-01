@@ -2,6 +2,7 @@
 using MongoDB.Bson.Serialization.Attributes;
 using UserManagement.Application.Contracts.Models;
 using UserManagement.Application.Contracts.UserManagement.Models.User;
+using UserManagement.Domain.UserManagement.bases;
 
 namespace UserManagement.Application.Contracts.UserManagement;
 
@@ -16,4 +17,6 @@ public class MenuDto
     public string Icon { get; set; }
     public string Url { get; set; }
     public List<MenuChildDto> Children { get; set; }
+    public List<PermissionDefinitionChildDto> Permissions { get; set; }
+
 }
