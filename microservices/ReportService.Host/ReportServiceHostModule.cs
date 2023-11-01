@@ -25,6 +25,7 @@ using ReportService.Host.Infrastructures;
 using ReportManagement.Application;
 using ReportManagement.HttpApi;
 using ReportManagement.EntityFrameworkCore;
+using ReportManagement.Application.ReportManagement.Grpc;
 
 namespace ReportService.Host
 {
@@ -131,11 +132,11 @@ namespace ReportService.Host
             app.UseAuthentication();
             app.UseAbpClaimsMap();
 
-            //app.UseEndpoints(endpoints =>
-            //{
-            //    endpoints.MapGrpcService<UserGrpcClientService>();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapGrpcService<GrpcReportService>();
 
-            //});
+            });
 
             app.UseAbpRequestLocalization(); //TODO: localization?
             app.UseSwagger();
