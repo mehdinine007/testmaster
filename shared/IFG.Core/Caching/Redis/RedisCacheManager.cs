@@ -50,11 +50,15 @@ namespace IFG.Core.Caching.Redis
             return await _cacheClient.GetDataBase().StringGetAsync(key);
         }
 
-        public async Task<bool> IsAddAsync(string key)
+        public async Task<bool> KeyExistsAsync(string key)
         {
             return await _cacheClient.GetDataBase().KeyExistsAsync(key);
         }
 
+        public bool KeyExists(string key)
+        {
+            return _cacheClient.GetDataBase().KeyExists(key);
+        }
         public async Task<bool> RemoveAsync(string key)
         {
             return await _cacheClient.GetDataBase().KeyDeleteAsync(key);
@@ -133,6 +137,11 @@ namespace IFG.Core.Caching.Redis
                 await RemoveAsync(key);
             }
             return await RemoveAsync(prefix);
+        }
+
+        public string GetString(string key)
+        {
+            return _cacheClient.GetDataBase().StringGet(key);
         }
     }
 }

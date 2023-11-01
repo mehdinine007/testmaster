@@ -49,6 +49,15 @@ namespace IFG.Core.Caching
             return default(T);
         }
 
+        public string GetString(string key, string prefix, CacheOptions options)
+        {
+            if (options.Provider == CacheProviderEnum.Redis)
+            {
+                    return _redisCacheManager.GetString(prefix + key);
+            }
+            return "";
+        }
+
         public async Task<string?> GetStringAsync(string key, string prefix, CacheOptions options)
         {
             if (options.Provider == CacheProviderEnum.Redis)
@@ -61,6 +70,16 @@ namespace IFG.Core.Caching
             else if (options.Provider == CacheProviderEnum.Hybrid)
                 return await GetAsync<string>(key, prefix, options);
             return null;
+        }
+
+        public bool KeyExists(string key,string prefix, CacheOptions options)
+        {
+            return _redisCacheManager.KeyExists(prefix + key);
+        }
+
+        public async Task<bool> KeyExistsAsync(string key, string prefix, CacheOptions options)
+        {
+            return await _redisCacheManager.KeyExistsAsync(prefix + key);
         }
 
         public async Task RemoveAsync(string key, string prefix, CacheOptions options)

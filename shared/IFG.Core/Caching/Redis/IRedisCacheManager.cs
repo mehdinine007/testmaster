@@ -14,7 +14,9 @@ namespace IFG.Core.Caching.Redis
         Task StringAppendAsync(string key, string value, int duration = 0);
         Task<T> GetAsync<T>(string key);
         Task<string> GetStringAsync(string key);
-        Task<bool> IsAddAsync(string key);
+        string GetString(string key);
+        Task<bool> KeyExistsAsync(string key);
+        bool KeyExists(string key);
         Task<bool> RemoveAsync(string key);
         IEnumerable<string> SearchKeys(string pattern);
         Task<bool> RemoveAllAsync(string pattern);
