@@ -13,7 +13,7 @@ using Volo.Abp.EntityFrameworkCore;
 namespace CompanyManagement.EfCore.CompanyManagement.EntityFrameworkCore
 {
     [ConnectionStringName("CompanyManagement")]
-                           
+
     public class CompanyManagementDbContext : AbpDbContext<CompanyManagementDbContext>, ICompanyManagementDbContext
     {
 
@@ -28,6 +28,7 @@ namespace CompanyManagement.EfCore.CompanyManagement.EntityFrameworkCore
         public DbSet<CompanyPaypaidPrices> CompanyPaypaidPrices { get; set; }
         public DbSet<CompanySaleCallDates> CompanySaleCallDates { get; set; }
         public DbSet<CompanyProduction> CompanyProduction { get; set; }
+        public DbSet<CompaniesCustomer> CompaniesCustomer { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -43,6 +44,6 @@ namespace CompanyManagement.EfCore.CompanyManagement.EntityFrameworkCore
         }
 
     }
-   
+
 
 }

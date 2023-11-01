@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Nest;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,7 +8,7 @@ using Volo.Abp.Domain.Entities.Auditing;
 
 namespace CompanyManagement.Domain.CompanyManagement
 {
-    public class ClientsOrderDetailByCompany: FullAuditedEntity<long>
+    public class ClientsOrderDetailByCompany : FullAuditedEntity<long>
     {
         public string NationalCode { get; set; }
 

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using CompanyManagement.Application.Contracts.CompanyManagement.Services;
 using CompanyManagement.Application.Contracts.CompanyManagement;
 using CompanyManagement.Domain.Shared.CompanyManagement;
+using CompanyManagement.Application.Contracts;
 
 namespace CompanyManagement.HttpApi.OrderManagement.Controllers;
 
@@ -19,11 +20,15 @@ public class CompanyController : Controller
         => _companyAppService = companyAppService;
     [HttpGet]
     public List<CustomersWithCars> GetCustomersAndCars(GetCustomersAndCarsDto input)
-    =>_companyAppService.GetCustomersAndCars(input);
+    => _companyAppService.GetCustomersAndCars(input);
     [HttpPost]
     public Task InsertCompanyProduction(List<CompanyProductionDto> companyProductionsDto)
-    =>_companyAppService.InsertCompanyProduction(companyProductionsDto);
+    => _companyAppService.InsertCompanyProduction(companyProductionsDto);
     [HttpPost]
     public Task SubmitOrderInformations(List<ClientsOrderDetailByCompanyDto> clientsOrderDetailByCompnayDtos)
     => _companyAppService.SubmitOrderInformations(clientsOrderDetailByCompnayDtos);
+    [HttpGet]
+    //TODO: add secure operation 
+    public CompaniesCustomerDto GetCustomer(string nationalCode, int saleId)
+        => _companyAppService.GetCustomer(nationalCode, saleId);
 }
