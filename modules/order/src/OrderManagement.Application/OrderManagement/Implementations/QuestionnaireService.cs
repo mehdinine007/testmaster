@@ -12,6 +12,7 @@ using OrderManagement.Domain.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Services;
@@ -174,6 +175,10 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
                 if (!smsCodeIsValid)
                     throw new UserFriendlyException("کد ارسالی صحیح نیست");
             }
+            else
+            {
+                await ControlUserWotnAnswerMoreThanOne(_commonAppService.GetUserId(), submitAnswerTreeDto.QuestionnaireId, submitAnswerTreeDto.RelatedEntity);
+            }
 
         }
         else if (questionnaire.QuestionnaireType == QuestionnaireType.AuthorizedOnly)
@@ -181,23 +186,7 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
             if (!_httpContextAccessor.HttpContext.User.Identity.IsAuthenticated)
                 throw new UserFriendlyException("لطفا لاگین کنید");
 
-            var currentUserUserId = _commonAppService.GetUserId();
-            var answerSubmittedQuery = (await _submittedAnswerRepository.GetQueryableAsync())
-                .Include(x => x.Question)
-                .Select(x => new
-                {
-                    x.UserId,
-                    x.Question.QuestionnaireId,
-                    x.RelatedEntityId
-                })
-                .Where(x => x.UserId.Value == currentUserUserId && x.QuestionnaireId == submitAnswerTreeDto.QuestionnaireId);
-
-            var submittedAnswer = submitAnswerTreeDto.RelatedEntity.HasValue
-                ? answerSubmittedQuery.FirstOrDefault(x => x.RelatedEntityId.Value == submitAnswerTreeDto.RelatedEntity.Value)
-                : answerSubmittedQuery.FirstOrDefault();
-
-            if (submittedAnswer != null)
-                throw new UserFriendlyException("این پرسشنامه قبلا توسط شما تکمیل شده است");
+            await ControlUserWotnAnswerMoreThanOne(_commonAppService.GetUserId(), submitAnswerTreeDto.QuestionnaireId, submitAnswerTreeDto.RelatedEntity);
         }
         else
             throw new InvalidOperationException();
@@ -311,4 +300,27 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
         });
         return questionnaireDtoList;
     }
+
+
+    #region Utilities
+    private async Task ControlUserWotnAnswerMoreThanOne(Guid userId, int questionnaireId, long? relatedEntity)
+    {
+        var answerSubmittedQuery = (await _submittedAnswerRepository.GetQueryableAsync())
+            .Include(x => x.Question)
+            .Select(x => new
+            {
+                x.UserId,
+                x.Question.QuestionnaireId,
+                x.RelatedEntityId
+            })
+            .Where(x => x.UserId.Value == userId && x.QuestionnaireId == questionnaireId);
+
+        var submittedAnswer = relatedEntity.HasValue
+            ? answerSubmittedQuery.FirstOrDefault(x => x.RelatedEntityId.Value == relatedEntity.Value)
+            : answerSubmittedQuery.FirstOrDefault();
+
+        if (submittedAnswer != null)
+            throw new UserFriendlyException("این پرسشنامه قبلا توسط شما تکمیل شده است");
+    }
+    #endregion
 }
