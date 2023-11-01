@@ -1,6 +1,5 @@
 ﻿using IFG.Core.Utility.Results;
 using Microsoft.EntityFrameworkCore;
-using Nest;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NPOI.SS.Formula.Functions;

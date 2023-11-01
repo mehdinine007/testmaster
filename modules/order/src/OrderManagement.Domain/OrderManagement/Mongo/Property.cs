@@ -1,5 +1,4 @@
 ﻿using MongoDB.Bson;
-using Nest;
 using OrderManagement.Domain.Shared;
 using System;
 using System.Collections.Generic;

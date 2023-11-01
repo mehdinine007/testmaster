@@ -5,7 +5,6 @@ using IFG.Core.Caching;
 using IFG.Core.IOC;
 using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption;
 using MongoDB.Bson;
-using Nest;
 using Polly.Caching;
 using UserManagement.Application.Contracts.Models;
 using UserManagement.Application.Contracts.UserManagement;

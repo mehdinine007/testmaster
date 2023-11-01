@@ -2,7 +2,6 @@
 using EasyCaching.Core.Diagnostics;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
-using Nest;
 using Newtonsoft.Json.Linq;
 using ReportManagement.Domain.ReportManagement;
 using ReportManagement.Domain.Shared.ReportManagement.Dtos;

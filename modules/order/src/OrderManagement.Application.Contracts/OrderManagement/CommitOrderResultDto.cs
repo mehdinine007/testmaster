@@ -12,7 +12,7 @@ namespace OrderManagement.Application.Contracts
     public class PaymentMethodConfiguration
     {
         public string Token { get; set; }
-        public int StatusCode { get; set; }
+        public int? StatusCode { get; set; }
         public string HtmlContent { get; set; }
         public string Message { get; set; }
     }

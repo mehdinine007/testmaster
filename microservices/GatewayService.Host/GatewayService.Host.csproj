@@ -14,6 +14,7 @@
     <ProjectReference Include="..\..\modules\gateway\src\GatewayManagement.Application\GatewayManagement.Application.csproj" />
     <ProjectReference Include="..\..\modules\gateway\src\GatewayManagement.EntityFrameworkCore\GatewayManagement.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\modules\gateway\src\GatewayManagement.HttpApi\GatewayManagement.HttpApi.csproj" />
+    <ProjectReference Include="..\..\shared\Extensions\Extensions.csproj" />
     <ProjectReference Include="..\..\shared\MsDemo.Shared\MsDemo.Shared.csproj" />
   </ItemGroup>
 
