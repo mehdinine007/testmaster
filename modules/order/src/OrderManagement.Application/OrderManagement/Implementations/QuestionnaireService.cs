@@ -68,11 +68,11 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
             })
             .FirstOrDefault(x => x.Id == questionnaireId)
             ?? throw new UserFriendlyException("پرسشنامه مورد نظر پیدا نشد");
-        if (questionnaireWhitListType.QuestionnaireType == QuestionnaireType.AuthorizedOnly)
+        if (questionnaireWhitListType.QuestionnaireType == QuestionnaireType.AuthorizedOnly || questionnaireWhitListType.WhitListRequirement.HasValue)
             throw new UserFriendlyException("لطفا لاگین کنید");
 
-        var currentUserId = _commonAppService.GetUserId();
-        var currentUserNationalCode = _commonAppService.GetNationalCode();
+        var currentUserId = _commonAppService.SoftGetUserId();
+        var currentUserNationalCode = questionnaireWhitListType.WhitListRequirement.HasValue ? _commonAppService.GetNationalCode() : string.Empty;
 
         if (questionnaireWhitListType.WhitListRequirement.HasValue)
             _baseInformationService.CheckWhiteList((WhiteListEnumType)questionnaireWhitListType.WhitListRequirement.Value, currentUserNationalCode);
@@ -80,15 +80,18 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
         var questionnaireQuery = await _questionnaireRepository.GetQueryableAsync();
         questionnaireQuery = questionnaireQuery.Include(x => x.Questions)
             .ThenInclude(x => x.Answers);
-        if (!relatedEntityId.HasValue)
+        if (questionnaireWhitListType.QuestionnaireType != QuestionnaireType.AuthorizedOnly && currentUserId.HasValue)
         {
-            questionnaireQuery = questionnaireQuery.Include(x => x.Questions)
-                .ThenInclude(x => x.SubmittedAnswers.Where(y => y.UserId.Value == currentUserId));
-        }
-        else
-        {
-            questionnaireQuery = questionnaireQuery.Include(x => x.Questions)
-                .ThenInclude(x => x.SubmittedAnswers.Where(y => y.UserId.Value == currentUserId && y.RelatedEntityId.Value == relatedEntityId.Value));
+            if (!relatedEntityId.HasValue)
+            {
+                questionnaireQuery = questionnaireQuery.Include(x => x.Questions)
+                    .ThenInclude(x => x.SubmittedAnswers.Where(y => y.UserId.Value == currentUserId.Value));
+            }
+            else
+            {
+                questionnaireQuery = questionnaireQuery.Include(x => x.Questions)
+                    .ThenInclude(x => x.SubmittedAnswers.Where(y => y.UserId.Value == currentUserId.Value && y.RelatedEntityId.Value == relatedEntityId.Value));
+            }
         }
 
         var questionnaireResult = questionnaireQuery.FirstOrDefault(x => x.Id == questionnaireId)

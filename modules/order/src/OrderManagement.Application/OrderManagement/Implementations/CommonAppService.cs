@@ -265,7 +265,7 @@ public class CommonAppService : ApplicationService, ICommonAppService
         {
             throw new UserFriendlyException("کد پیامک ارسالی صحیح نمی باشد");
         }
-        if(smsCodeDto.SMSCode != UserSMSCode)
+        if (smsCodeDto.SMSCode != UserSMSCode)
         {
             throw new UserFriendlyException("کد پیامک ارسالی صحیح نمی باشد");
 
@@ -404,6 +404,16 @@ public class CommonAppService : ApplicationService, ICommonAppService
         var userIdStr = _httpContextAccessor.HttpContext.User.Claims.SingleOrDefault(x => x.Type.Equals("UBP"))?.Value ?? string.Empty;
         if (string.IsNullOrWhiteSpace(userIdStr))
             throw new UserFriendlyException("لطفا لاگین کنید");
+
+
+        return new Guid(userIdStr);
+    }
+
+    public Guid? SoftGetUserId()
+    {
+        var userIdStr = _httpContextAccessor.HttpContext.User.Claims.SingleOrDefault(x => x.Type.Equals("UBP"))?.Value ?? string.Empty;
+        if (string.IsNullOrWhiteSpace(userIdStr))
+            return null;
 
 
         return new Guid(userIdStr);
