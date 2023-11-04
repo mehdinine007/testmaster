@@ -169,7 +169,7 @@ public class SendBoxAppService : ApplicationService, ISendBoxAppService
             }
             //_cacheManager.GetCache("SMS").TryGetValue(PreFix + input.Recipient + input.NationalCode, out objectSMS);
             //string objectSMSString = RedisHelper.Connection.GetDatabase().StringGet(PreFix + input.Recipient + input.NationalCode);
-            string objectSMSString = await _cacheManager.GetStringAsync(input.Recipient + input.NationalCode, PreFix, new() { Provider = CacheProviderEnum.Redis });
+            string objectSMSString = await _cacheManager.GetStringAsync(input.Recipient + input.NationalCode, PreFix, new() { Provider = CacheProviderEnum.Redis,RedisHash = false});
             if (objectSMSString == null)
             {
                 objectSMSString = "";
