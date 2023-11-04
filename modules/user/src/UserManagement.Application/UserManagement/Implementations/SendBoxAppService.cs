@@ -219,7 +219,12 @@ public class SendBoxAppService : ApplicationService, ISendBoxAppService
                 if (_retgrpc.Success)
                 {
                     sendSMSDto.LastSMSSend = DateTime.Now;
-                    await _cacheManager.SetStringAsync(input.Recipient + input.NationalCode, PreFix, JsonConvert.SerializeObject(sendSMSDto), new() { Provider = CacheProviderEnum.Redis });
+                    await _cacheManager.SetStringAsync(input.Recipient + input.NationalCode, PreFix, JsonConvert.SerializeObject(sendSMSDto)
+                        , new CacheOptions() 
+                        { 
+                            Provider = CacheProviderEnum.Redis,
+                            RedisHash = false 
+                        },120);
                 }
 
                 return new SuccsessResult();
