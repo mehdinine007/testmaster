@@ -119,6 +119,7 @@ public class CompanyAppService : ApplicationService, ICompanyAppService
         return CompanyId;
     }
 
+    [SecuredOperation(CompanyServicePermissionConstants.GetCustomer)]
     public CompaniesCustomerDto GetCustomer(string nationalCode, int saleId)
     {
         if (nationalCode.AsParallel().Any(x => !char.IsDigit(x)) || nationalCode.Length != 10)

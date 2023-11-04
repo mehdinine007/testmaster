@@ -7,6 +7,7 @@ using CompanyManagement.Application.Contracts.CompanyManagement.Services;
 using CompanyManagement.Application.Contracts.CompanyManagement;
 using CompanyManagement.Domain.Shared.CompanyManagement;
 using CompanyManagement.Application.Contracts;
+using Esale.Share.Authorize;
 
 namespace CompanyManagement.HttpApi.OrderManagement.Controllers;
 
@@ -28,7 +29,6 @@ public class CompanyController : Controller
     public Task SubmitOrderInformations(List<ClientsOrderDetailByCompanyDto> clientsOrderDetailByCompnayDtos)
     => _companyAppService.SubmitOrderInformations(clientsOrderDetailByCompnayDtos);
     [HttpGet]
-    //TODO: add secure operation 
     public CompaniesCustomerDto GetCustomer(string nationalCode, int saleId)
         => _companyAppService.GetCustomer(nationalCode, saleId);
 }

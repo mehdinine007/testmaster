@@ -466,7 +466,13 @@
             "title": "SubmitOrderInformations",
             "code": "000300010003",
             "displayName": "ثبت اطلاعات سفارش",
-            "children":[]
+            "children": []
+          },
+          {
+            "title": "GetCustomer",
+            "code": "000300010004",
+            "displayName": "گرفتن اطلاعات مشتریان برای شرکت های خودرو ساز",
+            "children": []
           }
         ]
       }
