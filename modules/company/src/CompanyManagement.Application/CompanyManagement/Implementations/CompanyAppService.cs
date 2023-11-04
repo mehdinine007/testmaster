@@ -136,10 +136,8 @@ public class CompanyAppService : ApplicationService, ICompanyAppService
         };
 
         var companiesCustomer = _companyManagementDbContext.Set<CompaniesCustomer>().FromSqlRaw(
-            "EXEC [dbo].[GetCompaniesCustomer] @saleId,@companyId,@nationalCode", paramArray).FirstOrDefault();
-
-        if (companiesCustomer == null)
-            return new CompaniesCustomerDto();
+            string.Format("EXEC {0} {1}", "[dbo].[GetCompaniesCustomer]", "@saleId,@companyId,@nationalCode"),paramArray ).AsEnumerable().FirstOrDefault();
+            //"EXEC [dbo].[GetCompaniesCustomer] @saleId,@companyId,@nationalCode", paramArray).FirstOrDefault();
 
         return ObjectMapper.Map<CompaniesCustomer, CompaniesCustomerDto>(companiesCustomer);
     }
