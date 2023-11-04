@@ -19,14 +19,14 @@ using Volo.Abp.Threading;
 using Volo.Abp.Uow;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.Extensions.Configuration;
-using EasyCaching.Host.Extensions;
+using IFG.Core.Caching;
 using Microsoft.EntityFrameworkCore;
 using WorkFlowManagement.Application;
 using GatewayManagement.HttpApi;
 using WorkFlowManagement.EntityFrameworkCore;
 using WorkFlowService.Host.Infrastructures;
 using WorkFlowManagement.Application.WorkFlowManagement.Grpc;
-using Esale.Core.Utility.Security.Encyption;
+using IFG.Core.Utility.Security.Encyption;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace WorkFlowService.Host

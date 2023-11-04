@@ -19,7 +19,7 @@
 	
   <ItemGroup>
     <ProjectReference Include="..\UserManagement.Domain.Shared\UserManagement.Domain.Shared.csproj" />
-    <ProjectReference Include="..\..\..\..\shared\Esale.Core\Esale.Core.csproj" />
+    <ProjectReference Include="..\..\..\..\shared\IFG.Core\IFG.Core.csproj" />
   </ItemGroup>
 
 </Project>

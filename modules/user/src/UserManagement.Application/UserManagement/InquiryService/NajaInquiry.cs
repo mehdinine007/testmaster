@@ -1,4 +1,4 @@
-﻿using Esale.Core.Utility.Results;
+﻿using IFG.Core.Utility.Results;
 using Newtonsoft.Json;
 using System.Net.Http.Headers;
 using System.ServiceModel;

@@ -15,6 +15,7 @@ namespace OrderManagement.Application.Contracts.Services
         string GetNationalCode();
         //Task<string> GetRole();
         Guid GetUserId();
+        Guid? SoftGetUserId();
         string GetIncomigToken();
         Task<bool> SetOrderStep(OrderStepEnum orderStep, Guid? userId = null);
         Task<bool> ValidateOrderStep(OrderStepEnum orderStep);

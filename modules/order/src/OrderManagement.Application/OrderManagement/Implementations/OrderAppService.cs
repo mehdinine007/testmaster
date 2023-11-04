@@ -18,11 +18,11 @@ using Microsoft.EntityFrameworkCore;
 using System.Data;
 using OrderManagement.Domain.Shared;
 using OrderManagement.Application.OrderManagement.Constants;
-using Esale.Core.Utility.Results;
+using IFG.Core.Utility.Results;
 using OrderManagement.Application.Helpers;
-using Esale.Core.DataAccess;
+using IFG.Core.DataAccess;
 using Volo.Abp.ObjectMapping;
-using Esale.Core.Caching;
+using IFG.Core.Caching;
 using OrderManagement.Application.Contracts.OrderManagement.Models;
 using OrderManagement.Domain.OrderManagement;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
@@ -618,9 +618,10 @@ public class OrderAppService : ApplicationService, IOrderAppService
         //        x.OrderStatus
         //    }).FirstOrDefault(x => x.Id == customerOrderId && x.OrderStatus == OrderStatusType.RecentlyAdded)
         //?? throw new EntityNotFoundException(typeof(CustomerOrder));
+        ApiResult<IpgApiResult> handShakeResponse = new ApiResult<IpgApiResult>();
         if (paymentMethodGranted)
         {
-            var handShakeResponse = await _ipgServiceProvider.HandShakeWithPsp(new PspHandShakeRequest()
+             handShakeResponse = await _ipgServiceProvider.HandShakeWithPsp(new PspHandShakeRequest()
             {
                 CallBackUrl = _configuration.GetValue<string>("CallBackUrl"),
                 Amount = (long)SaleDetailDto.CarFee,
@@ -719,17 +720,21 @@ public class OrderAppService : ApplicationService, IOrderAppService
         //await _distributedCache.SetStringAsync(cacheKey, handShakeResponse.Token);
         //var  ObjectMapper.Map<HandShakeResponseDto, HandShakeResultDto>(handShakeResponse);
         await _commonAppService.SetOrderStep(OrderStepEnum.SaveOrder);
+        if (paymentMethodGranted)
+        {
+
+        }
         return new CommitOrderResultDto()
         {
             PaymentGranted = paymentMethodGranted,
-            //UId = commitOrderDto.SaleDetailUId,
-            //PaymentMethodConigurations = paymentMethodGranted ? new()
-            //{
-            //    Message = handShakeResponse.Result.Message,
-            //    StatusCode = handShakeResponse.Result.StatusCode,
-            //    Token = handShakeResponse.Result.Token,
-            //    HtmlContent = handShakeResponse.Result.HtmlContent
-            //} : new()
+            UId = commitOrderDto.SaleDetailUId,
+            PaymentMethodConigurations = paymentMethodGranted ? new()
+            {
+                Message = handShakeResponse?.Result?.Message,
+                StatusCode = handShakeResponse?.Result?.StatusCode,
+                Token = handShakeResponse?.Result?.Token,
+                HtmlContent = handShakeResponse?.Result?.HtmlContent
+            } : new()
         };
     }
     public bool CanOrderEdit(OrderStatusType orderStatusType, string deliveryDate, int saleId)

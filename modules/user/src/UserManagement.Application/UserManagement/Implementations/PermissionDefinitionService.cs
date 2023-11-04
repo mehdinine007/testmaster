@@ -1,11 +1,10 @@
 ﻿using Abp.Authorization;
 using Abp.UI;
 using Core.Utility.Tools;
-using Esale.Core.Caching;
-using Esale.Core.IOC;
+using IFG.Core.Caching;
+using IFG.Core.IOC;
 using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption;
 using MongoDB.Bson;
-using Nest;
 using Polly.Caching;
 using UserManagement.Application.Contracts.Models;
 using UserManagement.Application.Contracts.UserManagement;

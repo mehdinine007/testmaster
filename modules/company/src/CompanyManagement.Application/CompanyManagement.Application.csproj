@@ -38,7 +38,6 @@
     <ItemGroup>
       <ProjectReference Include="..\..\..\..\shared\Authorization\Authorization.csproj" />
       <ProjectReference Include="..\..\..\..\shared\Extensions\Extensions.csproj" />
-      <ProjectReference Include="..\..\..\user\src\UserManagement.Application\UserManagement.Application.csproj" />
       <ProjectReference Include="..\CompanyManagement.Application.Contracts\CompanyManagement.Application.Contracts.csproj" />
       <ProjectReference Include="..\CompanyManagement.Domain\CompanyManagement.Domain.csproj" />
       <ProjectReference Include="..\CompanyManagement.EntityFrameworkCore\CompanyManagement.EntityFrameworkCore.csproj" />

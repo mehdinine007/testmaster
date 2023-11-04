@@ -1,5 +1,5 @@
 ﻿using EasyCaching.Core;
-using Esale.Core.Caching;
+using IFG.Core.Caching;
 using Esale.Share.Authorize;
 using Microsoft.EntityFrameworkCore;
 using OrderManagement.Application.Contracts;

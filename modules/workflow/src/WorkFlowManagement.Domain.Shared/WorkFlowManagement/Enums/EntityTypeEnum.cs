@@ -1,4 +1,4 @@
-﻿using Esale.Core.Attributes;
+﻿using IFG.Core.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;

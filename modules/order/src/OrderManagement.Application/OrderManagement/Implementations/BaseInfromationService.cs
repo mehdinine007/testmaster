@@ -18,7 +18,7 @@ using Volo.Abp.Domain.Repositories;
 using Microsoft.Extensions.Configuration;
 using EasyCaching.Core;
 using MongoDB.Bson;
-using Esale.Core.Caching;
+using IFG.Core.Caching;
 using Esale.Share.Authorize;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;

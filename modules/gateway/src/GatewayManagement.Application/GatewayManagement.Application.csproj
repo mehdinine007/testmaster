@@ -31,7 +31,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\shared\Esale.Core\Esale.Core.csproj" />
+    <ProjectReference Include="..\..\..\..\shared\IFG.Core\IFG.Core.csproj" />
     <ProjectReference Include="..\GatewayManagement.Application.Contracts\GatewayManagement.Application.Contracts.csproj" />
     <ProjectReference Include="..\GatewayManagement.Domain\GatewayManagement.Domain.csproj" />
   </ItemGroup>

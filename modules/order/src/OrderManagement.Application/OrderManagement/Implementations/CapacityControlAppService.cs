@@ -1,5 +1,5 @@
-﻿using Esale.Core.Caching.Redis;
-using Esale.Core.Utility.Results;
+﻿using IFG.Core.Caching.Redis;
+using IFG.Core.Utility.Results;
 using Grpc.Net.Client;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -15,7 +15,7 @@ using Volo.Abp.Domain.Repositories;
 using OrderManagement.Application.Contracts.Services;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
-using Esale.Core.Caching;
+using IFG.Core.Caching;
 using MongoDB.Bson;
 using StackExchange.Redis;
 using System.Linq.Dynamic.Core;

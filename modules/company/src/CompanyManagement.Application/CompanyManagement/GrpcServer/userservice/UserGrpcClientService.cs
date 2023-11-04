@@ -1,7 +1,6 @@
 ﻿using CompanyManagement.Application.Contracts;
 using CompanyManagement.Application.Contracts.CompanyManagement.Dtos;
 using CompanyManagement.Application.Contracts.CompanyManagement.IServices;
-using Esale.UserServiceGrpc;
 using Grpc.Net.Client;
 using Microsoft.Extensions.Configuration;
 using System;

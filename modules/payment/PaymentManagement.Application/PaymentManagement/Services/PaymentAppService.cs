@@ -1,5 +1,5 @@
-﻿using Esale.Core.DataAccess;
-using Esale.Core.Validation;
+﻿using IFG.Core.DataAccess;
+using IFG.Core.Validation;
 using Grpc.Net.Client;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;

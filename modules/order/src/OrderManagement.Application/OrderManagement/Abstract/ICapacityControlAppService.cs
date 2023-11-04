@@ -1,4 +1,4 @@
-﻿using Esale.Core.Utility.Results;
+﻿using IFG.Core.Utility.Results;
 using OrderManagement.Application.Contracts;
 using System;
 using System.Collections.Generic;

@@ -19,7 +19,7 @@ using Volo.Abp.Threading;
 using Volo.Abp.Uow;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.Extensions.Configuration;
-using EasyCaching.Host.Extensions;
+using IFG.Core.Caching;
 using Microsoft.EntityFrameworkCore;
 using ReportService.Host.Infrastructures;
 using ReportManagement.Application;

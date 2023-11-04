@@ -7,9 +7,9 @@ using Microsoft.Extensions.Logging;
 using Volo.Abp.Threading;
 using Volo.Abp.Auditing;
 using Volo.Abp.AuditLogging;
-using Esale.Core.IOC;
-using Esale.Core.Caching.Redis;
-using Esale.Core.Caching;
+using IFG.Core.IOC;
+using IFG.Core.Caching.Redis;
+using IFG.Core.Caching;
 using ReportService.Host;
 using ReportService.Host.Infrastructures.Middlewares;
 

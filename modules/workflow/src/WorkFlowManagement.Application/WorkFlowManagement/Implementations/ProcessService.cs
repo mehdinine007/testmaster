@@ -1,7 +1,6 @@
 ﻿using Esale.Share.Authorize;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Nest;
 using NPOI.HPSF;
 using Org.BouncyCastle.Asn1.TeleTrust;
 using System;
