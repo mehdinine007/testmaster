@@ -29,7 +29,7 @@ namespace GatewayService.Host
         typeof(AbpAspNetCoreMvcModule),
         //typeof(AbpEventBusRabbitMqModule),
         typeof(AbpEntityFrameworkCoreSqlServerModule),
-        typeof(AbpAuditLoggingEntityFrameworkCoreModule),
+        //typeof(AbpAuditLoggingEntityFrameworkCoreModule),
         //typeof(AbpPermissionManagementEntityFrameworkCoreModule),
         //typeof(AbpSettingManagementEntityFrameworkCoreModule),
         typeof(GatewayManagementApplicationModule),
@@ -126,7 +126,7 @@ namespace GatewayService.Host
             {
                 options.SwaggerEndpoint("/swagger/v1/swagger.json", "Gateway Service API");
             });
-            app.UseAuditing();
+            //app.UseAuditing();
             app.UseConfiguredEndpoints();
 
             //TODO: Problem on a clustered environment
