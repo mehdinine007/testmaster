@@ -35,11 +35,11 @@ using Abp.Authorization;
 using Esale.Core.Constant;
 using Esale.Core.IOC;
 using UserManagement.Domain.UserManagement.Authorization.RolePermissions;
-using Nest;
-using MongoDB.Bson.Serialization;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.JsonPatch.Internal;
-using static Nest.JoinField;
+using Newtonsoft.Json;
+
+
+
+
 
 namespace UserManagement.Application.UserManagement.Implementations;
 
@@ -100,7 +100,7 @@ public class MenuAppService : ApplicationService, IMenuAppService
 
 
             });
-                GetMenuChildDtos(new MenuDto { Code=child.Code,Title=child.Title,Children=child.Children,Permissions=child.Permissions});
+               // GetMenuChildDtos(new MenuDto { Code=child.Code,Title=child.Title,Children=child.Children,Permissions=child.Permissions});
             }
         }
         return new List<MenuChildDto>();
@@ -323,9 +323,14 @@ public class MenuAppService : ApplicationService, IMenuAppService
         return menu;
     }
 
-
-
-
-
-
+    public async Task UpdateMenuPolicy()
+    {
+        var currentDirectory = Environment.CurrentDirectory;
+        const string fileName = "UpdateMenuPolicy.json";
+        var fullPath = Path.Combine(currentDirectory, fileName);
+        var content = File.ReadAllText(fileName);
+        var ls = new List<Menu>(JsonConvert.DeserializeObject<List<Menu>>(content));
+        await _menuRepository.InsertManyAsync(ls);
+    }
+    
 }
