@@ -167,6 +167,9 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
         {
             if (!_httpContextAccessor.HttpContext.User.Identity.IsAuthenticated)
             {
+                if (!string.IsNullOrWhiteSpace(submitAnswerTreeDto.UnregisteredUserInformation.Vin))
+                    await ControlAnonymousUserWontSpamAnswer(submitAnswerTreeDto.UnregisteredUserInformation.Vin, questionnaire.Id);
+
                 var smsCodeIsValid = await _commonAppService.ValidateSMS(submitAnswerTreeDto.UnregisteredUserInformation.SmsCode,
                     submitAnswerTreeDto.UnregisteredUserInformation.NationalCode,
                     submitAnswerTreeDto.UnregisteredUserInformation.SmsCode,
@@ -174,6 +177,25 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
                 if (!smsCodeIsValid)
                     throw new UserFriendlyException("کد ارسالی صحیح نیست");
             }
+            else
+            {
+                await ControlUserWotnSpamAnswer(_commonAppService.GetUserId(), submitAnswerTreeDto.QuestionnaireId, submitAnswerTreeDto.RelatedEntity);
+            }
+
+            if (string.IsNullOrWhiteSpace(submitAnswerTreeDto.UnregisteredUserInformation.Vin) &&
+                string.IsNullOrWhiteSpace(submitAnswerTreeDto.UnregisteredUserInformation.FirstName) &&
+                string.IsNullOrWhiteSpace(submitAnswerTreeDto.UnregisteredUserInformation.ManufactureDate) &&
+                string.IsNullOrWhiteSpace(submitAnswerTreeDto.UnregisteredUserInformation.LastName) &&
+                string.IsNullOrWhiteSpace(submitAnswerTreeDto.UnregisteredUserInformation.VehicleName) &&
+                string.IsNullOrWhiteSpace(submitAnswerTreeDto.UnregisteredUserInformation.MobileNumber) &&
+                string.IsNullOrWhiteSpace(submitAnswerTreeDto.UnregisteredUserInformation.SmsCode) &&
+                string.IsNullOrWhiteSpace(submitAnswerTreeDto.UnregisteredUserInformation.EducationLevel) &&
+                string.IsNullOrWhiteSpace(submitAnswerTreeDto.UnregisteredUserInformation.Occupation) &&
+                string.IsNullOrWhiteSpace(submitAnswerTreeDto.UnregisteredUserInformation.NationalCode))
+                throw new UserFriendlyException("لطفا نمام فیلد ها را پر کنید");
+
+            await _unAuthorizedUserRepository.InsertAsync(
+               ObjectMapper.Map<UnregisteredUserInformation, UnAuthorizedUser>(submitAnswerTreeDto.UnregisteredUserInformation));
 
         }
         else if (questionnaire.QuestionnaireType == QuestionnaireType.AuthorizedOnly)
@@ -181,42 +203,11 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
             if (!_httpContextAccessor.HttpContext.User.Identity.IsAuthenticated)
                 throw new UserFriendlyException("لطفا لاگین کنید");
 
-            var currentUserUserId = _commonAppService.GetUserId();
-            var answerSubmittedQuery = (await _submittedAnswerRepository.GetQueryableAsync())
-                .Include(x => x.Question)
-                .Select(x => new
-                {
-                    x.UserId,
-                    x.Question.QuestionnaireId,
-                    x.RelatedEntityId
-                })
-                .Where(x => x.UserId.Value == currentUserUserId && x.QuestionnaireId == submitAnswerTreeDto.QuestionnaireId);
-
-            var submittedAnswer = submitAnswerTreeDto.RelatedEntity.HasValue
-                ? answerSubmittedQuery.FirstOrDefault(x => x.RelatedEntityId.Value == submitAnswerTreeDto.RelatedEntity.Value)
-                : answerSubmittedQuery.FirstOrDefault();
-
-            if (submittedAnswer != null)
-                throw new UserFriendlyException("این پرسشنامه قبلا توسط شما تکمیل شده است");
+            await ControlUserWotnSpamAnswer(_commonAppService.GetUserId(), submitAnswerTreeDto.QuestionnaireId, submitAnswerTreeDto.RelatedEntity);
         }
         else
             throw new InvalidOperationException();
 
-
-        if (string.IsNullOrWhiteSpace(submitAnswerTreeDto.UnregisteredUserInformation.Vin) &&
-            string.IsNullOrWhiteSpace(submitAnswerTreeDto.UnregisteredUserInformation.FirstName) &&
-            string.IsNullOrWhiteSpace(submitAnswerTreeDto.UnregisteredUserInformation.ManufactureDate) &&
-            string.IsNullOrWhiteSpace(submitAnswerTreeDto.UnregisteredUserInformation.LastName) &&
-            string.IsNullOrWhiteSpace(submitAnswerTreeDto.UnregisteredUserInformation.VehicleName) &&
-            string.IsNullOrWhiteSpace(submitAnswerTreeDto.UnregisteredUserInformation.MobileNumber) &&
-            string.IsNullOrWhiteSpace(submitAnswerTreeDto.UnregisteredUserInformation.SmsCode) &&
-            string.IsNullOrWhiteSpace(submitAnswerTreeDto.UnregisteredUserInformation.EducationLevel) &&
-            string.IsNullOrWhiteSpace(submitAnswerTreeDto.UnregisteredUserInformation.Occupation) &&
-            string.IsNullOrWhiteSpace(submitAnswerTreeDto.UnregisteredUserInformation.NationalCode))
-            throw new UserFriendlyException("لطفا نمام فیلد ها را پر کنید");
-
-        var unAuthorizedUser = await _unAuthorizedUserRepository.InsertAsync(
-            ObjectMapper.Map<UnregisteredUserInformation, UnAuthorizedUser>(submitAnswerTreeDto.UnregisteredUserInformation));
 
         //check all available questions in questionnaire being completed
         var questionIds = questionnaire.Questions.Select(x => x.Id).OrderBy(x => x).ToList();
@@ -311,4 +302,43 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
         });
         return questionnaireDtoList;
     }
+
+
+    #region Utilities
+    private async Task ControlUserWotnSpamAnswer(Guid userId, int questionnaireId, long? relatedEntity)
+    {
+        var answerSubmittedQuery = (await _submittedAnswerRepository.GetQueryableAsync())
+            .Include(x => x.Question)
+            .Select(x => new
+            {
+                x.UserId,
+                x.Question.QuestionnaireId,
+                x.RelatedEntityId
+            })
+            .Where(x => x.UserId.Value == userId && x.QuestionnaireId == questionnaireId);
+
+        var submittedAnswer = relatedEntity.HasValue
+            ? answerSubmittedQuery.FirstOrDefault(x => x.RelatedEntityId.Value == relatedEntity.Value)
+            : answerSubmittedQuery.FirstOrDefault();
+
+        if (submittedAnswer != null)
+            throw new UserFriendlyException("این پرسشنامه قبلا توسط شما تکمیل شده است");
+    }
+
+    private async Task ControlAnonymousUserWontSpamAnswer(string vin, int questionnaireId, long? relatedEntity = null)
+    {
+        var questionnaire = (await _questionnaireRepository
+            .GetQueryableAsync())
+            .Include(x => x.UnAuthorizedUsers)
+            .FirstOrDefault(x => x.Id == questionnaireId)
+            ?? throw new UserFriendlyException("پرسشنامه یافت نشد");
+        if (questionnaire.QuestionnaireType == QuestionnaireType.AuthorizedOnly)
+            throw new InvalidOperationException();
+
+        var answerForVin = questionnaire.UnAuthorizedUsers.FirstOrDefault(x => x.Vin == vin);
+        if (answerForVin != null)
+            throw new UserFriendlyException("قبلا برای این VIN نظر ثبت شده است");
+    }
+
+    #endregion
 }
