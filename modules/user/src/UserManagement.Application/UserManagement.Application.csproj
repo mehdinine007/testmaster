@@ -31,6 +31,7 @@
 	</ItemGroup>
 	<ItemGroup>
 	  <ProjectReference Include="..\..\..\..\shared\Authorization\Authorization.csproj" />
+	  <ProjectReference Include="..\..\..\..\shared\Licence\Licence.csproj" />
 	  <ProjectReference Include="..\UserManagement.Application.Contracts\UserManagement.Application.Contracts.csproj" />
 	  <ProjectReference Include="..\UserManagement.Domain\UserManagement.Domain.csproj" />
 	</ItemGroup>
