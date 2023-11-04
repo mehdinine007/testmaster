@@ -288,10 +288,10 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
         ProductList = string.IsNullOrWhiteSpace(input.NodePath)
             ? productQuery.ToList()
             : productQuery.Where(x => EF.Functions.Like(x.Code, input.NodePath + "%")).ToList();
-        if (input.ESaleTypeId != null)
-            ProductList = ProductList
-                .Where(x => x.SaleDetails != null && x.SaleDetails.Count > 0)
-                .ToList();
+        //if (input.ESaleTypeId != null)
+        //    ProductList = ProductList
+        //        .Where(x => x.SaleDetails != null && x.SaleDetails.Count > 0)
+        //        .ToList();
         if (input.AdvancedSearch != null && input.AdvancedSearch.Count > 0)
         {
             ProductList = await GetProductFilter(input.AdvancedSearch, ProductList);
