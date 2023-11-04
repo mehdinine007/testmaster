@@ -21,6 +21,7 @@ using Microsoft.EntityFrameworkCore;
 using GatewayManagement.Application.Servicess;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
 using GatewayManagement.Application.GatewayManagement.Services;
+using Volo.Abp.Auditing;
 
 namespace GatewayService.Host
 {
@@ -29,7 +30,7 @@ namespace GatewayService.Host
         typeof(AbpAspNetCoreMvcModule),
         //typeof(AbpEventBusRabbitMqModule),
         typeof(AbpEntityFrameworkCoreSqlServerModule),
-        //typeof(AbpAuditLoggingEntityFrameworkCoreModule),
+        typeof(AbpAuditLoggingEntityFrameworkCoreModule),
         //typeof(AbpPermissionManagementEntityFrameworkCoreModule),
         //typeof(AbpSettingManagementEntityFrameworkCoreModule),
         typeof(GatewayManagementApplicationModule),
@@ -87,11 +88,10 @@ namespace GatewayService.Host
             //    options.Configuration = configuration["Redis:Configuration"];
             //});
 
-            //Configure<AbpAuditingOptions>(options =>
-            //{
-            //    options.IsEnabled = false;
-            //    options.ApplicationName = "GatewayService";
-            //});
+            Configure<AbpAuditingOptions>(options =>
+            {
+                options.IsEnabled = false;
+            });
 
             //var redis = ConnectionMultiplexer.Connect(configuration["Redis:Configuration"]);
             //context.Services.AddDataProtection()
@@ -126,7 +126,7 @@ namespace GatewayService.Host
             {
                 options.SwaggerEndpoint("/swagger/v1/swagger.json", "Gateway Service API");
             });
-            //app.UseAuditing();
+            app.UseAuditing();
             app.UseConfiguredEndpoints();
 
             //TODO: Problem on a clustered environment
