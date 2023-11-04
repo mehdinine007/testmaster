@@ -46,4 +46,8 @@ public class SaleDetailController:Controller, ISaleDetailService
     [HttpPut]
     public async Task<int> Update(CreateSaleDetailDto createSaleDetailDto)
     => await _saleDetailService.Update(createSaleDetailDto);
+
+    [HttpGet]
+    public  List<SaleDetailForDropDownDto> GetAll()
+          => _saleDetailService.GetAll();
 }
