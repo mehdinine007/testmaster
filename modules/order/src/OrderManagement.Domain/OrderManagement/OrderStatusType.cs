@@ -18,8 +18,8 @@ namespace OrderManagement.Domain
         Winner = 40,
         [Display(Name = "انصراف کلی از اولیت بندی")]
         FullCancel = 50,
-        [Display(Name = "عدم تخصیص")]
-        CancelBySystem = 60,
+        [Display(Name = "عدم تخصیصی")]
+        CancelledBySystem = 60,
         [Display(Name = "پرداخت با موفقیت انجام شد")]
         PaymentSucceeded = 70,
         [Display(Name = "پرداخت ناموفق")]
