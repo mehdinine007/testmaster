@@ -25,6 +25,7 @@ using AdminPanelManagement.EntityFrameworkCore;
 using AdminPanelManagement.Application;
 using AdminPanelService.Host.Infrastructures;
 using IFG.Core.Caching;
+using AdminPanelManagement.Application.AdminPanelManagement.Grpc;
 
 namespace WorkFlowService.Host
 {
@@ -135,11 +136,11 @@ namespace WorkFlowService.Host
             app.UseAuthentication();
             app.UseAbpClaimsMap();
 
-            //app.UseEndpoints(endpoints =>
-            //{
-            //    endpoints.MapGrpcService<UserGrpcClientService>();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapGrpcService<ReportGrpcClientService>();
 
-            //});
+            });
 
             app.UseAbpRequestLocalization(); //TODO: localization?
             app.UseSwagger();

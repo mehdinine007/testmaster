@@ -1,6 +1,6 @@
 ﻿syntax = "proto3";
 
-option csharp_namespace = "ReportManagement.Application.Grpc.ReportService";
+option csharp_namespace = "AdminPanelManagement.Application.Grpc.ReportGrpcClient";
 
 import "google/protobuf/wrappers.proto";
 import "google/protobuf/any.proto";
@@ -18,7 +18,6 @@ service ReportServiceGrpc{
 	rpc GetGrid(GridRequestModel) returns (GridModel);
     rpc Test1(TestInput) returns (Test);
 }
-
 message Test
 {
    string result =1; 
