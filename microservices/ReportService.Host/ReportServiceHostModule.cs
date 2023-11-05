@@ -26,6 +26,7 @@ using ReportManagement.Application;
 using ReportManagement.HttpApi;
 using ReportManagement.EntityFrameworkCore;
 using ReportManagement.Application.ReportManagement.Grpc;
+using Esale.Core.Extensions;
 
 namespace ReportService.Host
 {
@@ -105,6 +106,7 @@ namespace ReportService.Host
 
             context.Services.AddGrpc();
             context.Services.EasyCaching(configuration, "RedisCache:ConnectionString");
+            context.Services.AddEsaleResultWrapper();
             //context.Services.AddMongoDbContext<OrderManagementMongoDbContext>(options =>
             //{
             //    options.AddDefaultRepositories(includeAllEntities: true);
