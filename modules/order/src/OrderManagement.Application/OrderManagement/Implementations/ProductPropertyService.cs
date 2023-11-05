@@ -1060,6 +1060,28 @@ namespace OrderManagement.Application
 
                 };
                 await _propertyDefinitionRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto, PropertyCategory>(propertydto));
+                propertydto = new PropertyCategoryDto()
+                {
+                    Title = "سایر ویژگی",
+                    Display = true,
+                    Priority = 0,
+                    Properties = new List<PropertyDto>()
+            {
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "ویژگی",
+                    Key = "P041",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                    Priority=0
+                },
+                
+
+            },
+
+                };
+                await _propertyDefinitionRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto, PropertyCategory>(propertydto));
             }
 
         }
@@ -1087,7 +1109,7 @@ namespace OrderManagement.Application
                             };
                             var propertyCategories = (await _propertyDefinitionRepository.GetMongoQueryableAsync()).ToList();
                             List<PropertyDto> propertyList = new List<PropertyDto>();
-                            for (int row = 2; row < rowcount; row++)
+                            for (int row = 2; row <= rowcount; row++)
                             {
 
                                 var key = item.Cells[row, 1].Value.ToString();
@@ -1132,7 +1154,7 @@ namespace OrderManagement.Application
                             };
                             var propertyCategories = (await _propertyDefinitionRepository.GetMongoQueryableAsync()).ToList();
                             List<PropertyDto> propertyList = new List<PropertyDto>();
-                            for (int row = 2; row < rowcount; row++)
+                            for (int row = 2; row <= rowcount; row++)
                             {
 
                                 var key = item.Cells[row, 1].Value.ToString();
