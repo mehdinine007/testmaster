@@ -744,7 +744,7 @@ public class UserAppService : ApplicationService, IUserAppService
             {
                 throw new UserFriendlyException("تاریخ صدور شناسنامه را وارد نمایید");
             }
-            if (!inputUser.RegionId.HasValue)
+            if (!inputUser.RegionId.HasValue || inputUser.RegionId.Value == 0)
             {
                 throw new UserFriendlyException("کد منطقه را وارد نمایید");
             }
