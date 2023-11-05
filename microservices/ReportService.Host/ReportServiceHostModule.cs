@@ -26,7 +26,7 @@ using ReportManagement.Application;
 using ReportManagement.HttpApi;
 using ReportManagement.EntityFrameworkCore;
 using ReportManagement.Application.ReportManagement.Grpc;
-using Esale.Core.Extensions;
+using IFG.Core.Extensions;
 
 namespace ReportService.Host
 {
