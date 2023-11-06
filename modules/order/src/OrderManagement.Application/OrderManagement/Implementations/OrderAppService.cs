@@ -265,7 +265,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         RustySalePlanValidation(commitOrderDto, SaleDetailDto.EsaleTypeId);
       
 
-        //await _commonAppService.IsUserRejected(); //if user reject from advocacy
+        await _commonAppService.IsUserRejected(); //if user reject from advocacy
         //                                          //_baseInformationAppService.CheckBlackList(SaleDetailDto.EsaleTypeId); //if user not exsist in blacklist
         //await CheckAdvocacy(nationalCode, SaleDetailDto.ESaleTypeId); //if hesab vekalati darad
         //Console.WriteLine("beforewhitelist");
