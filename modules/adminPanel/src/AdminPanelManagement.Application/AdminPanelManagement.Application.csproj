@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
+    <Nullable>disable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
@@ -42,6 +42,7 @@
     <ProjectReference Include="..\..\..\..\shared\IFG.Core\IFG.Core.csproj" />
     <ProjectReference Include="..\AdminPanelManagement.Application.Contracts\AdminPanelManagement.Application.Contracts.csproj" />
     <ProjectReference Include="..\AdminPanelManagement.Domain\AdminPanelManagement.Domain.csproj" />
+    <ProjectReference Include="..\AdminPanelManagement.EntityFrameworkCore\AdminPanelManagement.EntityFrameworkCore.csproj" />
   </ItemGroup>
 
   <ItemGroup>
