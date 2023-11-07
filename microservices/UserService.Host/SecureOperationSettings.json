@@ -6,7 +6,7 @@
     "children": [
       {
         "title": "UserService",
-        "code": "0001",
+        "code": "00010001",
         "displayName": "سرویس مدیریت کاربران",
         "children": [
           {
@@ -37,7 +37,7 @@
       },
       {
         "title": "BankAppService",
-        "code": "0002",
+        "code": "00010002",
         "displayName": "سرویس مدیریت بانک",
         "children": [
           {
@@ -87,7 +87,7 @@
     "children": [
       {
         "title": "BaseInformationService",
-        "code": "0001",
+        "code": "00020001",
         "displayName": "سرویس پایه",
         "children": [
           {
@@ -124,7 +124,7 @@
       },
       {
         "title": "CapacityControlAppService",
-        "code": "0002",
+        "code": "00020002",
         "displayName": "سرویس کنترل ظرفیت",
         "children": [
           {
@@ -137,7 +137,7 @@
       },
       {
         "title": "OrderAppService",
-        "code": "0003",
+        "code": "00020003",
         "displayName": "سرویس مدیریت سفارشات",
         "children": [
           {
@@ -204,7 +204,7 @@
       },
       {
         "title": "OrderStatusInquiryService",
-        "code": "0004",
+        "code": "00020004",
         "displayName": "سرویس استعلام وضعیت سفارشات",
         "children": [
           {
@@ -217,7 +217,7 @@
       },
       {
         "title": "QuestionnaireService",
-        "code": "0005",
+        "code": "00020005",
         "displayName": "سرویس مدیریت پرسشنامه",
         "children": [
           {
@@ -236,7 +236,7 @@
       },
       {
         "title": "SaleService",
-        "code": "0006",
+        "code": "00020006",
         "displayName": "سرویس مدیریت نوع فروش",
         "children": [
           {
@@ -261,7 +261,7 @@
       },
       {
         "title": "SaleSchemaService",
-        "code": "0007",
+        "code": "00020007",
         "displayName": "سرویس مدیریت بخش نامه های فروش",
         "children": [
           {
@@ -304,7 +304,7 @@
       },
       {
         "title": "AgencyService",
-        "code": "0008",
+        "code": "00020008",
         "displayName": "سرویس نمایندگان",
         "children": [
           {
@@ -335,7 +335,7 @@
       },
       {
         "title": "AgencySaleDetailService",
-        "code": "0009",
+        "code": "00020009",
         "displayName": "سرویس برنامه فروش نمایندگی",
         "children": [
           {
@@ -360,7 +360,7 @@
       },
       {
         "title": " ColorService",
-        "code": "0010",
+        "code": "00020010",
         "displayName": "سرویس مدیریت رنگ",
         "children": [
           {
@@ -397,7 +397,7 @@
       },
       {
         "title": "SaleDetailService",
-        "code": "0011",
+        "code": "00020011",
         "displayName": "سرویس مدیریت برنامه فروش",
         "children": [
           {
@@ -447,7 +447,7 @@
     "children": [
       {
         "title": "CompanyService",
-        "code": "0001",
+        "code": "00030001",
         "displayName": "سرویس شرکت ها",
         "children": [
           {
@@ -480,7 +480,7 @@
     "children": [
       {
         "title": "InboxService",
-        "code": "0001",
+        "code": "00040001",
         "displayName": "سرویس کارتابل جاری",
         "children": [
           {
@@ -493,7 +493,7 @@
       },
       {
         "title": "ProccessService",
-        "code": "0002",
+        "code": "00040002",
         "displayName": "سرویس کارتابل ارسال شده",
         "children": [
           {
