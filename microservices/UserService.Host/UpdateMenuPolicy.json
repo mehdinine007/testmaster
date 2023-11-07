@@ -1,0 +1,75 @@
+[
+  {
+    "title": "پنل خودروساز",
+    "code": "0001",
+    "displayName": "ماژول کاربران",
+    "type": 1,
+    "icon": "",
+    "Url": "",
+    "children": [
+      {
+        "title": "اطلاعات پایه",
+        "code": "00010001",
+        "Type": 1,
+        "Icon": "",
+        "Url": "",
+        "children": [
+          {
+            "title": "بخشنامه",
+            "code": "000100010001",
+            "Type": 2,
+            "Icon": "",
+            "Url": "",
+            "children": [],
+            "Permissions": [
+              {
+                "Title": "view",
+                "Code": "0001000100010001",
+                "DisplayName": "نمایش",
+                "Children": []
+              },
+              {
+                "Title": "create",
+                "Code": "0001000100010002",
+                "DisplayName": "ایجاد",
+                "Children": []
+              },
+              {
+                "Title": "update",
+                "Code": "0001000100010003",
+                "DisplayName": "ویرایش",
+                "Children": []
+              },
+              {
+                "Title": "delete",
+                "Code": "0001000100010004",
+                "DisplayName": "حذف",
+                "Children": []
+              }
+            ],
+            "Children": []
+          }
+        ]
+      },
+      {
+        "Title": "گزارشات",
+        "Code": "00010002",
+        "Type": 1,
+        "Icon": "",
+        "Url": "",
+        "Children": [],
+        "Permissions": []
+      },
+      {
+        "Title": "لیست مشتریان",
+        "Code": "00010003",
+        "Type": 1,
+        "Icon": "",
+        "Url": "",
+        "Children": [],
+        "Permissions": []
+      }
+    ],
+    "Permissions": []
+  }
+]
