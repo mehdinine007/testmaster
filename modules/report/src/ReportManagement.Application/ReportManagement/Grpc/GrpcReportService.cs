@@ -106,11 +106,14 @@ namespace ReportManagement.Application.ReportManagement.Grpc
                 Categories = { chartDto.Categories.Select(x => new CategoryData
                 {
                     Title = x.Title,
+                    Color=x.Color,
                 })
                 },
                 Series = { chartDto.Series.Select(x => new ChartSeriesData
                 {
                     Data = {x.Data },
+                     Color=x.Color,
+                      Name=x.Name,
 
                 }),
                 }
@@ -154,11 +157,18 @@ namespace ReportManagement.Application.ReportManagement.Grpc
             return chartModel;
         }
 
-        public override async Task<Test> Test1(TestInput request, ServerCallContext context)
+        public override async Task<Test> TestNullable(TestInput request, ServerCallContext context)
         {
-            var test =new Test()
+            var timestamp = new Google.Protobuf.WellKnownTypes.Timestamp
             {
-                 Result="salam"
+                Seconds = DateTimeOffset.Now.ToUnixTimeSeconds(),
+                Nanos = DateTimeOffset.Now.Millisecond * 1000000
+            };
+            var test = new Test()
+            {
+                //Result1 = "salam",
+                //Result2 = 2,
+                //MyTimestamp = timestamp
             };
             return test;
            

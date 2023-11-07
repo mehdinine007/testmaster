@@ -5,6 +5,8 @@ option csharp_namespace = "ReportManagement.Application.Grpc.ReportService";
 import "google/protobuf/wrappers.proto";
 import "google/protobuf/any.proto";
 import "google/protobuf/descriptor.proto";
+import "google/protobuf/timestamp.proto";
+
 
 
 package ReportService;
@@ -16,12 +18,15 @@ service ReportServiceGrpc{
 	rpc GetWidgetByDashboardId(WidgetRequestModel) returns (WidgetModelList);
 	rpc GetChart(ChartRequestModel) returns (ChartModel);
 	rpc GetGrid(GridRequestModel) returns (GridModel);
-    rpc Test1(TestInput) returns (Test);
+    rpc TestNullable(TestInput) returns (Test);
 }
 
 message Test
 {
-   string result =1; 
+   google.protobuf.StringValue result1 =1; 
+   google.protobuf.Int32Value result2=2;
+   google.protobuf.Timestamp myTimestamp = 3;
+
 }
 
 message TestInput
@@ -126,14 +131,14 @@ message ChartRequestModel{
 }
 
 message CategoryData{
-   string Title =1;
-   string Color =2;
+   google.protobuf.StringValue   Title =1;
+   google.protobuf.StringValue   Color =2;
 }
 
 
 message ChartSeriesData{
-   string Name =1;
-   string Color=2;
+  google.protobuf.StringValue   Name =1;
+   google.protobuf.StringValue   Color=2;
    repeated  sint64 Data =3;
 }
 

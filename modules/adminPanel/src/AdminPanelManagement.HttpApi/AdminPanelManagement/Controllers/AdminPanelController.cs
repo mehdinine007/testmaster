@@ -8,6 +8,7 @@ using Volo.Abp;
 using Microsoft.AspNetCore.Mvc;
 using AdminPanelManagement.Application.Contracts.AdminPanelManagement.IServices;
 using AdminPanelManagement.Application.Contracts.AdminPanelManagement.Dtos.report;
+using AdminPanelManagement.Application.Grpc.ReportGrpcClient;
 
 namespace AdminPanelManagement.HttpApi.AdminPanelManagement.Controllers
 {
@@ -40,8 +41,8 @@ namespace AdminPanelManagement.HttpApi.AdminPanelManagement.Controllers
         public async Task<GridDto> GetGrid(int widgetId, List<ConditionValue> conditionValue)
             => await _reportGrpcClientService.GetGrid(widgetId, conditionValue);
         [HttpPost]
-        public Task Test1()
-        => _reportGrpcClientService.Test1();
+        public async Task<TestDto> TestNullable()
+        => await  _reportGrpcClientService.TestNullable();
 
     }
 }

@@ -164,7 +164,7 @@ namespace AdminPanelManagement.Application.AdminPanelManagement.Grpc
         }
 
 
-        public async Task<string> Test1()
+        public async Task<TestDto> TestNullable()
         {
 
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2Support", true);
@@ -174,9 +174,19 @@ namespace AdminPanelManagement.Application.AdminPanelManagement.Grpc
             httpHandler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
             var channel = GrpcChannel.ForAddress(_configuration.GetValue<string>("Grpc:ReportUrl"), new GrpcChannelOptions { HttpHandler = httpHandler });
             var client = new ReportServiceGrpc.ReportServiceGrpcClient(channel);
-            var result = client.Test1(new TestInput() { });
-
-            return result.Result;
+            var result = client.TestNullable(new TestInput() { });
+            var timestamp = new Google.Protobuf.WellKnownTypes.Timestamp
+            {
+                Seconds = DateTimeOffset.Now.ToUnixTimeSeconds(),
+                Nanos = DateTimeOffset.Now.Millisecond * 1000000
+            };
+            var outPut = new TestDto()
+            {
+                result1 = result.Result1,
+                result2 = result.Result2,
+                result3 = result.MyTimestamp !=null ? result.MyTimestamp.ToDateTime() : null    
+            };
+            return outPut;
 
         }
 
