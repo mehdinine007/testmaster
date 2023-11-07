@@ -42,11 +42,11 @@ public class SaleSchemaService : ApplicationService, ISaleSchemaService
 
 
     [SecuredOperation(SaleSchemaServicePermissionConstants.GetList)]
-    public async Task<List<SaleSchemaDto>> GetList(List<AttachmentEntityTypeEnum> attachmentType = null)
+    public async Task<List<SaleSchemaDto>> GetList(List<AttachmentEntityTypeEnum> attachmentType = null, List<AttachmentLocationEnum> attachmentlocation = null)
     {
         var count = _saleSchemaRepository.WithDetails().Count();
         var saleSchemas = (await _saleSchemaRepository.GetQueryableAsync()).ToList();
-        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.SaleSchema, saleSchemas.Select(x => x.Id).ToList(), attachmentType );
+        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.SaleSchema, saleSchemas.Select(x => x.Id).ToList(), attachmentType, attachmentlocation);
         var saleSchemaDto = ObjectMapper.Map<List<SaleSchema>, List<SaleSchemaDto>>(saleSchemas);
         saleSchemaDto.ForEach(x =>
         {
@@ -74,14 +74,14 @@ public class SaleSchemaService : ApplicationService, ISaleSchemaService
     }
 
     [SecuredOperation(SaleSchemaServicePermissionConstants.GetById)]
-    public async Task<SaleSchemaDto> GetById(int id, List<AttachmentEntityTypeEnum> attachmentType = null)
+    public async Task<SaleSchemaDto> GetById(int id, List<AttachmentEntityTypeEnum> attachmentType = null, List<AttachmentLocationEnum> attachmentlocation = null)
     {
         await Validation(id, null);
         var saleSchema = (await _saleSchemaRepository.GetQueryableAsync())
             .FirstOrDefault(x => x.Id == id);
         var saleSchemaDto = ObjectMapper.Map<SaleSchema, SaleSchemaDto>(saleSchema);
 
-        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.SaleSchema, new List<int>() { id },attachmentType);
+        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.SaleSchema, new List<int>() { id },attachmentType, attachmentlocation);
          saleSchemaDto.Attachments = ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(attachments);
         return saleSchemaDto;
 

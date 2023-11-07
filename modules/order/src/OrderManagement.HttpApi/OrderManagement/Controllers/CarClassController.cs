@@ -28,8 +28,8 @@ namespace OrderManagement.HttpApi.OrderManagement.Controllers
         public Task<bool> Delete(int id)
         =>_carClassService.Delete(id);
         [HttpGet]
-        public Task<List<CarClassDto>> GetList(string attachmentType)
-        =>_carClassService.GetList(EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(attachmentType));
+        public Task<List<CarClassDto>> GetList(string attachmentType, string attachmentlocation)
+        =>_carClassService.GetList(EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(attachmentType), EnumHelper.ConvertStringToEnum<AttachmentLocationEnum>(attachmentlocation));
         [HttpPost]
         public Task<CarClassDto> Add(CarClassCreateDto carClassDto)
       =>_carClassService.Add(carClassDto);

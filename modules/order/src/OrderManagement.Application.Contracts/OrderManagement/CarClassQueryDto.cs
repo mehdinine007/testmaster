@@ -11,5 +11,6 @@ namespace OrderManagement.Application.Contracts.OrderManagement
     {
         public int Id { get; set; }
         public string?  AttachmentType { get; set; }
+        public string? AttachmentLocation { get; set; }
     }
 }

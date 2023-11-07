@@ -28,8 +28,8 @@ public class SiteStructureController : Controller
         => _siteStructureService = siteStructureService;
 
     [HttpGet]
-    public Task<SiteStructureDto> GetById(int id, string attachmentType)
-    => _siteStructureService.GetById(id, EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(attachmentType));
+    public Task<SiteStructureDto> GetById(int id, string attachmentType, string attachmentlocation)
+    => _siteStructureService.GetById(id, EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(attachmentType), EnumHelper.ConvertStringToEnum<AttachmentLocationEnum>(attachmentlocation));
 
 
     [HttpGet]

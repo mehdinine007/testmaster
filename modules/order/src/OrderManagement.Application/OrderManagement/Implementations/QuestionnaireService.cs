@@ -290,11 +290,11 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
         return true;
     }
 
-    public async Task<List<QuestionnaireDto>> LoadQuestionnaireList(List<AttachmentEntityTypeEnum> attachmentEntityTypeEnums)
+    public async Task<List<QuestionnaireDto>> LoadQuestionnaireList(List<AttachmentEntityTypeEnum> attachmentEntityTypeEnums, List<AttachmentLocationEnum> attachmentlocation)
     {
         var questionnaireList = (await _questionnaireRepository.GetQueryableAsync()).Where(x => x.Id != 0).ToList();
         var questionnaireIds = questionnaireList.Select(x => x.Id).ToList();
-        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.Questionnaire, questionnaireIds, attachmentEntityTypeEnums);
+        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.Questionnaire, questionnaireIds, attachmentEntityTypeEnums, attachmentlocation);
         var questionnaireDtoList = ObjectMapper.Map<List<Questionnaire>, List<QuestionnaireDto>>(questionnaireList);
         questionnaireDtoList.ForEach(x =>
         {

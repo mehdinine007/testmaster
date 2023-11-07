@@ -8,10 +8,10 @@ namespace OrderManagement.Application.Contracts.Services
 {
     public interface IBankAppService : IApplicationService
     {
-        Task<BankDto> GetById(int id, List<AttachmentEntityTypeEnum>? attachmentType = null);
+        Task<BankDto> GetById(int id, List<AttachmentEntityTypeEnum>? attachmentType = null, List<AttachmentLocationEnum> attachmentlocation = null);
         Task<BankDto> Add(BankCreateOrUpdateDto bankCreateOrUpdateDto);
         Task<BankDto> Update(BankCreateOrUpdateDto bankCreateOrUpdateDto);
-        Task<List<BankDto>> GetList(List<AttachmentEntityTypeEnum>? attachmentType=null);
+        Task<List<BankDto>> GetList(List<AttachmentEntityTypeEnum>? attachmentType=null, List<AttachmentLocationEnum>? attachmentlocation = null);
         Task<bool> Delete(int id);
         Task<bool> UploadFile(UploadFileDto uploadFile);
         Task SaveAdvocacyUsersFromBank(List<AdvocacyUsersFromBankDto> advocacyUsersFromBankDto);

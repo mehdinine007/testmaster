@@ -11,7 +11,7 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Services
 {
     public interface IAnnouncementService: IApplicationService
     {
-        Task<AnnouncementDto> GetById(int id, List<AttachmentEntityTypeEnum>? attachmentType = null);
+        Task<AnnouncementDto> GetById(int id, List<AttachmentEntityTypeEnum>? attachmentType = null, List<AttachmentLocationEnum> attachmentlocation = null);
         Task<List<AnnouncementDto>> GetAllAnnouncement(AnnouncementDto input);
         Task<PagedResultDto<AnnouncementDto>> GetPagination(AnnouncementGetListDto input);
         Task<int> Insert(CreateAnnouncementDto announcementDto);

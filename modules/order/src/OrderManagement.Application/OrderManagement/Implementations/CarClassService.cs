@@ -34,12 +34,12 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             return true;
         }
 
-        public async Task<List<CarClassDto>> GetList(List<AttachmentEntityTypeEnum> attachmentType=null)
+        public async Task<List<CarClassDto>> GetList(List<AttachmentEntityTypeEnum> attachmentType=null, List<AttachmentLocationEnum> attachmentlocation = null)
         {
             var carClassesQuery = await _carClassRepository.GetQueryableAsync();
             var carClasses = carClassesQuery.ToList();
             var carClassDto = ObjectMapper.Map<List<CarClass>, List<CarClassDto>>(carClasses);
-            var attachments = await _attachmentService.GetList(AttachmentEntityEnum.CarClass, carClasses.Select(x => x.Id).ToList(), attachmentType);
+            var attachments = await _attachmentService.GetList(AttachmentEntityEnum.CarClass, carClasses.Select(x => x.Id).ToList(), attachmentType, attachmentlocation);
             carClassDto.ForEach(x =>
             {
                 var attachment = attachments.Where(y => y.EntityId == x.Id).ToList();
@@ -83,7 +83,8 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             {
                 throw new UserFriendlyException(OrderConstant.CarClassNotFound, OrderConstant.CarClassNotFoundId);
             }
-            var attachments = await _attachmentService.GetList(AttachmentEntityEnum.CarClass, new List<int> { carClass.Id }, EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(carClassQueryDto.AttachmentType) );
+            var attachments = await _attachmentService.GetList(AttachmentEntityEnum.CarClass, new List<int> { carClass.Id }, EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(carClassQueryDto.AttachmentType),
+                                EnumHelper.ConvertStringToEnum<AttachmentLocationEnum>(carClassQueryDto.AttachmentLocation));
 
            var carClassDto= ObjectMapper.Map<CarClass, CarClassDto>(carClass);
         

@@ -64,7 +64,7 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
         await _attachmentService.DeleteByEntityId(AttachmentEntityEnum.ProductAndCategory, id);
     }
 
-    public async Task<ProductAndCategoryWithChildDto> GetById(int id, bool hasProperty, List<AttachmentEntityTypeEnum> attachmentType = null)
+    public async Task<ProductAndCategoryWithChildDto> GetById(int id, bool hasProperty, List<AttachmentEntityTypeEnum> attachmentType = null,List<AttachmentLocationEnum> locationType = null)
     {
         await Validation(id, null);
         var query = await _productAndCategoryRepository.GetQueryableAsync();
@@ -73,7 +73,7 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
         var productCategory = query
             .FirstOrDefault(x => x.Id == id) ??
             throw new UserFriendlyException("محصول یا دسته بندی مورد نطر پیدا نشد");
-        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, new List<int>() { id }, attachmentType);
+        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, new List<int>() { id }, attachmentType,locationType);
         var productResult = ObjectMapper.Map<ProductAndCategory, ProductAndCategoryWithChildDto>(productCategory);
         var productAndCategoryList = await FillAttachmentAndProperty(new List<ProductAndCategoryWithChildDto>() { productResult }, attachments, hasProperty);
         return productResult;
@@ -201,7 +201,7 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
         //var attachments = attachmentQuery.ToList();
 
         var ids = queryResult.Select(x => x.Id).ToList();
-        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, ids, EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(input.AttachmentType));
+        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, ids, EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(input.AttachmentType), EnumHelper.ConvertStringToEnum<AttachmentLocationEnum>(input.AttachmentLocation));
 
         var resultList = ObjectMapper.Map<List<ProductAndCategory>, List<ProductAndCategoryDto>>(queryResult);
         resultList.ForEach(x =>
@@ -226,7 +226,7 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
                     .Include(x => x.Childrens.Where(y => y.Type == ProductAndCategoryType.Category))
                     .Where(x => EF.Functions.Like(x.Code, input.NodePath + "%") && x.Type == ProductAndCategoryType.Category)
                     .ToList();
-                attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, parent.Select(x => x.Id).ToList(), EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(input.attachmentType));
+                attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, parent.Select(x => x.Id).ToList(), EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(input.attachmentType), EnumHelper.ConvertStringToEnum<AttachmentLocationEnum>(input.attachmentlocation));
                 ls = string.IsNullOrWhiteSpace(input.NodePath)
                     ? parent.Where(x => x.ParentId == null).ToList()
                     : parent.Where(x => x.Code != input.NodePath).ToList();
@@ -240,7 +240,7 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
                 {
                     ls = await GetProductFilter(input.AdvancedSearch, ls);
                 }
-                attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, ls.Select(x => x.Id).ToList(), EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(input.attachmentType));
+                attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, ls.Select(x => x.Id).ToList(), EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(input.attachmentType), EnumHelper.ConvertStringToEnum<AttachmentLocationEnum>(input.attachmentlocation));
                 break;
         }
         var productAndCategories = ObjectMapper.Map<List<ProductAndCategory>, List<ProductAndCategoryWithChildDto>>(ls);
@@ -296,7 +296,7 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
         {
             ProductList = await GetProductFilter(input.AdvancedSearch, ProductList);
         }
-        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, ProductList.Select(x => x.Id).ToList(), EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(input.attachmentType));
+        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, ProductList.Select(x => x.Id).ToList(), EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(input.attachmentType),EnumHelper.ConvertStringToEnum<AttachmentLocationEnum>(input.attachmentLocation));
 
         var productAndSaleDetailListDto = ObjectMapper.Map<List<ProductAndCategory>, List<ProductAndCategoryWithChildDto>>(ProductList);
 

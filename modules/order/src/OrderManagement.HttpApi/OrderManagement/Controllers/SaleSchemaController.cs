@@ -26,14 +26,14 @@ public class SaleSchemaController : Controller
 
 
     [HttpGet]
-    public Task<List<SaleSchemaDto>> GetList(string attachmentType)
-      => _saleSchemaService.GetList(EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(attachmentType));
+    public Task<List<SaleSchemaDto>> GetList(string attachmentType, string attachmentlocation)
+      => _saleSchemaService.GetList(EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(attachmentType), EnumHelper.ConvertStringToEnum<AttachmentLocationEnum>(attachmentlocation));
     
     
 
     [HttpGet]
-    public Task<SaleSchemaDto> GetById(int id, string attachmentType)
-         => _saleSchemaService.GetById(id, EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(attachmentType));
+    public Task<SaleSchemaDto> GetById(int id, string attachmentType, string attachmentlocation)
+         => _saleSchemaService.GetById(id, EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(attachmentType), EnumHelper.ConvertStringToEnum<AttachmentLocationEnum>(attachmentlocation));
 
     [HttpPost]
     public Task<SaleSchemaDto> Add(CreateSaleSchemaDto saleSchemaDto)

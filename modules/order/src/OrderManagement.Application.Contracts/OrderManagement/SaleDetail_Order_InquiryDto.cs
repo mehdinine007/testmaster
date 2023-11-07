@@ -9,6 +9,7 @@ namespace OrderManagement.Application.Contracts
 
         public Guid? SaleDetailUid { get; set; }
         public List<AttachmentEntityTypeEnum>? AttachmentType { get; set; } = null;
-       
+        public List<AttachmentLocationEnum> AttachmentLocation { get; set; } = null;
+
     }
 }
