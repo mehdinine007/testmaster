@@ -26,10 +26,10 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             _bankRepository = bankRepository;
             _attachmentService = attachmentService;
         }
-        public async Task<List<BankDto>> GetList(List<AttachmentEntityTypeEnum> attachmentType = null)
+        public async Task<List<BankDto>> GetList(List<AttachmentEntityTypeEnum> attachmentType = null, List<AttachmentLocationEnum> attachmentlocation = null)
         {
             var banks = (await _bankRepository.GetQueryableAsync()).ToList();
-            var attachments = await _attachmentService.GetList(AttachmentEntityEnum.Bank, banks.Select(x => x.Id).ToList(), attachmentType );
+            var attachments = await _attachmentService.GetList(AttachmentEntityEnum.Bank, banks.Select(x => x.Id).ToList(), attachmentType, attachmentlocation);
             var banksDto = ObjectMapper.Map<List<Bank>, List<BankDto>>(banks);
             banksDto.ForEach(x =>
             {
@@ -56,10 +56,10 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             return await GetById(bank.Id);
             
         }
-        public async Task<BankDto> GetById(int id,List<AttachmentEntityTypeEnum> attachmentType=null)
+        public async Task<BankDto> GetById(int id,List<AttachmentEntityTypeEnum> attachmentType=null, List<AttachmentLocationEnum> attachmentlocation = null)
         {
             var bank = await Validation(id, null);
-            var attachments = await _attachmentService.GetList(AttachmentEntityEnum.Bank, new List<int>() { id }, attachmentType);
+            var attachments = await _attachmentService.GetList(AttachmentEntityEnum.Bank, new List<int>() { id }, attachmentType, attachmentlocation);
             var bankDto= ObjectMapper.Map<Bank, BankDto>(bank);
             
                 bankDto.Attachments= ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(attachments);

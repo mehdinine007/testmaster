@@ -5,7 +5,7 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Services
 {
     public interface IProductAndCategoryService : IApplicationService
     {
-        Task<ProductAndCategoryWithChildDto> GetById(int id, bool hasProperty, List<AttachmentEntityTypeEnum>? attachmentType = null);
+        Task<ProductAndCategoryWithChildDto> GetById(int id, bool hasProperty, List<AttachmentEntityTypeEnum>? attachmentType = null, List<AttachmentLocationEnum>? attachmentlocation = null);
 
         Task<ProductAndCategoryDto> Insert(ProductAndCategoryCreateDto productAndCategoryCreateDto);
 

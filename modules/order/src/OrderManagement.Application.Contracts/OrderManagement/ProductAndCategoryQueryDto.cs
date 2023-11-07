@@ -8,5 +8,6 @@ namespace OrderManagement.Application.Contracts.OrderManagement
         public int? ParentId { get; set; }
 
         public string? AttachmentType { get; set; } = null;
+        public string? AttachmentLocation { get; set; } = null;
     }
 }

@@ -9,6 +9,7 @@ namespace OrderManagement.Application.Contracts
         public int? ProductLevelId { get; set; }
         public List<AdvancedSearchDto> AdvancedSearch { get; set; }
         public  string attachmentType { get; set; }
+        public string attachmentlocation { get; set; }
         public bool HasProperty { get; set; }
 
     }

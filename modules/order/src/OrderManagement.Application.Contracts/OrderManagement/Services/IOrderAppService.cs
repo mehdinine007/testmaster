@@ -8,11 +8,11 @@ namespace OrderManagement.Application.Contracts.Services
 {
     public interface IOrderAppService : IApplicationService
     {
-        Task<List<CustomerOrder_OrderDetailDto>> GetCustomerOrderList(List<AttachmentEntityTypeEnum>? attachmentType=null);
+        Task<List<CustomerOrder_OrderDetailDto>> GetCustomerOrderList(List<AttachmentEntityTypeEnum>? attachmentType=null, List<AttachmentLocationEnum>? attachmentlocation = null);
 
-        Task<CustomerOrder_OrderDetailDto> GetOrderDetailById(int id, List<AttachmentEntityTypeEnum>? attachmentType = null);
+        Task<CustomerOrder_OrderDetailDto> GetOrderDetailById(int id, List<AttachmentEntityTypeEnum>? attachmentType = null, List<AttachmentLocationEnum>? attachmentlocation = null);
 
-        Task<CustomerOrder_OrderDetailDto> GetSaleDetailByUid(Guid saleDetailUid, List<AttachmentEntityTypeEnum>? attachmentType=null);
+        Task<CustomerOrder_OrderDetailDto> GetSaleDetailByUid(Guid saleDetailUid, List<AttachmentEntityTypeEnum>? attachmentType=null, List<AttachmentLocationEnum>? attachmentlocation = null);
 
         Task<CustomerOrder_OrderDetailDto> GetDetail(SaleDetail_Order_InquiryDto inquiryDto);
 

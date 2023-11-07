@@ -88,13 +88,13 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             return siteStructure;
         }
 
-        public async Task<SiteStructureDto> GetById(int id, List<AttachmentEntityTypeEnum> attachmentsType = null)
+        public async Task<SiteStructureDto> GetById(int id, List<AttachmentEntityTypeEnum> attachmentsType = null, List<AttachmentLocationEnum> attachmentlocation = null)
         {
             await Validation(id, null);
             var siteSt = (await _siteStructureRepository.GetQueryableAsync())
                 .FirstOrDefault(x => x.Id == id);
                 var siteStructure = ObjectMapper.Map<SiteStructure, SiteStructureDto>(siteSt);
-            var attachments = await _attachmentService.GetList(AttachmentEntityEnum.SiteStructure, new List<int> { siteSt.Id }, attachmentsType);
+            var attachments = await _attachmentService.GetList(AttachmentEntityEnum.SiteStructure, new List<int> { siteSt.Id }, attachmentsType, attachmentlocation);
          
                 siteStructure.Attachments = ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(attachments);
             
@@ -107,7 +107,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
                 .Where(x => x.Location == siteStructureQuery.Location)
                 .OrderBy(x => x.Priority)
                 .ToList();
-            var attachments = await _attachmentService.GetList(AttachmentEntityEnum.SiteStructure, getSiteStructures.Select(x => x.Id).ToList(), EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(siteStructureQuery.AttachmentType));
+            var attachments = await _attachmentService.GetList(AttachmentEntityEnum.SiteStructure, getSiteStructures.Select(x => x.Id).ToList(), EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(siteStructureQuery.AttachmentType), EnumHelper.ConvertStringToEnum<AttachmentLocationEnum>(siteStructureQuery.AttachmentLocation));
             var siteStructures = ObjectMapper.Map<List<SiteStructure>, List<SiteStructureDto>>(getSiteStructures);
             siteStructures.ForEach(async x =>
             {
@@ -119,7 +119,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
                 }
                 if (x.Type == SiteStructureTypeEnum.CarClassCarousel)
                 {
-                    x.CarouselData = await _carClassService.GetList(EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(siteStructureQuery.AttachmentType));
+                    x.CarouselData = await _carClassService.GetList(EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(siteStructureQuery.AttachmentType), EnumHelper.ConvertStringToEnum<AttachmentLocationEnum>(siteStructureQuery.AttachmentLocation));
                 }
                 if (x.Type == SiteStructureTypeEnum.EsaleType)
 

@@ -12,6 +12,7 @@ namespace OrderManagement.Application.Contracts.OrderManagement
         public string NodePath { get; set; }
         public List<AdvancedSearchDto> AdvancedSearch { get; set; }
         public string? attachmentType { get; set; } = null;
+        public string? attachmentLocation { get; set; }
         public bool HasProperty { get; set; }
         public int? ESaleTypeId { get; set; }
     }

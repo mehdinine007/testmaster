@@ -41,8 +41,8 @@ public class QuestionnaireController : Controller //, IQuestionnaireService
         => await _questionnaireService.UploadFile(uploadFile);
 
     [HttpGet]
-    public async Task<List<QuestionnaireDto>> LoadQuestionnaireList(string attachmentEntityTypeEnums)
-        => await _questionnaireService.LoadQuestionnaireList(EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(attachmentEntityTypeEnums));
+    public async Task<List<QuestionnaireDto>> LoadQuestionnaireList(string attachmentEntityTypeEnums, string attachmentlocation)
+        => await _questionnaireService.LoadQuestionnaireList(EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(attachmentEntityTypeEnums), EnumHelper.ConvertStringToEnum<AttachmentLocationEnum>(attachmentlocation));
 
     [HttpGet]
     public async Task<List<QuestionnaireAnalysisDto>> GetQuestionnaireReport(int questionnaireId, long? relatedEntityId)

@@ -14,5 +14,6 @@ namespace OrderManagement.Application.Contracts.OrderManagement
         public string CategoryNode { get; set; }
         public int EsaleTypeId { get; set; }
         public string? AttachmentType { get; set; }
+        public string? AttachmentLocation { get; set; }
     }
 }

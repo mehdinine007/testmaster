@@ -8,6 +8,7 @@ public class RolePermission : FullAuditedEntity<ObjectId>
 {
     public string Title { get; set; }
     public string Code { get; set; }
-    public RolePermissionEnum Type { get; set; }
+
     public List<string> Permissions { get; set; }
+    public RolePermissionEnum? Type { get; set; }
 }
