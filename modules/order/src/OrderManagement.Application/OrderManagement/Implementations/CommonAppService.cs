@@ -150,51 +150,34 @@ public class CommonAppService : ApplicationService, ICommonAppService
 
     public async Task IsUserRejected()
     {
-        var identity = (ClaimsPrincipal)Thread.CurrentPrincipal;
-        // Get the claims values
-        var Nationalcode = _httpContextAccessor.HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.Name)
-                           .Select(c => c.Value).SingleOrDefault();
-        if (Nationalcode == null)
+        bool result;
+        bool.TryParse(_configuration.GetSection("IsEnableCheckUserRejection").Value, out result);
+        if (result)
         {
-            throw new UserFriendlyException("کد ملی صحیح نمی باشد");
+            var identity = (ClaimsPrincipal)Thread.CurrentPrincipal;
+            // Get the claims values
+            var Nationalcode = _httpContextAccessor.HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.Name)
+                               .Select(c => c.Value).SingleOrDefault();
+            if (Nationalcode == null)
+            {
+                throw new UserFriendlyException("کد ملی صحیح نمی باشد");
+            }
+           
+            string userRejection = _userRejectionAdcocacyRepository
+           .WithDetails()
+           .Select(x => x.NationalCode)
+           .FirstOrDefault(x => x == Nationalcode);
+
+
+            if (!string.IsNullOrEmpty(userRejection))
+            {
+            
+                throw new UserFriendlyException("شما انصراف داده اید و امکان ثبت سفارش نمی باشد");
+            }
+         
+
         }
-        //object UserRejectFromCache = null;
-        //UserRejectionAdvocacy userReject = null;
-        ////_cacheManager.GetCache("UserRejection").TryGetValue(Nationalcode, out UserRejectFromCache);
-        //UserRejectFromCache = await _distributedCache.GetStringAsync(string.Format(RedisConstants.UserRejectionPrefix, Nationalcode));
-        //if (UserRejectFromCache != null && (UserRejectFromCache as string) == "1")
-        //{
-        //    throw new UserFriendlyException("شما انصراف داده اید و امکان ثبت سفارش نمی باشد");
-        //}
-        //if (UserRejectFromCache != null && (UserRejectFromCache as string) == "0")
-        //{
-        //    return;
-        //}
-        //string userRejection = "";
 
-        string userRejection = _userRejectionAdcocacyRepository
-       .WithDetails()
-       .Select(x => x.NationalCode)
-       .FirstOrDefault(x => x == Nationalcode);
-
-
-        if (!string.IsNullOrEmpty(userRejection))
-        {
-            //await _cacheManager.GetCache("UserRejection").SetAsync(Nationalcode, "1");
-            //await _distributedCache.SetStringAsync(string.Format(RedisConstants.UserRejectionPrefix, Nationalcode), "1", new DistributedCacheEntryOptions
-            //{
-            //    AbsoluteExpiration = RedisConstants.UserRejectionTimeOffset
-            //});
-            throw new UserFriendlyException("شما انصراف داده اید و امکان ثبت سفارش نمی باشد");
-        }
-        //else
-        //{
-        //    //await _cacheManager.GetCache("UserRejection").SetAsync(Nationalcode, "0");
-        //    await _distributedCache.SetStringAsync(string.Format(RedisConstants.UserRejectionPrefix, Nationalcode), "0", new DistributedCacheEntryOptions
-        //    {
-        //        AbsoluteExpiration = DateTime.Now.AddMinutes(20)
-        //    });
-        //}
     }
     //public async Task<AdvocacyAcountResult> CheckAccount(string nationalCode, string mobileNo)
     //{
