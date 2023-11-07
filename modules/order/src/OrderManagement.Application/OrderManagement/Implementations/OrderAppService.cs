@@ -506,11 +506,11 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         }
         var paymentMethodGranted = _configuration.GetValue<bool?>("PaymentMethodGranted") ?? false;
-
+        UserDto customer = new UserDto();
         ////////////////////////
         if (paymentMethodGranted)
         {
-            var customer = await _esaleGrpcClient.GetUserId(_commonAppService.GetUserId().ToString());
+            customer = await _esaleGrpcClient.GetUserId(_commonAppService.GetUserId().ToString());
             if (!customer.NationalCode.Equals(nationalCode))
             {
 
