@@ -53,13 +53,13 @@ namespace OrderManagement.Application.OrderManagement.Implementations
         public async Task<Guid> Update(AttachmentUpdateDto attachmentDto)
         {
             var attachment = ObjectMapper.Map<AttachmentUpdateDto, Attachment>(attachmentDto);
-            attachment.EntityType = attachmentDto.Type;
-            attachment.Content = JsonConvert.SerializeObject(attachmentDto.Content);
-            await UpdateAttachment(attachment);
             if (attachmentDto.File != null)
             {
                 attachment = CopyFile(ObjectMapper.Map<AttachmentUpdateDto, AttachFileDto>(attachmentDto));
             }
+            attachment.EntityType = attachmentDto.Type;
+            attachment.Content = JsonConvert.SerializeObject(attachmentDto.Content);
+            await UpdateAttachment(attachment);
             return attachment.Id;
         }
         private async Task<Guid> UpdateAttachment(Attachment attachmentDto)
