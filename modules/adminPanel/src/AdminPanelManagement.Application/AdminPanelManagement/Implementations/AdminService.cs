@@ -26,7 +26,6 @@ namespace AdminPanelManagement.Application.AdminPanelManagement.Implementations
             List<CustomerOrderDto> customerOrderList = new List<CustomerOrderDto>();
             var customerOrders = new List<CustomerOrderDb>();
             List<string> cancellationDate = new List<string>();
-            List<string> advocacyUsersDate = new List<string>();
             var userInfoDb = await _customerOrderRepository.UserInfo(nationalCode);
             var userRejectionAdvocacy = await _customerOrderRepository.GetUserRejectionAdvocacy(nationalCode);
             userRejectionAdvocacy.ForEach(u =>
@@ -37,15 +36,6 @@ namespace AdminPanelManagement.Application.AdminPanelManagement.Implementations
                 cancellationDate.Add(CreationTime);
             });
 
-            var advocacyUsersFromBank = await _customerOrderRepository.GetAdvocacyUsersFromBank(nationalCode);
-
-
-            advocacyUsersFromBank.ForEach(u =>
-            {
-
-                var dateTime = u.dateTime;
-                advocacyUsersDate.Add(dateTime);
-            });
 
             if (userInfoDb.UID != null)
             {
@@ -105,7 +95,6 @@ namespace AdminPanelManagement.Application.AdminPanelManagement.Implementations
                 userInfo_CustomerOrderDto.CustomerOrders = customerOrderList;
             }
             userInfo_CustomerOrderDto.CancellationDate = cancellationDate;
-            userInfo_CustomerOrderDto.AdvocacyUsersDate = advocacyUsersDate;
             return userInfo_CustomerOrderDto;
 
         }

@@ -14,7 +14,6 @@ namespace AdminPanelManagement.Application.Contracts.AdminPanelManagement.Dtos
         public string LastName { get; set; }
         public string Mobile { get; set; }
         public List<string> CancellationDate { get; set; }
-        public List<string> AdvocacyUsersDate { get; set; }
         public List<CustomerOrderDto> CustomerOrders { get; set; }
     }
 }
