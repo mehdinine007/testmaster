@@ -179,7 +179,6 @@ namespace OrderManagement
             CreateMap<UnAuthorizedUser, UnregisteredUserInformation>()
                 .ForMember(x => x.SmsCode, opt => opt.Ignore())
                 .ReverseMap()
-                .ForMember(x => x.QuestionnaireId, opt => opt.Ignore())
                 .IgnoreFullAuditedObjectProperties();
         }
     }

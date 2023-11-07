@@ -265,7 +265,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         RustySalePlanValidation(commitOrderDto, SaleDetailDto.EsaleTypeId);
       
 
-        //await _commonAppService.IsUserRejected(); //if user reject from advocacy
+        await _commonAppService.IsUserRejected(); //if user reject from advocacy
         //                                          //_baseInformationAppService.CheckBlackList(SaleDetailDto.EsaleTypeId); //if user not exsist in blacklist
         //await CheckAdvocacy(nationalCode, SaleDetailDto.ESaleTypeId); //if hesab vekalati darad
         //Console.WriteLine("beforewhitelist");
@@ -505,13 +505,19 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
 
         }
+        var paymentMethodGranted = _configuration.GetValue<bool?>("PaymentMethodGranted") ?? false;
+        UserDto customer = new UserDto();
         ////////////////////////
-        var customer = await _esaleGrpcClient.GetUserId(_commonAppService.GetUserId().ToString());
-        if (!customer.NationalCode.Equals(nationalCode))
+        if (paymentMethodGranted)
         {
+            customer = await _esaleGrpcClient.GetUserId(_commonAppService.GetUserId().ToString());
+            if (!customer.NationalCode.Equals(nationalCode))
+            {
 
-            throw new UserFriendlyException("شما نمیتوانید سفارش شخص دیگری را پرداخت کنید");
+                throw new UserFriendlyException("شما نمیتوانید سفارش شخص دیگری را پرداخت کنید");
+            }
         }
+      
         //if (SaleDetailDto.EsaleTypeId == (Int16)EsaleTypeEnum.Youth)
         //{
         //    Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
@@ -540,7 +546,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
         //}
         //Console.WriteLine("beforeasli");
         CustomerOrder customerOrder = new CustomerOrder();
-        var paymentMethodGranted = _configuration.GetValue<bool?>("PaymentMethodGranted") ?? false;
         //var customerOrderQuery = await _commitOrderRepository.GetQueryableAsync();
         //var similarOrderTypes = new List<int>() { (int)OrderStatusType.PaymentNotVerified };
         //var similarOrder = customerOrderQuery.FirstOrDefault(x => similarOrderTypes.Any(y => y == (int)x.OrderStatus)
