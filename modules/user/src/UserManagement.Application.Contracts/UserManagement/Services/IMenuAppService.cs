@@ -17,6 +17,5 @@ public interface IMenuAppService : IApplicationService
     Task<MenuDto> Update(MenuDto input);
     Task<bool> Delete(ObjectId Id);
      Task InsertList();
-
-
+    Task UpdateMenuPolicy();
 }

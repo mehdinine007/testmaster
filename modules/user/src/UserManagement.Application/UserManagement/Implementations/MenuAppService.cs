@@ -51,6 +51,7 @@ using Elasticsearch.Net;
 using MongoDB.Driver.Core.Operations;
 using System.Security;
 using System.Net;
+using Newtonsoft.Json;
 
 namespace UserManagement.Application.UserManagement.Implementations;
 
@@ -317,9 +318,14 @@ public class MenuAppService : ApplicationService, IMenuAppService
         return menu;
     }
 
-
-
-
-
-
+    public async Task UpdateMenuPolicy()
+    {
+        var currentDirectory = Environment.CurrentDirectory;
+        const string fileName = "UpdateMenuPolicy.json";
+        var fullPath = Path.Combine(currentDirectory, fileName);
+        var content = File.ReadAllText(fileName);
+        var ls = new List<Menu>(JsonConvert.DeserializeObject<List<Menu>>(content));
+        await _menuRepository.InsertManyAsync(ls);
+    }
+    
 }

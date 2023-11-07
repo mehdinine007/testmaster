@@ -45,6 +45,10 @@ namespace UserManagement.HttpApi.UserManagement.Controllers
         [HttpPost]
         public async Task InsertList()
             => await _menuAppService.InsertList();
-   
+        [HttpPost]
+        public async Task  UpdateMenuPolicy()
+            => await _menuAppService.UpdateMenuPolicy();
+
+
     }
 }
