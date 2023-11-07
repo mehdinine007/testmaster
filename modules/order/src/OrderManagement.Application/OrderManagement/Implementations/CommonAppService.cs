@@ -1,4 +1,5 @@
 ﻿using EasyCaching.Core;
+using Esale.Core.Caching;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
@@ -29,7 +30,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations;
 
 public class CommonAppService : ApplicationService, ICommonAppService
 {
-    private readonly IDistributedCache _distributedCache;
+    private readonly ICacheManager _cacheManager;
     private IConfiguration _configuration { get; set; }
     private readonly IRepository<Logs, long> _logsRespository;
     private readonly IRepository<UserRejectionAdvocacy, int> _userRejectionAdcocacyRepository;
@@ -39,18 +40,19 @@ public class CommonAppService : ApplicationService, ICommonAppService
     private readonly IHttpContextAccessor _contextAccessor;
     private readonly IHybridCachingProvider _hybridCachingProvider;
 
-    public CommonAppService(IDistributedCache distributedCache,
-                            IConfiguration configuration,
+
+    public CommonAppService(IConfiguration configuration,
                             IRepository<Logs, long> LogsRespository,
                             IRepository<UserRejectionAdvocacy, int> UserRejectionAdcocacyRepository,
                             IHttpContextAccessor HttpContextAccessor,
                             IRepository<ExternalApiLogResult, int> externalApiLogResultRepository,
                             IRepository<ExternalApiResponsLog, int> externalApiResponsLogRepositor,
                             IHttpContextAccessor contextAccessor,
-                            IHybridCachingProvider hybridCachingProvider
+                            IHybridCachingProvider hybridCachingProvider,
+                            ICacheManager cacheManager
                             )
     {
-        _distributedCache = distributedCache;
+        _cacheManager = cacheManager;
         _configuration = configuration;
         _logsRespository = LogsRespository;
         _userRejectionAdcocacyRepository = UserRejectionAdcocacyRepository;
@@ -59,6 +61,7 @@ public class CommonAppService : ApplicationService, ICommonAppService
         _externalApiResponsLogRepository = externalApiResponsLogRepositor;
         _contextAccessor = contextAccessor;
         _hybridCachingProvider = hybridCachingProvider;
+
     }
 
     //private async Task<AuthtenticateResult> AuthenticateBank()
@@ -286,8 +289,10 @@ public class CommonAppService : ApplicationService, ICommonAppService
             //{
             //    throw new UserFriendlyException(Messages.CaptchaNotValid);
             //}
-            string objectCaptcha = await _distributedCache.GetStringAsync("cap_" + input.CIT);
-            await _distributedCache.RemoveAsync("cap_" + input.CIT);
+            
+            string objectCaptcha = await _cacheManager.GetStringAsync("cap_" + input.CIT,"", new CacheOptions() { Provider = CacheProviderEnum.Redis});
+            await _cacheManager.RemoveAsync("cap_" + input.CIT,"", new CacheOptions() { Provider = CacheProviderEnum.Redis });
+
             if (objectCaptcha == null)
             {
                 throw new UserFriendlyException("کپچای وارد شده صحیح نمی باشد");
@@ -469,8 +474,12 @@ public class CommonAppService : ApplicationService, ICommonAppService
     {
         if (userId == null)
             userId = GetUserId();
+
+
         string cacheKey = string.Format(RedisConstants.OrderStepCacheKey, userId.ToString());
-        var getOrderStep = await _distributedCache.GetStringAsync(cacheKey);
+        string getOrderStep = await _cacheManager.GetStringAsync(cacheKey,"", new CacheOptions() { Provider = CacheProviderEnum.Redis });
+
+
         if (string.IsNullOrEmpty(getOrderStep))
         {
             throw new UserFriendlyException(OrderConstant.NoValidFlowOrderStep, OrderConstant.NoValidFlowOrderStepId);
