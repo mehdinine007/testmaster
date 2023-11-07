@@ -40,6 +40,17 @@ using MongoDB.Bson.Serialization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.JsonPatch.Internal;
 using static Nest.JoinField;
+using System.Xml.Linq;
+using NuGet.ContentModel;
+using NuGet.Packaging;
+using System.ComponentModel;
+using System.Linq;
+using System.Collections.Generic;
+using Castle.MicroKernel.Registration;
+using Elasticsearch.Net;
+using MongoDB.Driver.Core.Operations;
+using System.Security;
+using System.Net;
 
 namespace UserManagement.Application.UserManagement.Implementations;
 
@@ -48,122 +59,105 @@ public class MenuAppService : ApplicationService, IMenuAppService
     private readonly ICacheManager _cacheManager;
     private readonly IRepository<Menu, ObjectId> _menuRepository;
     private readonly IRepository<RolePermission, ObjectId> _rolePermissionRepository;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
 
     public MenuAppService(ICacheManager cacheManager,
                          IRepository<Menu, ObjectId> menuRepository,
-                         IRepository<RolePermission, ObjectId> rolePermissionRepository
-
+                         IRepository<RolePermission, ObjectId> rolePermissionRepository,
+                         IHttpContextAccessor httpContextAccessor
         )
     {
         _cacheManager = cacheManager;
         _menuRepository = menuRepository;
         _rolePermissionRepository = rolePermissionRepository;
+        _httpContextAccessor = httpContextAccessor;
     }
 
-    public async Task<MenuDto> GetList()
+    public async Task<List<MenuDto>> GetList()
     {
-        var menus = (await _menuRepository.GetQueryableAsync())
-                    .ToList();
-        var getmenu = ObjectMapper.Map<List<Menu>, List<MenuDto>>(menus);
-        foreach ( var menu in getmenu )
-        {
-         var x=   GetMenuChildDtos(menu);
-            return new MenuDto();
-        }
-        return new MenuDto();
 
-    }
-
-    private List<MenuChildDto> GetMenuChildDtos(MenuDto parent)
-    {        
-        
-
-        //var ParentN =   ParentN == null ? new List<MenuDto>();
-         
-        var permissionlist = new List<PermissionDefinitionChildDto>();
-        if (parent.Children.Any())
-        {
-            List<MenuDto> ParentN = new List<MenuDto>();
-            List<MenuChildDto> childN = new List<MenuChildDto>();
-            ParentN.Add(new MenuDto { Code=parent.Code,Title=parent.Title});
-            foreach (var child in parent.Children)
-            {
-                childN.Add(new MenuChildDto { Code=child.Code,Title=child.Title ,Children=child.Children,Permissions=child.Permissions
-                  //Permissions=  permissionlist.Add(new PermissionDefinitionChildDto
-                  //  {
-                  //      Code = child.Permissions.Code,
-                  //      DisplayName = child.DisplayName,
-                  //      Title = child.Title,
-
-                  //  })
-
-
-            });
-                GetMenuChildDtos(new MenuDto { Code=child.Code,Title=child.Title,Children=child.Children,Permissions=child.Permissions});
-            }
-        }
-        return new List<MenuChildDto>();
-       
-    }
-        //private List<MenuChildDto> GetMenuChildDtos(List<MenuChildDto> children)
+        var permissions= GetPermission();
+        //List<PermissionDefinitionChildDto> permissions = new List<PermissionDefinitionChildDto>()
         //{
-        //    var permissionlist = new List<PermissionDefinitionChildDto>();
-        //    foreach (var child in children)
+        //       new PermissionDefinitionChildDto()
         //    {
-        //        if (child.Children.Count > 0)
-        //        {
-        //            children = child.Children;
-        //            if (children.Any(c => c.Children.Count >0)) continue;
+        //         Code="0001000100010002",
+        //         Title="create" ,
+        //         DisplayName="ایجاد"
 
-        //            else
-        //            {
-        //                if (children[0].Permissions.Count > 0)
-        //                {
-        //                    foreach (var per in children[0].Permissions)
-        //                    {
-        //                        {
-        //                            permissionlist.Add(new PermissionDefinitionChildDto
-        //                            {
-        //                                Code = per.Code,
-        //                                DisplayName = per.DisplayName,
-        //                                Title = per.Title,
-
-        //                            });
-        //                        };
-        //                    }
-        //                }
-        //                else continue;
-        //            }
-        //        }
-
-        //        List<MenuChildDto> result = children.SelectMany(x => x.Children).ToList();
-        //        //var MenuDto = new MenuDto
-        //        //{
-
-        //        //    Title=child.Title,
-        //        //    Code = child.Code,
-        //        //    Icon = child.Icon,
-        //        //    Url = child.Url,
-        //        //    Permissions = permissionlist
-        //        //};
-
-        //    //var menuchild = new MenuChildDto
-        //    //    {
-        //    //        Title = child.Title,
-        //    //        Code = child.Code,
-        //    //        Icon = child.Icon,
-        //    //        Url = child.Url,
-        //    //        Permissions = permissionlist
-        //    //    };
-
-        //            return result;
+        //    },
+        //       new PermissionDefinitionChildDto()
+        //    {
+        //         Code="0001000300010001",
+        //         Title="create" ,
+        //         DisplayName="ایجاد"
 
         //    }
+        //};
+        var menus = (await _menuRepository.GetQueryableAsync())
+              .ToList();
 
-        //    return new List<MenuChildDto>();// { child };
-        //}
-        public async Task<MenuDto> GetById(ObjectId Id)
+        var getmenu = ObjectMapper.Map<List<Menu>, List<MenuDto>>(menus);
+
+        var _menu = new List<MenuDto>();
+        foreach (var menu in getmenu)
+        {
+           // if (permissions.Any(x => x.Code.Substring(0, menu.Code.Length) == menu.Code))
+            if (permissions.Any(x=>x==menu.Code))
+            {
+                var _child = GetListWithParent(menu.Children, permissions);
+                menu.Children = _child;
+                _menu.Add(menu);
+            }
+        }
+
+
+
+        return _menu;
+    }
+
+    private List<string> GetPermission()
+    {
+           
+    var role = _httpContextAccessor.HttpContext.User.Claims
+            .Where(x => x.Type.Equals(ClaimTypes.Role))
+            .FirstOrDefault();
+        if (role is null)
+        {
+            throw new UserFriendlyException(CoreMessage.AuthenticationDenied, CoreMessage.AuthenticationDeniedId);
+        }
+
+        var rolePermission = _cacheManager.Get<List<string>>(role.ToString(),
+        RedisCoreConstant.RolePermissionPrefix,
+        new CacheOptions()
+        {
+            Provider = CacheProviderEnum.Hybrid
+        });
+        return rolePermission;
+
+
+    }
+    private List<MenuChildDto> GetListWithParent(List<MenuChildDto> child, List<string> permissions)
+    {
+        var _child = new List<MenuChildDto>();
+        foreach (var per in child)
+        {
+            if (permissions.Any(x => x.Substring(0, per.Code.Length) == per.Code))
+            {
+                if (per.Children != null && per.Children.Count > 0)
+                    per.Children = GetListWithParent(per.Children, permissions);
+                if (per.Permissions != null && per.Permissions.Count > 0)
+                    per.Permissions = per.Permissions
+                        .Where(x => permissions.Any(p => p == x.Code))
+                        .ToList();
+                _child.Add(per);
+            }
+        }
+        return _child;
+    }
+
+    public async Task<MenuDto> GetById(ObjectId Id)
     {
         var menu = await Validation(Id, null);
         var result = ObjectMapper.Map<Menu, MenuDto>(menu);
