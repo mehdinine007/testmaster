@@ -1,5 +1,5 @@
 ﻿using EasyCaching.Core;
-using Esale.Core.Caching;
+using IFG.Core.Caching;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
