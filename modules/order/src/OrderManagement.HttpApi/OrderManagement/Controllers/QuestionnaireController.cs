@@ -9,7 +9,7 @@ using Esale.Share.Authorize;
 using OrderManagement.Application.Contracts.OrderManagement;
 using System.Collections.Generic;
 using OrderManagement.Domain.Shared;
-using Esale.Core.Utility.Tools;
+using IFG.Core.Utility.Tools;
 
 namespace OrderManagement.HttpApi.OrderManagement.Controllers;
 
@@ -25,12 +25,10 @@ public class QuestionnaireController : Controller //, IQuestionnaireService
         _questionnaireService = questionnaireService;
     }
 
-    [UserAuthorization]
     [HttpGet]
     public async Task<QuestionnaireTreeDto> LoadQuestionnaireTree(int questionnaireId, long? relatedEntityId)
         => await _questionnaireService.LoadQuestionnaireTree(questionnaireId, relatedEntityId);
 
-    [UserAuthorization]
     [HttpPost]
     public async Task<bool> SubmitAnswer(SubmitAnswerTreeDto submitAnswerTreeDto)
     {

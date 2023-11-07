@@ -10,9 +10,7 @@ public class SendSMSDto
     public string CIT { get; set; }
     [Required]
     public string CK { get; set; }
-    [Required]
     public string Recipient { get; set; }
-    [Required]
     public string NationalCode { get; set; }
     [Required]
     public SMSType SMSLocation { get; set; }

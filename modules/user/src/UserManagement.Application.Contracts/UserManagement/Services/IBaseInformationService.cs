@@ -1,5 +1,4 @@
-﻿using Nest;
-using UserManagement.Application.Contracts.Models;
+﻿using UserManagement.Application.Contracts.Models;
 using UserManagement.Domain.UserManagement.Bases;
 using Volo.Abp.Application.Services;
 

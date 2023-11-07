@@ -24,7 +24,7 @@ namespace OrderManagement.EfCore.Migrations.CompanyManagementDb
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("OrderManagement.Domain.CompanyManagement.ClientsOrderDetailByCompany", b =>
+            modelBuilder.Entity("CompanyManagement.Domain.CompanyManagement.ClientsOrderDetailByCompany", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -38,9 +38,6 @@ namespace OrderManagement.EfCore.Migrations.CompanyManagementDb
 
                     b.Property<decimal?>("CancelBenefit")
                         .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("CarCode")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CarDesc")
                         .HasMaxLength(250)
@@ -89,6 +86,9 @@ namespace OrderManagement.EfCore.Migrations.CompanyManagementDb
                     b.Property<DateTime?>("InviteDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool?>("IsCanceled")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
@@ -117,6 +117,9 @@ namespace OrderManagement.EfCore.Migrations.CompanyManagementDb
                         .HasMaxLength(150)
                         .HasColumnType("int");
 
+                    b.Property<DateTime?>("TranDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Vin")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
@@ -126,7 +129,7 @@ namespace OrderManagement.EfCore.Migrations.CompanyManagementDb
                     b.ToTable("ClientsOrderDetailByCompany", (string)null);
                 });
 
-            modelBuilder.Entity("OrderManagement.Domain.CompanyManagement.CompanyPaypaidPrices", b =>
+            modelBuilder.Entity("CompanyManagement.Domain.CompanyManagement.CompanyPaypaidPrices", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -177,10 +180,10 @@ namespace OrderManagement.EfCore.Migrations.CompanyManagementDb
 
                     b.HasIndex("ClientsOrderDetailByCompanyId");
 
-                    b.ToTable("CompanyPaypaidPrices");
+                    b.ToTable("CompanyPaypaidPrices", (string)null);
                 });
 
-            modelBuilder.Entity("OrderManagement.Domain.CompanyManagement.CompanyProduction", b =>
+            modelBuilder.Entity("CompanyManagement.Domain.CompanyManagement.CompanyProduction", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -235,7 +238,7 @@ namespace OrderManagement.EfCore.Migrations.CompanyManagementDb
                     b.ToTable("CompanyProduction");
                 });
 
-            modelBuilder.Entity("OrderManagement.Domain.CompanyManagement.CompanySaleCallDates", b =>
+            modelBuilder.Entity("CompanyManagement.Domain.CompanyManagement.CompanySaleCallDates", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -289,9 +292,9 @@ namespace OrderManagement.EfCore.Migrations.CompanyManagementDb
                     b.ToTable("CompanySaleCallDates");
                 });
 
-            modelBuilder.Entity("OrderManagement.Domain.CompanyManagement.CompanyPaypaidPrices", b =>
+            modelBuilder.Entity("CompanyManagement.Domain.CompanyManagement.CompanyPaypaidPrices", b =>
                 {
-                    b.HasOne("OrderManagement.Domain.CompanyManagement.ClientsOrderDetailByCompany", "ClientsOrderDetailByCompany")
+                    b.HasOne("CompanyManagement.Domain.CompanyManagement.ClientsOrderDetailByCompany", "ClientsOrderDetailByCompany")
                         .WithMany("Paypaidprice")
                         .HasForeignKey("ClientsOrderDetailByCompanyId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -300,10 +303,10 @@ namespace OrderManagement.EfCore.Migrations.CompanyManagementDb
                     b.Navigation("ClientsOrderDetailByCompany");
                 });
 
-            modelBuilder.Entity("OrderManagement.Domain.CompanyManagement.CompanySaleCallDates", b =>
+            modelBuilder.Entity("CompanyManagement.Domain.CompanyManagement.CompanySaleCallDates", b =>
                 {
-                    b.HasOne("OrderManagement.Domain.CompanyManagement.ClientsOrderDetailByCompany", "ClientsOrderDetailByCompany")
-                        .WithMany("turnDate")
+                    b.HasOne("CompanyManagement.Domain.CompanyManagement.ClientsOrderDetailByCompany", "ClientsOrderDetailByCompany")
+                        .WithMany("TurnDate")
                         .HasForeignKey("ClientsOrderDetailByCompanyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -311,11 +314,11 @@ namespace OrderManagement.EfCore.Migrations.CompanyManagementDb
                     b.Navigation("ClientsOrderDetailByCompany");
                 });
 
-            modelBuilder.Entity("OrderManagement.Domain.CompanyManagement.ClientsOrderDetailByCompany", b =>
+            modelBuilder.Entity("CompanyManagement.Domain.CompanyManagement.ClientsOrderDetailByCompany", b =>
                 {
                     b.Navigation("Paypaidprice");
 
-                    b.Navigation("turnDate");
+                    b.Navigation("TurnDate");
                 });
 #pragma warning restore 612, 618
         }

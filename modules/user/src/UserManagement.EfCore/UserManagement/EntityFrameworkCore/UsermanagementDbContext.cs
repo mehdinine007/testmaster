@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using UserManagement.Domain.UserManagement;
 using UserManagement.Domain.UserManagement.Advocacy;
+using UserManagement.Domain.UserManagement.Authorization.Users;
 using UserManagement.Domain.UserManagement.Bases;
 using UserManagement.Domain.UserManagement.CompanyService;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
@@ -25,6 +26,9 @@ namespace UserManagement.EfCore.EntityFrameworkCore
         public DbSet<UserRejectionFromBank> UserRejectionFromBank { get; set; }
         public DbSet<ClientsOrderDetailByCompany> ClientsOrderDetailByCompany { get; set; }
         public DbSet<CompanyPaypaidPrices> CompanyPaypaidPrices { get; set; }
+        public DbSet<UserSQL> UserSQL { get; set; }
+
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);

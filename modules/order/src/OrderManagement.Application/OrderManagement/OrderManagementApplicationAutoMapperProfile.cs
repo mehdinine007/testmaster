@@ -1,7 +1,8 @@
 ﻿using AutoMapper;
-using Esale.Core.Utility.Tools;
+using IFG.Core.Utility.Tools;
 using Newtonsoft.Json;
 using OrderManagement.Application.Contracts;
+using OrderManagement.Application.Contracts.Dtos;
 using OrderManagement.Application.Contracts.OrderManagement;
 using OrderManagement.Application.Contracts.OrderManagement.Models;
 using OrderManagement.Domain;
@@ -112,6 +113,11 @@ namespace OrderManagement
             CreateMap<Agency, AgencyDto>().ReverseMap();
             //CreateMap<ApiResult, HandShakeResultDto>();
             CreateMap<SaleDetail, CreateSaleDetailDto>().ReverseMap();
+            CreateMap<SaleDetail, SaleDetailForDropDownDto>()
+                .ReverseMap()
+                .IgnoreFullAuditedObjectProperties();
+            
+
             CreateMap<AgencySaleDetail, AgencySaleDetailDto>().ReverseMap();
             CreateMap<AgencySaleDetail, AgencySaleDetailListDto>()
                .ForMember(x => x.AgencyName, opt => opt.MapFrom(y => y.Agency.Name))
@@ -170,7 +176,10 @@ namespace OrderManagement
             CreateMap<Bank, BankCreateOrUpdateDto>().ReverseMap();
 
 
-
+            CreateMap<UnAuthorizedUser, UnregisteredUserInformation>()
+                .ForMember(x => x.SmsCode, opt => opt.Ignore())
+                .ReverseMap()
+                .IgnoreFullAuditedObjectProperties();
         }
     }
 }

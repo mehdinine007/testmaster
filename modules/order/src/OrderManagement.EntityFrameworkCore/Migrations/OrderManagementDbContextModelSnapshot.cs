@@ -344,6 +344,10 @@ namespace OrderManagement.EfCore.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CompanyId")
+                        .IsUnique()
+                        .HasFilter("[CompanyId] IS NOT NULL");
+
                     b.ToTable("Announcement", (string)null);
                 });
 
@@ -418,17 +422,14 @@ namespace OrderManagement.EfCore.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("Title")
-                        .IsRequired()
                         .HasMaxLength(250)
                         .HasColumnType("nvarchar(250)");
 
                     b.Property<string>("Title_En")
-                        .IsRequired()
                         .HasMaxLength(250)
                         .HasColumnType("nvarchar(250)");
 
@@ -499,12 +500,10 @@ namespace OrderManagement.EfCore.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Title")
-                        .IsRequired()
                         .HasMaxLength(250)
                         .HasColumnType("nvarchar(250)");
 
                     b.Property<string>("Title_En")
-                        .IsRequired()
                         .HasMaxLength(250)
                         .HasColumnType("nvarchar(250)");
 
@@ -632,12 +631,10 @@ namespace OrderManagement.EfCore.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Title")
-                        .IsRequired()
                         .HasMaxLength(250)
                         .HasColumnType("nvarchar(250)");
 
                     b.Property<string>("Title_En")
-                        .IsRequired()
                         .HasMaxLength(250)
                         .HasColumnType("nvarchar(250)");
 
@@ -1404,6 +1401,46 @@ namespace OrderManagement.EfCore.Migrations
                     b.ToTable("Gallery", (string)null);
                 });
 
+            modelBuilder.Entity("OrderManagement.Domain.GenderTypeReadOnly", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Code")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<string>("Title_En")
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("GenderTypeReadOnly", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Code = 0,
+                            Title = "مرد",
+                            TitleEn = "Male"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Code = 1,
+                            Title = "زن",
+                            TitleEn = "Female"
+                        });
+                });
+
             modelBuilder.Entity("OrderManagement.Domain.Logs", b =>
                 {
                     b.Property<long>("Id")
@@ -1815,12 +1852,10 @@ namespace OrderManagement.EfCore.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Title")
-                        .IsRequired()
                         .HasMaxLength(250)
                         .HasColumnType("nvarchar(250)");
 
                     b.Property<string>("Title_En")
-                        .IsRequired()
                         .HasMaxLength(250)
                         .HasColumnType("nvarchar(250)");
 
@@ -2155,12 +2190,10 @@ namespace OrderManagement.EfCore.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Title")
-                        .IsRequired()
                         .HasMaxLength(250)
                         .HasColumnType("nvarchar(250)");
 
                     b.Property<string>("Title_En")
-                        .IsRequired()
                         .HasMaxLength(250)
                         .HasColumnType("nvarchar(250)");
 
@@ -2241,6 +2274,9 @@ namespace OrderManagement.EfCore.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("LastModifierId");
 
+                    b.Property<int>("QuestionnaireType")
+                        .HasColumnType("int");
+
                     b.Property<string>("Title")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
@@ -2251,6 +2287,46 @@ namespace OrderManagement.EfCore.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Questionnaire", (string)null);
+                });
+
+            modelBuilder.Entity("OrderManagement.Domain.QuestionnaireTypeReadOnly", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Code")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<string>("Title_En")
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("QuestionnaireTypeReadOnly", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Code = 0,
+                            Title = "احراض اجباری",
+                            TitleEn = "AuthorizedOnly"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Code = 1,
+                            Title = "احراض اختیاری",
+                            TitleEn = "AnonymousAllowed"
+                        });
                 });
 
             modelBuilder.Entity("OrderManagement.Domain.SaleDetail", b =>
@@ -2655,7 +2731,7 @@ namespace OrderManagement.EfCore.Migrations
                     b.Property<long?>("RelatedEntityId")
                         .HasColumnType("bigint");
 
-                    b.Property<Guid>("UserId")
+                    b.Property<Guid?>("UserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
@@ -2665,6 +2741,90 @@ namespace OrderManagement.EfCore.Migrations
                     b.HasIndex("QuestionId");
 
                     b.ToTable("SubmittedAnswer", (string)null);
+                });
+
+            modelBuilder.Entity("OrderManagement.Domain.UnAuthorizedUser", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("Age")
+                        .HasColumnType("Date");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("CreationTime");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("CreatorId");
+
+                    b.Property<Guid?>("DeleterId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("DeleterId");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("DeletionTime");
+
+                    b.Property<string>("EducationLevel")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FirstName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Gender")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false)
+                        .HasColumnName("IsDeleted");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("LastModificationTime");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("LastModifierId");
+
+                    b.Property<string>("LastName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ManufactureDate")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MobileNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NationalCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Occupation")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("QuestionnaireId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SmsCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("VehicleName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Vin")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("QuestionnaireId");
+
+                    b.ToTable("UnAuthorizedUser", (string)null);
                 });
 
             modelBuilder.Entity("OrderManagement.Domain.UserRejectionAdvocacy", b =>
@@ -3218,6 +3378,15 @@ namespace OrderManagement.EfCore.Migrations
                     b.Navigation("SaleDetail");
                 });
 
+            modelBuilder.Entity("OrderManagement.Domain.Announcement", b =>
+                {
+                    b.HasOne("OrderManagement.Domain.OrderManagement.ProductAndCategory", "Company")
+                        .WithOne("Announcement")
+                        .HasForeignKey("OrderManagement.Domain.Announcement", "CompanyId");
+
+                    b.Navigation("Company");
+                });
+
             modelBuilder.Entity("OrderManagement.Domain.Bank", b =>
                 {
                     b.HasOne("OrderManagement.Domain.Gallery", "Gallery")
@@ -3489,6 +3658,17 @@ namespace OrderManagement.EfCore.Migrations
                     b.Navigation("QuestionAnswer");
                 });
 
+            modelBuilder.Entity("OrderManagement.Domain.UnAuthorizedUser", b =>
+                {
+                    b.HasOne("OrderManagement.Domain.Questionnaire", "Questionnaire")
+                        .WithMany("UnAuthorizedUsers")
+                        .HasForeignKey("QuestionnaireId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Questionnaire");
+                });
+
             modelBuilder.Entity("OrderManagement.Domain.UserRejectionFromBank", b =>
                 {
                     b.HasOne("OrderManagement.Domain.Bank", "Banks")
@@ -3588,6 +3768,8 @@ namespace OrderManagement.EfCore.Migrations
 
             modelBuilder.Entity("OrderManagement.Domain.OrderManagement.ProductAndCategory", b =>
                 {
+                    b.Navigation("Announcement");
+
                     b.Navigation("CategorySeason");
 
                     b.Navigation("Childrens");
@@ -3628,6 +3810,8 @@ namespace OrderManagement.EfCore.Migrations
                     b.Navigation("Answers");
 
                     b.Navigation("Questions");
+
+                    b.Navigation("UnAuthorizedUsers");
                 });
 
             modelBuilder.Entity("OrderManagement.Domain.SaleDetail", b =>

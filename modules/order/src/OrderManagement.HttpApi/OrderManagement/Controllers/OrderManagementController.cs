@@ -4,11 +4,10 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Volo.Abp;
-using Esale.Share.Authorize;
 using Volo.Abp.Auditing;
 using System;
 using OrderManagement.Domain.Shared;
-using Esale.Core.Utility.Tools;
+using IFG.Core.Utility.Tools;
 
 namespace OrderManagement.HttpApi;
 
@@ -20,7 +19,8 @@ public class OrderManagementController
 
     public OrderManagementController(IOrderAppService orderAppService)
         => _orderAppService = orderAppService;
-    [UserAuthorization]
+
+
     [HttpPost]
     public async Task<bool> CancelOrder(int orderId)
     {
@@ -35,20 +35,20 @@ public class OrderManagementController
     }
 
     [HttpPost]
-    [UserAuthorization]
+
     public async Task<CommitOrderResultDto> CommitOrder([FromBody] CommitOrderDto commitOrderDto)
          => await _orderAppService.CommitOrder(commitOrderDto);
     [DisableAuditing]
     [HttpGet]
-    [UserAuthorization]
+
     public async Task<List<CustomerOrderReportDto>> GetCompaniesCustomerOrders()
         => await _orderAppService.GetCompaniesCustomerOrders();
     [DisableAuditing]
     [HttpGet]
-    [UserAuthorization]
+
     public async Task<List<CustomerOrderPriorityUserDto>> GetCustomerInfoPriorityUser()
         => await _orderAppService.GetCustomerInfoPriorityUser();
-    
+
     [HttpGet]
 
     public Task<List<CustomerOrder_OrderDetailDto>> GetCustomerOrderList(string attachmentEntityType)
@@ -58,18 +58,18 @@ public class OrderManagementController
     public async Task<CustomerOrder_OrderDetailDto> GetOrderDetailById(int id, string attachmentEntityType)
         => await _orderAppService.GetOrderDetailById(id, EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(attachmentEntityType));
 
-    [RemoteService(IsEnabled =false)]
+    [RemoteService(IsEnabled = false)]
     public async Task<CustomerOrder_OrderDetailDto> GetSaleDetailByUid(Guid saleDetailUid, string attachmentEntityType)
         => await _orderAppService.GetSaleDetailByUid(saleDetailUid, EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(attachmentEntityType));
 
     [DisableAuditing]
     [HttpPost]
-    [UserAuthorization]
-    public async Task<CustomerOrder_OrderDetailDto> GetDetail([FromBody]SaleDetail_Order_InquiryDto inquiryDto)
+
+    public async Task<CustomerOrder_OrderDetailDto> GetDetail([FromBody] SaleDetail_Order_InquiryDto inquiryDto)
         => await _orderAppService.GetDetail(inquiryDto);
 
     [HttpPost]
-    [UserAuthorization]
+
     public async Task<bool> InsertUserRejectionAdvocacyPlan(string userSmsCode)
     {
         await _orderAppService.InsertUserRejectionAdvocacyPlan(userSmsCode);
@@ -77,11 +77,11 @@ public class OrderManagementController
     }
     [DisableAuditing]
     [HttpPost]
-    [UserAuthorization]
+
     public async Task<bool> UserRejectionStatus()
         => await _orderAppService.UserRejectionStatus();
     //[HttpPost]
-    //[UserAuthorization]
+    //
     //public async Task<HandShakeResultDto> PrepareOrderForPayment(int customerOrder, int pspAccountId)
     //    => await _orderAppService.PrepareOrderForPayment(customerOrder, pspAccountId);
 

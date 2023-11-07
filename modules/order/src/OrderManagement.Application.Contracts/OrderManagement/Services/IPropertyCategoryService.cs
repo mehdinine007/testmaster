@@ -11,9 +11,9 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Services
     public interface IPropertyCategoryService : IApplicationService
     {
         Task<List<PropertyCategoryDto>> GetList();
-        Task<PropertyCategoryDto> GetById(ObjectId id);
+        Task<PropertyCategoryDto> GetById(string Id);
         Task<PropertyCategoryDto> Add(PropertyCategoryDto propertyCategoryDto);
         Task<PropertyCategoryDto> Update(PropertyCategoryDto propertyCategoryDto);
-        Task<bool> Delete(ObjectId Id);
+        Task<bool> Delete(string Id);
     }
 }

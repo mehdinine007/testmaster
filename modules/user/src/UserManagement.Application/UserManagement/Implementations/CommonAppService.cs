@@ -1,9 +1,10 @@
 ﻿#region NS
-using Esale.Core.Caching;
+using IFG.Core.Caching;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using System.Reflection.Emit;
 using System.Security.Claims;
 using UserManagement.Application.Contracts.Models;
 using UserManagement.Application.Contracts.Services;
@@ -18,17 +19,14 @@ namespace UserManagement.Application.UserManagement.Implementations;
 public class CommonAppService : ApplicationService, ICommonAppService
 {
     private readonly IConfiguration _configuration;
-    private readonly IDistributedCache _distributedCache;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly ICacheManager _cacheManager;
 
     public CommonAppService(IConfiguration configuration,
-                            IDistributedCache distributedCache,
                             IHttpContextAccessor httpContextAccessor,
                             ICacheManager cacheManager)
     {
         _configuration = configuration;
-        _distributedCache = distributedCache;
         _httpContextAccessor = httpContextAccessor;
         _cacheManager = cacheManager;
     }
@@ -44,7 +42,6 @@ public class CommonAppService : ApplicationService, ICommonAppService
     }
 
     public async Task<string> GetAddressByZipCode(string zipCode, string nationalCode)
-
     {
         if (zipCode.Length != 10 || zipCode.AsParallel().Any(x => !char.IsDigit(x)))
             throw new UserFriendlyException("کد پستی صحیح نیست");
@@ -53,10 +50,12 @@ public class CommonAppService : ApplicationService, ICommonAppService
             throw new UserFriendlyException("کد ملی صحیح نیست");
 
         const string cacheKey = "zip_{0}, ntnl_{1}";
-        var zipCache = await _distributedCache.GetStringAsync(string.Format(cacheKey, zipCode, nationalCode));
+        var zipCache = await _cacheManager.GetStringAsync(string.Format(cacheKey, zipCode, nationalCode), "",new CacheOptions { Provider = CacheProviderEnum.Redis });
+
+
         if (string.IsNullOrWhiteSpace(zipCache))
         {
-            if (_configuration.GetValue<bool?>("FakeAddressInquiryMode") ?? false)
+            if (_configuration.GetValue<bool?>("Inquiry:FakeAddressInquiryMode") ?? false)
             {
                 return "sample address to bypass inquiry for temporary usage";
             }
@@ -69,7 +68,8 @@ public class CommonAppService : ApplicationService, ICommonAppService
             if (inquiry.Success)
             {
                 var inquiryResponse = JsonConvert.DeserializeObject<FaraBoomZipCodeInquiryResponse>(inquiry.Data);
-                await _distributedCache.SetStringAsync(string.Format(cacheKey, zipCode, nationalCode), inquiryResponse.Addresss);
+                await _cacheManager.SetStringAsync(string.Format(cacheKey, zipCode, nationalCode),"", inquiryResponse.Addresss,new CacheOptions { Provider = CacheProviderEnum.Redis });
+
                 return inquiryResponse.Addresss;
             }
             throw new UserFriendlyException("استعلام کدپستی با خطا مواجه شد");
@@ -83,9 +83,9 @@ public class CommonAppService : ApplicationService, ICommonAppService
             throw new UserFriendlyException("کد ملی صحیح نیست");
         if (mobileNo.AsParallel().Any(x => !char.IsDigit(x)))
             throw new UserFriendlyException("شماره موبایل صحیح نیست");
-
         const string cacheKey = "mobileNo_{0}, ntnl{1}";
-        var validationResultCache = await _distributedCache.GetStringAsync(string.Format(cacheKey, mobileNo, nationalCode));
+
+        var validationResultCache = await _cacheManager.GetStringAsync(string.Format(cacheKey, mobileNo, nationalCode),"", new CacheOptions { Provider = CacheProviderEnum.Redis });
         if (string.IsNullOrWhiteSpace(validationResultCache))
         {
             var inquiryBuilder = new InquiryBuilder(new FaraBoomInquiryConfig()
@@ -97,13 +97,15 @@ public class CommonAppService : ApplicationService, ICommonAppService
             if (inquiry.Success)
             {
                 var inquiryResponse = JsonConvert.DeserializeObject<FaraBoomInquiryResponse>(inquiry.Data);
-                await _distributedCache.SetStringAsync(string.Format(cacheKey, mobileNo, nationalCode), inquiryResponse.match.ToString());
+                await _cacheManager.SetStringAsync(string.Format(cacheKey, mobileNo, nationalCode), "", inquiryResponse.match.ToString(),new CacheOptions { Provider = CacheProviderEnum.Redis });
+
                 return inquiryResponse.match;
             }
             if (!inquiry.Success && inquiry.MessageId.Equals("200", StringComparison.InvariantCultureIgnoreCase))
             {
                 var inquiryResponse = JsonConvert.DeserializeObject<FaraBoomInquiryResponse>(inquiry.Data);
-                await _distributedCache.SetStringAsync(string.Format(cacheKey, mobileNo, nationalCode), inquiryResponse.match.ToString());
+                await _cacheManager.SetStringAsync(string.Format(cacheKey, mobileNo, nationalCode),"", inquiryResponse.match.ToString(),new CacheOptions { Provider = CacheProviderEnum.Redis });
+
                 return inquiryResponse.match;
             }
             var serializedException = JsonConvert.SerializeObject(inquiry);
@@ -111,7 +113,8 @@ public class CommonAppService : ApplicationService, ICommonAppService
         }
         if (!bool.TryParse(validationResultCache, out bool isValid))
         {
-            _distributedCache.Remove(string.Format(cacheKey, mobileNo, nationalCode));
+            _cacheManager.RemoveAsync(string.Format(cacheKey, mobileNo, nationalCode), "",new CacheOptions { Provider = CacheProviderEnum.Redis });
+
             return false;
         }
         return isValid;
@@ -128,7 +131,7 @@ public class CommonAppService : ApplicationService, ICommonAppService
 
         //string ObjectSMSCode = RedisHelper.GetDatabase().StringGet(sMSType.ToString() + Mobile + NationalCode);
         //var ObjectSMSCode = await _distributedCache.GetStringAsync(sMSType.ToString() + Mobile + NationalCode);
-        var ObjectSMSCode = await _cacheManager.GetStringAsync(Mobile + NationalCode, sMSType.ToString(), new() { Provider = CacheProviderEnum.Redis });
+        var ObjectSMSCode = await _cacheManager.GetStringAsync(Mobile + NationalCode, sMSType.ToString(), new() { Provider = CacheProviderEnum.Redis,RedisHash = false });
 
 
         if (ObjectSMSCode == null)
@@ -164,8 +167,12 @@ public class CommonAppService : ApplicationService, ICommonAppService
             //{
             //    throw new UserFriendlyException(Messages.CaptchaNotValid);
             //}
-            string objectCaptcha = await _distributedCache.GetStringAsync("cap_" + input.CIT);
-            await _distributedCache.RemoveAsync("cap_" + input.CIT);
+
+            string objectCaptcha = await _cacheManager.GetStringAsync("cap_" + input.CIT,"", new CacheOptions { Provider = CacheProviderEnum.Redis });
+
+            await _cacheManager.RemoveAsync("cap_" + input.CIT,"", new CacheOptions { Provider = CacheProviderEnum.Redis });
+
+
             if (objectCaptcha == null)
             {
                 throw new UserFriendlyException("کپچای وارد شده صحیح نمی باشد");

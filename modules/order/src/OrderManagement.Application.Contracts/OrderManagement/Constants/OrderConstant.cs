@@ -84,5 +84,8 @@ namespace OrderManagement.Application.Contracts
         public static string SaleSchemaNotFound = "برنامه فروش وجود ندارد";
         public static string SaleSchemaFoundId = "5001";
 
+        public static string NotValid = "ورودی نامعتبر می باشد";
+        public static string NotValidId = "5002";
+
     }
 }

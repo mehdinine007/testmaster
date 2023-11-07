@@ -1,5 +1,6 @@
 ﻿using EasyCaching.Core;
-using Esale.Core.Caching;
+using IFG.Core.Caching;
+using Esale.Share.Authorize;
 using Microsoft.EntityFrameworkCore;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
@@ -36,7 +37,7 @@ public class AgencyService : ApplicationService, IAgencyService
     }
 
 
-
+    [SecuredOperation(AgencyServicePermissionConstants.Delete)]
     public async Task<bool> Delete(int id)
     {
         await _agencyRepository.DeleteAsync(x => x.Id == id, autoSave: true);
@@ -45,6 +46,7 @@ public class AgencyService : ApplicationService, IAgencyService
         return true;
     }
 
+    [SecuredOperation(AgencyServicePermissionConstants.GetAgencies)]
     public async Task<PagedResultDto<AgencyDto>> GetAgencies(int pageNo, int sizeNo)
     {
         var count = await _agencyRepository.CountAsync();
@@ -58,6 +60,7 @@ public class AgencyService : ApplicationService, IAgencyService
 
     }
     [UnitOfWork]
+    [SecuredOperation(AgencyServicePermissionConstants.Save)]
     public async Task<int> Save(AgencyDto agencyDto)
     {
         var province = await _provinceRepository.FirstOrDefaultAsync(x => x.Id == agencyDto.ProvinceId);
@@ -70,6 +73,7 @@ public class AgencyService : ApplicationService, IAgencyService
         return agency.Id;
     }
 
+    [SecuredOperation(AgencyServicePermissionConstants.Update)]
     public async Task<int> Update(AgencyDto agencyDto)
     {
         var result = await _agencyRepository.FirstOrDefaultAsync(x => x.Id == agencyDto.Id);

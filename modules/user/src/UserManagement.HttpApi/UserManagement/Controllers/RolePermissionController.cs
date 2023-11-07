@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using UserManagement.Application.Contracts.UserManagement.Services;
 using MongoDB.Bson;
 using UserManagement.Application.Contracts.Models;
+using Abp.Authorization.Roles;
+using UserManagement.Domain.UserManagement.Enums;
 
 namespace UserManagement.HttpApi.UserManagement.Controllers
 {
@@ -23,14 +25,16 @@ namespace UserManagement.HttpApi.UserManagement.Controllers
         public async Task<List<RolePermissionDto>> GetList()
         => await _rolePermission.GetList();
 
-        [HttpGet]
-        public async Task InsertList()
-            => await _rolePermission.InsertList();
+        [HttpPost]
+        public async Task InsertList(RolePermissionDto dto)
+            => await _rolePermission.InsertList(dto);
 
         [HttpPost]
         public async Task<RolePermissionDto> Add(RolePermissionDto dto)
             => await _rolePermission.Add(dto);
-
+        [HttpPost]
+        public async Task<bool> AddDefaultRole(RolePermissionEnum? type)
+            => await _rolePermission.AddDefaultRole(type);
         [HttpPut]
         public async Task<RolePermissionDto> Update(RolePermissionDto dto)
               => await _rolePermission.Update(dto);

@@ -56,6 +56,9 @@ namespace OrderManagement.Application.Contracts
         public ProductAndCategoryViewModel Product { get; set; }
 
         public string CompanyName { get; set; }
+        public int Id { get;set; }
+        public int SaleId { get; set; }
+
 
     }
 }

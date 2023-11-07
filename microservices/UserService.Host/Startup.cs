@@ -4,9 +4,9 @@ using ProductService.Host.Infrastructure.Middlewares;
 using Volo.Abp.Auditing;
 using UserService.Host.Infrastructures.Middlewares;
 using UserService.Host.Infrastructures.Extensions;
-using Esale.Core.IOC;
-using Esale.Core.Caching.Redis;
-using Esale.Core.Caching;
+using IFG.Core.IOC;
+using IFG.Core.Caching.Redis;
+using IFG.Core.Caching;
 using WorkingWithMongoDB.WebAPI.Services;
 using UserService.Host.Infrastructures.Hangfire.Abstract;
 using UserService.Host.Infrastructures.Hangfire.Concrete;
@@ -46,7 +46,7 @@ namespace UserService.Host
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
             app.UseCors(options => options.SetIsOriginAllowed(x => _ = true).AllowAnyMethod().AllowAnyHeader().AllowCredentials());
-            app.UseMiddleware<JwtMiddleware>();
+            //app.UseMiddleware<JwtMiddleware>();
             app.UseRouting();
             app.UseEndpoints(endpoints =>
             {

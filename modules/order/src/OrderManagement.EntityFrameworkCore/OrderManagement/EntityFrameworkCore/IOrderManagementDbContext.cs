@@ -96,5 +96,10 @@ namespace OrderManagement.EfCore
         DbSet<QuestionTypeReadOnly> QuestionTypeReadOnly { get; set; }
         DbSet<Announcement> Announcement { get; set; }
         DbSet<ChartStructure> ChartStructure { get; set; }
+        DbSet<QuestionnaireTypeReadOnly> QuestionnaireTypeReadOnly { get; set; }
+
+        DbSet<UnAuthorizedUser> UnAuthorizedUser { get; set; }
+
+        DbSet<GenderTypeReadOnly> GenderTypeReadOnly { get; set; }
     }
 }

@@ -19,15 +19,16 @@ using Microsoft.IdentityModel.Logging;
 using Volo.Abp.BackgroundJobs.Hangfire;
 using Hangfire;
 using Microsoft.Extensions.Configuration;
-using EasyCaching.Host.Extensions;
+using IFG.Core.Caching;
 using Volo.Abp.MongoDB;
 using Microsoft.EntityFrameworkCore;
-using Esale.Core.Extensions;
-using Esale.Core.Utility.Security.Encyption;
+using IFG.Core.Extensions;
+using IFG.Core.Utility.Security.Encyption;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using CompanyManagement.HttpApi;
 using CompanyManagement.EfCore.CompanyManagement.EntityFrameworkCore;
 using CompanyManagement.Application.CompanyManagement;
+using CompanyManagement.Application.CompanyManagement.Grpc;
 
 namespace CompanyService.Host
 {
@@ -155,10 +156,14 @@ namespace CompanyService.Host
             //app.UseEndpoints(endpoints =>
             //{
             //    endpoints.MapGrpcService<CompanyDeliveryService>();
-                
+
 
             //});
-          
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapGrpcService<UserGrpcClientService>();
+            });
 
             app.UseAbpRequestLocalization(); //TODO: localization?
             app.UseSwagger();
@@ -174,12 +179,12 @@ namespace CompanyService.Host
             //TODO: Problem on a clustered environment
             AsyncHelper.RunSync(async () =>
             {
-                //using (var scope = context.ServiceProvider.CreateScope())
-                //{
-                //    await scope.ServiceProvider
-                //        .GetRequiredService<IDataSeeder>()
-                //        .SeedAsync();
-                //}
+                using (var scope = context.ServiceProvider.CreateScope())
+                {
+                    await scope.ServiceProvider
+                        .GetRequiredService<IDataSeeder>()
+                        .SeedAsync();
+                }
             });
         }
     }

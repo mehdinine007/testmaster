@@ -7,18 +7,18 @@ using Volo.Abp.Domain.Entities;
 
 namespace CompanyManagement.Application.Contracts.CompanyManagement
 {
-    public class ClientsOrderDetailByCompanyDto : Entity<long>
+    public class ClientsOrderDetailByCompanyDto //: Entity<long>
     {
+        public long Id { get; set; }
         public string NationalCode { get; set; }
 
         public int? SaleType { get; set; }
 
         public int? ModelType { get; set; }
 
-
         public DateTime? InviteDate { get; set; }
-
-        public int ContRowId { get; set; }
+        public DateTime? TranDate { get; set; }
+        public string ContRowId { get; set; }
 
         public DateTime? ContRowIdDate { get; set; }
 
@@ -38,6 +38,8 @@ namespace CompanyManagement.Application.Contracts.CompanyManagement
 
         public string CarDesc { get; set; }
         public string CarCode { get; set; }
+        public long OrderId { get; set; }
+        public bool? IsCanceled { get; set; }
         public DateTime? IntroductionDate { get; set; }
         public DateTime? FactorDate { get; set; }
         public virtual ICollection<PaypaidpriceDto> Paypaidprice { get; set; }

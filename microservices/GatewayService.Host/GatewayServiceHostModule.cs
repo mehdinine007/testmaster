@@ -21,6 +21,7 @@ using Microsoft.EntityFrameworkCore;
 using GatewayManagement.Application.Servicess;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
 using GatewayManagement.Application.GatewayManagement.Services;
+using Volo.Abp.Auditing;
 
 namespace GatewayService.Host
 {
@@ -87,11 +88,10 @@ namespace GatewayService.Host
             //    options.Configuration = configuration["Redis:Configuration"];
             //});
 
-            //Configure<AbpAuditingOptions>(options =>
-            //{
-            //    options.IsEnabled = false;
-            //    options.ApplicationName = "GatewayService";
-            //});
+            Configure<AbpAuditingOptions>(options =>
+            {
+                options.IsEnabled = false;
+            });
 
             //var redis = ConnectionMultiplexer.Connect(configuration["Redis:Configuration"]);
             //context.Services.AddDataProtection()

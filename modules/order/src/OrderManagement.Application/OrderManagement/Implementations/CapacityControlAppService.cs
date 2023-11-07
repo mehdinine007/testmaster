@@ -1,5 +1,5 @@
-﻿using Esale.Core.Caching.Redis;
-using Esale.Core.Utility.Results;
+﻿using IFG.Core.Caching.Redis;
+using IFG.Core.Utility.Results;
 using Grpc.Net.Client;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -15,7 +15,7 @@ using Volo.Abp.Domain.Repositories;
 using OrderManagement.Application.Contracts.Services;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
-using Esale.Core.Caching;
+using IFG.Core.Caching;
 using MongoDB.Bson;
 using StackExchange.Redis;
 using System.Linq.Dynamic.Core;
@@ -27,6 +27,7 @@ using OrderManagement.Domain.OrderManagement;
 using Newtonsoft.Json;
 using MongoDB.Bson.Serialization;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using Esale.Share.Authorize;
 
 namespace OrderManagement.Application.OrderManagement;
 
@@ -111,7 +112,7 @@ public class CapacityControlAppService : ApplicationService, ICapacityControlApp
         return new SuccsessResult();
     }
 
-    public async Task GrpcPaymentTest()
+    public async Task AddCursupplyProperty()
     {
         var propertydto = new PropertyCategoryDto()
         {
@@ -123,7 +124,7 @@ public class CapacityControlAppService : ApplicationService, ICapacityControlApp
                 {
                     Id = ObjectId.GenerateNewId(),
                     Title = "امتیاز خودرو",
-                    Key = "score", 
+                    Key = "score",
                     Type = PropertyTypeEnum.Number,
                     Value = "0",
                 },
@@ -236,9 +237,93 @@ public class CapacityControlAppService : ApplicationService, ICapacityControlApp
             };
             await _productPropertyRepository.InsertAsync(ObjectMapper.Map<ProductPropertyDto, ProductProperty>(productpropertydto));
         });
+    }
 
+    public async Task AddIkdProperty()
+    {
+        var propertydto = new PropertyCategoryDto()
+        {
+            Title = "مشخصات اصلی",
+            Display = false,
+            Properties = new List<PropertyDto>()
+            {
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "جدیدترین",
+                    Key = "newest",
+                    Type = PropertyTypeEnum.Boolean,
+                    Value = "false",
+                },
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "فعال در صفحه اصلی",
+                    Key = "homefav",
+                    Type = PropertyTypeEnum.Boolean,
+                    Value = "false"
+                },
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "کلاس خودرو",
+                    Key = "carclass",
+                    Type = PropertyTypeEnum.Coding,
+                    CodingType = CodingTypeEnum.CarClass,
+                    Value = "0",
+                },
+            }
+        };
+        await _propertyDefinitionRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto, PropertyCategory>(propertydto));
+        propertydto = new PropertyCategoryDto()
+        {
+            Title = "مشخصات فنی",
+            Properties = new List<PropertyDto>()
+            {
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "حداکثر سرعت",
+                    Key = "maxspeed",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "217 km/h"
+                },
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "ظرفیت",
+                    Key = "capacity",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "1600 cc"
+                },
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "نوع موتور",
+                    Key = "enginekind",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "EP6 Turbo"
+                }
+            }
+        };
+        await _propertyDefinitionRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto, PropertyCategory>(propertydto));
+        var propertyQuery = await _propertyDefinitionRepository.GetQueryableAsync();
+        var property = propertyQuery.ToList();
+        var products = (await _productAndCategoryRepository.GetQueryableAsync()).Where(x => x.Type == ProductAndCategoryType.Product).ToList();
+        //products.ForEach(async x =>
+        //{
+        //    var productpropertydto = new ProductPropertyDto()
+        //    {
+        //        ProductId = x.Id,
+        //        PropertyCategories = ObjectMapper.Map<List<PropertyCategory>, List<PropertyCategoryDto>>(property)
+        //    };
+        //    await _productPropertyRepository.InsertAsync(ObjectMapper.Map<ProductPropertyDto, ProductProperty>(productpropertydto));
+        //});
+    }
 
-
+    public async Task GrpcPaymentTest()
+    {
+        await AddIkdProperty();
 
 
         IMongoCollection<ProductProperty> productFeatureCollection = await _productPropertyRepository.GetCollectionAsync();
@@ -347,6 +432,7 @@ public class CapacityControlAppService : ApplicationService, ICapacityControlApp
         //Validation(165, 1029);
     }
 
+    [SecuredOperation(CapacityControlServicePermissionConstants.ValidationBySaleDetailUId)]
     public async Task<bool> ValidationBySaleDetailUId(Guid saleDetailUId)
     {
         await _commonAppService.ValidateOrderStep(OrderStepEnum.SubmitOrder);

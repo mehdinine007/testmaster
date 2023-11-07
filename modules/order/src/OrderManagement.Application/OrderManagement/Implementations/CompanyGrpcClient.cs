@@ -21,7 +21,6 @@ namespace OrderManagement.Application.OrderManagement.Implementations
         {
             try
             {
-                System.Diagnostics.Debugger.Launch();
                 var httpHandler = new HttpClientHandler();
                 httpHandler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
                 var channel = GrpcChannel.ForAddress(_configuration.GetValue<string>("Company:GrpcAddress"), new GrpcChannelOptions { HttpHandler = httpHandler });

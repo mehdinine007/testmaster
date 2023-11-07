@@ -1,6 +1,8 @@
 ﻿using EasyCaching.Core;
-using Esale.Core.Caching;
+using IFG.Core.Caching;
+using Esale.Share.Authorize;
 using Microsoft.EntityFrameworkCore;
+using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.OrderManagement;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
 using OrderManagement.Application.OrderManagement.Constants;
@@ -35,6 +37,7 @@ public class AgencySaleDetailService : ApplicationService, IAgencySaleDetailServ
         _cacheManager = cacheManager;
     }
 
+    [SecuredOperation(AgencySaleDetailServicePermissionConstants.Delete)]
     public async Task<bool> Delete(int id)
     {
         var agancySaleDetail = _agencySaleDetailRepository.WithDetails(x => x.SaleDetail).AsNoTracking().FirstOrDefault(x => x.Id == id);
@@ -48,6 +51,7 @@ public class AgencySaleDetailService : ApplicationService, IAgencySaleDetailServ
         return true;
     }
 
+    [SecuredOperation(AgencySaleDetailServicePermissionConstants.GetAgencySaleDetail)]
     public async Task<PagedResultDto<AgencySaleDetailListDto>> GetAgencySaleDetail(int saleDetailId, int pageNo, int sizeNo)
     {
         var count = await _agencySaleDetailRepository.CountAsync(x => x.SaleDetailId == saleDetailId);
@@ -102,6 +106,7 @@ public class AgencySaleDetailService : ApplicationService, IAgencySaleDetailServ
     }
 
     [UnitOfWork]
+    [SecuredOperation(AgencySaleDetailServicePermissionConstants.Save)]
     public async Task<int> Save(AgencySaleDetailDto agencySaleDetailDto)
     {
         var agency = await _agencyRepository.FirstOrDefaultAsync(x => x.Id == agencySaleDetailDto.AgencyId);

@@ -10,7 +10,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <None Remove="CompanyManagement\Protos\CompanyService.proto" GrpcServices="Client"/>
+	  <None Remove="CompanyManagement\Protos\CompanyService.proto" GrpcServices="Client" />
 	</ItemGroup>
 
     <ItemGroup>
@@ -49,6 +49,7 @@
 
 	<ItemGroup>
 		<Protobuf Include="CompanyManagement\Protos\CompanyService.proto" GrpcServices="Server" />
+		<Protobuf Include="CompanyManagement\Protos\UserGrpcClient.proto" GrpcServices="Client" />
 	</ItemGroup>
 
 </Project>

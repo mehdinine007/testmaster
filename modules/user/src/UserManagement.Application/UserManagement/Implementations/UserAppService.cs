@@ -1,25 +1,37 @@
-﻿using Abp.Authorization;
+﻿using Newtonsoft.Json;
+using Esale.Share.Authorize;
+using Abp.Dependency;
+using Abp.Authorization;
 using Abp.Domain.Uow;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using System.Text.RegularExpressions;
+using UserManagement.Application.Constants;
 using UserManagement.Application.Contracts.Models;
 using UserManagement.Application.Contracts.Services;
 using UserManagement.Application.Contracts.UserManagement.Services;
 using UserManagement.Domain.Authorization.Users;
 using UserManagement.Domain.Shared;
+using UserManagement.Domain.UserManagement.bases;
+using UserManagement.Domain.UserManagement.Advocacy;
+using UserManagement.Domain.UserManagement.Authorization.Users;
 using Volo.Abp;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp.EventBus;
+using Volo.Abp.EventBus.Distributed;
 using Volo.Abp.ObjectMapping;
 using WorkingWithMongoDB.WebAPI.Services;
 using wsFava;
+using UserManagement.Application.Contracts.UserManagement.Constant;
+using UserManagement.Application.Contracts;
 
 namespace UserManagement.Application.UserManagement.Implementations;
 
@@ -28,6 +40,8 @@ public class UserAppService : ApplicationService, IUserAppService
 
     private readonly IRolePermissionService _rolePermissionService;
     private readonly IRepository<UserMongo, ObjectId> _userMongoRepository;
+    private readonly IRepository<UserSQL, long> _userSQLRepository;
+
     private readonly IConfiguration _configuration;
     private readonly IBankAppService _bankAppService;
     private readonly ICommonAppService _commonAppService;
@@ -36,6 +50,9 @@ public class UserAppService : ApplicationService, IUserAppService
     private readonly IBaseInformationService _baseInformationService;
     private readonly ICaptchaService _captchaService;
     private readonly IRepository<UserMongoWrite, ObjectId> _userMongoWriteRepository;
+    private readonly IRepository<PermissionDefinitionWrite, ObjectId> _permissionDefinationRepository;
+    private readonly IDistributedEventBus _distributedEventBus;
+
 
     public UserAppService(IConfiguration configuration,
                           IBankAppService bankAppService,
@@ -46,7 +63,10 @@ public class UserAppService : ApplicationService, IUserAppService
                           IRolePermissionService rolePermissionService,
                           IRepository<UserMongo, ObjectId> userMongoRepository,
                           IRepository<UserMongoWrite, ObjectId> userMongoWriteRepository,
-                          ICaptchaService captchaService
+                          ICaptchaService captchaService,                 
+                          IDistributedEventBus distributedEventBus,
+                          IRepository<UserSQL, long> UserSQLRepository,
+                          IRepository<PermissionDefinitionWrite, ObjectId> permissionDefinationRepository
         )
     {
         _rolePermissionService = rolePermissionService;
@@ -59,6 +79,9 @@ public class UserAppService : ApplicationService, IUserAppService
         _baseInformationService = baseInformationService;
         _userMongoWriteRepository = userMongoWriteRepository;
         _captchaService = captchaService;
+        _distributedEventBus = distributedEventBus;
+        _userSQLRepository = UserSQLRepository;
+        _permissionDefinationRepository = permissionDefinationRepository;
     }
 
     public async Task<bool> AddRole(ObjectId userid, List<string> roleCode)
@@ -77,10 +100,48 @@ public class UserAppService : ApplicationService, IUserAppService
         await _userMongoWriteRepository.UpdateAsync(ObjectMapper.Map<UserMongo, UserMongoWrite>(user));
         return true;
     }
+   
+    public class StockCountChangedEto
+    {
+        public Guid ProductId { get; set; }
 
+        public int NewCount { get; set; }
+    }
+    //public class MyHandler
+    //  : IDistributedEventHandler<StockCountChangedEto>,
+    //    ITransientDependency
+    //{
+    //    public async Task HandleEventAsync(StockCountChangedEto eventData)
+    //    {
+    //        var productId = eventData.ProductId;
+    //    }
+    //}
+    public async Task UpsertUserIntoSqlServer(UserSQL input)
+    {
+        if(input.EditMode == true)
+        {
+            var iqUser = await _userSQLRepository.GetQueryableAsync();
+                
+            var user = iqUser.AsNoTracking()
+                .Select(x => new { x.Id, x.UID}).FirstOrDefault(x => x.UID == input.UID);
+            if(user == null)
+            {
+                throw new UserFriendlyException("کاربر وجود ندارد");
+            }
+            input.SetId(user.Id);
+            await _userSQLRepository.UpdateAsync(input);
+        }
+        else
+        {
+            await _userSQLRepository.InsertAsync(input);
+
+        }
+        // await CurrentUnitOfWork.CompleteAsync();
+    }
     public async Task<UserDto> CreateAsync(CreateUserDto input)
     {
-
+         
+    
 
         if (!string.IsNullOrEmpty(_configuration.GetSection("CloseRegisterDate").Value)
             && DateTime.Now > DateTime.Parse(_configuration.GetSection("CloseRegisterDate").Value))
@@ -104,7 +165,7 @@ public class UserAppService : ApplicationService, IUserAppService
         //        throw new UserFriendlyException("کپچا صحیح نمی باشد");
         //    }
         //}
-        var useInquiryForUserAddress = _configuration.GetValue<bool?>("UseInquiryForUserAddress") ?? false;
+        var useInquiryForUserAddress = _configuration.GetValue<bool?>("Inquiry:UseInquiryForUserAddress") ?? false;
         //if (!string.IsNullOrWhiteSpace(input.Vin) &&
         //    !string.IsNullOrWhiteSpace(input.ChassiNo) &&
         //    !string.IsNullOrWhiteSpace(input.EngineNo) &&
@@ -158,16 +219,6 @@ public class UserAppService : ApplicationService, IUserAppService
                 throw new UserFriendlyException("پیش شماره تلفن را وارد نمایید");
 
             }
-            if (string.IsNullOrEmpty(input.Street))
-            {
-                throw new UserFriendlyException("خیابان را وارد نمایید");
-
-            }
-            if (string.IsNullOrEmpty(input.Pelaq))
-            {
-                throw new UserFriendlyException("پلاک را وارد نمایید");
-
-            }
             if (DateTime.Now.Subtract(input.BirthDate).TotalDays > 73200)
             {
                 throw new UserFriendlyException("تاریخ تولد صحیح نمی باشد");
@@ -176,11 +227,6 @@ public class UserAppService : ApplicationService, IUserAppService
             {
                 throw new UserFriendlyException("تاریخ صدور شناسنامه صحیح نمی باشد");
 
-            }
-
-            if (string.IsNullOrEmpty(input.Alley))
-            {
-                throw new UserFriendlyException("کوچه را وارد نمایید");
             }
             if (!input.IssuingDate.HasValue)
             {
@@ -253,7 +299,7 @@ public class UserAppService : ApplicationService, IUserAppService
             {
                 input.Shaba = "...";
                 input.AccountNumber = "...";
-                input.BankId = 3;
+                input.BankId = null;
             }
 
             //if (!ValidationHelper.IsShaba(input.Shaba))
@@ -334,7 +380,7 @@ public class UserAppService : ApplicationService, IUserAppService
         {
             throw new UserFriendlyException(Messages.NationalCodeNotValid);
         }
-        var useShahkarInquiry = _configuration.GetValue<bool?>("UseShahkarInquiryInRegister") ?? false;
+        var useShahkarInquiry = _configuration.GetValue<bool?>("Inquiry:UseShahkarInquiryInRegister") ?? false;
         var shahkarResult = useShahkarInquiry
             ? await _commonAppService.ValidateMobileNumber(input.NationalCode, input.Mobile)
             : false;
@@ -366,6 +412,7 @@ public class UserAppService : ApplicationService, IUserAppService
 
         //if (userFromCache == null)
         {
+         
             var user = ObjectMapper.Map<CreateUserDto, UserMongo>(input);
             user.IsActive = true;
             //user.TenantId = CurrentTenant.Id;
@@ -379,16 +426,28 @@ public class UserAppService : ApplicationService, IUserAppService
             user.IsDeleted = false;
             user.Password = _passwordHasher.HashPassword(new User(), input.Password);
             List<string> lsRols = new List<string>();
-            lsRols.Add("Customer");
+            var defultRoleCode = _configuration.GetValue<string>("CreateUser:RoleCode");
+           if (string.IsNullOrWhiteSpace(defultRoleCode))
+                throw new UserFriendlyException(UserMessageConstant.CreateUserDefultRoleCodeNotFound,UserMessageConstant.CreateUserDefultRoleCodeNotFoundId);
+            lsRols.Add(defultRoleCode);
             user.Roles = lsRols;
             //_userManager.InitializeOptions(AbpSession.TenantId);
             user.Address = useInquiryForUserAddress
                 ? user.Address = await _commonAppService.GetAddressByZipCode(user.PostalCode, user.NationalCode)
                 : user.Address = input.Address;
+            if(user.BankId == 0)
+            {
+                user.BankId = null;
+            }
             try
             {
                 //user._Id = ObjectId.GenerateNewId().ToString();
                 await _userMongoWriteRepository.InsertAsync(ObjectMapper.Map<UserMongo, UserMongoWrite>(user));
+              
+           
+                await _distributedEventBus.PublishAsync<UserSQL>(
+                     ObjectMapper.Map<UserMongo, UserSQL>(user)
+                    );
             }
             catch (Exception ex)
             {
@@ -430,7 +489,8 @@ public class UserAppService : ApplicationService, IUserAppService
                     Password = x.Password,
                     IsActive = x.IsActive,
                     RolesM = x.Roles,
-                    NormalizedUserName = x.NormalizedUserName
+                    NormalizedUserName = x.NormalizedUserName,
+                    CompanyId = x.CompanyId,
                 })
                 .FirstOrDefault();
         if (user != null)
@@ -440,6 +500,7 @@ public class UserAppService : ApplicationService, IUserAppService
         return user;
     }
 
+    [SecuredOperation(UserServicePermissionConstants.GetUserProfile)]
     public async Task<UserDto> GetUserProfile()
     {
         Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
@@ -489,7 +550,7 @@ public class UserAppService : ApplicationService, IUserAppService
         await _commonAppService.ValidateSMS(forgetPasswordDto.Mobile, forgetPasswordDto.NationalCode, forgetPasswordDto.SMSCode, SMSType.ForgetPassword);
         var userFromDb = (await _userMongoRepository.GetQueryableAsync())
             .SingleOrDefault(x => x.NationalCode == forgetPasswordDto.NationalCode && x.IsDeleted == false);
-        
+
 
 
         if (userFromDb == null || userFromDb.Mobile.Replace(" ", "") != forgetPasswordDto.Mobile)
@@ -503,10 +564,16 @@ public class UserAppService : ApplicationService, IUserAppService
 
         (await _userMongoRepository.GetCollectionAsync())
             .UpdateOne(filter, update);
+        var userSql = ObjectMapper.Map<UserMongo, UserSQL>(userFromDb);
+        userSql.EditMode = true;
+        await _distributedEventBus.PublishAsync<UserSQL>(
+               userSql
+               );
 
         return true;
     }
 
+    [SecuredOperation(UserServicePermissionConstants.ChangePassword)]
     public async Task<bool> ChangePassword(ChangePasswordDto input)
     {
         Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
@@ -557,8 +624,231 @@ public class UserAppService : ApplicationService, IUserAppService
             .Set(_ => _.LastModificationTime, DateTime.Now);
         (await _userMongoRepository.GetCollectionAsync())
             .UpdateOne(filter, update);
-
+        var userSql =  ObjectMapper.Map<UserMongo, UserSQL>(userFromDb);
+        userSql.EditMode = true;
+        await _distributedEventBus.PublishAsync<UserSQL>(
+                  userSql
+                 );
         return true;
+
+    }
+
+    [SecuredOperation(UserServicePermissionConstants.UpdateUserProfile)]
+    public async Task<bool> UpdateUserProfile(UserDto inputUser)
+    {
+        Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
+        if (!string.IsNullOrEmpty(_configuration.GetSection("CloseUpdateProfile").Value)
+           && DateTime.Now > DateTime.Parse(_configuration.GetSection("CloseUpdateProfile").Value))
+        {
+            throw new UserFriendlyException("زمان ویرایش اطلاعات به پایان رسیده است");
+        }
+
+        object captcha = null;
+        if (_configuration.GetSection("IsRecaptchaEnabled").Value == "1")
+        {
+            //var response1 = await _commonAppService.CheckCaptcha(new CaptchaInputDto(inputUser.ck, "CreateUser"));
+            var response = await _captchaService.ReCaptcha(new CaptchaInputDto(inputUser.ck, "CreateUser"));
+            if (response.Success == false)
+            {
+                throw new UserFriendlyException("خطای کپچا");
+            }
+        }
+        if (_configuration.GetSection("IsIranCellActive").Value == "0")
+        {
+            inputUser.Shaba = inputUser.Shaba.Replace(" ", "");
+            if (!ValidationHelper.IsShaba(inputUser.Shaba))
+            {
+                throw new UserFriendlyException(Messages.ShabaNotValid);
+            }
+        }
+
+        var user = await (await _userMongoRepository.GetCollectionAsync())
+            .Find(x => x.UID == _commonAppService.GetUID().ToString().ToLower()
+                && x.IsDeleted == false)
+            .FirstOrDefaultAsync();
+
+        var userFromDb = ObjectMapper.Map<UserMongo, UserMongoWrite>(user);
+        if (userFromDb == null)
+        {
+            throw new UserFriendlyException("خطایی رخ داده است!");
+        }
+
+        if (userFromDb.Mobile != inputUser.Mobile)
+        {
+            await _commonAppService.ValidateSMS(inputUser.Mobile, inputUser.NationalCode, inputUser.smsCode, SMSType.UpdateProfile);
+            userFromDb.Mobile = inputUser.Mobile;
+        }
+
+        var useInquiryForUserAddress = _configuration.GetValue<bool?>("Inquiry:UseInquiryForUserAddress") ?? false;
+
+        if (_configuration.GetSection("IsIranCellActive").Value == "0")
+        {
+            userFromDb.Shaba = inputUser.Shaba;
+            userFromDb.BankId = inputUser.BankId;
+            userFromDb.AccountNumber = inputUser.AccountNumber;
+        }
+        else
+        {
+            if (!inputUser.BirthCityId.HasValue)
+            {
+                throw new UserFriendlyException("شهر محل تولد رو انتخاب نمایید");
+            }
+            if (inputUser.BirthDate >= DateTime.Now)
+                throw new UserFriendlyException("تارخ تولد نمیتواند با تاریخ جاری برابر یا بزرگتر باشد");
+            if (inputUser.IssuingDate >= DateTime.Now)
+                throw new UserFriendlyException("تارخ صدور شناسنامه نمیتواند با تاریخ جاری برابر یا بزرگتر باشد");
+            //var requiredBirthDate = DateTime.Now.AddYears(-18);
+            //if (inputUser.BirthDate > requiredBirthDate)
+            //    throw new UserFriendlyException("سن متقاضی باید بیش تر از 18 سال باشد");
+            if (!inputUser.IssuingCityId.HasValue)
+            {
+                throw new UserFriendlyException("شهر محل صدور شناسنامه رو انتخاب نمایید");
+            }
+            if (!inputUser.HabitationCityId.HasValue)
+            {
+                throw new UserFriendlyException("شهر محل سکونت رو انتخاب نمایید");
+            }
+            if (!inputUser.BirthProvinceId.HasValue)
+            {
+                throw new UserFriendlyException("استان محل تولد رو انتخاب نمایید");
+            }
+            if (!inputUser.IssuingProvinceId.HasValue)
+            {
+                throw new UserFriendlyException("استان محل صدور شناسنامه رو انتخاب نمایید");
+            }
+            if (!inputUser.HabitationProvinceId.HasValue)
+            {
+                throw new UserFriendlyException("استان محل سکونت رو انتخاب نمایید");
+            }
+
+            if (string.IsNullOrEmpty(inputUser.PreTel))
+            {
+                throw new UserFriendlyException("پیش شماره تلفن را وارد نمایید");
+
+            }
+            if (string.IsNullOrEmpty(inputUser.Street))
+            {
+                throw new UserFriendlyException("خیابان را وارد نمایید");
+
+            }
+            if (string.IsNullOrEmpty(inputUser.Pelaq))
+            {
+                throw new UserFriendlyException("پلاک را وارد نمایید");
+
+            }
+            if (string.IsNullOrEmpty(inputUser.Alley))
+            {
+                throw new UserFriendlyException("کوچه را وارد نمایید");
+            }
+            if (!inputUser.IssuingDate.HasValue)
+            {
+                throw new UserFriendlyException("تاریخ صدور شناسنامه را وارد نمایید");
+            }
+            if (!inputUser.RegionId.HasValue || inputUser.RegionId.Value == 0)
+            {
+                throw new UserFriendlyException("کد منطقه را وارد نمایید");
+            }
+            if (string.IsNullOrWhiteSpace(inputUser.NationalCode) || inputUser.NationalCode.Length > 10)
+            {
+                throw new UserFriendlyException("کد ملی خالی است یا محدودیت تعداد کارکتر را نقض کرده است");
+            }
+            if (string.IsNullOrWhiteSpace(inputUser.FatherName) || inputUser.FatherName.Length > 150)
+            {
+                throw new UserFriendlyException("نام پدر خالی است یا محدودیت تعداد کارکتر را نقض کرده است");
+            }
+            if (string.IsNullOrWhiteSpace(inputUser.BirthCertId) || inputUser.BirthCertId.Length > 11)
+            {
+                throw new UserFriendlyException("شناسه محل تولد خالی است یا محدودیت تعداد کارکتر را نقض کرده است");
+            }
+            if (string.IsNullOrWhiteSpace(inputUser.PostalCode) || inputUser.PostalCode.Length > 10)
+            {
+                throw new UserFriendlyException("کد پستی خالی است یا محدودیت تعداد کارکتر را نقض کرده است");
+            }
+            if (string.IsNullOrWhiteSpace(inputUser.Mobile) || inputUser.Mobile.Length > 11)
+            {
+                throw new UserFriendlyException("شماره موبایل خالی است یا محدودیت تعداد کارکتر را نقض کرده است");
+            }
+            if (string.IsNullOrWhiteSpace(inputUser.Tel) || inputUser.Tel.Length > 11)
+            {
+                throw new UserFriendlyException("شماره تلفن خالی است یا محدودیت تعداد کارکتر را نقض کرده است");
+            }
+            //if (string.IsNullOrWhiteSpace(inputUser.Address) || inputUser.Address.Length > 255)
+            if (!useInquiryForUserAddress && (string.IsNullOrWhiteSpace(inputUser.Address) || inputUser.Address.Length > 255))
+            {
+                throw new UserFriendlyException("آدرس خالی است یا محدودیت تعداد کارکتر را نقض کرده است");
+            }
+            if (string.IsNullOrWhiteSpace(inputUser.PreTel) || inputUser.PreTel.Length > 6)
+            {
+                throw new UserFriendlyException("پیش شماره تلفن است یا محدودیت تعداد کارکتر را نقض کرده است");
+            }
+            if (!useInquiryForUserAddress && string.IsNullOrWhiteSpace(inputUser.Street) || inputUser.Street.Length > 100)
+            {
+                throw new UserFriendlyException("نام خیابان خالی است یا محدودیت تعداد کارکتر را نقض کرده است");
+            }
+            if (!useInquiryForUserAddress && string.IsNullOrWhiteSpace(inputUser.Pelaq) || inputUser.Pelaq.Length > 10)
+            {
+                throw new UserFriendlyException("شماره پلاک خالی است یا محدودیت تعداد کارکتر را نقض کرده است");
+            }
+            if (!useInquiryForUserAddress && string.IsNullOrWhiteSpace(inputUser.Alley) || inputUser.Alley.Length > 100)
+            {
+                throw new UserFriendlyException("نام کوچه خالی است یا محدودیت تعداد کارکتر را نقض کرده است");
+            }
+            if (!string.IsNullOrWhiteSpace(inputUser.EngineNo) && inputUser.EngineNo.Length > 20)
+                throw new UserFriendlyException("فرمت شماره موتور صحیح نیست");
+            if (!string.IsNullOrWhiteSpace(inputUser.ChassiNo) && inputUser.ChassiNo.Length > 20)
+                throw new UserFriendlyException("فرمت شماره شاسی صحیح نیست");
+            //if (!string.IsNullOrWhiteSpace(inputUser.Vehicle))
+            //    throw new UserFriendlyException("نام خودرو به درستی وارد نشده است");
+            var useShahkarInquiry = _configuration.GetValue<bool?>("Inquiry:UseShahkarInquiryInRegister") ?? false;
+            var shahkarResult = useShahkarInquiry
+            ? await _commonAppService.ValidateMobileNumber(inputUser.NationalCode, inputUser.Mobile)
+            : false;
+
+            if (useShahkarInquiry &&
+            !string.Equals(userFromDb.Mobile, inputUser.Mobile, StringComparison.InvariantCultureIgnoreCase) &&
+            !shahkarResult)
+            {
+                throw new UserFriendlyException("شماره موبایل به این کد ملی تعلق ندارد");
+            }
+            userFromDb.IssuingDate = inputUser.IssuingDate;
+            userFromDb.Alley = inputUser.Alley;
+            userFromDb.Street = inputUser.Street;
+            userFromDb.RegionId = inputUser.RegionId;
+            userFromDb.PreTel = inputUser.PreTel;
+            userFromDb.Pelaq = inputUser.Pelaq;
+            userFromDb.BirthCityId = inputUser.BirthCityId;
+            userFromDb.IssuingCityId = inputUser.IssuingCityId;
+            userFromDb.HabitationCityId = inputUser.HabitationCityId;
+            userFromDb.BirthProvinceId = inputUser.BirthProvinceId;
+            userFromDb.IssuingProvinceId = inputUser.IssuingProvinceId;
+            userFromDb.HabitationProvinceId = inputUser.HabitationProvinceId;
+            userFromDb.Vin = inputUser.Vin;
+            userFromDb.EngineNo = inputUser.EngineNo;
+            userFromDb.ChassiNo = inputUser.ChassiNo;
+            userFromDb.Vehicle = inputUser.Vehicle;
+        }
+
+        userFromDb.Tel = inputUser.Tel;
+        userFromDb.PostalCode = inputUser.PostalCode;
+        userFromDb.Gender = inputUser.Gender;
+        userFromDb.FatherName = inputUser.FatherName;
+        userFromDb.Name = inputUser.Name;
+        userFromDb.Surname = inputUser.Surname;
+        userFromDb.BirthCertId = inputUser.BirthCertId;
+        userFromDb.BirthDate = inputUser.BirthDate;
+
+        userFromDb.Address = useInquiryForUserAddress
+            ? userFromDb.Address = await _commonAppService.GetAddressByZipCode(userFromDb.PostalCode, userFromDb.NationalCode)
+            : userFromDb.Address = inputUser.Address;
+        userFromDb.LastModifierId = _commonAppService.GetUID();
+        userFromDb.LastModificationTime = DateTime.Now;
+
+        //using (var unitOfWork = _unitOfWorkManager.Begin(unitOfWorkOptions))
+        //{
+        var filter = Builders<UserMongoWrite>.Filter.Eq("UID", userFromDb.UID);
+        await (await _userMongoWriteRepository.GetCollectionAsync()).ReplaceOneAsync(filter, userFromDb);
+        return true;
+        
 
     }
 }

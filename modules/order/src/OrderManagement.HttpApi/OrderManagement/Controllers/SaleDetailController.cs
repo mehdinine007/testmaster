@@ -21,7 +21,6 @@ namespace OrderManagement.HttpApi.OrderManagement.Controllers;
 [DisableAuditing]
 [RemoteService]
 [Route("api/services/app/SaleDetailService/[action]")]
-[UserAuthorization]
 public class SaleDetailController:Controller, ISaleDetailService
 {
     private readonly ISaleDetailService _saleDetailService;
@@ -47,4 +46,8 @@ public class SaleDetailController:Controller, ISaleDetailService
     [HttpPut]
     public async Task<int> Update(CreateSaleDetailDto createSaleDetailDto)
     => await _saleDetailService.Update(createSaleDetailDto);
+
+    [HttpGet]
+    public  List<SaleDetailForDropDownDto> GetAll()
+          => _saleDetailService.GetAll();
 }

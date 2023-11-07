@@ -1,7 +1,6 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using UserManagement.Application.Contracts.Models;
-using UserManagement.Application.Contracts.UserManagement.Models.User;
 
 namespace UserManagement.Application.Contracts.UserManagement;
 

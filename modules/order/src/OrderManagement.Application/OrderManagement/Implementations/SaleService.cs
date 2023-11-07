@@ -9,15 +9,14 @@ using Volo.Abp.Domain.Repositories;
 using Microsoft.Extensions.Configuration;
 using System.Linq;
 using Volo.Abp.Domain.Entities;
-using OrderManagement.Application.OrderManagement.Utitlities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Volo.Abp.ObjectMapping;
 using OrderManagement.Application.Contracts.OrderManagement.Models;
 using OrderManagement.Domain.OrderManagement;
 using OrderManagement.Domain.Shared;
 using OrderManagement.Application.Contracts.OrderManagement;
-using Esale.Core.Utility.Tools;
+using IFG.Core.Utility.Tools;
+using Esale.Share.Authorize;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -50,6 +49,7 @@ public class SaleService : ApplicationService, ISaleService
         _attachmentService = attachmentService;
     }
 
+    [SecuredOperation(SaleServicePermissionConstants.GetPreSales)]
     public async Task<List<PreSaleDto>> GetPreSales()
     {
         return ObjectMapper.Map<List<PreSale>, List<PreSaleDto>>

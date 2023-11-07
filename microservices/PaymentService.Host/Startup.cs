@@ -1,5 +1,5 @@
 ﻿using Volo.Abp;
-using Esale.Core.IOC;
+using IFG.Core.IOC;
 using PaymentService.Host.Infrastructures.Extensions;
 using Volo.Abp.Auditing;
 using PaymentService.Host.Infrastructures.Middlewares;

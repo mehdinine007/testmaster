@@ -1,4 +1,5 @@
 ﻿using EasyCaching.Core;
+using IFG.Core.Caching;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
@@ -29,7 +30,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations;
 
 public class CommonAppService : ApplicationService, ICommonAppService
 {
-    private readonly IDistributedCache _distributedCache;
+    private readonly ICacheManager _cacheManager;
     private IConfiguration _configuration { get; set; }
     private readonly IRepository<Logs, long> _logsRespository;
     private readonly IRepository<UserRejectionAdvocacy, int> _userRejectionAdcocacyRepository;
@@ -39,18 +40,19 @@ public class CommonAppService : ApplicationService, ICommonAppService
     private readonly IHttpContextAccessor _contextAccessor;
     private readonly IHybridCachingProvider _hybridCachingProvider;
 
-    public CommonAppService(IDistributedCache distributedCache,
-                            IConfiguration configuration,
+
+    public CommonAppService(IConfiguration configuration,
                             IRepository<Logs, long> LogsRespository,
                             IRepository<UserRejectionAdvocacy, int> UserRejectionAdcocacyRepository,
                             IHttpContextAccessor HttpContextAccessor,
                             IRepository<ExternalApiLogResult, int> externalApiLogResultRepository,
                             IRepository<ExternalApiResponsLog, int> externalApiResponsLogRepositor,
                             IHttpContextAccessor contextAccessor,
-                            IHybridCachingProvider hybridCachingProvider
+                            IHybridCachingProvider hybridCachingProvider,
+                            ICacheManager cacheManager
                             )
     {
-        _distributedCache = distributedCache;
+        _cacheManager = cacheManager;
         _configuration = configuration;
         _logsRespository = LogsRespository;
         _userRejectionAdcocacyRepository = UserRejectionAdcocacyRepository;
@@ -59,6 +61,7 @@ public class CommonAppService : ApplicationService, ICommonAppService
         _externalApiResponsLogRepository = externalApiResponsLogRepositor;
         _contextAccessor = contextAccessor;
         _hybridCachingProvider = hybridCachingProvider;
+
     }
 
     //private async Task<AuthtenticateResult> AuthenticateBank()
@@ -147,51 +150,34 @@ public class CommonAppService : ApplicationService, ICommonAppService
 
     public async Task IsUserRejected()
     {
-        var identity = (ClaimsPrincipal)Thread.CurrentPrincipal;
-        // Get the claims values
-        var Nationalcode = _httpContextAccessor.HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.Name)
-                           .Select(c => c.Value).SingleOrDefault();
-        if (Nationalcode == null)
+        bool result;
+        bool.TryParse(_configuration.GetSection("IsEnableCheckUserRejection").Value, out result);
+        if (result)
         {
-            throw new UserFriendlyException("کد ملی صحیح نمی باشد");
+            var identity = (ClaimsPrincipal)Thread.CurrentPrincipal;
+            // Get the claims values
+            var Nationalcode = _httpContextAccessor.HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.Name)
+                               .Select(c => c.Value).SingleOrDefault();
+            if (Nationalcode == null)
+            {
+                throw new UserFriendlyException("کد ملی صحیح نمی باشد");
+            }
+           
+            string userRejection = _userRejectionAdcocacyRepository
+           .WithDetails()
+           .Select(x => x.NationalCode)
+           .FirstOrDefault(x => x == Nationalcode);
+
+
+            if (!string.IsNullOrEmpty(userRejection))
+            {
+            
+                throw new UserFriendlyException("شما انصراف داده اید و امکان ثبت سفارش نمی باشد");
+            }
+         
+
         }
-        //object UserRejectFromCache = null;
-        //UserRejectionAdvocacy userReject = null;
-        ////_cacheManager.GetCache("UserRejection").TryGetValue(Nationalcode, out UserRejectFromCache);
-        //UserRejectFromCache = await _distributedCache.GetStringAsync(string.Format(RedisConstants.UserRejectionPrefix, Nationalcode));
-        //if (UserRejectFromCache != null && (UserRejectFromCache as string) == "1")
-        //{
-        //    throw new UserFriendlyException("شما انصراف داده اید و امکان ثبت سفارش نمی باشد");
-        //}
-        //if (UserRejectFromCache != null && (UserRejectFromCache as string) == "0")
-        //{
-        //    return;
-        //}
-        //string userRejection = "";
 
-        string userRejection = _userRejectionAdcocacyRepository
-       .WithDetails()
-       .Select(x => x.NationalCode)
-       .FirstOrDefault(x => x == Nationalcode);
-
-
-        if (!string.IsNullOrEmpty(userRejection))
-        {
-            //await _cacheManager.GetCache("UserRejection").SetAsync(Nationalcode, "1");
-            //await _distributedCache.SetStringAsync(string.Format(RedisConstants.UserRejectionPrefix, Nationalcode), "1", new DistributedCacheEntryOptions
-            //{
-            //    AbsoluteExpiration = RedisConstants.UserRejectionTimeOffset
-            //});
-            throw new UserFriendlyException("شما انصراف داده اید و امکان ثبت سفارش نمی باشد");
-        }
-        //else
-        //{
-        //    //await _cacheManager.GetCache("UserRejection").SetAsync(Nationalcode, "0");
-        //    await _distributedCache.SetStringAsync(string.Format(RedisConstants.UserRejectionPrefix, Nationalcode), "0", new DistributedCacheEntryOptions
-        //    {
-        //        AbsoluteExpiration = DateTime.Now.AddMinutes(20)
-        //    });
-        //}
     }
     //public async Task<AdvocacyAcountResult> CheckAccount(string nationalCode, string mobileNo)
     //{
@@ -265,7 +251,7 @@ public class CommonAppService : ApplicationService, ICommonAppService
         {
             throw new UserFriendlyException("کد پیامک ارسالی صحیح نمی باشد");
         }
-        if(smsCodeDto.SMSCode != UserSMSCode)
+        if (smsCodeDto.SMSCode != UserSMSCode)
         {
             throw new UserFriendlyException("کد پیامک ارسالی صحیح نمی باشد");
 
@@ -286,8 +272,10 @@ public class CommonAppService : ApplicationService, ICommonAppService
             //{
             //    throw new UserFriendlyException(Messages.CaptchaNotValid);
             //}
-            string objectCaptcha = await _distributedCache.GetStringAsync("cap_" + input.CIT);
-            await _distributedCache.RemoveAsync("cap_" + input.CIT);
+            
+            string objectCaptcha = await _cacheManager.GetStringAsync("cap_" + input.CIT,"", new CacheOptions() { Provider = CacheProviderEnum.Redis});
+            await _cacheManager.RemoveAsync("cap_" + input.CIT,"", new CacheOptions() { Provider = CacheProviderEnum.Redis });
+
             if (objectCaptcha == null)
             {
                 throw new UserFriendlyException("کپچای وارد شده صحیح نمی باشد");
@@ -409,6 +397,16 @@ public class CommonAppService : ApplicationService, ICommonAppService
         return new Guid(userIdStr);
     }
 
+    public Guid? SoftGetUserId()
+    {
+        var userIdStr = _httpContextAccessor.HttpContext.User.Claims.SingleOrDefault(x => x.Type.Equals("UBP"))?.Value ?? string.Empty;
+        if (string.IsNullOrWhiteSpace(userIdStr))
+            return null;
+
+
+        return new Guid(userIdStr);
+    }
+
     public string GetIncomigToken()
         => _contextAccessor.HttpContext.Request.Headers.TryGetValue("Authorization", out var token)
         ? token
@@ -459,8 +457,12 @@ public class CommonAppService : ApplicationService, ICommonAppService
     {
         if (userId == null)
             userId = GetUserId();
+
+
         string cacheKey = string.Format(RedisConstants.OrderStepCacheKey, userId.ToString());
-        var getOrderStep = await _distributedCache.GetStringAsync(cacheKey);
+        string getOrderStep = await _cacheManager.GetStringAsync(cacheKey,"", new CacheOptions() { Provider = CacheProviderEnum.Redis });
+
+
         if (string.IsNullOrEmpty(getOrderStep))
         {
             throw new UserFriendlyException(OrderConstant.NoValidFlowOrderStep, OrderConstant.NoValidFlowOrderStepId);

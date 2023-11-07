@@ -1,6 +1,6 @@
 ﻿#region NS
 using Volo.Abp.Application.Services;
-using Esale.Core.Utility.Results;
+using IFG.Core.Utility.Results;
 using UserManagement.Application.Contracts.Models;
 #endregion
 

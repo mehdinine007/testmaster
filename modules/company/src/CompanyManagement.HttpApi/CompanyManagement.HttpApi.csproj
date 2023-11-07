@@ -14,6 +14,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\..\..\shared\Authorization\Authorization.csproj" />
+      <ProjectReference Include="..\..\..\..\shared\Licence\Licence.csproj" />
       <ProjectReference Include="..\CompanyManagement.Application.Contracts\CompanyManagement.Application.Contracts.csproj" />
       <ProjectReference Include="..\CompanyManagement.Application\CompanyManagement.Application.csproj" />
     </ItemGroup>

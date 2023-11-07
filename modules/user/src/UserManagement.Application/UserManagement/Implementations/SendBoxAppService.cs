@@ -1,6 +1,6 @@
 ﻿#region NS
-using Esale.Core.Caching;
-using Esale.Core.Utility.Results;
+using IFG.Core.Caching;
+using IFG.Core.Utility.Results;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Bson;
@@ -60,17 +60,16 @@ public class SendBoxAppService : ApplicationService, ISendBoxAppService
 
 
     [Audited]
-    public async Task<Esale.Core.Utility.Results.IResult> SendSms(SendSMSDto input)
+    public async Task<IFG.Core.Utility.Results.IResult> SendSms(SendSMSDto input)
     {
-        if (!ValidationHelper.IsNationalCode(input.NationalCode))
+        if (!string.IsNullOrEmpty(input.NationalCode) && !ValidationHelper.IsNationalCode(input.NationalCode))
         {
             throw new UserFriendlyException(Messages.NationalCodeNotValid);
         }
-        if (!ValidationHelper.IsMobileNumber(input.Recipient))
+        if (!string.IsNullOrEmpty(input.Recipient) && !ValidationHelper.IsMobileNumber(input.Recipient))
         {
             throw new UserFriendlyException(Messages.IsMobileNumberMessage);
         }
-
         Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
         RegistrationSMSDto sendSMSDto = new RegistrationSMSDto();
         //Logs logs = new Logs();
@@ -170,7 +169,7 @@ public class SendBoxAppService : ApplicationService, ISendBoxAppService
             }
             //_cacheManager.GetCache("SMS").TryGetValue(PreFix + input.Recipient + input.NationalCode, out objectSMS);
             //string objectSMSString = RedisHelper.Connection.GetDatabase().StringGet(PreFix + input.Recipient + input.NationalCode);
-            string objectSMSString = await _cacheManager.GetStringAsync(input.Recipient + input.NationalCode, PreFix, new() { Provider = CacheProviderEnum.Redis });
+            string objectSMSString = await _cacheManager.GetStringAsync(input.Recipient + input.NationalCode, PreFix, new() { Provider = CacheProviderEnum.Redis,RedisHash = false});
             if (objectSMSString == null)
             {
                 objectSMSString = "";
@@ -220,7 +219,12 @@ public class SendBoxAppService : ApplicationService, ISendBoxAppService
                 if (_retgrpc.Success)
                 {
                     sendSMSDto.LastSMSSend = DateTime.Now;
-                    await _cacheManager.SetStringAsync(input.Recipient + input.NationalCode, PreFix, JsonConvert.SerializeObject(sendSMSDto), new() { Provider = CacheProviderEnum.Redis });
+                    await _cacheManager.SetStringAsync(input.Recipient + input.NationalCode, PreFix, JsonConvert.SerializeObject(sendSMSDto)
+                        , new CacheOptions() 
+                        { 
+                            Provider = CacheProviderEnum.Redis,
+                            RedisHash = false 
+                        },120);
                 }
 
                 return new SuccsessResult();

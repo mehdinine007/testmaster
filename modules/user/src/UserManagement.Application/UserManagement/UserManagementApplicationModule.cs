@@ -9,13 +9,17 @@ using UserManagement.Domain.Authorization.Users;
 using UserManagement.Domain.UserManagement;
 using UserManagement.Domain.UserManagement.Authorization;
 using Volo.Abp.AutoMapper;
+using Volo.Abp.EventBus.RabbitMq;
 using Volo.Abp.Modularity;
 
 namespace UserManagement.Application;
 
 [DependsOn(
     typeof(UserManagementDomainModule),
-    typeof(UserManagementApplicationContractsModule))]
+    typeof(UserManagementApplicationContractsModule)
+        ,typeof(AbpEventBusRabbitMqModule)
+
+)]
 public class UserManagementApplicationModule : AbpModule
 {
     public static IConfiguration StaticConfig { get; private set; }

@@ -1,4 +1,4 @@
-﻿using Esale.Core.DataAccess;
+﻿using IFG.Core.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.OrderManagement;
