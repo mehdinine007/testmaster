@@ -11,7 +11,7 @@ namespace AdminPanelManagement.Application.Contracts.AdminPanelManagement.IServi
     public interface IReportGrpcClientService:IApplicationService
     {
         Task<List<DashboardDto>> GetAllDashboard();
-        Task<string> Test1();
+        Task<TestDto> TestNullable();
         Task<List<WidgetDto>> GetWidgetByDashboardId(int dashboardId);
         Task<ChartDto> GetChart(int widgetId, List<ConditionValue> conditionValue);
         Task<GridDto> GetGrid(int widgetId, List<ConditionValue> conditionValue);
