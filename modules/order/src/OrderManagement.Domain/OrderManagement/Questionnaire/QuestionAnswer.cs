@@ -8,7 +8,7 @@ public class QuestionAnswer : FullAuditedEntity<long>
 {
     private ICollection<SubmittedAnswer> _submittedAnswers;
 
-    public string Description { get; set; }
+    public string Description { get; set; } 
 
     public string Hint { get; set; }
 

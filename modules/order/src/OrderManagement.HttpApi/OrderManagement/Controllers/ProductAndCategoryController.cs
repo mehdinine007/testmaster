@@ -49,7 +49,7 @@ public class ProductAndCategoryController : AbpController //, IProductAndCategor
     public async Task<CustomPagedResultDto<ProductAndCategoryDto>> GetPagination([FromBody] ProductAndCategoryQueryDto input)
         => await _productAndCategoryService.GetListWithPagination(input);
 
-    [HttpPost]
+    [HttpGet]
     public async Task<List<ProductAndCategoryWithChildDto>> GetList(ProductAndCategoryGetListQueryDto input)
         => await _productAndCategoryService.GetList(input);
 
@@ -57,7 +57,7 @@ public class ProductAndCategoryController : AbpController //, IProductAndCategor
     public async Task<ProductAndCategoryDto> Update(ProductAndCategoryUpdateDto productAndCategoryUpdateDto)
         => await _productAndCategoryService.Update(productAndCategoryUpdateDto);
 
-    [HttpPost]
-    public async Task<List<ProductAndCategoryWithChildDto>> GetProductAndSaleDetailList(ProductAndSaleDetailGetListQueryDto input)
+    [HttpGet]
+    public async Task<List<ProductAndCategoryWithChildDto>> GetProductAndSaleDetailList([FromQuery]ProductAndSaleDetailGetListQueryDto input)
         => await _productAndCategoryService.GetProductAndSaleDetailList(input);
 }
