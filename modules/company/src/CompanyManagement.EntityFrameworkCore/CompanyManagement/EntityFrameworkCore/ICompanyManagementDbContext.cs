@@ -18,5 +18,6 @@ namespace CompanyManagement.EfCore.CompanyManagement.EntityFrameworkCore
         DbSet<CompanySaleCallDates> CompanySaleCallDates { get; set; }
         DbSet<CompanyProduction> CompanyProduction { get; set; }
 
+        DbSet<CompaniesCustomer> CompaniesCustomer { get; set; }
     }
 }

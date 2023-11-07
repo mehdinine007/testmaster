@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using CompanyManagement.Application.Contracts;
 using CompanyManagement.Application.Contracts.CompanyManagement;
 using CompanyManagement.Domain.CompanyManagement;
 using System;
@@ -22,7 +23,8 @@ namespace CompanyManagement.Application.CompanyManagement
                 .ForMember(x => x.ClientsOrderDetailByCompanyId, option => option.Ignore());
             //CreateMap<PaypaidpriceDto, CompanyPaypaidPrices>().ReverseMap();
             //CreateMap<TurnDateDto, CompanySaleCallDates>().ReverseMap();
-             
+            CreateMap<CompaniesCustomer, CompaniesCustomerDto>()
+               .ReverseMap();
 
         }
 
