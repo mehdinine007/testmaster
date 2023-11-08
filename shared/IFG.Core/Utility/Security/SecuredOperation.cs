@@ -33,7 +33,7 @@ namespace Esale.Share.Authorize
                 RedisCoreConstant.RolePermissionPrefix,
                 new CacheOptions()
                 {
-                    Provider = CacheProviderEnum.Hybrid
+                    Provider = CacheProviderEnum.Redis
                 });
                 if (rolePermission != null && rolePermission.Count > 0)
                 {
