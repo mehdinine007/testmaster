@@ -43,6 +43,8 @@ namespace OrderManagement.Application.OrderManagement.Implementations
                     PayedPrice = deliverDateValidation?.PayedPrice,
                     ContRowId = deliverDateValidation?.ContRowId,
                     Vin = deliverDateValidation?.Vin,
+                    ContRowIdDate = deliverDateValidation?.ContRowIdDate.ToDateTime(),
+                    //ContRowIdDate = deliverDateValidation?.ContRowId
                     BodyNumber = deliverDateValidation?.BodyNumber,
                     DeliveryDate = deliverDateValidation?.DeliveryDate.ToDateTime(),
                     FinalPrice = deliverDateValidation?.FinalPrice,

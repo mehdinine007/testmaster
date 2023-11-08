@@ -171,7 +171,7 @@ public class OrderStatusInquiryService : ApplicationService, IOrderStatusInquiry
             {
                 orderDeliverStatusList.Add((int)OrderDeliveryStatusType.ReceivingContractRowId);
                 var contRowIdItem = availableDeliveryStatusList.FirstOrDefault(x => x.OrderDeliverySatusCode == (int)OrderDeliveryStatusType.ReceivingContractRowId);
-                contRowIdItem.SubmitDate = inquiryFromCompany1.TranDate;// inquiryData.TranDate.ToDateTime();
+                contRowIdItem.SubmitDate = inquiryFromCompany1.ContRowIdDate;// inquiryData.TranDate.ToDateTime();
                 currentOrderDeliveryStatus = OrderDeliveryStatusType.ReceivingContractRowId;
             }
             if (fullAmountPaid > 0)
