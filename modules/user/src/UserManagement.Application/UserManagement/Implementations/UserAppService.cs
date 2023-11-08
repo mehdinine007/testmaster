@@ -653,7 +653,7 @@ public class UserAppService : ApplicationService, IUserAppService
 
     }
 
-    //[SecuredOperation(UserServicePermissionConstants.UpdateUserProfile)]
+    [SecuredOperation(UserServicePermissionConstants.UpdateUserProfile)]
     public async Task<bool> UpdateUserProfile(UserDto inputUser)
     {
         Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
