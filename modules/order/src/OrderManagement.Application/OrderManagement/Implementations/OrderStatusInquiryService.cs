@@ -161,9 +161,9 @@ public class OrderStatusInquiryService : ApplicationService, IOrderStatusInquiry
         //if (!inquiryFromCompany.Succeeded)
         //    _auditingManager.Current.Log.Exceptions.Add(new Exception(inquiryFromCompany.Errors));
         string rowContractId = "";
-        decimal? fullAmountPaid = null;
+        decimal? fullAmountPaid = null;  
         if (inquiryFromCompany1 != null)
-        {
+        { 
             // var inquiryData = inquiryFromCompany1.Data[0];
             rowContractId = inquiryFromCompany1.ContRowId;//? inquiryFromCompany1.ContRowId : default;
             fullAmountPaid = inquiryFromCompany1.FinalPrice;
