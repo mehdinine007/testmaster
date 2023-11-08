@@ -64,15 +64,15 @@ public class OrderStatusInquiryService : ApplicationService, IOrderStatusInquiry
     {
         var orderDeliveries = (await _orderDeliveryStatusTypeRepository.GetQueryableAsync()).AsNoTracking().ToList();
         var userId = _commonAppService.GetUserId();
-      //  var userId = "20e5d14f-1c64-44d6-a80c-1a0ca2417a6e";// جهت دمو
+        //  var userId = "20e5d14f-1c64-44d6-a80c-1a0ca2417a6e";// جهت دمو
         Guid userGuid = new Guid(userId.ToString());
         var order = (await _customerOrderRepository.GetQueryableAsync())
             .Include(x => x.SaleDetail)
             .ThenInclude(x => x.Product)
             .FirstOrDefault(x => x.Id == orderStatusInquiryCommitDto.OrderId && x.UserId == userGuid);
-        if(order == null)
+        if (order == null)
         {
-                throw new UserFriendlyException("سفارش یافت نشد");
+            throw new UserFriendlyException("سفارش یافت نشد");
 
         }
         //   ?? throw new UserFriendlyException("سفارش یافت نشد");
@@ -196,11 +196,11 @@ public class OrderStatusInquiryService : ApplicationService, IOrderStatusInquiry
         {
             ClientNationalCode = nationalCode,
             CompanyId = company.Id,
-           // InquiryFullResponse = serializedInquiryResponse,
+            // InquiryFullResponse = serializedInquiryResponse,
             OrderDeliveryStatus = currentOrderDeliveryStatus,
             SubmitDate = DateTime.Now,
             OrderId = order.Id,
-            RowContractId = Convert.ToInt32(rowContractId),
+            RowContractId = Convert.ToInt32(string.IsNullOrWhiteSpace(rowContractId) ? "0" : rowContractId),
             FullAmountPaid = fullAmountPaid
         };
         order.OrderDeliveryStatus = currentOrderDeliveryStatus;

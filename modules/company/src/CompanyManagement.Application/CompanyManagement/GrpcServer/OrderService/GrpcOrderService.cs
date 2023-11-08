@@ -34,7 +34,7 @@ namespace OrderManagement.Application.CompanyManagement.GrpcServer
                 PayedPrice = orderDelay.PayedPrice,
                 ContRowId = orderDelay.ContRowId,
                 Vin = orderDelay.Vin,
-                DeliveryDate = orderDelay.DeliveryDate.HasValue ? Timestamp.FromDateTimeOffset(orderDelay.TranDate.Value) : new(),
+                DeliveryDate = orderDelay.DeliveryDate.HasValue ? Timestamp.FromDateTimeOffset(orderDelay.DeliveryDate.Value) : new(),
                 BodyNumber = orderDelay.BodyNumber,
                 FinalPrice = orderDelay.FinalPrice,
                 CarDesc = orderDelay.CarDesc
