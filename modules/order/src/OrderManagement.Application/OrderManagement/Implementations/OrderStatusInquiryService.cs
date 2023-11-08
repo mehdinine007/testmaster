@@ -63,9 +63,9 @@ public class OrderStatusInquiryService : ApplicationService, IOrderStatusInquiry
     public async Task<OrderStatusInquiryResultDto> GetOrderDeilvery(OrderStatusInquiryCommitDto orderStatusInquiryCommitDto)
     {
         var orderDeliveries = (await _orderDeliveryStatusTypeRepository.GetQueryableAsync()).AsNoTracking().ToList();
-        //var userId = _commonAppService.GetUserId();
-        var userId = "20e5d14f-1c64-44d6-a80c-1a0ca2417a6e";// جهت دمو
-        Guid userGuid = new Guid(userId);
+        var userId = _commonAppService.GetUserId();
+      //  var userId = "20e5d14f-1c64-44d6-a80c-1a0ca2417a6e";// جهت دمو
+        Guid userGuid = new Guid(userId.ToString());
         var order = (await _customerOrderRepository.GetQueryableAsync())
             .Include(x => x.SaleDetail)
             .ThenInclude(x => x.Product)

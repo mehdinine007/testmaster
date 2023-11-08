@@ -47,7 +47,7 @@ namespace CompanyManagement.Application.CompanyManagement.Implementations
                        OrderId = dco.OrderId
                    })
                     .OrderByDescending(x => x.Id)
-                    .FirstOrDefault(x => x.NationalCode == nationalCode && x.OrderId == orderId);
+                    .FirstOrDefault(x => x.NationalCode == nationalCode); //&& x.OrderId == orderId);
             if (orderDelay == null)
             {
                 throw new UserFriendlyException("سفارشی وجود ندارد.");
