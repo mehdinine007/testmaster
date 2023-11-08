@@ -1,4 +1,6 @@
-﻿using EasyCaching.Core;
+﻿#region NS
+using EasyCaching.Core;
+using IFG.Core.Caching;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
@@ -24,6 +26,7 @@ using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
+#endregion
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -38,6 +41,7 @@ public class CommonAppService : ApplicationService, ICommonAppService
     private readonly IRepository<ExternalApiResponsLog, int> _externalApiResponsLogRepository;
     private readonly IHttpContextAccessor _contextAccessor;
     private readonly IHybridCachingProvider _hybridCachingProvider;
+    private readonly ICacheManager _cacheManager;
 
     public CommonAppService(IDistributedCache distributedCache,
                             IConfiguration configuration,
@@ -47,8 +51,8 @@ public class CommonAppService : ApplicationService, ICommonAppService
                             IRepository<ExternalApiLogResult, int> externalApiLogResultRepository,
                             IRepository<ExternalApiResponsLog, int> externalApiResponsLogRepositor,
                             IHttpContextAccessor contextAccessor,
-                            IHybridCachingProvider hybridCachingProvider
-                            )
+                            IHybridCachingProvider hybridCachingProvider,
+                            ICacheManager cacheManager)
     {
         _distributedCache = distributedCache;
         _configuration = configuration;
@@ -59,6 +63,7 @@ public class CommonAppService : ApplicationService, ICommonAppService
         _externalApiResponsLogRepository = externalApiResponsLogRepositor;
         _contextAccessor = contextAccessor;
         _hybridCachingProvider = hybridCachingProvider;
+        _cacheManager = cacheManager;
     }
 
     //private async Task<AuthtenticateResult> AuthenticateBank()
@@ -255,7 +260,10 @@ public class CommonAppService : ApplicationService, ICommonAppService
     public async Task<bool> ValidateSMS(string Mobile, string NationalCode, string UserSMSCode, SMSType sMSType)
     {
         Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
-        var stringCache = await RedisHelper.Connection.GetDatabase().StringGetAsync(sMSType.ToString() + Mobile + NationalCode);
+        string cacheKey = $"{sMSType.ToString()}{Mobile}{NationalCode}";
+        string prefix = "";
+        var stringCache = await _cacheManager.GetStringAsync(cacheKey, prefix, new CacheOptions
+        { Provider = CacheProviderEnum.Redis , RedisHash = false});
         if (string.IsNullOrEmpty(stringCache))
         {
             throw new UserFriendlyException("کد پیامک ارسالی صحیح نمی باشد");
@@ -268,12 +276,7 @@ public class CommonAppService : ApplicationService, ICommonAppService
         if (smsCodeDto.SMSCode != UserSMSCode)
         {
             throw new UserFriendlyException("کد پیامک ارسالی صحیح نمی باشد");
-
         }
-
-
-
-
         return true;
     }
     public async Task ValidateVisualizeCaptcha(VisualCaptchaInput input)
@@ -296,7 +299,6 @@ public class CommonAppService : ApplicationService, ICommonAppService
             {
                 throw new UserFriendlyException("کپچای وارد شده صحیح نمی باشد");
             }
-
         }
     }
 
@@ -394,7 +396,6 @@ public class CommonAppService : ApplicationService, ICommonAppService
         var userIdStr = _httpContextAccessor.HttpContext.User.Claims.SingleOrDefault(x => x.Type.Equals("UBP"))?.Value ?? string.Empty;
         if (string.IsNullOrWhiteSpace(userIdStr))
             throw new UserFriendlyException("لطفا لاگین کنید");
-
 
         return userIdStr;
     }
