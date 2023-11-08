@@ -27,4 +27,5 @@ message ClientOrderDetailResponse{
 	google.protobuf.Timestamp DeliveryDate = 7;
 	google.protobuf.Int64Value FinalPrice = 8;
 	string CarDesc = 9;
+	google.protobuf.Timestamp ContRowIdDate = 10;
 }

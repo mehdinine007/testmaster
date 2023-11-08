@@ -15,11 +15,13 @@ namespace UserService.Host.RabbitHandlers
         ITransientDependency
     {
         private readonly IUserAppService _userAppService;
+        private IConfiguration _configuration { get; set; }
         public UserHandler(
             IUserAppService UserAppService
-            )
+, IConfiguration configuration)
         {
             _userAppService = UserAppService;
+            _configuration = configuration;
         }
         public async Task HandleEventAsync(UserSQL eventData)
         {
@@ -28,7 +30,8 @@ namespace UserService.Host.RabbitHandlers
 
             try
             {
-                await _userAppService.UpsertUserIntoSqlServer(eventData);
+                if (_configuration.GetSection("HasUserRabbit").Value == "1")
+                    await _userAppService.UpsertUserIntoSqlServer(eventData);
 
             }
             catch (Exception ex)

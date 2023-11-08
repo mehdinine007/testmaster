@@ -44,14 +44,12 @@ namespace CompanyManagement.Application.CompanyManagement.Implementations
                        DeliveryDate = dco.DeliveryDate,
                        FinalPrice = dco.FinalPrice,
                        CarDesc = dco.CarDesc,
-                       OrderId = dco.OrderId
+                       OrderId = dco.OrderId,
+                       ContRowIdDate = dco.ContRowIdDate
                    })
                     .OrderByDescending(x => x.Id)
-                    .FirstOrDefault(x => x.NationalCode == nationalCode && x.OrderId == orderId);
-            if (orderDelay == null)
-            {
-                throw new UserFriendlyException("سفارشی وجود ندارد.");
-            }
+                    .FirstOrDefault(x => x.NationalCode == nationalCode); //&& x.OrderId == orderId);
+           
             return orderDelay;
         }
     }

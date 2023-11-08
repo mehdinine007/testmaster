@@ -19,5 +19,6 @@ namespace CompanyManagement.Application.Contracts.CompanyManagement
         public string CarDesc { get; set; }
         public long OrderId { get; set; }
         public long Id { get; set; }
+        public DateTime? ContRowIdDate { get; set; }
     }
 }
