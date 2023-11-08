@@ -23,6 +23,10 @@ namespace OrderManagement.Application.CompanyManagement.GrpcServer
             //{
           
             var orderDelay = await _orderDeliveryService.GetOrderDelivary(request.NationalCode, request.OrderId);
+            if(orderDelay == null)
+            {
+                return new ClientOrderDetailResponse();
+            }
             var ClientOrderDetail = await Task.FromResult(new ClientOrderDetailResponse()
             {
                 NationalCode = orderDelay.NationalCode,

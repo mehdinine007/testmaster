@@ -59,7 +59,7 @@ public class OrderStatusInquiryService : ApplicationService, IOrderStatusInquiry
         throw new NotImplementedException();
     }
 
-    [SecuredOperation(OrderStatusInquiryServicePermissionConstants.GetOrderDeilvery)]
+    //[SecuredOperation(OrderStatusInquiryServicePermissionConstants.GetOrderDeilvery)]
     public async Task<OrderStatusInquiryResultDto> GetOrderDeilvery(OrderStatusInquiryCommitDto orderStatusInquiryCommitDto)
     {
         var orderDeliveries = (await _orderDeliveryStatusTypeRepository.GetQueryableAsync()).AsNoTracking().ToList();
@@ -69,8 +69,13 @@ public class OrderStatusInquiryService : ApplicationService, IOrderStatusInquiry
         var order = (await _customerOrderRepository.GetQueryableAsync())
             .Include(x => x.SaleDetail)
             .ThenInclude(x => x.Product)
-            .FirstOrDefault(x => x.Id == orderStatusInquiryCommitDto.OrderId && x.UserId == userGuid)
-            ?? throw new UserFriendlyException("سفارش یافت نشد");
+            .FirstOrDefault(x => x.Id == orderStatusInquiryCommitDto.OrderId && x.UserId == userGuid);
+        if(order == null)
+        {
+                throw new UserFriendlyException("سفارش یافت نشد");
+
+        }
+        //   ?? throw new UserFriendlyException("سفارش یافت نشد");
         var currentOrderDeliveryStatus = order.OrderDeliveryStatus;
         var nationalCode = _commonAppService.GetNationalCode();
         //nationalCode = "5580099126"; //جهت دمو - 498729
@@ -186,18 +191,18 @@ public class OrderStatusInquiryService : ApplicationService, IOrderStatusInquiry
         //        : OrderDeliveryStatusType.OrderRegistered;
         //    orderDeliverStatusList.Add((int)ordersDeliveryCurrentStatus);
         //}
-        var serializedInquiryResponse = JsonConvert.SerializeObject(inquiryFromCompany1);
-        var orderLog = await _orderStatusInquiryRepository.InsertAsync(new OrderStatusInquiry()
+        //var serializedInquiryResponse = JsonConvert.SerializeObject(inquiryFromCompany1);
+        var orderLog = new OrderStatusInquiry()
         {
             ClientNationalCode = nationalCode,
             CompanyId = company.Id,
-            InquiryFullResponse = serializedInquiryResponse,
+           // InquiryFullResponse = serializedInquiryResponse,
             OrderDeliveryStatus = currentOrderDeliveryStatus,
             SubmitDate = DateTime.Now,
             OrderId = order.Id,
             RowContractId = Convert.ToInt32(rowContractId),
             FullAmountPaid = fullAmountPaid
-        });
+        };
         order.OrderDeliveryStatus = currentOrderDeliveryStatus;
         await _customerOrderRepository.AttachAsync(order, x => x.OrderDeliveryStatus);
         result = ObjectMapper.Map<OrderStatusInquiry, OrderStatusInquiryResultDto>(orderLog, result);

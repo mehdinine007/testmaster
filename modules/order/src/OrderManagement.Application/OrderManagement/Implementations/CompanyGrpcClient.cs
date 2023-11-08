@@ -32,17 +32,21 @@ namespace OrderManagement.Application.OrderManagement.Implementations
                     NationalCode = clientOrderRequest.NationalCode,
                     OrderId = clientOrderRequest.OrderId
                 });
+                if(deliverDateValidation == null ||  string.IsNullOrEmpty(deliverDateValidation.NationalCode))
+                {
+                    return null;
+                }
                 return new ClientOrderDeliveryInformationDto
                 {
-                    NationalCode = deliverDateValidation.NationalCode,
-                    TranDate = deliverDateValidation.TranDate.ToDateTime(),// ? Timestamp.FromDateTime(deliverDateValidation.TranDate) : new,
-                    PayedPrice = deliverDateValidation.PayedPrice,
-                    ContRowId = deliverDateValidation.ContRowId,
-                    Vin = deliverDateValidation.Vin,
-                    BodyNumber = deliverDateValidation.BodyNumber,
-                    DeliveryDate = deliverDateValidation.DeliveryDate.ToDateTime(),
-                    FinalPrice = deliverDateValidation.FinalPrice,
-                    CarDesc = deliverDateValidation.CarDesc
+                    NationalCode = deliverDateValidation?.NationalCode,
+                    TranDate = deliverDateValidation?.TranDate.ToDateTime(),// ? Timestamp.FromDateTime(deliverDateValidation.TranDate) : new,
+                    PayedPrice = deliverDateValidation?.PayedPrice,
+                    ContRowId = deliverDateValidation?.ContRowId,
+                    Vin = deliverDateValidation?.Vin,
+                    BodyNumber = deliverDateValidation?.BodyNumber,
+                    DeliveryDate = deliverDateValidation?.DeliveryDate.ToDateTime(),
+                    FinalPrice = deliverDateValidation?.FinalPrice,
+                    CarDesc = deliverDateValidation?.CarDesc
                 };
             }
             catch (Exception e)
