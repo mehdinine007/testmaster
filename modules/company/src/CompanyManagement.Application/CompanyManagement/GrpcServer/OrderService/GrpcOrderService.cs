@@ -37,7 +37,8 @@ namespace OrderManagement.Application.CompanyManagement.GrpcServer
                 DeliveryDate = orderDelay.DeliveryDate.HasValue ? Timestamp.FromDateTimeOffset(orderDelay.DeliveryDate.Value) : new(),
                 BodyNumber = orderDelay.BodyNumber,
                 FinalPrice = orderDelay.FinalPrice,
-                CarDesc = orderDelay.CarDesc
+                CarDesc = orderDelay.CarDesc,
+                ContRowIdDate = orderDelay.ContRowIdDate.HasValue ? Timestamp.FromDateTimeOffset(orderDelay.DeliveryDate.Value) : new(),
             });
             return ClientOrderDetail;
             //}
