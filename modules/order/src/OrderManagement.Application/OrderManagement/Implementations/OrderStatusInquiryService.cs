@@ -18,6 +18,8 @@ using Volo.Abp;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Auditing;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp.Uow;
+using System.Data;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -59,16 +61,17 @@ public class OrderStatusInquiryService : ApplicationService, IOrderStatusInquiry
         throw new NotImplementedException();
     }
 
-    //[SecuredOperation(OrderStatusInquiryServicePermissionConstants.GetOrderDeilvery)]
+   // [SecuredOperation(OrderStatusInquiryServicePermissionConstants.GetOrderDeilvery)]
+    [UnitOfWork(false, IsolationLevel.ReadUncommitted)]
     public async Task<OrderStatusInquiryResultDto> GetOrderDeilvery(OrderStatusInquiryCommitDto orderStatusInquiryCommitDto)
     {
         var orderDeliveries = (await _orderDeliveryStatusTypeRepository.GetQueryableAsync()).AsNoTracking().ToList();
         var userId = _commonAppService.GetUserId();
         //  var userId = "20e5d14f-1c64-44d6-a80c-1a0ca2417a6e";// جهت دمو
         Guid userGuid = new Guid(userId.ToString());
-        var order = (await _customerOrderRepository.GetQueryableAsync())
+        var order = (await _customerOrderRepository.GetQueryableAsync()).AsNoTracking()
             .Include(x => x.SaleDetail)
-            .ThenInclude(x => x.Product)
+            .ThenInclude(x => x.Product).AsNoTracking()
             .FirstOrDefault(x => x.Id == orderStatusInquiryCommitDto.OrderId && x.UserId == userGuid);
         if (order == null)
         {
@@ -203,8 +206,8 @@ public class OrderStatusInquiryService : ApplicationService, IOrderStatusInquiry
             RowContractId = Convert.ToInt32(string.IsNullOrWhiteSpace(rowContractId) ? "0" : rowContractId),
             FullAmountPaid = fullAmountPaid
         };
-        order.OrderDeliveryStatus = currentOrderDeliveryStatus;
-        await _customerOrderRepository.AttachAsync(order, x => x.OrderDeliveryStatus);
+       // order.OrderDeliveryStatus = currentOrderDeliveryStatus;
+       // await _customerOrderRepository.AttachAsync(order, x => x.OrderDeliveryStatus);
         result = ObjectMapper.Map<OrderStatusInquiry, OrderStatusInquiryResultDto>(orderLog, result);
         var orderDeliveryStatusDescription = (await _orderDeliveryStatusTypeRepository.GetQueryableAsync())
             .FirstOrDefault(x => x.Code == (int)result.OrderDeliveryStatus);
