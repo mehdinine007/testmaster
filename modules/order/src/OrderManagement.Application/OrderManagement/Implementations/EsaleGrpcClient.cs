@@ -16,6 +16,10 @@ using System.Linq;
 using OrderManagement.Application.PaymentServiceGrpc;
 using System.Net.Http;
 using OrderManagement.Application.CompanyService;
+using IFG.Core.Caching;
+using OrderManagement.Application.OrderManagement.Constants;
+using Newtonsoft.Json;
+using StackExchange.Redis.Extensions.Core.Implementations;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -23,22 +27,32 @@ public class EsaleGrpcClient : ApplicationService, IEsaleGrpcClient
 {
     private readonly IConfiguration _configuration;
     private readonly IRepository<Logs, long> _logsRepository;
+    private readonly ICacheManager _cacheManager;
 
-    public EsaleGrpcClient(IConfiguration configuration, IRepository<Logs, long> logsRepository)
+
+    public EsaleGrpcClient(IConfiguration configuration, IRepository<Logs, long> logsRepository, ICacheManager cacheManager)
     {
         _configuration = configuration;
         _logsRepository = logsRepository;
+        _cacheManager = cacheManager;
     }
 
     public async Task<UserDto> GetUserId(string userId)
     {
-
         AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2Support", true);
         AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
         var httpHandler = new HttpClientHandler();
         httpHandler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
         var channel = GrpcChannel.ForAddress(_configuration.GetValue<string>("Esale:GrpcAddress"), new GrpcChannelOptions { HttpHandler = httpHandler });
 
+        string cacheKey = $"{userId}";
+        string prefix = $"{RedisConstants.GrpcGetUserById}";
+        var cachedData = await _cacheManager.GetStringAsync(cacheKey,prefix,new CacheOptions 
+        { Provider = CacheProviderEnum.Hybrid });
+        if (!string.IsNullOrEmpty(cachedData))
+        {
+            return JsonConvert.DeserializeObject<UserDto>(cachedData);
+        }
 
         var client = new UserServiceGrpc.UserServiceGrpcClient(channel);
 
@@ -46,7 +60,7 @@ public class EsaleGrpcClient : ApplicationService, IEsaleGrpcClient
 
         if (string.IsNullOrEmpty(user.NationalCode))
             return null;
-        return new UserDto
+        var userDto = new UserDto
         {
             AccountNumber = user.AccountNumber,
             BankId = user.BankId,
@@ -64,6 +78,9 @@ public class EsaleGrpcClient : ApplicationService, IEsaleGrpcClient
             SurName = user.SurName
         };
 
+        await _cacheManager.SetStringAsync(cacheKey, prefix, JsonConvert.SerializeObject(userDto), new CacheOptions 
+        { Provider = CacheProviderEnum.Hybrid}, TimeSpan.FromMinutes(1).TotalSeconds);
+        return userDto;
     }
     public async Task<AdvocacyUserDto> GetUserAdvocacyByNationalCode(string nationlCode)
     {
