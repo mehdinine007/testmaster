@@ -23,6 +23,10 @@ namespace OrderManagement.Application.CompanyManagement.GrpcServer
             //{
           
             var orderDelay = await _orderDeliveryService.GetOrderDelivary(request.NationalCode, request.OrderId);
+            if(orderDelay == null)
+            {
+                return new ClientOrderDetailResponse();
+            }
             var ClientOrderDetail = await Task.FromResult(new ClientOrderDetailResponse()
             {
                 NationalCode = orderDelay.NationalCode,
@@ -30,10 +34,11 @@ namespace OrderManagement.Application.CompanyManagement.GrpcServer
                 PayedPrice = orderDelay.PayedPrice,
                 ContRowId = orderDelay.ContRowId,
                 Vin = orderDelay.Vin,
-                DeliveryDate = orderDelay.DeliveryDate.HasValue ? Timestamp.FromDateTimeOffset(orderDelay.TranDate.Value) : new(),
+                DeliveryDate = orderDelay.DeliveryDate.HasValue ? Timestamp.FromDateTimeOffset(orderDelay.DeliveryDate.Value) : new(),
                 BodyNumber = orderDelay.BodyNumber,
                 FinalPrice = orderDelay.FinalPrice,
-                CarDesc = orderDelay.CarDesc
+                CarDesc = orderDelay.CarDesc,
+                ContRowIdDate = orderDelay.ContRowIdDate.HasValue ? Timestamp.FromDateTimeOffset(orderDelay.DeliveryDate.Value) : new(),
             });
             return ClientOrderDetail;
             //}

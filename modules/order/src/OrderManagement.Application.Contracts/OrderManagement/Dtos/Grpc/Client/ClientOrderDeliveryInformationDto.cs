@@ -12,6 +12,7 @@ public class ClientOrderDeliveryInformationDto
     public long? FinalPrice { get; set; }
     public string CarDesc { get; set; }
     public long OrderId { get; set; }
+    public DateTime? ContRowIdDate { get; set; }
 }
 
 

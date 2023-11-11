@@ -171,7 +171,7 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
                 if (!string.IsNullOrWhiteSpace(submitAnswerTreeDto?.UnregisteredUserInformation?.Vin))
                     await ControlAnonymousUserWontSpamAnswer(submitAnswerTreeDto.UnregisteredUserInformation.Vin, questionnaire.Id);
 
-                var smsCodeIsValid = await _commonAppService.ValidateSMS(submitAnswerTreeDto?.UnregisteredUserInformation?.SmsCode,
+                var smsCodeIsValid = await _commonAppService.ValidateSMS(submitAnswerTreeDto?.UnregisteredUserInformation?.MobileNumber,
                     submitAnswerTreeDto?.UnregisteredUserInformation?.NationalCode,
                     submitAnswerTreeDto?.UnregisteredUserInformation?.SmsCode,
                     SMSType.AnonymousQuestionnaireSubmitation);

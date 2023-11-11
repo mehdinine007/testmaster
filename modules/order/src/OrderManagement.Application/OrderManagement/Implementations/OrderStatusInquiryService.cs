@@ -18,6 +18,8 @@ using Volo.Abp;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Auditing;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp.Uow;
+using System.Data;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -59,18 +61,24 @@ public class OrderStatusInquiryService : ApplicationService, IOrderStatusInquiry
         throw new NotImplementedException();
     }
 
-    [SecuredOperation(OrderStatusInquiryServicePermissionConstants.GetOrderDeilvery)]
+   // [SecuredOperation(OrderStatusInquiryServicePermissionConstants.GetOrderDeilvery)]
+    [UnitOfWork(false, IsolationLevel.ReadUncommitted)]
     public async Task<OrderStatusInquiryResultDto> GetOrderDeilvery(OrderStatusInquiryCommitDto orderStatusInquiryCommitDto)
     {
         var orderDeliveries = (await _orderDeliveryStatusTypeRepository.GetQueryableAsync()).AsNoTracking().ToList();
-        //var userId = _commonAppService.GetUserId();
-        var userId = "20e5d14f-1c64-44d6-a80c-1a0ca2417a6e";// جهت دمو
-        Guid userGuid = new Guid(userId);
-        var order = (await _customerOrderRepository.GetQueryableAsync())
+        var userId = _commonAppService.GetUserId();
+        //  var userId = "20e5d14f-1c64-44d6-a80c-1a0ca2417a6e";// جهت دمو
+        Guid userGuid = new Guid(userId.ToString());
+        var order = (await _customerOrderRepository.GetQueryableAsync()).AsNoTracking()
             .Include(x => x.SaleDetail)
-            .ThenInclude(x => x.Product)
-            .FirstOrDefault(x => x.Id == orderStatusInquiryCommitDto.OrderId && x.UserId == userGuid)
-            ?? throw new UserFriendlyException("سفارش یافت نشد");
+            .ThenInclude(x => x.Product).AsNoTracking()
+            .FirstOrDefault(x => x.Id == orderStatusInquiryCommitDto.OrderId && x.UserId == userGuid);
+        if (order == null)
+        {
+            throw new UserFriendlyException("سفارش یافت نشد");
+
+        }
+        //   ?? throw new UserFriendlyException("سفارش یافت نشد");
         var currentOrderDeliveryStatus = order.OrderDeliveryStatus;
         var nationalCode = _commonAppService.GetNationalCode();
         //nationalCode = "5580099126"; //جهت دمو - 498729
@@ -156,9 +164,9 @@ public class OrderStatusInquiryService : ApplicationService, IOrderStatusInquiry
         //if (!inquiryFromCompany.Succeeded)
         //    _auditingManager.Current.Log.Exceptions.Add(new Exception(inquiryFromCompany.Errors));
         string rowContractId = "";
-        decimal? fullAmountPaid = null;
+        decimal? fullAmountPaid = null;  
         if (inquiryFromCompany1 != null)
-        {
+        { 
             // var inquiryData = inquiryFromCompany1.Data[0];
             rowContractId = inquiryFromCompany1.ContRowId;//? inquiryFromCompany1.ContRowId : default;
             fullAmountPaid = inquiryFromCompany1.FinalPrice;
@@ -166,7 +174,7 @@ public class OrderStatusInquiryService : ApplicationService, IOrderStatusInquiry
             {
                 orderDeliverStatusList.Add((int)OrderDeliveryStatusType.ReceivingContractRowId);
                 var contRowIdItem = availableDeliveryStatusList.FirstOrDefault(x => x.OrderDeliverySatusCode == (int)OrderDeliveryStatusType.ReceivingContractRowId);
-                contRowIdItem.SubmitDate = inquiryFromCompany1.TranDate;// inquiryData.TranDate.ToDateTime();
+                contRowIdItem.SubmitDate = inquiryFromCompany1.ContRowIdDate;// inquiryData.TranDate.ToDateTime();
                 currentOrderDeliveryStatus = OrderDeliveryStatusType.ReceivingContractRowId;
             }
             if (fullAmountPaid > 0)
@@ -186,20 +194,20 @@ public class OrderStatusInquiryService : ApplicationService, IOrderStatusInquiry
         //        : OrderDeliveryStatusType.OrderRegistered;
         //    orderDeliverStatusList.Add((int)ordersDeliveryCurrentStatus);
         //}
-        var serializedInquiryResponse = JsonConvert.SerializeObject(inquiryFromCompany1);
-        var orderLog = await _orderStatusInquiryRepository.InsertAsync(new OrderStatusInquiry()
+        //var serializedInquiryResponse = JsonConvert.SerializeObject(inquiryFromCompany1);
+        var orderLog = new OrderStatusInquiry()
         {
             ClientNationalCode = nationalCode,
             CompanyId = company.Id,
-            InquiryFullResponse = serializedInquiryResponse,
+            // InquiryFullResponse = serializedInquiryResponse,
             OrderDeliveryStatus = currentOrderDeliveryStatus,
             SubmitDate = DateTime.Now,
             OrderId = order.Id,
-            RowContractId = Convert.ToInt32(rowContractId),
+            RowContractId = Convert.ToInt32(string.IsNullOrWhiteSpace(rowContractId) ? "0" : rowContractId),
             FullAmountPaid = fullAmountPaid
-        });
-        order.OrderDeliveryStatus = currentOrderDeliveryStatus;
-        await _customerOrderRepository.AttachAsync(order, x => x.OrderDeliveryStatus);
+        };
+       // order.OrderDeliveryStatus = currentOrderDeliveryStatus;
+       // await _customerOrderRepository.AttachAsync(order, x => x.OrderDeliveryStatus);
         result = ObjectMapper.Map<OrderStatusInquiry, OrderStatusInquiryResultDto>(orderLog, result);
         var orderDeliveryStatusDescription = (await _orderDeliveryStatusTypeRepository.GetQueryableAsync())
             .FirstOrDefault(x => x.Code == (int)result.OrderDeliveryStatus);
