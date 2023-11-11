@@ -46,8 +46,6 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
     private readonly IRepository<SaleDetail, int> _saleDetailRepository;
     private readonly IRepository<AgencySaleDetail, int> _agencySaleDetailRepository;
     private readonly ICapacityControlAppService _capacityControlAppService;
-    private readonly IHybridCachingProvider _hybridCache;
-
     private readonly ICacheManager _cacheManager;
     public BaseInformationService(IRepository<Company, int> companyRepository,
                                   IRepository<Gallery, int> galleryRepository,
@@ -66,7 +64,6 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
                                   IRepository<AgencySaleDetail, int> agencySaleDetailRepository,
                                   IRepository<ESaleType, int> esaleTypeRepository,
                                   ICapacityControlAppService capacityControlAppService,
-                                  IHybridCachingProvider hybridCache,
                                   ICacheManager cacheManager)
     {
         _esaleGrpcClient = esaleGrpcClient;
@@ -87,7 +84,6 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
         _agencySaleDetailRepository = agencySaleDetailRepository;
         _esaleTypeRepository = esaleTypeRepository;
         _capacityControlAppService = capacityControlAppService;
-        _hybridCache = hybridCache;
         _cacheManager = cacheManager;
     }
 

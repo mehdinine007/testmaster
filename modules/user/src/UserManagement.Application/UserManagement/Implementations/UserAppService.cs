@@ -45,7 +45,6 @@ public class UserAppService : ApplicationService, IUserAppService
     private readonly IConfiguration _configuration;
     private readonly IBankAppService _bankAppService;
     private readonly ICommonAppService _commonAppService;
-    private readonly IDistributedCache _distributedCache;
     private readonly IPasswordHasher<User> _passwordHasher;
     private readonly IBaseInformationService _baseInformationService;
     private readonly ICaptchaService _captchaService;
@@ -57,7 +56,6 @@ public class UserAppService : ApplicationService, IUserAppService
     public UserAppService(IConfiguration configuration,
                           IBankAppService bankAppService,
                           ICommonAppService commonAppService,
-                          IDistributedCache distributedCache,
                           IPasswordHasher<User> passwordHasher,
                           IBaseInformationService baseInformationService,
                           IRolePermissionService rolePermissionService,
@@ -74,7 +72,6 @@ public class UserAppService : ApplicationService, IUserAppService
         _configuration = configuration;
         _bankAppService = bankAppService;
         _commonAppService = commonAppService;
-        _distributedCache = distributedCache;
         _passwordHasher = passwordHasher;
         _baseInformationService = baseInformationService;
         _userMongoWriteRepository = userMongoWriteRepository;

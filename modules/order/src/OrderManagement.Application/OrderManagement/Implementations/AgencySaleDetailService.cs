@@ -24,16 +24,15 @@ public class AgencySaleDetailService : ApplicationService, IAgencySaleDetailServ
     private readonly IRepository<AgencySaleDetail> _agencySaleDetailRepository;
     private readonly IRepository<Agency> _agencyRepository;
     private readonly IRepository<SaleDetail> _saleDetailRepository;
-    private readonly IHybridCachingProvider _hybridCache;
     private readonly ICacheManager _cacheManager;
 
-    public AgencySaleDetailService(IRepository<AgencySaleDetail> agencySaleDetailRepository, IRepository<Agency> agencyRepository, IRepository<SaleDetail> saleDetailRepository
-        , IHybridCachingProvider hybridCache, ICacheManager cacheManager)
+    public AgencySaleDetailService(IRepository<AgencySaleDetail> agencySaleDetailRepository, 
+          IRepository<Agency> agencyRepository, IRepository<SaleDetail> saleDetailRepository,
+          ICacheManager cacheManager)
     {
         _agencySaleDetailRepository = agencySaleDetailRepository;
         _agencyRepository = agencyRepository;
         _saleDetailRepository = saleDetailRepository;
-        _hybridCache = hybridCache;
         _cacheManager = cacheManager;
     }
 
