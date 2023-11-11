@@ -39,6 +39,7 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
     private readonly ICacheManager _cacheManager;
     private readonly IAttachmentService _attachmentService;
     private readonly IRepository<ProductLevel, int> _productLevelRepository;
+    private readonly IProductAndCategoryService _productAndCategoryService;
     public SaleDetailService(IRepository<SaleDetail> saleDetailRepository,
                              IRepository<ESaleType> eSaleTypeRepository,
                              IRepository<SaleDetailCarColor> saleDetailCarColor,
@@ -46,7 +47,9 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
                              IRepository<SaleDetailCarColor, int> saleDetailColorRepository,
                              IHttpContextAccessor contextAccessor,
                              ICommonAppService commonAppService, IHybridCachingProvider hybridCache, ICacheManager cacheManager,
-                            IAttachmentService attachmentService, IRepository<ProductLevel, int> productLevelRepository)
+                             IAttachmentService attachmentService, IRepository<ProductLevel, int> productLevelRepository,
+                             IProductAndCategoryService productAndCategoryService
+        )
     {
         _saleDetailRepository = saleDetailRepository;
         _eSaleTypeRepository = eSaleTypeRepository;
@@ -58,7 +61,8 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
         _hybridCache = hybridCache;
         _cacheManager = cacheManager;
         _attachmentService = attachmentService;
-        _productLevelRepository=productLevelRepository;
+        _productLevelRepository = productLevelRepository;
+        _productAndCategoryService = productAndCategoryService;
     }
 
 
@@ -133,7 +137,7 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
             MinimumAmountOfProxyDeposit = x.MinimumAmountOfProxyDeposit,
             ProductId = x.ProductId,
             Product = ObjectMapper.Map<ProductAndCategory, ProductAndCategoryViewModel>(x.Product)
-    }).ToList();
+        }).ToList();
         var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, queryResult.Select(x => x.ProductId).ToList());
         var saleDetailIds = queryResult.Select(x => x.Id).ToList();
         var saleDetailColors = (await _saleDetailColorRepository.GetQueryableAsync()).Where(x => saleDetailIds.Any(y => y == x.SaleDetailId));
@@ -171,12 +175,11 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
         {
             throw new UserFriendlyException("تاریخ پایان بایدبزرگتراز تاریخ شروع باشد.");
         }
-       
 
-       var productLevel= (await _productLevelRepository.GetQueryableAsync()).FirstOrDefault(x=>x.Id== createSaleDetailDto.ProductId);
-        if (productLevel == null)
+        var product = await _productAndCategoryService.GetById(createSaleDetailDto.ProductId, false);
+        if (product == null)
         {
-            throw new UserFriendlyException(OrderConstant.ProductLevelNotFound, OrderConstant.ProductLevelNotFoundId);
+            throw new UserFriendlyException(OrderConstant.ProductAndCategoryNotFound, OrderConstant.ProductAndCategoryFoundId);
         }
         var esalType = await _eSaleTypeRepository.FirstOrDefaultAsync(x => x.Id == createSaleDetailDto.EsaleTypeId);
         if (esalType == null)
