@@ -12,6 +12,8 @@ namespace OrderManagement.Application.Contracts
 
         public int Id { get; set; }
 
+        public QuestionnaireType QuestionnaireType { get; set; }
+
         public List<AttachmentViewModel> Attachments { get; set; }
     }
 }
