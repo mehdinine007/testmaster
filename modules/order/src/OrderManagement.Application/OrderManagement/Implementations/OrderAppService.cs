@@ -258,12 +258,12 @@ public class OrderAppService : ApplicationService, IOrderAppService
             ttl = SaleDetailDto.SalePlanEndDate.Subtract(DateTime.Now);
 
         }
-      
+
         ////////////////conntrol repeated order in saledetails// iran&&varedat
 
         CheckSaleDetailValidation(SaleDetailDto);
         RustySalePlanValidation(commitOrderDto, SaleDetailDto.EsaleTypeId);
-      
+
 
         await _commonAppService.IsUserRejected(); //if user reject from advocacy
         //                                          //_baseInformationAppService.CheckBlackList(SaleDetailDto.EsaleTypeId); //if user not exsist in blacklist
@@ -626,16 +626,16 @@ public class OrderAppService : ApplicationService, IOrderAppService
         ApiResult<IpgApiResult> handShakeResponse = new ApiResult<IpgApiResult>();
         if (paymentMethodGranted)
         {
-             handShakeResponse = await _ipgServiceProvider.HandShakeWithPsp(new PspHandShakeRequest()
+            handShakeResponse = await _ipgServiceProvider.HandShakeWithPsp(new PspHandShakeRequest()
             {
                 CallBackUrl = _configuration.GetValue<string>("CallBackUrl"),
                 Amount = (long)SaleDetailDto.CarFee,
                 Mobile = customer.MobileNumber,
-                AdditionalData = customerOrder.PaymentSecret.ToString(),
+                AdditionalData = customerOrder.PaymentSecret.HasValue? customerOrder.PaymentSecret.Value.ToString() : string.Empty,
                 NationalCode = nationalCode,
                 PspAccountId = commitOrderDto.PspAccountId.Value,
                 FilterParam1 = customerOrder.SaleDetailId,
-                FilterParam2 = customerOrder.AgencyId,
+                FilterParam2 = customerOrder.AgencyId.HasValue ? customerOrder.AgencyId.Value : default,
                 FilterParam3 = customerOrder.Id
             });
             if (handShakeResponse == null)
@@ -748,7 +748,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         {
             return false;
         }
-        if ((orderStatusType == OrderStatusType.Winner && !string.IsNullOrEmpty(deliveryDate)) || (orderStatusType == OrderStatusType.RecentlyAdded) ) // OrderStatusType.RecentlyAdded
+        if ((orderStatusType == OrderStatusType.Winner && !string.IsNullOrEmpty(deliveryDate)) || (orderStatusType == OrderStatusType.RecentlyAdded)) // OrderStatusType.RecentlyAdded
         {
             return true;
         }
@@ -1199,7 +1199,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             //    .AsNoTracking()
             //    .FirstOrDefault(x => x.Id == orderId.Id);
 
-            if (order is null || (!int.TryParse(paymentSecret, out var numericPaymentSecret) || order.PaymentSecret != numericPaymentSecret))
+            if (order is null || (!int.TryParse(paymentSecret, out var numericPaymentSecret) || (order.PaymentSecret.HasValue &&  order.PaymentSecret.Value != numericPaymentSecret)))
                 exceptionCollection.Add(new UserFriendlyException("درخواست معتبر نیست"));
 
             if (order != null)

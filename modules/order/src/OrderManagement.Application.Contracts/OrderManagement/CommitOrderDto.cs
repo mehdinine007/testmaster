@@ -12,7 +12,7 @@ namespace OrderManagement.Application.Contracts
         public string EngineNo { get; set; }
         public string ChassiNo { get; set; }
         public string Vehicle { get; set; }
-        public int AgencyId { get; set; }
+        public int? AgencyId { get; set; }
         public int? PspAccountId { get; set; }
         public int? OrderId { get; set; }
     }
