@@ -22,7 +22,7 @@ public class CompaniesCustomer : Entity<int>
     public DateTime IssuingDate { get; set; }
     public string Shaba { get; set; }
     public string DeliveryDateDescription { get; set; }
-    public int OrderRejectionStatus { get; set; }
+    public int? OrderRejectionStatus { get; set; }
     public string CompanyName { get; set; }
     public int ESaleTypeId { get; set; }
 }
