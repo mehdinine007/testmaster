@@ -21,6 +21,8 @@ using MongoDB.Bson.Serialization;
 using System.ComponentModel;
 using IFG.Core.Utility.Tools;
 using Volo.Abp.ObjectMapping;
+using Esale.Share.Authorize;
+using OrderManagement.Application.Contracts.OrderManagement.Constants.Permissions;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -48,7 +50,7 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
         _commonAppService = commonAppService;
         _productPropertyRepository = productPropertyRepository;
     }
-
+    [SecuredOperation(ProductAndCategoryServicePermissionConstants.Delete)]
     public async Task Delete(int id)
     {
         var productCategory = await GetById(id, false, null);
@@ -79,6 +81,7 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
         return productResult;
     }
 
+    [SecuredOperation(ProductAndCategoryServicePermissionConstants.Add)]
     public async Task<ProductAndCategoryDto> Insert(ProductAndCategoryCreateDto productAndCategoryCreateDto)
     {
         var levelId = 0;
@@ -171,6 +174,7 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
         return ObjectMapper.Map<ProductAndCategory, ProductAndCategoryDto>(entity);
     }
 
+    [SecuredOperation(ProductAndCategoryServicePermissionConstants.UploadFile)]
     public async Task<Guid> UploadFile(UploadFileDto uploadFileDto)
     {
         await Validation(uploadFileDto.Id, null);
@@ -261,6 +265,7 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
         });
         return productAndCategories;
     }
+    [SecuredOperation(ProductAndCategoryServicePermissionConstants.Update)]
     public async Task<ProductAndCategoryDto> Update(ProductAndCategoryUpdateDto productAndCategoryUpdateDto)
     {
         var productAndCategory = (await _productAndCategoryRepository.GetQueryableAsync()).FirstOrDefault(x => x.Id == productAndCategoryUpdateDto.Id)

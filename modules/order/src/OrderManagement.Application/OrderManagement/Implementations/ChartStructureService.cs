@@ -1,8 +1,10 @@
-﻿using MongoDB.Driver;
+﻿using Esale.Share.Authorize;
+using MongoDB.Driver;
 using Nest;
 using Newtonsoft.Json;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.OrderManagement;
+using OrderManagement.Application.Contracts.OrderManagement.Constants.Permissions;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
 using OrderManagement.Domain;
 using OrderManagement.Domain.OrderManagement;
@@ -54,6 +56,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             }
             return chartStructure;
         }
+        [SecuredOperation(ChartStructureServicePermissionConstants.UploadFile)]
         public async Task<bool> UploadFile(UploadFileDto uploadFile)
         {
             var chartStructure = await Validation(uploadFile.Id);
@@ -72,6 +75,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             return chartStructureDto;
         }
 
+        [SecuredOperation(ChartStructureServicePermissionConstants.Add)]
         public async Task<ChartStructureDto> Add(ChartStructureCreateOrUpdateDto chartStructureCreateOrUpdateDto)
         {
             var chartStructure = ObjectMapper.Map<ChartStructureCreateOrUpdateDto, ChartStructure>(chartStructureCreateOrUpdateDto);
@@ -79,6 +83,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             return await GetById(chartStructure.Id);
         }
 
+        [SecuredOperation(ChartStructureServicePermissionConstants.Update)]
         public async Task<ChartStructureDto> Update(ChartStructureCreateOrUpdateDto chartStructureCreateOrUpdateDto)
         {
             var chartStructure = await Validation(chartStructureCreateOrUpdateDto.Id);
@@ -90,7 +95,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             await _chartStructureRepository.UpdateAsync(chartStructure, autoSave: true);
             return await GetById(chartStructure.Id);
         }
-
+        [SecuredOperation(ChartStructureServicePermissionConstants.Delete)]
         public async Task<bool> Delete(int id)
         {
             await Validation(id);

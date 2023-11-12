@@ -20,9 +20,6 @@ namespace UserManagement.HttpApi.UserManagement.Controllers
 
         public PermissionDefinitionController(IPermissionDefinitionService rolePermission)
             => _permission = rolePermission;
-        [HttpPost]
-        public async Task<PermissionDefinitionDto> Add(PermissionDefinitionDto permission)
-                => await _permission.Add(permission);
         [HttpDelete]
         public async Task<bool> Delete(ObjectId Id)
                 => await _permission.Delete(Id);
@@ -36,8 +33,8 @@ namespace UserManagement.HttpApi.UserManagement.Controllers
             => await _permission.GetList();
 
         [HttpPost]
-        public async Task<PermissionDefinitionDto> Insert(PermissionDefinitionDto permission)
-            => await _permission.Insert(permission);
+        public async Task<PermissionDefinitionDto> Add(PermissionDefinitionDto permission)
+            => await _permission.Add(permission);
         [HttpGet]
         public async Task InsertList()
             => await _permission.InsertList();

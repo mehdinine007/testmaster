@@ -77,6 +77,80 @@
             "children": []
           }
         ]
+      },
+      {
+        "title": "RolePermissionService",
+        "code": "00010003",
+        "displayName": "سرویس مجوز نقش ها",
+        "children": [
+          {
+            "title": "GetById",
+            "code": "000100030001",
+            "displayName": "نمایش مجوز نقش ها توسط شناسه",
+            "children": []
+          },
+          {
+            "title": "GetList",
+            "code": "000100030002",
+            "displayName": "نمایش مجوز نقش ها",
+            "children": []
+          },
+          {
+            "title": "Delete",
+            "code": "000100030003",
+            "displayName": "حذف",
+            "children": []
+          },
+          {
+            "title": "Add",
+            "code": "000100030004",
+            "displayName": "ثبت",
+            "children": []
+          },
+          {
+            "title": "Update",
+            "code": "000100030005",
+            "displayName": "بروز رسانی",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "PermissionDefinitionService",
+        "code": "00010004",
+        "displayName": "سرویس تعریف مجوز",
+        "children": [
+          {
+            "title": "GetById",
+            "code": "000100040001",
+            "displayName": "نمایش تعریف مجوز توسط شناسه",
+            "children": []
+          },
+          {
+            "title": "GetList",
+            "code": "000100040002",
+            "displayName": "نمایش تعریف مجوز",
+            "children": []
+          },
+          {
+            "title": "Delete",
+            "code": "000100040003",
+            "displayName": "حذف",
+            "children": []
+          },
+          {
+            "title": "Add",
+            "code": "000100040004",
+            "displayName": "ثبت",
+            "children": []
+          },
+          {
+            "title": "Update",
+            "code": "000100040005",
+            "displayName": "بروز رسانی",
+            "children": []
+          }
+        ]
       }
     ]
   },
@@ -94,31 +168,31 @@
             "title": "CheckAdvocacyPrice",
             "code": "000200010001",
             "displayName": "چک حساب وکالتی با مبلغ",
-            "children":[]
+            "children": []
           },
           {
             "title": "CheckBlackList",
             "code": "000200010002",
             "displayName": "چک کردن بلک لیست",
-            "children":[]
+            "children": []
           },
           {
             "title": "CheckWhiteList",
             "code": "000200010003",
             "displayName": "چک کردن وایت لیست",
-            "children":[]
+            "children": []
           },
           {
             "title": "GetAgencies",
             "code": "000200010004",
             "displayName": "نمایش نمایندگی ها",
-            "children":[]
+            "children": []
           },
           {
             "title": "ClearCache",
             "code": "000200010005",
             "displayName": "پاک کردن کش",
-            "children":[]
+            "children": []
           }
         ]
       },
@@ -131,7 +205,7 @@
             "title": "ValidationBySaleDetailUId",
             "code": "000200020001",
             "displayName": "اعتبارسنجی توسط UID برنامه فروش",
-            "children":[]
+            "children": []
           }
         ]
       },
@@ -211,7 +285,7 @@
             "title": "GetOrderDeilvery",
             "code": "000200040001",
             "displayName": "نمایش روند سفارش",
-            "children":[]
+            "children": []
           }
         ]
       },
@@ -224,13 +298,13 @@
             "title": "LoadQuestionnaireTree",
             "code": "000200050001",
             "displayName": "بارگذاری درخت پرسشنامه",
-            "children":[]
+            "children": []
           },
           {
             "title": "SubmitAnswer",
             "code": "000200050002",
             "displayName": "ثبت پاسخ",
-            "children":[]
+            "children": []
           }
         ]
       },
@@ -243,19 +317,19 @@
             "title": "GetPreSales",
             "code": "000200060001",
             "displayName": "",
-            "children":[]
+            "children": []
           },
           {
             "title": "UserValidationByBirthDate",
             "code": "000200060002",
             "displayName": "اعتبارسنجی تاریخ تولد کاربر",
-            "children":[]
+            "children": []
           },
           {
             "title": "UserValidationByMobile",
             "code": "000200060003",
             "displayName": "اعتبارسنجی موبایل کاربر",
-            "children":[]
+            "children": []
           }
         ]
       },
@@ -268,37 +342,37 @@
             "title": "GetById",
             "code": "000200070001",
             "displayName": "نمایش بخشنامه توسط شناسه",
-            "children":[]
+            "children": []
           },
           {
             "title": "GetList",
             "code": "000200070002",
             "displayName": "نمایش بخشنامه ها",
-            "children":[]
+            "children": []
           },
           {
             "title": "Delete",
             "code": "000200070003",
             "displayName": "حذف",
-            "children":[]
+            "children": []
           },
           {
             "title": "Add",
             "code": "000200070004",
             "displayName": "ثبت",
-            "children":[]
+            "children": []
           },
           {
             "title": "Update",
             "code": "000200070005",
             "displayName": "بروزرسانی",
-            "children":[]
+            "children": []
           },
           {
             "title": "UploadFile",
             "code": "000200070006",
             "displayName": "بروزرسانی فایل",
-            "children":[]
+            "children": []
           }
         ]
       },
@@ -311,25 +385,25 @@
             "title": "Delete",
             "code": "000200080001",
             "displayName": "حذف",
-            "children":[]
+            "children": []
           },
           {
             "title": "GetAgencies",
             "code": "000200080002",
             "displayName": "نمایش نمایندگی ها",
-            "children":[]
+            "children": []
           },
           {
             "title": "Save",
             "code": "000200080003",
             "displayName": "ثبت",
-            "children":[]
+            "children": []
           },
           {
             "title": "Update",
             "code": "000200080004",
             "displayName": "بروزرسانی",
-            "children":[]
+            "children": []
           }
         ]
       },
@@ -342,19 +416,19 @@
             "title": "Delete",
             "code": "000200090001",
             "displayName": "حذف",
-            "children":[]
+            "children": []
           },
           {
             "title": "GetAgencySaleDetail",
             "code": "000200090002",
             "displayName": "نمایش نمایندگی های برنامه فروش",
-            "children":[]
+            "children": []
           },
           {
             "title": "Save",
             "code": "000200090003",
             "displayName": "ذخیره",
-            "children":[]
+            "children": []
           }
         ]
       },
@@ -367,31 +441,31 @@
             "title": "Delete",
             "code": "000200100001",
             "displayName": "حذف",
-            "children":[]
+            "children": []
           },
           {
             "title": "GetAllColors",
             "code": "000200100002",
             "displayName": "نمایش همه رنگ ها",
-            "children":[]
+            "children": []
           },
           {
             "title": "GetColors",
             "code": "000200100003",
             "displayName": "نمایش رنگ",
-            "children":[]
+            "children": []
           },
           {
             "title": "Save",
             "code": "000200100004",
             "displayName": "ثبت",
-            "children":[]
+            "children": []
           },
           {
             "title": "Update",
             "code": "000200100005",
             "displayName": "بروزرسانی",
-            "children":[]
+            "children": []
           }
         ]
       },
@@ -404,40 +478,469 @@
             "title": "Delete",
             "code": "000200110001",
             "displayName": "حذف",
-            "children":[]
+            "children": []
           },
           {
             "title": "GetActiveList",
             "code": "000200110002",
             "displayName": "نمایش برنامه فروش های فعال",
-            "children":[]
+            "children": []
           },
           {
             "title": "GetById",
             "code": "000200110003",
             "displayName": "نمایش برنامه فروش توسط شناسه",
-            "children":[]
+            "children": []
           },
           {
             "title": "GetSaleDetails",
             "code": "000200110004",
             "displayName": "نمایش برنامه فروش ها",
-            "children":[]
+            "children": []
           },
           {
             "title": "Save",
             "code": "000200110005",
             "displayName": "ثبت",
-            "children":[]
+            "children": []
           },
           {
             "title": "Update",
             "code": "000200110006",
             "displayName": "بروزرسانی",
-            "children":[]
+            "children": []
           }
         ]
-      }
+      },
+      {
+        "title": "SiteStructureService",
+        "code": "00020012",
+        "displayName": "سرویس ساختار سایت",
+        "children": [
+          {
+            "title": "GetById",
+            "code": "000200120001",
+            "displayName": "نمایش ساختار سایت توسط شناسه",
+            "children": []
+          },
+          {
+            "title": "GetActiveList",
+            "code": "000200120002",
+            "displayName": "نمایش ساختار سایت",
+            "children": []
+          },
+          {
+            "title": "Delete",
+            "code": "000200120003",
+            "displayName": "حذف",
+            "children": []
+          },
+          {
+            "title": "Save",
+            "code": "000200120004",
+            "displayName": "ثبت",
+            "children": []
+          },
+          {
+            "title": "Update",
+            "code": "000200120005",
+            "displayName": "بروزرسانی",
+            "children": []
+          },
+          {
+            "title": "UploadFile",
+            "code": "000200120006",
+            "displayName": "بروزرسانی فایل",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "PropertyCategoryService",
+        "code": "00020013",
+        "displayName": "سرویس انتصاب محصول به ویژگی",
+        "children": [
+          {
+            "title": "GetById",
+            "code": "000200130001",
+            "displayName": "نمایش انتصاب محصول به ویژگی توسط شناسه",
+            "children": []
+          },
+          {
+            "title": "GetActiveList",
+            "code": "000200130002",
+            "displayName": "نمایش انتصاب محصول به ویژگی",
+            "children": []
+          },
+          {
+            "title": "Delete",
+            "code": "000200130003",
+            "displayName": "حذف",
+            "children": []
+          },
+          {
+            "title": "Save",
+            "code": "000200130004",
+            "displayName": "ثبت",
+            "children": []
+          },
+          {
+            "title": "Update",
+            "code": "000200130005",
+            "displayName": "بروزرسانی",
+            "children": []
+          },
+          {
+            "title": "UploadFile",
+            "code": "000200130006",
+            "displayName": "بروزرسانی فایل",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "ProductPropertyService",
+        "code": "00020014",
+        "displayName": "سرویس انتصاب محصول",
+        "children": [
+          {
+            "title": "GetById",
+            "code": "000200140001",
+            "displayName": "نمایش انتصاب محصول توسط شناسه",
+            "children": []
+          },
+          {
+            "title": "GetActiveList",
+            "code": "000200140002",
+            "displayName": "نمایش انتصاب محصول",
+            "children": []
+          },
+          {
+            "title": "Delete",
+            "code": "000200140003",
+            "displayName": "حذف",
+            "children": []
+          },
+          {
+            "title": "Add",
+            "code": "000200140004",
+            "displayName": "ثبت",
+            "children": []
+          },
+          {
+            "title": "Update",
+            "code": "000200140005",
+            "displayName": "بروزرسانی",
+            "children": []
+          },
+          {
+            "title": "UploadFile",
+            "code": "000200140006",
+            "displayName": "بروزرسانی فایل",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "ProductLevelService",
+        "code": "00020015",
+        "displayName": "سرویس سطح بندی محصول",
+        "children": [
+          {
+            "title": "GetById",
+            "code": "000200150001",
+            "displayName": "نمایش سرویس سطح بندی محصول توسط شناسه",
+            "children": []
+          },
+          {
+            "title": "GetList",
+            "code": "000200150002",
+            "displayName": "نمایش سرویس سطح بندی محصول",
+            "children": []
+          },
+          {
+            "title": "Delete",
+            "code": "000200150003",
+            "displayName": "حذف",
+            "children": []
+          },
+          {
+            "title": "Add",
+            "code": "000200150004",
+            "displayName": "ثبت",
+            "children": []
+          },
+          {
+            "title": "Update",
+            "code": "000200150005",
+            "displayName": "بروزرسانی",
+            "children": []
+          }
+         
+        ]
+      },
+      {
+        "title": "ProductAndCategoryService",
+        "code": "00020016",
+        "displayName": "سرویس دسته بندی محصولات",
+        "children": [
+          {
+            "title": "GetById",
+            "code": "000200160001",
+            "displayName": "نمایش دسته بندی محصولات توسط شناسه",
+            "children": []
+          },
+          {
+            "title": "GetList",
+            "code": "000200160002",
+            "displayName": "نمایش دسته بندی محصولات",
+            "children": []
+          },
+          {
+            "title": "Delete",
+            "code": "000200160003",
+            "displayName": "حذف",
+            "children": []
+          },
+          {
+            "title": "Add",
+            "code": "000200160004",
+            "displayName": "ثبت",
+            "children": []
+          },
+          {
+            "title": "Update",
+            "code": "000200160005",
+            "displayName": "بروزرسانی",
+            "children": []
+          },
+          {
+            "title": "UploadFile",
+            "code": "000200160006",
+            "displayName": "بروزرسانی فایل",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "ChartStructureService",
+        "code": "00020017",
+        "displayName": "سرویس ساختار محصول",
+        "children": [
+          {
+            "title": "GetById",
+            "code": "000200170001",
+            "displayName": "نمایش ساختار محصول توسط شناسه",
+            "children": []
+          },
+          {
+            "title": "GetList",
+            "code": "000200170002",
+            "displayName": "نمایش ساختار محصول",
+            "children": []
+          },
+          {
+            "title": "Delete",
+            "code": "000200170003",
+            "displayName": "حذف",
+            "children": []
+          },
+          {
+            "title": "Add",
+            "code": "000200170004",
+            "displayName": "ثبت",
+            "children": []
+          },
+          {
+            "title": "Update",
+            "code": "000200170005",
+            "displayName": "بروزرسانی",
+            "children": []
+          },
+          {
+            "title": "UploadFile",
+            "code": "000200170006",
+            "displayName": "بروزرسانی فایل",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "CarClassService",
+        "code": "00020018",
+        "displayName": "سرویس کلاس ماشین",
+        "children": [
+          {
+            "title": "GetById",
+            "code": "000200180001",
+            "displayName": "نمایش کلاس ماشین توسط شناسه",
+            "children": []
+          },
+          {
+            "title": "GetList",
+            "code": "000200180002",
+            "displayName": "نمایش کلاس ماشین",
+            "children": []
+          },
+          {
+            "title": "Delete",
+            "code": "000200180003",
+            "displayName": "حذف",
+            "children": []
+          },
+          {
+            "title": "Add",
+            "code": "000200180004",
+            "displayName": "ثبت",
+            "children": []
+          },
+          {
+            "title": "Update",
+            "code": "000200180005",
+            "displayName": "بروزرسانی",
+            "children": []
+          },
+          {
+            "title": "UploadFile",
+            "code": "000200180006",
+            "displayName": "بروزرسانی فایل",
+            "children": []
+          }
+
+        ]
+      },
+      {
+        "title": "BankAppService",
+        "code": "00020019",
+        "displayName": "سرویس بانک ها",
+        "children": [
+          {
+            "title": "GetById",
+            "code": "000200190001",
+            "displayName": "نمایش بانک ها توسط شناسه",
+            "children": []
+          },
+          {
+            "title": "GetList",
+            "code": "000200190002",
+            "displayName": "نمایش بانک ها",
+            "children": []
+          },
+          {
+            "title": "Delete",
+            "code": "000200190003",
+            "displayName": "حذف",
+            "children": []
+          },
+          {
+            "title": "Add",
+            "code": "000200190004",
+            "displayName": "ثبت",
+            "children": []
+          },
+          {
+            "title": "Update",
+            "code": "000200190005",
+            "displayName": "بروزرسانی",
+            "children": []
+          },
+          {
+            "title": "UploadFile",
+            "code": "000200190006",
+            "displayName": "بروزرسانی فایل",
+            "children": []
+          }
+
+        ]
+      },
+      {
+        "title": "AttachmentService",
+        "code": "00020020",
+        "displayName": "سرویس بانک ها",
+        "children": [
+          {
+            "title": "GetById",
+            "code": "000200200001",
+            "displayName": "نمایش بانک ها توسط شناسه",
+            "children": []
+          },
+          {
+            "title": "GetList",
+            "code": "000200200002",
+            "displayName": "نمایش بانک ها",
+            "children": []
+          },
+          {
+            "title": "Delete",
+            "code": "000200200003",
+            "displayName": "حذف",
+            "children": []
+          },
+          {
+            "title": "Add",
+            "code": "000200200004",
+            "displayName": "ثبت",
+            "children": []
+          },
+          {
+            "title": "Update",
+            "code": "000200200005",
+            "displayName": "بروزرسانی",
+            "children": []
+          },
+          {
+            "title": "UploadFile",
+            "code": "000200200006",
+            "displayName": "بروزرسانی فایل",
+            "children": []
+          }
+
+        ]
+      },
+      {
+        "title": "AnnouncementService",
+        "code": "00020021",
+        "displayName": "سرویس بانک ها",
+        "children": [
+          {
+            "title": "GetById",
+            "code": "000200210001",
+            "displayName": "نمایش بانک ها توسط شناسه",
+            "children": []
+          },
+          {
+            "title": "GetList",
+            "code": "000200210002",
+            "displayName": "نمایش بانک ها",
+            "children": []
+          },
+          {
+            "title": "Delete",
+            "code": "000200210003",
+            "displayName": "حذف",
+            "children": []
+          },
+          {
+            "title": "Add",
+            "code": "000200210004",
+            "displayName": "ثبت",
+            "children": []
+          },
+          {
+            "title": "Update",
+            "code": "000200210005",
+            "displayName": "بروزرسانی",
+            "children": []
+          },
+          {
+            "title": "UploadFile",
+            "code": "000200210006",
+            "displayName": "بروزرسانی فایل",
+            "children": []
+          }
+
+        ]
+      },
     ]
   },
   {

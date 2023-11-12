@@ -39,7 +39,7 @@ namespace UserManagement.Application.UserManagement.Implementations
             _cacheManager = cacheManager;
             _permissionWriteRepository = permissionWriteRepository;
         }
-
+        [SecuredOperation(RolePermissionServicePermissionConstants.GetList)]
         public async Task<List<PermissionDefinitionDto>> GetList()
         {
             List<PermissionDefinition> permissions = new();
@@ -170,8 +170,8 @@ namespace UserManagement.Application.UserManagement.Implementations
         }
 
 
-
-        public async Task<PermissionDefinitionDto> Insert(PermissionDefinitionDto permission)
+        [SecuredOperation(RolePermissionServicePermissionConstants.Add)]
+        public async Task<PermissionDefinitionDto> Add(PermissionDefinitionDto permission)
         {
             var permissionQuery = await _permissionRepository.GetQueryableAsync();
             var _maxCode = permissionQuery.Max(x => x.Code);
@@ -181,6 +181,7 @@ namespace UserManagement.Application.UserManagement.Implementations
             return ObjectMapper.Map<PermissionDefinition, PermissionDefinitionDto>(results);
         }
 
+        [SecuredOperation(RolePermissionServicePermissionConstants.GetById)]
         public async Task<PermissionDefinitionDto> GetById(ObjectId Id)
         {
             var permissionDefinition = await Validation(Id, null);
@@ -197,14 +198,8 @@ namespace UserManagement.Application.UserManagement.Implementations
             }
             return permissiondefenition;
         }
-
-        public async Task<PermissionDefinitionDto> Add(PermissionDefinitionDto permission)
-        {
-            var permissiondefinition = ObjectMapper.Map<PermissionDefinitionDto, PermissionDefinitionWrite>(permission);
-            var result = await _permissionWriteRepository.InsertAsync(permissiondefinition);
-            return ObjectMapper.Map<PermissionDefinition, PermissionDefinitionDto>(result);
-        }
-
+               
+        [SecuredOperation(RolePermissionServicePermissionConstants.Update)]
         public async Task<PermissionDefinitionDto> Update(PermissionDefinitionDto input)
         {
             var rolePermission = (await _rolepermissionRepository.GetQueryableAsync()).FirstOrDefault(x => x.Code == input.Code);
@@ -236,6 +231,7 @@ namespace UserManagement.Application.UserManagement.Implementations
 
         }
 
+        [SecuredOperation(RolePermissionServicePermissionConstants.Delete)]
         public async Task<bool> Delete(ObjectId Id)
         {
             var permissiondefenission = await GetById(Id);

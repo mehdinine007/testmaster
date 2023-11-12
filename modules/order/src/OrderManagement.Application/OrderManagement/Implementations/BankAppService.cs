@@ -12,7 +12,8 @@ using OrderManagement.Domain.Shared;
 using Volo.Abp;
 using MongoDB.Driver;
 using Microsoft.EntityFrameworkCore;
-
+using Esale.Share.Authorize;
+using OrderManagement.Application.Contracts.OrderManagement.Constants.Permissions;
 
 namespace OrderManagement.Application.OrderManagement.Implementations
 {
@@ -39,6 +40,8 @@ namespace OrderManagement.Application.OrderManagement.Implementations
            
             return banksDto;
         }
+
+        [SecuredOperation(BankAppServicePermissionConstants.Add)]
         public async Task<BankDto> Add(BankCreateOrUpdateDto bankCreateOrUpdateDto)
         {
             var bank = ObjectMapper.Map<BankCreateOrUpdateDto, Bank>(bankCreateOrUpdateDto);
@@ -46,6 +49,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             return ObjectMapper.Map<Bank, BankDto>(entity);
         }
 
+        [SecuredOperation(BankAppServicePermissionConstants.Update)]
         public async Task<BankDto> Update(BankCreateOrUpdateDto bankCreateOrUpdateDto)
         {
             var bank = await Validation(bankCreateOrUpdateDto.Id, bankCreateOrUpdateDto);
@@ -65,6 +69,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
                 bankDto.Attachments= ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(attachments);
             return bankDto;
         }
+        [SecuredOperation(BankAppServicePermissionConstants.Delete)]
         public async Task<bool> Delete(int id)
         {
             await Validation(id, null);
@@ -84,6 +89,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             return bank;
         }
 
+        [SecuredOperation(BankAppServicePermissionConstants.UploadFile)]
         public async Task<bool> UploadFile(UploadFileDto uploadFile)
         {
             var bank = await Validation(uploadFile.Id, null);

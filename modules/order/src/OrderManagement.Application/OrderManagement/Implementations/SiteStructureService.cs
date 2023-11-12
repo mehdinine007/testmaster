@@ -1,8 +1,10 @@
-﻿using IFG.Core.Utility.Tools;
+﻿using Esale.Share.Authorize;
+using IFG.Core.Utility.Tools;
 using Nest;
 using Newtonsoft.Json;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.OrderManagement;
+using OrderManagement.Application.Contracts.OrderManagement.Constants.Permissions;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
 using OrderManagement.Application.Contracts.Services;
 using OrderManagement.Domain;
@@ -42,6 +44,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             _bankAppServiceService = bankAppServiceService;
             _announcementService = announcementService;
         }
+        [SecuredOperation(SiteStructureServicePermissionConstant.Add)]
         public async Task<SiteStructureDto> Add(SiteStructureAddOrUpdateDto siteStructureDto)
         {
             var siteStructureQuery = await _siteStructureRepository.GetQueryableAsync();
@@ -58,6 +61,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             _siteStructure = await _siteStructureRepository.InsertAsync(_siteStructure, autoSave: true);
             return await GetById(_siteStructure.Id);
         }
+        [SecuredOperation(SiteStructureServicePermissionConstant.Update)]
         public async Task<SiteStructureDto> Update(SiteStructureAddOrUpdateDto siteStructureDto)
         {
             var siteStructure = await Validation(siteStructureDto.Id, siteStructureDto);
@@ -69,6 +73,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             return await GetById(siteStructure.Id);
         }
 
+        [SecuredOperation(SiteStructureServicePermissionConstant.Delete)]
         public async Task<bool> Delete(int id)
         {
             await Validation(id, null);
@@ -141,7 +146,8 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             });
             return siteStructures;
         }
-
+                
+        [SecuredOperation(SiteStructureServicePermissionConstant.UploadFile)]
         public async Task<bool> UploadFile(UploadFileDto uploadFile)
         {
             await Validation(uploadFile.Id, null);

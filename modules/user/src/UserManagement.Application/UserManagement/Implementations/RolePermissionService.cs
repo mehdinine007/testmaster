@@ -12,6 +12,7 @@ using UserManagement.Application.Contracts.Models;
 using UserManagement.Domain.UserManagement.Enums;
 using NuGet.Packaging;
 using MongoDB.Driver;
+using Esale.Share.Authorize;
 
 namespace UserManagement.Application.UserManagement.Implementations
 {
@@ -43,7 +44,7 @@ namespace UserManagement.Application.UserManagement.Implementations
                 await _cacheManager.SetAsync("Role" + role.Code, RedisCoreConstant.RolePermissionPrefix, role.Permissions, 90000, new CacheOptions { Provider = CacheProviderEnum.Hybrid });
             }
         }
-
+        [SecuredOperation(RolePermissionServicePermissionConstants.GetList)]
         public async Task<List<RolePermissionDto>> GetList()
         {
             List<RolePermission> rolePermissions = new();
@@ -52,35 +53,6 @@ namespace UserManagement.Application.UserManagement.Implementations
             rolePermissions = rolePermissionQuery.ToList();
             var getRolePermission = ObjectMapper.Map<List<RolePermission>, List<RolePermissionDto>>(rolePermissions);
             return getRolePermission;
-        }
-
-        public async Task InsertList(RolePermissionDto dto)
-        {
-            var srviceCodeList = new List<string>();
-            var permissions = await _permissionDefinitionService.GetList();
-            foreach (var madule in permissions)
-            {
-                foreach (var service in madule.Children)
-                {
-                    srviceCodeList.AddRange(service.Children.Select(x => x.Code).ToList());
-                }
-            }
-            dto.Permissions = srviceCodeList;
-            await Add(dto);
-            // var permis = new List<string>() { "00010001", "000100020001", "000100020002", "000100020003", "000100020004", "000100020005", "000100020006" };
-            //var rolePermissionDto = new RolePermissionDto()
-            //{
-
-            //    Title = "Customer",
-            //    Code = "0001",
-            //    Permissions = permis
-
-            //};
-
-            //var b = ObjectMapper.Map<RolePermissionDto, RolePermission>(rolePermissionDto);
-            //var a = await _rolePermissionRepository.InsertAsync(b);
-            //var rolePermissions = (await _rolePermissionRepository.GetQueryableAsync())
-            //    .ToList();
         }
 
         public async Task<bool> AddDefaultRole(RolePermissionEnum? type)
@@ -149,6 +121,7 @@ namespace UserManagement.Application.UserManagement.Implementations
             return true;
         }
 
+        [SecuredOperation(RolePermissionServicePermissionConstants.Add)]
         public async Task<RolePermissionDto> Add(RolePermissionDto dto)
         {
             var role = await _rolePermissionRepository.GetQueryableAsync();
@@ -163,6 +136,7 @@ namespace UserManagement.Application.UserManagement.Implementations
             return ObjectMapper.Map<RolePermissionWrite, RolePermissionDto>(entity);
         }
 
+        [SecuredOperation(RolePermissionServicePermissionConstants.Update)]
         public async Task<RolePermissionDto> Update(RolePermissionDto dto)
         {
 
@@ -185,12 +159,14 @@ namespace UserManagement.Application.UserManagement.Implementations
 
         }
 
+        [SecuredOperation(RolePermissionServicePermissionConstants.GetById)]
         public async Task<RolePermissionDto> GetById(ObjectId id)
         {
             var rolepermission = await Validation(id, null);
             var rolepermissionDto = ObjectMapper.Map<RolePermission, RolePermissionDto>(rolepermission);
             return rolepermissionDto;
         }
+        [SecuredOperation(RolePermissionServicePermissionConstants.Delete)]
         public async Task<bool> Delete(ObjectId id)
         {
             await Validation(id, null);

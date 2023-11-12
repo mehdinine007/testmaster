@@ -1,7 +1,9 @@
-﻿using IFG.Core.DataAccess;
+﻿using Esale.Share.Authorize;
+using IFG.Core.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.OrderManagement;
+using OrderManagement.Application.Contracts.OrderManagement.Constants.Permissions;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
 using OrderManagement.Domain;
 using OrderManagement.Domain.OrderManagement;
@@ -27,7 +29,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
 
         }
 
-
+        [SecuredOperation(ProductLevelServicePermissionConstants.Delete)]
         public async Task<bool> Delete(int id)
         {
             await _productLevelRepository.DeleteAsync(x => x.Id == id, autoSave: true);
@@ -41,6 +43,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             return productLevelsDto;
         }
 
+        [SecuredOperation(ProductLevelServicePermissionConstants.Add)]
         public async Task<ProductLevelDto> Add(ProductLevelDto productLevelDto)
         {
             var productLevelQuery = await _productLevelRepository.GetQueryableAsync();
@@ -58,6 +61,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             return ObjectMapper.Map<ProductLevel, ProductLevelDto>(entity);
         }
 
+        [SecuredOperation(ProductLevelServicePermissionConstants.Update)]
         public async Task<ProductLevelDto> Update(ProductLevelDto productLevelDto)
         {
             var productLevelQuery = await _productLevelRepository.GetQueryableAsync();

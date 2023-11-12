@@ -1,7 +1,9 @@
 ﻿using Core.Utility.Tools;
+using Esale.Share.Authorize;
 using MongoDB.Bson;
 using Nest;
 using OrderManagement.Application.Contracts;
+using OrderManagement.Application.Contracts.OrderManagement.Constants.Permissions;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
 using OrderManagement.Domain;
 using System;
@@ -47,6 +49,8 @@ public class PropertyCategoryService : ApplicationService, IPropertyCategoryServ
         }
         
     }
+    
+    [SecuredOperation(PropertyCategoryServicePermissionConstants.Add)]
     public async Task<PropertyCategoryDto> Add(PropertyCategoryDto propertyCategoryDto)
     {
         var propertyCategoryQuery = await _propertyCategoryRepository.GetQueryableAsync();
@@ -69,6 +73,7 @@ public class PropertyCategoryService : ApplicationService, IPropertyCategoryServ
 
         return ObjectMapper.Map<PropertyCategory, PropertyCategoryDto>(entity);
     }
+    [SecuredOperation(PropertyCategoryServicePermissionConstants.Update)]
     public async Task<PropertyCategoryDto> Update(PropertyCategoryDto propertyCategoryDto)
     {
         var existingEntity = await _propertyCategoryRepository.FirstOrDefaultAsync(x => x.Id == ObjectId.Parse(propertyCategoryDto.Id));
@@ -86,6 +91,7 @@ public class PropertyCategoryService : ApplicationService, IPropertyCategoryServ
         await _propertyCategoryRepository.UpdateAsync(existingEntity, autoSave: true);
         return ObjectMapper.Map<PropertyCategory, PropertyCategoryDto>(existingEntity);
     }
+    [SecuredOperation(PropertyCategoryServicePermissionConstants.Delete)]
     public async Task<bool> Delete(string Id)
     {
         ObjectId objectId;
