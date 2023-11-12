@@ -479,8 +479,7 @@ public class CommonAppService : ApplicationService, ICommonAppService
         var serviceRequest = await client.GetAsync(string.Format(_configuration.GetValue<string>("IkcoOrderInquiryAddresses:InquiryAddress"), nationalCode, orderId));
         if (serviceRequest.StatusCode == HttpStatusCode.Unauthorized)
         {
-            var cacheKey = "";
-            await _cacheManager.RemoveAsync(cacheKey, RedisConstants.IkcoBearerToken, new CacheOptions() { Provider = CacheProviderEnum.Hybrid });
+            await _cacheManager.RemoveAsync(RedisConstants.IkcoBearerToken, RedisConstants.OrderStatusPrefix, new CacheOptions() { Provider = CacheProviderEnum.Hybrid });
             accessToken = await GetIkcoAccessTokenAsync();
             serviceRequest = await client.GetAsync(string.Format(_configuration.GetValue<string>("IkcoOrderInquiryAddresses:InquiryAddress"), nationalCode, orderId));
         }
