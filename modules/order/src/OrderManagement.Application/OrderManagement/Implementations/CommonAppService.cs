@@ -494,8 +494,8 @@ public class CommonAppService : ApplicationService, ICommonAppService
 
     public async Task<string> GetIkcoAccessTokenAsync()
     {
-        var cacheKey = "";
-        var cachedAccessToken = await _cacheManager.GetAsync<string>(cacheKey, RedisConstants.IkcoBearerToken, new CacheOptions { Provider = CacheProviderEnum.Hybrid });
+        
+        var cachedAccessToken = await _cacheManager.GetAsync<string>(RedisConstants.IkcoBearerToken,RedisConstants.OrderStatusPrefix, new CacheOptions { Provider = CacheProviderEnum.Hybrid });
 
         if (!string.IsNullOrEmpty(cachedAccessToken))
         {
@@ -518,8 +518,8 @@ public class CommonAppService : ApplicationService, ICommonAppService
         if (response.Data == null)
             throw new UserFriendlyException(response?.Errors ?? "خطا در فرآیند لاگین سرویس استعلام سفارش");
 
-        await _cacheManager.SetAsync<string>(cacheKey, RedisConstants.IkcoBearerToken, response.Data.AccessToken, 
-            TimeSpan.FromDays(1).TotalDays,
+        await _cacheManager.SetAsync<string>(RedisConstants.IkcoBearerToken,RedisConstants.OrderStatusPrefix, response.Data.AccessToken, 
+            TimeSpan.FromDays(1).Seconds,
             new CacheOptions
             {
                 Provider = CacheProviderEnum.Hybrid
