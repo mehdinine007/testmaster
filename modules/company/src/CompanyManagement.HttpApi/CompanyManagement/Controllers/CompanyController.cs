@@ -29,6 +29,6 @@ public class CompanyController : Controller
     public Task SubmitOrderInformations(List<ClientsOrderDetailByCompanyDto> clientsOrderDetailByCompnayDtos)
     => _companyAppService.SubmitOrderInformations(clientsOrderDetailByCompnayDtos);
     [HttpGet]
-    public CompaniesCustomerDto GetCustomer(string nationalCode, int saleId)
-        => _companyAppService.GetCustomer(nationalCode, saleId);
+    public CompaniesCustomerDto GetRecentCustomerAndOrder(string nationalCode, int saleId)
+        => _companyAppService.GetRecentCustomerAndOrder(nationalCode, saleId);
 }
