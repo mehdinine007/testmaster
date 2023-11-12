@@ -112,7 +112,7 @@ public class CompanyAppService : ApplicationService, ICompanyAppService
     }
 
     [SecuredOperation(CompanyServicePermissionConstants.GetCustomer)]
-    public CompaniesCustomerDto GetCustomer(string nationalCode, int saleId)
+    public CompaniesCustomerDto GetRecentCustomerAndOrder(string nationalCode, int saleId)
     {
         if (nationalCode.AsParallel().Any(x => !char.IsDigit(x)) || nationalCode.Length != 10)
             throw new UserFriendlyException("کد ملی مشتری صحیح نیست");
@@ -129,7 +129,7 @@ public class CompanyAppService : ApplicationService, ICompanyAppService
         };
 
         var companiesCustomer = _companyManagementDbContext.Set<CompaniesCustomer>().FromSqlRaw(
-            string.Format("EXEC {0} {1}", "[dbo].[GetCompaniesCustomer]", "@saleId,@companyId,@nationalCode"),paramArray ).AsEnumerable().FirstOrDefault();
+            string.Format("EXEC {0} {1}", "[dbo].[GetRecentCustomerAndOrder]", "@saleId,@companyId,@nationalCode"),paramArray ).AsEnumerable().FirstOrDefault();
             //"EXEC [dbo].[GetCompaniesCustomer] @saleId,@companyId,@nationalCode", paramArray).FirstOrDefault();
 
         return ObjectMapper.Map<CompaniesCustomer, CompaniesCustomerDto>(companiesCustomer);

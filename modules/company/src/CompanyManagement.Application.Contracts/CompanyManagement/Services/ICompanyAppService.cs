@@ -8,5 +8,5 @@ public interface ICompanyAppService : IApplicationService
     Task<bool> SubmitOrderInformations(List<ClientsOrderDetailByCompanyDto> clientsOrderDetailByCompnayDtos);
     List<CustomersWithCars> GetCustomersAndCars(GetCustomersAndCarsDto input);
     Task<bool> InsertCompanyProduction(List<CompanyProductionDto> companyProductionsDto);
-    CompaniesCustomerDto GetCustomer(string nationalCode, int saleId);
+    CompaniesCustomerDto GetRecentCustomerAndOrder(string nationalCode, int saleId);
 }
