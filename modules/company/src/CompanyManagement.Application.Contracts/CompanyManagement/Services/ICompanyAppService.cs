@@ -13,6 +13,6 @@ namespace CompanyManagement.Application.Contracts.CompanyManagement.Services
         Task<bool> SubmitOrderInformations(List<ClientsOrderDetailByCompanyDto> clientsOrderDetailByCompnayDtos);
         List<CustomersWithCars> GetCustomersAndCars(GetCustomersAndCarsDto input);
         Task<bool> InsertCompanyProduction(List<CompanyProductionDto> companyProductionsDto);
-
+        CompaniesCustomerDto GetRecentCustomerAndOrder(string nationalCode, int saleId);
     }
 }

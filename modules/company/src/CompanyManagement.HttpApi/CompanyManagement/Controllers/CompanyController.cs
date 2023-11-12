@@ -19,11 +19,15 @@ public class CompanyController : Controller
         => _companyAppService = companyAppService;
     [HttpGet]
     public List<CustomersWithCars> GetCustomersAndCars(GetCustomersAndCarsDto input)
-    =>_companyAppService.GetCustomersAndCars(input);
+    => _companyAppService.GetCustomersAndCars(input);
     [HttpPost]
     public Task InsertCompanyProduction(List<CompanyProductionDto> companyProductionsDto)
-    =>_companyAppService.InsertCompanyProduction(companyProductionsDto);
+    => _companyAppService.InsertCompanyProduction(companyProductionsDto);
     [HttpPost]
     public Task SubmitOrderInformations(List<ClientsOrderDetailByCompanyDto> clientsOrderDetailByCompnayDtos)
     => _companyAppService.SubmitOrderInformations(clientsOrderDetailByCompnayDtos);
+
+    [HttpGet]
+    public CompaniesCustomerDto GetRecentCustomerAndOrder(string nationalCode, int saleId)
+        => _companyAppService.GetRecentCustomerAndOrder(nationalCode, saleId);
 }
