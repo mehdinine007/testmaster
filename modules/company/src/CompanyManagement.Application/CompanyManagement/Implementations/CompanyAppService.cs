@@ -113,7 +113,7 @@ namespace CompanyManagement.Application.CompanyManagement.Implementations
             return CompanyId;
         }
 
-        [SecuredOperation(CompanyServicePermissionConstants.GetCustomer)]
+        [SecuredOperation(CompanyServicePermissionConstants.GetRecentCustomerAndOrder)]
         public CompaniesCustomerDto GetRecentCustomerAndOrder(string nationalCode, int saleId)
         {
             if (nationalCode.AsParallel().Any(x => !char.IsDigit(x)) || nationalCode.Length != 10)
