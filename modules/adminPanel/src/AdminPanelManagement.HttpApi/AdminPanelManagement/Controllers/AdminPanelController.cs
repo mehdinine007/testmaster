@@ -6,22 +6,26 @@ using System.Threading.Tasks;
 using Volo.Abp.Auditing;
 using Volo.Abp;
 using Microsoft.AspNetCore.Mvc;
+using AdminPanelManagement.Application.Contracts.AdminPanelManagement.IServices;
+using AdminPanelManagement.Application.Contracts.AdminPanelManagement.Dtos;
 
 namespace AdminPanelManagement.HttpApi.AdminPanelManagement.Controllers
 {
     [DisableAuditing]
     [RemoteService]
-    [Route("api/services/app/ActivityService/[action]")]
+    [Route("api/services/app/AdminPanelService/[action]")]
     //[UserAuthorization]
     public class AdminPanelController: Controller
     {
 
-       // private readonly IActivityService _activityService;
-        public AdminPanelController()
-        { } 
-        //[HttpPost]
-        //public Task<ActivityDto> Add(ActivityCreateOrUpdateDto activityCreateOrUpdateDto)
-        //=>_activityService.Add(activityCreateOrUpdateDto);
-       
+       private readonly IAdminPanelService _adminPanelService;
+        public AdminPanelController(IAdminPanelService adminPanelService)
+        {
+            _adminPanelService = adminPanelService;
+        }
+        [HttpGet]
+        public Task<UserInfo_CustomerOrderDto> GetCustomerOrderList(string nationalCode)
+        => _adminPanelService.GetCustomerOrderList(nationalCode);
+
     }
 }

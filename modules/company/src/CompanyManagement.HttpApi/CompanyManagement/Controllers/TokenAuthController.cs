@@ -15,7 +15,7 @@ namespace CompanyManagement.HttpApi.CompanyManagement.Controllers;
 
 [DisableAuditing]
 [RemoteService]
-[Route("api/services/app/TokenAuthService/[action]")]
+[Route("api/TokenAuth/Auth/[action]")]
 //[UserAuthorization]
 public class TokenAuthController : Controller
 {
@@ -29,7 +29,7 @@ public class TokenAuthController : Controller
 
 
     [HttpPost]
-    public async Task<AuthenticateResultModel> Authenticate(AuthenticateReqDto model)
+    public async Task<AuthenticateResultModel> Auth(AuthenticateReqDto model)
     {
         return await _authenticateAppService.Authenticate(model);
     }

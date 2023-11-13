@@ -36,7 +36,7 @@ namespace CompanyManagement.Application.CompanyManagement.Implementations
                    {
                        Id = dco.Id,
                        NationalCode = dco.NationalCode,
-                       TranDate = dco.TranDate,
+                     //  TranDate = dco.TranDate,
                        PayedPrice = d.Any() ? d.Sum(x => x.PayedPrice) : 0,
                        ContRowId = dco.ContRowId.ToString(),
                        Vin = dco.Vin,

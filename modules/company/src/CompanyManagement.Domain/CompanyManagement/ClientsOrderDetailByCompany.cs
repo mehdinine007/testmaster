@@ -13,7 +13,6 @@ namespace CompanyManagement.Domain.CompanyManagement
         public int? SaleType { get; set; }
         public int? ModelType { get; set; }
         public DateTime? InviteDate { get; set; }
-        public DateTime? TranDate { get; set; }
         public string ContRowId { get; set; }
         public DateTime? ContRowIdDate { get; set; }
         public string Vin { get; set; }
@@ -28,6 +27,7 @@ namespace CompanyManagement.Domain.CompanyManagement
         public bool? IsCanceled { get; set; }
         public DateTime? IntroductionDate { get; set; }
         public DateTime? FactorDate { get; set; }
+        public string CarCode { get;set; }
         public virtual ICollection<CompanyPaypaidPrices> Paypaidprice { get; set; }
         public virtual ICollection<CompanySaleCallDates> TurnDate { get; set; }
     }
