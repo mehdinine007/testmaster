@@ -17,7 +17,6 @@ namespace CompanyManagement.Application.Contracts.CompanyManagement
         public int? ModelType { get; set; }
 
         public DateTime? InviteDate { get; set; }
-        public DateTime? TranDate { get; set; }
         public string ContRowId { get; set; }
 
         public DateTime? ContRowIdDate { get; set; }
