@@ -30,4 +30,8 @@ public class CompanyController : Controller
     {
         return await _companyAppService.SubmitOrderInformations(clientsOrderDetailByCompnayDtos);
     }
+
+    [HttpGet]
+    public CompaniesCustomerDto GetRecentCustomerAndOrder(string nationalCode, int saleId)
+        => _companyAppService.GetRecentCustomerAndOrder(nationalCode, saleId);
 }

@@ -10,6 +10,9 @@ public class CompanyServicePermissionConstants : BasePermissionConstants
     public const string InsertCompanyProduction_DisplayName = "ایجاد برنامه تولید خودرو ساز";
     public const string SubmitOrderInformations = "000300010003";
     public const string SubmitOrderInformations_DisplayName = "ثبت اطلاعات سفارش";
+    public const string GetRecentCustomerAndOrder = "000300010004";
+    public const string GetRecentCustomerAndOrder_DisplayName = "گرفتن اطلاعات مشتریان برای شرکت های خودرو ساز";
+
 
     public override string ModuleIdentifier => "0003";
 

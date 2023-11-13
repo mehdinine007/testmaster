@@ -447,26 +447,32 @@
     "children": [
       {
         "title": "CompanyService",
-        "code": "0001",
+        "code": "00030001",
         "displayName": "سرویس شرکت ها",
         "children": [
           {
             "title": "GetCustomersAndCars",
             "code": "000300010001",
             "displayName": "نمایش مشتری ها و خودروها",
-            "children":[]
+            "children": []
           },
           {
             "title": "InsertCompanyProduction",
             "code": "000300010002",
             "displayName": "ایجاد برنامه تولید خودرو ساز",
-            "children":[]
+            "children": []
           },
           {
             "title": "SubmitOrderInformations",
             "code": "000300010003",
             "displayName": "ثبت اطلاعات سفارش",
-            "children":[]
+            "children": []
+          },
+          {
+            "title": "SubmitOrderInformations",
+            "code": "000300010004",
+            "displayName": "ثبت اطلاعات سفارش",
+            "children": []
           }
         ]
       }

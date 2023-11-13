@@ -4,9 +4,12 @@ using CompanyManagement.Application.Contracts.CompanyManagement;
 using CompanyManagement.Application.Contracts.CompanyManagement.Services;
 using CompanyManagement.Domain.CompanyManagement;
 using CompanyManagement.Domain.Shared.CompanyManagement;
+using CompanyManagement.EfCore.CompanyManagement.EntityFrameworkCore;
 using CompanyManagement.EfCore.CompanyManagement.Repositories;
 using Esale.Share.Authorize;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -32,6 +35,7 @@ namespace CompanyManagement.Application.CompanyManagement.Implementations
         private IConfiguration _configuration;
         private ICompanyRepository _companyRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly CompanyManagementDbContext _companyManagementDbContext;
 
         public CompanyAppService(IRepository<ClientsOrderDetailByCompany, long> clientsOrderDetailByCompanyRepository,
                                 IConfiguration configuration,
@@ -39,7 +43,8 @@ namespace CompanyManagement.Application.CompanyManagement.Implementations
                                 IRepository<CompanySaleCallDates, long> CompanySaleCallDatesRepository,
                                 IRepository<CompanyProduction, long> companyProductionRepository,
                                 ICompanyRepository companyRepository,
-                                IHttpContextAccessor HttpContextAccessor
+                                IHttpContextAccessor HttpContextAccessor,
+                                CompanyManagementDbContext companyManagementDbContext
                                 )
         {
             _clientsOrderDetailByCompanyRepository = clientsOrderDetailByCompanyRepository;
@@ -49,6 +54,7 @@ namespace CompanyManagement.Application.CompanyManagement.Implementations
             _companyProductionRepository = companyProductionRepository;
             _companyRepository = companyRepository;
             _httpContextAccessor = HttpContextAccessor;
+            _companyManagementDbContext = companyManagementDbContext;
         }
 
         [SecuredOperation(CompanyServicePermissionConstants.GetCustomersAndCars)]
@@ -106,5 +112,30 @@ namespace CompanyManagement.Application.CompanyManagement.Implementations
             }
             return CompanyId;
         }
+
+        [SecuredOperation(CompanyServicePermissionConstants.GetRecentCustomerAndOrder)]
+        public CompaniesCustomerDto GetRecentCustomerAndOrder(string nationalCode, int saleId)
+        {
+            if (nationalCode.AsParallel().Any(x => !char.IsDigit(x)) || nationalCode.Length != 10)
+                throw new UserFriendlyException("کد ملی مشتری صحیح نیست");
+
+            var companyIdStr = GetCompanyId();
+            if (!int.TryParse(companyIdStr, out int companyId))
+                throw new InvalidCastException($"Unable to cast companyIdStr = {companyIdStr} to int32");
+
+            var paramArray = new object[]
+            {
+            new SqlParameter("@saleId",SqlDbType.Int){Value = saleId},
+            new SqlParameter("@companyId",SqlDbType.Int){Value = companyId},
+            new SqlParameter("@nationalCode",SqlDbType.NVarChar){Value = nationalCode}
+            };
+
+            var companiesCustomer = _companyManagementDbContext.Set<CompaniesCustomer>().FromSqlRaw(
+                string.Format("EXEC {0} {1}", "[dbo].[GetRecentCustomerAndOrder]", "@saleId,@companyId,@nationalCode"), paramArray).AsEnumerable().FirstOrDefault();
+            //"EXEC [dbo].[GetCompaniesCustomer] @saleId,@companyId,@nationalCode", paramArray).FirstOrDefault();
+
+            return ObjectMapper.Map<CompaniesCustomer, CompaniesCustomerDto>(companiesCustomer);
+        }
+
     }
 }

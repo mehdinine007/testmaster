@@ -22,7 +22,9 @@ namespace CompanyManagement.Application.CompanyManagement
                 .ForMember(x => x.ClientsOrderDetailByCompanyId, option => option.Ignore());
             //CreateMap<PaypaidpriceDto, CompanyPaypaidPrices>().ReverseMap();
             //CreateMap<TurnDateDto, CompanySaleCallDates>().ReverseMap();
-             
+            CreateMap<CompaniesCustomer, CompaniesCustomerDto>()
+             .ReverseMap();
+
 
         }
 
