@@ -38,6 +38,7 @@ namespace AdminPanelManagement.EntityFrameworkCore
             builder.Entity<UserInfoDb>().ToTable(nameof(UserInfoDb), t => t.ExcludeFromMigrations());
             builder.Entity<UserRejectionAdvocacyDb>().ToTable(nameof(UserRejectionAdvocacyDb), t => t.ExcludeFromMigrations());
             builder.Entity<AdvocacyUsersFromBankDb>().ToTable(nameof(AdvocacyUsersFromBankDb), t => t.ExcludeFromMigrations());
+            builder.Entity<ReportQuestionnaireDb>().ToTable(nameof(ReportQuestionnaireDb), t => t.ExcludeFromMigrations());
         }
     }
 }
