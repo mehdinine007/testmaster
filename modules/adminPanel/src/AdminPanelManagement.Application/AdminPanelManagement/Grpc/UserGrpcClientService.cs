@@ -1,8 +1,8 @@
 ﻿using AdminPanelManagement.Application.Contracts.AdminPanelManagement.Dtos;
 using AdminPanelManagement.Application.Contracts.AdminPanelManagement.IServices;
-using AdminPanelManagement.Application.Grpc.UserGrpcClient;
 using Grpc.Net.Client;
 using Microsoft.Extensions.Configuration;
+using AdminPanelManagement.Application.Grpc.UserGrpcClient;
 using System;
 using System.Collections.Generic;
 using System.Linq;

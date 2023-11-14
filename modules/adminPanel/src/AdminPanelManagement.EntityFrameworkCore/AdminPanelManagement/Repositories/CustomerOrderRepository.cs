@@ -1,6 +1,5 @@
 ﻿using AdminPanelManagement.Domain.AdminPanelManagement;
 using AdminPanelManagement.Domain.Shared.AdminPanelManagement.Db;
-using dminPanelManagement.Domain.Shared.AdminPanelManagement.Db;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;

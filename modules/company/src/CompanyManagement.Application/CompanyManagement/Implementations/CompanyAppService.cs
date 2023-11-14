@@ -23,7 +23,6 @@ using Volo.Abp.Domain.Repositories;
 using Volo.Abp.EntityFrameworkCore;
 using Volo.Abp.ObjectMapping;
 
-namespace CompanyManagement.Application.CompanyManagement.Implementations;
 
 namespace CompanyManagement.Application.CompanyManagement.Implementations
 {

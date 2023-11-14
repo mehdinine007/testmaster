@@ -23,7 +23,6 @@ namespace CompanyManagement.EfCore.CompanyManagement.EntityFrameworkCore
         public DbSet<CompanyProduction> CompanyProduction { get; set; }
         public DbSet<CompaniesCustomer> CompaniesCustomer { get; set; }
 
-        public DbSet<CompaniesCustomer> CompaniesCustomer { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

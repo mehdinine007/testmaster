@@ -14,6 +14,5 @@ namespace CompanyManagement.EfCore.CompanyManagement.EntityFrameworkCore
         DbSet<CompanyProduction> CompanyProduction { get; set; }
         DbSet<CompaniesCustomer> CompaniesCustomer { get; set; }
 
-        DbSet<CompaniesCustomer> CompaniesCustomer { get; set; }
     }
 }
