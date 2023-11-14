@@ -25,6 +25,9 @@ using AdminPanelManagement.EntityFrameworkCore;
 using AdminPanelManagement.Application;
 using AdminPanelService.Host.Infrastructures;
 using IFG.Core.Caching;
+using IFG.Core.Utility.Security.Encyption;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Hangfire;
 
 namespace WorkFlowService.Host
 {
@@ -49,8 +52,22 @@ namespace WorkFlowService.Host
         public override void ConfigureServices(ServiceConfigurationContext context)
         {
             var configuration = context.Services.GetConfiguration();
-
             context.Services.Configure<AppSecret>(configuration.GetSection("Authentication:JwtBearer"));
+
+            context.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(opt =>
+            {
+                opt.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidIssuer = configuration["Authentication:JwtBearer:Issuer"],
+                    ValidAudience = configuration["Authentication:JwtBearer:Audience"],
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = SecurityKeyHelper.CreateSecurityKey(configuration["Authentication:JwtBearer:SecurityKey"])
+                };
+            });
 
             context.Services.AddSwaggerGen(options =>
                 {
@@ -135,11 +152,17 @@ namespace WorkFlowService.Host
             app.UseAuthentication();
             app.UseAbpClaimsMap();
 
+            //if (MsDemoConsts.IsMultiTenancyEnabled)
+            //{
+            //    app.UseMultiTenancy();
+            //}
             //app.UseEndpoints(endpoints =>
             //{
-            //    endpoints.MapGrpcService<UserGrpcClientService>();
+            //    endpoints.MapGrpcService<CompanyGrpcClient>();
+
 
             //});
+
 
             app.UseAbpRequestLocalization(); //TODO: localization?
             app.UseSwagger();
@@ -149,6 +172,8 @@ namespace WorkFlowService.Host
             });
 
             app.UseAuditing();
+            //app.UseHangfireDashboard();
+            //app.UseHangfireDashboard("/hangfire");
             app.UseConfiguredEndpoints();
             //TODO: Problem on a clustered environment
             AsyncHelper.RunSync(async () =>
@@ -161,5 +186,6 @@ namespace WorkFlowService.Host
                 }
             });
         }
-    }
+    
+}
 }

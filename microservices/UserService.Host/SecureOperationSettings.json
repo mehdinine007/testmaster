@@ -493,7 +493,7 @@
             "title": "GetInbox",
             "code": "000400010001",
             "displayName": "نمایش کارتابل جاری",
-            "children":[]
+            "children": []
           }
         ]
       },
@@ -506,13 +506,33 @@
             "title": "StartProcess",
             "code": "000400020001",
             "displayName": "شروع پردازش",
-            "children":[]
+            "children": []
           },
           {
             "title": "GetOutBox",
             "code": "000400020002",
             "displayName": "نمایش کارتابل ارسال شده",
-            "children":[]
+            "children": []
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "AdminPanelManagement",
+    "code": "0005",
+    "displayName": "ماژول ادمین پنل",
+    "children": [
+      {
+        "title": "ReportService",
+        "code": "0001",
+        "displayName": "سرویس گزارشات",
+        "children": [
+          {
+            "title": "ReportQuestionnaire",
+            "code": "000500010001",
+            "displayName": "نمایش گزارش پرسشنامه",
+            "children": []
           }
         ]
       }

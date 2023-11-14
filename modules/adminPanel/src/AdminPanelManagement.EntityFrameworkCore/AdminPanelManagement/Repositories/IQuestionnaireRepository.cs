@@ -1,4 +1,5 @@
 ﻿using AdminPanelManagement.Domain.Shared.AdminPanelManagement.Db;
+using AdminPanelManagement.Domain.Shared.AdminPanelManagement.Enum;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,6 @@ namespace AdminPanelManagement.EntityFrameworkCore.AdminPanelManagement.Reposito
 {
     public interface IQuestionnaireRepository
     {
-        public Task<List<ReportQuestionnaireDb>> GetReportQuestionnaire (string uid,int type, int? maxResultCount, int? skipCount);
+        public Task<List<ReportQuestionnaireDb>> GetReportQuestionnaire (string nationalCode, ReportQuestionnaireTypeEnum type, int? maxResultCount, int? skipCount);
     }
 }
