@@ -51,6 +51,8 @@ namespace CompanyManagement.EfCore
                 entity.ToTable(nameof(CompaniesCustomer), t => t.ExcludeFromMigrations());
                 entity.HasNoKey();
             });
+
+
         }
     }
 }

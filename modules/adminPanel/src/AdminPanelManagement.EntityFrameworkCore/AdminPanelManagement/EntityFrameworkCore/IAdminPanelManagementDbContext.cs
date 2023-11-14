@@ -11,7 +11,8 @@ namespace AdminPanelManagement.EntityFrameworkCore
     [ConnectionStringName("AdminPanelManagement")]
     public interface IAdminPanelManagementDbContext : IEfCoreDbContext
     {
+        // DbSet<OrganizationChart> OrganizationCharts { get; set; }
         DbSet<Test> Test { get; set; }
-    
+
     }
 }

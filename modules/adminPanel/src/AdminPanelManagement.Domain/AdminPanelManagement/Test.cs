@@ -7,7 +7,7 @@ using Volo.Abp.Domain.Entities.Auditing;
 
 namespace AdminPanelManagement.Domain.AdminPanelManagement
 {
-    public class Test: FullAuditedEntity<int>
+    public class Test : FullAuditedEntity<int>
     {
 
     }

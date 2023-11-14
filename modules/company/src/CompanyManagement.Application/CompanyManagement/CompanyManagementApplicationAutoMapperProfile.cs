@@ -24,7 +24,8 @@ namespace CompanyManagement.Application.CompanyManagement
             //CreateMap<PaypaidpriceDto, CompanyPaypaidPrices>().ReverseMap();
             //CreateMap<TurnDateDto, CompanySaleCallDates>().ReverseMap();
             CreateMap<CompaniesCustomer, CompaniesCustomerDto>()
-               .ReverseMap();
+             .ReverseMap();
+
 
         }
 

@@ -2,9 +2,8 @@
 using WorkFlowManagement.Domain;
 using Volo.Abp.Data;
 using Volo.Abp.EntityFrameworkCore;
-using AdminPanelManagement.Domain.AdminPanelManagement;
 using AdminPanelManagement.Domain.Shared.AdminPanelManagement.Db;
-using dminPanelManagement.Domain.Shared.AdminPanelManagement.Db;
+using AdminPanelManagement.Domain.AdminPanelManagement;
 
 namespace AdminPanelManagement.EntityFrameworkCore
 {
@@ -22,9 +21,7 @@ namespace AdminPanelManagement.EntityFrameworkCore
             : base(options)
         {
         }
-
-        public DbSet<Test> Test { get;set; }
-
+        public DbSet<Test> Test { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -41,8 +38,7 @@ namespace AdminPanelManagement.EntityFrameworkCore
             builder.Entity<UserInfoDb>().ToTable(nameof(UserInfoDb), t => t.ExcludeFromMigrations());
             builder.Entity<UserRejectionAdvocacyDb>().ToTable(nameof(UserRejectionAdvocacyDb), t => t.ExcludeFromMigrations());
             builder.Entity<AdvocacyUsersFromBankDb>().ToTable(nameof(AdvocacyUsersFromBankDb), t => t.ExcludeFromMigrations());
-
-
+            builder.Entity<ReportQuestionnaireDb>().ToTable(nameof(ReportQuestionnaireDb), t => t.ExcludeFromMigrations());
         }
     }
 }

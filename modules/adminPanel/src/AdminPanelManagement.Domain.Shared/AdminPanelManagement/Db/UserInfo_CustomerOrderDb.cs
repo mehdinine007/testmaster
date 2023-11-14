@@ -15,5 +15,6 @@ namespace AdminPanelManagement.Domain.Shared.AdminPanelManagement.Db
         public string CancellationDate { get; set; }
         public string AdvocacyUsersDate { get; set; }
         public List<CustomerOrderDb> CustomerOrders { get; set; }
+
     }
 }

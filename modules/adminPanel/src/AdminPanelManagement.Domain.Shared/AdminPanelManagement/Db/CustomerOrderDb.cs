@@ -9,6 +9,7 @@ namespace AdminPanelManagement.Domain.Shared.AdminPanelManagement.Db
 {
     public class CustomerOrderDb
     {
+
         public int SaleDetailId { get; set; }
         public int Id { get; set; }
         public int? OrderRejectionStatus { get; set; }

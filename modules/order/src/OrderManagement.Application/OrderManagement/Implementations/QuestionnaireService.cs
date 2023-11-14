@@ -168,8 +168,6 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
         {
             if (!_httpContextAccessor.HttpContext.User.Identity.IsAuthenticated)
             {
-                if (!string.IsNullOrWhiteSpace(submitAnswerTreeDto?.UnregisteredUserInformation?.Vin))
-                    await ControlAnonymousUserWontSpamAnswer(submitAnswerTreeDto.UnregisteredUserInformation.Vin, questionnaire.Id);
 
                 var smsCodeIsValid = await _commonAppService.ValidateSMS(submitAnswerTreeDto?.UnregisteredUserInformation?.MobileNumber,
                     submitAnswerTreeDto?.UnregisteredUserInformation?.NationalCode,
@@ -178,10 +176,12 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
                 if (!smsCodeIsValid)
                     throw new UserFriendlyException("کد ارسالی صحیح نیست");
             }
-            else
-            {
-                await ControlUserWotnSpamAnswer(_commonAppService.GetUserId(), submitAnswerTreeDto.QuestionnaireId, submitAnswerTreeDto.RelatedEntity);
-            }
+            //else
+            //{
+            //    await ControlUserWotnSpamAnswer(_commonAppService.GetUserId(), submitAnswerTreeDto.QuestionnaireId, submitAnswerTreeDto.RelatedEntity);
+            //}
+            if (!string.IsNullOrWhiteSpace(submitAnswerTreeDto?.UnregisteredUserInformation?.Vin))
+                await ControlAnonymousUserWontSpamAnswer(submitAnswerTreeDto.UnregisteredUserInformation.Vin, questionnaire.Id);
 
             if (string.IsNullOrWhiteSpace(submitAnswerTreeDto?.UnregisteredUserInformation?.Vin) &&
                 string.IsNullOrWhiteSpace(submitAnswerTreeDto?.UnregisteredUserInformation?.FirstName) &&
@@ -196,8 +196,8 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
                 throw new UserFriendlyException("لطفا نمام فیلد ها را پر کنید");
 
             submitAnswerTreeDto.UnregisteredUserInformation.QuestionnaireId = questionnaire.Id;
-             await _unAuthorizedUserRepository.InsertAsync(
-               ObjectMapper.Map<UnregisteredUserInformation, UnAuthorizedUser>(submitAnswerTreeDto.UnregisteredUserInformation));
+            await _unAuthorizedUserRepository.InsertAsync(
+              ObjectMapper.Map<UnregisteredUserInformation, UnAuthorizedUser>(submitAnswerTreeDto.UnregisteredUserInformation));
 
         }
         else if (questionnaire.QuestionnaireType == QuestionnaireType.AuthorizedOnly)
@@ -236,7 +236,7 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
                         throw new UserFriendlyException($"لطفا برای این سوال یک گزینه را انتخاب کنید : {question.Title}");
                     submitAnswerList.Add(new SubmittedAnswer()
                     {
-                        UserId = userAuthenticated ? currrentUserId.Value : null,
+                        UserId = questionnaire.QuestionnaireType == QuestionnaireType.AuthorizedOnly && userAuthenticated ? currrentUserId.Value : null,
                         QuestionId = x.QuestionId,
                         QuestionAnswerId = x.QuestionAnswerId,
                         RelatedEntityId = submitAnswerTreeDto.RelatedEntity.HasValue
@@ -253,7 +253,7 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
                     {
                         QuestionAnswerId = y.Id,
                         QuestionId = x.QuestionId,
-                        UserId = userAuthenticated ? currrentUserId.Value : null,
+                        UserId = questionnaire.QuestionnaireType == QuestionnaireType.AuthorizedOnly && userAuthenticated ? currrentUserId.Value : null,
                         RelatedEntityId = submitAnswerTreeDto.RelatedEntity.HasValue
                             ? submitAnswerTreeDto.RelatedEntity.Value
                             : null
@@ -266,7 +266,7 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
                     {
                         CustomAnswerValue = x.CustomAnswerValue,
                         QuestionId = x.QuestionId,
-                        UserId = userAuthenticated ? currrentUserId.Value : null,
+                        UserId = questionnaire.QuestionnaireType == QuestionnaireType.AuthorizedOnly && userAuthenticated ? currrentUserId.Value : null,
                         RelatedEntityId = submitAnswerTreeDto.RelatedEntity.HasValue
                             ? submitAnswerTreeDto.RelatedEntity.Value
                             : null

@@ -1,4 +1,4 @@
-﻿namespace CompanyManagement.Application.Contracts;
+﻿namespace CompanyManagement.Application.Contracts.CompanyManagement;
 
 public class CompaniesCustomerDto
 {
@@ -22,7 +22,7 @@ public class CompaniesCustomerDto
     public DateTime IssuingDate { get; set; }
     public string Shaba { get; set; }
     public string DeliveryDateDescription { get; set; }
-    public int OrderRejectionStatus { get; set; }
+    public int? OrderRejectionStatus { get; set; }
     public string CompanyName { get; set; }
     public int ESaleTypeId { get; set; }
 }

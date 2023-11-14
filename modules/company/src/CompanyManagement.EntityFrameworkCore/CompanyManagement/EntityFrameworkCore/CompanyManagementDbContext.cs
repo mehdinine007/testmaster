@@ -1,12 +1,5 @@
 ﻿using CompanyManagement.Domain.CompanyManagement;
-using CompanyManagement.EfCore.CompanyManagement.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Volo.Abp.AuditLogging.EntityFrameworkCore;
 using Volo.Abp.Data;
 using Volo.Abp.EntityFrameworkCore;
 
@@ -28,6 +21,8 @@ namespace CompanyManagement.EfCore.CompanyManagement.EntityFrameworkCore
         public DbSet<CompanyPaypaidPrices> CompanyPaypaidPrices { get; set; }
         public DbSet<CompanySaleCallDates> CompanySaleCallDates { get; set; }
         public DbSet<CompanyProduction> CompanyProduction { get; set; }
+        public DbSet<CompaniesCustomer> CompaniesCustomer { get; set; }
+
         public DbSet<CompaniesCustomer> CompaniesCustomer { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)

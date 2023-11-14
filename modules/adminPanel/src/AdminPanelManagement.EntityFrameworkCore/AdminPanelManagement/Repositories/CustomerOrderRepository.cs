@@ -17,6 +17,8 @@ namespace AdminPanelManagement.EntityFrameworkCore.AdminPanelManagement.Reposito
 {
     public class CustomerOrderRepository : EfCoreRepository<AdminPanelManagementDbContext, Test, int>, ICustomerOrderRepository
     {
+
+
         private readonly IConfiguration _configuration;
         private string _connectionStrings;
         public CustomerOrderRepository(IConfiguration configuration, IDbContextProvider<AdminPanelManagementDbContext> dbContextProvider) : base(dbContextProvider)
@@ -93,5 +95,8 @@ namespace AdminPanelManagement.EntityFrameworkCore.AdminPanelManagement.Reposito
             return res;
         }
 
+
+
     }
+
 }

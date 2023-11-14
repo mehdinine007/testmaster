@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>disable</Nullable>
+	  <Nullable>disable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,10 +13,6 @@
     <EmbeddedResource Remove="WorkFlowManagement\**" />
     <None Remove="GatewayManagement\**" />
     <None Remove="WorkFlowManagement\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="AdminPanelManagement\Grpc\Protos\ReportGrpcClient.proto" />
   </ItemGroup>
 
   <ItemGroup>
@@ -42,11 +38,6 @@
     <ProjectReference Include="..\..\..\..\shared\IFG.Core\IFG.Core.csproj" />
     <ProjectReference Include="..\AdminPanelManagement.Application.Contracts\AdminPanelManagement.Application.Contracts.csproj" />
     <ProjectReference Include="..\AdminPanelManagement.Domain\AdminPanelManagement.Domain.csproj" />
-    <ProjectReference Include="..\AdminPanelManagement.EntityFrameworkCore\AdminPanelManagement.EntityFrameworkCore.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Protobuf Include="AdminPanelManagement\Grpc\Protos\ReportGrpcClient.proto" GrpcServices="Client" />
   </ItemGroup>
 
 </Project>

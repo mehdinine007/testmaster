@@ -20,5 +20,6 @@ namespace AdminPanelManagement.EntityFrameworkCore.AdminPanelManagement.Reposito
         public Task<List<AdvocacyUsersFromBankDb>> GetAdvocacyUsersFromBank(string nationalCode);
         public Task<List<UserRejectionFromBankDto>> GetUserRejectionFromBank(string nationalCode);
 
+
     }
 }

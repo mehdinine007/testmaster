@@ -8,6 +8,7 @@ namespace AdminPanelManagement.Domain.Shared.AdminPanelManagement.Db
 {
     public class AdvocacyUsersFromBankDb
     {
+
         public string dateTime { get; set; }
         public int Id { get; set; }
     }
