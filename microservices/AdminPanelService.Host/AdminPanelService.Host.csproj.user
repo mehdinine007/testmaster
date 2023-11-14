@@ -5,7 +5,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <ActiveDebugProfile>IIS Express</ActiveDebugProfile>
-    <NameOfLastUsedPublishProfile>D:\Works\Web\Fava\EsaleCarMicroservice-Backend\develop\esalecarmicroservice-backend\microservices\WorkFlowService.Host\Properties\PublishProfiles\dev-workflow.pubxml</NameOfLastUsedPublishProfile>
+    <NameOfLastUsedPublishProfile>D:\C\net\EsaleMicroservices\microservices\AdminPanelService.Host\Properties\PublishProfiles\FolderProfile.pubxml</NameOfLastUsedPublishProfile>
     <ActiveDebugProfile>IIS Express</ActiveDebugProfile>
   </PropertyGroup>
 </Project>
