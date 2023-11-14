@@ -25,9 +25,10 @@ using AdminPanelManagement.EntityFrameworkCore;
 using AdminPanelManagement.Application;
 using AdminPanelService.Host.Infrastructures;
 using IFG.Core.Caching;
+using IFG.Core.Extensions;
 using IFG.Core.Utility.Security.Encyption;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Hangfire;
+
 
 namespace WorkFlowService.Host
 {
@@ -109,6 +110,7 @@ namespace WorkFlowService.Host
             //    options.IsEnabled = false; //Disables the auditing system
             //});
 
+            context.Services.AddEsaleResultWrapper();
 
             //context.Services.AddStackExchangeRedisCache(options =>
             //{

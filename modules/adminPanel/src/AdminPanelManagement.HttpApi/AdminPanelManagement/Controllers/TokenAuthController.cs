@@ -13,7 +13,7 @@ namespace AdminPanelManagement.HttpApi.AdminPanelManagement.Controllers
 {
     [DisableAuditing]
     [RemoteService]
-    [Route("api/services/app/TokenAuthService/[action]")]
+    [Route("api/TokenAuth/[action]")]
 
     public class TokenAuthController : Controller
     {
