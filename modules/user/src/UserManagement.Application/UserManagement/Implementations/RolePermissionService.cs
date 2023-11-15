@@ -146,6 +146,57 @@ namespace UserManagement.Application.UserManagement.Implementations
                 rolePermission.Permissions = serviceList;
                 await Add(rolePermission);
             }
+            if (type == RolePermissionEnum.nicc )
+            {
+                var serviceList = new List<string>();
+                var permission = permissions.Where(x => x.Code == "0005").ToList();
+                foreach (var per in permission)
+                {
+                    var code = per.Children.Select(x => x.Code).ToList();
+                    foreach (var child in per.Children)
+                    {
+                        serviceList.AddRange(child.Children.Select(c => c.Code).ToList());
+                    }
+                }
+                rolePermission.Title = RolePermissionEnum.nicc.ToString();
+                rolePermission.Type = RolePermissionEnum.nicc;
+                rolePermission.Permissions = serviceList;
+                await Add(rolePermission);
+            }
+            if (type == RolePermissionEnum.InspectionOrganization )
+            {
+                var serviceList = new List<string>();
+                var permission = permissions.Where(x => x.Code == "0005").ToList();
+                foreach (var per in permission)
+                {
+                    var code = per.Children.Select(x => x.Code).ToList();
+                    foreach (var child in per.Children)
+                    {
+                        serviceList.AddRange(child.Children.Select(c => c.Code).ToList());
+                    }
+                }
+                rolePermission.Title = RolePermissionEnum.InspectionOrganization.ToString();
+                rolePermission.Type = RolePermissionEnum.InspectionOrganization;
+                rolePermission.Permissions = serviceList;
+                await Add(rolePermission);
+            }
+            if (type == RolePermissionEnum.mimt)
+            {
+                var serviceList = new List<string>();
+                var permission = permissions.Where(x => x.Code == "0005").ToList();
+                foreach (var per in permission)
+                {
+                    var code = per.Children.Select(x => x.Code).ToList();
+                    foreach (var child in per.Children)
+                    {
+                        serviceList.AddRange(child.Children.Select(c => c.Code).ToList());
+                    }
+                }
+                rolePermission.Title = RolePermissionEnum.mimt.ToString();
+                rolePermission.Type = RolePermissionEnum.mimt;
+                rolePermission.Permissions = serviceList;
+                await Add(rolePermission);
+            }
             return true;
         }
 

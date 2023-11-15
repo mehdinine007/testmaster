@@ -10,6 +10,10 @@ namespace UserManagement.Domain.UserManagement.Enums
         None = 0,
         Admin = 1,
         Customer = 2,
-        Company = 3
+        Company = 3,
+        InspectionOrganization =4,
+        mimt = 5,
+        nicc = 6
+
     }
 }
