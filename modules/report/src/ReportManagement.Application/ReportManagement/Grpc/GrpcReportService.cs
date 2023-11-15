@@ -2,6 +2,7 @@
 using Google.Protobuf.Collections;
 using Grpc.Core;
 using JetBrains.Annotations;
+using Newtonsoft.Json;
 using NPOI.SS.Formula.Functions;
 using NPOI.XSSF.UserModel.Helpers;
 using ReportManagement.Application.Contracts.ReportManagement.Dtos;
@@ -120,6 +121,8 @@ namespace ReportManagement.Application.ReportManagement.Grpc
             };
             return chartModel;
         }
+
+
         public override async Task<GridModel> GetGrid(GridRequestModel request, ServerCallContext context)
         {
             var conditionValues = request.ConditionValue.Select(x => new ConditionValue()
@@ -131,30 +134,14 @@ namespace ReportManagement.Application.ReportManagement.Grpc
             }).ToList();
 
             var gridDto = await _widgetService.GetGrid(request.WidgetId, conditionValues);
-            var MyDictionary = gridDto.Data.SelectMany(dict =>
-          dict.Select(pair => new KeyValue
-          {
-              Key = pair.Key,
-              Value = pair.Value as Google.Protobuf.WellKnownTypes.Any
-          })).ToList();
-            var chartModel = new GridModel()
+            string json = JsonConvert.SerializeObject(gridDto);
+
+          var gridModel = new GridModel()
             {
-                Id = gridDto.Id,
-                Title = gridDto.Title,
-                Categories = { gridDto.Categories.Select(x => new CategoryData
-                {
-                    Title = x.Title,
-                    Color = x.Color,
-                })
-                },
-                Data = { MyDictionary.Select(x=>new KeyValue
-                {
-                    Key=x.Key,
-                    Value=x.Value,
-                })
-                }
+               JsonResult=json
             };
-            return chartModel;
+
+            return gridModel;
         }
 
         public override async Task<Test> TestNullable(TestInput request, ServerCallContext context)

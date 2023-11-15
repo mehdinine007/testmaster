@@ -173,10 +173,9 @@ namespace ReportManagement.Application.ReportManagement.Implementations
             {
                 var keys = data.FirstOrDefault()!.Keys.Select(x => x)
                     .ToList();
-                string _category = keys[0];
-                categories = data.Select(x => new CategoryData()
+                categories = keys.Select(x => new CategoryData()
                 {
-                    Title = x[_category].ToString()!
+                    Title = x
                 }).ToList();
             }
             var gridDto = new GridDto()
