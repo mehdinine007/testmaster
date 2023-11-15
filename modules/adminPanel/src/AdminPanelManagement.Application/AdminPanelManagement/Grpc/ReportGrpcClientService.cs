@@ -5,6 +5,7 @@ using Google.Protobuf.Collections;
 using Grpc.Core;
 using Grpc.Net.Client;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
@@ -145,21 +146,7 @@ namespace AdminPanelManagement.Application.AdminPanelManagement.Grpc
             var channel = GrpcChannel.ForAddress(_configuration.GetValue<string>("Grpc:ReportUrl"), new GrpcChannelOptions { HttpHandler = httpHandler });
             var client = new ReportServiceGrpc.ReportServiceGrpcClient(channel);
             var result = client.GetGrid(new GridRequestModel() { WidgetId = widgetId, ConditionValue = { condition } });
-
-            var gridDto = new GridDto
-            {
-                Id = result.Id,
-                Title = result.Title,
-                Categories = result.Categories.Select(x => new CategoryData
-                {
-                    Color = x.Color,
-                    Title = x.Title,
-
-                }).ToList(),
-                Data = result.Data
-                   .Cast<IDictionary<string, object>>()
-                   .Select(x => x.ToDictionary(x => x.Key, x => x.Value)).ToList()
-            };
+            var gridDto = JsonConvert.DeserializeObject<GridDto>(result.JsonResult);
             return gridDto;
         }
 
@@ -184,7 +171,7 @@ namespace AdminPanelManagement.Application.AdminPanelManagement.Grpc
             {
                 result1 = result.Result1,
                 result2 = result.Result2,
-                result3 = result.MyTimestamp !=null ? result.MyTimestamp.ToDateTime() : null    
+                result3 = result.MyTimestamp != null ? result.MyTimestamp.ToDateTime() : null
             };
             return outPut;
 
