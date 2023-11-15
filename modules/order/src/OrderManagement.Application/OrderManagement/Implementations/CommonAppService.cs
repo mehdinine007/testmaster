@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.OrderManagement;
@@ -40,7 +41,6 @@ public class CommonAppService : ApplicationService, ICommonAppService
     private readonly IRepository<ExternalApiLogResult, int> _externalApiLogResultRepository;
     private readonly IRepository<ExternalApiResponsLog, int> _externalApiResponsLogRepository;
     private readonly IHttpContextAccessor _contextAccessor;
-    private readonly IHybridCachingProvider _hybridCachingProvider;
 
 
     public CommonAppService(IConfiguration configuration,
@@ -50,7 +50,6 @@ public class CommonAppService : ApplicationService, ICommonAppService
                             IRepository<ExternalApiLogResult, int> externalApiLogResultRepository,
                             IRepository<ExternalApiResponsLog, int> externalApiResponsLogRepositor,
                             IHttpContextAccessor contextAccessor,
-                            IHybridCachingProvider hybridCachingProvider,
                             ICacheManager cacheManager)
     {
         _cacheManager = cacheManager;
@@ -61,7 +60,6 @@ public class CommonAppService : ApplicationService, ICommonAppService
         _externalApiLogResultRepository = externalApiLogResultRepository;
         _externalApiResponsLogRepository = externalApiResponsLogRepositor;
         _contextAccessor = contextAccessor;
-        _hybridCachingProvider = hybridCachingProvider;
     }
 
     //private async Task<AuthtenticateResult> AuthenticateBank()
@@ -162,7 +160,7 @@ public class CommonAppService : ApplicationService, ICommonAppService
             {
                 throw new UserFriendlyException("کد ملی صحیح نمی باشد");
             }
-           
+
             string userRejection = _userRejectionAdcocacyRepository
            .WithDetails()
            .Select(x => x.NationalCode)
@@ -171,10 +169,10 @@ public class CommonAppService : ApplicationService, ICommonAppService
 
             if (!string.IsNullOrEmpty(userRejection))
             {
-            
+
                 throw new UserFriendlyException("شما انصراف داده اید و امکان ثبت سفارش نمی باشد");
             }
-         
+
 
         }
 
@@ -270,9 +268,9 @@ public class CommonAppService : ApplicationService, ICommonAppService
             //{
             //    throw new UserFriendlyException(Messages.CaptchaNotValid);
             //}
-            
-            string objectCaptcha = await _cacheManager.GetStringAsync("cap_" + input.CIT,"", new CacheOptions() { Provider = CacheProviderEnum.Redis});
-            await _cacheManager.RemoveAsync("cap_" + input.CIT,"", new CacheOptions() { Provider = CacheProviderEnum.Redis });
+
+            string objectCaptcha = await _cacheManager.GetStringAsync("cap_" + input.CIT, "", new CacheOptions() { Provider = CacheProviderEnum.Redis });
+            await _cacheManager.RemoveAsync("cap_" + input.CIT, "", new CacheOptions() { Provider = CacheProviderEnum.Redis });
 
             if (objectCaptcha == null)
             {
@@ -456,7 +454,7 @@ public class CommonAppService : ApplicationService, ICommonAppService
 
 
         string cacheKey = string.Format(RedisConstants.OrderStepCacheKey, userId.ToString());
-        string getOrderStep = await _cacheManager.GetStringAsync(cacheKey,"", new CacheOptions() { Provider = CacheProviderEnum.Redis });
+        string getOrderStep = await _cacheManager.GetStringAsync(cacheKey, "", new CacheOptions() { Provider = CacheProviderEnum.Redis });
 
 
         if (string.IsNullOrEmpty(getOrderStep))
@@ -479,7 +477,7 @@ public class CommonAppService : ApplicationService, ICommonAppService
         var serviceRequest = await client.GetAsync(string.Format(_configuration.GetValue<string>("IkcoOrderInquiryAddresses:InquiryAddress"), nationalCode, orderId));
         if (serviceRequest.StatusCode == HttpStatusCode.Unauthorized)
         {
-            await _hybridCachingProvider.RemoveAsync(RedisConstants.IkcoBearerToken);
+            await _cacheManager.RemoveAsync(RedisConstants.IkcoBearerToken, RedisConstants.OrderStatusPrefix, new CacheOptions() { Provider = CacheProviderEnum.Hybrid });
             accessToken = await GetIkcoAccessTokenAsync();
             serviceRequest = await client.GetAsync(string.Format(_configuration.GetValue<string>("IkcoOrderInquiryAddresses:InquiryAddress"), nationalCode, orderId));
         }
@@ -493,9 +491,13 @@ public class CommonAppService : ApplicationService, ICommonAppService
 
     public async Task<string> GetIkcoAccessTokenAsync()
     {
-        var cachedAccessToken = await _hybridCachingProvider.GetAsync<string>(RedisConstants.IkcoBearerToken);
-        if (cachedAccessToken.HasValue)
-            return cachedAccessToken.Value;
+        
+        var cachedAccessToken = await _cacheManager.GetAsync<string>(RedisConstants.IkcoBearerToken,RedisConstants.OrderStatusPrefix, new CacheOptions { Provider = CacheProviderEnum.Hybrid });
+
+        if (!string.IsNullOrEmpty(cachedAccessToken))
+        {
+            return cachedAccessToken;
+        }
 
         using var client = new HttpClient();
         //var loginModel = _configuration.GetValue<IkcoOrderInquiryProfile>(nameof(IkcoOrderInquiryProfile));
@@ -513,7 +515,12 @@ public class CommonAppService : ApplicationService, ICommonAppService
         if (response.Data == null)
             throw new UserFriendlyException(response?.Errors ?? "خطا در فرآیند لاگین سرویس استعلام سفارش");
 
-        await _hybridCachingProvider.SetAsync<string>(RedisConstants.IkcoBearerToken, response.Data.AccessToken, new TimeSpan(1, 0, 0, 0));
+        await _cacheManager.SetAsync<string>(RedisConstants.IkcoBearerToken,RedisConstants.OrderStatusPrefix, response.Data.AccessToken, 
+            TimeSpan.FromDays(1).Seconds,
+            new CacheOptions
+            {
+                Provider = CacheProviderEnum.Hybrid
+            });
 
         return response.Data.AccessToken;
     }

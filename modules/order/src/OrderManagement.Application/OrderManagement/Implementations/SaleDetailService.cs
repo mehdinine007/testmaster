@@ -35,7 +35,6 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
     private readonly IRepository<SaleDetailCarColor, int> _saleDetailColorRepository;
     private readonly IHttpContextAccessor _contextAccessor;
     private readonly ICommonAppService _commonAppService;
-    private readonly IHybridCachingProvider _hybridCache;
     private readonly ICacheManager _cacheManager;
     private readonly IAttachmentService _attachmentService;
     private readonly IRepository<ProductLevel, int> _productLevelRepository;
@@ -60,7 +59,6 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
         _saleDetailColorRepository = saleDetailColorRepository;
         _contextAccessor = contextAccessor;
         _commonAppService = commonAppService;
-        _hybridCache = hybridCache;
         _cacheManager = cacheManager;
         _attachmentService = attachmentService;
         _productLevelRepository = productLevelRepository;

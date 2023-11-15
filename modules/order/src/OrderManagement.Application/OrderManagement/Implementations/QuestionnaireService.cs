@@ -25,7 +25,6 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
     private readonly IBaseInformationService _baseInformationService;
     private readonly ICommonAppService _commonAppService;
     private readonly IRepository<SubmittedAnswer, long> _submittedAnswerRepository;
-    private readonly IHybridCachingProvider _hybridCachingProvider;
     private readonly IRepository<Question, int> _questionRepository;
     private readonly IRepository<QuestionAnswer, long> _answerRepository;
     private readonly IAttachmentService _attachmentService;
@@ -36,7 +35,6 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
                                 IBaseInformationService baseInformationService,
                                 ICommonAppService commonAppService,
                                 IRepository<SubmittedAnswer, long> submittedAnswerRepository,
-                                IHybridCachingProvider hybridCachingProvider,
                                 IRepository<Question, int> questionRepository,
                                 IRepository<QuestionAnswer, long> answerRepository,
                                 IAttachmentService attachmentService,
@@ -48,7 +46,6 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
         _baseInformationService = baseInformationService;
         _commonAppService = commonAppService;
         _submittedAnswerRepository = submittedAnswerRepository;
-        _hybridCachingProvider = hybridCachingProvider;
         _questionRepository = questionRepository;
         _answerRepository = answerRepository;
         _attachmentService = attachmentService;
