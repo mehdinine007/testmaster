@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AdminPanelManagement.Domain.Shared.AdminPanelManagement.Enum;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,7 +10,7 @@ namespace AdminPanelManagement.Application.Contracts.AdminPanelManagement.Dtos
 {
     public  class ReportQueryDto
     {
-        public int Type { get; set; }
+        public ReportQuestionnaireTypeEnum Type { get; set; }
         public string? NationalCode { get; set; }
         public int? SkipCount { get; set; }
         public int? MaxResultCount { get; set; }

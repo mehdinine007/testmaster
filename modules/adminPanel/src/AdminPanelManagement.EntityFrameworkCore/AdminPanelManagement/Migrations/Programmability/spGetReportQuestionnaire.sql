@@ -2,14 +2,17 @@
   drop  proc  spGetReportQuestionnaire
 GO
 create PROCEDURE [dbo].[spGetReportQuestionnaire]
-    @userId nvarchar(36)  null,
+    @nationalCode nvarchar(10)  null,
     @Type int,
-	@maxResultCount int,
-	@skipCount int
+	@maxResultCount int null,
+	@skipCount int null
 AS
 BEGIN
+  declare @userId uniqueidentifier
     IF (@Type = 1)
     BEGIN
+	select  @userId=UID from AbpUsers where NationalCode=@nationalCode
+
         SELECT SubmittedAnswer.Id
 		,UnAuthorizedUser.Age
 		,UnAuthorizedUser.EducationLevel
