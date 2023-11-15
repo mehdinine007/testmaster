@@ -40,6 +40,7 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
     private readonly IAttachmentService _attachmentService;
     private readonly IRepository<ProductLevel, int> _productLevelRepository;
     private readonly IProductAndCategoryService _productAndCategoryService;
+    private readonly ISaleSchemaService _saleSchemaService;
     public SaleDetailService(IRepository<SaleDetail> saleDetailRepository,
                              IRepository<ESaleType> eSaleTypeRepository,
                              IRepository<SaleDetailCarColor> saleDetailCarColor,
@@ -48,7 +49,8 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
                              IHttpContextAccessor contextAccessor,
                              ICommonAppService commonAppService, IHybridCachingProvider hybridCache, ICacheManager cacheManager,
                              IAttachmentService attachmentService, IRepository<ProductLevel, int> productLevelRepository,
-                             IProductAndCategoryService productAndCategoryService
+                             IProductAndCategoryService productAndCategoryService,
+                             ISaleSchemaService saleSchemaService
         )
     {
         _saleDetailRepository = saleDetailRepository;
@@ -63,6 +65,7 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
         _attachmentService = attachmentService;
         _productLevelRepository = productLevelRepository;
         _productAndCategoryService = productAndCategoryService;
+        _saleSchemaService = saleSchemaService;
     }
 
 
@@ -192,7 +195,8 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
         {
             throw new UserFriendlyException("رنگ انتخاب شده موجود نمیباشد");
         }
-
+        // control sale schema exists
+        await _saleSchemaService.GetById(createSaleDetailDto.SaleId);
 
         var uid = Guid.NewGuid();
 
