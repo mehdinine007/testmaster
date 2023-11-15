@@ -1,8 +1,10 @@
-﻿using IFG.Core.DataAccess;
+﻿using Esale.Share.Authorize;
+using IFG.Core.DataAccess;
 using IFG.Core.Utility.Tools;
 using Microsoft.EntityFrameworkCore;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.OrderManagement;
+using OrderManagement.Application.Contracts.OrderManagement.Constants.Permissions;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
 using OrderManagement.Domain;
 using OrderManagement.Domain.OrderManagement;
@@ -28,6 +30,8 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             _carClassRepository = carClassRepository;
             _attachmentService = attachmentService;
         }
+
+        [SecuredOperation(CarClassServicePermissionConstants.Delete)]
         public async Task<bool> Delete(int id)
         {
             await _carClassRepository.DeleteAsync(x => x.Id == id, autoSave: true);
@@ -48,6 +52,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             return carClassDto;
         }
 
+        [SecuredOperation(CarClassServicePermissionConstants.Add)]
         public async Task<CarClassDto> Add(CarClassCreateDto carClassDto)
         {
             var carClass = ObjectMapper.Map<CarClassCreateDto, CarClass>(carClassDto);
@@ -55,6 +60,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             return ObjectMapper.Map<CarClass, CarClassDto>(entity);
         }
 
+        [SecuredOperation(CarClassServicePermissionConstants.Update)]
         public async Task<CarClassDto> Update(CarClassCreateDto carClassDto)
         {
             var result = await _carClassRepository.WithDetails().AsNoTracking().FirstOrDefaultAsync(x => x.Id == carClassDto.Id);
@@ -69,6 +75,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             return ObjectMapper.Map<CarClass, CarClassDto>(entity);
         }
 
+        [SecuredOperation(CarClassServicePermissionConstants.UploadFile)]
         public async Task<Guid> UploadFile(UploadFileDto uploadFile)
         {
             await Validation(uploadFile.Id,null);

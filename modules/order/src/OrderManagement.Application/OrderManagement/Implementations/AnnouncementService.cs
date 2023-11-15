@@ -1,8 +1,10 @@
-﻿using IFG.Core.DataAccess;
+﻿using Esale.Share.Authorize;
+using IFG.Core.DataAccess;
 using IFG.Core.Utility.Tools;
 using Microsoft.EntityFrameworkCore;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.OrderManagement;
+using OrderManagement.Application.Contracts.OrderManagement.Constants.Permissions;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
 using OrderManagement.Domain;
 using OrderManagement.Domain.Shared;
@@ -31,7 +33,7 @@ public class AnnouncementService : ApplicationService, IAnnouncementService
         _announcementRepository = announcementRepository;
         _attachmentService = attachmentService;
     }
-
+    [SecuredOperation(AnnouncementServicePermissionConstants.Delete)]
     public async Task<bool> Delete(int id)
     {
         var announcement = (await _announcementRepository.GetQueryableAsync()).AsNoTracking().FirstOrDefault(x => x.Id == id);
@@ -119,6 +121,7 @@ public class AnnouncementService : ApplicationService, IAnnouncementService
     //    return announcement;
     //}
     [UnitOfWork]
+    [SecuredOperation(AnnouncementServicePermissionConstants.Add)]
     public async Task<int> Insert(CreateAnnouncementDto announcementDto)
     {
         var announcement = ObjectMapper.Map<CreateAnnouncementDto, Announcement>(announcementDto);
@@ -127,6 +130,7 @@ public class AnnouncementService : ApplicationService, IAnnouncementService
 
     }
 
+    [SecuredOperation(AnnouncementServicePermissionConstants.Update)]
     public async Task<int> Update(CreateAnnouncementDto announcementDto)
     {
         var getAnnouncement = (await _announcementRepository.GetQueryableAsync()).AsNoTracking().FirstOrDefault(x => x.Id == announcementDto.Id);
@@ -140,6 +144,7 @@ public class AnnouncementService : ApplicationService, IAnnouncementService
         return announcement.Id;
     }
 
+    [SecuredOperation(AnnouncementServicePermissionConstants.UploadFile)]
     public async Task<bool> UploadFile(UploadFileDto uploadFile)
     {
         var announcement = await Validation(uploadFile.Id, null);

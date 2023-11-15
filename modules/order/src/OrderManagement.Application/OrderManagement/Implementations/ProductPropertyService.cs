@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Esale.Share.Authorize;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using MongoDB.Bson;
 using Nest;
 using OfficeOpenXml;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.OrderManagement;
+using OrderManagement.Application.Contracts.OrderManagement.Constants.Permissions;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
 using OrderManagement.Domain;
 using OrderManagement.Domain.OrderManagement;
@@ -49,6 +51,7 @@ namespace OrderManagement.Application
                 return null;
             return ObjectMapper.Map<List<PropertyCategory>, List<PropertyCategoryDto>>(productProperty.PropertyCategories);
         }
+        
         public async Task<List<ProductPropertyDto>> GetList()
         {
             List<ProductProperty> productProperty = new();
@@ -71,6 +74,7 @@ namespace OrderManagement.Application
                 throw new UserFriendlyException(OrderConstant.NotValid, OrderConstant.NotValidId);
             }
         }
+        [SecuredOperation(ProductPropertyServicePermissionConstants.Add)]
         public async Task<ProductPropertyDto> Add(ProductPropertyDto productPropertyDto)
         {
             var productPropertyQuery = await _productPropertyRepository.GetQueryableAsync();
@@ -87,6 +91,7 @@ namespace OrderManagement.Application
             var entity = await _productPropertyRepository.InsertAsync(mapProductPropertyDto, autoSave: true);
             return ObjectMapper.Map<ProductProperty, ProductPropertyDto>(entity);
         }
+        [SecuredOperation(ProductPropertyServicePermissionConstants.Update)]
         public async Task<ProductPropertyDto> Update(ProductPropertyDto productPropertyDto)
         {
             var existingEntity = await _productPropertyRepository.FindAsync(x => x.ProductId == productPropertyDto.ProductId);
@@ -112,6 +117,7 @@ namespace OrderManagement.Application
 
             return ObjectMapper.Map<ProductProperty, ProductPropertyDto>(existingEntity);
         }
+        [SecuredOperation(ProductPropertyServicePermissionConstants.Delete)]
         public async Task<bool> Delete(string Id)
         {
             ObjectId objectId;

@@ -1,10 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Esale.Share.Authorize;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.OrderManagement;
+using OrderManagement.Application.Contracts.OrderManagement.Constants.Permissions;
 using OrderManagement.Domain.OrderManagement;
 using OrderManagement.Domain.Shared;
 using System;
@@ -50,6 +52,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             return attachmentDto.Id;
         }
 
+        [SecuredOperation(AttachmentServicePermissionConstants.Update)]
         public async Task<Guid> Update(AttachmentUpdateDto attachmentDto)
         {
             var attachment = ObjectMapper.Map<AttachmentUpdateDto, Attachment>(attachmentDto);
@@ -74,6 +77,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             await _attachementRepository.UpdateAsync(attachment, autoSave: true);
             return attachment.Id;
         }
+        [SecuredOperation(AttachmentServicePermissionConstants.Delete)]
         public async Task<bool> DeleteById(Guid id)
         {
             var attachment = await Validation(id, null);
@@ -123,6 +127,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             return attachment;
         }
 
+        [SecuredOperation(AttachmentServicePermissionConstants.UploadFile)]
         public async Task<Guid> UploadFile(AttachmentEntityEnum entity, UploadFileDto uploadFile)
         {
             if (uploadFile.Id <= 0)

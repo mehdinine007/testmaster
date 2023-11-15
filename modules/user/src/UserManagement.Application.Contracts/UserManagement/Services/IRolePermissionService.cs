@@ -9,7 +9,6 @@ namespace UserManagement.Application.Contracts.UserManagement.Services
     {
         Task<List<RolePermissionDto>> GetList();
        
-        Task InsertList(RolePermissionDto dto);
         Task AddToRedis();
         Task<RolePermissionDto> Add(RolePermissionDto dto);
         Task<bool> AddDefaultRole(RolePermissionEnum? type);

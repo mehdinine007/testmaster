@@ -24,11 +24,7 @@ namespace UserManagement.HttpApi.UserManagement.Controllers
         [HttpGet]
         public async Task<List<RolePermissionDto>> GetList()
         => await _rolePermission.GetList();
-
-        [HttpPost]
-        public async Task InsertList(RolePermissionDto dto)
-            => await _rolePermission.InsertList(dto);
-
+                               
         [HttpPost]
         public async Task<RolePermissionDto> Add(RolePermissionDto dto)
             => await _rolePermission.Add(dto);
