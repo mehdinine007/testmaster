@@ -13,6 +13,8 @@ public class UserManagementMongoDbContext : AbpMongoDbContext
     public IMongoCollection<PermissionDefinition> PermissionDefinition => Collection<PermissionDefinition>();
     public IMongoCollection<RolePermission> RolePermission => Collection<RolePermission>();
     public IMongoCollection<UserMongo> Customers => Collection<UserMongo>();
+    public IMongoCollection<Menu> Menu => Collection<Menu>();
+
 
     protected override void CreateModel(IMongoModelBuilder modelBuilder)
     {
