@@ -751,20 +751,6 @@ public class UserAppService : ApplicationService, IUserAppService
                 throw new UserFriendlyException("پیش شماره تلفن را وارد نمایید");
 
             }
-            if (string.IsNullOrEmpty(inputUser.Street))
-            {
-                throw new UserFriendlyException("خیابان را وارد نمایید");
-
-            }
-            if (string.IsNullOrEmpty(inputUser.Pelaq))
-            {
-                throw new UserFriendlyException("پلاک را وارد نمایید");
-
-            }
-            if (string.IsNullOrEmpty(inputUser.Alley))
-            {
-                throw new UserFriendlyException("کوچه را وارد نمایید");
-            }
             if (!inputUser.IssuingDate.HasValue)
             {
                 throw new UserFriendlyException("تاریخ صدور شناسنامه را وارد نمایید");
