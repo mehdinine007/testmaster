@@ -1,5 +1,5 @@
 ﻿using Abp.Runtime.Security;
-using Esale.Core.Caching;
+using IFG.Core.Caching;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
@@ -32,14 +32,14 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Model;
 using UserManagement.Domain.UserManagement.Enums;
 using Microsoft.AspNetCore.Http;
 using Abp.Authorization;
-using Esale.Core.Constant;
-using Esale.Core.IOC;
+using IFG.Core.Constant;
+using IFG.Core.IOC;
 using UserManagement.Domain.UserManagement.Authorization.RolePermissions;
-using Nest;
+
 using MongoDB.Bson.Serialization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.JsonPatch.Internal;
-using static Nest.JoinField;
+
 using System.Xml.Linq;
 using NuGet.ContentModel;
 using NuGet.Packaging;
@@ -47,11 +47,12 @@ using System.ComponentModel;
 using System.Linq;
 using System.Collections.Generic;
 using Castle.MicroKernel.Registration;
-using Elasticsearch.Net;
+
 using MongoDB.Driver.Core.Operations;
 using System.Security;
 using System.Net;
 using Newtonsoft.Json;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace UserManagement.Application.UserManagement.Implementations;
 
@@ -79,57 +80,67 @@ public class MenuAppService : ApplicationService, IMenuAppService
     {
 
         var permissions= GetPermission();
-        //List<PermissionDefinitionChildDto> permissions = new List<PermissionDefinitionChildDto>()
-        //{
-        //       new PermissionDefinitionChildDto()
-        //    {
-        //         Code="0001000100010002",
-        //         Title="create" ,
-        //         DisplayName="ایجاد"
 
-        //    },
-        //       new PermissionDefinitionChildDto()
-        //    {
-        //         Code="0001000300010001",
-        //         Title="create" ,
-        //         DisplayName="ایجاد"
-
-        //    }
-        //};
         var menus = (await _menuRepository.GetQueryableAsync())
               .ToList();
-
         var getmenu = ObjectMapper.Map<List<Menu>, List<MenuDto>>(menus);
 
-        var _menu = new List<MenuDto>();
+        if (!permissions.Any())
+            throw new UserFriendlyException(PermissionConstant.PermissionNotFound, PermissionConstant.PermissionNotFoundId);
+
+
+        var activeMenu = new List<MenuChildDto>();
         foreach (var menu in getmenu)
         {
-           // if (permissions.Any(x => x.Code.Substring(0, menu.Code.Length) == menu.Code))
-            if (permissions.Any(x=>x==menu.Code))
+            if (menu.Children.Any())
+                activeMenu.AddRange(getFirstParent(menu.Children, permissions,new List<MenuChildDto>()));
+        }
+
+      
+
+        var _menu = new List<MenuDto>();
+
+        foreach (var menu in getmenu)
+        {
+            if (activeMenu.Any(x => x.Code.Substring(0, menu.Code.Length) == menu.Code))
             {
-                var _child = GetListWithParent(menu.Children, permissions);
+                var _child = GetListWithParent(menu.Children, activeMenu,permissions);
                 menu.Children = _child;
                 _menu.Add(menu);
             }
         }
-
-
-
         return _menu;
+    }
+
+    private List<MenuChildDto> getFirstParent(List<MenuChildDto> getmenu, List<string> permissions, List<MenuChildDto> menulst)
+    {
+        foreach (var menu in getmenu)
+        {
+            if (menu.Children.Any())
+                 getFirstParent(menu.Children, permissions, menulst);
+            else
+            {
+                if (menu.Permissions.Any(x => permissions.Any(p => p == x.Code)))
+                {
+                    menulst.Add(menu);
+                }
+            }
+        }
+        return menulst;
     }
 
     private List<string> GetPermission()
     {
-           
-    var role = _httpContextAccessor.HttpContext.User.Claims
-            .Where(x => x.Type.Equals(ClaimTypes.Role))
-            .FirstOrDefault();
+
+        var role = _httpContextAccessor.HttpContext.User.Claims
+                .Where(x => x.Type.Equals(ClaimTypes.Role))
+                .FirstOrDefault();
         if (role is null)
         {
             throw new UserFriendlyException(CoreMessage.AuthenticationDenied, CoreMessage.AuthenticationDeniedId);
         }
 
-        var rolePermission = _cacheManager.Get<List<string>>(role.ToString(),
+        var rolePermission = _cacheManager.Get<List<string>>("Role" + role.Value,
         RedisCoreConstant.RolePermissionPrefix,
         new CacheOptions()
         {
@@ -139,15 +150,16 @@ public class MenuAppService : ApplicationService, IMenuAppService
 
 
     }
-    private List<MenuChildDto> GetListWithParent(List<MenuChildDto> child, List<string> permissions)
+    private List<MenuChildDto> GetListWithParent(List<MenuChildDto> children, List<MenuChildDto> activeMenu, List<string> permissions)
     {
+
         var _child = new List<MenuChildDto>();
-        foreach (var per in child)
+        foreach (var per in children)
         {
-            if (permissions.Any(x => x.Substring(0, per.Code.Length) == per.Code))
+            if (activeMenu.Any(x => x.Code.Substring(0, per.Code.Length) == per.Code))
             {
                 if (per.Children != null && per.Children.Count > 0)
-                    per.Children = GetListWithParent(per.Children, permissions);
+                    per.Children = GetListWithParent(per.Children, activeMenu, permissions);
                 if (per.Permissions != null && per.Permissions.Count > 0)
                     per.Permissions = per.Permissions
                         .Where(x => permissions.Any(p => p == x.Code))
@@ -157,6 +169,7 @@ public class MenuAppService : ApplicationService, IMenuAppService
         }
         return _child;
     }
+   
 
     public async Task<MenuDto> GetById(ObjectId Id)
     {
@@ -290,10 +303,35 @@ public class MenuAppService : ApplicationService, IMenuAppService
                         Title = "لیست مشتریان",
                         Icon = string.Empty,
                         Url = string.Empty,
-                        Type = (int)MenuEnum.Category
-
-                     }
-
+                        Type = (int)MenuEnum.Category ,
+                         Permissions= new List<PermissionDefinitionChildDto>()
+                            {
+                                new PermissionDefinitionChildDto
+                                {
+                                        Title="view",
+                                        Code="000100030001",
+                                        DisplayName="نمایش"
+                                },
+                                    new PermissionDefinitionChildDto
+                                {
+                                        Title="create",
+                                        Code="000100030002",
+                                        DisplayName="ایجاد"
+                                },
+                                        new PermissionDefinitionChildDto
+                                {
+                                        Title="update",
+                                        Code="000100030003",
+                                        DisplayName="ویرایش"
+                                },
+                                            new PermissionDefinitionChildDto
+                                {
+                                        Title="delete",
+                                        Code="000100030004",
+                                        DisplayName="حذف"
+                                },
+                            }
+                        }
 
                 }
 
@@ -327,5 +365,5 @@ public class MenuAppService : ApplicationService, IMenuAppService
         var ls = new List<Menu>(JsonConvert.DeserializeObject<List<Menu>>(content));
         await _menuRepository.InsertManyAsync(ls);
     }
-    
+
 }
