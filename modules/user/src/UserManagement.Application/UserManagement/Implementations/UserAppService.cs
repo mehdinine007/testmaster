@@ -126,7 +126,7 @@ public class UserAppService : ApplicationService, IUserAppService
                 .Select(x => new { x.Id, x.UID}).FirstOrDefault(x => x.UID == input.UID);
             if(user == null)
             {
-                throw new UserFriendlyException("کاربر وجود ندارد");
+                throw new UserFriendlyException("کاربر وجود ندارد:" + input.UID);
             }
             input.SetId(user.Id);
             await _userSQLRepository.UpdateAsync(input);
