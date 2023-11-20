@@ -63,13 +63,11 @@ namespace CompanyManagement.Application.CompanyManagement.Implementations
             var customersAndCarsInputDto = new CustomersAndCarsInputDto()
             {
                 SaleId = input.SaleId,
-                CompanyId = int.Parse(GetCompanyId())
+                CompanyId = int.Parse(GetCompanyId()),
+                PageNo = input.PageNo
             };
 
-            _companyRepository.GetCustomerOrderList(customersAndCarsInputDto);
-
-            List<CustomersWithCars> lsCustomersWithCars = new List<CustomersWithCars>();
-
+            var lsCustomersWithCars = _companyRepository.GetCustomerOrderList(customersAndCarsInputDto);
             return lsCustomersWithCars;
         }
 

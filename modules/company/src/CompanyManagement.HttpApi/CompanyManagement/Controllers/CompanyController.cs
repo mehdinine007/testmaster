@@ -17,7 +17,7 @@ public class CompanyController : Controller
     private readonly ICompanyAppService _companyAppService;
     public CompanyController(ICompanyAppService companyAppService)
         => _companyAppService = companyAppService;
-    [HttpGet]
+    [HttpPost]
     public List<CustomersWithCars> GetCustomersAndCars(GetCustomersAndCarsDto input)
     => _companyAppService.GetCustomersAndCars(input);
     [HttpPost]

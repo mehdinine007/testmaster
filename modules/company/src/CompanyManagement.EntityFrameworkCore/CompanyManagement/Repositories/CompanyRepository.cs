@@ -35,7 +35,7 @@ namespace CompanyManagement.EfCore.CompanyManagement.Repositories
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Add("@CompanyId", SqlDbType.Int).Value = customersAndCarsInputDto.CompanyId;
                 cmd.Parameters.Add("@SaleId", SqlDbType.Int).Value = customersAndCarsInputDto.SaleId;
-                cmd.Parameters.Add("@PageIndex", SqlDbType.Int).Value = int.Parse(_configuration.GetSection("ReturnCountWinner").Value);
+                cmd.Parameters.Add("@PageIndex", SqlDbType.Int).Value = customersAndCarsInputDto.PageNo;
                 cmd.Parameters.Add("@Type", SqlDbType.Int).Value = 0;
 
                 con.Open();
