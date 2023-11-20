@@ -13,7 +13,7 @@ namespace ReportManagement.Application.Contracts.ReportManagement.IServices
         Task<DashboardDto> GetById(int id);
         Task<DashboardDto> Add(DashboardCreateOrUpdateDto dashboardCreateOrUpdateDto);
         Task<DashboardDto> Update(DashboardCreateOrUpdateDto dashboardCreateOrUpdateDto);
-        Task<List<DashboardDto>> GetList();
+        Task<List<DashboardDto>> GetList(string roles);
         Task<bool> Delete(int id);
         Task<DashboardWidgetDto> AddDashboardWidget(DashboardWidgetCreateOrUpdateDto dashboardWidgetCreateOrUpdateDto);
         Task<bool> DeleteDashboardWidget(int dashboardWidgetId);

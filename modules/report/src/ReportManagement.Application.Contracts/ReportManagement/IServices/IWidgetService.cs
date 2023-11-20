@@ -15,9 +15,9 @@ namespace ReportManagement.Application.Contracts.ReportManagement.IServices
         Task<WidgetDto> GetById(int id);
         Task<WidgetDto> Add(WidgetCreateOrUpdateDto widgetCreateOrUpdateDto);
         Task<WidgetDto> Update(WidgetCreateOrUpdateDto widgetCreateOrUpdateDto);
-        Task<List<WidgetDto>> GetList(int dashboardId);
-        Task<ChartDto> GetChart(int widgetId, List<ConditionValue> conditionValue);
+        Task<List<WidgetDto>> GetList(int dashboardId, string roles);
+        Task<ChartDto> GetChart(int widgetId, List<ConditionValue> conditionValue, string roles);
         Task<bool> Delete(int id);
-        Task<GridDto> GetGrid(int widgetId, List<ConditionValue> conditionValue);
+        Task<GridDto> GetGrid(int widgetId, List<ConditionValue> conditionValue, string roles);
     }  
 }

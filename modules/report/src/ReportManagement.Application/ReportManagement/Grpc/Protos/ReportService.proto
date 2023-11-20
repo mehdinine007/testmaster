@@ -47,12 +47,16 @@ message DashboardModel
        
 }
 
-message DashboardRequestModel {}
+message DashboardRequestModel 
+{
+ string Roles =1;
+}
 
 
 message WidgetRequestModel
 {
    int32 dashboardId =1;
+     string Roles =2;
   
 }
 message WidgetModelList
@@ -128,6 +132,7 @@ message ConditionValueModel{
 message ChartRequestModel{
    int32  widgetId =1;
    repeated ConditionValueModel ConditionValue =2 ;
+     string Roles =3;
 }
 
 message CategoryData{
@@ -167,6 +172,7 @@ message GridRequestModel
 {
    int32  widgetId =1;
    repeated ConditionValueModel ConditionValue =2 ;
+     string Roles =3;
 
 }
 

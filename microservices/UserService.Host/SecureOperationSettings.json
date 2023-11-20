@@ -1036,6 +1036,30 @@
             "code": "000500010001",
             "displayName": "نمایش گزارش پرسشنامه",
             "children": []
+          },
+          {
+            "title": "GetAllDashboard",
+            "code": "000500020002",
+            "displayName": "نمایش داشبوردها",
+            "children": []
+          },
+          {
+            "title": "GetWidgetByDashboardId",
+            "code": "000500030003",
+            "displayName": "نمایش ویجت ها",
+            "children": []
+          },
+          {
+            "title": "GetChart",
+            "code": "000500040004",
+            "displayName": "نمایش چارت",
+            "children": []
+          },
+          {
+            "title": "GetGrid",
+            "code": "000500050005",
+            "displayName": "نمایش گرید",
+            "children": []
           }
         ]
       }

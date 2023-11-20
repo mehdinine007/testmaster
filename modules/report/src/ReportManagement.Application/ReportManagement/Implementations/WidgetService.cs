@@ -59,7 +59,7 @@ namespace ReportManagement.Application.ReportManagement.Implementations
 
       
 
-        public async Task<List<WidgetDto>> GetList(int dashboardId)
+        public async Task<List<WidgetDto>> GetList(int dashboardId, string roles)
         {
             var widgets = (await _dashboardWidgetRepository.GetQueryableAsync())
                 .AsNoTracking()
@@ -99,7 +99,7 @@ namespace ReportManagement.Application.ReportManagement.Implementations
             return widget;
         }
 
-        public async Task<ChartDto> GetChart(int widgetId, List<ConditionValue> conditionValue)
+        public async Task<ChartDto> GetChart(int widgetId, List<ConditionValue> conditionValue, string roles)
         {
             var categories = new List<CategoryData>();
             var widget = await Validation(widgetId, null);
@@ -159,7 +159,7 @@ namespace ReportManagement.Application.ReportManagement.Implementations
             return chartDto;
 
         }
-        public async Task<GridDto> GetGrid(int widgetId, List<ConditionValue> conditionValue)
+        public async Task<GridDto> GetGrid(int widgetId, List<ConditionValue> conditionValue, string roles)
         {
             var widget = await Validation(widgetId, null);
             var categories = new List<CategoryData>();

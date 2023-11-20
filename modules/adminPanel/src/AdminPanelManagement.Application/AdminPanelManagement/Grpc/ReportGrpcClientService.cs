@@ -26,7 +26,7 @@ namespace AdminPanelManagement.Application.AdminPanelManagement.Grpc
             _configuration = configuration;
         }
 
-        public async Task<List<DashboardDto>> GetAllDashboard()
+        public async Task<List<DashboardDto>> GetAllDashboard(string roles)
 
         {
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2Support", true);
@@ -38,7 +38,7 @@ namespace AdminPanelManagement.Application.AdminPanelManagement.Grpc
             httpHandler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
             var channel = GrpcChannel.ForAddress(_configuration.GetValue<string>("Grpc:ReportUrl"), new GrpcChannelOptions { HttpHandler = httpHandler });
             var client = new ReportServiceGrpc.ReportServiceGrpcClient(channel);
-            var result = client.GetAllDashboard(new DashboardRequestModel() { });
+            var result = client.GetAllDashboard(new DashboardRequestModel() {  Roles=roles});
             var dashboardDto = result.DashboardModel.Select(x => new DashboardDto
             {
                 Id = x.Id,
@@ -49,7 +49,7 @@ namespace AdminPanelManagement.Application.AdminPanelManagement.Grpc
             return dashboardDto;
 
         }
-        public async Task<List<WidgetDto>> GetWidgetByDashboardId(int dashboardId)
+        public async Task<List<WidgetDto>> GetWidgetByDashboardId(int dashboardId, string roles)
         {
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2Support", true);
 
@@ -60,7 +60,7 @@ namespace AdminPanelManagement.Application.AdminPanelManagement.Grpc
             httpHandler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
             var channel = GrpcChannel.ForAddress(_configuration.GetValue<string>("Grpc:ReportUrl"), new GrpcChannelOptions { HttpHandler = httpHandler });
             var client = new ReportServiceGrpc.ReportServiceGrpcClient(channel);
-            var result = client.GetWidgetByDashboardId(new WidgetRequestModel() { DashboardId = dashboardId });
+            var result = client.GetWidgetByDashboardId(new WidgetRequestModel() { DashboardId = dashboardId,Roles= roles });
             var widgetDto = result.WidgetModel.Select(x => new WidgetDto
             {
                 Id = x.Id,
@@ -88,7 +88,7 @@ namespace AdminPanelManagement.Application.AdminPanelManagement.Grpc
             }).ToList();
             return widgetDto;
         }
-        public async Task<ChartDto> GetChart(int widgetId, List<ConditionValue> conditionValue)
+        public async Task<ChartDto> GetChart(int widgetId, List<ConditionValue> conditionValue, string roles)
         {
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2Support", true);
 
@@ -105,7 +105,7 @@ namespace AdminPanelManagement.Application.AdminPanelManagement.Grpc
             httpHandler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
             var channel = GrpcChannel.ForAddress(_configuration.GetValue<string>("Grpc:ReportUrl"), new GrpcChannelOptions { HttpHandler = httpHandler });
             var client = new ReportServiceGrpc.ReportServiceGrpcClient(channel);
-            var result = client.GetChart(new ChartRequestModel() { WidgetId = widgetId, ConditionValue = { condition } });
+            var result = client.GetChart(new ChartRequestModel() { WidgetId = widgetId, ConditionValue = { condition },Roles= roles });
 
             var chartDto = new ChartDto
             {
@@ -128,7 +128,7 @@ namespace AdminPanelManagement.Application.AdminPanelManagement.Grpc
             };
             return chartDto;
         }
-        public async Task<GridDto> GetGrid(int widgetId, List<ConditionValue> conditionValue)
+        public async Task<GridDto> GetGrid(int widgetId, List<ConditionValue> conditionValue, string roles)
         {
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2Support", true);
 
@@ -145,12 +145,10 @@ namespace AdminPanelManagement.Application.AdminPanelManagement.Grpc
             httpHandler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
             var channel = GrpcChannel.ForAddress(_configuration.GetValue<string>("Grpc:ReportUrl"), new GrpcChannelOptions { HttpHandler = httpHandler });
             var client = new ReportServiceGrpc.ReportServiceGrpcClient(channel);
-            var result = client.GetGrid(new GridRequestModel() { WidgetId = widgetId, ConditionValue = { condition } });
+            var result = client.GetGrid(new GridRequestModel() { WidgetId = widgetId, ConditionValue = { condition },Roles= roles });
             var gridDto = JsonConvert.DeserializeObject<GridDto>(result.JsonResult);
             return gridDto;
         }
-
-
         public async Task<TestDto> TestNullable()
         {
 
@@ -176,7 +174,7 @@ namespace AdminPanelManagement.Application.AdminPanelManagement.Grpc
             return outPut;
 
         }
-
+      
     }
 }
 

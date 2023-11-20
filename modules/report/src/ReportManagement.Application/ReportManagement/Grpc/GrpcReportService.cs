@@ -36,7 +36,7 @@ namespace ReportManagement.Application.ReportManagement.Grpc
 
         public override async Task<DashboardModelList> GetAllDashboard(DashboardRequestModel request, ServerCallContext context)
         {
-            var dashboardsDto = await _dashboardService.GetList();
+            var dashboardsDto = await _dashboardService.GetList(request.Roles);
             var dashboarList = new DashboardModelList();
             dashboardsDto.ForEach(x =>
             {
@@ -55,7 +55,7 @@ namespace ReportManagement.Application.ReportManagement.Grpc
         {
             var widgetModelList = new WidgetModelList();
 
-            var widgetDtos = await _widgetService.GetList(request.DashboardId);
+            var widgetDtos = await _widgetService.GetList(request.DashboardId, request.Roles);
             widgetDtos.ForEach(x =>
             {
                 var widgetModel = new WidgetModel
@@ -98,7 +98,7 @@ namespace ReportManagement.Application.ReportManagement.Grpc
                 Type = (Domain.Shared.ReportManagement.Enums.ConditionTypeEnum)x.Type,
             }).ToList();
 
-            var chartDto = await _widgetService.GetChart(request.WidgetId, conditionValues);
+            var chartDto = await _widgetService.GetChart(request.WidgetId, conditionValues, request.Roles);
             var chartModel = new ChartModel()
             {
                 Id = chartDto.Id,
@@ -133,7 +133,7 @@ namespace ReportManagement.Application.ReportManagement.Grpc
                 Type = (Domain.Shared.ReportManagement.Enums.ConditionTypeEnum)x.Type,
             }).ToList();
 
-            var gridDto = await _widgetService.GetGrid(request.WidgetId, conditionValues);
+            var gridDto = await _widgetService.GetGrid(request.WidgetId, conditionValues, request.Roles);
             string json = JsonConvert.SerializeObject(gridDto);
 
           var gridModel = new GridModel()
