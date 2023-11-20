@@ -29,7 +29,7 @@ namespace CompanyManagement.Application.CompanyManagement.Grpc
             httpHandler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
             var channel = GrpcChannel.ForAddress(_configuration.GetValue<string>("Grpc:UserUrl"), new GrpcChannelOptions { HttpHandler = httpHandler });
             var client = new Application.Grpc.UserGrpcClient.UserServiceGrpc.UserServiceGrpcClient(channel);
-            var auth = client.Authenticate(new Application.Grpc.UserGrpcClient.AuthenticateRequest() { UserNameOrEmailAddress = input.UserNameOrEmailAddress, Password = input.Password });
+            var auth = client.Authenticate(new Application.Grpc.UserGrpcClient.AuthenticateRequest() { UserNameOrEmailAddress = input.userID, Password = input.userPWD });
             var res = new AuthenticateResponseDto();
             if (!auth.Success)
             {

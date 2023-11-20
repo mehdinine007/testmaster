@@ -1,8 +1,11 @@
 ﻿namespace CompanyManagement.Application.Contracts;
 
-public class AuthenticateReqDto
+namespace CompanyManagement.Application.Contracts
 {
-
-    public string UserNameOrEmailAddress { get; set; }
-    public string Password { get; set; }
+    public class AuthenticateReqDto
+    {
+       
+        public string userID { get; set; }
+        public string userPWD { get; set; }
+    }
 }
