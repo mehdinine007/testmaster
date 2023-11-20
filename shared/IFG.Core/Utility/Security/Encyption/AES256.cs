@@ -1,6 +1,8 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
 
+namespace IFG.Core.Utility.Security;
+
 internal class AES256
 {
     public const int BlockSize = 16;
@@ -56,7 +58,7 @@ internal class AES256
                 }
             }
 
-            return System.Convert.ToBase64String(Concat(Concat("Salted__", salt), encrypted));
+            return System.Convert.ToBase64String(Concat(Concat("1F#Sa_lt", salt), encrypted));
         }
     }
 
@@ -88,7 +90,7 @@ internal class AES256
         byte[] salted = new byte[8];
         Array.Copy(ct, 0, salted, 0, 8);
 
-        if (Encoding.UTF8.GetString(salted) != "Salted__")
+        if (Encoding.UTF8.GetString(salted) != "1F#Sa_lt")
         {
             return new byte[0];
         }
@@ -168,6 +170,7 @@ internal class AES256
         return Concat(Encoding.UTF8.GetBytes(a), b);
     }
 }
+
 
 
 public static class Aes256CryptoLib

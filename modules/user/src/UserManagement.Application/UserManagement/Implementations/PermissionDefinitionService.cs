@@ -39,7 +39,7 @@ namespace UserManagement.Application.UserManagement.Implementations
             _cacheManager = cacheManager;
             _permissionWriteRepository = permissionWriteRepository;
         }
-        [SecuredOperation(RolePermissionServicePermissionConstants.GetList)]
+        //[SecuredOperation(RolePermissionServicePermissionConstants.GetList)]
         public async Task<List<PermissionDefinitionDto>> GetList()
         {
             List<PermissionDefinition> permissions = new();

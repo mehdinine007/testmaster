@@ -172,7 +172,7 @@ namespace UserManagement.Application.UserManagement.Implementations
             return true;
         }
 
-        [SecuredOperation(RolePermissionServicePermissionConstants.Add)]
+        //[SecuredOperation(RolePermissionServicePermissionConstants.Add)]
         public async Task<RolePermissionDto> Add(RolePermissionDto dto)
         {
             var role = await _rolePermissionRepository.GetQueryableAsync();
