@@ -1,8 +1,10 @@
-﻿using AdminPanelManagement.Application.Contracts.AdminPanelManagement.Dtos;
+﻿using AdminPanelManagement.Application.Contracts.AdminPanelManagement.Constants.Permissions;
+using AdminPanelManagement.Application.Contracts.AdminPanelManagement.Dtos;
 using AdminPanelManagement.Application.Contracts.IServices;
 using AdminPanelManagement.Domain.Shared.AdminPanelManagement.Db;
 using AdminPanelManagement.Domain.Shared.AdminPanelManagement.Enum;
 using AdminPanelManagement.EntityFrameworkCore.AdminPanelManagement.Repositories;
+using Esale.Share.Authorize;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -27,17 +29,25 @@ namespace AdminPanelManagement.Application.AdminPanelManagement.Implementations
             _questionnaireRepository = questionnaireRepository;
         }
 
-
+        [SecuredOperation(ReportServicePermissionConstants.ReportQuestionnaire)]
         public async Task<List<ReportQuestionnaireDto>> ReportQuestionnaire(ReportQueryDto input)
         {
             List<ReportQuestionnaireDto> ReportQuestionnaire = new List<ReportQuestionnaireDto>();
             List<ReportQuestionnaireDb> result = new List<ReportQuestionnaireDb>();
-            if (input.Type == 1)
+
+            if (input.Type != ReportQuestionnaireTypeEnum.ReportWithNationalCode && input.Type !=  ReportQuestionnaireTypeEnum.ReportWithOutNationalCode) 
             {
-                var userInfoDb = await _customerOrderRepository.UserInfo(input.NationalCode);
-                if (userInfoDb.UID.ToString() != null)
+                throw new UserFriendlyException("نوع گزارش معتبر نمیباشد");
+            }
+
+
+            if (input.Type == ReportQuestionnaireTypeEnum.ReportWithNationalCode)
+            {
+                if (input.NationalCode.IsNullOrEmpty())
                 {
-                    result = await _questionnaireRepository.GetReportQuestionnaire(userInfoDb.UID.ToString(), input.Type, -1, -1);
+                    throw new UserFriendlyException("لطفا کد ملی را وارد کنید");
+                }
+                    result = await _questionnaireRepository.GetReportQuestionnaire(input.NationalCode, input.Type, -1, -1);
                     ReportQuestionnaire = result.Select(x => new ReportQuestionnaireDto
                     {
                         CustomAnswerValue = x.CustomAnswerValue,
@@ -59,11 +69,17 @@ namespace AdminPanelManagement.Application.AdminPanelManagement.Implementations
 
 
                     }).ToList();
-                }
-
             }
-            else if (input.Type == 2)
+            else if (input.Type == ReportQuestionnaireTypeEnum.ReportWithOutNationalCode)
             {
+                if (input.SkipCount<=0)
+                {
+                    throw new UserFriendlyException("شماره صفحه نمیتواند کوچتر از صفر یا صفر باشد");
+                }
+                if (input.MaxResultCount <= 0)
+                {
+                    throw new UserFriendlyException("تعداد نمایش در صفحه نمیتواند کوچتر از صفر یا صفر باشد");
+                }
                 result = await _questionnaireRepository.GetReportQuestionnaire("", input.Type, input.MaxResultCount, input.SkipCount);
                 ReportQuestionnaire = result.Select(x => new ReportQuestionnaireDto
                 {
