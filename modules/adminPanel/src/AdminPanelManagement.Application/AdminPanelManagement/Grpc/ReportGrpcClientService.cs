@@ -88,7 +88,7 @@ namespace AdminPanelManagement.Application.AdminPanelManagement.Grpc
             }).ToList();
             return widgetDto;
         }
-        public async Task<ChartDto> GetChart(int widgetId, List<ConditionValue> conditionValue, string roles)
+        public async Task<ChartDto> GetChart(int widgetId, List<ConditionValue> conditionValue)
         {
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2Support", true);
 
@@ -105,7 +105,7 @@ namespace AdminPanelManagement.Application.AdminPanelManagement.Grpc
             httpHandler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
             var channel = GrpcChannel.ForAddress(_configuration.GetValue<string>("Grpc:ReportUrl"), new GrpcChannelOptions { HttpHandler = httpHandler });
             var client = new ReportServiceGrpc.ReportServiceGrpcClient(channel);
-            var result = client.GetChart(new ChartRequestModel() { WidgetId = widgetId, ConditionValue = { condition },Roles= roles });
+            var result = client.GetChart(new ChartRequestModel() { WidgetId = widgetId, ConditionValue = { condition } });
 
             var chartDto = new ChartDto
             {
@@ -128,7 +128,7 @@ namespace AdminPanelManagement.Application.AdminPanelManagement.Grpc
             };
             return chartDto;
         }
-        public async Task<GridDto> GetGrid(int widgetId, List<ConditionValue> conditionValue, string roles)
+        public async Task<GridDto> GetGrid(int widgetId, List<ConditionValue> conditionValue)
         {
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2Support", true);
 
@@ -145,7 +145,7 @@ namespace AdminPanelManagement.Application.AdminPanelManagement.Grpc
             httpHandler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
             var channel = GrpcChannel.ForAddress(_configuration.GetValue<string>("Grpc:ReportUrl"), new GrpcChannelOptions { HttpHandler = httpHandler });
             var client = new ReportServiceGrpc.ReportServiceGrpcClient(channel);
-            var result = client.GetGrid(new GridRequestModel() { WidgetId = widgetId, ConditionValue = { condition },Roles= roles });
+            var result = client.GetGrid(new GridRequestModel() { WidgetId = widgetId, ConditionValue = { condition } });
             var gridDto = JsonConvert.DeserializeObject<GridDto>(result.JsonResult);
             return gridDto;
         }

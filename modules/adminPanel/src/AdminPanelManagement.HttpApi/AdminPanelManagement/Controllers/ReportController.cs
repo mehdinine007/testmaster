@@ -38,5 +38,14 @@ namespace AdminPanelManagement.HttpApi.AdminPanelManagement.Controllers
         public async Task<ChartDto> GetChart(int widgetId, List<ConditionValue> conditionValue)
        => await _reportService.GetChart(widgetId, conditionValue);
 
+        [HttpGet]
+        public async Task<GridDto> GetGrid(int widgetId, List<ConditionValue> conditionValue)
+       => await _reportService.GetGrid(widgetId, conditionValue);
+
+        [HttpGet]
+        public async Task<List<WidgetDto>> GetWidgetByDashboardId(int widgetId)
+      => await _reportService.GetWidgetByDashboardId(widgetId);
+
+
     }
 }

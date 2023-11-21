@@ -52,13 +52,13 @@ namespace AdminPanelManagement.Application.AdminPanelManagement.Implementations
         public async Task<ChartDto> GetChart(int widgetId, List<ConditionValue> conditionValue)
         {
             var roles = await GetRole();
-            return await _reportGrpcClientService.GetChart(widgetId, conditionValue, roles);
+            return await _reportGrpcClientService.GetChart(widgetId, conditionValue);
         }
         [SecuredOperation(ReportServicePermissionConstants.GetGrid)]
         public async Task<GridDto> GetGrid(int widgetId, List<ConditionValue> conditionValue)
         {
             var roles = await GetRole();
-            return await _reportGrpcClientService.GetGrid(widgetId, conditionValue, roles);
+            return await _reportGrpcClientService.GetGrid(widgetId, conditionValue);
         }
         [SecuredOperation(ReportServicePermissionConstants.GetWidgetByDashboardId)]
         public async Task<List<WidgetDto>> GetWidgetByDashboardId(int dashboardId)

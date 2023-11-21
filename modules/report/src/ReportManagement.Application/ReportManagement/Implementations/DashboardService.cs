@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using NPOI.OpenXmlFormats.Dml;
 using ReportManagement.Application.Contracts.ReportManagement.Dtos;
 using ReportManagement.Application.Contracts.ReportManagement.IServices;
@@ -57,7 +58,11 @@ namespace ReportManagement.Application.ReportManagement.Implementations
 
         public async Task<List<DashboardDto>> GetList(string roles)
         {
-            var dashboard = (await _dashboardRepository.GetQueryableAsync()).Where(x => x.Roles.Contains(roles)).ToList();
+            var _roles = roles.Split(",").Select(x=> x).ToList();
+            var dashboard = (await _dashboardRepository.GetQueryableAsync())
+                .ToList()
+                .Where(x => x.Roles.Split(",").Any(y => _roles.Contains(y))).ToList();
+
             var dashboardDto = ObjectMapper.Map<List<Dashboard>, List<DashboardDto>>(dashboard);
             return dashboardDto;
         }

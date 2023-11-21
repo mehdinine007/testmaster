@@ -98,7 +98,7 @@ namespace ReportManagement.Application.ReportManagement.Grpc
                 Type = (Domain.Shared.ReportManagement.Enums.ConditionTypeEnum)x.Type,
             }).ToList();
 
-            var chartDto = await _widgetService.GetChart(request.WidgetId, conditionValues, request.Roles);
+            var chartDto = await _widgetService.GetChart(request.WidgetId, conditionValues);
             var chartModel = new ChartModel()
             {
                 Id = chartDto.Id,
@@ -133,7 +133,7 @@ namespace ReportManagement.Application.ReportManagement.Grpc
                 Type = (Domain.Shared.ReportManagement.Enums.ConditionTypeEnum)x.Type,
             }).ToList();
 
-            var gridDto = await _widgetService.GetGrid(request.WidgetId, conditionValues, request.Roles);
+            var gridDto = await _widgetService.GetGrid(request.WidgetId, conditionValues);
             string json = JsonConvert.SerializeObject(gridDto);
 
           var gridModel = new GridModel()

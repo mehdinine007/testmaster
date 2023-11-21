@@ -61,12 +61,13 @@ namespace ReportManagement.Application.ReportManagement.Implementations
 
         public async Task<List<WidgetDto>> GetList(int dashboardId, string roles)
         {
+            var _roles = roles.Split(",");
             var widgets = (await _dashboardWidgetRepository.GetQueryableAsync())
                 .AsNoTracking()
                 .Include(i => i.Widget)
                 .Where(x => x.DashboardId == dashboardId)
-                .Select(x => x.Widget)
-                .ToList();
+                .Select(x => x.Widget).ToList()
+                .Where(x => x.Roles.Split(",").Any(y => _roles.Contains(y))).ToList();
             var widgetDto = ObjectMapper.Map<List<Widget>, List<WidgetDto>>(widgets);
             return widgetDto;
         }
@@ -99,7 +100,7 @@ namespace ReportManagement.Application.ReportManagement.Implementations
             return widget;
         }
 
-        public async Task<ChartDto> GetChart(int widgetId, List<ConditionValue> conditionValue, string roles)
+        public async Task<ChartDto> GetChart(int widgetId, List<ConditionValue> conditionValue)
         {
             var categories = new List<CategoryData>();
             var widget = await Validation(widgetId, null);
@@ -159,7 +160,7 @@ namespace ReportManagement.Application.ReportManagement.Implementations
             return chartDto;
 
         }
-        public async Task<GridDto> GetGrid(int widgetId, List<ConditionValue> conditionValue, string roles)
+        public async Task<GridDto> GetGrid(int widgetId, List<ConditionValue> conditionValue)
         {
             var widget = await Validation(widgetId, null);
             var categories = new List<CategoryData>();

@@ -130,7 +130,7 @@ message ConditionValueModel{
 message ChartRequestModel{
    int32  widgetId =1;
    repeated ConditionValueModel ConditionValue =2 ;
-   string Roles =3;
+
 }
 
 message CategoryData{
@@ -169,7 +169,6 @@ message GridRequestModel
 {
    int32  widgetId =1;
    repeated ConditionValueModel ConditionValue =2 ;
-   string Roles =3;
 
 }
 
