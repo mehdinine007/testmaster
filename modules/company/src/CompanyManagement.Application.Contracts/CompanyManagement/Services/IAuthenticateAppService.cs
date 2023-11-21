@@ -1,5 +1,5 @@
-﻿using CompanyManagement.Application.Contracts.CompanyManagement.Dtos;
-using CompanyManagement.Domain.CompanyManagement;
+﻿using CompanyManagement.Domain.CompanyManagement;
+using IFG.Core.Infrastructures.TokenAuth;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;

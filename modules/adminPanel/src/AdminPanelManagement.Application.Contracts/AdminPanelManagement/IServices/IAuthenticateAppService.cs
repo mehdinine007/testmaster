@@ -1,9 +1,4 @@
-﻿using AdminPanelManagement.Application.Contracts.AdminPanelManagement.Dtos;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using IFG.Core.Infrastructures.TokenAuth;
 using Volo.Abp.Application.Services;
 
 namespace AdminPanelManagement.Application.Contracts.AdminPanelManagement.IServices

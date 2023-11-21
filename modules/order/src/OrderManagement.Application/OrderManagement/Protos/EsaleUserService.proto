@@ -10,8 +10,7 @@ package UserService;
 service UserServiceGrpc{
 	rpc GetUserAdvocacy(UserAdvocacyRequest) returns (UserAdvocacy);
 	rpc GetUserById(GetUserModel) returns (UserModel);
-	//rpc CheckOrderDeliveryDate(ClientOrderDetailRequest) returns (ClientOrderDetailResponse);
-
+	rpc Authenticate(AuthenticateRequest) returns (AuthenticateResponse);
 }
 
 message GetUserModel{
@@ -60,3 +59,21 @@ message UserAdvocacyRequest{
 	string NationalCode = 1;
 }
 
+message AuthenticateRequest{
+	string UserNameOrEmailAddress=1;
+	string Password =2;
+
+}
+
+message AuthenticateResponse{
+     bool Success=1;
+	 string Message =2;
+     google.protobuf.Int32Value ErrorCode =3;
+	 AuthenticateDataModel data=4;
+}
+
+message AuthenticateDataModel{
+	 string AccessToken =1;
+     string EncryptedAccessToken =2;
+     google.protobuf.Int32Value ExpireInSeconds=3 ;
+}
