@@ -106,7 +106,7 @@ namespace WorkFlowService.Host
                     });
                     });
                 });
-          
+
 
             Configure<AbpLocalizationOptions>(options =>
             {
@@ -148,10 +148,10 @@ namespace WorkFlowService.Host
             //});
 
             using var scope = context.Services.BuildServiceProvider();
-        
 
 
-           
+
+
             IdentityModelEventSource.ShowPII = true;
             //ConfigureHangfire(context, configuration);
 
@@ -221,6 +221,6 @@ namespace WorkFlowService.Host
                 }
             });
         }
-    
-}
+
+    }
 }
