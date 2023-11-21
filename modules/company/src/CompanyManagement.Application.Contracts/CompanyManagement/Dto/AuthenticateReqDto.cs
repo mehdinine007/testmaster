@@ -1,5 +1,4 @@
-﻿namespace CompanyManagement.Application.Contracts;
-
+﻿
 namespace CompanyManagement.Application.Contracts
 {
     public class AuthenticateReqDto
