@@ -465,5 +465,11 @@ public static class OrderManagementDbContextModelCreatingExtensions
             entity.ToTable(nameof(GenderTypeReadOnly));
             entity.AddEnumChangeTracker<GenderTypeReadOnly, GenderType>();
         });
+
+        builder.Entity<SaleProcessTypeReadOnly>(entity =>
+        {
+            entity.ToTable(nameof(SaleProcessTypeReadOnly));
+            entity.AddEnumChangeTracker<SaleProcessTypeReadOnly, SaleProcessType>();
+        });
     }
 }

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using OrderManagement.Domain.Shared;
 
 namespace OrderManagement.Application.Contracts.OrderManagement
 {
@@ -40,6 +38,8 @@ namespace OrderManagement.Application.Contracts.OrderManagement
         public bool Visible { get; set; }
         public int ColorId { get; set; }
         public int ProductId { get; set; }
+
+        public SaleProcessType SaleProcess { get; set; }
 
     }
 }
