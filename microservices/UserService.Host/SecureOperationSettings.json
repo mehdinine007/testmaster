@@ -975,6 +975,12 @@
             "code": "000200220005",
             "displayName": "بروزرسانی",
             "children": []
+          },
+          {
+            "title": "UploadFile",
+            "code": "000200220006",
+            "displayName": "آپلود فایل",
+            "children": []
           }
 
         ]

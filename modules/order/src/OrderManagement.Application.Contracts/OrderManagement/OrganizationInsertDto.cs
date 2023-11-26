@@ -11,6 +11,5 @@ namespace OrderManagement.Application.Contracts.OrderManagement
         public string Title { get; set; }
         public string Url { get; set; }
         public string EncryptKey { get; set; }
-        public List<AttachmentViewModel> Attachments { get; set; }
     }
 }

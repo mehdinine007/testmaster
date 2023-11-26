@@ -37,7 +37,7 @@ public class OrganizationService : ApplicationService, IOrganizationService
         _attachmentService = attachmentService;
     }
 
-   // [SecuredOperation(OrganizationServicePermissionConstants.Delete)]
+    [SecuredOperation(OrganizationServicePermissionConstants.Delete)]
     public async Task<bool> Delete(int id)
     {
         var organ = (await _organizationRepository.GetQueryableAsync()).AsNoTracking().FirstOrDefault(x => x.Id == id);
@@ -50,7 +50,7 @@ public class OrganizationService : ApplicationService, IOrganizationService
         return true;
     }
 
-  //  [SecuredOperation(OrganizationServicePermissionConstants.GetAll)]
+    [SecuredOperation(OrganizationServicePermissionConstants.GetAll)]
     public async Task<List<OrganizationDto>> GetAll()
     {
         var organ = await _organizationRepository.GetListAsync();
@@ -58,7 +58,7 @@ public class OrganizationService : ApplicationService, IOrganizationService
         return organdto;
     }   
 
-    //[SecuredOperation(OrganizationServicePermissionConstants.Save)]
+    [SecuredOperation(OrganizationServicePermissionConstants.Save)]
     public async Task<int> Save(OrganizationInsertDto organDto)
     {
 
@@ -69,7 +69,7 @@ public class OrganizationService : ApplicationService, IOrganizationService
         return organ.Id;
     }
 
-   // [SecuredOperation(OrganizationServicePermissionConstants.Update)]
+    [SecuredOperation(OrganizationServicePermissionConstants.Update)]
     public async Task<int> Update(OrganizationUpdateDto organDto)
 
     {
@@ -84,7 +84,7 @@ public class OrganizationService : ApplicationService, IOrganizationService
         return organ.Id;
     }
 
-   // [SecuredOperation(OrganizationServicePermissionConstants.GetById)]
+    [SecuredOperation(OrganizationServicePermissionConstants.GetById)]
     public async Task<OrganizationDto> GetById(int id, List<AttachmentEntityTypeEnum> attachmentType = null, List<AttachmentLocationEnum> attachmentlocation = null)
     {
         var organ = await Validation(id, null);
@@ -96,6 +96,16 @@ public class OrganizationService : ApplicationService, IOrganizationService
         organDto.Attachments = ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(attachments);
         return organDto;
     }
+
+
+    [SecuredOperation(OrganizationServicePermissionConstants.UploadFile)]
+    public async Task<bool> UploadFile(UploadFileDto uploadFile)
+    {
+        var announcement = await Validation(uploadFile.Id, null);
+        await _attachmentService.UploadFile(AttachmentEntityEnum.Organization, uploadFile);
+        return true;
+    }
+
 
     private async Task<Organization> Validation(int id, OrganizationUpdateDto organDto)
     {

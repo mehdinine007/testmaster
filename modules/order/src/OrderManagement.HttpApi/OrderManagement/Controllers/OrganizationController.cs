@@ -38,4 +38,8 @@ public class OrganizationController : Controller
     [HttpPut]
     public Task<int> Update(OrganizationUpdateDto orgDto)
     => _organizationService.Update(orgDto);
+
+    [HttpPost]
+    public Task<bool> UploadFile(UploadFileDto uploadFile)
+         => _organizationService.UploadFile(uploadFile);
 }

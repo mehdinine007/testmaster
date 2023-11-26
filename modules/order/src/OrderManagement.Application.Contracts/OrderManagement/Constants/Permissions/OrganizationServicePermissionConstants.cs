@@ -15,7 +15,9 @@ public class OrganizationServicePermissionConstants : BasePermissionConstants
     public const string Save_DisplayName = "ثبت";
     public const string Update = "000200220005";
     public const string Update_DisplayName = "بروزرسانی";
-    
+    public const string UploadFile = "000200220006";
+    public const string UploadFile_DisplayName = "آپلود فایل";
+
 
     public override string ModuleIdentifier => "0002";
 
