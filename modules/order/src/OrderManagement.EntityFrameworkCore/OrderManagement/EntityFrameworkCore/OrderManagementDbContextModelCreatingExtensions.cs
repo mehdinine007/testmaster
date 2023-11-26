@@ -7,6 +7,7 @@ using Volo.Abp.EntityFrameworkCore.Modeling;
 using OrderManagement.Domain.OrderManagement;
 using IFG.Core.DataAccess;
 using OrderManagement.Domain.Shared;
+using System.Reflection.Emit;
 
 namespace OrderManagement.EfCore;
 
@@ -460,10 +461,17 @@ public static class OrderManagementDbContextModelCreatingExtensions
         //    entity.Property(x => x.CarDesc)
         //        .HasMaxLength(250);
         //});
+       
         builder.Entity<GenderTypeReadOnly>(entity =>
         {
             entity.ToTable(nameof(GenderTypeReadOnly));
             entity.AddEnumChangeTracker<GenderTypeReadOnly, GenderType>();
         });
+        builder.Entity<Organization>(entity =>
+        {
+            entity.ToTable(nameof(Organization));
+        });
+
+  
     }
 }

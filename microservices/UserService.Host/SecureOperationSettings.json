@@ -676,7 +676,7 @@
             "displayName": "بروزرسانی",
             "children": []
           }
-         
+
         ]
       },
       {
@@ -941,6 +941,44 @@
 
         ]
       },
+      {
+        "title": "OrganizationService",
+        "code": "00020022",
+        "displayName": "سرویس سازمان ها",
+        "children": [
+          {
+            "title": "GetById",
+            "code": "000200220001",
+            "displayName": "نمایش سازمان ها توسط شناسه",
+            "children": []
+          },
+          {
+            "title": "GetAll",
+            "code": "000200220002",
+            "displayName": "نمایش سازمان ها",
+            "children": []
+          },
+          {
+            "title": "Delete",
+            "code": "000200220003",
+            "displayName": "حذف",
+            "children": []
+          },
+          {
+            "title": "Add",
+            "code": "000200220004",
+            "displayName": "ثبت",
+            "children": []
+          },
+          {
+            "title": "Update",
+            "code": "000200220005",
+            "displayName": "بروزرسانی",
+            "children": []
+          }
+
+        ]
+      }
     ]
   },
   {
