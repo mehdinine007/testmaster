@@ -1,6 +1,4 @@
-﻿using OrderManagement.Application.Contracts.OrderManagement.Models;
-using System;
-using System.Collections.Generic;
+﻿using OrderManagement.Domain.Shared;
 
 namespace OrderManagement.Application.Contracts
 {
@@ -10,8 +8,8 @@ namespace OrderManagement.Application.Contracts
 
         public string SalePlanDescription { get; set; }
 
-        
 
+        public SaleProcessType SaleProcess { get; set; }
 
     }
 }

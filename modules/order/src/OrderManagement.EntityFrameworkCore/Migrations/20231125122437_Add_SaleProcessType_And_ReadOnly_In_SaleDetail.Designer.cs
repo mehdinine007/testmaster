@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OrderManagement.EfCore;
 using Volo.Abp.EntityFrameworkCore;
@@ -12,9 +13,11 @@ using Volo.Abp.EntityFrameworkCore;
 namespace OrderManagement.EfCore.Migrations
 {
     [DbContext(typeof(OrderManagementDbContext))]
-    partial class OrderManagementDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231125122437_Add_SaleProcessType_And_ReadOnly_In_SaleDetail")]
+    partial class AddSaleProcessTypeAndReadOnlyInSaleDetail
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -443,42 +446,48 @@ namespace OrderManagement.EfCore.Migrations
                             Id = 1,
                             Code = 1,
                             Description = "شماره سفارش {0}",
-                            Title = "ثبت سفارش"
+                            Title = "ثبت سفارش",
+                            TitleEn = "OrderRegistered"
                         },
                         new
                         {
                             Id = 2,
                             Code = 2,
                             Description = "",
-                            Title = "الویت بندی"
+                            Title = "الویت بندی",
+                            TitleEn = "Prioritization"
                         },
                         new
                         {
                             Id = 3,
                             Code = 3,
                             Description = "خودرو شما {0} می باشد",
-                            Title = "تعیین خودرو"
+                            Title = "تعیین خودرو",
+                            TitleEn = "ProductDetermination"
                         },
                         new
                         {
                             Id = 4,
                             Code = 4,
                             Description = "ارسال به خودرو ساز ({0})",
-                            Title = "ارسال به خودرو ساز"
+                            Title = "ارسال به خودرو ساز",
+                            TitleEn = "SendingToManufaturer"
                         },
                         new
                         {
                             Id = 5,
                             Code = 5,
                             Description = "شماره قرارداد {0}",
-                            Title = "دریافت ردیف قرارداد"
+                            Title = "دریافت ردیف قرارداد",
+                            TitleEn = "ReceivingContractRowId"
                         },
                         new
                         {
                             Id = 6,
                             Code = 6,
                             Description = "مبلغ پرداختی {0}",
-                            Title = "تکمیل وجه"
+                            Title = "تکمیل وجه",
+                            TitleEn = "ReceivingAmountCompleted"
                         });
                 });
 
@@ -510,91 +519,106 @@ namespace OrderManagement.EfCore.Migrations
                         {
                             Id = 1,
                             Code = 1,
-                            Title = "عدم تطابق کدملی و شماره موبایل"
+                            Title = "عدم تطابق کدملی و شماره موبایل",
+                            TitleEn = "PhoneNumberAndNationalCodeConflict"
                         },
                         new
                         {
                             Id = 2,
                             Code = 2,
-                            Title = "نداشتن گواهی نامه معتبر"
+                            Title = "نداشتن گواهی نامه معتبر",
+                            TitleEn = "DoesntHadQualifiedDrivingLicense"
                         },
                         new
                         {
                             Id = 3,
                             Code = 3,
-                            Title = "دارای پلاک فعال"
+                            Title = "دارای پلاک فعال",
+                            TitleEn = "ActivePlaqueDetected"
                         },
                         new
                         {
                             Id = 4,
                             Code = 4,
-                            Title = "ثبت سفارش در سامانه خودروهای وارداتی"
+                            Title = "ثبت سفارش در سامانه خودروهای وارداتی",
+                            TitleEn = "OrderRegisteredInInternalVehicleSite"
                         },
                         new
                         {
                             Id = 5,
                             Code = 5,
-                            Title = "لیست خرید خودروساز (سایپا)"
+                            Title = "لیست خرید خودروساز (سایپا)",
+                            TitleEn = "SaipaVehicleManufactureList"
                         },
                         new
                         {
                             Id = 6,
                             Code = 6,
-                            Title = "لیست خرید خودروساز (ایران خودرو)"
+                            Title = "لیست خرید خودروساز (ایران خودرو)",
+                            TitleEn = "IkcoVehicleManufactureList"
                         },
                         new
                         {
                             Id = 7,
                             Code = 7,
-                            Title = "لیست خرید خودروساز (کرمان موتور)"
+                            Title = "لیست خرید خودروساز (کرمان موتور)",
+                            TitleEn = "KermanMotorVehicleManufactureList"
                         },
                         new
                         {
                             Id = 8,
                             Code = 8,
-                            Title = "لیست خرید خودروساز (صنایع خودرو سازی ایلیا)"
+                            Title = "لیست خرید خودروساز (صنایع خودرو سازی ایلیا)",
+                            TitleEn = "IliaAutoVehicleManufactureList"
                         },
                         new
                         {
                             Id = 9,
                             Code = 9,
-                            Title = "لیست خرید خودروساز (فردا موتورز)"
+                            Title = "لیست خرید خودروساز (فردا موتورز)",
+                            TitleEn = "FardaMotorsVehicleManufactureList"
                         },
                         new
                         {
                             Id = 10,
                             Code = 10,
-                            Title = "لیست خرید خودروساز (آرین پارس)"
+                            Title = "لیست خرید خودروساز (آرین پارس)",
+                            TitleEn = "ArianParsVehicleManufactureList"
                         },
                         new
                         {
                             Id = 11,
                             Code = 11,
-                            Title = "لیست خرید خودروساز (مکث موتور)"
+                            Title = "لیست خرید خودروساز (مکث موتور)",
+                            TitleEn = "MaxMotorVehicleManufactureList"
                         },
                         new
                         {
                             Id = 12,
                             Code = 12,
-                            Title = "لیست خرید خودروساز (بهمن موتور)"
+                            Title = "لیست خرید خودروساز (بهمن موتور)",
+                            TitleEn = "BahmanMotorVehicleManufactureList"
                         },
                         new
                         {
                             Id = 13,
                             Code = 13,
-                            Title = "لیست خرید خودروساز (مدیران خودرو)"
+                            Title = "لیست خرید خودروساز (مدیران خودرو)",
+                            TitleEn = "MvmVehicleManufactureList"
                         },
                         new
                         {
                             Id = 14,
                             Code = 14,
-                            Title = "عدم احراز در طرح جوانی توسط ثبت احول"
+                            Title = "عدم احراز در طرح جوانی توسط ثبت احول",
+                            TitleEn = "YoungPlan"
                         },
                         new
                         {
                             Id = 15,
                             Code = 15,
-                            Title = "عدم احراز خودرو فرسوده"
+                            Title = "عدم احراز خودرو فرسوده",
+                            TitleEn = "OldPlan"
                         });
                 });
 
@@ -626,31 +650,36 @@ namespace OrderManagement.EfCore.Migrations
                         {
                             Id = 1,
                             Code = 10,
-                            Title = "ثبت سفارش اولیه با موفقیت انجام شد"
+                            Title = "ثبت سفارش اولیه با موفقیت انجام شد",
+                            TitleEn = "RecentlyAdded"
                         },
                         new
                         {
                             Id = 2,
                             Code = 20,
-                            Title = "انصراف داده شده"
+                            Title = "انصراف داده شده",
+                            TitleEn = "Canceled"
                         },
                         new
                         {
                             Id = 3,
                             Code = 30,
-                            Title = "انتخاب نشده اید"
+                            Title = "انتخاب نشده اید",
+                            TitleEn = "loser"
                         },
                         new
                         {
                             Id = 4,
                             Code = 40,
-                            Title = "برنده شده اید"
+                            Title = "برنده شده اید",
+                            TitleEn = "Winner"
                         },
                         new
                         {
                             Id = 5,
                             Code = 50,
-                            Title = "انصراف کلی از اولیت بندی"
+                            Title = "انصراف کلی از اولیت بندی",
+                            TitleEn = "FullCancel"
                         },
                         new
                         {
@@ -1407,13 +1436,15 @@ namespace OrderManagement.EfCore.Migrations
                         {
                             Id = 1,
                             Code = 0,
-                            Title = "مرد"
+                            Title = "مرد",
+                            TitleEn = "Male"
                         },
                         new
                         {
                             Id = 2,
                             Code = 1,
-                            Title = "زن"
+                            Title = "زن",
+                            TitleEn = "Female"
                         });
                 });
 
@@ -1451,7 +1482,7 @@ namespace OrderManagement.EfCore.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Logs", (string)null);
+                    b.ToTable("Logs");
                 });
 
             modelBuilder.Entity("OrderManagement.Domain.OrderManagement.Attachment", b =>
@@ -1564,7 +1595,7 @@ namespace OrderManagement.EfCore.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("CarClass", (string)null);
+                    b.ToTable("CarClass");
                 });
 
             modelBuilder.Entity("OrderManagement.Domain.OrderManagement.ChartStructure", b =>
@@ -1622,7 +1653,7 @@ namespace OrderManagement.EfCore.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ChartStructure", (string)null);
+                    b.ToTable("ChartStructure");
                 });
 
             modelBuilder.Entity("OrderManagement.Domain.OrderManagement.Color", b =>
@@ -1671,7 +1702,7 @@ namespace OrderManagement.EfCore.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Color", (string)null);
+                    b.ToTable("Color");
                 });
 
             modelBuilder.Entity("OrderManagement.Domain.OrderManagement.OrderStatusInquiry", b =>
@@ -1741,61 +1772,6 @@ namespace OrderManagement.EfCore.Migrations
                     b.HasIndex("CompanyId");
 
                     b.ToTable("OrderStatusInquiry", (string)null);
-                });
-
-            modelBuilder.Entity("OrderManagement.Domain.OrderManagement.Organization", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("Code")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("CreationTime");
-
-                    b.Property<Guid?>("CreatorId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("CreatorId");
-
-                    b.Property<Guid?>("DeleterId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("DeleterId");
-
-                    b.Property<DateTime?>("DeletionTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("DeletionTime");
-
-                    b.Property<string>("EncryptKey")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false)
-                        .HasColumnName("IsDeleted");
-
-                    b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("LastModificationTime");
-
-                    b.Property<Guid?>("LastModifierId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("LastModifierId");
-
-                    b.Property<string>("Title")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Url")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Organization", (string)null);
                 });
 
             modelBuilder.Entity("OrderManagement.Domain.OrderManagement.ProductAndCategory", b =>
@@ -1899,13 +1875,15 @@ namespace OrderManagement.EfCore.Migrations
                         {
                             Id = 1,
                             Code = 1,
-                            Title = "محصول"
+                            Title = "محصول",
+                            TitleEn = "Product"
                         },
                         new
                         {
                             Id = 2,
                             Code = 2,
-                            Title = "دسته بندی"
+                            Title = "دسته بندی",
+                            TitleEn = "Category"
                         });
                 });
 
@@ -1955,7 +1933,7 @@ namespace OrderManagement.EfCore.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ProductLevel", (string)null);
+                    b.ToTable("ProductLevel");
                 });
 
             modelBuilder.Entity("OrderManagement.Domain.OrderManagement.SaleDetailCarColor", b =>
@@ -2235,25 +2213,29 @@ namespace OrderManagement.EfCore.Migrations
                         {
                             Id = 1,
                             Code = 1,
-                            Title = "تشریحی"
+                            Title = "تشریحی",
+                            TitleEn = "Descriptional"
                         },
                         new
                         {
                             Id = 2,
                             Code = 2,
-                            Title = "گزینه ای"
+                            Title = "گزینه ای",
+                            TitleEn = "Optional"
                         },
                         new
                         {
                             Id = 3,
                             Code = 3,
-                            Title = "بازه"
+                            Title = "بازه",
+                            TitleEn = "Range"
                         },
                         new
                         {
                             Id = 4,
                             Code = 4,
-                            Title = "چند گزینه ای"
+                            Title = "چند گزینه ای",
+                            TitleEn = "MultiSelectOptional"
                         });
                 });
 
@@ -2342,13 +2324,15 @@ namespace OrderManagement.EfCore.Migrations
                         {
                             Id = 1,
                             Code = 0,
-                            Title = "احراض اجباری"
+                            Title = "احراض اجباری",
+                            TitleEn = "AuthorizedOnly"
                         },
                         new
                         {
                             Id = 2,
                             Code = 1,
-                            Title = "احراض اختیاری"
+                            Title = "احراض اختیاری",
+                            TitleEn = "AnonymousAllowed"
                         });
                 });
 
@@ -2743,7 +2727,7 @@ namespace OrderManagement.EfCore.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("SiteStructures", (string)null);
+                    b.ToTable("SiteStructures");
                 });
 
             modelBuilder.Entity("OrderManagement.Domain.SubmittedAnswer", b =>
@@ -3035,7 +3019,7 @@ namespace OrderManagement.EfCore.Migrations
                     b.HasIndex("nationalcode")
                         .HasFilter("IsDeleted = 0");
 
-                    b.ToTable("UserRejectionFromBank", (string)null);
+                    b.ToTable("UserRejectionFromBank");
                 });
 
             modelBuilder.Entity("OrderManagement.Domain.WhiteList", b =>
@@ -3136,7 +3120,7 @@ namespace OrderManagement.EfCore.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Year", (string)null);
+                    b.ToTable("Year");
                 });
 
             modelBuilder.Entity("Volo.Abp.AuditLogging.AuditLog", b =>

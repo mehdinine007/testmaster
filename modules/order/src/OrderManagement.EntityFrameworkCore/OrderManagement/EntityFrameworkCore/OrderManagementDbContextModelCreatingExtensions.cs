@@ -473,5 +473,11 @@ public static class OrderManagementDbContextModelCreatingExtensions
         });
 
   
+
+        builder.Entity<SaleProcessTypeReadOnly>(entity =>
+        {
+            entity.ToTable(nameof(SaleProcessTypeReadOnly));
+            entity.AddEnumChangeTracker<SaleProcessTypeReadOnly, SaleProcessType>();
+        });
     }
 }

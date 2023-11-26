@@ -101,6 +101,8 @@ namespace OrderManagement.EfCore
         DbSet<UnAuthorizedUser> UnAuthorizedUser { get; set; }
 
         DbSet<GenderTypeReadOnly> GenderTypeReadOnly { get; set; }
-         DbSet<Organization> Organization { get; set; }
+
+        DbSet<SaleProcessTypeReadOnly> SaleProcessTypeReadOnly { get; set; }
+        DbSet<Organization> Organization { get; set; }
     }
 }
