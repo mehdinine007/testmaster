@@ -51,7 +51,7 @@ namespace OrderManagement.Application
                 return null;
             return ObjectMapper.Map<List<PropertyCategory>, List<PropertyCategoryDto>>(productProperty.PropertyCategories);
         }
-        
+
         public async Task<List<ProductPropertyDto>> GetList()
         {
             List<ProductProperty> productProperty = new();
@@ -1113,7 +1113,7 @@ namespace OrderManagement.Application
                     Value = "",
                     Priority=0
                 },
-                
+
 
             },
 
@@ -1144,29 +1144,35 @@ namespace OrderManagement.Application
                             {
                                 throw new UserFriendlyException("محصول وجود ندارد");
                             };
-                            var propertyCategories = (await _propertyDefinitionRepository.GetMongoQueryableAsync()).ToList();
-                            List<PropertyDto> propertyList = new List<PropertyDto>();
-                            for (int row = 2; row <= rowcount; row++)
+                            var productMongo = (await _productPropertyRepository.GetMongoQueryableAsync()).Where(x => x.ProductId == product.Id).ToList();
+                            if (productMongo.Count>0)
                             {
-
-                                var key = item.Cells[row, 1].Value.ToString();
-                                var title = item.Cells[row, 2].Value.ToString();
-                                var value = item.Cells[row, 3].Value.ToString();
-                                foreach (var category in propertyCategories)
+                                    await _productPropertyRepository.HardDeleteAsync(y => y.ProductId == product.Id);
+                            }
+                                var propertyCategories = (await _propertyDefinitionRepository.GetMongoQueryableAsync()).ToList();
+                                List<PropertyDto> propertyList = new List<PropertyDto>();
+                                for (int row = 2; row <= rowcount; row++)
                                 {
-                                    foreach (var property in category.Properties)
+
+                                    var key = item.Cells[row, 1].Value.ToString();
+                                    var title = item.Cells[row, 2].Value.ToString();
+                                    var value = item.Cells[row, 3].Value.ToString();
+                                    foreach (var category in propertyCategories)
                                     {
-                                        if (property.Key == key)
-                                            property.Value = value;
+                                        foreach (var property in category.Properties)
+                                        {
+                                            if (property.Key == key)
+                                                property.Value = value;
+                                        }
                                     }
                                 }
-                            }
-                            var productPropertyDto = new ProductPropertyDto()
-                            {
-                                ProductId = product.Id,
-                                PropertyCategories = ObjectMapper.Map<List<PropertyCategory>, List<ProductPropertyCategoryDto>>(propertyCategories)
-                            };
-                            await _productPropertyRepository.InsertAsync(ObjectMapper.Map<ProductPropertyDto, ProductProperty>(productPropertyDto));
+                                var productPropertyDto = new ProductPropertyDto()
+                                {
+                                    ProductId = product.Id,
+                                    PropertyCategories = ObjectMapper.Map<List<PropertyCategory>, List<ProductPropertyCategoryDto>>(propertyCategories)
+                                };
+                                await _productPropertyRepository.InsertAsync(ObjectMapper.Map<ProductPropertyDto, ProductProperty>(productPropertyDto));
+                            
                         }
                     }
                 }
@@ -1189,29 +1195,36 @@ namespace OrderManagement.Application
                             {
                                 throw new UserFriendlyException("محصول وجود ندارد");
                             };
-                            var propertyCategories = (await _propertyDefinitionRepository.GetMongoQueryableAsync()).ToList();
-                            List<PropertyDto> propertyList = new List<PropertyDto>();
-                            for (int row = 2; row <= rowcount; row++)
+                            var productMongo =(await _productPropertyRepository.GetMongoQueryableAsync()).Where(x => x.ProductId == product.Id).ToList();
+                            if (productMongo.Count > 0)
                             {
-
-                                var key = item.Cells[row, 1].Value.ToString();
-                                var title = item.Cells[row, 2].Value.ToString();
-                                var value = item.Cells[row, 3].Value.ToString();
-                                foreach (var category in propertyCategories)
+                                    await _productPropertyRepository.HardDeleteAsync(y => y.ProductId == product.Id);
+                               
+                            }
+                            var propertyCategories = (await _propertyDefinitionRepository.GetMongoQueryableAsync()).ToList();
+                                List<PropertyDto> propertyList = new List<PropertyDto>();
+                                for (int row = 2; row <= rowcount; row++)
                                 {
-                                    foreach (var property in category.Properties)
+
+                                    var key = item.Cells[row, 1].Value.ToString();
+                                    var title = item.Cells[row, 2].Value.ToString();
+                                    var value = item.Cells[row, 3].Value.ToString();
+                                    foreach (var category in propertyCategories)
                                     {
-                                        if (property.Key == key)
-                                            property.Value = value;
+                                        foreach (var property in category.Properties)
+                                        {
+                                            if (property.Key == key)
+                                                property.Value = value;
+                                        }
                                     }
                                 }
-                            }
-                            var productPropertyDto = new ProductPropertyDto()
-                            {
-                                ProductId = product.Id,
-                                PropertyCategories = ObjectMapper.Map<List<PropertyCategory>, List<ProductPropertyCategoryDto>>(propertyCategories)
-                            };
-                            await _productPropertyRepository.InsertAsync(ObjectMapper.Map<ProductPropertyDto, ProductProperty>(productPropertyDto));
+                                var productPropertyDto = new ProductPropertyDto()
+                                {
+                                    ProductId = product.Id,
+                                    PropertyCategories = ObjectMapper.Map<List<PropertyCategory>, List<ProductPropertyCategoryDto>>(propertyCategories)
+                                };
+                                await _productPropertyRepository.InsertAsync(ObjectMapper.Map<ProductPropertyDto, ProductProperty>(productPropertyDto));
+                            
                         }
                     }
                 }
