@@ -461,7 +461,7 @@ public static class OrderManagementDbContextModelCreatingExtensions
         //    entity.Property(x => x.CarDesc)
         //        .HasMaxLength(250);
         //});
-       
+
         builder.Entity<GenderTypeReadOnly>(entity =>
         {
             entity.ToTable(nameof(GenderTypeReadOnly));
@@ -472,12 +472,14 @@ public static class OrderManagementDbContextModelCreatingExtensions
             entity.ToTable(nameof(Organization));
         });
 
-  
+
 
         builder.Entity<SaleProcessTypeReadOnly>(entity =>
         {
             entity.ToTable(nameof(SaleProcessTypeReadOnly));
             entity.AddEnumChangeTracker<SaleProcessTypeReadOnly, SaleProcessType>();
         });
+
+        builder.Entity<Priority>(entity => entity.ToTable(nameof(Priority)));
     }
 }

@@ -4,6 +4,9 @@ namespace OrderManagement.Application.Contracts
 {
     public class CommitOrderResultDto
     {
+        public string OrderId { get; set; }
+        public string NationalCode { get; set; }
+        public string OrganizationUrl { get; set; }
         public Guid UId { get; set; }
         public bool PaymentGranted { get; set; }
         public PaymentMethodConfiguration PaymentMethodConigurations { get; set; }

@@ -182,6 +182,8 @@ namespace OrderManagement
                 .ForMember(x => x.SmsCode, opt => opt.Ignore())
                 .ReverseMap()
                 .IgnoreFullAuditedObjectProperties();
+
+            CreateMap<Priority, PriorityDto>().ReverseMap();
         }
     }
 }

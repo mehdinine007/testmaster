@@ -89,7 +89,8 @@ public class OrganizationService : ApplicationService, IOrganizationService
     {
         var organ = await Validation(id, null);
         var announcement = (await _organizationRepository.GetQueryableAsync()).AsNoTracking()
-           .FirstOrDefault(x => x.Id == id);
+           .FirstOrDefault(x => x.Id == id)
+           ?? throw new UserFriendlyException("شرکت مورد نظر یافت نشد");
         var attachments = await _attachmentService.GetList(AttachmentEntityEnum.Organization, new List<int>() { id }, attachmentType, attachmentlocation);
         var organDto = ObjectMapper.Map<Organization, OrganizationDto>(organ);
 

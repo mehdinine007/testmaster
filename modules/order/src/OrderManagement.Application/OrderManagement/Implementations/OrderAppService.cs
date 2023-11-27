@@ -27,6 +27,7 @@ using OrderManagement.Application.Contracts.OrderManagement.Models;
 using OrderManagement.Domain.OrderManagement;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
 using Esale.Share.Authorize;
+using IFG.Core.Utility.Security;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -52,6 +53,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
     private readonly ICacheManager _cacheManager;
     private readonly IAttachmentService _attachmentService;
     private readonly IProductAndCategoryService _productAndCategoryService;
+    private readonly IRepository<Priority, int> _priorityRepository;
+    private readonly IOrganizationService _organizationService;
 
     public OrderAppService(ICommonAppService commonAppService,
                            IBaseInformationService baseInformationAppService,
@@ -74,7 +77,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
                            IUnitOfWorkManager unitOfWorkManager,
                            ICacheManager cacheManager,
                            IAttachmentService attachmentService,
-                        IProductAndCategoryService productAndCategoryService
+                           IProductAndCategoryService productAndCategoryService,
+                           IRepository<Priority, int> priorityRepository,
+                           IOrganizationService organizationService
         )
     {
         _commonAppService = commonAppService;
@@ -97,6 +102,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
         _cacheManager = cacheManager;
         _attachmentService = attachmentService;
         _productAndCategoryService = productAndCategoryService;
+        _priorityRepository = priorityRepository;
+        _organizationService = organizationService;
     }
 
 
@@ -224,7 +231,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     SalePlanStartDate = x.SalePlanStartDate,
                     UID = x.UID,
                     ESaleTypeId = x.ESaleTypeId,
-                    CarFee = x.CarFee
+                    CarFee = x.CarFee,
+                    ProductId = x.ProductId,
+                    SaleProcess = x.SaleProcess
                 })
                 .FirstOrDefault(x => x.UID == commitOrderDto.SaleDetailUId);
             if (SaleDetailFromDb == null)
@@ -263,6 +272,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         CheckSaleDetailValidation(SaleDetailDto);
         RustySalePlanValidation(commitOrderDto, SaleDetailDto.EsaleTypeId);
+        if (SaleDetailDto.SaleProcess == SaleProcessType.RegularSale)
+            await GetPriorityByNationalCode(nationalCode);
 
 
         await _commonAppService.IsUserRejected(); //if user reject from advocacy
@@ -517,7 +528,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 throw new UserFriendlyException("شما نمیتوانید سفارش شخص دیگری را پرداخت کنید");
             }
         }
-      
+
         //if (SaleDetailDto.EsaleTypeId == (Int16)EsaleTypeEnum.Youth)
         //{
         //    Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
@@ -594,7 +605,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             customerOrder.AgencyId = commitOrderDto.AgencyId;
             customerOrder.PaymentSecret = _randomGenerator.GetUniqueInt();
             customerOrder.OrderDeliveryStatus = OrderDeliveryStatusType.OrderRegistered;
-            await _commitOrderRepository.InsertAsync(customerOrder);
+            await _commitOrderRepository.InsertAsync(customerOrder, autoSave: true);
             await CurrentUnitOfWork.SaveChangesAsync();
         }
 
@@ -631,7 +642,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 CallBackUrl = _configuration.GetValue<string>("CallBackUrl"),
                 Amount = (long)SaleDetailDto.CarFee,
                 Mobile = customer.MobileNumber,
-                AdditionalData = customerOrder.PaymentSecret.HasValue? customerOrder.PaymentSecret.Value.ToString() : string.Empty,
+                AdditionalData = customerOrder.PaymentSecret.HasValue ? customerOrder.PaymentSecret.Value.ToString() : string.Empty,
                 NationalCode = nationalCode,
                 PspAccountId = commitOrderDto.PspAccountId.Value,
                 FilterParam1 = customerOrder.SaleDetailId,
@@ -725,12 +736,23 @@ public class OrderAppService : ApplicationService, IOrderAppService
         //await _distributedCache.SetStringAsync(cacheKey, handShakeResponse.Token);
         //var  ObjectMapper.Map<HandShakeResponseDto, HandShakeResultDto>(handShakeResponse);
         await _commonAppService.SetOrderStep(OrderStepEnum.SaveOrder);
-        if (paymentMethodGranted)
+        var encryptionIsRequired = SaleDetailDto.SaleProcess == SaleProcessType.DirectSale;
+        var encryptionKey = string.Empty;
+        var organizationUrl = string.Empty;
+        if (encryptionIsRequired)
         {
-
+            var productId = SaleDetailDto.ProductId;
+            var product = await _productAndCategoryService.GetById(productId, false);
+            var cmp = await _productAndCategoryService.GetProductAndCategoryByCode(product.Code.Substring(0, 4));
+            var organization = await _organizationService.GetById(cmp.Id);
+            encryptionKey = organization.EncryptKey;
+            organizationUrl = organization.Url + "?enc=" + organization.EncryptKey;
         }
         return new CommitOrderResultDto()
         {
+            OrganizationUrl = organizationUrl,
+            OrderId = encryptionIsRequired ? customerOrder.Id.ToString().Aes256Encrypt(encryptionKey) : customerOrder.Id.ToString(),
+            NationalCode = encryptionIsRequired ? nationalCode.Aes256Encrypt(encryptionKey) : nationalCode,
             PaymentGranted = paymentMethodGranted,
             UId = commitOrderDto.SaleDetailUId,
             PaymentMethodConigurations = paymentMethodGranted ? new()
@@ -1199,7 +1221,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             //    .AsNoTracking()
             //    .FirstOrDefault(x => x.Id == orderId.Id);
 
-            if (order is null || (!int.TryParse(paymentSecret, out var numericPaymentSecret) || (order.PaymentSecret.HasValue &&  order.PaymentSecret.Value != numericPaymentSecret)))
+            if (order is null || (!int.TryParse(paymentSecret, out var numericPaymentSecret) || (order.PaymentSecret.HasValue && order.PaymentSecret.Value != numericPaymentSecret)))
                 exceptionCollection.Add(new UserFriendlyException("درخواست معتبر نیست"));
 
             if (order != null)
@@ -1377,7 +1399,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
     }
 
     [SecuredOperation(OrderAppServicePermissionConstants.GetSaleDetailByUid)]
-    public async Task<CustomerOrder_OrderDetailDto> GetSaleDetailByUid(Guid saleDetailUid, List<AttachmentEntityTypeEnum> attachmentEntityType = null , List<AttachmentLocationEnum> attachmentlocation = null)
+    public async Task<CustomerOrder_OrderDetailDto> GetSaleDetailByUid(Guid saleDetailUid, List<AttachmentEntityTypeEnum> attachmentEntityType = null, List<AttachmentLocationEnum> attachmentlocation = null)
     {
         //if (!_commonAppService.IsInRole("Customer"))
         //{
@@ -1415,7 +1437,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
     }
 
     [SecuredOperation(OrderAppServicePermissionConstants.GetOrderDetailById)]
-    public async Task<CustomerOrder_OrderDetailDto> GetOrderDetailById(int id, List<AttachmentEntityTypeEnum> attachmentType = null , List<AttachmentLocationEnum> attachmentlocation = null)
+    public async Task<CustomerOrder_OrderDetailDto> GetOrderDetailById(int id, List<AttachmentEntityTypeEnum> attachmentType = null, List<AttachmentLocationEnum> attachmentlocation = null)
     {
         //if (!_commonAppService.IsInRole("Customer"))
         //{
@@ -1457,7 +1479,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 PaymentId = x.PaymentId
             }).FirstOrDefault(x => x.UserId == userId && x.OrderId == id);
 
-        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, new List<int> { customerOrder.ProductId }.ToList(),attachmentType, attachmentlocation);
+        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, new List<int> { customerOrder.ProductId }.ToList(), attachmentType, attachmentlocation);
         var attachment = attachments.Where(y => y.EntityId == customerOrder.ProductId).ToList();
         customerOrder.Product.Attachments = ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(attachment);
 
@@ -1484,4 +1506,13 @@ public class OrderAppService : ApplicationService, IOrderAppService
         return customerOrder;
     }
 
+    public async Task<PriorityDto> GetPriorityByNationalCode(string nationalCode)
+    {
+        var priority = (await _priorityRepository.GetQueryableAsync())
+            .AsNoTracking()
+            .FirstOrDefault(x => x.NationalCode == nationalCode)
+            ?? throw new UserFriendlyException("کدملی جاری در الویت بندی وجود ندارد");
+
+        return ObjectMapper.Map<Priority, PriorityDto>(priority);
+    }
 }

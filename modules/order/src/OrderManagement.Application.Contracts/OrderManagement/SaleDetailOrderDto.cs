@@ -21,5 +21,6 @@ namespace OrderManagement.Application.Contracts
 
         public SaleProcessType SaleProcess { get; set; }
 
+        public int ProductId { get; set; }
     }
 }
