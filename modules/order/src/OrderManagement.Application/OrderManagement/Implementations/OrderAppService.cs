@@ -28,6 +28,7 @@ using OrderManagement.Domain.OrderManagement;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
 using Esale.Share.Authorize;
 using IFG.Core.Utility.Security;
+using Core.Utility.Tools;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -746,13 +747,14 @@ public class OrderAppService : ApplicationService, IOrderAppService
             var cmp = await _productAndCategoryService.GetProductAndCategoryByCode(product.Code.Substring(0, 4));
             var organization = await _organizationService.GetById(cmp.Id);
             encryptionKey = organization.EncryptKey;
-            organizationUrl = organization.Url + "?enc=" + organization.EncryptKey;
+            var enc = string.Format(OrderConstant.OrganizationEncryptedExpression, nationalCode, customerOrder.Id);
+            organizationUrl = string.Format(OrderConstant.OrganizationUrlFormat,
+                organization.Url.RemoveLastCharacterIfExists('/'),
+                enc.Aes256Encrypt(organization.EncryptKey));
         }
         return new CommitOrderResultDto()
         {
             OrganizationUrl = organizationUrl,
-            OrderId = encryptionIsRequired ? customerOrder.Id.ToString().Aes256Encrypt(encryptionKey) : customerOrder.Id.ToString(),
-            NationalCode = encryptionIsRequired ? nationalCode.Aes256Encrypt(encryptionKey) : nationalCode,
             PaymentGranted = paymentMethodGranted,
             UId = commitOrderDto.SaleDetailUId,
             PaymentMethodConigurations = paymentMethodGranted ? new()
@@ -776,8 +778,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
         }
         return false;
     }
-
-
 
     private void CheckSaleDetailValidation(SaleDetailOrderDto sale)
     {

@@ -84,7 +84,7 @@ public class OrganizationService : ApplicationService, IOrganizationService
         return organ.Id;
     }
 
-    [SecuredOperation(OrganizationServicePermissionConstants.GetById)]
+    //[SecuredOperation(OrganizationServicePermissionConstants.GetById)]
     public async Task<OrganizationDto> GetById(int id, List<AttachmentEntityTypeEnum> attachmentType = null, List<AttachmentLocationEnum> attachmentlocation = null)
     {
         var organ = await Validation(id, null);
