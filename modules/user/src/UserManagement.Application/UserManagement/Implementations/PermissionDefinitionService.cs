@@ -16,7 +16,6 @@ using UserManagement.Domain.UserManagement.bases;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
 using Esale.Share.Authorize;
-using UserManagement.Application.Constants;
 using Newtonsoft.Json;
 
 namespace UserManagement.Application.UserManagement.Implementations

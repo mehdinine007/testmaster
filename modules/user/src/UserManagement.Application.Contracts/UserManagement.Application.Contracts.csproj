@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<ItemGroup>
 	  <Compile Remove="UserManagement\Models\User\UserMapProfile.cs" />
@@ -7,6 +7,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\UserManagement.Domain.Shared\UserManagement.Domain.Shared.csproj" />
 		<ProjectReference Include="..\..\..\..\shared\IFG.Core\IFG.Core.csproj" />
+		<ProjectReference Include="..\..\..\..\shared\Licence\Licence.csproj" />
 		<ProjectReference Include="..\UserManagement.Domain\UserManagement.Domain.csproj" />
 	</ItemGroup>
 

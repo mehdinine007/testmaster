@@ -17,7 +17,6 @@ using OrderManagement.Application.PaymentServiceGrpc;
 using System.Net.Http;
 using OrderManagement.Application.CompanyService;
 using IFG.Core.Caching;
-using OrderManagement.Application.OrderManagement.Constants;
 using Newtonsoft.Json;
 using StackExchange.Redis.Extensions.Core.Implementations;
 
