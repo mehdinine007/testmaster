@@ -210,6 +210,16 @@ public class OrderAppService : ApplicationService, IOrderAppService
             });
         //var cacheKey = string.Format(RedisConstants.SaleDetailPrefix, commitOrderDto.SaleDetailUId);
         //_memoryCache.TryGetValue(cacheKey, out SaleDetailDto);
+       
+        var paymentMethodGranted = _configuration.GetValue<bool?>("PaymentMethodGranted") ?? false;
+        if (paymentMethodGranted &&  commitOrderDto.AgencyId is null )
+        {
+            throw new UserFriendlyException(OrderConstant.AgencyNotFound, OrderConstant.AgencyId);
+        }
+        if (paymentMethodGranted && commitOrderDto.PspAccountId is null )
+        {
+            throw new UserFriendlyException(OrderConstant.PspAccountNotFound, OrderConstant.PspAccountId);
+        }
         if (SaleDetailDto == null)
         {
             var saleDetailQuery = await _saleDetailRepository.GetQueryableAsync();
@@ -505,7 +515,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
 
         }
-        var paymentMethodGranted = _configuration.GetValue<bool?>("PaymentMethodGranted") ?? false;
+ 
         UserDto customer = new UserDto();
         ////////////////////////
         if (paymentMethodGranted)
