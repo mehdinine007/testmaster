@@ -53,6 +53,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
     private readonly IAttachmentService _attachmentService;
     private readonly IProductAndCategoryService _productAndCategoryService;
 
+
     public OrderAppService(ICommonAppService commonAppService,
                            IBaseInformationService baseInformationAppService,
                            IRepository<SaleDetail, int> saleDetailRepository,
@@ -778,19 +779,16 @@ public class OrderAppService : ApplicationService, IOrderAppService
             }
         }
     }
-    [UnitOfWork(false, IsolationLevel.ReadUncommitted)]
-    [SecuredOperation(OrderAppServicePermissionConstants.GetCustomerOrderList)]
+
+    //[UnitOfWork(false, IsolationLevel.ReadUncommitted)]
+    //[SecuredOperation(OrderAppServicePermissionConstants.GetCustomerOrderList)]
     public async Task<List<CustomerOrder_OrderDetailDto>> GetCustomerOrderList(List<AttachmentEntityTypeEnum> attachmentType = null)
     {
-        //if (!_commonAppService.IsInRole("Customer"))
-        //{
-        //    throw new UserFriendlyException("دسترسی شما کافی نمی باشد");
-        //}
+
         var userId = _commonAppService.GetUserId();
         var orderRejections = _orderRejectionTypeReadOnlyRepository.WithDetails().ToList();
         var orderStatusTypes = _orderStatusTypeReadOnlyRepository.WithDetails().ToList();
         var parents = await _productAndCategoryService.GetAllParent();
-        //var customerOrder = await _commitOrderRepository.GetAllListAsync(x => x.UserId == userId);
         var customerOrders = _commitOrderRepository.WithDetails()
             .AsNoTracking()
             .Join(_saleDetailRepository.WithDetails(x => x.Product),
@@ -813,7 +811,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 y.Product,
                 y.SalePlanEndDate,
                 y.Id,
-                y.SaleId
+                y.SaleId,
+                y.TrackingCode
 
             }).Where(x => x.UserId == userId)
             .Select(x => new CustomerOrder_OrderDetailDto
@@ -833,8 +832,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 Product = ObjectMapper.Map<ProductAndCategory, ProductAndCategoryViewModel>(x.Product),
                 SalePlanEndDate = x.SalePlanEndDate,
                 Id = x.Id,
-                SaleId = x.SaleId
-
+                SaleId = x.SaleId,
+                TrackingCode = x.TrackingCode,
             }).ToList();
         var cancleableDate = _configuration.GetValue<string>("CancelableDate");
         var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, customerOrders.Select(x => x.ProductId).ToList(), attachmentType);
@@ -880,7 +879,10 @@ public class OrderAppService : ApplicationService, IOrderAppService
             }
 
         });
+
         return customerOrders.OrderByDescending(x => x.OrderId).ToList();
+
+
     }
     [Audited]
     [UnitOfWork(isTransactional: false)]
