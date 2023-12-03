@@ -18,7 +18,7 @@ namespace OrderManagement.Domain
 
         public int CircularSaleCode { get; set; } // شماره بخشنامه فروش
         public int SaleId { get; set; }
-        public int TrackingCode { get; set; }
+      
         public int SalePlanCode { get; set; } // شماره برنامه فروش 
 
         public string SalePlanDescription { get; set; }

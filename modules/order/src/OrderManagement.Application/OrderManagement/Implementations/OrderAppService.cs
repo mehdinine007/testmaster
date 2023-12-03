@@ -718,8 +718,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
         }
     }
 
-    //[UnitOfWork(false, IsolationLevel.ReadUncommitted)]
-    //[SecuredOperation(OrderAppServicePermissionConstants.GetCustomerOrderList)]
+    [UnitOfWork(false, IsolationLevel.ReadUncommitted)]
+    [SecuredOperation(OrderAppServicePermissionConstants.GetCustomerOrderList)]
     public async Task<List<CustomerOrder_OrderDetailDto>> GetCustomerOrderList(List<AttachmentEntityTypeEnum> attachmentType = null)
     {
 
@@ -750,7 +750,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 y.SalePlanEndDate,
                 y.Id,
                 y.SaleId,
-                y.TrackingCode
+                x.TrackingCode
 
             }).Where(x => x.UserId == userId)
             .Select(x => new CustomerOrder_OrderDetailDto
@@ -771,7 +771,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 SalePlanEndDate = x.SalePlanEndDate,
                 Id = x.Id,
                 SaleId = x.SaleId,
-                TrackingCode = x.TrackingCode,
+                TrackingCode = y.TrackingCode,
             }).ToList();
         var cancleableDate = _configuration.GetValue<string>("CancelableDate");
         var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, customerOrders.Select(x => x.ProductId).ToList(), attachmentType);
