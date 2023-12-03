@@ -168,14 +168,14 @@ public class OrderAppService : ApplicationService, IOrderAppService
     [SecuredOperation(OrderAppServicePermissionConstants.CommitOrder)]
     public async Task<CommitOrderResultDto> CommitOrder(CommitOrderDto commitOrderDto)
     {
+
+
+
         await _commonAppService.ValidateOrderStep(OrderStepEnum.SaveOrder);
         var allowedStatusTypes = new List<int>() { (int)OrderStatusType.RecentlyAdded, (int)OrderStatusType.PaymentSucceeded };
 
         Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
         TimeSpan ttl = DateTime.Now.Subtract(DateTime.Now);
-
-        //if (!_commonAppService.IsInRole("Customer"))
-        //    throw new UserFriendlyException("دسترسی شما کافی نمی باشد");
 
         if (_configuration.GetSection("IsIranCellActive").Value == "1")
         {
@@ -208,6 +208,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             {
                 Provider = CacheProviderEnum.Hybrid
             });
+
         //var cacheKey = string.Format(RedisConstants.SaleDetailPrefix, commitOrderDto.SaleDetailUId);
         //_memoryCache.TryGetValue(cacheKey, out SaleDetailDto);
         if (SaleDetailDto == null)
@@ -227,6 +228,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     CarFee = x.CarFee
                 })
                 .FirstOrDefault(x => x.UID == commitOrderDto.SaleDetailUId);
+        
             if (SaleDetailFromDb == null)
             {
                 throw new UserFriendlyException("تاریخ برنامه فروش به پایان رسیده است.");
@@ -258,22 +260,16 @@ public class OrderAppService : ApplicationService, IOrderAppService
             ttl = SaleDetailDto.SalePlanEndDate.Subtract(DateTime.Now);
 
         }
-      
+
         ////////////////conntrol repeated order in saledetails// iran&&varedat
 
         CheckSaleDetailValidation(SaleDetailDto);
         RustySalePlanValidation(commitOrderDto, SaleDetailDto.EsaleTypeId);
-      
-
-        await _commonAppService.IsUserRejected(); //if user reject from advocacy
-        //                                          //_baseInformationAppService.CheckBlackList(SaleDetailDto.EsaleTypeId); //if user not exsist in blacklist
-        //await CheckAdvocacy(nationalCode, SaleDetailDto.ESaleTypeId); //if hesab vekalati darad
-        //Console.WriteLine("beforewhitelist");
-        //_baseInformationAppService.CheckWhiteList(WhiteListEnumType.WhiteListOrder);
-        //Console.WriteLine("afterwhitelist");
+        await _commonAppService.IsUserRejected();
 
         var orderQuery = await _commitOrderRepository.GetQueryableAsync();
         var userId = _commonAppService.GetUserId();
+        //var userId =new Guid("35b56107-0210-400b-8db1-319f82ce086e");
 
         _baseInformationAppService.CheckBlackList(SaleDetailDto.ESaleTypeId); //if user reject from advocacy
         var CustomerOrderWinner = orderQuery
@@ -289,18 +285,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
             throw new UserFriendlyException("جهت ثبت سفارش جدید لطفا ابتدا از جزئیات سفارش، سفارش قبلی خود که احراز شده اید یا در حال بررسی می باشد را لغو نمایید");
 
         }
-        ///////////////////////////////agar order 1403 barandeh dasht natone sefaresh bezaneh
-        //var activeSuccessfulOrderExists = orderQuery
-        //    .AsNoTracking()
-        //    .Select(x => new { x.UserId, x.OrderStatus })
-        //    .FirstOrDefault(
-        //        y => y.UserId == userId &&
-        //     y.OrderStatus == OrderStatusType.Winner
-        // );
-        //if (activeSuccessfulOrderExists != null)
-        //    throw new UserFriendlyException("جهت ثبت سفارش جدید لطفا ابتدا از جزئیات سفارش، سفارش قبلی خود که موعد تحویل آن در سال 1403 می باشد را لغو نمایید .");
-        ///////////////////////////////check entekhab yek no tarh////////////
-        string EsaleTypeId = await _cacheManager.GetStringAsync("_EsaleType", RedisConstants.CommitOrderPrefix + userId.ToString()
+
+         string EsaleTypeId = await _cacheManager.GetStringAsync("_EsaleType", RedisConstants.CommitOrderPrefix + userId.ToString()
             , new CacheOptions()
             {
                 Provider = CacheProviderEnum.Redis
@@ -517,50 +503,10 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 throw new UserFriendlyException("شما نمیتوانید سفارش شخص دیگری را پرداخت کنید");
             }
         }
-      
-        //if (SaleDetailDto.EsaleTypeId == (Int16)EsaleTypeEnum.Youth)
-        //{
-        //    Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
-        //    object UserFromCache = null;
-        //    _cacheManager.GetCache("UserProf").TryGetValue(AbpSession.UserId.Value.ToString(), out UserFromCache);
-        //    if (UserFromCache != null)
-        //    {
-        //        var userDto = UserFromCache as UserDto;
-        //        if (userDto.Gender = Enums.Gender.Male)
-        //        {
-        //            throw new UserFriendlyException("با توجه به جنسیت، شما مجاز به شرکت در این طرح نیستید");
-        //        }
-        //    }
-        //    else
-        //    {
-        //        var user = await _userRepository.FirstOrDefaultAsync(x => x.Id == AbpSession.UserId);
-        //        _cacheManager.GetCache("UserProf").Set(AbpSession.UserId.Value.ToString(), ObjectMapper.Map<UserDto>(user));
 
-        //    }
-        //}
 
-        //if (paymentMethodGranted && !commitOrderDto.PspAccountId.HasValue)
-        //{
-
-        //    throw new UserFriendlyException("درگاه انتخاب نشده است");
-        //}
-        //Console.WriteLine("beforeasli");
         CustomerOrder customerOrder = new CustomerOrder();
-        //var customerOrderQuery = await _commitOrderRepository.GetQueryableAsync();
-        //var similarOrderTypes = new List<int>() { (int)OrderStatusType.PaymentNotVerified };
-        //var similarOrder = customerOrderQuery.FirstOrDefault(x => similarOrderTypes.Any(y => y == (int)x.OrderStatus)
-        //    /* x.OrderStatus == OrderStatusType.PaymentNotVerified*/
-        //    && x.UserId == userId
-        //    && x.SaleDetailId == SaleDetailDto.Id);
-        //if (paymentMethodGranted && similarOrder != null)
-        //{
-        //    customerOrder = similarOrder;
-        //    customerOrder.OrderStatus = OrderStatusType.RecentlyAdded;
-        //    customerOrder.AgencyId = commitOrderDto.AgencyId;
-        //    await _commitOrderRepository.UpdateAsync(customerOrder, autoSave: true);
-        //    await CurrentUnitOfWork.SaveChangesAsync();
-        //}
-        // else
+
         if (paymentMethodGranted)
         {
             // try
@@ -571,16 +517,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             if (!agencyCapacityControl.Success)
                 throw new UserFriendlyException(agencyCapacityControl.Message);
         }
-
-        //  }
-        //catch (Exception ex)
-        //{
-        //    customerOrder.OrderStatus = OrderStatusType.PaymentNotVerified;
-        //    await _commitOrderRepository.UpdateAsync(customerOrder);
-        //    await CurrentUnitOfWork.SaveChangesAsync();
-
-        //    throw ex;
-        //}
+                       
         {
             customerOrder.SaleDetailId = SaleDetailDto.Id;
             customerOrder.UserId = userId;
@@ -594,6 +531,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             customerOrder.AgencyId = commitOrderDto.AgencyId;
             customerOrder.PaymentSecret = _randomGenerator.GetUniqueInt();
             customerOrder.OrderDeliveryStatus = OrderDeliveryStatusType.OrderRegistered;
+            customerOrder.TrackingCode = _configuration.GetSection("SaleDetailId").Value.Contains(SaleDetailDto.Id.ToString()) == true ? Core.Utility.Tools.RandomGenerator.GetUniqueInt(8).ToString() : null;
             await _commitOrderRepository.InsertAsync(customerOrder);
             await CurrentUnitOfWork.SaveChangesAsync();
         }
@@ -626,7 +564,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         ApiResult<IpgApiResult> handShakeResponse = new ApiResult<IpgApiResult>();
         if (paymentMethodGranted)
         {
-             handShakeResponse = await _ipgServiceProvider.HandShakeWithPsp(new PspHandShakeRequest()
+            handShakeResponse = await _ipgServiceProvider.HandShakeWithPsp(new PspHandShakeRequest()
             {
                 CallBackUrl = _configuration.GetValue<string>("CallBackUrl"),
                 Amount = (long)SaleDetailDto.CarFee,
@@ -748,7 +686,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         {
             return false;
         }
-        if ((orderStatusType == OrderStatusType.Winner && !string.IsNullOrEmpty(deliveryDate)) || (orderStatusType == OrderStatusType.RecentlyAdded) ) // OrderStatusType.RecentlyAdded
+        if ((orderStatusType == OrderStatusType.Winner && !string.IsNullOrEmpty(deliveryDate)) || (orderStatusType == OrderStatusType.RecentlyAdded)) // OrderStatusType.RecentlyAdded
         {
             return true;
         }

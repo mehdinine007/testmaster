@@ -38,7 +38,8 @@ namespace CompanyManagement.Domain.Shared.CompanyManagement
         public bool CertificateStatus { get; set; }
         public bool PlaqueStatus { get; set; }
         public string BlackList { get; set; }
-
+        public int SaleId { get; set; }
+        public string TrackingCode { get; set; }
 
     }
 }

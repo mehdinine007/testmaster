@@ -29,13 +29,13 @@ namespace CompanyManagement.EfCore.CompanyManagement.Repositories
         {
             List<CustomersWithCars> lsCustomersWithCars = new List<CustomersWithCars>();
 
-            using (SqlConnection con = new SqlConnection(_configuration.GetConnectionString("OrderManagement")))
+            using (SqlConnection con = new SqlConnection(_configuration.GetConnectionString("CompanyManagement")))
             {
                 SqlCommand cmd = new SqlCommand("CustomerCarDeliveryTime", con);
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Add("@CompanyId", SqlDbType.Int).Value = customersAndCarsInputDto.CompanyId;
                 cmd.Parameters.Add("@SaleId", SqlDbType.Int).Value = customersAndCarsInputDto.SaleId;
-                cmd.Parameters.Add("@PageIndex", SqlDbType.Int).Value = customersAndCarsInputDto.PageNo;
+                cmd.Parameters.Add("@PageNo ", SqlDbType.Int).Value = customersAndCarsInputDto.PageNo;
                 cmd.Parameters.Add("@Type", SqlDbType.Int).Value = 0;
 
                 con.Open();
@@ -72,6 +72,8 @@ namespace CompanyManagement.EfCore.CompanyManagement.Repositories
                     customersWithCars.CertificateStatus = true;
                     customersWithCars.ShahkarStatus = true;
                     customersWithCars.BlackList = "";
+                    customersWithCars.SaleId = int.Parse(rdr["SaleId"].ToString());
+                    customersWithCars.TrackingCode = rdr["TrackingCode"].ToString();
                     lsCustomersWithCars.Add(customersWithCars);
                 }
                 con.Close();

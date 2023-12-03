@@ -31,5 +31,6 @@ namespace OrderManagement.Domain
         public DateTime? VehicleSelectDate { get; set; }
         public DateTime? SendToManufacturerDate { get; set; }
         public DateTime? OrderRejectionDate { get; set; }
+        public string TrackingCode { get; set; }
     }
 }
