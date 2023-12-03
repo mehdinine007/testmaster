@@ -107,7 +107,7 @@ public class UserServiceHostModule : AbpModule
         context.Services.AddMongoDbContext<UserManagementMongoDbContextWriteOnly>(options => options.AddDefaultRepositories(includeAllEntities: true));
         ConfigureHangfire(context, configuration);
         context.Services.AddGrpc();
-        context.Services.EasyCaching(configuration, "RedisCache:ConnectionString");
+        context.Services.EasyCaching(configuration);
        
 
     }

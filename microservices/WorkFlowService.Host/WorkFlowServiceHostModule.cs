@@ -125,7 +125,7 @@ namespace WorkFlowService.Host
             //ConfigureHangfire(context, configuration);
 
             context.Services.AddGrpc();
-            context.Services.EasyCaching(configuration, "RedisCache:ConnectionString");
+            context.Services.EasyCaching(configuration);
             //context.Services.AddMongoDbContext<OrderManagementMongoDbContext>(options =>
             //{
             //    options.AddDefaultRepositories(includeAllEntities: true);
