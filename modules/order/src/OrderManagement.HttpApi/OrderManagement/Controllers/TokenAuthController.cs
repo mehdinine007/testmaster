@@ -5,6 +5,7 @@ using Volo.Abp.AspNetCore.Mvc;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
 using System.Threading.Tasks;
 using IFG.Core.Infrastructures.TokenAuth;
+using CompanyManagement.Application.Contracts;
 
 namespace OrderManagement.HttpApi.OrderManagement.Controllers;
 

@@ -17,6 +17,7 @@ using IFG.Core.Caching;
 using OrderManagement.Application.OrderManagement.Constants;
 using Newtonsoft.Json;
 using IFG.Core.Infrastructures.TokenAuth;
+using CompanyManagement.Application.Contracts;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -275,7 +276,7 @@ public class EsaleGrpcClient : ApplicationService, IEsaleGrpcClient
         httpHandler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
         var channel = GrpcChannel.ForAddress(_configuration.GetValue<string>("Esale:GrpcAddress"), new GrpcChannelOptions { HttpHandler = httpHandler });
         var client = new UserServiceGrpc.UserServiceGrpcClient(channel);
-        var auth = await client.AuthenticateAsync(new AuthenticateRequest() { UserNameOrEmailAddress = input.UserNameOrEmailAddress, Password = input.Password });
+        var auth = await client.AuthenticateAsync(new AuthenticateRequest() { UserNameOrEmailAddress = input.userID, Password = input.userPWD });
         var res = new AuthenticateResponseDto();
         if (!auth.Success)
         {
@@ -292,5 +293,6 @@ public class EsaleGrpcClient : ApplicationService, IEsaleGrpcClient
         res.Data.ExpireInSeconds = auth.Data.ExpireInSeconds.Value;
 
         return res;
+      //  return null;
     }
 }

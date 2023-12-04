@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using AdminPanelManagement.Application.Grpc.UserGrpcClient;
 using Volo.Abp.Application.Services;
 using IFG.Core.Infrastructures.TokenAuth;
+using CompanyManagement.Application.Contracts;
 
 namespace AdminPanelManagement.Application.AdminPanelManagement.Grpc
 {
@@ -25,7 +26,7 @@ namespace AdminPanelManagement.Application.AdminPanelManagement.Grpc
             httpHandler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
             var channel = GrpcChannel.ForAddress(_configuration.GetValue<string>("Grpc:UserUrl"), new GrpcChannelOptions { HttpHandler = httpHandler });
             var client = new UserServiceGrpc.UserServiceGrpcClient(channel);
-            var auth = client.Authenticate(new Application.Grpc.UserGrpcClient.AuthenticateRequest() { UserNameOrEmailAddress = input.UserNameOrEmailAddress, Password = input.Password });
+            var auth = client.Authenticate(new Application.Grpc.UserGrpcClient.AuthenticateRequest() { UserNameOrEmailAddress = input.userID, Password = input.userPWD });
             var res = new AuthenticateResponseDto();
             if (!auth.Success)
             {

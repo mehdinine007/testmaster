@@ -4,6 +4,7 @@ using IFG.Core.Infrastructures.TokenAuth;
 using Volo.Abp.Application.Services;
 using OrderManagement.Application.Contracts.Services;
 using Volo.Abp;
+using CompanyManagement.Application.Contracts;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 

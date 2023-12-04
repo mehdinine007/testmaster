@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Services;
 using IFG.Core.Infrastructures.TokenAuth;
+using CompanyManagement.Application.Contracts;
 
 namespace CompanyManagement.Application.CompanyManagement.Grpc
 {

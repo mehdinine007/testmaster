@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using CompanyManagement.Application.Contracts.CompanyManagement.Services;
 using System.Threading.Tasks;
 using IFG.Core.Infrastructures.TokenAuth;
+using CompanyManagement.Application.Contracts;
 
 namespace CompanyManagement.HttpApi.CompanyManagement.Controllers;
 

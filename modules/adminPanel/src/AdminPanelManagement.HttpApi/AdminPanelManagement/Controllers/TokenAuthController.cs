@@ -3,6 +3,7 @@ using Volo.Abp;
 using AdminPanelManagement.Application.Contracts.AdminPanelManagement.IServices;
 using Microsoft.AspNetCore.Mvc;
 using IFG.Core.Infrastructures.TokenAuth;
+using CompanyManagement.Application.Contracts;
 
 namespace AdminPanelManagement.HttpApi.AdminPanelManagement.Controllers
 {
