@@ -20,6 +20,7 @@ namespace ReportManagement.Domain.ReportManagement
         public virtual ICollection<Dashboard> Dashboards { get; set; }
 
         public OutPutTypeEnum OutPutType { get; set; }
+        public string Roles { get; set; }
 
     }
 }

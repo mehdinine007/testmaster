@@ -36,7 +36,7 @@ namespace ReportManagement.Application.ReportManagement.Grpc
 
         public override async Task<DashboardModelList> GetAllDashboard(DashboardRequestModel request, ServerCallContext context)
         {
-            var dashboardsDto = await _dashboardService.GetList();
+            var dashboardsDto = await _dashboardService.GetList(request.Roles);
             var dashboarList = new DashboardModelList();
             dashboardsDto.ForEach(x =>
             {
@@ -55,7 +55,7 @@ namespace ReportManagement.Application.ReportManagement.Grpc
         {
             var widgetModelList = new WidgetModelList();
 
-            var widgetDtos = await _widgetService.GetList(request.DashboardId);
+            var widgetDtos = await _widgetService.GetList(request.DashboardId, request.Roles);
             widgetDtos.ForEach(x =>
             {
                 var widgetModel = new WidgetModel

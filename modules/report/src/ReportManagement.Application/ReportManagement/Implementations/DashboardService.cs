@@ -1,4 +1,6 @@
-﻿using NPOI.OpenXmlFormats.Dml;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
+using NPOI.OpenXmlFormats.Dml;
 using ReportManagement.Application.Contracts.ReportManagement.Dtos;
 using ReportManagement.Application.Contracts.ReportManagement.IServices;
 using ReportManagement.Application.Contracts.WorkFlowManagement.Constants;
@@ -6,6 +8,7 @@ using ReportManagement.Domain.ReportManagement;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp;
@@ -20,12 +23,15 @@ namespace ReportManagement.Application.ReportManagement.Implementations
         private readonly IRepository<Dashboard, int> _dashboardRepository;
         private readonly IRepository<DashboardWidget, int> _dashboardWidgetRepository;
         private readonly  IWidgetService _widgetService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         public DashboardService(IRepository<Dashboard, int> dashboardRepository, IRepository<DashboardWidget, int> dashboardWidgetRepository
-            , IWidgetService widgetService)
+            , IWidgetService widgetService,
+              IHttpContextAccessor HttpContextAccessor)
         {
             _dashboardRepository = dashboardRepository;
             _dashboardWidgetRepository = dashboardWidgetRepository;
             _widgetService = widgetService;
+            _httpContextAccessor = HttpContextAccessor;
         }
 
 
@@ -50,9 +56,13 @@ namespace ReportManagement.Application.ReportManagement.Implementations
             return dashboardDto;
         }
 
-        public async Task<List<DashboardDto>> GetList()
+        public async Task<List<DashboardDto>> GetList(string roles)
         {
-            var dashboard = (await _dashboardRepository.GetQueryableAsync()).ToList();
+            var _roles = roles.Split(",").Select(x=> x).ToList();
+            var dashboard = (await _dashboardRepository.GetQueryableAsync())
+                .ToList()
+                .Where(x => x.Roles.Split(",").Any(y => _roles.Contains(y))).ToList();
+
             var dashboardDto = ObjectMapper.Map<List<Dashboard>, List<DashboardDto>>(dashboard);
             return dashboardDto;
         }

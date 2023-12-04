@@ -59,14 +59,15 @@ namespace ReportManagement.Application.ReportManagement.Implementations
 
       
 
-        public async Task<List<WidgetDto>> GetList(int dashboardId)
+        public async Task<List<WidgetDto>> GetList(int dashboardId, string roles)
         {
+            var _roles = roles.Split(",");
             var widgets = (await _dashboardWidgetRepository.GetQueryableAsync())
                 .AsNoTracking()
                 .Include(i => i.Widget)
                 .Where(x => x.DashboardId == dashboardId)
-                .Select(x => x.Widget)
-                .ToList();
+                .Select(x => x.Widget).ToList()
+                .Where(x => x.Roles.Split(",").Any(y => _roles.Contains(y))).ToList();
             var widgetDto = ObjectMapper.Map<List<Widget>, List<WidgetDto>>(widgets);
             return widgetDto;
         }

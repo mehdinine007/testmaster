@@ -10,9 +10,9 @@ namespace AdminPanelManagement.Application.Contracts.AdminPanelManagement.IServi
 {
     public interface IReportGrpcClientService:IApplicationService
     {
-        Task<List<DashboardDto>> GetAllDashboard();
+        Task<List<DashboardDto>> GetAllDashboard(string roles);
         Task<TestDto> TestNullable();
-        Task<List<WidgetDto>> GetWidgetByDashboardId(int dashboardId);
+        Task<List<WidgetDto>> GetWidgetByDashboardId(int dashboardId, string roles);
         Task<ChartDto> GetChart(int widgetId, List<ConditionValue> conditionValue);
         Task<GridDto> GetGrid(int widgetId, List<ConditionValue> conditionValue);
 
