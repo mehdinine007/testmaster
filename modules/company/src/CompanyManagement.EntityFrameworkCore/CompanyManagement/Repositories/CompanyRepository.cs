@@ -72,6 +72,8 @@ namespace CompanyManagement.EfCore.CompanyManagement.Repositories
                     customersWithCars.CertificateStatus = true;
                     customersWithCars.ShahkarStatus = true;
                     customersWithCars.BlackList = "";
+                    customersWithCars.SaleId = int.Parse(rdr["SaleId"].ToString());
+                    customersWithCars.TrackingCode = rdr["TrackingCode"].ToString();
                     lsCustomersWithCars.Add(customersWithCars);
                 }
                 con.Close();
