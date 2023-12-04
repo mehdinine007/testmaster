@@ -15,6 +15,8 @@ namespace CompanyManagement.Application.Contracts.CompanyManagement
         public  long Id { get;  set; }
         [Required]
         public string NationalCode { get; set; }
+        public int SaleId { get; set; }
+        public string TrackingCode { get; set; }
 
         public int? SaleType { get; set; }
 
