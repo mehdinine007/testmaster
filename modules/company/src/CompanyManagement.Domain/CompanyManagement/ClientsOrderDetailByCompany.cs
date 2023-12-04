@@ -29,7 +29,7 @@ namespace CompanyManagement.Domain.CompanyManagement
         public DateTime? FactorDate { get; set; }
         public string CarCode { get;set; }
         public int SaleId { get; set; }
-        public int TrackingCode { get; set; }
+        public string TrackingCode { get; set; }
         public virtual ICollection<CompanyPaypaidPrices> Paypaidprice { get; set; }
         public virtual ICollection<CompanySaleCallDates> TurnDate { get; set; }
     }
