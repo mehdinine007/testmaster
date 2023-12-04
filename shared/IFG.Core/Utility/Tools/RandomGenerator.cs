@@ -45,8 +45,8 @@ namespace Core.Utility.Tools
         public static long GetUniqueInt(int size)
         {
             byte[] value = Guid.NewGuid().ToByteArray();
-            long x = Math.Abs(BitConverter.ToInt32(value, 0));
-            return int.Parse(x.ToString().Substring(0, size));
+            long x = Math.Abs(BitConverter.ToInt64(value, 0));
+            return long.Parse(x.ToString().Substring(0, size));
         }
     }
 }
