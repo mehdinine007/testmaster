@@ -89,5 +89,10 @@ namespace OrderManagement.Application.Contracts
         public const string OrganizationUrlFormat = "{0}?enc={1}";
         public const string OrganizationEncryptedExpression = "nationalCode={0}|orderId={1}";
 
+        public static string AgencyNotFound = "نمایندگی تعرف نشده است.";
+        public static string AgencyId = "5003";
+
+        public static string PspAccountNotFound = "درگاه بانکی انتخاب نشده است.";
+        public static string PspAccountId = "5004";
     }
 }
