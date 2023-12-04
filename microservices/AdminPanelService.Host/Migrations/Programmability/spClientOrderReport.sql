@@ -1,15 +1,10 @@
-﻿if exists(select 1 from sysObjects where Upper(Name)= 'spClientOrderReport')
-  drop  proc  spClientOrderReport
 GO
-
-USE [carsupply-test-company]
-GO
-/****** Object:  StoredProcedure [dbo].[ClientOrderReport]    Script Date: 10/21/2023 10:14:43 AM ******/
+/****** Object:  StoredProcedure [dbo].[spClientOrderReport]    Script Date: 12/4/2023 6:41:48 AM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-create procedure [dbo].[spClientOrderReport]
+CREATE procedure [dbo].[spClientOrderReport]
 @companyFilter as nvarchar(max) null,
 @productFilter as nvarchar(max) null,
 @modelTypeFilter as nvarchar(max) null ,
@@ -17,16 +12,17 @@ create procedure [dbo].[spClientOrderReport]
 @toDateFilter as datetime2 null,
 @saleDetailFilter as nvarchar(max) null,
 @saleSchemaFilter as nvarchar(max) null,
-@containsOrderCount as bit,
-@containsAssignedCount as bit,
-@containsAnnouncedCount as bit,
-@containsPayedCount as bit,
-@containsContractCount as bit,
-@containsInvoiceCount as bit,
-@containsAdvocacyRejectionCount as bit,
-@containsOrderRejectionCount as bit,
-@containsCancelCount as bit,
-@containsDeliverCount as bit
+--@containsOrderCount as bit, -- 1
+--@containsAssignedCount as bit,  -- 2
+--@containsAnnouncedCount as bit,  -- 3
+--@containsPayedCount as bit,  -- 4
+--@containsContractCount as bit, -- 5
+--@containsInvoiceCount as bit, -- 6
+--@containsAdvocacyRejectionCount as bit, -- 7
+--@containsOrderRejectionCount as bit, -- 8
+--@containsCancelCount as bit, -- 9
+--@containsDeliverCount as bit -- 10
+@categories as nvarchar(50)
 as
 begin
 
@@ -50,6 +46,11 @@ declare @tempTb table
 	[type] int not null
 );
 
+IF OBJECT_ID('tempdb..#cat') IS NOT NULL DROP TABLE #cat
+select value as cat_type into #cat
+from string_split(@categories,',')
+where value <> 0
+
 insert into @tempTb (id, [type])
 select value , 1
 from string_split(@productFilter,',')
@@ -57,6 +58,11 @@ where value <> 0;
 
 insert into @tempTb (id, [type])
 select value , 2
+from string_split(@companyFilter,',')
+where value <> 0;
+
+insert into @tempTb (id, [type])
+select value , 1
 from string_split(@companyFilter,',')
 where value <> 0;
 
@@ -80,8 +86,9 @@ AS
 (
 select ROW_NUMBER() OVER(PARTITION BY  cod.NationalCode ORDER BY cod.id desc ) rownum ,
 cod.NationalCode,
+pod.Id as ProductId,
 cod.ContRowId, 
-cp.Id CompanyId,
+cpp.Id CompanyId,
 cod.CarDesc, 
 cod.DeliveryDate, 
 cod.IntroductionDate,
@@ -91,58 +98,56 @@ cmp.Title,
 cod.Vin,
 cod.BodyNumber,
 cod.InviteDate,
-cp.Id as companypayedpriceid,
-0 as IsCanceled,
+cpp.Id as companypayedpriceid,
+cod.IsCanceled as IsCanceled,
 co.OrderStatus,
-cod.orderid,
-ura.Id as UserRejectionAdvocacyId
-from ClientsOrderDetailByCompany as cod
-	inner join carsupply_test_order..ProductAndCategory_CarTip pcm 
-		on pcm.cartipid=cod.CarCode
-	inner join carsupply_test_order..ProductAndCategory pac 
-		on pac.Id= pcm.productid
-	left join CompanyPaypaidPrices as cp
-		on cp.ClientsOrderDetailByCompanyId = cod.Id
-	inner join carsupply_test_order..ProductAndCategory as cmp
-		on left(pac.Code,4) = cmp.Code
-	inner join carsupply_demo_user..AbpUsers as usr 
-		on usr.NationalCode = cod.NationalCode
-	inner join carsupply_test_order..CustomerOrder co
-		on co.UserId = usr.UID
-	inner join carsupply_test_order..SaleDetail as sd
-		on sd.Id = co.SaleId
-	left join carsupply_test_order..UserRejectionAdvocacy as ura
-		on ura.NationalCode = COD.NationalCode -- check it
-where cod.IsDeleted <> 1
-and pac.IsDeleted <> 1
-and cp.IsDeleted <> 1
+co.id OrderId,
+usr.Id as UserRejectionAdvocacyId
+from ProductAndCategory as pod
+	inner join SaleDetail as sd 
+		on pod.Id = sd.ProductId
+	inner join CustomerOrder as co
+		on co.SaleDetailId = sd.Id
+	inner join ProductAndCategory as cmp
+		on cmp.Code = left(pod.Code,4) and cmp.LevelId = 1
+	inner join ProductAndCategory_CarTip as pod_c
+		on pod_c.ProductId = pod.Id
+    inner join AbpUsers as usr 
+		on usr.UID = co.userid	
+	left join esaledb..ClientsOrderDetailByCompany as cod
+		on cod.CarCode = pod_c.CarTipId and cod.NationalCode = usr.NationalCode
+	left join esaledb..CompanyPaypaidPrices as cpp
+		on cpp.ClientsOrderDetailByCompanyId = cod.Id
+where (cod.IsDeleted is null or cod.IsDeleted <> 1)
+and pod.IsDeleted <> 1
+and (cpp.IsDeleted is null or cpp.IsDeleted <> 1)
 and cmp.IsDeleted <> 1
 and co.IsDeleted <> 1
 and sd.IsDeleted <> 1
-and ura.IsDeleted <> 1
+and usr.IsDeleted <> 1
+and pod_c.IsDeleted <> 1
+and (@productFilter is null or exists (select 1 from @tempTb temp where temp.id = pod.Id and temp.[type] = 1))
 and (@companyFilter is  null or   exists(select 1 from @tempTb temp where temp.id = cmp.id and temp.[type] = 2))
-and (@productFilter is null or exists (select 1 from @tempTb temp where temp.id = pac.Id and temp.[type] = 1))
 and (@modelTypeFilter is null or  exists(select 1 from @tempTb temp where temp.id = sd.ESaleTypeId and temp.[type] = 3))
-and (@fromDateFilter is null or  @fromDateFilter <= pac.CreationTime)
-and (@toDateFilter is null or  @toDateFilter >= pac.CreationTime)
+and (@fromdateFilter is null or co.Creationtime>=@fromdateFilter)
+and (@todateFilter is null or co.Creationtime<=@todateFilter)
 and (@saleDetailFilter is null or exists(select 1 from @tempTb temp where temp.id = sd.Id and temp.[type] = 4))
 and (@saleSchemaFilter is null or exists(select 1 from @temptb temp where temp.id = sd.saleid and temp.[type] = 5))
 )
 
-select
-r.CarCode,
-IIF(@containsInvoiceCount = 0 , null , count(case when r.FactorDate is not null then 1 else null end)) as InvoiceCount,
-IIF(@containsOrderCount = 0 , null , count(r.orderid)) as OrderCount,
-IIF(@containsAssignedCount = 0 , null , count(case when r.vin is not null then 1 when r.bodynumber is not null then 1 else null end)) as AssignCount,
-IIF(@containsAnnouncedCount = 0 , null , count(case when r.InviteDate is not null then 1 else null end)) as AnnouncementCount,
-IIF(@containsPayedCount = 0 , NULL , count(case when r.companypayedpriceid is not null then 1 else null end)) as PaymentCount,
-IIF(@containsContractCount = 0 ,null , count(case when r.ContRowId is not null then 1 else null end)) as ContractCount,
-IIF(@containsDeliverCount = 0 , null , count(case when r.ContRowId is not null then 1 else null end)) as DeliverCount,
-IIF(@containsCancelCount = 0 ,null , count(r.IsCanceled)) as Cancelcount,
-IIF(@containsOrderRejectionCount = 0 ,null , count(case when r.orderstatus = 20 then 1 else null end)) as OrderRejectioncount,
-IIF(@containsAdvocacyRejectionCount = 0 , null , count(case when r.UserRejectionAdvocacyId is not null then 1 else null end)) as AdvocacyRejectioncount
+select 
+IIF(exists(select 1 from #cat where cat_type = 6), count(case when r.FactorDate is not null and r.rownum = 1 then 1 else null end), null) as InvoiceCount,
+IIF(exists(select 1 from #cat where cat_type = 1), count(distinct r.orderid), null) as OrderCount,
+IIF(exists(select 1 from #cat where cat_type = 2) , count(case when (r.vin is not null and r.rownum = 1 or r.bodynumber is not null )and r.rownum =1 then 1 else null end), null) as AssignCount,
+IIF(exists(select 1 from #cat where cat_type = 3) , count(case when r.InviteDate is not null and r.rownum = 1 then 1 else null end), null) as AnnouncementCount,
+IIF(exists(select 1 from #cat where cat_type = 4) , count(case when r.companypayedpriceid is not null and r.rownum = 1 then 1 else null end), null) as PaymentCount,
+IIF(exists(select 1 from #cat where cat_type = 5), count(case when r.ContRowId is not null and r.rownum = 1 then 1 else null end), null) as ContractCount,
+IIF(exists(select 1 from #cat where cat_type = 10) , count(case when r.DeliveryDate is not null and r.rownum =1 then 1 else null end), null) as DeliverCount,
+IIF(exists(select 1 from #cat where cat_type = 9) , count(r.IsCanceled), null) as Cancelcount,
+IIF(exists(select 1 from #cat where cat_type = 8) , count(case when r.orderstatus = 20 then 1 else null end), null) as OrderRejectioncount,
+IIF(exists(select 1 from #cat where cat_type = 7), count(case when r.UserRejectionAdvocacyId is not null then 1 else null end), null) as AdvocacyRejectioncount
 from Res as r
-where r.rownum = 1
-group by  r.CarCode
-order by r.CarCode
+--where r.rownum = 1
+group by  r.ProductId
+--order by r.CarCode
 end;
