@@ -17,7 +17,6 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
 using OrderManagement.Domain.Shared;
-using OrderManagement.Application.OrderManagement.Constants;
 using IFG.Core.Utility.Results;
 using OrderManagement.Application.Helpers;
 using IFG.Core.DataAccess;

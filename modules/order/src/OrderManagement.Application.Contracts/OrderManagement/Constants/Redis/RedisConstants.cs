@@ -1,7 +1,6 @@
 using System;
 
-namespace OrderManagement.Application.OrderManagement.Constants;
-
+namespace OrderManagement.Application.Contracts;
 public static class RedisConstants
 {
     public const string RedisDefaultPrefix = "n:{0} ,c:{1}";

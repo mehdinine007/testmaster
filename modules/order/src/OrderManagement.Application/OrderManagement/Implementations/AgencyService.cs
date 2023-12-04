@@ -4,7 +4,6 @@ using Esale.Share.Authorize;
 using Microsoft.EntityFrameworkCore;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
-using OrderManagement.Application.OrderManagement.Constants;
 using OrderManagement.Domain;
 using System;
 using System.Collections.Generic;

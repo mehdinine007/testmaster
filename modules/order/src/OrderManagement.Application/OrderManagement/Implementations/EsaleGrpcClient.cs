@@ -14,7 +14,6 @@ using System.Linq;
 using OrderManagement.Application.PaymentServiceGrpc;
 using System.Net.Http;
 using IFG.Core.Caching;
-using OrderManagement.Application.OrderManagement.Constants;
 using Newtonsoft.Json;
 using IFG.Core.Infrastructures.TokenAuth;
 using CompanyManagement.Application.Contracts;

@@ -13,6 +13,8 @@ using UserManagement.Domain.UserManagement.Enums;
 using NuGet.Packaging;
 using MongoDB.Driver;
 using Esale.Share.Authorize;
+using System.Reflection.Metadata;
+using Licence;
 
 namespace UserManagement.Application.UserManagement.Implementations
 {
@@ -86,7 +88,7 @@ namespace UserManagement.Application.UserManagement.Implementations
             if (type == RolePermissionEnum.Customer || type == null)
             {
                 var serviceList = new List<string>();
-                var permission = permissions.Where(x => x.Code == "0001" || x.Code == "0002").ToList();
+                var permission = permissions.Where(x => x.Code == ConstantInfo.ModuleIUser || x.Code == ConstantInfo.ModuleOrder).ToList();
                 foreach (var per in permission)
                 {
                     var code = per.Children.Select(x => x.Code).ToList();
@@ -104,7 +106,7 @@ namespace UserManagement.Application.UserManagement.Implementations
             if (type == RolePermissionEnum.Company || type == null)
             {
                 var serviceList = new List<string>();
-                var permission = permissions.Where(x => x.Code == "0003").ToList();
+                var permission = permissions.Where(x => x.Code == ConstantInfo.ModuleCompany).ToList();
                 foreach (var per in permission)
                 {
                     var code = per.Children.Select(x => x.Code).ToList();
@@ -121,7 +123,7 @@ namespace UserManagement.Application.UserManagement.Implementations
             if (type == RolePermissionEnum.nicc )
             {
                 var serviceList = new List<string>();
-                var permission = permissions.Where(x => x.Code == "0005").ToList();
+                var permission = permissions.Where(x => x.Code == ConstantInfo.ModuleAdminPanel).ToList();
                 foreach (var per in permission)
                 {
                     var code = per.Children.Select(x => x.Code).ToList();
@@ -138,7 +140,7 @@ namespace UserManagement.Application.UserManagement.Implementations
             if (type == RolePermissionEnum.InspectionOrganization )
             {
                 var serviceList = new List<string>();
-                var permission = permissions.Where(x => x.Code == "0005").ToList();
+                var permission = permissions.Where(x => x.Code == ConstantInfo.ModuleAdminPanel).ToList();
                 foreach (var per in permission)
                 {
                     var code = per.Children.Select(x => x.Code).ToList();
@@ -155,7 +157,7 @@ namespace UserManagement.Application.UserManagement.Implementations
             if (type == RolePermissionEnum.mimt)
             {
                 var serviceList = new List<string>();
-                var permission = permissions.Where(x => x.Code == "0005").ToList();
+                var permission = permissions.Where(x => x.Code == ConstantInfo.ModuleAdminPanel).ToList();
                 foreach (var per in permission)
                 {
                     var code = per.Children.Select(x => x.Code).ToList();

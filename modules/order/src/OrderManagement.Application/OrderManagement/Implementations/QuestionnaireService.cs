@@ -6,7 +6,6 @@ using OrderManagement.Application.Contracts.Dtos;
 using OrderManagement.Application.Contracts.OrderManagement;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
 using OrderManagement.Application.Contracts.Services;
-using OrderManagement.Application.OrderManagement.Constants;
 using OrderManagement.Domain;
 using OrderManagement.Domain.Shared;
 using System;

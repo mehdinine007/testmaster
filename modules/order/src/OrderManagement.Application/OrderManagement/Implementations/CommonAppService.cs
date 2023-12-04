@@ -11,7 +11,6 @@ using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.OrderManagement;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
 using OrderManagement.Application.Contracts.Services;
-using OrderManagement.Application.OrderManagement.Constants;
 using OrderManagement.Domain;
 using RestSharp;
 using System;

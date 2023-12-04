@@ -10,7 +10,6 @@ using OrderManagement.Application.Contracts.OrderManagement.Inqueries;
 using OrderManagement.Application.Contracts.OrderManagement.Models;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
 using OrderManagement.Application.Contracts.Services;
-using OrderManagement.Application.OrderManagement.Constants;
 using OrderManagement.Domain;
 using OrderManagement.Domain.OrderManagement;
 using OrderManagement.Domain.Shared;

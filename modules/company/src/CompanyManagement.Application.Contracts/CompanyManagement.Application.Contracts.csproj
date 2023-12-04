@@ -23,6 +23,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\..\..\shared\IFG.Core\IFG.Core.csproj" />
+      <ProjectReference Include="..\..\..\..\shared\Licence\Licence.csproj" />
       <ProjectReference Include="..\CompanyManagement.Domain.Shared\CompanyManagement.Domain.Shared.csproj" />
       <ProjectReference Include="..\CompanyManagement.Domain\CompanyManagement.Domain.csproj" />
     </ItemGroup>

@@ -14,7 +14,6 @@ using Microsoft.Extensions.Configuration;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using System.Text.RegularExpressions;
-using UserManagement.Application.Constants;
 using UserManagement.Application.Contracts.Models;
 using UserManagement.Application.Contracts.Services;
 using UserManagement.Application.Contracts.UserManagement.Services;
@@ -34,7 +33,6 @@ using wsFava;
 using UserManagement.Application.Contracts.UserManagement.Constant;
 using UserManagement.Application.Contracts;
 using IFG.Core.Caching;
-using UserManagement.Application.UserManagement.Constants;
 #endregion
 
 namespace UserManagement.Application.UserManagement.Implementations;

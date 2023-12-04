@@ -1,15 +1,13 @@
 ﻿using IFG.Core.Bases;
+using Licence;
 
 namespace OrderManagement.Application.Contracts;
 
-public class CapacityControlServicePermissionConstants : BasePermissionConstants
+public class CapacityControlServicePermissionConstants
 {
-    public const string ValidationBySaleDetailUId = "000200020001";
+    public const string ValidationBySaleDetailUId = ConstantInfo.ModuleOrder + ServiceIdentifier + "0001";
     public const string ValidationBySaleDetailUId_DisplayName = "اعتبارسنجی توسط UID برنامه فروش";
 
-    public override string ModuleIdentifier => "0002";
-
-    public override string ServiceIdentifier => "0002";
-
-    public override string ServiceDisplayName => "سرویس کنترل ظرفیت";
+    public const string ServiceIdentifier = "0002";
+    public const string ServiceDisplayName = "سرویس کنترل ظرفیت";
 }

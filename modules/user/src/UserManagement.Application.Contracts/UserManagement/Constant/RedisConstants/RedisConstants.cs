@@ -1,5 +1,5 @@
 
-namespace UserManagement.Application.UserManagement.Constants;
+namespace UserManagement.Application.Contracts.UserManagement.Constant;
 
 public static class RedisConstants
 {

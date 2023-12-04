@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.Services;
-using OrderManagement.Application.OrderManagement.Constants;
 using OrderManagement.Domain;
 using OrderManagement.Domain.Shared;
 using System;

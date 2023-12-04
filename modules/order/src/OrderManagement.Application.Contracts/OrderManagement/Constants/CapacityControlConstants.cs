@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OrderManagement.Application.OrderManagement
+namespace OrderManagement.Application.Contracts
 {
     public  class CapacityControlConstants
     {
