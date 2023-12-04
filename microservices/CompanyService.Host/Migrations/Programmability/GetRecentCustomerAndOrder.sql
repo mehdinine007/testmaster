@@ -34,7 +34,8 @@ co.DeliveryDateDescription,
 co.OrderRejectionStatus,
 c.Title as CompanyName,
 sd.ESaleTypeId,
-c.Id as Id
+c.Id as Id,
+co.TrackingCode
 from carsupply_test_order..SaleDetail as sd
 	inner join carsupply_test_order..ProductAndCategory as ct
 		on ct.Id = sd.ProductId

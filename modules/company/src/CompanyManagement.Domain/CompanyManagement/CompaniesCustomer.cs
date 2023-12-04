@@ -28,6 +28,7 @@ namespace CompanyManagement.Domain.CompanyManagement
         public int? OrderRejectionStatus { get; set; }
         public string CompanyName { get; set; }
         public int ESaleTypeId { get; set; }
+        public string TrackingCode { get; set; }
     }
 
 }
