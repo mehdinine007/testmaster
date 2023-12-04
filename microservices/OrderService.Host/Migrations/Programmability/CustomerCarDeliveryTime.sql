@@ -1,13 +1,8 @@
 if exists(select 1 from sysObjects where Upper(Name) = 'CustomerCarDeliveryTime')
 	drop proc CustomerCarDeliveryTime
-USE [carsupply_test_order]
-GO
-/****** Object:  StoredProcedure [dbo].[CustomerCarDeliveryTime]    Script Date: 12/4/2023 11:44:22 AM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-ALTER procedure [dbo].[CustomerCarDeliveryTime]
+
+Go
+Create procedure [dbo].[CustomerCarDeliveryTime]
 	-- Add the parameters for the stored procedure here
 	 @CompanyId as int,
 	  @SaleId as int,
