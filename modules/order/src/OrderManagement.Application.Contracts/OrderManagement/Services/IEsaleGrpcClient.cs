@@ -1,4 +1,5 @@
-﻿using Volo.Abp.Application.Services;
+﻿using IFG.Core.Infrastructures.TokenAuth;
+using Volo.Abp.Application.Services;
 
 namespace OrderManagement.Application.Contracts.Services
 {
@@ -13,7 +14,8 @@ namespace OrderManagement.Application.Contracts.Services
         Task<PaymentHandShakeViewModel> HandShake(PaymentHandShakeDto handShakeDto);
         Task<PaymentResultViewModel> Verify(int paymentId);
         Task<PaymentResultViewModel> Reverse(int paymentId);
+        Task<AuthenticateResponseDto> Athenticate(AuthenticateReqDto input);
         //Task<ClientOrderDeliveryInformationDto> ValidateClientOrderDeliveryDate(ClientOrderDeliveryInformationRequestDto clientOrderRequest);
-
+        //Task<AuthtenticateResult>
     }
 }

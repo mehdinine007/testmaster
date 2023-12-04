@@ -190,7 +190,7 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
                 string.IsNullOrWhiteSpace(submitAnswerTreeDto?.UnregisteredUserInformation?.EducationLevel) &&
                 string.IsNullOrWhiteSpace(submitAnswerTreeDto?.UnregisteredUserInformation?.Occupation) &&
                 string.IsNullOrWhiteSpace(submitAnswerTreeDto?.UnregisteredUserInformation?.NationalCode))
-                throw new UserFriendlyException("لطفا نمام فیلد ها را پر کنید");
+                    throw new UserFriendlyException("لطفا نمام فیلد ها را پر کنید");
 
             submitAnswerTreeDto.UnregisteredUserInformation.QuestionnaireId = questionnaire.Id;
             await _unAuthorizedUserRepository.InsertAsync(

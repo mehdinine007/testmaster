@@ -3,8 +3,7 @@ using Volo.Abp;
 using Microsoft.AspNetCore.Mvc;
 using CompanyManagement.Application.Contracts.CompanyManagement.Services;
 using System.Threading.Tasks;
-using CompanyManagement.Application.Contracts;
-using CompanyManagement.Application.Contracts.CompanyManagement.Dtos;
+using IFG.Core.Infrastructures.TokenAuth;
 
 namespace CompanyManagement.HttpApi.CompanyManagement.Controllers;
 

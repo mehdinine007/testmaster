@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Volo.Abp.Auditing;
+﻿using Volo.Abp.Auditing;
 using Volo.Abp;
 using AdminPanelManagement.Application.Contracts.AdminPanelManagement.IServices;
-using AdminPanelManagement.Application.Contracts.AdminPanelManagement.Dtos;
 using Microsoft.AspNetCore.Mvc;
+using IFG.Core.Infrastructures.TokenAuth;
 
 namespace AdminPanelManagement.HttpApi.AdminPanelManagement.Controllers
 {

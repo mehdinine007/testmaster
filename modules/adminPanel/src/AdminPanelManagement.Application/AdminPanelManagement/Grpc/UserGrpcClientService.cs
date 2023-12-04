@@ -1,14 +1,9 @@
-﻿using AdminPanelManagement.Application.Contracts.AdminPanelManagement.Dtos;
-using AdminPanelManagement.Application.Contracts.AdminPanelManagement.IServices;
+﻿using AdminPanelManagement.Application.Contracts.AdminPanelManagement.IServices;
 using Grpc.Net.Client;
 using Microsoft.Extensions.Configuration;
 using AdminPanelManagement.Application.Grpc.UserGrpcClient;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Volo.Abp.Application.Services;
+using IFG.Core.Infrastructures.TokenAuth;
 
 namespace AdminPanelManagement.Application.AdminPanelManagement.Grpc
 {
@@ -22,7 +17,6 @@ namespace AdminPanelManagement.Application.AdminPanelManagement.Grpc
 
 
         public async Task<AuthenticateResponseDto> Athenticate(AuthenticateReqDto input)
-
         {
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2Support", true);
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);

@@ -29,6 +29,8 @@ using CompanyManagement.HttpApi;
 using CompanyManagement.EfCore.CompanyManagement.EntityFrameworkCore;
 using CompanyManagement.Application.CompanyManagement;
 using CompanyManagement.Application.CompanyManagement.Grpc;
+using Licence;
+using System.Collections.Generic;
 
 namespace CompanyService.Host
 {
@@ -71,11 +73,36 @@ namespace CompanyService.Host
             });
             if (configuration.GetValue<bool?>("SwaggerIsEnable") ?? false)
             {
+                var version = AppLicence.GetVersion(configuration.GetSection("Licence:SerialNumber").Value).Version;
                 context.Services.AddSwaggerGen(options =>
                 {
-                    options.SwaggerDoc("v1", new OpenApiInfo { Title = "Company Service API", Version = "v1" });
+                    options.SwaggerDoc("v1", new OpenApiInfo { Title = "Company Service API", Version = version });
                     options.DocInclusionPredicate((docName, description) => true);
                     options.CustomSchemaIds(type => type.FullName);
+                    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+                    {
+                        Name = "Authorization",
+                        Description = "Enter the Bearer Authorization string as following: `Bearer Generated-JWT-Token`",
+                        In = ParameterLocation.Header,
+                        Type = SecuritySchemeType.Http,
+                        Scheme = "Bearer",
+                    });
+                    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+                    {
+                        {
+                            new OpenApiSecurityScheme
+                            {
+                                Name = "Bearer",
+                                In = ParameterLocation.Header,
+                                Reference = new OpenApiReference
+                                {
+                                    Id = "Bearer",
+                                    Type = ReferenceType.SecurityScheme
+                                }
+                            },
+                            new List<string>()
+                        }
+                    });
                 });
             }
 
