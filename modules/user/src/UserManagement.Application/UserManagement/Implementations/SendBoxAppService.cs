@@ -29,19 +29,14 @@ public class SendBoxAppService : ApplicationService, ISendBoxAppService
     private readonly ICommonAppService _commonAppService;
     private readonly IHttpContextAccessor _contextAccessor;
     private readonly IRepository<UserMongo, ObjectId> _userMongoRepository;
-    private readonly IRandomGenerator _iRandomGenerator;
     private readonly IBaseInformationService _baseInformationService;
     private readonly ICacheManager _cacheManager;
-    //private readonly IRepository<Logs, long> _logsRepository;
-    //private readonly IDistributedCache _distributedCache;
     private readonly IGetwayGrpcClient _getwayGrpcClient;
     private readonly ICaptchaService _captchaService;
 
     public SendBoxAppService(IConfiguration configuration,
         ICommonAppService CommonAppService,
-        IRandomGenerator iRandomGenerator,
         IBaseInformationService baseInformationService,
-        //IRepository<Logs, long> LogsRepository,
         ICacheManager cacheManager,
         IGetwayGrpcClient getwayGrpcClient,
         ICaptchaService captchaService,
@@ -49,9 +44,7 @@ public class SendBoxAppService : ApplicationService, ISendBoxAppService
     {
         _configuration = configuration;
         _commonAppService = CommonAppService;
-        _iRandomGenerator = iRandomGenerator;
         _baseInformationService = baseInformationService;
-        //_logsRepository = LogsRepository;
         _cacheManager = cacheManager;
         _getwayGrpcClient = getwayGrpcClient;
         _captchaService = captchaService;
@@ -104,7 +97,7 @@ public class SendBoxAppService : ApplicationService, ISendBoxAppService
             //  var _magfa = new MagfaSendSms(JsonConvert.DeserializeObject<MagfaConfig>(_configuration.GetSection("SendBoxConfig:Sms:Magfa").Value));
             string Message = "";
             string PreFix = "";
-            sendSMSDto.SMSCode = _iRandomGenerator.GetUniqueInt().ToString();
+            sendSMSDto.SMSCode = Core.Utility.Tools.RandomGenerator.GetUniqueInt(6).ToString();
             if (input.SMSLocation == SMSType.Register)
             {
                 PreFix = SMSType.Register.ToString();

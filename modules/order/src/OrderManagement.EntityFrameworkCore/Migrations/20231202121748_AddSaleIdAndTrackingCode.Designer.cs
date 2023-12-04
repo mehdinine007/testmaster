@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OrderManagement.EfCore;
 using Volo.Abp.EntityFrameworkCore;
@@ -12,9 +13,11 @@ using Volo.Abp.EntityFrameworkCore;
 namespace OrderManagement.EfCore.Migrations
 {
     [DbContext(typeof(OrderManagementDbContext))]
-    partial class OrderManagementDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231202121748_AddSaleIdAndTrackingCode")]
+    partial class AddSaleIdAndTrackingCode
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1068,7 +1071,7 @@ namespace OrderManagement.EfCore.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("AgencyId")
+                    b.Property<int>("AgencyId")
                         .HasColumnType("int");
 
                     b.Property<string>("ChassiNo")
@@ -1115,6 +1118,9 @@ namespace OrderManagement.EfCore.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("LastModifierId");
 
+                    b.Property<long>("OldUserId")
+                        .HasColumnType("bigint");
+
                     b.Property<int?>("OrderDeliveryStatus")
                         .HasColumnType("int");
 
@@ -1133,7 +1139,7 @@ namespace OrderManagement.EfCore.Migrations
                     b.Property<int?>("PaymentId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("PaymentSecret")
+                    b.Property<int>("PaymentSecret")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("PrioritizationDate")
@@ -1156,9 +1162,6 @@ namespace OrderManagement.EfCore.Migrations
 
                     b.Property<DateTime?>("SendToManufacturerDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("TrackingCode")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
@@ -1774,61 +1777,6 @@ namespace OrderManagement.EfCore.Migrations
                     b.ToTable("OrderStatusInquiry", (string)null);
                 });
 
-            modelBuilder.Entity("OrderManagement.Domain.OrderManagement.Organization", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("Code")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("CreationTime");
-
-                    b.Property<Guid?>("CreatorId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("CreatorId");
-
-                    b.Property<Guid?>("DeleterId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("DeleterId");
-
-                    b.Property<DateTime?>("DeletionTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("DeletionTime");
-
-                    b.Property<string>("EncryptKey")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false)
-                        .HasColumnName("IsDeleted");
-
-                    b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("LastModificationTime");
-
-                    b.Property<Guid?>("LastModifierId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("LastModifierId");
-
-                    b.Property<string>("Title")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Url")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Organization", (string)null);
-                });
-
             modelBuilder.Entity("OrderManagement.Domain.OrderManagement.ProductAndCategory", b =>
                 {
                     b.Property<int>("Id")
@@ -2096,43 +2044,6 @@ namespace OrderManagement.EfCore.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("PreSale", (string)null);
-                });
-
-            modelBuilder.Entity("OrderManagement.Domain.Priority", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("EkanNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("NationalCode")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("OrderID")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("PriorityLevel")
-                        .HasColumnType("int");
-
-                    b.Property<string>("PriorityNum")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Radif")
-                        .HasColumnType("int");
-
-                    b.Property<string>("SortID")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SumNumberOfNationalCode")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Priority", (string)null);
                 });
 
             modelBuilder.Entity("OrderManagement.Domain.Province", b =>
@@ -2514,10 +2425,10 @@ namespace OrderManagement.EfCore.Migrations
                     b.Property<DateTime>("SalePlanStartDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("SaleProcess")
+                    b.Property<int>("SaleTypeCapacity")
                         .HasColumnType("int");
 
-                    b.Property<int>("SaleTypeCapacity")
+                    b.Property<int>("TrackingCode")
                         .HasColumnType("int");
 
                     b.Property<Guid>("UID")
@@ -2542,46 +2453,6 @@ namespace OrderManagement.EfCore.Migrations
                         .IsUnique();
 
                     b.ToTable("SaleDetail", (string)null);
-                });
-
-            modelBuilder.Entity("OrderManagement.Domain.SaleProcessTypeReadOnly", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("Code")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Title")
-                        .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)");
-
-                    b.Property<string>("Title_En")
-                        .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("SaleProcessTypeReadOnly", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Code = 0,
-                            Title = "فروش عادی",
-                            TitleEn = "RegularSale"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Code = 1,
-                            Title = "فروش مستقیم",
-                            TitleEn = "DirectSale"
-                        });
                 });
 
             modelBuilder.Entity("OrderManagement.Domain.SaleSchema", b =>

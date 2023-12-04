@@ -4,17 +4,17 @@ using System.Text;
 
 namespace Core.Utility.Tools
 {
-    public class RandomGenerator
+    public static class RandomGenerator
     {
-        private readonly Random _random = new Random();
+        private static Random _random = new Random();
 
-        public int RandomNumber(int min, int max)
+        public static int RandomNumber(int min, int max)
         {
             return _random.Next(min, max);
         }
 
         // Generates a random string with a given size.    
-        public string RandomString(int size, bool lowerCase = false)
+        public static string RandomString(int size, bool lowerCase = false)
         {
             var builder = new StringBuilder(size);
 
@@ -30,7 +30,7 @@ namespace Core.Utility.Tools
             return lowerCase ? builder.ToString().ToLower() : builder.ToString();
         }
 
-        public string RandomPassword()
+        public static string RandomPassword()
         {
             var passwordBuilder = new StringBuilder();
 
@@ -40,6 +40,13 @@ namespace Core.Utility.Tools
 
             passwordBuilder.Append(RandomString(2));
             return passwordBuilder.ToString();
+        }
+
+        public static long GetUniqueInt(int size)
+        {
+            byte[] value = Guid.NewGuid().ToByteArray();
+            long x = Math.Abs(BitConverter.ToInt32(value, 0));
+            return int.Parse(x.ToString().Substring(0, size));
         }
     }
 }
