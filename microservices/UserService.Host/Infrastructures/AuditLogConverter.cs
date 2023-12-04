@@ -14,11 +14,16 @@ namespace UserService.Host
 {
     public class AuditLogConverter : IAuditLogInfoToAuditLogConverter, ITransientDependency
     {
+
+        #region Initialize
         protected IGuidGenerator GuidGenerator { get; }
         protected IExceptionToErrorInfoConverter ExceptionToErrorInfoConverter { get; }
         protected IJsonSerializer JsonSerializer { get; }
         protected AbpExceptionHandlingOptions ExceptionHandlingOptions { get; }
 
+        #endregion
+
+        #region CTOR
         public AuditLogConverter(IGuidGenerator guidGenerator, IExceptionToErrorInfoConverter exceptionToErrorInfoConverter, IJsonSerializer jsonSerializer, IOptions<AbpExceptionHandlingOptions> exceptionHandlingOptions)
         {
             GuidGenerator = guidGenerator;
@@ -26,11 +31,12 @@ namespace UserService.Host
             JsonSerializer = jsonSerializer;
             ExceptionHandlingOptions = exceptionHandlingOptions.Value;
         }
+        #endregion
 
+        #region ConvertAsync
         public virtual Task<AuditLog> ConvertAsync(AuditLogInfo auditLogInfo)
         {
             var auditLogId = GuidGenerator.Create();
-
             var extraProperties = new ExtraPropertyDictionary();
             if (auditLogInfo.ExtraProperties != null)
             {
@@ -39,54 +45,38 @@ namespace UserService.Host
                     extraProperties.Add(pair.Key, pair.Value);
                 }
             }
-
             var entityChanges = auditLogInfo
                                     .EntityChanges?
                                     .Select(entityChangeInfo => new EntityChange(GuidGenerator, auditLogId, entityChangeInfo, tenantId: auditLogInfo.TenantId))
                                     .ToList()
                                 ?? new List<EntityChange>();
-
             var actions = auditLogInfo
                               .Actions?
                               .Select(auditLogActionInfo => new AuditLogAction(GuidGenerator.Create(), auditLogId, auditLogActionInfo, tenantId: auditLogInfo.TenantId))
                               .ToList()
                           ?? new List<AuditLogAction>();
-
-            //var remoteServiceErrorInfos = auditLogInfo.Exceptions?.Select(exception => ExceptionToErrorInfoConverter.Convert(exception, options =>
-            //{
-            //    options.SendExceptionsDetailsToClients = true;
-            //    options.SendStackTraceToClients = true;
-            //}))
-            //                              ?? new List<RemoteServiceErrorInfo>();
-            var remoteServiceErrorInfos = new List<RemoteServiceErrorInfo>();
-            string message = "";
+            var exceptions = "";
             if (auditLogInfo.Exceptions != null)
             {
                 var exception = auditLogInfo.Exceptions.FirstOrDefault();
-
                 if (exception != null)
                 {
-                    message = exception.Message ?? "";
+                    exceptions = exception.GetType().FullName + ": " + (exception.Message ?? "");
                     if (exception.InnerException != null)
                     {
-                        message += "||" + exception.InnerException.Message;
+                        exceptions += Environment.NewLine + "Inner Exception: " +
+                        exception.InnerException.GetType().FullName + ": " +
+                        (exception.InnerException.Message ?? "");
                     }
                     if (exception.StackTrace != null)
                     {
-                        message += "||" + exception.StackTrace;
+                        exceptions += Environment.NewLine + "StackTrace: " + exception.StackTrace;
                     }
                 }
             }
-
-
-            var exceptions = message != ""
-               ? JsonSerializer.Serialize(message, indented: true)
-               : null;
-
             var comments = auditLogInfo
                 .Comments?
                 .JoinAsString(Environment.NewLine);
-
             var auditLog = new AuditLog(
                 auditLogId,
                 auditLogInfo.ApplicationName,
@@ -116,5 +106,7 @@ namespace UserService.Host
             );
             return Task.FromResult(auditLog);
         }
+        #endregion
+
     }
 }

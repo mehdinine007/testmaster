@@ -1,27 +1,31 @@
-﻿using System;
+﻿#region NS
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 using Volo.Abp.AspNetCore.ExceptionHandling;
 using Volo.Abp.Auditing;
 using Volo.Abp.AuditLogging;
 using Volo.Abp.Data;
 using Volo.Abp.DependencyInjection;
 using Volo.Abp.Guids;
-using Volo.Abp.Http;
 using Volo.Abp.Json;
+#endregion
 
 namespace OrderService.Host
 {
     public class AuditLogConverter : IAuditLogInfoToAuditLogConverter, ITransientDependency
     {
+
+        #region Initialize
         protected IGuidGenerator GuidGenerator { get; }
         protected IExceptionToErrorInfoConverter ExceptionToErrorInfoConverter { get; }
         protected IJsonSerializer JsonSerializer { get; }
         protected AbpExceptionHandlingOptions ExceptionHandlingOptions { get; }
+        #endregion
 
+        #region CTOR
         public AuditLogConverter(IGuidGenerator guidGenerator, IExceptionToErrorInfoConverter exceptionToErrorInfoConverter, IJsonSerializer jsonSerializer, IOptions<AbpExceptionHandlingOptions> exceptionHandlingOptions)
         {
             GuidGenerator = guidGenerator;
@@ -29,11 +33,12 @@ namespace OrderService.Host
             JsonSerializer = jsonSerializer;
             ExceptionHandlingOptions = exceptionHandlingOptions.Value;
         }
+        #endregion
 
+        #region ConvertAsync
         public virtual Task<AuditLog> ConvertAsync(AuditLogInfo auditLogInfo)
         {
             var auditLogId = GuidGenerator.Create();
-
             var extraProperties = new ExtraPropertyDictionary();
             if (auditLogInfo.ExtraProperties != null)
             {
@@ -42,7 +47,6 @@ namespace OrderService.Host
                     extraProperties.Add(pair.Key, pair.Value);
                 }
             }
-
             var entityChanges = auditLogInfo
                                     .EntityChanges?
                                     .Select(entityChangeInfo => new EntityChange(GuidGenerator, auditLogId, entityChangeInfo, tenantId: auditLogInfo.TenantId))
@@ -54,42 +58,28 @@ namespace OrderService.Host
                               .Select(auditLogActionInfo => new AuditLogAction(GuidGenerator.Create(), auditLogId, auditLogActionInfo, tenantId: auditLogInfo.TenantId))
                               .ToList()
                           ?? new List<AuditLogAction>();
-
-            //var remoteServiceErrorInfos = auditLogInfo.Exceptions?.Select(exception => ExceptionToErrorInfoConverter.Convert(exception, options =>
-            //{
-            //    options.SendExceptionsDetailsToClients = true;
-            //    options.SendStackTraceToClients = true;
-            //}))
-            //                              ?? new List<RemoteServiceErrorInfo>();
-            var  remoteServiceErrorInfos = new List<RemoteServiceErrorInfo>();
-            string message = "";
+            var exceptions = "";
             if (auditLogInfo.Exceptions != null)
             {
                 var exception = auditLogInfo.Exceptions.FirstOrDefault();
-                
-                if(exception != null)
+                if (exception != null)
                 {
-                    message = exception.Message ?? "";
+                    exceptions = exception.GetType().FullName + ": " + (exception.Message ?? "");
                     if (exception.InnerException != null)
                     {
-                        message += "||" + exception.InnerException.Message;
+                        exceptions += Environment.NewLine + "Inner Exception: " +
+                        exception.InnerException.GetType().FullName + ": " +
+                        (exception.InnerException.Message ?? "");
                     }
-                    if(exception.StackTrace != null)
+                    if (exception.StackTrace != null)
                     {
-                        message += "||" + exception.StackTrace;
+                        exceptions += Environment.NewLine + "StackTrace: " + exception.StackTrace;
                     }
                 }
             }
-          
-
-             var exceptions = message != ""
-                ? JsonSerializer.Serialize(message, indented: true)
-                : null;
-
             var comments = auditLogInfo
                 .Comments?
                 .JoinAsString(Environment.NewLine);
-
             var auditLog = new AuditLog(
                 auditLogId,
                 auditLogInfo.ApplicationName,
@@ -119,5 +109,7 @@ namespace OrderService.Host
             );
             return Task.FromResult(auditLog);
         }
+        #endregion
+
     }
 }
