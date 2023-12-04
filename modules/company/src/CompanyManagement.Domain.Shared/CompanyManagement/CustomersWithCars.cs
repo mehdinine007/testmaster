@@ -1,5 +1,4 @@
-﻿namespace CompanyManagement.Domain.Shared.CompanyManagement;
-
+﻿
 namespace CompanyManagement.Domain.Shared.CompanyManagement
 {
     public class CustomersWithCars

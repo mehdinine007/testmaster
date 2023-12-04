@@ -22,9 +22,9 @@ namespace OrderManagement.Domain
         public string ChassiNo { get; set; }
         public string Vehicle { get; set; }
         public int? PspId { get; set; }
-        public int AgencyId { get; set; }
+        public int? AgencyId { get; set; }
         public int? PaymentId { get; set; }
-        public int PaymentSecret { get; set; }
+        public int? PaymentSecret { get; set; }
         public OrderDeliveryStatusType? OrderDeliveryStatus { get; set; }
         public string OrderDeliveryStatusDesc { get; set; }
         public DateTime? PrioritizationDate { get; set; }
