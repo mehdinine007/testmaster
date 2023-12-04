@@ -86,6 +86,8 @@ namespace OrderManagement.Application.Contracts
 
         public static string NotValid = "ورودی نامعتبر می باشد";
         public static string NotValidId = "5002";
+        public const string OrganizationUrlFormat = "{0}?enc={1}";
+        public const string OrganizationEncryptedExpression = "nationalCode={0}|orderId={1}";
 
     }
 }

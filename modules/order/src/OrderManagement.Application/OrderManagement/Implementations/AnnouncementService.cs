@@ -152,8 +152,6 @@ public class AnnouncementService : ApplicationService, IAnnouncementService
         return true;
     }
 
-
-
     public async Task<AnnouncementDto> GetById(int id, List<AttachmentEntityTypeEnum> attachmentType = null, List<AttachmentLocationEnum> attachmentlocation = null)
     {
         var announc = await Validation(id, null);

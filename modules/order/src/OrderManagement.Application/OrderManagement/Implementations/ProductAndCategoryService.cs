@@ -23,6 +23,7 @@ using IFG.Core.Utility.Tools;
 using Volo.Abp.ObjectMapping;
 using Esale.Share.Authorize;
 using OrderManagement.Application.Contracts.OrderManagement.Constants.Permissions;
+using System.Linq.Dynamic.Core;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -66,16 +67,16 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
         await _attachmentService.DeleteByEntityId(AttachmentEntityEnum.ProductAndCategory, id);
     }
 
-    public async Task<ProductAndCategoryWithChildDto> GetById(int id, bool hasProperty, List<AttachmentEntityTypeEnum> attachmentType = null,List<AttachmentLocationEnum> locationType = null)
+    public async Task<ProductAndCategoryWithChildDto> GetById(int id, bool hasProperty, List<AttachmentEntityTypeEnum> attachmentType = null, List<AttachmentLocationEnum> locationType = null)
     {
         await Validation(id, null);
         var query = await _productAndCategoryRepository.GetQueryableAsync();
         //if (!_commonAppService.IsInRole("Admin"))
-            query = query.Where(x => x.Active);
+        query = query.Where(x => x.Active);
         var productCategory = query
             .FirstOrDefault(x => x.Id == id) ??
             throw new UserFriendlyException("محصول یا دسته بندی مورد نطر پیدا نشد");
-        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, new List<int>() { id }, attachmentType,locationType);
+        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, new List<int>() { id }, attachmentType, locationType);
         var productResult = ObjectMapper.Map<ProductAndCategory, ProductAndCategoryWithChildDto>(productCategory);
         var productAndCategoryList = await FillAttachmentAndProperty(new List<ProductAndCategoryWithChildDto>() { productResult }, attachments, hasProperty);
         return productResult;
@@ -186,7 +187,7 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
     {
         var productCategoryQuery = await _productAndCategoryRepository.WithDetailsAsync(x => x.Childrens);
         //if (!_commonAppService.IsInRole("Admin"))
-            productCategoryQuery = productCategoryQuery.Where(x => x.Active);
+        productCategoryQuery = productCategoryQuery.Where(x => x.Active);
 
         productCategoryQuery = productCategoryQuery.AsSingleQuery();
         productCategoryQuery = productCategoryQuery.Where(x => x.ParentId == input.ParentId);
@@ -221,7 +222,7 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
         List<ProductAndCategory> ls = new();
         var productAndCategoryQuery = await _productAndCategoryRepository.GetQueryableAsync();
         //if (!_commonAppService.IsInRole("Admin"))
-            productAndCategoryQuery = productAndCategoryQuery.Include(x => x.ProductLevel).Where(x => x.Active);
+        productAndCategoryQuery = productAndCategoryQuery.Include(x => x.ProductLevel).Where(x => x.Active);
         var attachments = new List<AttachmentDto>();
         switch (input.Type)
         {
@@ -301,7 +302,7 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
         {
             ProductList = await GetProductFilter(input.AdvancedSearch, ProductList);
         }
-        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, ProductList.Select(x => x.Id).ToList(), EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(input.attachmentType),EnumHelper.ConvertStringToEnum<AttachmentLocationEnum>(input.attachmentLocation));
+        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, ProductList.Select(x => x.Id).ToList(), EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(input.attachmentType), EnumHelper.ConvertStringToEnum<AttachmentLocationEnum>(input.attachmentLocation));
 
         var productAndSaleDetailListDto = ObjectMapper.Map<List<ProductAndCategory>, List<ProductAndCategoryWithChildDto>>(ProductList);
 
@@ -366,10 +367,26 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
     {
         var productAndCategorytQueryable = await _productAndCategoryRepository.GetQueryableAsync();
         var productAndCategory = new ProductAndCategory();
-       var parents= productAndCategorytQueryable.Where(x =>x.ParentId==null).ToList();
+        var parents = productAndCategorytQueryable.Where(x => x.ParentId == null).ToList();
 
-      var  productAndCategoryDto  = ObjectMapper.Map<List<ProductAndCategory>, List<ProductAndCategoryDto>>(parents);
+        var productAndCategoryDto = ObjectMapper.Map<List<ProductAndCategory>, List<ProductAndCategoryDto>>(parents);
         return productAndCategoryDto;
 
+    }
+
+    public async Task<ProductAndCategoryDto> GetProductAndCategoryByCode(string code,
+        List<AttachmentEntityTypeEnum> attachmentType = null,
+        List<AttachmentLocationEnum> attachmentlocation = null
+        )
+    {
+        var productAndCategory = (await _productAndCategoryRepository.GetQueryableAsync()).FirstOrDefault(x => x.Code == code)
+            ?? throw new UserFriendlyException("دسته بندی یا محصول مرتبط بافت نشد");
+        var result = ObjectMapper.Map<ProductAndCategory, ProductAndCategoryDto>(productAndCategory);
+        if ((attachmentType ?? new List<AttachmentEntityTypeEnum>()).Any())
+        {
+            var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, new List<int>() { productAndCategory.Id }, attachmentType, attachmentlocation);
+            result.Attachments = ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(attachments);
+        }
+        return result;
     }
 }

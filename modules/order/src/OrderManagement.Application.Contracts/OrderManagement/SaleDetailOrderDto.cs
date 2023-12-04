@@ -1,4 +1,4 @@
-﻿using System;
+﻿using OrderManagement.Domain.Shared;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OrderManagement.Application.Contracts
@@ -19,5 +19,8 @@ namespace OrderManagement.Application.Contracts
 
         public decimal CarFee { get; set; }
 
+        public SaleProcessType SaleProcess { get; set; }
+
+        public int ProductId { get; set; }
     }
 }
