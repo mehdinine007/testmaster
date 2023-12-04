@@ -532,7 +532,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             customerOrder.AgencyId = commitOrderDto.AgencyId;
             customerOrder.PaymentSecret = _randomGenerator.GetUniqueInt();
             customerOrder.OrderDeliveryStatus = OrderDeliveryStatusType.OrderRegistered;
-            customerOrder.TrackingCode = _configuration.GetSection("SaleDetailId").Value.Contains(SaleDetailDto.Id.ToString()) == true ? Core.Utility.Tools.RandomGenerator.GetUniqueInt(8).ToString() : null;
+            customerOrder.TrackingCode = _configuration.GetSection("SaleDetailId").Value.Contains(SaleDetailDto.Id.ToString()) == true ? Core.Utility.Tools.RandomGenerator.GetUniqueInt(_configuration.GetValue<int>("RandomeCodeLength")).ToString() : null;
             await _commitOrderRepository.InsertAsync(customerOrder);
             await CurrentUnitOfWork.SaveChangesAsync();
         }
