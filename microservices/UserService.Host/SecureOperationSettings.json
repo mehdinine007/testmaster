@@ -1016,7 +1016,7 @@
             "children": []
           },
           {
-            "title": "GetCustomer",
+            "title": "GetRecentCustomerAndOrder",
             "code": "000300010004",
             "displayName": "گرفتن اطلاعات مشتریان برای شرکت های خودرو ساز",
             "children": []
