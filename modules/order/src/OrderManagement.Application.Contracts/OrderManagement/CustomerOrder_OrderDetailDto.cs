@@ -58,7 +58,7 @@ namespace OrderManagement.Application.Contracts
         public string CompanyName { get; set; }
         public int Id { get;set; }
         public int SaleId { get; set; }
-        public int TrackingCode { get; set; }
+        public string TrackingCode { get; set; }
 
     }
 }

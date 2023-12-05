@@ -779,7 +779,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 SalePlanEndDate = x.SalePlanEndDate,
                 Id = x.Id,
                 SaleId = x.SaleId,
-                TrackingCode = int.Parse(x.TrackingCode)
+                TrackingCode = x.TrackingCode
             }).ToList();
         var cancleableDate = _configuration.GetValue<string>("CancelableDate");
         var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, customerOrders.Select(x => x.ProductId).ToList(), attachmentType, attachmentlocation);
