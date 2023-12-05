@@ -8,6 +8,7 @@ namespace OrderManagement.Application.Contracts
         public Guid UId { get; set; }
         public bool PaymentGranted { get; set; }
         public PaymentMethodConfiguration PaymentMethodConigurations { get; set; }
+        public string TrackingCode { get;set; }
     }
 
     public class PaymentMethodConfiguration
