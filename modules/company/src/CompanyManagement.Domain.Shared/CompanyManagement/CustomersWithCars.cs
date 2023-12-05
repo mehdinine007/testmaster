@@ -35,6 +35,10 @@ namespace CompanyManagement.Domain.Shared.CompanyManagement
         public string BlackList { get; set; }
         public int SaleId { get; set; }
         public string TrackingCode { get; set; }
+        public string Vin { get; set; }
+        public string EngineNo { get; set; }
+        public string ChassiNo { get; set; }
+        public string Vehicle { get; set; }
 
     }
 }

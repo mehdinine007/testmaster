@@ -48,7 +48,7 @@ AS
 select  --us.NationalCode, sum(f.PriorityLevel)
   co.Id,co.Id as orderid, ct.Id as cartipid,ct.title, us.NationalCode,us.Mobile,us.Name,us.Surname,us.FatherName,us.BirthCertId,us.BirthDate,us.Gender,f.Radif,
 ci.id as CityID,ci.Name as City,pv.Id as ProvinceId, pv.Name as Province, us.Tel, us.PostalCode, us.Address, us.IssuingDate , us.Shaba, co.DeliveryDateDescription, co.OrderRejectionStatus, c.Title as sherkat, sd.ESaleTypeId
-,co.SaleId ,co.TrakingCode
+,co.SaleId ,co.TrakingCode, co.Vin, co.EngineNo, co.ChassiNo, co.Vehicle
 ,ROW_NUMBER() OVER(PARTITION BY  us.NationalCode ORDER BY f.PriorityLevel desc ) rownum, f.PriorityLevel
 ----into #sp19
 
@@ -57,7 +57,7 @@ ci.id as CityID,ci.Name as City,pv.Id as ProvinceId, pv.Name as Province, us.Tel
 		on sd.ProductId = ct.id	
 		inner join carsupply_test_order.dbo.ProductAndCategory c(nolock)
 		on c.Code = left(ct.Code,4)
-		inner join carsupply_test_order.dbo.customerorder co(nolock)
+		inner join [carsupply_test_order].dbo.customerorder co(nolock)
 		on co.SaleDetailId = sd.id
 		--[USERDB].carsupply_test_order.dbo
 		inner join [carsupply_test_order].[dbo].[PriorityListSaleSchema] ps
@@ -97,7 +97,7 @@ AS
 select  --us.NationalCode, sum(f.PriorityLevel)
   co.Id,co.Id as orderid, ct.Id as cartipid,ct.title, us.NationalCode,us.Mobile,us.Name,us.Surname,us.FatherName,us.BirthCertId,us.BirthDate,us.Gender,f.Radif,
 ci.id as CityID,ci.Name as City,pv.Id as ProvinceId, pv.Name as Province, us.Tel, us.PostalCode, us.Address, us.IssuingDate , us.Shaba, co.DeliveryDateDescription, co.OrderRejectionStatus, c.Title as sherkat, sd.ESaleTypeId
-,co.SaleId ,co.TrakingCode
+,co.SaleId ,co.TrakingCode, co.Vin, co.EngineNo, co.ChassiNo, co.Vehicle
 ,ROW_NUMBER() OVER(PARTITION BY  us.NationalCode ORDER BY f.PriorityLevel desc ) rownum, f.PriorityLevel
 ----into #sp19
 
@@ -152,7 +152,7 @@ AS
 select  --us.NationalCode, sum(f.PriorityLevel)
   co.Id,co.Id as orderid, ct.Id as cartipid,ct.title, us.NationalCode,us.Mobile,us.Name,us.Surname,us.FatherName,us.BirthCertId,us.BirthDate,us.Gender,f.Radif,
 ci.id as CityID,ci.Name as City,pv.Id as ProvinceId, pv.Name as Province, us.Tel, us.PostalCode, us.Address, us.IssuingDate , us.Shaba, co.DeliveryDateDescription, co.OrderRejectionStatus, c.Title as sherkat, sd.ESaleTypeId
-,co.SaleId ,co.TrakingCode
+,co.SaleId ,co.TrakingCode, co.Vin, co.EngineNo, co.ChassiNo, co.Vehicle
 ,ROW_NUMBER() OVER(PARTITION BY  us.NationalCode ORDER BY f.PriorityLevel desc ) rownum, f.PriorityLevel
 ----into #sp19
 
