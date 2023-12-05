@@ -16,7 +16,7 @@ namespace IFG.Core.Caching.Redis
         private MultiplexerProvider _cacheClient;
         public RedisCacheManager()
         {
-            _cacheClient = new MultiplexerProvider("RedisCache:ConnectionString");
+            _cacheClient = new MultiplexerProvider("RedisCache");
         }
         public async Task<bool> StringSetAsync(string key, string value, int duration = 0)
         {

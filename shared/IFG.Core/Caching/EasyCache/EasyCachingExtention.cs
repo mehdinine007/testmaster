@@ -1,6 +1,8 @@
 ﻿using EasyCaching.Core.Configurations;
+using IFG.Core.Caching.Redis.Provider;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 using System;
 namespace IFG.Core.Caching
 {
@@ -9,12 +11,8 @@ namespace IFG.Core.Caching
         public static IServiceCollection EasyCaching(this IServiceCollection services, IConfiguration configuration)
         {
             var redisCacheSection = configuration.GetSection("RedisCache");
-            var connectionString = redisCacheSection["ConnectionString"];
-            var databaseId = redisCacheSection["DatabaseId"];
-            var connectionStringUser = redisCacheSection["ConnectionStringUser"];
-            var databaseIdUser = redisCacheSection["DatabaseIdUser"];
-            var port = redisCacheSection["Port"]!=null ? int.Parse(redisCacheSection["Port"]):6379 ;
-            var password = redisCacheSection["Password"];
+            var redisConfig = redisCacheSection.Get<RedisConfig>();
+           
             services.AddEasyCaching(options =>
             {
                 options.WithJson("myjson");
@@ -24,12 +22,12 @@ namespace IFG.Core.Caching
                 // distributed
                 options.UseRedis(config =>
                 {
-                    config.DBConfig.Endpoints.Add(new ServerEndPoint(connectionString, port));
+                    config.DBConfig.Endpoints.Add(new ServerEndPoint(redisConfig.ConnectionString, redisConfig.Port));
 
-                    config.DBConfig.Database = 5;
+                    config.DBConfig.Database = redisConfig.HybridDataBaseId;
                     config.SerializerName = "myjson";
 
-                    config.DBConfig.Password = password;
+                    config.DBConfig.Password = redisConfig.Password;
                 }, "myredis");
               
 
@@ -48,9 +46,9 @@ namespace IFG.Core.Caching
                 // use redis bus
                 .WithRedisBus(busConf =>
                 {
-                    busConf.Endpoints.Add(new ServerEndPoint(connectionString, port));
+                    busConf.Endpoints.Add(new ServerEndPoint(redisConfig.ConnectionString, redisConfig.Port));
                     busConf.SerializerName = "myjson";
-                    busConf.Password = password;
+                    busConf.Password = redisConfig.Password;
                 });
             });
             return services;
