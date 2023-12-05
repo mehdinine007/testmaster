@@ -555,36 +555,11 @@ public class OrderAppService : ApplicationService, IOrderAppService
             customerOrder.AgencyId = commitOrderDto.AgencyId;
             customerOrder.PaymentSecret = _randomGenerator.GetUniqueInt();
             customerOrder.OrderDeliveryStatus = OrderDeliveryStatusType.OrderRegistered;
-            customerOrder.TrackingCode = _configuration.GetSection("SaleDetailId").Value.Contains(SaleDetailDto.Id.ToString()) == true ? Core.Utility.Tools.RandomGenerator.GetUniqueInt(_configuration.GetValue<int>("RandomeCodeLength")).ToString() : null;
-            await _commitOrderRepository.InsertAsync(customerOrder);
+            customerOrder.TrackingCode = SaleDetailDto.SaleProcess == SaleProcessType.SaleWithTrackingCode  ? Core.Utility.Tools.RandomGenerator.GetUniqueInt(_configuration.GetValue<int>("RandomeCodeLength")).ToString() : null;
+             await _commitOrderRepository.InsertAsync(customerOrder);
             await CurrentUnitOfWork.SaveChangesAsync();
         }
 
-
-        //Console.WriteLine("afterasli");
-
-        //unitOfWork.Complete();
-        //}
-        //await _cacheManager.GetCache("CommitOrder").
-        //           SetAsync(
-        //       userId.ToString() + "_" +
-        //       commitOrderDto.SaleDetailUId.ToString()
-        //       , customerOrder.Id,
-        //       TimeSpan.FromSeconds(ttl.TotalSeconds));
-
-
-        //var customerOrderQuery = await _commitOrderRepository.GetQueryableAsync();
-        //var customerOrder = customerOrderQuery.Include(x => x.SaleDetail)
-        //    .Select(x => new
-        //    {
-        //        x.UserId,
-        //        x.Id,
-        //        SaleDetailId = x.SaleDetail.Id,
-        //        Amount = x.SaleDetail.CarFee,
-        //        x.AgencyId,
-        //        x.OrderStatus
-        //    }).FirstOrDefault(x => x.Id == customerOrderId && x.OrderStatus == OrderStatusType.RecentlyAdded)
-        //?? throw new EntityNotFoundException(typeof(CustomerOrder));
         ApiResult<IpgApiResult> handShakeResponse = new ApiResult<IpgApiResult>();
         if (paymentMethodGranted)
         {
