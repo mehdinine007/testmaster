@@ -167,10 +167,18 @@ namespace OrderManagement
               .ReverseMap();
             CreateMap<BankDto, Bank>()
               .ReverseMap();
+
             CreateMap<Announcement, AnnouncementDto>()
+                .ForMember(o=>o.Content,opt=> opt.MapFrom(y=> System.Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(y.Content))))
+                .ForMember(o=>o.Description,opt=> opt.MapFrom(y=> System.Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(y.Description))))
+                .ForMember(o=>o.Notice,opt=> opt.MapFrom(y=> System.Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(y.Notice))))
                 .ReverseMap()
                 .IgnoreFullAuditedObjectProperties();
-            CreateMap<CreateAnnouncementDto, Announcement>();
+
+            CreateMap<CreateAnnouncementDto, Announcement>()
+                .ForMember(x => x.Content, opt => opt.MapFrom(y => System.Text.Encoding.UTF8.GetString(System.Convert.FromBase64String(y.Content))))
+                .ForMember(x => x.Description, opt => opt.MapFrom(y => System.Text.Encoding.UTF8.GetString(System.Convert.FromBase64String(y.Description))))
+                .ForMember(x => x.Notice, opt => opt.MapFrom(y => System.Text.Encoding.UTF8.GetString(System.Convert.FromBase64String(y.Notice))));
 
 
             CreateMap<Bank, BankCreateOrUpdateDto>().ReverseMap();
