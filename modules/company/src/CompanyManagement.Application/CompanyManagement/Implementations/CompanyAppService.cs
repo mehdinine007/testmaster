@@ -35,7 +35,7 @@ namespace CompanyManagement.Application.CompanyManagement.Implementations
         private IConfiguration _configuration;
         private ICompanyRepository _companyRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly CompanyManagementDbContext _companyManagementDbContext;
+        private readonly OrderManagementDbContext _orderManagementDbContext;
 
         public CompanyAppService(IRepository<ClientsOrderDetailByCompany, long> clientsOrderDetailByCompanyRepository,
                                 IConfiguration configuration,
@@ -44,7 +44,7 @@ namespace CompanyManagement.Application.CompanyManagement.Implementations
                                 IRepository<CompanyProduction, long> companyProductionRepository,
                                 ICompanyRepository companyRepository,
                                 IHttpContextAccessor HttpContextAccessor,
-                                CompanyManagementDbContext companyManagementDbContext
+                                OrderManagementDbContext orderManagementDbContext
                                 )
         {
             _clientsOrderDetailByCompanyRepository = clientsOrderDetailByCompanyRepository;
@@ -54,7 +54,7 @@ namespace CompanyManagement.Application.CompanyManagement.Implementations
             _companyProductionRepository = companyProductionRepository;
             _companyRepository = companyRepository;
             _httpContextAccessor = HttpContextAccessor;
-            _companyManagementDbContext = companyManagementDbContext;
+            _orderManagementDbContext = orderManagementDbContext;
         }
 
         [SecuredOperation(CompanyServicePermissionConstants.GetCustomersAndCars)]
@@ -128,7 +128,7 @@ namespace CompanyManagement.Application.CompanyManagement.Implementations
             new SqlParameter("@nationalCode",SqlDbType.NVarChar){Value = nationalCode}
             };
 
-            var companiesCustomer = _companyManagementDbContext.Set<CompaniesCustomer>().FromSqlRaw(
+            var companiesCustomer = _orderManagementDbContext.Set<CompaniesCustomer>().FromSqlRaw(
                 string.Format("EXEC {0} {1}", "[dbo].[GetRecentCustomerAndOrder]", "@saleId,@companyId,@nationalCode"), paramArray).AsEnumerable().FirstOrDefault();
             //"EXEC [dbo].[GetCompaniesCustomer] @saleId,@companyId,@nationalCode", paramArray).FirstOrDefault();
 

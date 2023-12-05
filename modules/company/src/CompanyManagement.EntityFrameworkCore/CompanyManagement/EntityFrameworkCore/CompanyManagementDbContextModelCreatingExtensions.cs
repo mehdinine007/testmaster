@@ -45,14 +45,6 @@ namespace CompanyManagement.EfCore
                 entity.Property(x => x.CarDesc)
                     .HasMaxLength(250);
             });
-
-            builder.Entity<CompaniesCustomer>(entity =>
-            {
-                entity.ToTable(nameof(CompaniesCustomer), t => t.ExcludeFromMigrations());
-                entity.HasNoKey();
-            });
-
-
         }
     }
 }
