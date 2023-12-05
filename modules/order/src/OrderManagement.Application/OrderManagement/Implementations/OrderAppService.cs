@@ -682,7 +682,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             OrganizationUrl = organizationUrl,
             PaymentGranted = paymentMethodGranted,
             UId = commitOrderDto.SaleDetailUId,
-            aaa = customerOrder.TrackingCode,
+            TrackingCode = customerOrder.TrackingCode,
             PaymentMethodConigurations = paymentMethodGranted ? new()
             {
                 Message = handShakeResponse?.Result?.Message,
