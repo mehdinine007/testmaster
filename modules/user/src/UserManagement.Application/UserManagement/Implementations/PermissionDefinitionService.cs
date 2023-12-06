@@ -197,7 +197,7 @@ namespace UserManagement.Application.UserManagement.Implementations
             }
             return permissiondefenition;
         }
-               
+
         [SecuredOperation(RolePermissionServicePermissionConstants.Update)]
         public async Task<PermissionDefinitionDto> Update(PermissionDefinitionDto input)
         {
@@ -243,8 +243,13 @@ namespace UserManagement.Application.UserManagement.Implementations
         }
 
         //[SecuredOperation(UserServicePermissionConstants.UpdateSecuritPolicy)]
-        public async Task UpdateSecurityPolicy()
+        public async Task SeedPermissions()
         {
+            var permissionQuery = await _permissionRepository.GetQueryableAsync();
+            var permissions = permissionQuery.ToList();
+            if (permissions.Count > 0)
+                    await _permissionRepository.HardDeleteAsync(permissions);
+           
             var currentDirectory = Environment.CurrentDirectory;
             const string fileName = "SecureOperationSettings.json";
             var fullPath = Path.Combine(currentDirectory, fileName);
