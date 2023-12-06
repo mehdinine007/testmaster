@@ -480,6 +480,10 @@ public static class OrderManagementDbContextModelCreatingExtensions
             entity.AddEnumChangeTracker<SaleProcessTypeReadOnly, SaleProcessType>();
         });
 
-        builder.Entity<Priority>(entity => entity.ToTable(nameof(Priority)));
+        builder.Entity<Priority>(entity =>
+        {
+            entity.ToTable("PriorityList");
+            entity.HasIndex(x => x.NationalCode, "IX_PriorityList_NationalCode");
+        });
     }
 }
