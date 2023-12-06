@@ -50,6 +50,7 @@ public class SaleDetail : FullAuditedEntity<int>
     public bool Visible { get; set; }
 
     public SaleProcessType SaleProcess { get; set; }
+    public string CompanySaleId { get; set; }
 
     public virtual CarTip CarTip { get; protected set; }
     public virtual ESaleType ESaleType { get; protected set; }

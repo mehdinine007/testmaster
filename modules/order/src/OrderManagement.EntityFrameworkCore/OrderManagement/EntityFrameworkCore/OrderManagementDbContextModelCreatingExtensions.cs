@@ -85,6 +85,8 @@ public static class OrderManagementDbContextModelCreatingExtensions
                 .IsUnique();
             entity.Property(x => x.Visible)
                 .HasDefaultValue(true);
+            entity.Property(x => x.CompanySaleId)
+                .HasMaxLength(20);
 
             entity.HasOne<SaleSchema>(x => x.SaleSchema)
                 .WithMany(x => x.SaleDetails)
