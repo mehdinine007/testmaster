@@ -74,6 +74,9 @@ public static class OrderManagementDbContextModelCreatingExtensions
                 .HasMaxLength(50);
             entity.Property(x => x.Vehicle)
                 .HasMaxLength(50);
+            entity.HasIndex(p => p.TrackingCode)
+                .IsUnique()
+                .HasFilter($"{nameof(CustomerOrder.IsDeleted)} = 0 ");
         });
 
         builder.Entity<SaleDetail>(entity =>
