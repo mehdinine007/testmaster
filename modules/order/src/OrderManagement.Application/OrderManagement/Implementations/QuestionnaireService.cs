@@ -189,7 +189,7 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
                 string.IsNullOrWhiteSpace(submitAnswerTreeDto?.UnregisteredUserInformation?.EducationLevel) &&
                 string.IsNullOrWhiteSpace(submitAnswerTreeDto?.UnregisteredUserInformation?.Occupation) &&
                 string.IsNullOrWhiteSpace(submitAnswerTreeDto?.UnregisteredUserInformation?.NationalCode))
-                    throw new UserFriendlyException("لطفا نمام فیلد ها را پر کنید");
+                throw new UserFriendlyException("لطفا نمام فیلد ها را پر کنید");
 
             submitAnswerTreeDto.UnregisteredUserInformation.QuestionnaireId = questionnaire.Id;
             await _unAuthorizedUserRepository.InsertAsync(
@@ -286,7 +286,7 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
         return true;
     }
 
-    public async Task<List<QuestionnaireDto>> LoadQuestionnaireList(List<AttachmentEntityTypeEnum> attachmentEntityTypeEnums, List<AttachmentLocationEnum> attachmentlocation)
+    public async Task<List<QuestionnaireDto>> LoadQuestionnaireList(List<AttachmentEntityTypeEnum> attachmentEntityTypeEnums = null, List<AttachmentLocationEnum> attachmentlocation = null)
     {
         var questionnaireList = (await _questionnaireRepository.GetQueryableAsync()).Where(x => x.Id != 0).ToList();
         var questionnaireIds = questionnaireList.Select(x => x.Id).ToList();
