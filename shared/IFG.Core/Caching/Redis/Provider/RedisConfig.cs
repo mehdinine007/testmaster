@@ -9,8 +9,8 @@ namespace IFG.Core.Caching.Redis.Provider
 {
     public class RedisConfig
     {
-        public string ConnectionString { get; set; }
-        public int DateBaseId { get; set; } = 0;
+        public string Url { get; set; }
+        public int DataBaseId { get; set; } = 0;
         public int Port { get; set; } = 6379;
         public string Password { get; set; }
         public int HybridDataBaseId { get; set; } = 5;

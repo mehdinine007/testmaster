@@ -22,9 +22,10 @@ namespace IFG.Core.Caching
                 // distributed
                 options.UseRedis(config =>
                 {
-                    config.DBConfig.Endpoints.Add(new ServerEndPoint(redisConfig.ConnectionString, redisConfig.Port));
+                    config.DBConfig.Endpoints.Add(new ServerEndPoint(redisConfig.Url, redisConfig.Port));
 
                     config.DBConfig.Database = redisConfig.HybridDataBaseId;
+
                     config.SerializerName = "myjson";
 
                     config.DBConfig.Password = redisConfig.Password;
@@ -42,13 +43,15 @@ namespace IFG.Core.Caching
                     // specify the distributed cache provider name after v0.5.4
 
                     config.DistributedCacheProviderName = "myredis";
+                    
                 }, "h1")
                 // use redis bus
                 .WithRedisBus(busConf =>
                 {
-                    busConf.Endpoints.Add(new ServerEndPoint(redisConfig.ConnectionString, redisConfig.Port));
+                    busConf.Endpoints.Add(new ServerEndPoint(redisConfig.Url, redisConfig.Port));
                     busConf.SerializerName = "myjson";
                     busConf.Password = redisConfig.Password;
+               
                 });
             });
             return services;

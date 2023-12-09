@@ -21,9 +21,9 @@ namespace IFG.Core.Caching.Redis.Provider
             var config = redisCacheSection.Get<RedisConfig>();
             var connectionString = "";
             if (config.Password.IsNullOrEmpty())
-                connectionString = $"{config.ConnectionString}:{config.Port}";
+                connectionString = $"{config.Url}:{config.Port}";
             else
-                connectionString = $"{config.ConnectionString}:{config.Port},password={config.Password}";
+                connectionString = $"{config.Url}:{config.Port},password={config.Password}";
             lazyConnection = new Lazy<ConnectionMultiplexer>(() => ConnectionMultiplexer.Connect(connectionString));
         }
 
