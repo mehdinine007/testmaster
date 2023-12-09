@@ -11,5 +11,8 @@ public enum SaleProcessType
     DirectSale = 1,
 
     [Display(Name = "فروش با کد پیگیری")]
-    SaleWithTrackingCode = 2
+    SaleWithTrackingCode = 2,
+
+   [Display(Name = "فروش آزاد")]
+   FreeSale = 3,
 }

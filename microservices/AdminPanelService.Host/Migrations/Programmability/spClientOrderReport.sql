@@ -1,9 +1,6 @@
-GO
-/****** Object:  StoredProcedure [dbo].[spClientOrderReport]    Script Date: 12/4/2023 6:41:48 AM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
+if exists(select 1 from sysObjects where upper(Name)= 'spClientOrderReport')
+	drop proc spClientOrderReport
+Go
 CREATE procedure [dbo].[spClientOrderReport]
 @companyFilter as nvarchar(max) null,
 @productFilter as nvarchar(max) null,
