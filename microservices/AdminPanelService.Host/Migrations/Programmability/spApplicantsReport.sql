@@ -1,9 +1,6 @@
-GO
-/****** Object:  StoredProcedure [dbo].[spApplicantsReport]    Script Date: 12/4/2023 6:23:45 AM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
+if exists(select 1 from sysObjects where upper(Name)= 'spApplicantsReport')
+	drop proc spApplicantsReport
+Go
 create proc [dbo].[spApplicantsReport]
  
 

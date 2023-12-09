@@ -2,7 +2,7 @@
   drop  proc  GetRecentCustomerAndOrder
 GO
 
-ALTER procedure [dbo].[GetRecentCustomerAndOrder]
+create procedure [dbo].[GetRecentCustomerAndOrder]
 	@saleId as int,
 	@companyId as int,
 	@nationalCode as nvarchar(10)
