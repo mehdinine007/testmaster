@@ -1,14 +1,16 @@
-﻿using EasyCaching.Core;
+﻿#region NS
+using EasyCaching.Core;
+using IFG.Core.Caching;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.OrderManagement;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
 using OrderManagement.Application.Contracts.Services;
-using OrderManagement.Application.OrderManagement.Constants;
 using OrderManagement.Domain;
 using RestSharp;
 using System;
@@ -24,12 +26,13 @@ using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
+#endregion
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
 public class CommonAppService : ApplicationService, ICommonAppService
 {
-    private readonly IDistributedCache _distributedCache;
+    private readonly ICacheManager _cacheManager;
     private IConfiguration _configuration { get; set; }
     private readonly IRepository<Logs, long> _logsRespository;
     private readonly IRepository<UserRejectionAdvocacy, int> _userRejectionAdcocacyRepository;
@@ -37,20 +40,18 @@ public class CommonAppService : ApplicationService, ICommonAppService
     private readonly IRepository<ExternalApiLogResult, int> _externalApiLogResultRepository;
     private readonly IRepository<ExternalApiResponsLog, int> _externalApiResponsLogRepository;
     private readonly IHttpContextAccessor _contextAccessor;
-    private readonly IHybridCachingProvider _hybridCachingProvider;
 
-    public CommonAppService(IDistributedCache distributedCache,
-                            IConfiguration configuration,
+
+    public CommonAppService(IConfiguration configuration,
                             IRepository<Logs, long> LogsRespository,
                             IRepository<UserRejectionAdvocacy, int> UserRejectionAdcocacyRepository,
                             IHttpContextAccessor HttpContextAccessor,
                             IRepository<ExternalApiLogResult, int> externalApiLogResultRepository,
                             IRepository<ExternalApiResponsLog, int> externalApiResponsLogRepositor,
                             IHttpContextAccessor contextAccessor,
-                            IHybridCachingProvider hybridCachingProvider
-                            )
+                            ICacheManager cacheManager)
     {
-        _distributedCache = distributedCache;
+        _cacheManager = cacheManager;
         _configuration = configuration;
         _logsRespository = LogsRespository;
         _userRejectionAdcocacyRepository = UserRejectionAdcocacyRepository;
@@ -58,7 +59,6 @@ public class CommonAppService : ApplicationService, ICommonAppService
         _externalApiLogResultRepository = externalApiLogResultRepository;
         _externalApiResponsLogRepository = externalApiResponsLogRepositor;
         _contextAccessor = contextAccessor;
-        _hybridCachingProvider = hybridCachingProvider;
     }
 
     //private async Task<AuthtenticateResult> AuthenticateBank()
@@ -159,7 +159,7 @@ public class CommonAppService : ApplicationService, ICommonAppService
             {
                 throw new UserFriendlyException("کد ملی صحیح نمی باشد");
             }
-           
+
             string userRejection = _userRejectionAdcocacyRepository
            .WithDetails()
            .Select(x => x.NationalCode)
@@ -168,10 +168,10 @@ public class CommonAppService : ApplicationService, ICommonAppService
 
             if (!string.IsNullOrEmpty(userRejection))
             {
-            
+
                 throw new UserFriendlyException("شما انصراف داده اید و امکان ثبت سفارش نمی باشد");
             }
-         
+
 
         }
 
@@ -238,7 +238,10 @@ public class CommonAppService : ApplicationService, ICommonAppService
     public async Task<bool> ValidateSMS(string Mobile, string NationalCode, string UserSMSCode, SMSType sMSType)
     {
         Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
-        var stringCache = await RedisHelper.Connection.GetDatabase().StringGetAsync(sMSType.ToString() + Mobile + NationalCode);
+        string cacheKey = $"{sMSType.ToString()}{Mobile}{NationalCode}";
+        string prefix = "";
+        var stringCache = await _cacheManager.GetStringAsync(cacheKey, prefix, new CacheOptions
+        { Provider = CacheProviderEnum.Redis , RedisHash = false});
         if (string.IsNullOrEmpty(stringCache))
         {
             throw new UserFriendlyException("کد پیامک ارسالی صحیح نمی باشد");
@@ -251,12 +254,7 @@ public class CommonAppService : ApplicationService, ICommonAppService
         if (smsCodeDto.SMSCode != UserSMSCode)
         {
             throw new UserFriendlyException("کد پیامک ارسالی صحیح نمی باشد");
-
         }
-
-
-
-
         return true;
     }
     public async Task ValidateVisualizeCaptcha(VisualCaptchaInput input)
@@ -269,8 +267,10 @@ public class CommonAppService : ApplicationService, ICommonAppService
             //{
             //    throw new UserFriendlyException(Messages.CaptchaNotValid);
             //}
-            string objectCaptcha = await _distributedCache.GetStringAsync("cap_" + input.CIT);
-            await _distributedCache.RemoveAsync("cap_" + input.CIT);
+
+            string objectCaptcha = await _cacheManager.GetStringAsync("cap_" + input.CIT, "", new CacheOptions() { Provider = CacheProviderEnum.Redis });
+            await _cacheManager.RemoveAsync("cap_" + input.CIT, "", new CacheOptions() { Provider = CacheProviderEnum.Redis });
+
             if (objectCaptcha == null)
             {
                 throw new UserFriendlyException("کپچای وارد شده صحیح نمی باشد");
@@ -279,7 +279,6 @@ public class CommonAppService : ApplicationService, ICommonAppService
             {
                 throw new UserFriendlyException("کپچای وارد شده صحیح نمی باشد");
             }
-
         }
     }
 
@@ -378,7 +377,6 @@ public class CommonAppService : ApplicationService, ICommonAppService
         if (string.IsNullOrWhiteSpace(userIdStr))
             throw new UserFriendlyException("لطفا لاگین کنید");
 
-
         return userIdStr;
     }
 
@@ -452,8 +450,12 @@ public class CommonAppService : ApplicationService, ICommonAppService
     {
         if (userId == null)
             userId = GetUserId();
+
+
         string cacheKey = string.Format(RedisConstants.OrderStepCacheKey, userId.ToString());
-        var getOrderStep = await _distributedCache.GetStringAsync(cacheKey);
+        string getOrderStep = await _cacheManager.GetStringAsync(cacheKey, "", new CacheOptions() { Provider = CacheProviderEnum.Redis });
+
+
         if (string.IsNullOrEmpty(getOrderStep))
         {
             throw new UserFriendlyException(OrderConstant.NoValidFlowOrderStep, OrderConstant.NoValidFlowOrderStepId);
@@ -474,7 +476,7 @@ public class CommonAppService : ApplicationService, ICommonAppService
         var serviceRequest = await client.GetAsync(string.Format(_configuration.GetValue<string>("IkcoOrderInquiryAddresses:InquiryAddress"), nationalCode, orderId));
         if (serviceRequest.StatusCode == HttpStatusCode.Unauthorized)
         {
-            await _hybridCachingProvider.RemoveAsync(RedisConstants.IkcoBearerToken);
+            await _cacheManager.RemoveAsync(RedisConstants.IkcoBearerToken, RedisConstants.OrderStatusPrefix, new CacheOptions() { Provider = CacheProviderEnum.Hybrid });
             accessToken = await GetIkcoAccessTokenAsync();
             serviceRequest = await client.GetAsync(string.Format(_configuration.GetValue<string>("IkcoOrderInquiryAddresses:InquiryAddress"), nationalCode, orderId));
         }
@@ -488,9 +490,13 @@ public class CommonAppService : ApplicationService, ICommonAppService
 
     public async Task<string> GetIkcoAccessTokenAsync()
     {
-        var cachedAccessToken = await _hybridCachingProvider.GetAsync<string>(RedisConstants.IkcoBearerToken);
-        if (cachedAccessToken.HasValue)
-            return cachedAccessToken.Value;
+        
+        var cachedAccessToken = await _cacheManager.GetAsync<string>(RedisConstants.IkcoBearerToken,RedisConstants.OrderStatusPrefix, new CacheOptions { Provider = CacheProviderEnum.Hybrid });
+
+        if (!string.IsNullOrEmpty(cachedAccessToken))
+        {
+            return cachedAccessToken;
+        }
 
         using var client = new HttpClient();
         //var loginModel = _configuration.GetValue<IkcoOrderInquiryProfile>(nameof(IkcoOrderInquiryProfile));
@@ -508,7 +514,12 @@ public class CommonAppService : ApplicationService, ICommonAppService
         if (response.Data == null)
             throw new UserFriendlyException(response?.Errors ?? "خطا در فرآیند لاگین سرویس استعلام سفارش");
 
-        await _hybridCachingProvider.SetAsync<string>(RedisConstants.IkcoBearerToken, response.Data.AccessToken, new TimeSpan(1, 0, 0, 0));
+        await _cacheManager.SetAsync<string>(RedisConstants.IkcoBearerToken,RedisConstants.OrderStatusPrefix, response.Data.AccessToken, 
+            TimeSpan.FromDays(1).Seconds,
+            new CacheOptions
+            {
+                Provider = CacheProviderEnum.Hybrid
+            });
 
         return response.Data.AccessToken;
     }

@@ -1,14 +1,10 @@
-﻿using AdminPanelManagement.Application.Contracts.AdminPanelManagement.Dtos;
-using AdminPanelManagement.Application.Contracts.AdminPanelManagement.IServices;
-using AdminPanelManagement.Application.Grpc.UserGrpcClient;
+﻿using AdminPanelManagement.Application.Contracts.AdminPanelManagement.IServices;
 using Grpc.Net.Client;
 using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using AdminPanelManagement.Application.Grpc.UserGrpcClient;
 using Volo.Abp.Application.Services;
+using IFG.Core.Infrastructures.TokenAuth;
+using CompanyManagement.Application.Contracts;
 
 namespace AdminPanelManagement.Application.AdminPanelManagement.Grpc
 {
@@ -22,7 +18,6 @@ namespace AdminPanelManagement.Application.AdminPanelManagement.Grpc
 
 
         public async Task<AuthenticateResponseDto> Athenticate(AuthenticateReqDto input)
-
         {
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2Support", true);
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
@@ -31,7 +26,7 @@ namespace AdminPanelManagement.Application.AdminPanelManagement.Grpc
             httpHandler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
             var channel = GrpcChannel.ForAddress(_configuration.GetValue<string>("Grpc:UserUrl"), new GrpcChannelOptions { HttpHandler = httpHandler });
             var client = new UserServiceGrpc.UserServiceGrpcClient(channel);
-            var auth = client.Authenticate(new Application.Grpc.UserGrpcClient.AuthenticateRequest() { UserNameOrEmailAddress = input.UserNameOrEmailAddress, Password = input.Password });
+            var auth = client.Authenticate(new Application.Grpc.UserGrpcClient.AuthenticateRequest() { UserNameOrEmailAddress = input.userID, Password = input.userPWD });
             var res = new AuthenticateResponseDto();
             if (!auth.Success)
             {

@@ -59,7 +59,7 @@ public class UserDto
     public DateTime? IssuingDate { get; set; }
     [Column(TypeName = "NVARCHAR(100)")]
     public string Alley { get; set; }
-    public int BankId { get; set; }
+    public int? BankId { get; set; }
     public string AccountNumber { get; set; }
     public string Shaba { get; set; }
     public string Message { get; set; }

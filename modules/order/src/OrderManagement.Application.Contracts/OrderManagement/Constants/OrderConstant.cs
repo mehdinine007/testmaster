@@ -86,6 +86,13 @@ namespace OrderManagement.Application.Contracts
 
         public static string NotValid = "ورودی نامعتبر می باشد";
         public static string NotValidId = "5002";
+        public const string OrganizationUrlFormat = "{0}?enc={1}";
+        public const string OrganizationEncryptedExpression = "nationalCode={0}|orderId={1}";
 
+        public static string AgencyNotFound = "نمایندگی تعرف نشده است.";
+        public static string AgencyId = "5003";
+
+        public static string PspAccountNotFound = "درگاه بانکی انتخاب نشده است.";
+        public static string PspAccountId = "5004";
     }
 }

@@ -10,7 +10,6 @@ using OrderManagement.Application.Contracts.OrderManagement.Inqueries;
 using OrderManagement.Application.Contracts.OrderManagement.Models;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
 using OrderManagement.Application.Contracts.Services;
-using OrderManagement.Application.OrderManagement.Constants;
 using OrderManagement.Domain;
 using OrderManagement.Domain.OrderManagement;
 using OrderManagement.Domain.Shared;
@@ -35,10 +34,11 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
     private readonly IRepository<SaleDetailCarColor, int> _saleDetailColorRepository;
     private readonly IHttpContextAccessor _contextAccessor;
     private readonly ICommonAppService _commonAppService;
-    private readonly IHybridCachingProvider _hybridCache;
     private readonly ICacheManager _cacheManager;
     private readonly IAttachmentService _attachmentService;
     private readonly IRepository<ProductLevel, int> _productLevelRepository;
+    private readonly IProductAndCategoryService _productAndCategoryService;
+    private readonly ISaleSchemaService _saleSchemaService;
     public SaleDetailService(IRepository<SaleDetail> saleDetailRepository,
                              IRepository<ESaleType> eSaleTypeRepository,
                              IRepository<SaleDetailCarColor> saleDetailCarColor,
@@ -46,7 +46,10 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
                              IRepository<SaleDetailCarColor, int> saleDetailColorRepository,
                              IHttpContextAccessor contextAccessor,
                              ICommonAppService commonAppService, IHybridCachingProvider hybridCache, ICacheManager cacheManager,
-                            IAttachmentService attachmentService, IRepository<ProductLevel, int> productLevelRepository)
+                             IAttachmentService attachmentService, IRepository<ProductLevel, int> productLevelRepository,
+                             IProductAndCategoryService productAndCategoryService,
+                             ISaleSchemaService saleSchemaService
+        )
     {
         _saleDetailRepository = saleDetailRepository;
         _eSaleTypeRepository = eSaleTypeRepository;
@@ -55,10 +58,11 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
         _saleDetailColorRepository = saleDetailColorRepository;
         _contextAccessor = contextAccessor;
         _commonAppService = commonAppService;
-        _hybridCache = hybridCache;
         _cacheManager = cacheManager;
         _attachmentService = attachmentService;
-        _productLevelRepository=productLevelRepository;
+        _productLevelRepository = productLevelRepository;
+        _productAndCategoryService = productAndCategoryService;
+        _saleSchemaService = saleSchemaService;
     }
 
 
@@ -133,7 +137,7 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
             MinimumAmountOfProxyDeposit = x.MinimumAmountOfProxyDeposit,
             ProductId = x.ProductId,
             Product = ObjectMapper.Map<ProductAndCategory, ProductAndCategoryViewModel>(x.Product)
-    }).ToList();
+        }).ToList();
         var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, queryResult.Select(x => x.ProductId).ToList());
         var saleDetailIds = queryResult.Select(x => x.Id).ToList();
         var saleDetailColors = (await _saleDetailColorRepository.GetQueryableAsync()).Where(x => saleDetailIds.Any(y => y == x.SaleDetailId));
@@ -171,12 +175,11 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
         {
             throw new UserFriendlyException("تاریخ پایان بایدبزرگتراز تاریخ شروع باشد.");
         }
-       
 
-       var productLevel= (await _productLevelRepository.GetQueryableAsync()).FirstOrDefault(x=>x.Id== createSaleDetailDto.ProductId);
-        if (productLevel == null)
+        var product = await _productAndCategoryService.GetById(createSaleDetailDto.ProductId, false);
+        if (product == null)
         {
-            throw new UserFriendlyException(OrderConstant.ProductLevelNotFound, OrderConstant.ProductLevelNotFoundId);
+            throw new UserFriendlyException(OrderConstant.ProductAndCategoryNotFound, OrderConstant.ProductAndCategoryFoundId);
         }
         var esalType = await _eSaleTypeRepository.FirstOrDefaultAsync(x => x.Id == createSaleDetailDto.EsaleTypeId);
         if (esalType == null)
@@ -189,7 +192,8 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
         {
             throw new UserFriendlyException("رنگ انتخاب شده موجود نمیباشد");
         }
-
+        // control sale schema exists
+        await _saleSchemaService.GetById(createSaleDetailDto.SaleId);
 
         var uid = Guid.NewGuid();
 

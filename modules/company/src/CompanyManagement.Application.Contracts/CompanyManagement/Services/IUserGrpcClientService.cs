@@ -1,4 +1,4 @@
-﻿using CompanyManagement.Application.Contracts.CompanyManagement.Dtos;
+﻿using IFG.Core.Infrastructures.TokenAuth;
 using Volo.Abp.Application.Services;
 
 namespace CompanyManagement.Application.Contracts.CompanyManagement.IServices

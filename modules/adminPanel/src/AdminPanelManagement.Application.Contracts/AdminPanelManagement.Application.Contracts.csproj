@@ -13,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\shared\Licence\Licence.csproj" />
     <ProjectReference Include="..\AdminPanelManagement.Domain.Shared\AdminPanelManagement.Domain.Shared.csproj" />
   </ItemGroup>
 

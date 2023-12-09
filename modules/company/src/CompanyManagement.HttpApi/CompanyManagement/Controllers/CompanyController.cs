@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using CompanyManagement.Application.Contracts.CompanyManagement.Services;
 using CompanyManagement.Application.Contracts.CompanyManagement;
 using CompanyManagement.Domain.Shared.CompanyManagement;
+using CompanyManagement.Application.Contracts;
+using Esale.Share.Authorize;
 
 namespace CompanyManagement.HttpApi.OrderManagement.Controllers;
 

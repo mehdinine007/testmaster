@@ -24,11 +24,13 @@ using AdminPanelManagement.HttpApi;
 using AdminPanelManagement.EntityFrameworkCore;
 using AdminPanelManagement.Application;
 using AdminPanelService.Host.Infrastructures;
+using AdminPanelManagement.Application.AdminPanelManagement.Grpc;
 using IFG.Core.Caching;
 using IFG.Core.Extensions;
 using IFG.Core.Utility.Security.Encyption;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-
+using Licence;
+using System.Collections.Generic;
 
 namespace WorkFlowService.Host
 {
@@ -72,11 +74,39 @@ namespace WorkFlowService.Host
 
             context.Services.AddSwaggerGen(options =>
                 {
-                    options.SwaggerDoc("v1", new OpenApiInfo { Title = "AdminPanel Service API", Version = "v1" });
-                    options.DocInclusionPredicate((docName, description) => true);
-                    options.CustomSchemaIds(type => type.FullName);
+                    var version = AppLicence.GetVersion(configuration.GetSection("Licence:SerialNumber").Value).Version;
+                    context.Services.AddSwaggerGen(options =>
+                    {
+                        options.SwaggerDoc("v1", new OpenApiInfo { Title = "Admin Panel API", Version = version });
+                        options.DocInclusionPredicate((docName, description) => true);
+                        options.CustomSchemaIds(type => type.FullName);
+                        options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+                        {
+                            Name = "Authorization",
+                            Description = "Enter the Bearer Authorization string as following: `Bearer Generated-JWT-Token`",
+                            In = ParameterLocation.Header,
+                            Type = SecuritySchemeType.Http,
+                            Scheme = "Bearer",
+                        });
+                        options.AddSecurityRequirement(new OpenApiSecurityRequirement
+                    {
+                        {
+                            new OpenApiSecurityScheme
+                            {
+                                Name = "Bearer",
+                                In = ParameterLocation.Header,
+                                Reference = new OpenApiReference
+                                {
+                                    Id = "Bearer",
+                                    Type = ReferenceType.SecurityScheme
+                                }
+                            },
+                            new List<string>()
+                        }
+                    });
+                    });
                 });
-          
+
 
             Configure<AbpLocalizationOptions>(options =>
             {
@@ -118,10 +148,10 @@ namespace WorkFlowService.Host
             //});
 
             using var scope = context.Services.BuildServiceProvider();
-        
 
 
-           
+
+
             IdentityModelEventSource.ShowPII = true;
             //ConfigureHangfire(context, configuration);
 
@@ -162,8 +192,11 @@ namespace WorkFlowService.Host
             //{
             //    endpoints.MapGrpcService<CompanyGrpcClient>();
 
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapGrpcService<ReportGrpcClientService>();
 
-            //});
+            });
 
 
             app.UseAbpRequestLocalization(); //TODO: localization?
@@ -188,6 +221,6 @@ namespace WorkFlowService.Host
                 }
             });
         }
-    
-}
+
+    }
 }

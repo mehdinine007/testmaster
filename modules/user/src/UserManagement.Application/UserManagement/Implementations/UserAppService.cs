@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿#region NS
+using Newtonsoft.Json;
 using Esale.Share.Authorize;
 using Abp.Dependency;
 using Abp.Authorization;
@@ -13,7 +14,6 @@ using Microsoft.Extensions.Configuration;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using System.Text.RegularExpressions;
-using UserManagement.Application.Constants;
 using UserManagement.Application.Contracts.Models;
 using UserManagement.Application.Contracts.Services;
 using UserManagement.Application.Contracts.UserManagement.Services;
@@ -32,6 +32,8 @@ using WorkingWithMongoDB.WebAPI.Services;
 using wsFava;
 using UserManagement.Application.Contracts.UserManagement.Constant;
 using UserManagement.Application.Contracts;
+using IFG.Core.Caching;
+#endregion
 
 namespace UserManagement.Application.UserManagement.Implementations;
 
@@ -41,40 +43,37 @@ public class UserAppService : ApplicationService, IUserAppService
     private readonly IRolePermissionService _rolePermissionService;
     private readonly IRepository<UserMongo, ObjectId> _userMongoRepository;
     private readonly IRepository<UserSQL, long> _userSQLRepository;
-
     private readonly IConfiguration _configuration;
     private readonly IBankAppService _bankAppService;
     private readonly ICommonAppService _commonAppService;
-    private readonly IDistributedCache _distributedCache;
     private readonly IPasswordHasher<User> _passwordHasher;
     private readonly IBaseInformationService _baseInformationService;
     private readonly ICaptchaService _captchaService;
     private readonly IRepository<UserMongoWrite, ObjectId> _userMongoWriteRepository;
     private readonly IRepository<PermissionDefinitionWrite, ObjectId> _permissionDefinationRepository;
     private readonly IDistributedEventBus _distributedEventBus;
+    private readonly ICacheManager _cacheManager;
 
 
     public UserAppService(IConfiguration configuration,
                           IBankAppService bankAppService,
                           ICommonAppService commonAppService,
-                          IDistributedCache distributedCache,
                           IPasswordHasher<User> passwordHasher,
                           IBaseInformationService baseInformationService,
                           IRolePermissionService rolePermissionService,
                           IRepository<UserMongo, ObjectId> userMongoRepository,
                           IRepository<UserMongoWrite, ObjectId> userMongoWriteRepository,
-                          ICaptchaService captchaService,                 
+                          ICaptchaService captchaService,
                           IDistributedEventBus distributedEventBus,
                           IRepository<UserSQL, long> UserSQLRepository,
-                          IRepository<PermissionDefinitionWrite, ObjectId> permissionDefinationRepository
-        )
+                          IRepository<PermissionDefinitionWrite, ObjectId> permissionDefinationRepository,
+                          ICacheManager cacheManager)
     {
         _rolePermissionService = rolePermissionService;
         _userMongoRepository = userMongoRepository;
         _configuration = configuration;
         _bankAppService = bankAppService;
         _commonAppService = commonAppService;
-        _distributedCache = distributedCache;
         _passwordHasher = passwordHasher;
         _baseInformationService = baseInformationService;
         _userMongoWriteRepository = userMongoWriteRepository;
@@ -82,6 +81,7 @@ public class UserAppService : ApplicationService, IUserAppService
         _distributedEventBus = distributedEventBus;
         _userSQLRepository = UserSQLRepository;
         _permissionDefinationRepository = permissionDefinationRepository;
+        _cacheManager = cacheManager;
     }
 
     public async Task<bool> AddRole(ObjectId userid, List<string> roleCode)
@@ -107,6 +107,7 @@ public class UserAppService : ApplicationService, IUserAppService
 
         public int NewCount { get; set; }
     }
+
     //public class MyHandler
     //  : IDistributedEventHandler<StockCountChangedEto>,
     //    ITransientDependency
@@ -116,6 +117,7 @@ public class UserAppService : ApplicationService, IUserAppService
     //        var productId = eventData.ProductId;
     //    }
     //}
+
     public async Task UpsertUserIntoSqlServer(UserSQL input)
     {
         if(input.EditMode == true)
@@ -505,11 +507,24 @@ public class UserAppService : ApplicationService, IUserAppService
     public async Task<UserDto> GetUserProfile()
     {
         Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
-        Guid test = _commonAppService.GetUID();
+        string prefix = $"{RedisConstants.GetUserProfile}";
+        Guid userId = _commonAppService.GetUID();
+        string cacheKey = userId.ToString();
+        var cachedData = await _cacheManager.GetStringAsync(cacheKey, prefix, new CacheOptions 
+        { Provider = CacheProviderEnum.Hybrid });
+        
+        if (!string.IsNullOrEmpty(cachedData))
+        {
+            return JsonConvert.DeserializeObject<UserDto>(cachedData);
+        }
+
         var user = (await _userMongoRepository.GetQueryableAsync())
-        .FirstOrDefault(a => a.UID == test.ToString().ToLower() && !a.IsDeleted);
+        .FirstOrDefault(a => a.UID == userId.ToString().ToLower() && !a.IsDeleted);
+
         if (user != null)
         {
+            await _cacheManager.SetStringAsync(cacheKey, prefix, JsonConvert.SerializeObject(user), new CacheOptions 
+            { Provider = CacheProviderEnum.Hybrid }, TimeSpan.FromMinutes(8).TotalSeconds);
             var userDto = ObjectMapper.Map<UserMongo, UserDto>(user);
             return userDto;
         }
@@ -662,6 +677,11 @@ public class UserAppService : ApplicationService, IUserAppService
                 throw new UserFriendlyException(Messages.ShabaNotValid);
             }
         }
+        string prefix = $"{RedisConstants.GetUserProfile}";
+        Guid userId = _commonAppService.GetUID();
+        string cacheKey = userId.ToString();
+        await _cacheManager.RemoveAsync(cacheKey, prefix, new CacheOptions
+        { Provider = CacheProviderEnum.Hybrid });
 
         var user = await (await _userMongoRepository.GetCollectionAsync())
             .Find(x => x.UID == _commonAppService.GetUID().ToString().ToLower()
@@ -726,20 +746,6 @@ public class UserAppService : ApplicationService, IUserAppService
             {
                 throw new UserFriendlyException("پیش شماره تلفن را وارد نمایید");
 
-            }
-            if (string.IsNullOrEmpty(inputUser.Street))
-            {
-                throw new UserFriendlyException("خیابان را وارد نمایید");
-
-            }
-            if (string.IsNullOrEmpty(inputUser.Pelaq))
-            {
-                throw new UserFriendlyException("پلاک را وارد نمایید");
-
-            }
-            if (string.IsNullOrEmpty(inputUser.Alley))
-            {
-                throw new UserFriendlyException("کوچه را وارد نمایید");
             }
             if (!inputUser.IssuingDate.HasValue)
             {
@@ -844,8 +850,6 @@ public class UserAppService : ApplicationService, IUserAppService
         userFromDb.LastModifierId = _commonAppService.GetUID();
         userFromDb.LastModificationTime = DateTime.Now;
 
-        //using (var unitOfWork = _unitOfWorkManager.Begin(unitOfWorkOptions))
-        //{
         var filter = Builders<UserMongoWrite>.Filter.Eq("UID", userFromDb.UID);
         await (await _userMongoWriteRepository.GetCollectionAsync()).ReplaceOneAsync(filter, userFromDb);
         var userSql = ObjectMapper.Map<UserMongo, UserSQL>(userFromDb);
@@ -854,7 +858,5 @@ public class UserAppService : ApplicationService, IUserAppService
                   userSql
                  );
         return true;
-        
-
     }
 }

@@ -4,7 +4,6 @@ using Esale.Share.Authorize;
 using Microsoft.EntityFrameworkCore;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
-using OrderManagement.Application.OrderManagement.Constants;
 using OrderManagement.Domain;
 using System;
 using System.Collections.Generic;
@@ -25,14 +24,13 @@ public class AgencyService : ApplicationService, IAgencyService
 {
     private readonly IRepository<Agency> _agencyRepository;
     private readonly IRepository<Province> _provinceRepository;
-    private readonly IHybridCachingProvider _hybridCache;
     private readonly ICacheManager _cacheManager;
 
-    public AgencyService(IRepository<Agency> agencyRepository, IRepository<Province> provinceRepository, IHybridCachingProvider hybridCache, ICacheManager cacheManager)
+    public AgencyService(IRepository<Agency> agencyRepository, IRepository<Province> provinceRepository,
+         ICacheManager cacheManager)
     {
         _agencyRepository = agencyRepository;
         _provinceRepository = provinceRepository;
-        _hybridCache = hybridCache;
         _cacheManager = cacheManager;
     }
 

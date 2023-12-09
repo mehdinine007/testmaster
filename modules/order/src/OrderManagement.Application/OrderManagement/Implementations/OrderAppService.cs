@@ -17,7 +17,6 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
 using OrderManagement.Domain.Shared;
-using OrderManagement.Application.OrderManagement.Constants;
 using IFG.Core.Utility.Results;
 using OrderManagement.Application.Helpers;
 using IFG.Core.DataAccess;
@@ -27,6 +26,8 @@ using OrderManagement.Application.Contracts.OrderManagement.Models;
 using OrderManagement.Domain.OrderManagement;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
 using Esale.Share.Authorize;
+using IFG.Core.Utility.Security;
+using Core.Utility.Tools;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -52,6 +53,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
     private readonly ICacheManager _cacheManager;
     private readonly IAttachmentService _attachmentService;
     private readonly IProductAndCategoryService _productAndCategoryService;
+    private readonly IRepository<Priority, int> _priorityRepository;
+    private readonly IOrganizationService _organizationService;
+
 
     public OrderAppService(ICommonAppService commonAppService,
                            IBaseInformationService baseInformationAppService,
@@ -74,7 +78,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
                            IUnitOfWorkManager unitOfWorkManager,
                            ICacheManager cacheManager,
                            IAttachmentService attachmentService,
-                        IProductAndCategoryService productAndCategoryService
+                           IProductAndCategoryService productAndCategoryService,
+                           IRepository<Priority, int> priorityRepository,
+                           IOrganizationService organizationService
         )
     {
         _commonAppService = commonAppService;
@@ -97,6 +103,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
         _cacheManager = cacheManager;
         _attachmentService = attachmentService;
         _productAndCategoryService = productAndCategoryService;
+        _priorityRepository = priorityRepository;
+        _organizationService = organizationService;
     }
 
 
@@ -168,14 +176,14 @@ public class OrderAppService : ApplicationService, IOrderAppService
     [SecuredOperation(OrderAppServicePermissionConstants.CommitOrder)]
     public async Task<CommitOrderResultDto> CommitOrder(CommitOrderDto commitOrderDto)
     {
+
+
+
         await _commonAppService.ValidateOrderStep(OrderStepEnum.SaveOrder);
         var allowedStatusTypes = new List<int>() { (int)OrderStatusType.RecentlyAdded, (int)OrderStatusType.PaymentSucceeded };
 
         Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
         TimeSpan ttl = DateTime.Now.Subtract(DateTime.Now);
-
-        //if (!_commonAppService.IsInRole("Customer"))
-        //    throw new UserFriendlyException("دسترسی شما کافی نمی باشد");
 
         if (_configuration.GetSection("IsIranCellActive").Value == "1")
         {
@@ -208,8 +216,19 @@ public class OrderAppService : ApplicationService, IOrderAppService
             {
                 Provider = CacheProviderEnum.Hybrid
             });
+
         //var cacheKey = string.Format(RedisConstants.SaleDetailPrefix, commitOrderDto.SaleDetailUId);
         //_memoryCache.TryGetValue(cacheKey, out SaleDetailDto);
+
+        var paymentMethodGranted = _configuration.GetValue<bool?>("PaymentMethodGranted") ?? false;
+        if (paymentMethodGranted && commitOrderDto.AgencyId is null)
+        {
+            throw new UserFriendlyException(OrderConstant.AgencyNotFound, OrderConstant.AgencyId);
+        }
+        if (paymentMethodGranted && commitOrderDto.PspAccountId is null)
+        {
+            throw new UserFriendlyException(OrderConstant.PspAccountNotFound, OrderConstant.PspAccountId);
+        }
         if (SaleDetailDto == null)
         {
             var saleDetailQuery = await _saleDetailRepository.GetQueryableAsync();
@@ -224,9 +243,12 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     SalePlanStartDate = x.SalePlanStartDate,
                     UID = x.UID,
                     ESaleTypeId = x.ESaleTypeId,
-                    CarFee = x.CarFee
+                    CarFee = x.CarFee,
+                    ProductId = x.ProductId,
+                    SaleProcess = x.SaleProcess
                 })
                 .FirstOrDefault(x => x.UID == commitOrderDto.SaleDetailUId);
+
             if (SaleDetailFromDb == null)
             {
                 throw new UserFriendlyException("تاریخ برنامه فروش به پایان رسیده است.");
@@ -258,19 +280,18 @@ public class OrderAppService : ApplicationService, IOrderAppService
             ttl = SaleDetailDto.SalePlanEndDate.Subtract(DateTime.Now);
 
         }
-      
+
         ////////////////conntrol repeated order in saledetails// iran&&varedat
 
         CheckSaleDetailValidation(SaleDetailDto);
         RustySalePlanValidation(commitOrderDto, SaleDetailDto.EsaleTypeId);
-      
+        if (SaleDetailDto.SaleProcess == SaleProcessType.RegularSale)
+            if (!await NationalCodeExistsInPriority(nationalCode))
+                throw new UserFriendlyException("کد ملی متقاضی در لیست الویت بندی وجود نداشت");
+
 
         await _commonAppService.IsUserRejected(); //if user reject from advocacy
-        //                                          //_baseInformationAppService.CheckBlackList(SaleDetailDto.EsaleTypeId); //if user not exsist in blacklist
-        //await CheckAdvocacy(nationalCode, SaleDetailDto.ESaleTypeId); //if hesab vekalati darad
-        //Console.WriteLine("beforewhitelist");
-        //_baseInformationAppService.CheckWhiteList(WhiteListEnumType.WhiteListOrder);
-        //Console.WriteLine("afterwhitelist");
+
 
         var orderQuery = await _commitOrderRepository.GetQueryableAsync();
         var userId = _commonAppService.GetUserId();
@@ -289,22 +310,12 @@ public class OrderAppService : ApplicationService, IOrderAppService
             throw new UserFriendlyException("جهت ثبت سفارش جدید لطفا ابتدا از جزئیات سفارش، سفارش قبلی خود که احراز شده اید یا در حال بررسی می باشد را لغو نمایید");
 
         }
-        ///////////////////////////////agar order 1403 barandeh dasht natone sefaresh bezaneh
-        //var activeSuccessfulOrderExists = orderQuery
-        //    .AsNoTracking()
-        //    .Select(x => new { x.UserId, x.OrderStatus })
-        //    .FirstOrDefault(
-        //        y => y.UserId == userId &&
-        //     y.OrderStatus == OrderStatusType.Winner
-        // );
-        //if (activeSuccessfulOrderExists != null)
-        //    throw new UserFriendlyException("جهت ثبت سفارش جدید لطفا ابتدا از جزئیات سفارش، سفارش قبلی خود که موعد تحویل آن در سال 1403 می باشد را لغو نمایید .");
-        ///////////////////////////////check entekhab yek no tarh////////////
+
         string EsaleTypeId = await _cacheManager.GetStringAsync("_EsaleType", RedisConstants.CommitOrderPrefix + userId.ToString()
-            , new CacheOptions()
-            {
-                Provider = CacheProviderEnum.Redis
-            });
+           , new CacheOptions()
+           {
+               Provider = CacheProviderEnum.Redis
+           });
         if (!string.IsNullOrEmpty(EsaleTypeId))
         {
             if (EsaleTypeId != SaleDetailDto.EsaleTypeId.ToString())
@@ -505,7 +516,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
 
         }
-        var paymentMethodGranted = _configuration.GetValue<bool?>("PaymentMethodGranted") ?? false;
+
         UserDto customer = new UserDto();
         ////////////////////////
         if (paymentMethodGranted)
@@ -517,50 +528,10 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 throw new UserFriendlyException("شما نمیتوانید سفارش شخص دیگری را پرداخت کنید");
             }
         }
-      
-        //if (SaleDetailDto.EsaleTypeId == (Int16)EsaleTypeEnum.Youth)
-        //{
-        //    Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
-        //    object UserFromCache = null;
-        //    _cacheManager.GetCache("UserProf").TryGetValue(AbpSession.UserId.Value.ToString(), out UserFromCache);
-        //    if (UserFromCache != null)
-        //    {
-        //        var userDto = UserFromCache as UserDto;
-        //        if (userDto.Gender = Enums.Gender.Male)
-        //        {
-        //            throw new UserFriendlyException("با توجه به جنسیت، شما مجاز به شرکت در این طرح نیستید");
-        //        }
-        //    }
-        //    else
-        //    {
-        //        var user = await _userRepository.FirstOrDefaultAsync(x => x.Id == AbpSession.UserId);
-        //        _cacheManager.GetCache("UserProf").Set(AbpSession.UserId.Value.ToString(), ObjectMapper.Map<UserDto>(user));
 
-        //    }
-        //}
 
-        //if (paymentMethodGranted && !commitOrderDto.PspAccountId.HasValue)
-        //{
-
-        //    throw new UserFriendlyException("درگاه انتخاب نشده است");
-        //}
-        //Console.WriteLine("beforeasli");
         CustomerOrder customerOrder = new CustomerOrder();
-        //var customerOrderQuery = await _commitOrderRepository.GetQueryableAsync();
-        //var similarOrderTypes = new List<int>() { (int)OrderStatusType.PaymentNotVerified };
-        //var similarOrder = customerOrderQuery.FirstOrDefault(x => similarOrderTypes.Any(y => y == (int)x.OrderStatus)
-        //    /* x.OrderStatus == OrderStatusType.PaymentNotVerified*/
-        //    && x.UserId == userId
-        //    && x.SaleDetailId == SaleDetailDto.Id);
-        //if (paymentMethodGranted && similarOrder != null)
-        //{
-        //    customerOrder = similarOrder;
-        //    customerOrder.OrderStatus = OrderStatusType.RecentlyAdded;
-        //    customerOrder.AgencyId = commitOrderDto.AgencyId;
-        //    await _commitOrderRepository.UpdateAsync(customerOrder, autoSave: true);
-        //    await CurrentUnitOfWork.SaveChangesAsync();
-        //}
-        // else
+
         if (paymentMethodGranted)
         {
             // try
@@ -572,15 +543,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 throw new UserFriendlyException(agencyCapacityControl.Message);
         }
 
-        //  }
-        //catch (Exception ex)
-        //{
-        //    customerOrder.OrderStatus = OrderStatusType.PaymentNotVerified;
-        //    await _commitOrderRepository.UpdateAsync(customerOrder);
-        //    await CurrentUnitOfWork.SaveChangesAsync();
-
-        //    throw ex;
-        //}
         {
             customerOrder.SaleDetailId = SaleDetailDto.Id;
             customerOrder.UserId = userId;
@@ -594,48 +556,24 @@ public class OrderAppService : ApplicationService, IOrderAppService
             customerOrder.AgencyId = commitOrderDto.AgencyId;
             customerOrder.PaymentSecret = _randomGenerator.GetUniqueInt();
             customerOrder.OrderDeliveryStatus = OrderDeliveryStatusType.OrderRegistered;
+            customerOrder.TrackingCode = SaleDetailDto.SaleProcess == SaleProcessType.SaleWithTrackingCode ? Core.Utility.Tools.RandomGenerator.GetUniqueInt(_configuration.GetValue<int>("RandomeCodeLength")).ToString() : null;
             await _commitOrderRepository.InsertAsync(customerOrder);
             await CurrentUnitOfWork.SaveChangesAsync();
         }
 
-
-        //Console.WriteLine("afterasli");
-
-        //unitOfWork.Complete();
-        //}
-        //await _cacheManager.GetCache("CommitOrder").
-        //           SetAsync(
-        //       userId.ToString() + "_" +
-        //       commitOrderDto.SaleDetailUId.ToString()
-        //       , customerOrder.Id,
-        //       TimeSpan.FromSeconds(ttl.TotalSeconds));
-
-
-        //var customerOrderQuery = await _commitOrderRepository.GetQueryableAsync();
-        //var customerOrder = customerOrderQuery.Include(x => x.SaleDetail)
-        //    .Select(x => new
-        //    {
-        //        x.UserId,
-        //        x.Id,
-        //        SaleDetailId = x.SaleDetail.Id,
-        //        Amount = x.SaleDetail.CarFee,
-        //        x.AgencyId,
-        //        x.OrderStatus
-        //    }).FirstOrDefault(x => x.Id == customerOrderId && x.OrderStatus == OrderStatusType.RecentlyAdded)
-        //?? throw new EntityNotFoundException(typeof(CustomerOrder));
         ApiResult<IpgApiResult> handShakeResponse = new ApiResult<IpgApiResult>();
         if (paymentMethodGranted)
         {
-             handShakeResponse = await _ipgServiceProvider.HandShakeWithPsp(new PspHandShakeRequest()
+            handShakeResponse = await _ipgServiceProvider.HandShakeWithPsp(new PspHandShakeRequest()
             {
                 CallBackUrl = _configuration.GetValue<string>("CallBackUrl"),
                 Amount = (long)SaleDetailDto.CarFee,
                 Mobile = customer.MobileNumber,
-                AdditionalData = customerOrder.PaymentSecret.ToString(),
+                AdditionalData = customerOrder.PaymentSecret.HasValue ? customerOrder.PaymentSecret.Value.ToString() : string.Empty,
                 NationalCode = nationalCode,
                 PspAccountId = commitOrderDto.PspAccountId.Value,
                 FilterParam1 = customerOrder.SaleDetailId,
-                FilterParam2 = customerOrder.AgencyId,
+                FilterParam2 = customerOrder.AgencyId.HasValue ? customerOrder.AgencyId.Value : default,
                 FilterParam3 = customerOrder.Id
             });
             if (handShakeResponse == null)
@@ -725,14 +663,27 @@ public class OrderAppService : ApplicationService, IOrderAppService
         //await _distributedCache.SetStringAsync(cacheKey, handShakeResponse.Token);
         //var  ObjectMapper.Map<HandShakeResponseDto, HandShakeResultDto>(handShakeResponse);
         await _commonAppService.SetOrderStep(OrderStepEnum.SaveOrder);
-        if (paymentMethodGranted)
+        var encryptionIsRequired = SaleDetailDto.SaleProcess == SaleProcessType.DirectSale;
+        var encryptionKey = string.Empty;
+        var organizationUrl = string.Empty;
+        if (encryptionIsRequired)
         {
-
+            var productId = SaleDetailDto.ProductId;
+            var product = await _productAndCategoryService.GetById(productId, false);
+            var cmp = await _productAndCategoryService.GetProductAndCategoryByCode(product.Code.Substring(0, 4));
+            var organization = await _organizationService.GetById(cmp.Id);
+            encryptionKey = organization.EncryptKey;
+            var enc = string.Format(OrderConstant.OrganizationEncryptedExpression, nationalCode, customerOrder.Id);
+            organizationUrl = string.Format(OrderConstant.OrganizationUrlFormat,
+                organization.Url.RemoveLastCharacterIfExists('/'),
+                enc.Aes256Encrypt(organization.EncryptKey));
         }
         return new CommitOrderResultDto()
         {
+            OrganizationUrl = organizationUrl,
             PaymentGranted = paymentMethodGranted,
             UId = commitOrderDto.SaleDetailUId,
+            TrackingCode = customerOrder.TrackingCode,
             PaymentMethodConigurations = paymentMethodGranted ? new()
             {
                 Message = handShakeResponse?.Result?.Message,
@@ -748,14 +699,12 @@ public class OrderAppService : ApplicationService, IOrderAppService
         {
             return false;
         }
-        if ((orderStatusType == OrderStatusType.Winner && !string.IsNullOrEmpty(deliveryDate)) || (orderStatusType == OrderStatusType.RecentlyAdded) ) // OrderStatusType.RecentlyAdded
+        if ((orderStatusType == OrderStatusType.Winner && !string.IsNullOrEmpty(deliveryDate)) || (orderStatusType == OrderStatusType.RecentlyAdded)) // OrderStatusType.RecentlyAdded
         {
             return true;
         }
         return false;
     }
-
-
 
     private void CheckSaleDetailValidation(SaleDetailOrderDto sale)
     {
@@ -778,19 +727,16 @@ public class OrderAppService : ApplicationService, IOrderAppService
             }
         }
     }
+
     [UnitOfWork(false, IsolationLevel.ReadUncommitted)]
     [SecuredOperation(OrderAppServicePermissionConstants.GetCustomerOrderList)]
-    public async Task<List<CustomerOrder_OrderDetailDto>> GetCustomerOrderList(List<AttachmentEntityTypeEnum> attachmentType = null)
+    public async Task<List<CustomerOrder_OrderDetailDto>> GetCustomerOrderList(List<AttachmentEntityTypeEnum> attachmentType = null, List<AttachmentLocationEnum> attachmentlocation = null)
     {
-        //if (!_commonAppService.IsInRole("Customer"))
-        //{
-        //    throw new UserFriendlyException("دسترسی شما کافی نمی باشد");
-        //}
+
         var userId = _commonAppService.GetUserId();
         var orderRejections = _orderRejectionTypeReadOnlyRepository.WithDetails().ToList();
         var orderStatusTypes = _orderStatusTypeReadOnlyRepository.WithDetails().ToList();
         var parents = await _productAndCategoryService.GetAllParent();
-        //var customerOrder = await _commitOrderRepository.GetAllListAsync(x => x.UserId == userId);
         var customerOrders = _commitOrderRepository.WithDetails()
             .AsNoTracking()
             .Join(_saleDetailRepository.WithDetails(x => x.Product),
@@ -813,7 +759,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 y.Product,
                 y.SalePlanEndDate,
                 y.Id,
-                y.SaleId
+                y.SaleId,
+                x.TrackingCode
 
             }).Where(x => x.UserId == userId)
             .Select(x => new CustomerOrder_OrderDetailDto
@@ -833,11 +780,11 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 Product = ObjectMapper.Map<ProductAndCategory, ProductAndCategoryViewModel>(x.Product),
                 SalePlanEndDate = x.SalePlanEndDate,
                 Id = x.Id,
-                SaleId = x.SaleId
-
+                SaleId = x.SaleId,
+                TrackingCode = x.TrackingCode
             }).ToList();
         var cancleableDate = _configuration.GetValue<string>("CancelableDate");
-        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, customerOrders.Select(x => x.ProductId).ToList(), attachmentType);
+        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, customerOrders.Select(x => x.ProductId).ToList(), attachmentType, attachmentlocation);
         customerOrders.ForEach(x =>
         {
 
@@ -880,7 +827,10 @@ public class OrderAppService : ApplicationService, IOrderAppService
             }
 
         });
+
         return customerOrders.OrderByDescending(x => x.OrderId).ToList();
+
+
     }
     [Audited]
     [UnitOfWork(isTransactional: false)]
@@ -1199,7 +1149,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             //    .AsNoTracking()
             //    .FirstOrDefault(x => x.Id == orderId.Id);
 
-            if (order is null || (!int.TryParse(paymentSecret, out var numericPaymentSecret) || order.PaymentSecret != numericPaymentSecret))
+            if (order is null || (!int.TryParse(paymentSecret, out var numericPaymentSecret) || (order.PaymentSecret.HasValue && order.PaymentSecret.Value != numericPaymentSecret)))
                 exceptionCollection.Add(new UserFriendlyException("درخواست معتبر نیست"));
 
             if (order != null)
@@ -1363,11 +1313,11 @@ public class OrderAppService : ApplicationService, IOrderAppService
         switch (inquiryDto)
         {
             case SaleDetail_Order_InquiryDto dto when dto.OrderId.HasValue:
-                inquiryResult = await GetOrderDetailById(dto.OrderId.Value, inquiryDto.AttachmentType);
+                inquiryResult = await GetOrderDetailById(dto.OrderId.Value, inquiryDto.AttachmentType, inquiryDto.AttachmentLocation);
                 break;
             case SaleDetail_Order_InquiryDto dto when dto.SaleDetailUid.HasValue:
                 await _commonAppService.ValidateOrderStep(OrderStepEnum.PreviewOrder);
-                inquiryResult = await GetSaleDetailByUid(dto.SaleDetailUid.Value, inquiryDto.AttachmentType);
+                inquiryResult = await GetSaleDetailByUid(dto.SaleDetailUid.Value, inquiryDto.AttachmentType, inquiryDto.AttachmentLocation);
                 await _commonAppService.SetOrderStep(OrderStepEnum.PreviewOrder);
                 break;
             default:
@@ -1377,7 +1327,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
     }
 
     [SecuredOperation(OrderAppServicePermissionConstants.GetSaleDetailByUid)]
-    public async Task<CustomerOrder_OrderDetailDto> GetSaleDetailByUid(Guid saleDetailUid, List<AttachmentEntityTypeEnum> attachmentEntityType = null)
+    public async Task<CustomerOrder_OrderDetailDto> GetSaleDetailByUid(Guid saleDetailUid, List<AttachmentEntityTypeEnum> attachmentEntityType = null, List<AttachmentLocationEnum> attachmentlocation = null)
     {
         //if (!_commonAppService.IsInRole("Customer"))
         //{
@@ -1404,7 +1354,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             throw new UserFriendlyException("تاریخ برنامه فروش به پایان و سفارش قابل مشاده نیست");
 
 
-        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, new List<int> { saleDetail.ProductId }.ToList(), attachmentEntityType);
+        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, new List<int> { saleDetail.ProductId }.ToList(), attachmentEntityType, attachmentlocation);
         var attachment = attachments.Where(y => y.EntityId == saleDetail.ProductId).ToList();
         saleDetail.Product.Attachments = ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(attachment);
         var user = await _esaleGrpcClient.GetUserId(_commonAppService.GetUserId().ToString());
@@ -1415,7 +1365,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
     }
 
     [SecuredOperation(OrderAppServicePermissionConstants.GetOrderDetailById)]
-    public async Task<CustomerOrder_OrderDetailDto> GetOrderDetailById(int id, List<AttachmentEntityTypeEnum> attachmentType = null)
+    public async Task<CustomerOrder_OrderDetailDto> GetOrderDetailById(int id, List<AttachmentEntityTypeEnum> attachmentType = null, List<AttachmentLocationEnum> attachmentlocation = null)
     {
         //if (!_commonAppService.IsInRole("Customer"))
         //{
@@ -1457,7 +1407,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 PaymentId = x.PaymentId
             }).FirstOrDefault(x => x.UserId == userId && x.OrderId == id);
 
-        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, new List<int> { customerOrder.ProductId }.ToList(), attachmentType);
+        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, new List<int> { customerOrder.ProductId }.ToList(), attachmentType, attachmentlocation);
         var attachment = attachments.Where(y => y.EntityId == customerOrder.ProductId).ToList();
         customerOrder.Product.Attachments = ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(attachment);
 
@@ -1484,4 +1434,12 @@ public class OrderAppService : ApplicationService, IOrderAppService
         return customerOrder;
     }
 
+    public async Task<bool> NationalCodeExistsInPriority(string nationalCode)
+    {
+        var priority = (await _priorityRepository.GetQueryableAsync())
+            .AsNoTracking()
+            .Select(x => x.NationalCode)
+            .FirstOrDefault(x => x == nationalCode);
+        return !string.IsNullOrEmpty(priority);
+    }
 }

@@ -1,4 +1,5 @@
 ﻿using OrderManagement.Application.Contracts.OrderManagement.Models;
+using OrderManagement.Domain.Shared;
 using System;
 using System.Collections.Generic;
 
@@ -53,8 +54,9 @@ namespace OrderManagement.Application.Contracts
         public int ProductId { get; set; }
 
         public ProductAndCategoryViewModel Product { get; set; }
-        
 
+        public SaleProcessType SaleProcess { get; set; }
+        public string CompanySaleId { get; set; }
 
     }
 }

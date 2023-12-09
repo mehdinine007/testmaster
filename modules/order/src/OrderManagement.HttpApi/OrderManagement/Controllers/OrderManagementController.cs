@@ -51,16 +51,16 @@ public class OrderManagementController
 
     [HttpGet]
 
-    public Task<List<CustomerOrder_OrderDetailDto>> GetCustomerOrderList(string attachmentEntityType)
-        => _orderAppService.GetCustomerOrderList(EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(attachmentEntityType));
+    public Task<List<CustomerOrder_OrderDetailDto>> GetCustomerOrderList(string attachmentEntityType, string attachmentlocation)
+        => _orderAppService.GetCustomerOrderList(EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(attachmentEntityType), EnumHelper.ConvertStringToEnum<AttachmentLocationEnum>(attachmentlocation));
 
     [RemoteService(IsEnabled = false)]
-    public async Task<CustomerOrder_OrderDetailDto> GetOrderDetailById(int id, string attachmentEntityType)
+    public async Task<CustomerOrder_OrderDetailDto> GetOrderDetailById(int id, string attachmentEntityType, string attachmentlocation)
         => await _orderAppService.GetOrderDetailById(id, EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(attachmentEntityType));
 
     [RemoteService(IsEnabled = false)]
-    public async Task<CustomerOrder_OrderDetailDto> GetSaleDetailByUid(Guid saleDetailUid, string attachmentEntityType)
-        => await _orderAppService.GetSaleDetailByUid(saleDetailUid, EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(attachmentEntityType));
+    public async Task<CustomerOrder_OrderDetailDto> GetSaleDetailByUid(Guid saleDetailUid, string attachmentEntityType, string attachmentlocation)
+        => await _orderAppService.GetSaleDetailByUid(saleDetailUid, EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(attachmentEntityType),EnumHelper.ConvertStringToEnum<AttachmentLocationEnum>(attachmentlocation));
 
     [DisableAuditing]
     [HttpPost]

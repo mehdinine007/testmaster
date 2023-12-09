@@ -1,4 +1,6 @@
 ﻿using AdminPanelManagement.Application.Contracts.AdminPanelManagement.Dtos;
+using CompanyManagement.Application.Contracts;
+using IFG.Core.Infrastructures.TokenAuth;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Esale.Share.Authorize;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using MongoDB.Bson;
 using Nest;
 using OfficeOpenXml;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.OrderManagement;
+using OrderManagement.Application.Contracts.OrderManagement.Constants.Permissions;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
 using OrderManagement.Domain;
 using OrderManagement.Domain.OrderManagement;
@@ -49,6 +51,7 @@ namespace OrderManagement.Application
                 return null;
             return ObjectMapper.Map<List<PropertyCategory>, List<PropertyCategoryDto>>(productProperty.PropertyCategories);
         }
+
         public async Task<List<ProductPropertyDto>> GetList()
         {
             List<ProductProperty> productProperty = new();
@@ -71,6 +74,7 @@ namespace OrderManagement.Application
                 throw new UserFriendlyException(OrderConstant.NotValid, OrderConstant.NotValidId);
             }
         }
+        [SecuredOperation(ProductPropertyServicePermissionConstants.Add)]
         public async Task<ProductPropertyDto> Add(ProductPropertyDto productPropertyDto)
         {
             var productPropertyQuery = await _productPropertyRepository.GetQueryableAsync();
@@ -87,6 +91,7 @@ namespace OrderManagement.Application
             var entity = await _productPropertyRepository.InsertAsync(mapProductPropertyDto, autoSave: true);
             return ObjectMapper.Map<ProductProperty, ProductPropertyDto>(entity);
         }
+        [SecuredOperation(ProductPropertyServicePermissionConstants.Update)]
         public async Task<ProductPropertyDto> Update(ProductPropertyDto productPropertyDto)
         {
             var existingEntity = await _productPropertyRepository.FindAsync(x => x.ProductId == productPropertyDto.ProductId);
@@ -112,6 +117,7 @@ namespace OrderManagement.Application
 
             return ObjectMapper.Map<ProductProperty, ProductPropertyDto>(existingEntity);
         }
+        [SecuredOperation(ProductPropertyServicePermissionConstants.Delete)]
         public async Task<bool> Delete(string Id)
         {
             ObjectId objectId;
@@ -138,7 +144,7 @@ namespace OrderManagement.Application
                 {
                     Title = "مشخصات اصلی",
                     Display = false,
-                    Priority = 6,
+                    Priority = 0,
                     Properties = new List<PropertyDto>()
             {
                 new PropertyDto()
@@ -160,6 +166,15 @@ namespace OrderManagement.Application
                     Value = "",
                     Priority=2
                 },
+                 new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "استاندارد 85 گانه",
+                    Key = "standard85",
+                    Type = PropertyTypeEnum.Number,
+                    Value = "",
+                    Priority=0
+                },
             }
                 };
                 await _propertyDefinitionRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto, PropertyCategory>(propertydto));
@@ -177,7 +192,7 @@ namespace OrderManagement.Application
                     Key = "P001",
                     Type = PropertyTypeEnum.Text,
                     Value = "",
-                    Priority=4
+                    Priority=0
                 },
                 new PropertyDto()
                 {
@@ -216,7 +231,7 @@ namespace OrderManagement.Application
                     Key = "P005",
                     Type = PropertyTypeEnum.Text,
                     Value = "",
-                    Priority=5
+                    Priority=0
                 },
             }
                 };
@@ -262,7 +277,7 @@ namespace OrderManagement.Application
                     Key = "P009",
                     Type = PropertyTypeEnum.Text,
                     Value = "",
-                    Priority=4
+                    Priority=0
                 },
                 new PropertyDto()
                 {
@@ -271,7 +286,7 @@ namespace OrderManagement.Application
                     Key = "P010",
                     Type = PropertyTypeEnum.Text,
                     Value = "",
-                    Priority=5
+                    Priority=0
                 },
             }
                 };
@@ -280,7 +295,7 @@ namespace OrderManagement.Application
                 {
                     Title = "بدنه و شاسی",
                     Display = true,
-                    Priority = 4,
+                    Priority = 0,
                     Properties = new List<PropertyDto>()
             {
                 new PropertyDto()
@@ -317,7 +332,7 @@ namespace OrderManagement.Application
                     Key = "P014",
                     Type = PropertyTypeEnum.Text,
                     Value = "",
-                    Priority=4
+                    Priority=0
                 },
                 new PropertyDto()
                 {
@@ -326,7 +341,7 @@ namespace OrderManagement.Application
                     Key = "P015",
                     Type = PropertyTypeEnum.Text,
                     Value = "",
-                    Priority=5
+                    Priority=0
                 },
                  new PropertyDto()
                 {
@@ -335,7 +350,7 @@ namespace OrderManagement.Application
                     Key = "P016",
                     Type = PropertyTypeEnum.Text,
                     Value = "",
-                    Priority=6
+                    Priority=0
                 },
                  new PropertyDto()
                  {
@@ -344,7 +359,7 @@ namespace OrderManagement.Application
                     Key = "P017",
                     Type = PropertyTypeEnum.Text,
                     Value = "",
-                    Priority=7
+                    Priority=0
 
                  },
                  new PropertyDto()
@@ -354,7 +369,7 @@ namespace OrderManagement.Application
                     Key = "P018",
                     Type = PropertyTypeEnum.Text,
                     Value = "",
-                    Priority=8
+                    Priority=0
 
                  }
 
@@ -366,7 +381,7 @@ namespace OrderManagement.Application
                 {
                     Title = "ایمنی و امنیت",
                     Display = true,
-                    Priority = 5,
+                    Priority = 0,
                     Properties = new List<PropertyDto>()
 
             {
@@ -404,7 +419,7 @@ namespace OrderManagement.Application
                     Key = "P022",
                     Type = PropertyTypeEnum.Boolean,
                     Value = "",
-                    Priority=4
+                    Priority=0
                 },
                 new PropertyDto()
                 {
@@ -413,7 +428,7 @@ namespace OrderManagement.Application
                     Key = "P023",
                     Type = PropertyTypeEnum.Boolean,
                     Value = "",
-                    Priority=5
+                    Priority=0
                 },
                  new PropertyDto()
                 {
@@ -422,7 +437,7 @@ namespace OrderManagement.Application
                     Key = "P024",
                     Type = PropertyTypeEnum.Boolean,
                     Value = "",
-                    Priority=6
+                    Priority=0
                 },
                  new PropertyDto()
                  {
@@ -431,7 +446,7 @@ namespace OrderManagement.Application
                     Key = "P025",
                     Type = PropertyTypeEnum.Text,
                     Value = "",
-                    Priority=7
+                    Priority=0
 
                  },
                  new PropertyDto()
@@ -441,7 +456,7 @@ namespace OrderManagement.Application
                     Key = "P026",
                     Type = PropertyTypeEnum.Text,
                     Value = "",
-                    Priority=8
+                    Priority=0
 
                  }
 
@@ -490,7 +505,7 @@ namespace OrderManagement.Application
                     Key = "P030",
                     Type = PropertyTypeEnum.Boolean,
                     Value = "",
-                    Priority=4
+                    Priority=0
                 },
                 new PropertyDto()
                 {
@@ -499,7 +514,7 @@ namespace OrderManagement.Application
                     Key = "P031",
                     Type = PropertyTypeEnum.Boolean,
                     Value = "",
-                    Priority=5
+                    Priority=0
                 },
                  new PropertyDto()
                 {
@@ -508,7 +523,7 @@ namespace OrderManagement.Application
                     Key = "P032",
                     Type = PropertyTypeEnum.Boolean,
                     Value = "",
-                    Priority=6
+                    Priority=0
                 },
                  new PropertyDto()
                 {
@@ -517,7 +532,7 @@ namespace OrderManagement.Application
                     Key = "P033",
                     Type = PropertyTypeEnum.Text,
                     Value = "",
-                    Priority=7
+                    Priority=0
 
                 },
                  new PropertyDto()
@@ -527,7 +542,7 @@ namespace OrderManagement.Application
                     Key = "P034",
                     Type = PropertyTypeEnum.Number,
                     Value = "",
-                    Priority=8
+                    Priority=0
 
                 },
                  new PropertyDto()
@@ -537,7 +552,7 @@ namespace OrderManagement.Application
                     Key = "P035",
                     Type = PropertyTypeEnum.Text,
                     Value = "",
-                    Priority=9
+                    Priority=0
 
                 },
                  new PropertyDto()
@@ -547,7 +562,7 @@ namespace OrderManagement.Application
                     Key = "P036",
                     Type = PropertyTypeEnum.Number,
                     Value = "",
-                    Priority=10
+                    Priority=0
 
                 },
                  new PropertyDto()
@@ -557,7 +572,7 @@ namespace OrderManagement.Application
                     Key = "P037",
                     Type = PropertyTypeEnum.Boolean,
                     Value = "",
-                    Priority=11
+                    Priority=0
 
                 },
                   new PropertyDto()
@@ -567,7 +582,7 @@ namespace OrderManagement.Application
                     Key = "P038",
                     Type = PropertyTypeEnum.Boolean,
                     Value = "",
-                    Priority=12
+                    Priority=0
 
                 },
                    new PropertyDto()
@@ -577,7 +592,7 @@ namespace OrderManagement.Application
                     Key = "P039",
                     Type = PropertyTypeEnum.Boolean,
                     Value = "",
-                    Priority=13
+                    Priority=0
 
                 },
                     new PropertyDto()
@@ -587,9 +602,31 @@ namespace OrderManagement.Application
                     Key = "P040",
                     Type = PropertyTypeEnum.Boolean,
                     Value = "",
-                    Priority=14
+                    Priority=0
 
                 }
+
+            },
+
+                };
+                await _propertyDefinitionRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto, PropertyCategory>(propertydto));
+                propertydto = new PropertyCategoryDto()
+                {
+                    Title = "سایر ویژگی",
+                    Display = true,
+                    Priority = 0,
+                    Properties = new List<PropertyDto>()
+            {
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "ویژگی",
+                    Key = "P041",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                    Priority=0
+                },
+
 
             },
 
@@ -1055,6 +1092,28 @@ namespace OrderManagement.Application
                     Priority=0
 
                 }
+
+            },
+
+                };
+                await _propertyDefinitionRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto, PropertyCategory>(propertydto));
+                propertydto = new PropertyCategoryDto()
+                {
+                    Title = "سایر ویژگی",
+                    Display = true,
+                    Priority = 0,
+                    Properties = new List<PropertyDto>()
+            {
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "ویژگی",
+                    Key = "P041",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                    Priority=0
+                },
+
 
             },
 
@@ -1085,29 +1144,35 @@ namespace OrderManagement.Application
                             {
                                 throw new UserFriendlyException("محصول وجود ندارد");
                             };
-                            var propertyCategories = (await _propertyDefinitionRepository.GetMongoQueryableAsync()).ToList();
-                            List<PropertyDto> propertyList = new List<PropertyDto>();
-                            for (int row = 2; row < rowcount; row++)
+                            var productMongo = (await _productPropertyRepository.GetMongoQueryableAsync()).Where(x => x.ProductId == product.Id).ToList();
+                            if (productMongo.Count>0)
                             {
-
-                                var key = item.Cells[row, 1].Value.ToString();
-                                var title = item.Cells[row, 2].Value.ToString();
-                                var value = item.Cells[row, 3].Value.ToString();
-                                foreach (var category in propertyCategories)
+                                    await _productPropertyRepository.HardDeleteAsync(y => y.ProductId == product.Id);
+                            }
+                                var propertyCategories = (await _propertyDefinitionRepository.GetMongoQueryableAsync()).ToList();
+                                List<PropertyDto> propertyList = new List<PropertyDto>();
+                                for (int row = 2; row <= rowcount; row++)
                                 {
-                                    foreach (var property in category.Properties)
+
+                                    var key = item.Cells[row, 1].Value.ToString();
+                                    var title = item.Cells[row, 2].Value.ToString();
+                                    var value = item.Cells[row, 3].Value.ToString();
+                                    foreach (var category in propertyCategories)
                                     {
-                                        if (property.Key == key)
-                                            property.Value = value;
+                                        foreach (var property in category.Properties)
+                                        {
+                                            if (property.Key == key)
+                                                property.Value = value;
+                                        }
                                     }
                                 }
-                            }
-                            var productPropertyDto = new ProductPropertyDto()
-                            {
-                                ProductId = product.Id,
-                                PropertyCategories = ObjectMapper.Map<List<PropertyCategory>, List<ProductPropertyCategoryDto>>(propertyCategories)
-                            };
-                            await _productPropertyRepository.InsertAsync(ObjectMapper.Map<ProductPropertyDto, ProductProperty>(productPropertyDto));
+                                var productPropertyDto = new ProductPropertyDto()
+                                {
+                                    ProductId = product.Id,
+                                    PropertyCategories = ObjectMapper.Map<List<PropertyCategory>, List<ProductPropertyCategoryDto>>(propertyCategories)
+                                };
+                                await _productPropertyRepository.InsertAsync(ObjectMapper.Map<ProductPropertyDto, ProductProperty>(productPropertyDto));
+                            
                         }
                     }
                 }
@@ -1130,29 +1195,36 @@ namespace OrderManagement.Application
                             {
                                 throw new UserFriendlyException("محصول وجود ندارد");
                             };
-                            var propertyCategories = (await _propertyDefinitionRepository.GetMongoQueryableAsync()).ToList();
-                            List<PropertyDto> propertyList = new List<PropertyDto>();
-                            for (int row = 2; row < rowcount; row++)
+                            var productMongo =(await _productPropertyRepository.GetMongoQueryableAsync()).Where(x => x.ProductId == product.Id).ToList();
+                            if (productMongo.Count > 0)
                             {
-
-                                var key = item.Cells[row, 1].Value.ToString();
-                                var title = item.Cells[row, 2].Value.ToString();
-                                var value = item.Cells[row, 3].Value.ToString();
-                                foreach (var category in propertyCategories)
+                                    await _productPropertyRepository.HardDeleteAsync(y => y.ProductId == product.Id);
+                               
+                            }
+                            var propertyCategories = (await _propertyDefinitionRepository.GetMongoQueryableAsync()).ToList();
+                                List<PropertyDto> propertyList = new List<PropertyDto>();
+                                for (int row = 2; row <= rowcount; row++)
                                 {
-                                    foreach (var property in category.Properties)
+
+                                    var key = item.Cells[row, 1].Value.ToString();
+                                    var title = item.Cells[row, 2].Value.ToString();
+                                    var value = item.Cells[row, 3].Value.ToString();
+                                    foreach (var category in propertyCategories)
                                     {
-                                        if (property.Key == key)
-                                            property.Value = value;
+                                        foreach (var property in category.Properties)
+                                        {
+                                            if (property.Key == key)
+                                                property.Value = value;
+                                        }
                                     }
                                 }
-                            }
-                            var productPropertyDto = new ProductPropertyDto()
-                            {
-                                ProductId = product.Id,
-                                PropertyCategories = ObjectMapper.Map<List<PropertyCategory>, List<ProductPropertyCategoryDto>>(propertyCategories)
-                            };
-                            await _productPropertyRepository.InsertAsync(ObjectMapper.Map<ProductPropertyDto, ProductProperty>(productPropertyDto));
+                                var productPropertyDto = new ProductPropertyDto()
+                                {
+                                    ProductId = product.Id,
+                                    PropertyCategories = ObjectMapper.Map<List<PropertyCategory>, List<ProductPropertyCategoryDto>>(propertyCategories)
+                                };
+                                await _productPropertyRepository.InsertAsync(ObjectMapper.Map<ProductPropertyDto, ProductProperty>(productPropertyDto));
+                            
                         }
                     }
                 }

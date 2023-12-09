@@ -9,13 +9,14 @@ using Volo.Abp.Domain.Repositories;
 using System;
 using System.Threading.Tasks;
 using Volo.Abp;
-using StackExchange.Redis;
-using Google.Protobuf.WellKnownTypes;
 using System.Collections.Generic;
 using System.Linq;
 using OrderManagement.Application.PaymentServiceGrpc;
 using System.Net.Http;
-using OrderManagement.Application.CompanyService;
+using IFG.Core.Caching;
+using Newtonsoft.Json;
+using IFG.Core.Infrastructures.TokenAuth;
+using CompanyManagement.Application.Contracts;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -23,22 +24,32 @@ public class EsaleGrpcClient : ApplicationService, IEsaleGrpcClient
 {
     private readonly IConfiguration _configuration;
     private readonly IRepository<Logs, long> _logsRepository;
+    private readonly ICacheManager _cacheManager;
 
-    public EsaleGrpcClient(IConfiguration configuration, IRepository<Logs, long> logsRepository)
+
+    public EsaleGrpcClient(IConfiguration configuration, IRepository<Logs, long> logsRepository, ICacheManager cacheManager)
     {
         _configuration = configuration;
         _logsRepository = logsRepository;
+        _cacheManager = cacheManager;
     }
 
     public async Task<UserDto> GetUserId(string userId)
     {
-
         AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2Support", true);
         AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
         var httpHandler = new HttpClientHandler();
         httpHandler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
         var channel = GrpcChannel.ForAddress(_configuration.GetValue<string>("Esale:GrpcAddress"), new GrpcChannelOptions { HttpHandler = httpHandler });
 
+        string cacheKey = $"{userId}";
+        string prefix = $"{RedisConstants.GrpcGetUserById}";
+        var cachedData = await _cacheManager.GetStringAsync(cacheKey, prefix, new CacheOptions
+        { Provider = CacheProviderEnum.Hybrid });
+        if (!string.IsNullOrEmpty(cachedData))
+        {
+            return JsonConvert.DeserializeObject<UserDto>(cachedData);
+        }
 
         var client = new UserServiceGrpc.UserServiceGrpcClient(channel);
 
@@ -46,7 +57,7 @@ public class EsaleGrpcClient : ApplicationService, IEsaleGrpcClient
 
         if (string.IsNullOrEmpty(user.NationalCode))
             return null;
-        return new UserDto
+        var userDto = new UserDto
         {
             AccountNumber = user.AccountNumber,
             BankId = user.BankId,
@@ -64,6 +75,9 @@ public class EsaleGrpcClient : ApplicationService, IEsaleGrpcClient
             SurName = user.SurName
         };
 
+        await _cacheManager.SetStringAsync(cacheKey, prefix, JsonConvert.SerializeObject(userDto), new CacheOptions
+        { Provider = CacheProviderEnum.Hybrid }, TimeSpan.FromMinutes(1).TotalSeconds);
+        return userDto;
     }
     public async Task<AdvocacyUserDto> GetUserAdvocacyByNationalCode(string nationlCode)
     {
@@ -251,39 +265,33 @@ public class EsaleGrpcClient : ApplicationService, IEsaleGrpcClient
             StatusCode = reverse.StatusCode,
         };
     }
-    //public async Task<ClientOrderDeliveryInformationDto> ValidateClientOrderDeliveryDate(ClientOrderDeliveryInformationRequestDto clientOrderRequest)
-    //{
-    //    try
-    //    {
-    //        System.Diagnostics.Debugger.Launch();
-    //        var httpHandler = new HttpClientHandler();
-    //        httpHandler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
-    //        var channel = GrpcChannel.ForAddress(_configuration.GetValue<string>("Company:GrpcAddress"), new GrpcChannelOptions { HttpHandler = httpHandler });
-    //        var client1 = new UserServiceGrpc.UserServiceGrpcClient(channel);
-    //        var client = new CompanyServiceGrpc.CompanyServiceGrpcBase(channel);
 
-    //        var deliverDateValidation = await client.CheckOrderDeliveryDateAsync(new ClientOrderDetailRequest
-    //        {
-    //            NationalCode = clientOrderRequest.NationalCode,
-    //            OrderId = clientOrderRequest.OrderId
-    //        });
-    //        return new ClientOrderDeliveryInformationDto
-    //        {
-    //            NationalCode = deliverDateValidation.NationalCode,
-    //            TranDate = deliverDateValidation.TranDate.ToDateTime(),// ? Timestamp.FromDateTime(deliverDateValidation.TranDate) : new,
-    //            PayedPrice = deliverDateValidation.PayedPrice,
-    //            ContRowId = deliverDateValidation.ContRowId,
-    //            Vin = deliverDateValidation.Vin,
-    //            BodyNumber = deliverDateValidation.BodyNumber,
-    //            DeliveryDate = deliverDateValidation.DeliveryDate.ToDateTime(),
-    //            FinalPrice = deliverDateValidation.FinalPrice,
-    //            CarDesc = deliverDateValidation.CarDesc
-    //        };
-    //    }
-    //    catch (Exception e)
-    //    {
+    public async Task<AuthenticateResponseDto> Athenticate(AuthenticateReqDto input)
+    {
+        AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2Support", true);
+        AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
 
-    //        throw;
-    //    }
-    //}
+        var httpHandler = new HttpClientHandler();
+        httpHandler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+        var channel = GrpcChannel.ForAddress(_configuration.GetValue<string>("Esale:GrpcAddress"), new GrpcChannelOptions { HttpHandler = httpHandler });
+        var client = new UserServiceGrpc.UserServiceGrpcClient(channel);
+        var auth = await client.AuthenticateAsync(new AuthenticateRequest() { UserNameOrEmailAddress = input.userID, Password = input.userPWD });
+        var res = new AuthenticateResponseDto();
+        if (!auth.Success)
+        {
+            res.Success = auth.Success;
+            res.Message = auth.Message;
+            res.ErrorCode = auth.ErrorCode.Value;
+            return res;
+        }
+
+        res.Success = auth.Success;
+        res.Data = new AuthenticateResultModel();
+        res.Data.AccessToken = auth.Data.AccessToken;
+        res.Data.EncryptedAccessToken = auth.Data.EncryptedAccessToken;
+        res.Data.ExpireInSeconds = auth.Data.ExpireInSeconds.Value;
+
+        return res;
+      //  return null;
+    }
 }

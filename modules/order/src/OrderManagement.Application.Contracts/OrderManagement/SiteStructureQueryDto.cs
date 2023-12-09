@@ -9,7 +9,8 @@ namespace OrderManagement.Application.Contracts.OrderManagement
 {
     public class SiteStructureQueryDto
     {
-        public string? AttachmentType { get; set; } 
+        public string? AttachmentType { get; set; }
+        public string? AttachmentLocation { get; set; }
         public int? Location { get; set; }
     }
 }

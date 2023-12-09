@@ -24,6 +24,11 @@ namespace CompanyManagement.EfCore.CompanyManagement.EntityFrameworkCore
                 //options.AddDefaultRepositories();
                 options.AddDefaultRepositories(includeAllEntities: true);
             });
+            context.Services.AddAbpDbContext<OrderManagementDbContext>(options =>
+            {
+                //options.AddDefaultRepositories();
+                options.AddDefaultRepositories(includeAllEntities: true);
+            });
         }
     }
 }

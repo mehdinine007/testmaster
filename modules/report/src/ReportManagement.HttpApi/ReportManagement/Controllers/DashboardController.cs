@@ -39,8 +39,8 @@ namespace ReportManagement.HttpApi.ReportManagement.Controllers
         public Task<DashboardDto> GetById(int id)
         =>_dashboardService.GetById(id);
         [HttpGet]
-        public Task<List<DashboardDto>> GetList()
-        =>_dashboardService.GetList();
+        public Task<List<DashboardDto>> GetList(string roles)
+        =>_dashboardService.GetList(roles);
         [HttpPut]
         public Task<DashboardDto> Update(DashboardCreateOrUpdateDto dashboardCreateOrUpdateDto)
        =>_dashboardService.Update(dashboardCreateOrUpdateDto);

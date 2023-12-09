@@ -1,15 +1,10 @@
 ﻿using Volo.Abp.Auditing;
 using Volo.Abp;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using MongoDB.Bson;
 using CompanyManagement.Application.Contracts.CompanyManagement.Services;
 using System.Threading.Tasks;
+using IFG.Core.Infrastructures.TokenAuth;
 using CompanyManagement.Application.Contracts;
-using CompanyManagement.Application.Contracts.CompanyManagement.Dtos;
-using Esale.Share.Authorize;
 
 namespace CompanyManagement.HttpApi.CompanyManagement.Controllers;
 
@@ -33,6 +28,4 @@ public class TokenAuthController : Controller
     {
         return await _authenticateAppService.Authenticate(model);
     }
-
-
 }

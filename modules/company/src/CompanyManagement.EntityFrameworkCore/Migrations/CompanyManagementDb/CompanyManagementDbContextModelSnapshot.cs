@@ -39,9 +39,16 @@ namespace OrderManagement.EfCore.Migrations.CompanyManagementDb
                     b.Property<decimal?>("CancelBenefit")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<string>("CarCode")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("CarDesc")
                         .HasMaxLength(250)
                         .HasColumnType("nvarchar(250)");
+
+                    b.Property<string>("CompanySaleId")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<string>("ContRowId")
                         .HasColumnType("nvarchar(max)");
@@ -117,8 +124,8 @@ namespace OrderManagement.EfCore.Migrations.CompanyManagementDb
                         .HasMaxLength(150)
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("TranDate")
-                        .HasColumnType("datetime2");
+                    b.Property<string>("TrackingCode")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Vin")
                         .HasMaxLength(50)

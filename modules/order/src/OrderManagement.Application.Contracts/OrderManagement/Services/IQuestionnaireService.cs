@@ -14,6 +14,6 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Services
 
         Task<bool> UploadFile(UploadFileDto uploadFile);
 
-        Task<List<QuestionnaireDto>> LoadQuestionnaireList(List<AttachmentEntityTypeEnum> attachmentEntityTypeEnums);
+        Task<List<QuestionnaireDto>> LoadQuestionnaireList(List<AttachmentEntityTypeEnum> attachmentEntityTypeEnums, List<AttachmentLocationEnum> attachmentlocation);
     }
 }

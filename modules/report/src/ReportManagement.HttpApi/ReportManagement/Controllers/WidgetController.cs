@@ -37,8 +37,8 @@ namespace ReportManagement.HttpApi.ReportManagement.Controllers
        =>_widgetService.GetChart(chartInputDto.WidgetId, chartInputDto.ConditionValue);
 
         [HttpGet]
-        public Task<List<WidgetDto>> GetList(int dashboardId)
-       =>_widgetService.GetList(dashboardId);
+        public Task<List<WidgetDto>> GetList(int dashboardId, string roles)
+       =>_widgetService.GetList(dashboardId, roles);
         [HttpPut]
         public Task<WidgetDto> Update(WidgetCreateOrUpdateDto widgetCreateOrUpdateDto)
         =>_widgetService.Update(widgetCreateOrUpdateDto);

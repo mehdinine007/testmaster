@@ -6,7 +6,6 @@ using OrderManagement.Application.Contracts.Dtos;
 using OrderManagement.Application.Contracts.OrderManagement;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
 using OrderManagement.Application.Contracts.Services;
-using OrderManagement.Application.OrderManagement.Constants;
 using OrderManagement.Domain;
 using OrderManagement.Domain.Shared;
 using System;
@@ -25,7 +24,6 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
     private readonly IBaseInformationService _baseInformationService;
     private readonly ICommonAppService _commonAppService;
     private readonly IRepository<SubmittedAnswer, long> _submittedAnswerRepository;
-    private readonly IHybridCachingProvider _hybridCachingProvider;
     private readonly IRepository<Question, int> _questionRepository;
     private readonly IRepository<QuestionAnswer, long> _answerRepository;
     private readonly IAttachmentService _attachmentService;
@@ -36,7 +34,6 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
                                 IBaseInformationService baseInformationService,
                                 ICommonAppService commonAppService,
                                 IRepository<SubmittedAnswer, long> submittedAnswerRepository,
-                                IHybridCachingProvider hybridCachingProvider,
                                 IRepository<Question, int> questionRepository,
                                 IRepository<QuestionAnswer, long> answerRepository,
                                 IAttachmentService attachmentService,
@@ -48,7 +45,6 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
         _baseInformationService = baseInformationService;
         _commonAppService = commonAppService;
         _submittedAnswerRepository = submittedAnswerRepository;
-        _hybridCachingProvider = hybridCachingProvider;
         _questionRepository = questionRepository;
         _answerRepository = answerRepository;
         _attachmentService = attachmentService;
@@ -290,11 +286,11 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
         return true;
     }
 
-    public async Task<List<QuestionnaireDto>> LoadQuestionnaireList(List<AttachmentEntityTypeEnum> attachmentEntityTypeEnums)
+    public async Task<List<QuestionnaireDto>> LoadQuestionnaireList(List<AttachmentEntityTypeEnum> attachmentEntityTypeEnums = null, List<AttachmentLocationEnum> attachmentlocation = null)
     {
         var questionnaireList = (await _questionnaireRepository.GetQueryableAsync()).Where(x => x.Id != 0).ToList();
         var questionnaireIds = questionnaireList.Select(x => x.Id).ToList();
-        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.Questionnaire, questionnaireIds, attachmentEntityTypeEnums);
+        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.Questionnaire, questionnaireIds, attachmentEntityTypeEnums, attachmentlocation);
         var questionnaireDtoList = ObjectMapper.Map<List<Questionnaire>, List<QuestionnaireDto>>(questionnaireList);
         questionnaireDtoList.ForEach(x =>
         {

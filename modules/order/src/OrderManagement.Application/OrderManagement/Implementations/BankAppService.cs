@@ -12,7 +12,8 @@ using OrderManagement.Domain.Shared;
 using Volo.Abp;
 using MongoDB.Driver;
 using Microsoft.EntityFrameworkCore;
-
+using Esale.Share.Authorize;
+using OrderManagement.Application.Contracts.OrderManagement.Constants.Permissions;
 
 namespace OrderManagement.Application.OrderManagement.Implementations
 {
@@ -26,10 +27,10 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             _bankRepository = bankRepository;
             _attachmentService = attachmentService;
         }
-        public async Task<List<BankDto>> GetList(List<AttachmentEntityTypeEnum> attachmentType = null)
+        public async Task<List<BankDto>> GetList(List<AttachmentEntityTypeEnum> attachmentType = null, List<AttachmentLocationEnum> attachmentlocation = null)
         {
             var banks = (await _bankRepository.GetQueryableAsync()).ToList();
-            var attachments = await _attachmentService.GetList(AttachmentEntityEnum.Bank, banks.Select(x => x.Id).ToList(), attachmentType );
+            var attachments = await _attachmentService.GetList(AttachmentEntityEnum.Bank, banks.Select(x => x.Id).ToList(), attachmentType, attachmentlocation);
             var banksDto = ObjectMapper.Map<List<Bank>, List<BankDto>>(banks);
             banksDto.ForEach(x =>
             {
@@ -39,6 +40,8 @@ namespace OrderManagement.Application.OrderManagement.Implementations
            
             return banksDto;
         }
+
+        [SecuredOperation(BankAppServicePermissionConstants.Add)]
         public async Task<BankDto> Add(BankCreateOrUpdateDto bankCreateOrUpdateDto)
         {
             var bank = ObjectMapper.Map<BankCreateOrUpdateDto, Bank>(bankCreateOrUpdateDto);
@@ -46,6 +49,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             return ObjectMapper.Map<Bank, BankDto>(entity);
         }
 
+        [SecuredOperation(BankAppServicePermissionConstants.Update)]
         public async Task<BankDto> Update(BankCreateOrUpdateDto bankCreateOrUpdateDto)
         {
             var bank = await Validation(bankCreateOrUpdateDto.Id, bankCreateOrUpdateDto);
@@ -56,15 +60,16 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             return await GetById(bank.Id);
             
         }
-        public async Task<BankDto> GetById(int id,List<AttachmentEntityTypeEnum> attachmentType=null)
+        public async Task<BankDto> GetById(int id,List<AttachmentEntityTypeEnum> attachmentType=null, List<AttachmentLocationEnum> attachmentlocation = null)
         {
             var bank = await Validation(id, null);
-            var attachments = await _attachmentService.GetList(AttachmentEntityEnum.Bank, new List<int>() { id }, attachmentType);
+            var attachments = await _attachmentService.GetList(AttachmentEntityEnum.Bank, new List<int>() { id }, attachmentType, attachmentlocation);
             var bankDto= ObjectMapper.Map<Bank, BankDto>(bank);
             
                 bankDto.Attachments= ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(attachments);
             return bankDto;
         }
+        [SecuredOperation(BankAppServicePermissionConstants.Delete)]
         public async Task<bool> Delete(int id)
         {
             await Validation(id, null);
@@ -84,6 +89,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             return bank;
         }
 
+        [SecuredOperation(BankAppServicePermissionConstants.UploadFile)]
         public async Task<bool> UploadFile(UploadFileDto uploadFile)
         {
             var bank = await Validation(uploadFile.Id, null);

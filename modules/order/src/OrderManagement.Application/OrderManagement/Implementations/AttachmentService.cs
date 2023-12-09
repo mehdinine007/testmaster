@@ -1,10 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Esale.Share.Authorize;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.OrderManagement;
+using OrderManagement.Application.Contracts.OrderManagement.Constants.Permissions;
 using OrderManagement.Domain.OrderManagement;
 using OrderManagement.Domain.Shared;
 using System;
@@ -50,6 +52,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             return attachmentDto.Id;
         }
 
+        [SecuredOperation(AttachmentServicePermissionConstants.Update)]
         public async Task<Guid> Update(AttachmentUpdateDto attachmentDto)
         {
             var attachment = ObjectMapper.Map<AttachmentUpdateDto, Attachment>(attachmentDto);
@@ -74,6 +77,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             await _attachementRepository.UpdateAsync(attachment, autoSave: true);
             return attachment.Id;
         }
+        [SecuredOperation(AttachmentServicePermissionConstants.Delete)]
         public async Task<bool> DeleteById(Guid id)
         {
             var attachment = await Validation(id, null);
@@ -123,6 +127,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             return attachment;
         }
 
+        [SecuredOperation(AttachmentServicePermissionConstants.UploadFile)]
         public async Task<Guid> UploadFile(AttachmentEntityEnum entity, UploadFileDto uploadFile)
         {
             if (uploadFile.Id <= 0)
@@ -170,18 +175,15 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             return attachment;
         }
 
-        public async Task<List<AttachmentDto>> GetList(AttachmentEntityEnum entity, List<int> entityIds, List<AttachmentEntityTypeEnum> entityType=null )
+        public async Task<List<AttachmentDto>> GetList(AttachmentEntityEnum entity, List<int> entityIds, List<AttachmentEntityTypeEnum> entityType=null, List<AttachmentLocationEnum> location = null)
         {
             var iqAttachment = await _attachementRepository.GetQueryableAsync();
             if (entityType is null || entityType.Count==0)
                 iqAttachment = iqAttachment
-                    .Where(x => x.Entity == entity && entityIds.Contains(x.EntityId));
+                    .Where(x => x.Entity == entity && entityIds.Contains(x.EntityId) && (location == null || location.Contains(x.Location)));
             else
                 iqAttachment = iqAttachment
-                   .Where(x => x.Entity == entity && entityType.Contains(x.EntityType) && entityIds.Contains(x.EntityId));
-            //iqAttachment = iqAttachment
-            //    .Where(x => x.Entity == entity && x.EntityType == entityType && entityIds.Contains(x.EntityId));
-
+                   .Where(x => x.Entity == entity && entityType.Contains(x.EntityType) && entityIds.Contains(x.EntityId) && (location == null || location.Contains(x.Location)));
             var attachments = iqAttachment
                 .OrderBy(x => x.Priority)
                 .ToList();

@@ -65,6 +65,9 @@ namespace ReportManagement.EntityFrameworkCore.Migrations
                     b.Property<int>("Priority")
                         .HasColumnType("int");
 
+                    b.Property<string>("Roles")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Title")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
@@ -176,6 +179,9 @@ namespace ReportManagement.EntityFrameworkCore.Migrations
 
                     b.Property<int>("OutPutType")
                         .HasColumnType("int");
+
+                    b.Property<string>("Roles")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
                         .HasMaxLength(100)

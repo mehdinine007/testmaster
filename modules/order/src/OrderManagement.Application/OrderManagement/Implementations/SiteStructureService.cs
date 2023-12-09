@@ -1,8 +1,10 @@
-﻿using IFG.Core.Utility.Tools;
+﻿using Esale.Share.Authorize;
+using IFG.Core.Utility.Tools;
 using Nest;
 using Newtonsoft.Json;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.OrderManagement;
+using OrderManagement.Application.Contracts.OrderManagement.Constants.Permissions;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
 using OrderManagement.Application.Contracts.Services;
 using OrderManagement.Domain;
@@ -42,6 +44,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             _bankAppServiceService = bankAppServiceService;
             _announcementService = announcementService;
         }
+        [SecuredOperation(SiteStructureServicePermissionConstant.Add)]
         public async Task<SiteStructureDto> Add(SiteStructureAddOrUpdateDto siteStructureDto)
         {
             var siteStructureQuery = await _siteStructureRepository.GetQueryableAsync();
@@ -58,6 +61,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             _siteStructure = await _siteStructureRepository.InsertAsync(_siteStructure, autoSave: true);
             return await GetById(_siteStructure.Id);
         }
+        [SecuredOperation(SiteStructureServicePermissionConstant.Update)]
         public async Task<SiteStructureDto> Update(SiteStructureAddOrUpdateDto siteStructureDto)
         {
             var siteStructure = await Validation(siteStructureDto.Id, siteStructureDto);
@@ -69,6 +73,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             return await GetById(siteStructure.Id);
         }
 
+        [SecuredOperation(SiteStructureServicePermissionConstant.Delete)]
         public async Task<bool> Delete(int id)
         {
             await Validation(id, null);
@@ -88,13 +93,13 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             return siteStructure;
         }
 
-        public async Task<SiteStructureDto> GetById(int id, List<AttachmentEntityTypeEnum> attachmentsType = null)
+        public async Task<SiteStructureDto> GetById(int id, List<AttachmentEntityTypeEnum> attachmentsType = null, List<AttachmentLocationEnum> attachmentlocation = null)
         {
             await Validation(id, null);
             var siteSt = (await _siteStructureRepository.GetQueryableAsync())
                 .FirstOrDefault(x => x.Id == id);
                 var siteStructure = ObjectMapper.Map<SiteStructure, SiteStructureDto>(siteSt);
-            var attachments = await _attachmentService.GetList(AttachmentEntityEnum.SiteStructure, new List<int> { siteSt.Id }, attachmentsType);
+            var attachments = await _attachmentService.GetList(AttachmentEntityEnum.SiteStructure, new List<int> { siteSt.Id }, attachmentsType, attachmentlocation);
          
                 siteStructure.Attachments = ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(attachments);
             
@@ -107,7 +112,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
                 .Where(x => x.Location == siteStructureQuery.Location)
                 .OrderBy(x => x.Priority)
                 .ToList();
-            var attachments = await _attachmentService.GetList(AttachmentEntityEnum.SiteStructure, getSiteStructures.Select(x => x.Id).ToList(), EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(siteStructureQuery.AttachmentType));
+            var attachments = await _attachmentService.GetList(AttachmentEntityEnum.SiteStructure, getSiteStructures.Select(x => x.Id).ToList(), EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(siteStructureQuery.AttachmentType), EnumHelper.ConvertStringToEnum<AttachmentLocationEnum>(siteStructureQuery.AttachmentLocation));
             var siteStructures = ObjectMapper.Map<List<SiteStructure>, List<SiteStructureDto>>(getSiteStructures);
             siteStructures.ForEach(async x =>
             {
@@ -119,7 +124,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
                 }
                 if (x.Type == SiteStructureTypeEnum.CarClassCarousel)
                 {
-                    x.CarouselData = await _carClassService.GetList(EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(siteStructureQuery.AttachmentType));
+                    x.CarouselData = await _carClassService.GetList(EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(siteStructureQuery.AttachmentType), EnumHelper.ConvertStringToEnum<AttachmentLocationEnum>(siteStructureQuery.AttachmentLocation));
                 }
                 if (x.Type == SiteStructureTypeEnum.EsaleType)
 
@@ -141,7 +146,8 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             });
             return siteStructures;
         }
-
+                
+        [SecuredOperation(SiteStructureServicePermissionConstant.UploadFile)]
         public async Task<bool> UploadFile(UploadFileDto uploadFile)
         {
             await Validation(uploadFile.Id, null);

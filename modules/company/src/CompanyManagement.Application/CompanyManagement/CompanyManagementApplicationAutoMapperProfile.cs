@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using CompanyManagement.Application.Contracts;
 using CompanyManagement.Application.Contracts.CompanyManagement;
 using CompanyManagement.Domain.CompanyManagement;
 using System;

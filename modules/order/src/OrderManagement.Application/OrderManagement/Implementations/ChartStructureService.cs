@@ -1,8 +1,10 @@
-﻿using MongoDB.Driver;
+﻿using Esale.Share.Authorize;
+using MongoDB.Driver;
 using Nest;
 using Newtonsoft.Json;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.OrderManagement;
+using OrderManagement.Application.Contracts.OrderManagement.Constants.Permissions;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
 using OrderManagement.Domain;
 using OrderManagement.Domain.OrderManagement;
@@ -29,12 +31,12 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             _chartStructureRepository = chartStructureRepository;
             _attachmentService = attachmentService;
         }
-        public async Task<List<ChartStructureDto>> GetList(List<AttachmentEntityTypeEnum> attachmentType = null)
+        public async Task<List<ChartStructureDto>> GetList(List<AttachmentEntityTypeEnum> attachmentType = null, List<AttachmentLocationEnum> attachmentlocation = null)
         {
             var chartStructures = (await _chartStructureRepository.GetQueryableAsync())
                 .OrderBy(x => x.Priority)
                 .ToList();
-            var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ChartStructure, chartStructures.Select(x => x.Id).ToList(), attachmentType);
+            var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ChartStructure, chartStructures.Select(x => x.Id).ToList(), attachmentType, attachmentlocation);
             var chartStructuresDto = ObjectMapper.Map<List<ChartStructure>, List<ChartStructureDto>>(chartStructures);
             chartStructuresDto.ForEach(x =>
             {
@@ -54,6 +56,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             }
             return chartStructure;
         }
+        [SecuredOperation(ChartStructureServicePermissionConstants.UploadFile)]
         public async Task<bool> UploadFile(UploadFileDto uploadFile)
         {
             var chartStructure = await Validation(uploadFile.Id);
@@ -61,10 +64,10 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             return true;
         }
 
-        public async Task<ChartStructureDto> GetById(int id, List<AttachmentEntityTypeEnum> attachmentType = null)
+        public async Task<ChartStructureDto> GetById(int id, List<AttachmentEntityTypeEnum> attachmentType = null, List<AttachmentLocationEnum> attachmentlocation = null)
         {
             var chartStructure = await Validation(id);
-            var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ChartStructure, new List<int>() { id }, attachmentType);
+            var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ChartStructure, new List<int>() { id }, attachmentType, attachmentlocation);
             var chartStructureDto = ObjectMapper.Map<ChartStructure, ChartStructureDto>(chartStructure);
             
                 chartStructureDto.Attachments = ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(attachments);
@@ -72,6 +75,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             return chartStructureDto;
         }
 
+        [SecuredOperation(ChartStructureServicePermissionConstants.Add)]
         public async Task<ChartStructureDto> Add(ChartStructureCreateOrUpdateDto chartStructureCreateOrUpdateDto)
         {
             var chartStructure = ObjectMapper.Map<ChartStructureCreateOrUpdateDto, ChartStructure>(chartStructureCreateOrUpdateDto);
@@ -79,6 +83,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             return await GetById(chartStructure.Id);
         }
 
+        [SecuredOperation(ChartStructureServicePermissionConstants.Update)]
         public async Task<ChartStructureDto> Update(ChartStructureCreateOrUpdateDto chartStructureCreateOrUpdateDto)
         {
             var chartStructure = await Validation(chartStructureCreateOrUpdateDto.Id);
@@ -90,7 +95,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             await _chartStructureRepository.UpdateAsync(chartStructure, autoSave: true);
             return await GetById(chartStructure.Id);
         }
-
+        [SecuredOperation(ChartStructureServicePermissionConstants.Delete)]
         public async Task<bool> Delete(int id)
         {
             await Validation(id);

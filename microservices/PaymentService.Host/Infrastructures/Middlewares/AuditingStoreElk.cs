@@ -1,13 +1,17 @@
-﻿using Elasticsearch.Net;
+﻿using Azure.Core;
+using Elasticsearch.Net;
+using Microsoft.Extensions.Configuration;
 using MsDemo.Shared.ExtensionsInterfaces;
 using Nest;
 using Newtonsoft.Json;
+using System;
+using System.Threading.Tasks;
 using Volo.Abp.Auditing;
 using Volo.Abp.AuditLogging;
 using Volo.Abp.DependencyInjection;
 using Volo.Abp.Domain.Repositories;
 
-namespace PaymentService.Host.Infrastructures.Middlewares
+namespace OrderService.Host.Infrastructures.Middlewares
 {
     public class AuditingStoreElk : IAuditingStore, ITransientDependency
     {

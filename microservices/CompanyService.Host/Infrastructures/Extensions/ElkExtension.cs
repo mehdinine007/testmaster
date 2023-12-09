@@ -7,6 +7,7 @@ using Nest;
 using CompanyService.Host.Infrastructures.Middlewares;
 using System;
 using Volo.Abp.Auditing;
+using OrderService.Host.Infrastructures.Middlewares;
 
 namespace CompanyService.Host.Infrastructures.Extensions
 {

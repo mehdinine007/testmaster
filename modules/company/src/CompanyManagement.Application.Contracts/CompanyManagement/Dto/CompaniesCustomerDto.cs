@@ -25,4 +25,6 @@ public class CompaniesCustomerDto
     public int? OrderRejectionStatus { get; set; }
     public string CompanyName { get; set; }
     public int ESaleTypeId { get; set; }
+    public string TrackingCode { get; set; }
+    public string CompanySaleId { get; set; }
 }

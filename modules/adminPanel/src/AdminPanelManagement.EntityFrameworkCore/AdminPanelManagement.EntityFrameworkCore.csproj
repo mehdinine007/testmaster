@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\AdminPanelManagement.Domain.Shared\AdminPanelManagement.Domain.Shared.csproj" />
     <ProjectReference Include="..\AdminPanelManagement.Domain\AdminPanelManagement.Domain.csproj" />
   </ItemGroup>
 

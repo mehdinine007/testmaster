@@ -10,7 +10,8 @@
         Bank = 5,
         Announcement = 6,
         ChartStructure = 7,
-        Questionnaire = 8
+        Questionnaire = 8,
+        Organization = 9
     }
 }
 

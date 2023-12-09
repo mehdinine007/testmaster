@@ -114,7 +114,7 @@ public class AuthenticateAppService : ApplicationService, IAuthenticateAppServic
         {
         //    new Claim(JwtRegisteredClaimNames.Sub, nameIdClaim.Value),
             new Claim(ClaimTypes.Name, user.UserName),
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new Claim(ClaimTypes.NameIdentifier, user.UID.ToString()),
             new Claim(ClaimTypes.Role, (user?.RolesM ?? new()).Any() ? string.Join(",",user.RolesM) : string.Empty),
             new Claim("UBP", user.UID.ToString()),
             new Claim("CompanyId" , user.UserName.StartsWith("C") ? user.CompanyId.ToString() : string.Empty),

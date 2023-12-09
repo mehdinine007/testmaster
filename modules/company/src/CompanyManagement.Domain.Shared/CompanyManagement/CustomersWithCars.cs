@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿
 namespace CompanyManagement.Domain.Shared.CompanyManagement
 {
     public class CustomersWithCars
@@ -38,7 +33,12 @@ namespace CompanyManagement.Domain.Shared.CompanyManagement
         public bool CertificateStatus { get; set; }
         public bool PlaqueStatus { get; set; }
         public string BlackList { get; set; }
-
+        public int SaleId { get; set; }
+        public string TrackingCode { get; set; }
+        public string Vin { get; set; }
+        public string EngineNo { get; set; }
+        public string ChassiNo { get; set; }
+        public string Vehicle { get; set; }
 
     }
 }

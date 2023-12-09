@@ -1,5 +1,4 @@
-﻿using AutoMapper.Internal.Mappers;
-using CompanyManagement.Application.Contracts;
+﻿using CompanyManagement.Application.Contracts;
 using CompanyManagement.Application.Contracts.CompanyManagement;
 using CompanyManagement.Application.Contracts.CompanyManagement.Services;
 using CompanyManagement.Domain.CompanyManagement;
@@ -16,12 +15,13 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Security.Claims;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp.EntityFrameworkCore;
+using Volo.Abp.ObjectMapping;
 
 
 namespace CompanyManagement.Application.CompanyManagement.Implementations
@@ -35,7 +35,7 @@ namespace CompanyManagement.Application.CompanyManagement.Implementations
         private IConfiguration _configuration;
         private ICompanyRepository _companyRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly CompanyManagementDbContext _companyManagementDbContext;
+        private readonly OrderManagementDbContext _orderManagementDbContext;
 
         public CompanyAppService(IRepository<ClientsOrderDetailByCompany, long> clientsOrderDetailByCompanyRepository,
                                 IConfiguration configuration,
@@ -44,7 +44,7 @@ namespace CompanyManagement.Application.CompanyManagement.Implementations
                                 IRepository<CompanyProduction, long> companyProductionRepository,
                                 ICompanyRepository companyRepository,
                                 IHttpContextAccessor HttpContextAccessor,
-                                CompanyManagementDbContext companyManagementDbContext
+                                OrderManagementDbContext orderManagementDbContext
                                 )
         {
             _clientsOrderDetailByCompanyRepository = clientsOrderDetailByCompanyRepository;
@@ -54,7 +54,7 @@ namespace CompanyManagement.Application.CompanyManagement.Implementations
             _companyProductionRepository = companyProductionRepository;
             _companyRepository = companyRepository;
             _httpContextAccessor = HttpContextAccessor;
-            _companyManagementDbContext = companyManagementDbContext;
+            _orderManagementDbContext = orderManagementDbContext;
         }
 
         [SecuredOperation(CompanyServicePermissionConstants.GetCustomersAndCars)]
@@ -84,19 +84,19 @@ namespace CompanyManagement.Application.CompanyManagement.Implementations
         {
             var x = ObjectMapper.Map<List<ClientsOrderDetailByCompanyDto>, List<ClientsOrderDetailByCompany>>(clientsOrderDetailByCompnayDtos, new List<ClientsOrderDetailByCompany>());
 
-            await _clientsOrderDetailByCompanyRepository.InsertManyAsync(
-                ObjectMapper.Map<List<ClientsOrderDetailByCompanyDto>, List<ClientsOrderDetailByCompany>>(clientsOrderDetailByCompnayDtos, new List<ClientsOrderDetailByCompany>()));
-            return true;
-        }
+        await _clientsOrderDetailByCompanyRepository.InsertManyAsync(
+            ObjectMapper.Map<List<ClientsOrderDetailByCompanyDto>, List<ClientsOrderDetailByCompany>>(clientsOrderDetailByCompnayDtos, new List<ClientsOrderDetailByCompany>()));
+        return true;
+    }
 
-        private bool IsInRole(string Role)
-        {
-            var identity = (ClaimsPrincipal)Thread.CurrentPrincipal;
-            // Get the claims values
-            var role = _httpContextAccessor.HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.Role)
-                               .Select(c => c.Value).SingleOrDefault();
-            return role == Role;
-        }
+    private bool IsInRole(string Role)
+    {
+        var identity = (ClaimsPrincipal)Thread.CurrentPrincipal;
+        // Get the claims values
+        var role = _httpContextAccessor.HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.Role)
+                           .Select(c => c.Value).SingleOrDefault();
+        return role == Role;
+    }
 
         private string GetCompanyId()
         {
@@ -128,7 +128,7 @@ namespace CompanyManagement.Application.CompanyManagement.Implementations
             new SqlParameter("@nationalCode",SqlDbType.NVarChar){Value = nationalCode}
             };
 
-            var companiesCustomer = _companyManagementDbContext.Set<CompaniesCustomer>().FromSqlRaw(
+            var companiesCustomer = _orderManagementDbContext.Set<CompaniesCustomer>().FromSqlRaw(
                 string.Format("EXEC {0} {1}", "[dbo].[GetRecentCustomerAndOrder]", "@saleId,@companyId,@nationalCode"), paramArray).AsEnumerable().FirstOrDefault();
             //"EXEC [dbo].[GetCompaniesCustomer] @saleId,@companyId,@nationalCode", paramArray).FirstOrDefault();
 

@@ -9,5 +9,6 @@ namespace AdminPanelManagement.Domain.AdminPanelManagement
 {
     public class Test : FullAuditedEntity<int>
     {
+
     }
 }

@@ -1,11 +1,8 @@
 ﻿using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace IFG.Core.Utility.Security.Encyption
 {
-   public class SigningCredentialsHelper
+    public class SigningCredentialsHelper
     {
         public static SigningCredentials CreateSigningCredentials(SecurityKey securityKey)
         {

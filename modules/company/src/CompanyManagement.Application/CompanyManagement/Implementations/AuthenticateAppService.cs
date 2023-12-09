@@ -1,7 +1,7 @@
 ﻿using CompanyManagement.Application.Contracts;
-using CompanyManagement.Application.Contracts.CompanyManagement.Dtos;
 using CompanyManagement.Application.Contracts.CompanyManagement.IServices;
 using CompanyManagement.Application.Contracts.CompanyManagement.Services;
+using IFG.Core.Infrastructures.TokenAuth;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Services;

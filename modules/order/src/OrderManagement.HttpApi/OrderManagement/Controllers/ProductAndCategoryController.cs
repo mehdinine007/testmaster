@@ -34,8 +34,8 @@ public class ProductAndCategoryController : AbpController //, IProductAndCategor
     }
 
     [HttpGet]
-    public async Task<ProductAndCategoryWithChildDto> GetById(int id, bool hasProperty, string attachmentType)
-        => await _productAndCategoryService.GetById(id, hasProperty, EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(attachmentType));
+    public async Task<ProductAndCategoryWithChildDto> GetById(int id, bool hasProperty, string attachmentType, string attachmentlocation)
+        => await _productAndCategoryService.GetById(id, hasProperty, EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(attachmentType), EnumHelper.ConvertStringToEnum<AttachmentLocationEnum>(attachmentlocation));
 
     [HttpPost]
     public async Task<ProductAndCategoryDto> Insert([FromBody] ProductAndCategoryCreateDto productAndCategoryCreateDto)
@@ -49,7 +49,7 @@ public class ProductAndCategoryController : AbpController //, IProductAndCategor
     public async Task<CustomPagedResultDto<ProductAndCategoryDto>> GetPagination([FromBody] ProductAndCategoryQueryDto input)
         => await _productAndCategoryService.GetListWithPagination(input);
 
-    [HttpPost]
+    [HttpGet]
     public async Task<List<ProductAndCategoryWithChildDto>> GetList(ProductAndCategoryGetListQueryDto input)
         => await _productAndCategoryService.GetList(input);
 
@@ -57,7 +57,7 @@ public class ProductAndCategoryController : AbpController //, IProductAndCategor
     public async Task<ProductAndCategoryDto> Update(ProductAndCategoryUpdateDto productAndCategoryUpdateDto)
         => await _productAndCategoryService.Update(productAndCategoryUpdateDto);
 
-    [HttpPost]
-    public async Task<List<ProductAndCategoryWithChildDto>> GetProductAndSaleDetailList(ProductAndSaleDetailGetListQueryDto input)
+    [HttpGet]
+    public async Task<List<ProductAndCategoryWithChildDto>> GetProductAndSaleDetailList([FromQuery]ProductAndSaleDetailGetListQueryDto input)
         => await _productAndCategoryService.GetProductAndSaleDetailList(input);
 }

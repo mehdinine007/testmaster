@@ -9,8 +9,8 @@ using Volo.Abp;
 using UserManagement.Domain.Authorization.Users;
 using MongoDB.Bson;
 using Esale.Share.Authorize;
-using UserManagement.Application.Constants;
 using Abp.Auditing;
+using UserManagement.Application.Contracts.UserManagement.Constant;
 
 namespace UserManagement.Application.UserManagement.Implementations;
 

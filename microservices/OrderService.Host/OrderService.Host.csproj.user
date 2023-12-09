@@ -5,7 +5,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <ActiveDebugProfile>IIS Express</ActiveDebugProfile>
-    <NameOfLastUsedPublishProfile>D:\C\net\EsaleMicroservices\microservices\OrderService.Host\Properties\PublishProfiles\carsupply-test-order.pubxml</NameOfLastUsedPublishProfile>
-    <ActiveDebugProfile>ProductService.Host</ActiveDebugProfile>
+    <NameOfLastUsedPublishProfile>D:\Works\Web\Fava\EsaleCarMicroservice-Backend\develop\esalecarmicroservice-backend\microservices\OrderService.Host\Properties\PublishProfiles\carsupply-test-order.pubxml</NameOfLastUsedPublishProfile>
+    <ActiveDebugProfile>IIS Express</ActiveDebugProfile>
   </PropertyGroup>
 </Project>

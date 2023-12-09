@@ -59,14 +59,15 @@ namespace ReportManagement.Application.ReportManagement.Implementations
 
       
 
-        public async Task<List<WidgetDto>> GetList(int dashboardId)
+        public async Task<List<WidgetDto>> GetList(int dashboardId, string roles)
         {
+            var _roles = roles.Split(",");
             var widgets = (await _dashboardWidgetRepository.GetQueryableAsync())
                 .AsNoTracking()
                 .Include(i => i.Widget)
                 .Where(x => x.DashboardId == dashboardId)
-                .Select(x => x.Widget)
-                .ToList();
+                .Select(x => x.Widget).ToList()
+                .Where(x => x.Roles.Split(",").Any(y => _roles.Contains(y))).ToList();
             var widgetDto = ObjectMapper.Map<List<Widget>, List<WidgetDto>>(widgets);
             return widgetDto;
         }
@@ -173,10 +174,9 @@ namespace ReportManagement.Application.ReportManagement.Implementations
             {
                 var keys = data.FirstOrDefault()!.Keys.Select(x => x)
                     .ToList();
-                string _category = keys[0];
-                categories = data.Select(x => new CategoryData()
+                categories = keys.Select(x => new CategoryData()
                 {
-                    Title = x[_category].ToString()!
+                    Title = x
                 }).ToList();
             }
             var gridDto = new GridDto()

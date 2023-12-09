@@ -40,8 +40,8 @@ public class AnnouncementController : Controller
     public Task<List<AnnouncementDto>> GetAllAnnouncement(AnnouncementDto input)
     => _announcementService.GetAllAnnouncement(input);
     [HttpGet]
-    public  Task<AnnouncementDto> GetById(int id, string attachmentType)
-        => _announcementService.GetById(id, EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(attachmentType));
+    public  Task<AnnouncementDto> GetById(int id, string attachmentType, string attachmentlocation)
+        => _announcementService.GetById(id, EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(attachmentType), EnumHelper.ConvertStringToEnum<AttachmentLocationEnum>(attachmentlocation));
 
     [HttpGet]
     public Task<PagedResultDto<AnnouncementDto>> GetPagination(AnnouncementGetListDto input)

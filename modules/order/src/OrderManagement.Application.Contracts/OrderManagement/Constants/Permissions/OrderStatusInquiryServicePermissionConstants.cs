@@ -1,15 +1,13 @@
 ﻿using IFG.Core.Bases;
+using Licence;
 
 namespace OrderManagement.Application.Contracts;
 
-public class OrderStatusInquiryServicePermissionConstants: BasePermissionConstants
+public class OrderStatusInquiryServicePermissionConstants
 {
-    public const string GetOrderDeilvery = "000200040001";
+    public const string GetOrderDeilvery = ConstantInfo.ModuleOrder + ServiceIdentifier + "0001";
     public const string GetOrderDeilvery_DisplayName = "نمایش روند سفارش";
 
-    public override string ModuleIdentifier => "0002";
-
-    public override string ServiceIdentifier => "0004";
-
-    public override string ServiceDisplayName => "سرویس استعلام وضعیت سفارشات";
+    public const string ServiceIdentifier = "0004";
+    public const string ServiceDisplayName = "سرویس استعلام وضعیت سفارشات";
 }

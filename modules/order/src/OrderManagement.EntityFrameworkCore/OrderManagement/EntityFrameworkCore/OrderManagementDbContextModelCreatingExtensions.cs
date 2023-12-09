@@ -7,6 +7,7 @@ using Volo.Abp.EntityFrameworkCore.Modeling;
 using OrderManagement.Domain.OrderManagement;
 using IFG.Core.DataAccess;
 using OrderManagement.Domain.Shared;
+using System.Reflection.Emit;
 
 namespace OrderManagement.EfCore;
 
@@ -73,6 +74,9 @@ public static class OrderManagementDbContextModelCreatingExtensions
                 .HasMaxLength(50);
             entity.Property(x => x.Vehicle)
                 .HasMaxLength(50);
+            entity.HasIndex(p => p.TrackingCode)
+                .IsUnique()
+                .HasFilter($"{nameof(CustomerOrder.IsDeleted)} = 0 ");
         });
 
         builder.Entity<SaleDetail>(entity =>
@@ -84,7 +88,8 @@ public static class OrderManagementDbContextModelCreatingExtensions
                 .IsUnique();
             entity.Property(x => x.Visible)
                 .HasDefaultValue(true);
-
+            entity.Property(x => x.CompanySaleId)
+               .HasMaxLength(20);
             entity.HasOne<SaleSchema>(x => x.SaleSchema)
                 .WithMany(x => x.SaleDetails)
                 .HasForeignKey(x => x.SaleId);
@@ -460,10 +465,29 @@ public static class OrderManagementDbContextModelCreatingExtensions
         //    entity.Property(x => x.CarDesc)
         //        .HasMaxLength(250);
         //});
+
         builder.Entity<GenderTypeReadOnly>(entity =>
         {
             entity.ToTable(nameof(GenderTypeReadOnly));
             entity.AddEnumChangeTracker<GenderTypeReadOnly, GenderType>();
+        });
+        builder.Entity<Organization>(entity =>
+        {
+            entity.ToTable(nameof(Organization));
+        });
+
+
+
+        builder.Entity<SaleProcessTypeReadOnly>(entity =>
+        {
+            entity.ToTable(nameof(SaleProcessTypeReadOnly));
+            entity.AddEnumChangeTracker<SaleProcessTypeReadOnly, SaleProcessType>();
+        });
+
+        builder.Entity<Priority>(entity =>
+        {
+            entity.ToTable("PriorityList");
+            entity.HasIndex(x => x.NationalCode, "IX_PriorityList_NationalCode");
         });
     }
 }

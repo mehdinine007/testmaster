@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
@@ -13,10 +13,6 @@
     <EmbeddedResource Remove="WorkFlowManagement\**" />
     <None Remove="GatewayManagement\**" />
     <None Remove="WorkFlowManagement\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="AdminPanelManagement\Grpc\Protos\UserGrpcClient.proto" />
   </ItemGroup>
 
   <ItemGroup>
@@ -40,13 +36,17 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\shared\IFG.Core\IFG.Core.csproj" />
+    <ProjectReference Include="..\..\..\report\src\ReportManagement.Application\ReportManagement.Application.csproj" />
     <ProjectReference Include="..\AdminPanelManagement.Application.Contracts\AdminPanelManagement.Application.Contracts.csproj" />
     <ProjectReference Include="..\AdminPanelManagement.Domain\AdminPanelManagement.Domain.csproj" />
     <ProjectReference Include="..\AdminPanelManagement.EntityFrameworkCore\AdminPanelManagement.EntityFrameworkCore.csproj" />
   </ItemGroup>
+	<ItemGroup>
+		<Protobuf Include="AdminPanelManagement\Grpc\Protos\UserGrpcClient.proto" />
+	</ItemGroup>
+	<ItemGroup>
+		<Protobuf Include="AdminPanelManagement\Grpc\Protos\ReportGrpcClient.proto" GrpcServices="Client" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Protobuf Include="AdminPanelManagement\Grpc\Protos\UserGrpcClient.proto" />
-  </ItemGroup>
 
 </Project>

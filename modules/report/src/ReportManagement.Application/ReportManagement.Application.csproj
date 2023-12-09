@@ -40,13 +40,14 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\shared\IFG.Core\IFG.Core.csproj" />
+    <ProjectReference Include="..\..\..\..\shared\Licence\Licence.csproj" />
     <ProjectReference Include="..\ReportManagement.Application.Contracts\ReportManagement.Application.Contracts.csproj" />
     <ProjectReference Include="..\ReportManagement.Domain\ReportManagement.Domain.csproj" />
     <ProjectReference Include="..\ReportManagement.EntityFrameworkCore\ReportManagement.EntityFrameworkCore.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Protobuf Include="ReportManagement\Grpc\Protos\ReportService.proto" GrpcServices="Both" />
+    <Protobuf Include="ReportManagement\Grpc\Protos\ReportService.proto" GrpcServices="Server" />
   </ItemGroup>
 
 </Project>

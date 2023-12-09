@@ -36,7 +36,7 @@ namespace UserManagement.Domain.Authorization.Users
         [Column(TypeName = "NVARCHAR(255)")]
         [Required]
         public string Address { get; set; }
-        public int BankId { get; set; }
+        public int? BankId { get; set; }
         [Column(TypeName = "NVARCHAR(50)")]
         [Required]
         public string AccountNumber { get; set; }

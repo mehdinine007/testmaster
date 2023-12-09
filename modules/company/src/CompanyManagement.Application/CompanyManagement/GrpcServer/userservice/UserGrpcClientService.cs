@@ -1,13 +1,12 @@
-﻿using CompanyManagement.Application.Contracts;
-using CompanyManagement.Application.Contracts.CompanyManagement.Dtos;
-using CompanyManagement.Application.Contracts.CompanyManagement.IServices;
+﻿using CompanyManagement.Application.Contracts.CompanyManagement.IServices;
 using Grpc.Net.Client;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Services;
-using CompanyManagement.Application.Grpc.UserGrpcClient;
+using IFG.Core.Infrastructures.TokenAuth;
+using CompanyManagement.Application.Contracts;
 
 namespace CompanyManagement.Application.CompanyManagement.Grpc
 {
@@ -20,7 +19,6 @@ namespace CompanyManagement.Application.CompanyManagement.Grpc
         }
 
         public async Task<AuthenticateResponseDto> Athenticate(AuthenticateReqDto input)
-
         {
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2Support", true);
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);

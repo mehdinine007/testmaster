@@ -42,6 +42,7 @@
         <ProjectReference Include="..\..\modules\adminPanel\src\AdminPanelManagement.HttpApi\AdminPanelManagement.HttpApi.csproj" />
         <ProjectReference Include="..\..\shared\Extensions\Extensions.csproj" />
         <ProjectReference Include="..\..\shared\IFG.Core\IFG.Core.csproj" />
+        <ProjectReference Include="..\..\shared\Licence\Licence.csproj" />
         <ProjectReference Include="..\..\shared\MsDemo.Shared\MsDemo.Shared.csproj" />
     </ItemGroup>
 

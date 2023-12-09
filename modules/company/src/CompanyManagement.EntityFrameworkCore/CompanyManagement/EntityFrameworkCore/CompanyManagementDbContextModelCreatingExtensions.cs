@@ -13,7 +13,7 @@ namespace CompanyManagement.EfCore
 {
     public static class CompanyManagementDbContextModelCreatingExtensions
     {
-        public static void ConfigureCompanyManagement(this ModelBuilder builder,Action<CompanyManagementModelBuilderConfigurationOptions> optionsAction = null)
+        public static void ConfigureCompanyManagement(this ModelBuilder builder, Action<CompanyManagementModelBuilderConfigurationOptions> optionsAction = null)
         {
             Check.NotNull(builder, nameof(builder));
 
@@ -36,6 +36,9 @@ namespace CompanyManagement.EfCore
                 entity.Property(x => x.SaleType)
                     .HasMaxLength(150);
 
+                entity.Property(x => x.CompanySaleId)
+                    .HasMaxLength(20);
+
                 entity.Property(x => x.Vin)
                     .HasMaxLength(50);
 
@@ -45,14 +48,6 @@ namespace CompanyManagement.EfCore
                 entity.Property(x => x.CarDesc)
                     .HasMaxLength(250);
             });
-
-            builder.Entity<CompaniesCustomer>(entity =>
-            {
-                entity.ToTable(nameof(CompaniesCustomer), t => t.ExcludeFromMigrations());
-                entity.HasNoKey();
-            });
-
-
         }
     }
 }

@@ -681,13 +681,20 @@ namespace OrderManagement.EfCore.Migrations
                         new
                         {
                             Id = 6,
+                            Code = 60,
+                            Title = "عدم تخصیصی",
+                            TitleEn = "CancelledBySystem"
+                        },
+                        new
+                        {
+                            Id = 7,
                             Code = 70,
                             Title = "پرداخت با موفقیت انجام شد",
                             TitleEn = "PaymentSucceeded"
                         },
                         new
                         {
-                            Id = 7,
+                            Id = 8,
                             Code = 80,
                             Title = "پرداخت ناموفق",
                             TitleEn = "PaymentNotVerified"
@@ -1061,7 +1068,7 @@ namespace OrderManagement.EfCore.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("AgencyId")
+                    b.Property<int?>("AgencyId")
                         .HasColumnType("int");
 
                     b.Property<string>("ChassiNo")
@@ -1129,7 +1136,7 @@ namespace OrderManagement.EfCore.Migrations
                     b.Property<int?>("PaymentId")
                         .HasColumnType("int");
 
-                    b.Property<int>("PaymentSecret")
+                    b.Property<int?>("PaymentSecret")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("PrioritizationDate")
@@ -1153,6 +1160,9 @@ namespace OrderManagement.EfCore.Migrations
                     b.Property<DateTime?>("SendToManufacturerDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("TrackingCode")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
@@ -1168,6 +1178,10 @@ namespace OrderManagement.EfCore.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("TrackingCode")
+                        .IsUnique()
+                        .HasFilter("IsDeleted = 0 ");
 
                     b.HasIndex("SaleDetailId", "UserId")
                         .IsUnique()
@@ -1767,6 +1781,61 @@ namespace OrderManagement.EfCore.Migrations
                     b.ToTable("OrderStatusInquiry", (string)null);
                 });
 
+            modelBuilder.Entity("OrderManagement.Domain.OrderManagement.Organization", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Code")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("CreationTime");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("CreatorId");
+
+                    b.Property<Guid?>("DeleterId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("DeleterId");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("DeletionTime");
+
+                    b.Property<string>("EncryptKey")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false)
+                        .HasColumnName("IsDeleted");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("LastModificationTime");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("LastModifierId");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Url")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Organization", (string)null);
+                });
+
             modelBuilder.Entity("OrderManagement.Domain.OrderManagement.ProductAndCategory", b =>
                 {
                     b.Property<int>("Id")
@@ -2034,6 +2103,45 @@ namespace OrderManagement.EfCore.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("PreSale", (string)null);
+                });
+
+            modelBuilder.Entity("OrderManagement.Domain.Priority", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("EkanNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NationalCode")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("OrderID")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PriorityLevel")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PriorityNum")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Radif")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SortID")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SumNumberOfNationalCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex(new[] { "NationalCode" }, "IX_PriorityList_NationalCode");
+
+                    b.ToTable("PriorityList", (string)null);
                 });
 
             modelBuilder.Entity("OrderManagement.Domain.Province", b =>
@@ -2352,6 +2460,10 @@ namespace OrderManagement.EfCore.Migrations
                     b.Property<double>("CoOperatingProfitPercentage")
                         .HasColumnType("float");
 
+                    b.Property<string>("CompanySaleId")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2")
                         .HasColumnName("CreationTime");
@@ -2415,6 +2527,9 @@ namespace OrderManagement.EfCore.Migrations
                     b.Property<DateTime>("SalePlanStartDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("SaleProcess")
+                        .HasColumnType("int");
+
                     b.Property<int>("SaleTypeCapacity")
                         .HasColumnType("int");
 
@@ -2440,6 +2555,53 @@ namespace OrderManagement.EfCore.Migrations
                         .IsUnique();
 
                     b.ToTable("SaleDetail", (string)null);
+                });
+
+            modelBuilder.Entity("OrderManagement.Domain.SaleProcessTypeReadOnly", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Code")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<string>("Title_En")
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SaleProcessTypeReadOnly", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Code = 0,
+                            Title = "فروش عادی",
+                            TitleEn = "RegularSale"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Code = 1,
+                            Title = "فروش مستقیم",
+                            TitleEn = "DirectSale"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Code = 2,
+                            Title = "فروش با کد پیگیری",
+                            TitleEn = "SaleWithTrackingCode"
+                        });
                 });
 
             modelBuilder.Entity("OrderManagement.Domain.SaleSchema", b =>

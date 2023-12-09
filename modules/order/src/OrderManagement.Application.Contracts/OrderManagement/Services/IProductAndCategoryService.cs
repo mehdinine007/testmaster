@@ -5,7 +5,7 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Services
 {
     public interface IProductAndCategoryService : IApplicationService
     {
-        Task<ProductAndCategoryWithChildDto> GetById(int id, bool hasProperty, List<AttachmentEntityTypeEnum>? attachmentType = null);
+        Task<ProductAndCategoryWithChildDto> GetById(int id, bool hasProperty, List<AttachmentEntityTypeEnum>? attachmentType = null, List<AttachmentLocationEnum>? attachmentlocation = null);
 
         Task<ProductAndCategoryDto> Insert(ProductAndCategoryCreateDto productAndCategoryCreateDto);
 
@@ -24,6 +24,8 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Services
         Task<List<FilterParamDto>> GetFilterParamList();
 
         Task<List<ProductAndCategoryDto>> GetAllParent();
+
+        Task<ProductAndCategoryDto> GetProductAndCategoryByCode(string code, List<AttachmentEntityTypeEnum>? attachmentType = null, List<AttachmentLocationEnum>? attachmentlocation = null);
 
     }
 }

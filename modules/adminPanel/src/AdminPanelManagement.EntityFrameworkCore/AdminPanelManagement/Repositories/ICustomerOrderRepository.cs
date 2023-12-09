@@ -1,4 +1,5 @@
-﻿using AdminPanelManagement.Domain.AdminPanelManagement;
+﻿
+using AdminPanelManagement.Domain.AdminPanelManagement;
 using AdminPanelManagement.Domain.Shared.AdminPanelManagement.Db;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,7 @@ namespace AdminPanelManagement.EntityFrameworkCore.AdminPanelManagement.Reposito
 {
     public interface ICustomerOrderRepository
     {
+
         public Task<List<CustomerOrderDb>> GetCustomerOrderList(Guid uid);
         public Task<UserInfoDb> UserInfo(string nationalCode);
         public Task<List<OrderRejectionTypeReadOnly>> GetOrderRejectionType();
