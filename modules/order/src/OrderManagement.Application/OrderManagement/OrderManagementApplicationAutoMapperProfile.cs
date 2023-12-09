@@ -7,6 +7,7 @@ using OrderManagement.Application.Contracts.OrderManagement;
 using OrderManagement.Application.Contracts.OrderManagement.Models;
 using OrderManagement.Domain;
 using OrderManagement.Domain.OrderManagement;
+using OrderManagement.Domain.OrderManagement.MongoWrite;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -97,10 +98,15 @@ namespace OrderManagement
                 .ReverseMap();
             CreateMap<PropertyCategory, PropertyCategoryDto>()
                 .ReverseMap();
+            CreateMap<PropertyCategoryWrite, PropertyCategoryDto>()
+                .ReverseMap();
+
             CreateMap<PropertyCategory, ProductPropertyCategoryDto>()
                 .ReverseMap();
 
             CreateMap<ProductProperty, ProductPropertyDto>()
+                .ReverseMap();
+            CreateMap<ProductPropertyWrite, ProductPropertyDto>()
                 .ReverseMap();
 
             CreateMap<DropDownItem, DropDownItemDto>()
