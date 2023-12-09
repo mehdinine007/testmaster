@@ -87,10 +87,6 @@ public static class OrderManagementDbContextModelCreatingExtensions
                 .HasDefaultValue(true);
             entity.Property(x => x.CompanySaleId)
                .HasMaxLength(20);
-            entity.HasIndex(p => p.CompanySaleId)
-                 .IsUnique()
-            .HasFilter($"{nameof(CustomerOrder.IsDeleted)} = 0 ");
-
             entity.HasOne<SaleSchema>(x => x.SaleSchema)
                 .WithMany(x => x.SaleDetails)
                 .HasForeignKey(x => x.SaleId);
