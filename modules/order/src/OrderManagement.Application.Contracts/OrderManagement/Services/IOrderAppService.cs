@@ -33,6 +33,6 @@ namespace OrderManagement.Application.Contracts.Services
 
         Task<IPaymentResult> CheckoutPayment(IPgCallBackRequest callBackRequest);
 
-        Task<PriorityDto> GetPriorityByNationalCode(string nationalCode);
+        Task<bool> NationalCodeExistsInPriority(string nationalCode);
     }
 }

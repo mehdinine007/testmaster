@@ -219,13 +219,13 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         //var cacheKey = string.Format(RedisConstants.SaleDetailPrefix, commitOrderDto.SaleDetailUId);
         //_memoryCache.TryGetValue(cacheKey, out SaleDetailDto);
-       
+
         var paymentMethodGranted = _configuration.GetValue<bool?>("PaymentMethodGranted") ?? false;
-        if (paymentMethodGranted &&  commitOrderDto.AgencyId is null )
+        if (paymentMethodGranted && commitOrderDto.AgencyId is null)
         {
             throw new UserFriendlyException(OrderConstant.AgencyNotFound, OrderConstant.AgencyId);
         }
-        if (paymentMethodGranted && commitOrderDto.PspAccountId is null )
+        if (paymentMethodGranted && commitOrderDto.PspAccountId is null)
         {
             throw new UserFriendlyException(OrderConstant.PspAccountNotFound, OrderConstant.PspAccountId);
         }
@@ -248,7 +248,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     SaleProcess = x.SaleProcess
                 })
                 .FirstOrDefault(x => x.UID == commitOrderDto.SaleDetailUId);
-        
+
             if (SaleDetailFromDb == null)
             {
                 throw new UserFriendlyException("تاریخ برنامه فروش به پایان رسیده است.");
@@ -286,11 +286,12 @@ public class OrderAppService : ApplicationService, IOrderAppService
         CheckSaleDetailValidation(SaleDetailDto);
         RustySalePlanValidation(commitOrderDto, SaleDetailDto.EsaleTypeId);
         if (SaleDetailDto.SaleProcess == SaleProcessType.RegularSale)
-            await GetPriorityByNationalCode(nationalCode);
+            if (!await NationalCodeExistsInPriority(nationalCode))
+                throw new UserFriendlyException("کد ملی متقاضی در لیست الویت بندی وجود نداشت");
 
 
         await _commonAppService.IsUserRejected(); //if user reject from advocacy
-      
+
 
         var orderQuery = await _commitOrderRepository.GetQueryableAsync();
         var userId = _commonAppService.GetUserId();
@@ -310,11 +311,11 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         }
 
-         string EsaleTypeId = await _cacheManager.GetStringAsync("_EsaleType", RedisConstants.CommitOrderPrefix + userId.ToString()
-            , new CacheOptions()
-            {
-                Provider = CacheProviderEnum.Redis
-            });
+        string EsaleTypeId = await _cacheManager.GetStringAsync("_EsaleType", RedisConstants.CommitOrderPrefix + userId.ToString()
+           , new CacheOptions()
+           {
+               Provider = CacheProviderEnum.Redis
+           });
         if (!string.IsNullOrEmpty(EsaleTypeId))
         {
             if (EsaleTypeId != SaleDetailDto.EsaleTypeId.ToString())
@@ -515,7 +516,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
 
         }
- 
+
         UserDto customer = new UserDto();
         ////////////////////////
         if (paymentMethodGranted)
@@ -541,7 +542,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             if (!agencyCapacityControl.Success)
                 throw new UserFriendlyException(agencyCapacityControl.Message);
         }
-                       
+
         {
             customerOrder.SaleDetailId = SaleDetailDto.Id;
             customerOrder.UserId = userId;
@@ -555,8 +556,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
             customerOrder.AgencyId = commitOrderDto.AgencyId;
             customerOrder.PaymentSecret = _randomGenerator.GetUniqueInt();
             customerOrder.OrderDeliveryStatus = OrderDeliveryStatusType.OrderRegistered;
-            customerOrder.TrackingCode = SaleDetailDto.SaleProcess == SaleProcessType.SaleWithTrackingCode  ? Core.Utility.Tools.RandomGenerator.GetUniqueInt(_configuration.GetValue<int>("RandomeCodeLength")).ToString() : null;
-             await _commitOrderRepository.InsertAsync(customerOrder);
+            customerOrder.TrackingCode = SaleDetailDto.SaleProcess == SaleProcessType.SaleWithTrackingCode ? Core.Utility.Tools.RandomGenerator.GetUniqueInt(_configuration.GetValue<int>("RandomeCodeLength")).ToString() : null;
+            await _commitOrderRepository.InsertAsync(customerOrder);
             await CurrentUnitOfWork.SaveChangesAsync();
         }
 
@@ -1433,13 +1434,12 @@ public class OrderAppService : ApplicationService, IOrderAppService
         return customerOrder;
     }
 
-    public async Task<PriorityDto> GetPriorityByNationalCode(string nationalCode)
+    public async Task<bool> NationalCodeExistsInPriority(string nationalCode)
     {
         var priority = (await _priorityRepository.GetQueryableAsync())
             .AsNoTracking()
-            .FirstOrDefault(x => x.NationalCode == nationalCode)
-            ?? throw new UserFriendlyException("کدملی جاری در الویت بندی وجود ندارد");
-
-        return ObjectMapper.Map<Priority, PriorityDto>(priority);
+            .Select(x => x.NationalCode)
+            .FirstOrDefault(x => x == nationalCode);
+        return !string.IsNullOrEmpty(priority);
     }
 }
