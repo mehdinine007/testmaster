@@ -4,6 +4,7 @@ using MsDemo.Shared.ExtensionsInterfaces;
 using Nest;
 using GatewayService.Host.Infrastructures.Middlewares;
 using Volo.Abp.Auditing;
+using OrderService.Host.Infrastructures.Middlewares;
 
 namespace GatewayService.Host.Infrastructures.Extensions
 {

@@ -11,7 +11,7 @@ using Volo.Abp.AuditLogging;
 using Volo.Abp.DependencyInjection;
 using Volo.Abp.Domain.Repositories;
 
-namespace CompanyService.Host.Infrastructures.Middlewares
+namespace OrderService.Host.Infrastructures.Middlewares
 {
     public class AuditingStoreElk : IAuditingStore, ITransientDependency
     {
@@ -59,7 +59,7 @@ namespace CompanyService.Host.Infrastructures.Middlewares
                     string jsonData = JsonConvert.SerializeObject(await Converter.ConvertAsync(auditInfo));
                     var response = client.LowLevel.Index<StringResponse>(_configuration.GetSection("ElkIndexName").Value, jsonData);
                     Body body = JsonConvert.DeserializeObject<Body>(response.Body);
-                  //  if (body._shards.successful != 1)
+                    if (body._shards.successful != 1)
                     {
                         await _auditLogRepository.InsertAsync(await Converter.ConvertAsync(auditInfo));
                     }

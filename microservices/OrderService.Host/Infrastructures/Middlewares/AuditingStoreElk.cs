@@ -59,9 +59,18 @@ namespace OrderService.Host.Infrastructures.Middlewares
                     string jsonData = JsonConvert.SerializeObject(await Converter.ConvertAsync(auditInfo));
                     var response = client.LowLevel.Index<StringResponse>(_configuration.GetSection("ElkIndexName").Value, jsonData);
                     Body body = JsonConvert.DeserializeObject<Body>(response.Body);
-                  //  if (body._shards.successful != 1)
+                    if (body._shards.successful != 1)
                     {
+                        if(auditInfo.Comments == null)
+                        {
+                            auditInfo.Comments.Add("elk err");
+                        }
+                        else
+                        {
+                            auditInfo.Comments.Add("elk err");
+                        }
                         await _auditLogRepository.InsertAsync(await Converter.ConvertAsync(auditInfo));
+                        
                     }
                 }
                 else

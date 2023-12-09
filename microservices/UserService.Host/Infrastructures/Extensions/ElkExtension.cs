@@ -8,6 +8,7 @@ using Nest;
 using UserService.Host.Infrastructures.Middlewares;
 using System;
 using Volo.Abp.Auditing;
+using OrderService.Host.Infrastructures.Middlewares;
 #endregion
 
 
