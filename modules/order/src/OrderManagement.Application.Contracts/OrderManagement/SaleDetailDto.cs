@@ -56,6 +56,7 @@ namespace OrderManagement.Application.Contracts
         public ProductAndCategoryViewModel Product { get; set; }
 
         public SaleProcessType SaleProcess { get; set; }
+        public string CompanySaleId { get; set; }
 
     }
 }

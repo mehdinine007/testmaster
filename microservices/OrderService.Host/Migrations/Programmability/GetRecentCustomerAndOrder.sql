@@ -1,11 +1,7 @@
 ﻿if exists(select 1 from sysObjects where Upper(Name)= 'GetRecentCustomerAndOrder')
   drop  proc  GetRecentCustomerAndOrder
 GO
-/****** Object:  StoredProcedure [dbo].[GetRecentCustomerAndOrder]    Script Date: 11/12/2023 10:36:46 AM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
+
 ALTER procedure [dbo].[GetRecentCustomerAndOrder]
 	@saleId as int,
 	@companyId as int,
@@ -35,7 +31,8 @@ co.OrderRejectionStatus,
 c.Title as CompanyName,
 sd.ESaleTypeId,
 c.Id as Id,
-co.TrackingCode
+co.TrackingCode,
+sd.CompanySaleId
 from carsupply_test_order..SaleDetail as sd
 	inner join carsupply_test_order..ProductAndCategory as ct
 		on ct.Id = sd.ProductId

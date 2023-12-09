@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OrderManagement.EfCore;
 using Volo.Abp.EntityFrameworkCore;
@@ -12,9 +13,11 @@ using Volo.Abp.EntityFrameworkCore;
 namespace OrderManagement.EfCore.Migrations
 {
     [DbContext(typeof(OrderManagementDbContext))]
-    partial class OrderManagementDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231206072029_add-companysaleid-saledetail")]
+    partial class addcompanysaleidsaledetail
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1161,7 +1164,7 @@ namespace OrderManagement.EfCore.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("TrackingCode")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
@@ -1178,10 +1181,6 @@ namespace OrderManagement.EfCore.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("TrackingCode")
-                        .IsUnique()
-                        .HasFilter("IsDeleted = 0 ");
 
                     b.HasIndex("SaleDetailId", "UserId")
                         .IsUnique()
@@ -2117,7 +2116,7 @@ namespace OrderManagement.EfCore.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NationalCode")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("OrderID")
                         .HasColumnType("nvarchar(max)");
@@ -2139,9 +2138,7 @@ namespace OrderManagement.EfCore.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex(new[] { "NationalCode" }, "IX_PriorityList_NationalCode");
-
-                    b.ToTable("PriorityList", (string)null);
+                    b.ToTable("Priority", (string)null);
                 });
 
             modelBuilder.Entity("OrderManagement.Domain.Province", b =>
