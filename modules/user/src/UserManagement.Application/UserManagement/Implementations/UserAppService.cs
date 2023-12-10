@@ -135,7 +135,6 @@ public class UserAppService : ApplicationService, IUserAppService
         }
         else
         {
-            input.SetId(0);
             await _userSQLRepository.InsertAsync(input);
 
         }
@@ -853,7 +852,6 @@ public class UserAppService : ApplicationService, IUserAppService
         var filter = Builders<UserMongoWrite>.Filter.Eq("UID", userFromDb.UID);
         await (await _userMongoWriteRepository.GetCollectionAsync()).ReplaceOneAsync(filter, userFromDb);
         var userSql = ObjectMapper.Map<UserMongo, UserSQL>(userFromDb);
-        userSql.EditMode = true;
         await _distributedEventBus.PublishAsync<UserSQL>(
                   userSql
                  );
