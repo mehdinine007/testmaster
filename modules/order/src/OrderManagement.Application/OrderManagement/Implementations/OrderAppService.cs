@@ -673,7 +673,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             var cmp = await _productAndCategoryService.GetProductAndCategoryByCode(product.Code.Substring(0, 4));
             var organization = await _organizationService.GetById(cmp.Id);
             encryptionKey = organization.EncryptKey;
-            var enc = string.Format(OrderConstant.OrganizationEncryptedExpression, nationalCode, customerOrder.Id);
+            var enc = string.Format(OrderConstant.OrganizationEncryptedExpression, nationalCode, customerOrder.SaleId);
             organizationUrl = string.Format(OrderConstant.OrganizationUrlFormat,
                 organization.Url.RemoveLastCharacterIfExists('/'),
                 enc.Aes256Encrypt(organization.EncryptKey));
