@@ -17,6 +17,10 @@ using Volo.Abp.Auditing;
 using Microsoft.EntityFrameworkCore;
 using UserManagement.Domain.Shared;
 using UserManagement.Domain.UserManagement.CompanyService;
+using IFG.Core.Caching;
+using Abp.Runtime.Caching;
+using UserManagement.Application.Contracts.UserManagement.Constant;
+using Newtonsoft.Json;
 #endregion
 
 namespace UserManagement.Application.Implementations;
@@ -31,6 +35,7 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
     private readonly ICommonAppService _commonAppService;
     private readonly IRepository<ClientsOrderDetailByCompany, long> _clientsOrderDetailByCompany;
     private readonly IRepository<CompanyPaypaidPrices, long> _companyPaypaidPricesRepository;
+    private readonly IFG.Core.Caching.ICacheManager _cacheManager;
 
 
     public BaseInformationService(IConfiguration configuration,
@@ -40,7 +45,8 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
                                   IRepository<UserMongo, ObjectId> userMongoRepository,
                                   ICommonAppService commonAppService,
                                   IRepository<ClientsOrderDetailByCompany, long> clientsOrderDetailByCompany,
-                                  IRepository<CompanyPaypaidPrices, long> companyPaypaidPricesRepository)
+                                  IRepository<CompanyPaypaidPrices, long> companyPaypaidPricesRepository,
+                                  IFG.Core.Caching.ICacheManager cacheManager)
     {
         _configuration = configuration;
         _advocacyUsersRepository = advocacyUsersRepository;
@@ -50,6 +56,7 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
         _commonAppService = commonAppService;
         _clientsOrderDetailByCompany = clientsOrderDetailByCompany;
         _companyPaypaidPricesRepository = companyPaypaidPricesRepository;
+        _cacheManager = cacheManager;
     }
 
     public async Task RegistrationValidationWithoutCaptcha(RegistrationValidationDto input)
@@ -126,6 +133,17 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
     public async Task<UserGrpcDto> GetUserByIdAsync(string userId)
     {
         object UserFromCache = null;
+      
+        string prefix = $"{RedisConstants.GetUserById}";
+        var useridd = _commonAppService.GetUID();
+        string cacheKey = "GetUser_"+useridd.ToString();
+
+        var cachedData = await _cacheManager.GetStringAsync(cacheKey, prefix, new CacheOptions
+        { Provider = CacheProviderEnum.Hybrid });
+
+        if (!string.IsNullOrEmpty(cachedData)) {
+            return JsonConvert.DeserializeObject<UserGrpcDto>(cachedData);
+        }
 
         var userQueryable = await _userMongoRepository.GetQueryableAsync();
         var user = userQueryable
@@ -153,7 +171,7 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
         if (user == null)
             return null;
 
-        return new UserGrpcDto
+        var usergrpcdto = new UserGrpcDto
         {
             AccountNumber = user.AccountNumber,
             BankId = user.BankId,
@@ -172,6 +190,11 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
             Name = user.Name,
             Uid=user.UID
         };
+
+        await _cacheManager.SetStringAsync(cacheKey, prefix, JsonConvert.SerializeObject(usergrpcdto), new CacheOptions
+        { Provider = CacheProviderEnum.Hybrid }, TimeSpan.FromMinutes(5).TotalSeconds);
+
+        return usergrpcdto;
     }
 
     [Audited]
