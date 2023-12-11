@@ -220,15 +220,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
         //var cacheKey = string.Format(RedisConstants.SaleDetailPrefix, commitOrderDto.SaleDetailUId);
         //_memoryCache.TryGetValue(cacheKey, out SaleDetailDto);
 
-        var paymentMethodGranted = _configuration.GetValue<bool?>("PaymentMethodGranted") ?? false;
-        if (paymentMethodGranted && commitOrderDto.AgencyId is null)
-        {
-            throw new UserFriendlyException(OrderConstant.AgencyNotFound, OrderConstant.AgencyId);
-        }
-        if (paymentMethodGranted && commitOrderDto.PspAccountId is null)
-        {
-            throw new UserFriendlyException(OrderConstant.PspAccountNotFound, OrderConstant.PspAccountId);
-        }
+        //var paymentMethodGranted = _configuration.GetValue<bool?>("PaymentMethodGranted") ?? false;
+      
         if (SaleDetailDto == null)
         {
             var saleDetailQuery = await _saleDetailRepository.GetQueryableAsync();
@@ -280,22 +273,32 @@ public class OrderAppService : ApplicationService, IOrderAppService
             ttl = SaleDetailDto.SalePlanEndDate.Subtract(DateTime.Now);
 
         }
-        UserDto customer = new UserDto();
-        if (SaleDetailDto.ESaleTypeId == 2 || paymentMethodGranted)
+
+        if (SaleDetailDto.SaleProcess == SaleProcessType.CashSale && commitOrderDto.AgencyId is null)
         {
-             customer = await _esaleGrpcClient.GetUserId(_commonAppService.GetUserId().ToString());
+            throw new UserFriendlyException(OrderConstant.AgencyNotFound, OrderConstant.AgencyId);
+        }
+        if (SaleDetailDto.SaleProcess == SaleProcessType.CashSale && commitOrderDto.PspAccountId is null)
+        {
+            throw new UserFriendlyException(OrderConstant.PspAccountNotFound, OrderConstant.PspAccountId);
+        }
+        UserDto customer = new UserDto();
+        if (SaleDetailDto.ESaleTypeId == 2 || SaleDetailDto.SaleProcess == SaleProcessType.CashSale)
+        {
+            customer = await _esaleGrpcClient.GetUserId(_commonAppService.GetUserId().ToString());
         }
         if (SaleDetailDto.ESaleTypeId == 2 && customer.GenderCode != 2)
         {
             throw new UserFriendlyException("طرح فروش مربوط به شما نمی باشد");
         }
-        if (paymentMethodGranted)
+        if (SaleDetailDto.SaleProcess == SaleProcessType.CashSale)
         {
             if (!customer.NationalCode.Equals(nationalCode))
             {
                 throw new UserFriendlyException("شما نمیتوانید سفارش شخص دیگری را پرداخت کنید");
             }
         }
+
         ////////////////conntrol repeated order in saledetails// iran&&varedat
 
         CheckSaleDetailValidation(SaleDetailDto);
@@ -531,13 +534,13 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
 
         }
-        
-        
+
+
 
 
         CustomerOrder customerOrder = new CustomerOrder();
 
-        if (paymentMethodGranted)
+        if (SaleDetailDto.SaleProcess == SaleProcessType.CashSale)
         {
             // try
             // {
@@ -567,7 +570,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         }
 
         ApiResult<IpgApiResult> handShakeResponse = new ApiResult<IpgApiResult>();
-        if (paymentMethodGranted)
+        if (SaleDetailDto.SaleProcess == SaleProcessType.CashSale)
         {
             handShakeResponse = await _ipgServiceProvider.HandShakeWithPsp(new PspHandShakeRequest()
             {
@@ -686,10 +689,10 @@ public class OrderAppService : ApplicationService, IOrderAppService
         return new CommitOrderResultDto()
         {
             OrganizationUrl = organizationUrl,
-            PaymentGranted = paymentMethodGranted,
+            PaymentGranted = SaleDetailDto.SaleProcess == SaleProcessType.CashSale,
             UId = commitOrderDto.SaleDetailUId,
             TrackingCode = customerOrder.TrackingCode,
-            PaymentMethodConigurations = paymentMethodGranted ? new()
+            PaymentMethodConigurations = SaleDetailDto.SaleProcess == SaleProcessType.CashSale ? new()
             {
                 Message = handShakeResponse?.Result?.Message,
                 StatusCode = handShakeResponse?.Result?.StatusCode,
