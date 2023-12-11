@@ -280,7 +280,22 @@ public class OrderAppService : ApplicationService, IOrderAppService
             ttl = SaleDetailDto.SalePlanEndDate.Subtract(DateTime.Now);
 
         }
-
+        UserDto customer = new UserDto();
+        if (SaleDetailDto.ESaleTypeId == 2 || paymentMethodGranted)
+        {
+             customer = await _esaleGrpcClient.GetUserId(_commonAppService.GetUserId().ToString());
+        }
+        if (SaleDetailDto.ESaleTypeId == 2 && customer.GenderCode != 2)
+        {
+            throw new UserFriendlyException("طرح فروش مربوط به شما نمی باشد");
+        }
+        if (paymentMethodGranted)
+        {
+            if (!customer.NationalCode.Equals(nationalCode))
+            {
+                throw new UserFriendlyException("شما نمیتوانید سفارش شخص دیگری را پرداخت کنید");
+            }
+        }
         ////////////////conntrol repeated order in saledetails// iran&&varedat
 
         CheckSaleDetailValidation(SaleDetailDto);
@@ -516,18 +531,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
 
         }
-
-        UserDto customer = new UserDto();
-        ////////////////////////
-        if (paymentMethodGranted)
-        {
-            customer = await _esaleGrpcClient.GetUserId(_commonAppService.GetUserId().ToString());
-            if (!customer.NationalCode.Equals(nationalCode))
-            {
-
-                throw new UserFriendlyException("شما نمیتوانید سفارش شخص دیگری را پرداخت کنید");
-            }
-        }
+        
+        
 
 
         CustomerOrder customerOrder = new CustomerOrder();

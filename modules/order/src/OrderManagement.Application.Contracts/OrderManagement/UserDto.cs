@@ -23,6 +23,7 @@
         public int? HabitationProvinceId { get; set; }
 
         public string MobileNumber { get; set; }
+        public int GenderCode { get; set; }
 
         public int? CompanyId { get; set; }
 
