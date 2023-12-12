@@ -33,6 +33,7 @@ public class CommonAppService : ApplicationService, ICommonAppService
 
     public Guid GetUID()
     {
+
         var userIdStr = _httpContextAccessor.HttpContext.User.Claims.SingleOrDefault(x => x.Type.Equals("UBP"))?.Value.ToUpper() ?? string.Empty;
         if (string.IsNullOrWhiteSpace(userIdStr))
             throw new UserFriendlyException("لطفا لاگین کنید");

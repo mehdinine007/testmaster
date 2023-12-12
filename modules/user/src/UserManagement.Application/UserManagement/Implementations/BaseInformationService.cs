@@ -132,11 +132,11 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
     [RemoteService(false)]
     public async Task<UserGrpcDto> GetUserByIdAsync(string userId)
     {
+        System.Diagnostics.Debugger.Launch();
         object UserFromCache = null;
       
         string prefix = $"{RedisConstants.GetUserById}";
-        var useridd = _commonAppService.GetUID();
-        string cacheKey = "GetUser_"+useridd.ToString();
+        string cacheKey = "GetUser_"+ userId;
 
         var cachedData = await _cacheManager.GetStringAsync(cacheKey, prefix, new CacheOptions
         { Provider = CacheProviderEnum.Hybrid });

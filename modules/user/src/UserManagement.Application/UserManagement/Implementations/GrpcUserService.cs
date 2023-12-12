@@ -47,7 +47,7 @@ namespace UserManagement.Application.UserManagement.Implementations
 
         public override async Task<UserModel> GetUserById(GetUserModel request, ServerCallContext context)
         {
-            try
+                       try
             {
                 var user = await _baseInformationSevice.GetUserByIdAsync(request.UserId);
                 if (user == null)
