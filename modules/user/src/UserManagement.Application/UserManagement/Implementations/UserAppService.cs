@@ -195,6 +195,10 @@ public class UserAppService : ApplicationService, IUserAppService
                 throw new UserFriendlyException("تاریخ صدور شناسنامه نمیتواند با تاریخ جاری برابر یا بزرگتر باشد");
             if (input.BirthDate > input.IssuingDate)
                 throw new UserFriendlyException("تاریخ تولد نمیتواند با صدور شناسنامه بزرگتر باشد");
+            if (input.Gender != Domain.UserManagement.Enums.Gender.Male && input.Gender != Domain.UserManagement.Enums.Gender.Female)
+            {
+                throw new UserFriendlyException("جنست انتخاب شده،درست نمی باشد");
+            }
             if (!input.IssuingCityId.HasValue)
             {
                 throw new UserFriendlyException("شهر محل صدور شناسنامه رو انتخاب نمایید");
@@ -720,6 +724,10 @@ public class UserAppService : ApplicationService, IUserAppService
             //var requiredBirthDate = DateTime.Now.AddYears(-18);
             //if (inputUser.BirthDate > requiredBirthDate)
             //    throw new UserFriendlyException("سن متقاضی باید بیش تر از 18 سال باشد");
+            if(inputUser.Gender != Domain.UserManagement.Enums.Gender.Male && inputUser.Gender != Domain.UserManagement.Enums.Gender.Female)
+            {
+                throw new UserFriendlyException("جنست انتخاب شده،درست نمی باشد");
+            }
             if (!inputUser.IssuingCityId.HasValue)
             {
                 throw new UserFriendlyException("شهر محل صدور شناسنامه رو انتخاب نمایید");
