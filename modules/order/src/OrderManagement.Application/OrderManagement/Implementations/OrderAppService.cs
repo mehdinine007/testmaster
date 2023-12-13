@@ -793,7 +793,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         var anyCompletedOrder = customerOrders.FirstOrDefault(x => x.OrderStatusCode == (int)OrderStatusType.Winner);
         if (enableExactPriorityCalculation && anyCompletedOrder == null)
         {
-            var cachedBlackListCount = _cacheManager.GetString(RedisConstants.BlackListTotalCount, string.Empty, new()
+            var cachedBlackListCount = _cacheManager.GetString(RedisConstants.BlackListTotalCount, RedisConstants.BlacklistCountPrefix, new()
             {
                 Provider = CacheProviderEnum.Redis
             });
@@ -805,7 +805,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             if (string.IsNullOrEmpty(cachedBlackListCount))
             {
                 await _cacheManager.SetStringAsync(RedisConstants.BlackListTotalCount,
-                    string.Empty,
+                    RedisConstants.BlacklistCountPrefix,
                     blackListCount.ToString(),
                     new()
                     {

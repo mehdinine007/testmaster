@@ -33,4 +33,5 @@ public static class RedisConstants
     public const string QuestionnaireSurveyReport = "n:Questionnaire:{0}";
     public const string QuestionnaireSurveyReportWithRelatedEntity = "n:Questionnaire:{0}, rlt_entity:{1}";
     public const string BlackListTotalCount = "n:BlacklistTotalCount";
+    public const string BlacklistCountPrefix = "n:UserOrder";
 }
