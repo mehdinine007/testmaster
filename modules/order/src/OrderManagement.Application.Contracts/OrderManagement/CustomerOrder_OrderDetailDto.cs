@@ -63,7 +63,9 @@ namespace OrderManagement.Application.Contracts
     }
     public class CustomerOrder_OrderDetailTreeDto
     {
-        public int? ExactPriority { get; set; }
+        public int? ApproximatePriority { get; set; }
+
+        public int PrimaryPriority { get; set; }
 
         public List<CustomerOrder_OrderDetailDto> OrderList { get; set; }
     }

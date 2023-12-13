@@ -3,22 +3,19 @@ using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using Volo.Abp.Domain.Entities.Auditing;
-using OrderManagement.Domain.Shared;
-using System.Collections.Generic;
 
-namespace OrderManagement.Domain
+namespace OrderManagement.Domain;
+
+public class AdvocacyUser : FullAuditedEntity<int>
 {
-    public class AdvocacyUser : FullAuditedEntity<int>
-    {
-        [Required]
-        [Column(TypeName = "NCHAR(10)")]
-        public string nationalcode { get; set; }
-        public string bankName { get; set; }
-        public decimal price { get; set; }
-        public DateTime? dateTime { get; set; }
-        public string accountNumber { get; set; }
-        public string shabaNumber { get; set; }
-        public long UserId { get; set; }
-        public int? BanksId { get; set; }
-    }
+    [Required]
+    [Column(TypeName = "NCHAR(10)")]
+    public string nationalcode { get; set; }
+    public string bankName { get; set; }
+    public decimal price { get; set; }
+    public DateTime? dateTime { get; set; }
+    public string accountNumber { get; set; }
+    public string shabaNumber { get; set; }
+    public long UserId { get; set; }
+    public int? BanksId { get; set; }
 }

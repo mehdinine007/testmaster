@@ -489,5 +489,12 @@ public static class OrderManagementDbContextModelCreatingExtensions
             entity.ToTable("PriorityList");
             entity.HasIndex(x => x.NationalCode, "IX_PriorityList_NationalCode");
         });
+
+        builder.Entity<CustomerPriority>(entity =>
+        {
+            entity.ToTable(nameof(CustomerPriority));
+
+            entity.HasIndex(x => x.Uid, "IX_CustomerPriority_Uid");
+        });
     }
 }

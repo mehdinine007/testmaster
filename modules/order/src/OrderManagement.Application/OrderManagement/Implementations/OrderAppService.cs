@@ -56,6 +56,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
     private readonly IRepository<Priority, int> _priorityRepository;
     private readonly IOrganizationService _organizationService;
     private readonly IRepository<CarMakerBlackList, long> _blackListRepository;
+    private readonly IRepository<CustomerPriority> _customerPriorityRepository;
 
     public OrderAppService(ICommonAppService commonAppService,
                            IBaseInformationService baseInformationAppService,
@@ -81,7 +82,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
                            IProductAndCategoryService productAndCategoryService,
                            IRepository<Priority, int> priorityRepository,
                            IOrganizationService organizationService,
-                           IRepository<CarMakerBlackList, long> blackListRepository
+                           IRepository<CarMakerBlackList, long> blackListRepository,
+                           IRepository<CustomerPriority> customerPriorityRepository
         )
     {
         _commonAppService = commonAppService;
@@ -107,6 +109,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         _priorityRepository = priorityRepository;
         _organizationService = organizationService;
         _blackListRepository = blackListRepository;
+        _customerPriorityRepository = customerPriorityRepository;
     }
 
 
@@ -787,36 +790,27 @@ public class OrderAppService : ApplicationService, IOrderAppService
             }).ToList();
         var cancleableDate = _configuration.GetValue<string>("CancelableDate");
         var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, customerOrders.Select(x => x.ProductId).ToList(), attachmentType, attachmentlocation);
-        var enableExactPriorityCalculation = _configuration.GetValue<bool>("EnableExactPriorityCalculation");
         CustomerOrder_OrderDetailTreeDto resultObject = new();
-        int blackListCount = default;
-        var anyCompletedOrder = customerOrders.FirstOrDefault(x => x.OrderStatusCode == (int)OrderStatusType.Winner);
-        if (enableExactPriorityCalculation && anyCompletedOrder == null)
+        var enableExactPriorityCalculation = _configuration.GetValue<bool>("EnableExactPriorityCalculation");
+        if (enableExactPriorityCalculation)
         {
-            var cachedBlackListCount = _cacheManager.GetString(RedisConstants.BlackListTotalCount, RedisConstants.BlacklistCountPrefix, new()
+            var anyCompletedOrder = customerOrders.FirstOrDefault(x => x.OrderStatusCode == (int)OrderStatusType.Winner
+                && x.PriorityId.HasValue &&
+                x.PriorityId.Value == 1);
+            var customerPriority = (await _customerPriorityRepository.GetQueryableAsync())
+                .Select(x => new
+                {
+                    x.Uid,
+                    x.ChosenPriorityByCustomer,
+                    x.ApproximatePriority
+                })
+                .AsNoTracking()
+                .FirstOrDefault(x => x.Uid == userId);
+            resultObject.PrimaryPriority = customerPriority.ChosenPriorityByCustomer;
+            if (anyCompletedOrder == null)
             {
-                Provider = CacheProviderEnum.Redis
-            });
-
-            blackListCount = string.IsNullOrEmpty(cachedBlackListCount)
-                ? (await _blackListRepository.GetQueryableAsync()).Count()
-                : int.Parse(cachedBlackListCount);
-
-            if (string.IsNullOrEmpty(cachedBlackListCount))
-            {
-                await _cacheManager.SetStringAsync(RedisConstants.BlackListTotalCount,
-                    RedisConstants.BlacklistCountPrefix,
-                    blackListCount.ToString(),
-                    new()
-                    {
-                        Provider = CacheProviderEnum.Redis
-                    },
-                    3600D);
+                resultObject.ApproximatePriority = customerPriority.ApproximatePriority;
             }
-            var user = await _esaleGrpcClient.GetUserId(userId.ToString());
-            resultObject.ExactPriority = user.Priority.HasValue
-                ? user.Priority.Value - blackListCount
-                : null;
         }
 
         customerOrders.ForEach(x =>
