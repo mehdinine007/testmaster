@@ -49,6 +49,7 @@ public class AnnouncementService : ApplicationService, IAnnouncementService
     public async Task<List<AnnouncementDto>> GetAllAnnouncement(AnnouncementDto input)
     {
         var announcementRepository = await _announcementRepository.GetQueryableAsync();
+        announcementRepository = announcementRepository.Where(x => x.Active);
         if (input.CompanyId.HasValue)
         {
             if (input.CompanyId != 0)
@@ -69,7 +70,8 @@ public class AnnouncementService : ApplicationService, IAnnouncementService
                  announcement.Select(x => x.Id).ToList(),
                  EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(input.AttachmentType), EnumHelper.ConvertStringToEnum<AttachmentLocationEnum>(input.AttachmentLocation), announcement);
     }
-    public async Task<List<AnnouncementDto>> getAttachment(AttachmentEntityEnum attachment, List<int> id, List<AttachmentEntityTypeEnum> typeEnum,List<AttachmentLocationEnum> attachmentlocation, List<Announcement> announcementCompany)
+
+    public async Task<List<AnnouncementDto>> getAttachment(AttachmentEntityEnum attachment, List<int> id, List<AttachmentEntityTypeEnum> typeEnum, List<AttachmentLocationEnum> attachmentlocation, List<Announcement> announcementCompany)
     {
         var attachments = await _attachmentService.GetList(attachment, id, typeEnum, attachmentlocation);
 
@@ -87,14 +89,13 @@ public class AnnouncementService : ApplicationService, IAnnouncementService
         var count = _announcementRepository.WithDetails().Count();
         var announcementResult = await _announcementRepository.GetQueryableAsync();
         var announcementList = announcementResult
-            .Where(x => x.CompanyId == input.CompanyId)
+            .Where(x => x.CompanyId == input.CompanyId && x.Active == input.Active)
             .AsNoTracking()
             .OrderByDescending(x => x.Id)
-            .Skip(input.SkipCount)
-            .Take(input.MaxResultCount)
+            .PageBy(input)
             .ToList();
         var attachments = await _attachmentService.GetList(AttachmentEntityEnum.Announcement, announcementList.Select(x => x.Id).ToList()
-                                                    ,EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(input.AttachmentType), EnumHelper.ConvertStringToEnum<AttachmentLocationEnum>(input.AttachmentLocation));
+                                                    , EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(input.AttachmentType), EnumHelper.ConvertStringToEnum<AttachmentLocationEnum>(input.AttachmentLocation));
         var announcement = ObjectMapper.Map<List<Announcement>, List<AnnouncementDto>>(announcementList);
         announcement.ForEach(x =>
         {
@@ -158,7 +159,7 @@ public class AnnouncementService : ApplicationService, IAnnouncementService
         var announcement = (await _announcementRepository.GetQueryableAsync()).AsNoTracking()
             .FirstOrDefault(x => x.Id == id);
         var announcementDto = ObjectMapper.Map<Announcement, AnnouncementDto>(announcement);
-        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.Announcement,new List<int>() { id }, attachmentType, attachmentlocation);
+        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.Announcement, new List<int>() { id }, attachmentType, attachmentlocation);
 
         announcementDto.Attachments = ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(attachments);
 
