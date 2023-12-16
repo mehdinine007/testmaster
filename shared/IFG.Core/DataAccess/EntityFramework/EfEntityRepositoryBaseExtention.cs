@@ -1,8 +1,10 @@
 ﻿using IFG.Core.Bases;
 using IFG.Core.Utility.Tools;
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.Linq.Expressions;
+using Volo.Abp.Application.Dtos;
 using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 
@@ -90,7 +92,7 @@ namespace IFG.Core.DataAccess
             // Add control to ensure enum inherited from int32
             var enumDatas = Enum.GetValues<TEnum>()
                 .Cast<TEnum>()
-                .Select(x => new Tuple<int, string, string,string>(Convert.ToInt32(x), x.ToString(), x.GetDisplayName(),x.GetDisplayDescription()))
+                .Select(x => new Tuple<int, string, string, string>(Convert.ToInt32(x), x.ToString(), x.GetDisplayName(), x.GetDisplayDescription()))
                 .OrderBy(x => x.Item1)
                 .ToList();
             entityTypeBuilder.Property(x => x.Title)
@@ -113,6 +115,21 @@ namespace IFG.Core.DataAccess
                 });
             }
             entityTypeBuilder.HasData(recordsToInsert);
+        }
+
+        public static IQueryable<TEntity> SortByRule<TEntity>(this IQueryable<TEntity> query, IIfgSortedResultRequest input)
+            where TEntity : IEntity
+        {
+            if (input is IIfgSortedResultRequest sortInput)
+            {
+                if (!string.IsNullOrEmpty(sortInput.Sorting))
+                {
+                    return input.SortingType == SortingType.Asc
+                        ? query.OrderBy(x => EF.Property<object>(x, sortInput.Sorting))
+                        : query.OrderByDescending(x => EF.Property<object>(x, sortInput.Sorting));
+                }
+            }
+            return query;
         }
     }
 }
