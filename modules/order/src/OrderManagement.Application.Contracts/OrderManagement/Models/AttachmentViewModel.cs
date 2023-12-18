@@ -1,4 +1,5 @@
 ﻿using OrderManagement.Domain.Shared;
+using OrderManagement.Domain.Shared.OrderManagement.Enums;
 
 namespace OrderManagement.Application.Contracts
 {
@@ -14,6 +15,8 @@ namespace OrderManagement.Application.Contracts
         public List<string> Content { get; set; }
         public int Priority { get; set; }
         public int EntityId { get; set; }
+        public DeviceEnum Device { get; set; }
+        public string DeviceTitle { get; set; }
 
     }
 }
