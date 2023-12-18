@@ -8,6 +8,7 @@ using OrderManagement.Domain.OrderManagement;
 using IFG.Core.DataAccess;
 using OrderManagement.Domain.Shared;
 using System.Reflection.Emit;
+using Volo.Abp.Domain.Entities;
 
 namespace OrderManagement.EfCore;
 
@@ -446,25 +447,7 @@ public static class OrderManagementDbContextModelCreatingExtensions
             entity.Property(x => x.Age)
                 .HasColumnType("Date");
         });
-        //builder.Entity<ClientsOrderDetailByCompany>(entity =>
-        //{
-        //    entity.ToTable(nameof(ClientsOrderDetailByCompany));
 
-        //    entity.Property(x => x.NationalCode)
-        //        .HasMaxLength(10);
-
-        //    entity.Property(x => x.SaleType)
-        //        .HasMaxLength(150);
-
-        //    entity.Property(x => x.Vin)
-        //        .HasMaxLength(50);
-
-        //    entity.Property(x => x.BodyNumber)
-        //        .HasMaxLength(50);
-
-        //    entity.Property(x => x.CarDesc)
-        //        .HasMaxLength(250);
-        //});
 
         builder.Entity<GenderTypeReadOnly>(entity =>
         {
@@ -476,8 +459,6 @@ public static class OrderManagementDbContextModelCreatingExtensions
             entity.ToTable(nameof(Organization));
         });
 
-
-
         builder.Entity<SaleProcessTypeReadOnly>(entity =>
         {
             entity.ToTable(nameof(SaleProcessTypeReadOnly));
@@ -488,6 +469,28 @@ public static class OrderManagementDbContextModelCreatingExtensions
         {
             entity.ToTable("PriorityList");
             entity.HasIndex(x => x.NationalCode, "IX_PriorityList_NationalCode");
+        });
+
+
+
+        builder.Entity<QuestionRelationship>(entity =>
+        {
+            entity.ToTable(nameof(QuestionRelationship));
+
+            entity.HasOne<Question>(x => x.Question)
+                    .WithMany(x => x.questionRelationships)
+                    .HasForeignKey(x => x.QuestionId)
+                    .OnDelete(DeleteBehavior.NoAction);
+
+            entity.HasOne<QuestionAnswer>(x => x.QuestionAnswer)
+                   .WithMany(x => x.questionRelationships)
+                   .HasForeignKey(x => x.QuestionAnswerId);
+        });
+
+        builder.Entity<OperatorEnumReadOnly>(entity =>
+        {
+            entity.ToTable(nameof(OperatorEnumReadOnly));
+            entity.AddEnumChangeTracker<OperatorEnumReadOnly, OperatorFilterEnum>();
         });
     }
 }

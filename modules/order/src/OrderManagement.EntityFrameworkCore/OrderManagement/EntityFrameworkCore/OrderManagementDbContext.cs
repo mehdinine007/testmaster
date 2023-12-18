@@ -116,6 +116,8 @@ namespace OrderManagement.EfCore
 
         public DbSet<Priority> Priority { get; set; }
 
+        public DbSet<QuestionRelationship> QuestionRelationship { get ; set; }
+
         public OrderManagementDbContext(DbContextOptions<OrderManagementDbContext> options)
             : base(options)
         {

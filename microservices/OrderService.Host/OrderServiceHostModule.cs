@@ -104,7 +104,10 @@ namespace OrderService.Host
                             new List<string>()
                         }
                     });
+                    options.IncludeXmlComments(string.Format(@"{0}\OrderManagement.HttpApi.xml",
+System.AppDomain.CurrentDomain.BaseDirectory));
                 });
+
             }
 
             Configure<AbpLocalizationOptions>(options =>

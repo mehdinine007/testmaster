@@ -22,6 +22,7 @@
 
     <ItemGroup>
 		<PackageReference Include="EPPlus" Version="6.2.10" />
+		<PackageReference Include="FluentValidation" Version="11.8.1" />
 		<PackageReference Include="google.protobuf" Version="3.22.4" />
 		<PackageReference Include="grpc.net.client" Version="2.53.0" />
 		<PackageReference Include="grpc.tools" Version="2.54.0" />
