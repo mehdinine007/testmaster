@@ -115,6 +115,7 @@ namespace OrderManagement.EfCore
         public DbSet<SaleProcessTypeReadOnly> SaleProcessTypeReadOnly { get; set; }
 
         public DbSet<Priority> Priority { get; set; }
+        public DbSet<QuestionGroup> QuestionGroup { get; set; }
 
         public OrderManagementDbContext(DbContextOptions<OrderManagementDbContext> options)
             : base(options)

@@ -192,6 +192,7 @@ namespace OrderManagement
                 .IgnoreFullAuditedObjectProperties();
 
             CreateMap<Priority, PriorityDto>().ReverseMap();
+            CreateMap<QuestionGroup, QuestionGroupDto>().ReverseMap();
         }
     }
 }

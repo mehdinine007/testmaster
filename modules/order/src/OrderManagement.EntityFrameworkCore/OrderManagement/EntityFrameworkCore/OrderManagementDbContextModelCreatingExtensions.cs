@@ -385,7 +385,18 @@ public static class OrderManagementDbContextModelCreatingExtensions
             entity.Property(x => x.Title)
                 .HasMaxLength(50);
         });
-
+        builder.Entity<QuestionGroup>(entity =>
+        {
+            entity.ToTable(nameof(QuestionGroup));
+            
+            entity.HasOne<Questionnaire>(x => x.Questionnaire)
+                .WithMany(x => x.QuestionGroups)    
+                .HasForeignKey(x => x.QuestionnaireId)
+                .OnDelete(DeleteBehavior.NoAction);
+         
+            entity.Property(x => x.Title)
+                    .HasMaxLength(50);
+        });
         builder.Entity<QuestionAnswer>(entity =>
         {
             entity.ToTable(nameof(QuestionAnswer));
@@ -489,5 +500,7 @@ public static class OrderManagementDbContextModelCreatingExtensions
             entity.ToTable("PriorityList");
             entity.HasIndex(x => x.NationalCode, "IX_PriorityList_NationalCode");
         });
+
+     
     }
 }

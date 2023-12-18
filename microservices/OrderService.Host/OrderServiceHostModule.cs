@@ -31,6 +31,7 @@ using IFG.Core.Extensions;
 using IFG.Core.Utility.Security.Encyption;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Collections.Generic;
+using Volo.Abp.FluentValidation;
 using Licence;
 
 namespace OrderService.Host
@@ -49,7 +50,9 @@ namespace OrderService.Host
         typeof(OrderManagementEntityFrameworkCoreModule),
         //typeof(AbpAspNetCoreMultiTenancyModule),
         typeof(AbpTenantManagementEntityFrameworkCoreModule),
-        typeof(AbpBackgroundJobsHangfireModule)
+        typeof(AbpBackgroundJobsHangfireModule),
+        typeof(AbpFluentValidationModule)
+
         )]
     public class OrderServiceHostModule : AbpModule
     {
