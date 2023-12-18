@@ -51,8 +51,8 @@ public class OrderManagementController
 
     [HttpGet]
 
-    public Task<List<CustomerOrder_OrderDetailDto>> GetCustomerOrderList(string attachmentEntityType, string attachmentlocation)
-        => _orderAppService.GetCustomerOrderList(EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(attachmentEntityType), EnumHelper.ConvertStringToEnum<AttachmentLocationEnum>(attachmentlocation));
+    public async Task<CustomerOrder_OrderDetailTreeDto> GetCustomerOrderList(string attachmentEntityType, string attachmentlocation)
+        => await _orderAppService.GetCustomerOrderList(EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(attachmentEntityType), EnumHelper.ConvertStringToEnum<AttachmentLocationEnum>(attachmentlocation));
 
     [RemoteService(IsEnabled = false)]
     public async Task<CustomerOrder_OrderDetailDto> GetOrderDetailById(int id, string attachmentEntityType, string attachmentlocation)

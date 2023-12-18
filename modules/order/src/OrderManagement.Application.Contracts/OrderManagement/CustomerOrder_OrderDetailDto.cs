@@ -56,9 +56,17 @@ namespace OrderManagement.Application.Contracts
         public ProductAndCategoryViewModel Product { get; set; }
 
         public string CompanyName { get; set; }
-        public int Id { get;set; }
+        public int Id { get; set; }
         public int SaleId { get; set; }
         public string TrackingCode { get; set; }
 
+    }
+    public class CustomerOrder_OrderDetailTreeDto
+    {
+        public int? ApproximatePriority { get; set; }
+
+        public int PrimaryPriority { get; set; }
+
+        public List<CustomerOrder_OrderDetailDto> OrderList { get; set; }
     }
 }

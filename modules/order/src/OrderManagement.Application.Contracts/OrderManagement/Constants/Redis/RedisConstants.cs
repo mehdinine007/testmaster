@@ -7,7 +7,7 @@ public static class RedisConstants
 
     public const string SaleDetailPrefix = "n:SaleDetail:";
     public const string CommitOrderPrefix = "n:CommitOrder:";
-    public const string OrderStepCacheKey = CommitOrderPrefix+"OrderStep_{0}";
+    public const string OrderStepCacheKey = CommitOrderPrefix + "OrderStep_{0}";
     public const string GrpcGetUserById = "n:GrpcGetUsreById:";
 
     public const string CommitOrderEsaleTypePrefix = "n:CommitOrderEsaleType:";
@@ -32,4 +32,6 @@ public static class RedisConstants
     public const string OrderStatusPrefix = "n:OrderStatusPrefix:";
     public const string QuestionnaireSurveyReport = "n:Questionnaire:{0}";
     public const string QuestionnaireSurveyReportWithRelatedEntity = "n:Questionnaire:{0}, rlt_entity:{1}";
+    public const string BlackListTotalCount = "BlacklistTotalCount";
+    public const string BlacklistCountPrefix = "n:UserOrder";
 }
