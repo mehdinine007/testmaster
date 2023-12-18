@@ -105,5 +105,6 @@ namespace OrderManagement.EfCore
         DbSet<SaleProcessTypeReadOnly> SaleProcessTypeReadOnly { get; set; }
         DbSet<Organization> Organization { get; set; }
         DbSet<Priority> Priority { get; set; }
+        DbSet<QuestionGroup> QuestionGroup  { get; set; }
     }
 }
