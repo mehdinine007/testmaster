@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,13 +9,10 @@ namespace OrderManagement.Application.Contracts.OrderManagement
 {
     public class QuestionRelationshipDto
     {
-
         public int Id { get; set; }
         public int QuestionRelationId { get; set; }
         public int OperationType { get; set; }
-        public int QuestionAnswerId { get; set; }
+        public long QuestionAnswerId { get; set; }
         public int QuestionId { get; set; }
-
-
     }
 }

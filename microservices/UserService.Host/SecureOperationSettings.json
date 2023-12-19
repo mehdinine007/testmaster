@@ -985,6 +985,44 @@
 
         ]
       }
+      {
+        "title": "QuestionRelationshipService",
+        "code": "00020024",
+        "displayName": "سرویس ارتباط سوالات پرسشنامه",
+        "children": [
+          {
+            "title": "GetById",
+            "code": "000200240001",
+            "displayName": "نمایش ارتباط سوال پرسشنامه توسط شناسه",
+            "children": []
+          },
+          {
+            "title": "GetAll",
+            "code": "000200240002",
+            "displayName": "نمایش ارتباط سوالات پرسشنامه توسط سوال",
+            "children": []
+          },
+          {
+            "title": "Delete",
+            "code": "000200240003",
+            "displayName": "حذف",
+            "children": []
+          },
+          {
+            "title": "Add",
+            "code": "000200240004",
+            "displayName": "ثبت",
+            "children": []
+          },
+          {
+            "title": "Update",
+            "code": "000200240005",
+            "displayName": "بروزرسانی",
+            "children": []
+          }
+
+        ]
+      }
     ]
   },
   {

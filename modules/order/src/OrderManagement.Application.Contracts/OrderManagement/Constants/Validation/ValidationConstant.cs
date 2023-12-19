@@ -12,6 +12,12 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Constants
         public const string ItemNotFoundId = "0005";
         public const string QuestionnerNotFound = "پرسشنامه خالی است";
         public const string QuestionnerNotFoundId = "0006";
+        public const string QuestionNotFound = "پرسش وجود ندارد";
+        public const string QuestionNotFoundId = "0009";  
+        public const string AnswerNotFound = "پاسخ وجود ندارد";
+        public const string AnswerNotFoundId = "0010";
+        public const string OperatorNotFound = "عملگر وجود ندارد";
+        public const string OperatorNotFoundId = "0011";
     }
     public static class RuleSets
     {
@@ -23,6 +29,9 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Constants
         public const string DeleteId = "0003";
         public const string GetById = "GetById";
         public const string GetByIdId = "0004";
+        public const string GetListByQuestionId = "GetListByQuestionId";
+        public const string GetListByQuestionIdId = "0006";
+        
 
     }
 }

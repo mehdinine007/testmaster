@@ -18,11 +18,7 @@ namespace OrderManagement.Application.OrderManagement.FluentValidation
             RuleFor(x => x.Title).NotNull().NotEmpty().MaximumLength(50).WithMessage(ValidationConstant.ItemNotFound);
             RuleFor(x => x.QuestionnaireId).NotNull().NotEmpty().WithMessage(ValidationConstant.QuestionnerNotFound);
 
-            RuleSet(RuleSets.Add, () =>
-            {
-
-            });
-
+          
             RuleSet(RuleSets.Edit, () =>
             {
                 RuleFor(x => x.Id).MustAsync(async (o, e) => await questionGrouprepository.AnyAsync(p => p.Id == o)).WithMessage(ValidationConstant.ItemNotFound);

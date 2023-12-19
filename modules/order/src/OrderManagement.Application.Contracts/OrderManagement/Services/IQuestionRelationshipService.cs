@@ -11,10 +11,11 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Services
 {
     public interface IQuestionRelationshipService : IApplicationService
     {
-        Task<int> Add(QuestionRelationshipDto questionRelationshipDto);
-        Task<List<QuestionRelationshipDto>> GetList(int QuestionId);
         Task<QuestionRelationshipDto> GetById(int id);
-        Task<int> Update(QuestionRelationshipDto questionRelationshipDto);
+        Task<List<QuestionRelationshipDto>> GetList(int QuestionId);
         Task<bool> Delete(int id);
+        Task<int> Add(QuestionRelationshipDto questionRelationshipDto);
+ 
+        Task<int> Update(QuestionRelationshipDto questionRelationshipDto);
     }
 }
