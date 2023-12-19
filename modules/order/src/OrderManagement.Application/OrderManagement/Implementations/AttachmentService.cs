@@ -74,6 +74,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             attachment.Location = attachmentDto.Location;
             attachment.Content = attachmentDto.Content;
             attachment.Description = attachmentDto.Description;
+            attachment.Device=attachmentDto.Device;
             await _attachementRepository.UpdateAsync(attachment, autoSave: true);
             return attachment.Id;
         }
@@ -144,7 +145,8 @@ namespace OrderManagement.Application.OrderManagement.Implementations
                 Title = uploadFile.Title,
                 Content = uploadFile.Content,
                 Location = uploadFile.Location,
-                Priority = uploadFile.Priority
+                Priority = uploadFile.Priority,
+                Device=uploadFile.Device,
             };
             attachDto.Id = Guid.NewGuid();
             var attachment = CopyFile(attachDto);
