@@ -86,13 +86,16 @@ public class AnnouncementService : ApplicationService, IAnnouncementService
 
     public async Task<PagedResultDto<AnnouncementDto>> GetPagination(AnnouncementGetListDto input)
     {
-        var count = _announcementRepository.WithDetails().Count();
         var announcementResult = await _announcementRepository.GetQueryableAsync();
+        if (input.CompanyId.HasValue)
+            announcementResult = announcementResult.Where(x => x.CompanyId.Value == input.CompanyId.Value);
+        if (input.Active.HasValue)
+            announcementResult = announcementResult.Where(x => x.Active == input.Active.Value);
+        var count = announcementResult.Count();
         var announcementList = announcementResult
-            .Where(x => x.CompanyId == input.CompanyId && x.Active == input.Active)
             .AsNoTracking()
-            .OrderByDescending(x => x.Id)
             .PageBy(input)
+            .SortByRule(input)
             .ToList();
         var attachments = await _attachmentService.GetList(AttachmentEntityEnum.Announcement, announcementList.Select(x => x.Id).ToList()
                                                     , EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(input.AttachmentType), EnumHelper.ConvertStringToEnum<AttachmentLocationEnum>(input.AttachmentLocation));
