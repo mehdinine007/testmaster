@@ -15,6 +15,9 @@ using MongoDB.Driver;
 using Esale.Share.Authorize;
 using System.Reflection.Metadata;
 using Licence;
+using System.ComponentModel.DataAnnotations;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Volo.Abp.ObjectMapping;
 
 namespace UserManagement.Application.UserManagement.Implementations
 {
@@ -63,15 +66,10 @@ namespace UserManagement.Application.UserManagement.Implementations
             var permissions = await _permissionDefinitionService.GetList();
             var rolePermissions = await _rolePermissionRepository.GetListAsync();
 
-            var existRole = rolePermissions.Where(x => x.Type == type).FirstOrDefault();
-            if (existRole != null)
+            if (type == RolePermissionEnum.Admin || (type == null || type == RolePermissionEnum.None))
             {
-                await _rolePermissionWritRepository.HardDeleteAsync(ObjectMapper.Map<RolePermission, RolePermissionWrite>(existRole), autoSave: true);
-            }
-    
-            if (type == RolePermissionEnum.Admin || type == null)
-            {
-            var serviceList = new List<string>();
+                await DeleteRolePermission(RolePermissionEnum.Admin, rolePermissions);
+                var serviceList = new List<string>();
                 foreach (var per in permissions)
                 {
                     foreach (var child in per.Children)
@@ -82,11 +80,15 @@ namespace UserManagement.Application.UserManagement.Implementations
                 rolePermission.Title = RolePermissionEnum.Admin.ToString();
                 rolePermission.Type = RolePermissionEnum.Admin;
                 rolePermission.Permissions = serviceList;
+                rolePermission.Code = ((int)RolePermissionEnum.Admin).ToString().PadLeft(4, '0');
                 await Add(rolePermission);
+
+
             }
 
-            if (type == RolePermissionEnum.Customer || type == null)
+            if (type == RolePermissionEnum.Customer || (type == null || type == RolePermissionEnum.None))
             {
+                await DeleteRolePermission(RolePermissionEnum.Customer, rolePermissions);
                 var serviceList = new List<string>();
                 var permission = permissions.Where(x => x.Code == ConstantInfo.ModuleIUser || x.Code == ConstantInfo.ModuleOrder).ToList();
                 foreach (var per in permission)
@@ -101,10 +103,15 @@ namespace UserManagement.Application.UserManagement.Implementations
                 rolePermission.Title = RolePermissionEnum.Customer.ToString();
                 rolePermission.Type = RolePermissionEnum.Customer;
                 rolePermission.Permissions = serviceList;
+                rolePermission.Code = ((int)RolePermissionEnum.Customer).ToString().PadLeft(4, '0');
+
+
                 await Add(rolePermission);
+
             }
-            if (type == RolePermissionEnum.Company || type == null)
+            if (type == RolePermissionEnum.Company || (type == null || type == RolePermissionEnum.None))
             {
+                await DeleteRolePermission(RolePermissionEnum.Company, rolePermissions);
                 var serviceList = new List<string>();
                 var permission = permissions.Where(x => x.Code == ConstantInfo.ModuleCompany).ToList();
                 foreach (var per in permission)
@@ -118,10 +125,15 @@ namespace UserManagement.Application.UserManagement.Implementations
                 rolePermission.Title = RolePermissionEnum.Company.ToString();
                 rolePermission.Type = RolePermissionEnum.Company;
                 rolePermission.Permissions = serviceList;
+                rolePermission.Code = ((int)RolePermissionEnum.Company).ToString().PadLeft(4, '0');
+
+
                 await Add(rolePermission);
+
             }
-            if (type == RolePermissionEnum.nicc )
+            if (type == RolePermissionEnum.nicc || (type == null || type == RolePermissionEnum.None))
             {
+                await DeleteRolePermission(RolePermissionEnum.nicc, rolePermissions);
                 var serviceList = new List<string>();
                 var permission = permissions.Where(x => x.Code == ConstantInfo.ModuleAdminPanel).ToList();
                 foreach (var per in permission)
@@ -135,10 +147,12 @@ namespace UserManagement.Application.UserManagement.Implementations
                 rolePermission.Title = RolePermissionEnum.nicc.ToString();
                 rolePermission.Type = RolePermissionEnum.nicc;
                 rolePermission.Permissions = serviceList;
+                rolePermission.Code = ((int)RolePermissionEnum.nicc).ToString().PadLeft(4, '0');
                 await Add(rolePermission);
             }
-            if (type == RolePermissionEnum.InspectionOrganization )
+            if (type == RolePermissionEnum.InspectionOrganization || (type == null || type == RolePermissionEnum.None))
             {
+                await DeleteRolePermission(RolePermissionEnum.InspectionOrganization, rolePermissions);
                 var serviceList = new List<string>();
                 var permission = permissions.Where(x => x.Code == ConstantInfo.ModuleAdminPanel).ToList();
                 foreach (var per in permission)
@@ -152,10 +166,14 @@ namespace UserManagement.Application.UserManagement.Implementations
                 rolePermission.Title = RolePermissionEnum.InspectionOrganization.ToString();
                 rolePermission.Type = RolePermissionEnum.InspectionOrganization;
                 rolePermission.Permissions = serviceList;
+                rolePermission.Code = ((int)RolePermissionEnum.InspectionOrganization).ToString().PadLeft(4, '0');
+
                 await Add(rolePermission);
             }
-            if (type == RolePermissionEnum.mimt)
+            if (type == RolePermissionEnum.mimt || (type == null || type == RolePermissionEnum.None))
             {
+                await DeleteRolePermission(RolePermissionEnum.mimt, rolePermissions);
+
                 var serviceList = new List<string>();
                 var permission = permissions.Where(x => x.Code == ConstantInfo.ModuleAdminPanel).ToList();
                 foreach (var per in permission)
@@ -169,20 +187,35 @@ namespace UserManagement.Application.UserManagement.Implementations
                 rolePermission.Title = RolePermissionEnum.mimt.ToString();
                 rolePermission.Type = RolePermissionEnum.mimt;
                 rolePermission.Permissions = serviceList;
+                rolePermission.Code = ((int)RolePermissionEnum.mimt).ToString().PadLeft(4, '0');
+
                 await Add(rolePermission);
             }
             return true;
+        }
+
+        private async Task DeleteRolePermission(RolePermissionEnum type, List<RolePermission> rolePermissions)
+        {
+            if (rolePermissions.Count() > 0)
+            {
+                var existRole = rolePermissions.Where(x => x.Type == type).FirstOrDefault();
+                await _rolePermissionWritRepository.HardDeleteAsync(ObjectMapper.Map<RolePermission, RolePermissionWrite>(existRole), autoSave: true);
+            }
         }
 
         //[SecuredOperation(RolePermissionServicePermissionConstants.Add)]
         public async Task<RolePermissionDto> Add(RolePermissionDto dto)
         {
             var role = await _rolePermissionRepository.GetQueryableAsync();
-            string maxcode = default;
-            if (role.Any())
-                maxcode = role.Max(x => x.Code);
 
-            dto.Code = StringHelper.GenerateTreeNodePath(maxcode, null, 4);
+            if (string.IsNullOrEmpty(dto.Code))
+            {
+                string maxcode = default;
+                if (role.Any())
+                    maxcode = role.Max(x => x.Code);
+                dto.Code = StringHelper.GenerateTreeNodePath(maxcode, null, 4);
+            }
+
             var rolePermission = ObjectMapper.Map<RolePermissionDto, RolePermissionWrite>(dto);
 
             var entity = await _rolePermissionWritRepository.InsertAsync(rolePermission, autoSave: true);

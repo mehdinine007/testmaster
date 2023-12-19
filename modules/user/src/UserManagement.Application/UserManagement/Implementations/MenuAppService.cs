@@ -356,7 +356,7 @@ public class MenuAppService : ApplicationService, IMenuAppService
         return menu;
     }
 
-    public async Task UpdateMenuPolicy()
+    public async Task SeedMenu()
     {
         var currentDirectory = Environment.CurrentDirectory;
         const string fileName = "UpdateMenuPolicy.json";
