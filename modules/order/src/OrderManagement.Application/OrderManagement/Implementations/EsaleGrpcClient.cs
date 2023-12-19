@@ -70,6 +70,7 @@ public class EsaleGrpcClient : ApplicationService, IEsaleGrpcClient
             NationalCode = user.NationalCode,
             Shaba = user.Shaba,
             MobileNumber = user.MobileNumber,
+            GenderCode = user.GenderCode,
             CompanyId = user.CompanyId,
             Name = user.Name,
             SurName = user.SurName,
