@@ -806,10 +806,10 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 })
                 .AsNoTracking()
                 .FirstOrDefault(x => x.Uid == userId);
-            resultObject.PrimaryPriority = customerPriority.ChosenPriorityByCustomer;
+            resultObject.PrimaryPriority = customerPriority?.ChosenPriorityByCustomer;
             if (anyCompletedOrder == null)
             {
-                resultObject.ApproximatePriority = customerPriority.ApproximatePriority;
+                resultObject.ApproximatePriority = customerPriority?.ApproximatePriority;
             }
         }
 
