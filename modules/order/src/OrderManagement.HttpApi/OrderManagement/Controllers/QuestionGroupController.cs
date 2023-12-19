@@ -13,6 +13,7 @@ using IFG.Core.Utility.Tools;
 using OrderManagement.Application.OrderManagement.Implementations;
 using Volo.Abp.AspNetCore.Mvc;
 
+
 namespace OrderManagement.HttpApi.OrderManagement.Controllers;
 
 [DisableAuditing]
@@ -26,8 +27,9 @@ public class QuestionGroupController : AbpController, IQuestionGroupService
     {
         _questionGroupService = questionGroupService;
     }
+  
     [HttpGet]
-    public async Task<List<QuestionGroupDto>> GetAll() => await _questionGroupService.GetAll();
+    public async Task<List<QuestionGroupDto>> GetAll(int QuestionnaireId) => await _questionGroupService.GetAll(QuestionnaireId);
 
     [HttpGet]
     public async Task<QuestionGroupDto> GetById(int Id) => await _questionGroupService.GetById(Id);
