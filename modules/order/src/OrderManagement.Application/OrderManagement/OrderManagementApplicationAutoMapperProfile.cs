@@ -195,6 +195,7 @@ namespace OrderManagement
             CreateMap<Priority, PriorityDto>().ReverseMap();
             CreateMap<QuestionRelationship, QuestionRelationshipDto>().ReverseMap();
 
+            CreateMap<QuestionGroup, QuestionGroupDto>().ReverseMap();
         }
     }
 }

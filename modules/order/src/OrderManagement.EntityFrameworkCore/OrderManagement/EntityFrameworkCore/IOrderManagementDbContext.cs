@@ -108,5 +108,6 @@ namespace OrderManagement.EfCore
         DbSet<QuestionRelationship> QuestionRelationship { get; set; }
 
 
+        DbSet<QuestionGroup> QuestionGroup  { get; set; }
     }
 }
