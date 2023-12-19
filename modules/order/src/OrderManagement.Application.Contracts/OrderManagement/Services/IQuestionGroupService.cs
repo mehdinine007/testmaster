@@ -11,7 +11,7 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Services
 {
     public interface IQuestionGroupService : IApplicationService
     {
-        Task<List<QuestionGroupDto>> GetAll();
+        Task<List<QuestionGroupDto>> GetAll(int QuestionnaireId);
         Task<QuestionGroupDto> GetById(int Id);
         Task<QuestionGroupDto> Add(QuestionGroupDto questionGroup);
         Task<QuestionGroupDto> Update(QuestionGroupDto questionGroup);

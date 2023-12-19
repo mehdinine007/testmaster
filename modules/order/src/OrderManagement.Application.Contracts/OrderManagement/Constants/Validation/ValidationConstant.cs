@@ -8,8 +8,10 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Constants
 {
     public class ValidationConstant
     {
+        public const string GetListByQuestionner = "پرسشنامه تعریف نشده";
+        public const string GetListByQuestionnerId = "0005";
         public const string ItemNotFound = "مورد یافت نشد";
-        public const string ItemNotFoundId = "0005";
+        public const string ItemNotFoundId = "0006";
         public const string QuestionnerNotFound = "پرسشنامه خالی است";
         public const string QuestionnerNotFoundId = "0006";
         public const string QuestionNotFound = "پرسش وجود ندارد";
@@ -18,6 +20,11 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Constants
         public const string AnswerNotFoundId = "0010";
         public const string OperatorNotFound = "عملگر وجود ندارد";
         public const string OperatorNotFoundId = "0011";
+        public const string QuestionnerNotFoundId = "0007";
+        public const string TitleNotFound = "عنوان خالی است";
+        public const string TitleNotFoundId = "0008";
+        public const string QuestionnerNotExist = "پرسشنامه وجود ندارد";
+        public const string QuestionnerNotExistId = "00012";
     }
     public static class RuleSets
     {
@@ -32,6 +39,7 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Constants
         public const string GetListByQuestionId = "GetListByQuestionId";
         public const string GetListByQuestionIdId = "0006";
         
+
 
     }
 }
