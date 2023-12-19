@@ -39,7 +39,7 @@ namespace OrderService.Host.Infrastructures.Middlewares
 
         //This field is for the framework ToDo:E.K.2000
         //protected IAuditLogInfoToAuditLogConverter Converter { get; }
-        protected AuditLogConverter _converterer { get; }
+        protected AuditLogConverter _converter { get; }
         private IConfiguration _configuration { get; set; }
         private IElkRepository<AuditLog, AuditLog> _elkRepository { get; set; }
         ElasticClient client;
@@ -47,7 +47,7 @@ namespace OrderService.Host.Infrastructures.Middlewares
         /// <summary>
         /// Creates  a new <see cref="AuditingStore"/>.
         /// </summary>
-        public AuditingStoreElk(AuditLogConverter converterer,
+        public AuditingStoreElk(AuditLogConverter converter,
                IRepository<AuditLog, 
                Guid> auditLogRepository, 
                IElkRepository<AuditLog, 
@@ -60,7 +60,7 @@ namespace OrderService.Host.Infrastructures.Middlewares
             _elkRepository = ElkRepository;
             this.client = client;
             _configuration = Configuration;
-            _converterer = converterer;
+            _converter = converter;
         }
 
         public virtual async Task SaveAsync(AuditLogInfo auditInfo)
@@ -69,7 +69,7 @@ namespace OrderService.Host.Infrastructures.Middlewares
             {
                 if (_configuration.GetSection("IsElkEnabled").Value == "1")
                 {
-                    string jsonData = JsonConvert.SerializeObject(await _converterer.ConvertAsync(auditInfo));
+                    string jsonData = JsonConvert.SerializeObject(await _converter.ConvertAsync(auditInfo));
                     var response = client.LowLevel.Index<StringResponse>(_configuration.GetSection("ElkIndexName").Value, jsonData);
                     Body body = JsonConvert.DeserializeObject<Body>(response.Body);
                     if (body._shards.successful != 1)
@@ -82,18 +82,18 @@ namespace OrderService.Host.Infrastructures.Middlewares
                         {
                             auditInfo.Comments.Add("elk err");
                         }
-                        await _auditLogRepository.InsertAsync(await _converterer.ConvertAsync(auditInfo));
+                        await _auditLogRepository.InsertAsync(await _converter.ConvertAsync(auditInfo));
                     }
                 }
                 else
                 {
-                    await _auditLogRepository.InsertAsync(await _converterer.ConvertAsync(auditInfo));
+                    await _auditLogRepository.InsertAsync(await _converter.ConvertAsync(auditInfo));
 
                 }
             }
             catch (Exception ex)
             {
-                await _auditLogRepository.InsertAsync(await _converterer.ConvertAsync(auditInfo));
+                await _auditLogRepository.InsertAsync(await _converter.ConvertAsync(auditInfo));
             }
         }
     }
