@@ -65,7 +65,7 @@ namespace OrderManagement.Application.Contracts
     {
         public int? ApproximatePriority { get; set; }
 
-        public int PrimaryPriority { get; set; }
+        public int? PrimaryPriority { get; set; }
 
         public List<CustomerOrder_OrderDetailDto> OrderList { get; set; }
     }
