@@ -1,7 +1,9 @@
-﻿using FluentValidation;
+﻿using Esale.Share.Authorize;
+using FluentValidation;
 using Nest;
 using OrderManagement.Application.Contracts.OrderManagement;
 using OrderManagement.Application.Contracts.OrderManagement.Constants;
+using OrderManagement.Application.Contracts.OrderManagement.Constants.Permissions;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
 using OrderManagement.Domain;
 using OrderManagement.Domain.OrderManagement;
@@ -33,6 +35,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
 
         }
 
+        [SecuredOperation(QuestionGroupServicePermissionConstants.Add)]
         public async Task<QuestionGroupDto> Add(QuestionGroupDto questionGroupDto)
         {
             var validationResult = await _questionGroupValidator.ValidateAsync(questionGroupDto, Options => Options.IncludeRuleSets(RuleSets.Add));
@@ -57,6 +60,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
 
         }
 
+        [SecuredOperation(QuestionGroupServicePermissionConstants.Delete)]
         public async Task<bool> Delete(int Id)
         {
             var validationResult = await _questionGroupValidator.ValidateAsync(new QuestionGroupDto { Id = Id }, options => options.IncludeRuleSets(RuleSets.Delete));
@@ -70,13 +74,22 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             return true;
         }
 
-        public async Task<List<QuestionGroupDto>> GetAll()
+        [SecuredOperation(QuestionGroupServicePermissionConstants.GetList)]
+        public async Task<List<QuestionGroupDto>> GetAll(int QuestionnaireId)
         {
-            var qusetion = await _questionGroupRepository.GetListAsync();
-            var questiondto = ObjectMapper.Map<List<QuestionGroup>, List<QuestionGroupDto>>(qusetion);
-            return questiondto;
+            var validationResult = await _questionGroupValidator.ValidateAsync(new QuestionGroupDto { QuestionnaireId = QuestionnaireId}, options => options.IncludeRuleSets(ValidationConstant.GetListByQuestionner));
+
+            if (!validationResult.IsValid)
+            {
+                var ex = new ValidationException(validationResult.Errors);
+                throw new UserFriendlyException(ex.Message, ValidationConstant.GetListByQuestionner);
+            }
+            var qusetion = (await _questionGroupRepository.GetQueryableAsync())
+                            .Where(x => x.QuestionnaireId == QuestionnaireId).ToList();
+              return ObjectMapper.Map<List<QuestionGroup>, List<QuestionGroupDto>>(qusetion);
         }
 
+        [SecuredOperation(QuestionGroupServicePermissionConstants.GetById)]
         public async Task<QuestionGroupDto> GetById(int Id)
         {
             var validationResult = await _questionGroupValidator.ValidateAsync(new QuestionGroupDto { Id = Id }, options => options.IncludeRuleSets(RuleSets.GetById));
@@ -91,6 +104,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             return ObjectMapper.Map<QuestionGroup, QuestionGroupDto>(questiongroup);
         }
 
+        [SecuredOperation(QuestionGroupServicePermissionConstants.Update)]
         public async Task<QuestionGroupDto> Update(QuestionGroupDto questionGroupDto)
         {
             var validationResult = await _questionGroupValidator.ValidateAsync(questionGroupDto, Options => Options.IncludeRuleSets(RuleSets.Edit));
@@ -101,7 +115,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             }
             var questionGroupQuery = (await _questionGroupRepository.GetQueryableAsync())
                                         .FirstOrDefault(x => x.Id == questionGroupDto.Id);
-            if (!string.IsNullOrEmpty(questionGroupDto.Title))
+            
                 questionGroupQuery.Title = questionGroupDto.Title;
 
             var result = await _questionGroupRepository.UpdateAsync(questionGroupQuery);
@@ -109,6 +123,6 @@ namespace OrderManagement.Application.OrderManagement.Implementations
 
             return ObjectMapper.Map<QuestionGroup, QuestionGroupDto>(result);
 
-        }
+        }       
     }
 }
