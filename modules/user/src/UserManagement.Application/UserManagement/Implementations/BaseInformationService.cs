@@ -146,7 +146,8 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
                 x.Gender,
                 x.Name,
                 x.Surname,
-                x.UID
+                x.UID,
+                x.Priority
             })
             .FirstOrDefault(x => x.UID == userId.ToLower());
 
@@ -170,7 +171,8 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
             CompanyId = user.CompanyId,
             SurName = user.Surname,
             Name = user.Name,
-            Uid=user.UID
+            Uid=user.UID,
+            Priority = user.Priority
         };
     }
 

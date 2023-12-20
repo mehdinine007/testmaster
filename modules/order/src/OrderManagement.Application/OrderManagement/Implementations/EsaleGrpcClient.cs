@@ -72,7 +72,8 @@ public class EsaleGrpcClient : ApplicationService, IEsaleGrpcClient
             MobileNumber = user.MobileNumber,
             CompanyId = user.CompanyId,
             Name = user.Name,
-            SurName = user.SurName
+            SurName = user.SurName,
+            Priority = user.Priority
         };
 
         await _cacheManager.SetStringAsync(cacheKey, prefix, JsonConvert.SerializeObject(userDto), new CacheOptions

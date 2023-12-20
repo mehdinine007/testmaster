@@ -16,6 +16,7 @@ service UserServiceGrpc{
 message GetUserModel{
 	string userId = 1;
 }
+
 message UserModel{
 	string NationalCode = 1;
 
@@ -45,7 +46,11 @@ message UserModel{
 
 	string Name = 14;
 
-	string SurName = 15;
+	string SurName=15;
+
+	string Uid=16;
+
+	google.protobuf.Int32Value Priority= 17;
 }
 
 message UserAdvocacy{

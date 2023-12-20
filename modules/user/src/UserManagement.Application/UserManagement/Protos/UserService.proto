@@ -60,8 +60,10 @@ message UserModel{
 	string Name = 14;
 
 	string SurName=15;
+
 	string Uid=16;
 
+	google.protobuf.Int32Value Priority= 17;
 }
 message AuthenticateRequest{
 	string UserNameOrEmailAddress=1;

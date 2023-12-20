@@ -70,7 +70,8 @@ namespace UserManagement.Application.UserManagement.Implementations
                     CompanyId = user.CompanyId,
                     Name = user.Name,
                     SurName = user.SurName,
-                    Uid = user.Uid
+                    Uid = user.Uid,
+                    Priority = user.Priority,
                 };
             }
             catch (Exception)

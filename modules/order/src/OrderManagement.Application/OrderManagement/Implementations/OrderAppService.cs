@@ -55,7 +55,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
     private readonly IProductAndCategoryService _productAndCategoryService;
     private readonly IRepository<Priority, int> _priorityRepository;
     private readonly IOrganizationService _organizationService;
-
+    private readonly IRepository<CarMakerBlackList, long> _blackListRepository;
+    private readonly IRepository<CustomerPriority> _customerPriorityRepository;
 
     public OrderAppService(ICommonAppService commonAppService,
                            IBaseInformationService baseInformationAppService,
@@ -80,7 +81,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
                            IAttachmentService attachmentService,
                            IProductAndCategoryService productAndCategoryService,
                            IRepository<Priority, int> priorityRepository,
-                           IOrganizationService organizationService
+                           IOrganizationService organizationService,
+                           IRepository<CarMakerBlackList, long> blackListRepository,
+                           IRepository<CustomerPriority> customerPriorityRepository
         )
     {
         _commonAppService = commonAppService;
@@ -105,6 +108,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
         _productAndCategoryService = productAndCategoryService;
         _priorityRepository = priorityRepository;
         _organizationService = organizationService;
+        _blackListRepository = blackListRepository;
+        _customerPriorityRepository = customerPriorityRepository;
     }
 
 
@@ -730,7 +735,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
     [UnitOfWork(false, IsolationLevel.ReadUncommitted)]
     [SecuredOperation(OrderAppServicePermissionConstants.GetCustomerOrderList)]
-    public async Task<List<CustomerOrder_OrderDetailDto>> GetCustomerOrderList(List<AttachmentEntityTypeEnum> attachmentType = null, List<AttachmentLocationEnum> attachmentlocation = null)
+    public async Task<CustomerOrder_OrderDetailTreeDto> GetCustomerOrderList(List<AttachmentEntityTypeEnum> attachmentType = null, List<AttachmentLocationEnum> attachmentlocation = null)
     {
 
         var userId = _commonAppService.GetUserId();
@@ -785,10 +790,31 @@ public class OrderAppService : ApplicationService, IOrderAppService
             }).ToList();
         var cancleableDate = _configuration.GetValue<string>("CancelableDate");
         var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, customerOrders.Select(x => x.ProductId).ToList(), attachmentType, attachmentlocation);
+        CustomerOrder_OrderDetailTreeDto resultObject = new();
+        var enableExactPriorityCalculation = _configuration.GetValue<bool>("EnableExactPriorityCalculation");
+        if (enableExactPriorityCalculation)
+        {
+            var anyCompletedOrder = customerOrders.FirstOrDefault(x => x.OrderStatusCode == (int)OrderStatusType.Winner
+                && x.PriorityId.HasValue &&
+                x.PriorityId.Value == 1);
+            var customerPriority = (await _customerPriorityRepository.GetQueryableAsync())
+                .Select(x => new
+                {
+                    x.Uid,
+                    x.ChosenPriorityByCustomer,
+                    x.ApproximatePriority
+                })
+                .AsNoTracking()
+                .FirstOrDefault(x => x.Uid == userId);
+            resultObject.PrimaryPriority = customerPriority?.ChosenPriorityByCustomer;
+            if (anyCompletedOrder == null)
+            {
+                resultObject.ApproximatePriority = customerPriority?.ApproximatePriority;
+            }
+        }
+
         customerOrders.ForEach(x =>
         {
-
-
             var attachment = attachments.Where(y => y.EntityId == x.ProductId).ToList();
             x.Product.Attachments = ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(attachment);
 
@@ -825,10 +851,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
             {
                 x.CompanyName = Parent.Title;
             }
-
         });
-
-        return customerOrders.OrderByDescending(x => x.OrderId).ToList();
+        resultObject.OrderList = customerOrders.OrderByDescending(x => x.OrderId).ToList();
+        return resultObject;
 
 
     }
