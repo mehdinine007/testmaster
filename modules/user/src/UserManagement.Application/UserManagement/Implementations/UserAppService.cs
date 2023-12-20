@@ -682,7 +682,7 @@ IFG.Core.Caching.ICacheManager cacheManager)
         string prefix = $"{RedisConstants.GetUserById}";
         Guid userId = _commonAppService.GetUID();
         string cacheKey = userId.ToString();
-        await _cacheManager.RemoveByPrefixAsync(RedisConstants.GetUserById+ "profile_" + _commonAppService.GetUID().ToString(), new CacheOptions
+        await _cacheManager.RemoveByPrefixAsync(RedisConstants.GetUserById, new CacheOptions
        { Provider = CacheProviderEnum.Hybrid });
 
         var user = await (await _userMongoRepository.GetCollectionAsync())
