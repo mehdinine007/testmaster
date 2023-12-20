@@ -13,6 +13,6 @@ namespace OrderManagement.Domain.OrderManagement
         public string Title { get; set; }
         public int QuestionnaireId { get; set; }
         public virtual Questionnaire Questionnaire { get; set; }
-
+        public virtual Question Question { get; set; }
     }
 }

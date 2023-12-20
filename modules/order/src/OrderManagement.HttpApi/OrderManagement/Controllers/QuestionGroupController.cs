@@ -27,16 +27,54 @@ public class QuestionGroupController : AbpController, IQuestionGroupService
     {
         _questionGroupService = questionGroupService;
     }
-  
+    //--------------------------------------------------
+    /// <summary class="header">
+    ///گرفتن تمام گروهبندی سوالات 
+    /// </summary>
+    /// <remarks>
+    /// Sample value of message
+    /// 
+    ///     پارامترها 
+    ///     QuestionnaireId: int : پرسشنامه
+    /// </remarks>
     [HttpGet]
     public async Task<List<QuestionGroupDto>> GetAll(int QuestionnaireId) => await _questionGroupService.GetAll(QuestionnaireId);
-
+    //--------------------------------------------------
+    /// <summary class="header">
+    ///گرفتن گروهبندی سوالات با شناسه 
+    /// </summary>
+    /// <remarks>
+    /// Sample value of message
+    /// 
+    ///     پارامترها 
+    ///     Id: int : گروهبندی سوالات
+    /// </remarks>
     [HttpGet]
     public async Task<QuestionGroupDto> GetById(int Id) => await _questionGroupService.GetById(Id);
-
+    //--------------------------------------------------
+    /// <summary class="header">
+    ///اضافه کردن گروهبندی سوالات 
+    /// </summary>
+    /// <remarks>
+    /// Sample value of message
+    /// 
+    ///     پارامترها زیر اجباری است 
+    ///     Title: int : گروهبندی سوالات
+    ///     QuestionnaireId: int : پرسشنامه
+    /// </remarks>
     [HttpPost]
     public async Task<QuestionGroupDto> Add(QuestionGroupDto questionGroup) => await _questionGroupService.Add(questionGroup);
-
+    //--------------------------------------------------
+    /// <summary class="header">
+    ///اضافه کردن گروهبندی سوالات 
+    /// </summary>
+    /// <remarks>
+    /// Sample value of message
+    /// 
+    ///     پارامترها زیر اجباری است و فقط اجازه ی ویرایش عنوان وجود دارد 
+    ///     Title: int : گروهبندی سوالات
+    ///     
+    /// </remarks>
     [HttpPut]
     public async Task<QuestionGroupDto> Update(QuestionGroupDto questionGroup) => await _questionGroupService.Update(questionGroup);
     [HttpDelete]
