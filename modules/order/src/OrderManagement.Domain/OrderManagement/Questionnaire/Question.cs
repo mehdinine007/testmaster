@@ -1,4 +1,5 @@
-﻿using OrderManagement.Domain.Shared;
+﻿using OrderManagement.Domain.OrderManagement;
+using OrderManagement.Domain.Shared;
 using System.Collections.Generic;
 using Volo.Abp.Domain.Entities.Auditing;
 
@@ -10,6 +11,8 @@ public class Question : FullAuditedEntity<int>
 
     private ICollection<SubmittedAnswer> _submittedAnswers;
 
+    private ICollection<QuestionRelationship> _questionRelationships;
+
     public string Title { get; set; }
 
     public QuestionType QuestionType { get; set; }
@@ -17,7 +20,8 @@ public class Question : FullAuditedEntity<int>
     public int QuestionnaireId { get; set; }
 
     public virtual Questionnaire Questionnaire { get; protected set; }
-
+    public int? QuestionGroupId { get; set; }
+    public virtual QuestionGroup QuestionGroup { get; set; }
     public virtual ICollection<QuestionAnswer> Answers
     {
         get => _answers ?? (_answers = new List<QuestionAnswer>());
@@ -30,10 +34,17 @@ public class Question : FullAuditedEntity<int>
         protected set => _submittedAnswers = value;
     }
 
+    public virtual ICollection<QuestionRelationship> QuestionRelationships
+    {
+        get => _questionRelationships ?? (_questionRelationships = new List<QuestionRelationship>());
+        protected set => _questionRelationships = value;
+    }
+
     public Question()
     {
         Answers = new HashSet<QuestionAnswer>();
         SubmittedAnswers = new HashSet<SubmittedAnswer>();
+        QuestionRelationships = new HashSet<QuestionRelationship>();
     }
 
 }

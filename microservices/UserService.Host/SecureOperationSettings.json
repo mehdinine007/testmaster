@@ -856,18 +856,18 @@
       {
         "title": "AttachmentService",
         "code": "00020020",
-        "displayName": "سرویس بانک ها",
+        "displayName": "سرویس پیوست",
         "children": [
           {
             "title": "GetById",
             "code": "000200200001",
-            "displayName": "نمایش بانک ها توسط شناسه",
+            "displayName": "نمایش پیوست توسط شناسه",
             "children": []
           },
           {
             "title": "GetList",
             "code": "000200200002",
-            "displayName": "نمایش بانک ها",
+            "displayName": "نمایش پیوست ها",
             "children": []
           },
           {
@@ -900,18 +900,18 @@
       {
         "title": "AnnouncementService",
         "code": "00020021",
-        "displayName": "سرویس بانک ها",
+        "displayName": "سرویس اطلاعیه",
         "children": [
           {
             "title": "GetById",
             "code": "000200210001",
-            "displayName": "نمایش بانک ها توسط شناسه",
+            "displayName": "نمایش اطلاعیه توسط شناسه",
             "children": []
           },
           {
             "title": "GetList",
             "code": "000200210002",
-            "displayName": "نمایش بانک ها",
+            "displayName": "نمایش اطلاعیه ها",
             "children": []
           },
           {
@@ -984,6 +984,81 @@
           }
 
         ]
+      },
+      {
+        "title": "QuestionGroupService",
+        "code": "00020023",
+        "displayName": "سرویس گروه سوالات",
+        "children": [
+          {
+            "title": "GetById",
+            "code": "000200230001",
+            "displayName": "نمایش گروه سوالات توسط شناسه",
+            "children": []
+          },
+          {
+            "title": "GetAll",
+            "code": "000200230002",
+            "displayName": "نمایش گروه سوالات",
+            "children": []
+          },
+          {
+            "title": "Delete",
+            "code": "000200230003",
+            "displayName": "حذف",
+            "children": []
+          },
+          {
+            "title": "Add",
+            "code": "000200230004",
+            "displayName": "ثبت",
+            "children": []
+          },
+          {
+            "title": "Update",
+            "code": "000200230005",
+            "displayName": "بروزرسانی",
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "QuestionRelationshipService",
+        "code": "00020024",
+        "displayName": "سرویس ارتباط سوالات پرسشنامه",
+        "children": [
+          {
+            "title": "GetById",
+            "code": "000200240001",
+            "displayName": "نمایش ارتباط سوال پرسشنامه توسط شناسه",
+            "children": []
+          },
+          {
+            "title": "GetAll",
+            "code": "000200240002",
+            "displayName": "نمایش ارتباط سوالات پرسشنامه توسط سوال",
+            "children": []
+          },
+          {
+            "title": "Delete",
+            "code": "000200240003",
+            "displayName": "حذف",
+            "children": []
+          },
+          {
+            "title": "Add",
+            "code": "000200240004",
+            "displayName": "ثبت",
+            "children": []
+          },
+          {
+            "title": "Update",
+            "code": "000200240005",
+            "displayName": "بروزرسانی",
+            "children": []
+          }
+
+        ]
       }
     ]
   },
@@ -1025,7 +1100,6 @@
       }
     ]
   },
-
   {
     "title": "WorkFlowManagement",
     "code": "0004",
