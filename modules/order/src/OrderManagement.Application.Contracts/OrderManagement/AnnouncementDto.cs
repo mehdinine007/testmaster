@@ -19,6 +19,7 @@ namespace OrderManagement.Application.Contracts.OrderManagement
         public int? CompanyId { get; set; }
         public string? AttachmentType { get; set; } = null;
         public string? AttachmentLocation { get; set; } = null;
+        public bool Active { get; set; }
         public List<AttachmentViewModel> Attachments { get; set; }
     }
 }
