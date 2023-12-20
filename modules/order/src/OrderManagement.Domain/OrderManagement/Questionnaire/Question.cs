@@ -1,4 +1,5 @@
-﻿using OrderManagement.Domain.Shared;
+﻿using OrderManagement.Domain.OrderManagement;
+using OrderManagement.Domain.Shared;
 using System.Collections.Generic;
 using Volo.Abp.Domain.Entities.Auditing;
 
@@ -19,7 +20,8 @@ public class Question : FullAuditedEntity<int>
     public int QuestionnaireId { get; set; }
 
     public virtual Questionnaire Questionnaire { get; protected set; }
-
+    public int? QuestionGroupId { get; set; }
+    public virtual QuestionGroup QuestionGroup { get; set; }
     public virtual ICollection<QuestionAnswer> Answers
     {
         get => _answers ?? (_answers = new List<QuestionAnswer>());

@@ -9,6 +9,9 @@ namespace OrderManagement.Application.Contracts
         public string Title { get; set; }
         public QuestionType QuestionType { get; set; }
         public int QuestionnaireId { get; set; }
+        public int QuestionGrupId { get; set; }
+        public QuestionGroupDto QuestionGroup { get; set; }
+        
         public virtual ICollection<QuestionAnswerDto> Answers { get; set; }
         public virtual ICollection<SubmittedAnswerDto> SubmittedAnswers { get; set; }
         public virtual ICollection<QuestionRelationshipDto> QuestionRelationships { get; set; }

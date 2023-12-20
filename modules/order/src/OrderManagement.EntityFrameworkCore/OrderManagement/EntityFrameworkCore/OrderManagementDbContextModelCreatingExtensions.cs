@@ -383,13 +383,19 @@ public static class OrderManagementDbContextModelCreatingExtensions
             entity.HasOne<Questionnaire>(x => x.Questionnaire)
                 .WithMany(x => x.Questions)
                 .HasForeignKey(x => x.QuestionnaireId);
+
+            entity.HasOne<QuestionGroup>(x => x.QuestionGroup)
+                .WithOne(x => x.Question)
+                .HasForeignKey<Question>(x=> x.QuestionGroupId)
+                .OnDelete(DeleteBehavior.NoAction);
+
             entity.Property(x => x.Title)
                 .HasMaxLength(50);
         });
         builder.Entity<QuestionGroup>(entity =>
         {
             entity.ToTable(nameof(QuestionGroup));
-            
+
             entity.HasOne<Questionnaire>(x => x.Questionnaire)
                 .WithMany(x => x.QuestionGroups)    
                 .HasForeignKey(x => x.QuestionnaireId)

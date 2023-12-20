@@ -85,6 +85,8 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
                     .ThenInclude(x => x.SubmittedAnswers.Where(y => y.UserId.Value == currentUserId.Value))
                      .Include(x => x.Questions).ThenInclude(x => x.QuestionRelationships)
                     .ThenInclude(x => x.QuestionAnswer);
+                    .ThenInclude(x => x.SubmittedAnswers.Where(y => y.UserId.Value == currentUserId.Value))
+                    .Include(x=>x.Questions).ThenInclude(x=>x.QuestionGroup);
             }
             else
             {
@@ -94,6 +96,8 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
                     .Include(x => x.Questions).ThenInclude(x=>x.QuestionRelationships)
                     .ThenInclude(x=>x.QuestionAnswer);
                
+                    .ThenInclude(x => x.SubmittedAnswers.Where(y => y.UserId.Value == currentUserId.Value && y.RelatedEntityId.Value == relatedEntityId.Value))
+                     .Include(x => x.Questions).ThenInclude(x => x.QuestionGroup);
             }
         }
 
