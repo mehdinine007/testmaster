@@ -489,7 +489,7 @@ public static class OrderManagementDbContextModelCreatingExtensions
             entity.ToTable(nameof(QuestionRelationship));
 
             entity.HasOne<Question>(x => x.Question)
-                    .WithMany(x => x.questionRelationships)
+                    .WithMany(x => x.QuestionRelationships)
                     .HasForeignKey(x => x.QuestionId)
                     .OnDelete(DeleteBehavior.NoAction);
 

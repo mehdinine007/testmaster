@@ -27,7 +27,12 @@ public class QuestionGroupController : AbpController, IQuestionGroupService
     {
         _questionGroupService = questionGroupService;
     }
-  
+    /// <summary class="header">
+    /// لیست گروه سوالات
+    /// </summary>
+    /// <param name="QuestionnaireId"></param>
+    /// <returns></returns>
+    /// <remarks>hi babe</remarks>
     [HttpGet]
     public async Task<List<QuestionGroupDto>> GetAll(int QuestionnaireId) => await _questionGroupService.GetAll(QuestionnaireId);
 

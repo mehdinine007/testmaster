@@ -32,7 +32,7 @@ public class Question : FullAuditedEntity<int>
         protected set => _submittedAnswers = value;
     }
 
-    public virtual ICollection<QuestionRelationship> questionRelationships
+    public virtual ICollection<QuestionRelationship> QuestionRelationships
     {
         get => _questionRelationships ?? (_questionRelationships = new List<QuestionRelationship>());
         protected set => _questionRelationships = value;
@@ -42,7 +42,7 @@ public class Question : FullAuditedEntity<int>
     {
         Answers = new HashSet<QuestionAnswer>();
         SubmittedAnswers = new HashSet<SubmittedAnswer>();
-        questionRelationships = new HashSet<QuestionRelationship>();
+        QuestionRelationships = new HashSet<QuestionRelationship>();
     }
 
 }

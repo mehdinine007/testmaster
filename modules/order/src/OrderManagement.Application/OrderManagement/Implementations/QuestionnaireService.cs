@@ -82,12 +82,18 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
             if (!relatedEntityId.HasValue)
             {
                 questionnaireQuery = questionnaireQuery.Include(x => x.Questions)
-                    .ThenInclude(x => x.SubmittedAnswers.Where(y => y.UserId.Value == currentUserId.Value));
+                    .ThenInclude(x => x.SubmittedAnswers.Where(y => y.UserId.Value == currentUserId.Value))
+                     .Include(x => x.Questions).ThenInclude(x => x.QuestionRelationships)
+                    .ThenInclude(x => x.QuestionAnswer);
             }
             else
             {
+
                 questionnaireQuery = questionnaireQuery.Include(x => x.Questions)
-                    .ThenInclude(x => x.SubmittedAnswers.Where(y => y.UserId.Value == currentUserId.Value && y.RelatedEntityId.Value == relatedEntityId.Value));
+                    .ThenInclude(x => x.SubmittedAnswers.Where(y => y.UserId.Value == currentUserId.Value && y.RelatedEntityId.Value == relatedEntityId.Value))
+                    .Include(x => x.Questions).ThenInclude(x=>x.QuestionRelationships)
+                    .ThenInclude(x=>x.QuestionAnswer);
+               
             }
         }
 
