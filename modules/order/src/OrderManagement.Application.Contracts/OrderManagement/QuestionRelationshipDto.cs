@@ -1,5 +1,6 @@
 ﻿
 using OrderManagement.Domain;
+using OrderManagement.Domain.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +16,7 @@ namespace OrderManagement.Application.Contracts.OrderManagement
         public int OperationType { get; set; }
         public long QuestionAnswerId { get; set; }
         public int QuestionId { get; set; }
-        public virtual QuestionAnswerDto QuestionAnswer { get; set; }
+        public  QuestionAnswerDto QuestionAnswer { get; set; }
 
     }
 }

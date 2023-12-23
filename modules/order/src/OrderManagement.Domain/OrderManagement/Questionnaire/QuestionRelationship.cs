@@ -12,7 +12,7 @@ public class QuestionRelationship : FullAuditedEntity<int>
     public long QuestionAnswerId { get; set; }
     public virtual QuestionAnswer QuestionAnswer { get; set; }
     public int QuestionId { get; set; }
-    public virtual Question Question { get; set; }
+    public Question Question { get; set; }
 
 
 }

@@ -66,7 +66,7 @@ public class QuestionGroupController : AbpController, IQuestionGroupService
     public async Task<QuestionGroupDto> Add(QuestionGroupDto questionGroup) => await _questionGroupService.Add(questionGroup);
     //--------------------------------------------------
     /// <summary class="header">
-    ///اضافه کردن گروهبندی سوالات 
+    ///ویرایش گروهبندی سوالات 
     /// </summary>
     /// <remarks>
     /// Sample value of message
@@ -77,6 +77,17 @@ public class QuestionGroupController : AbpController, IQuestionGroupService
     /// </remarks>
     [HttpPut]
     public async Task<QuestionGroupDto> Update(QuestionGroupDto questionGroup) => await _questionGroupService.Update(questionGroup);
+    //--------------------------------------------------
+    /// <summary class="header">
+    ///حذف گروهبندی  
+    /// </summary>
+    /// <remarks>
+    /// Sample value of message
+    /// 
+    ///     پارامتر زیر اجباری است 
+    ///     Id: int : شناسه گروهبندی سوالات
+    ///     
+    /// </remarks>
     [HttpDelete]
     public async Task<bool> Delete(int Id) => await _questionGroupService.Delete(Id);
 }

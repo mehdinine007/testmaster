@@ -90,7 +90,8 @@ public class QuestionRelationshipService : ApplicationService, IQuestionRelation
             throw new UserFriendlyException(ex.Message, ValidationConstant.ItemNotFound);
         }
 
-        await _questionRelationshipRepository.DeleteAsync(x => x.Id == id, autoSave: true);
+        await _questionRelationshipRepository.DeleteAsync(x => x.Id == id);
+        await CurrentUnitOfWork.SaveChangesAsync();
         return true;
     }
 
@@ -106,7 +107,9 @@ public class QuestionRelationshipService : ApplicationService, IQuestionRelation
             throw new UserFriendlyException(ex.Message, ValidationConstant.ItemNotFound);
         }
         var questionRelationship = ObjectMapper.Map<QuestionRelationshipDto, QuestionRelationship>(questionRelationshipDto);
-        await _questionRelationshipRepository.InsertAsync(questionRelationship, autoSave: true);
+        await _questionRelationshipRepository.InsertAsync(questionRelationship);
+        await CurrentUnitOfWork.SaveChangesAsync();
+
         return questionRelationship.Id;
     }   
 
@@ -126,8 +129,11 @@ public class QuestionRelationshipService : ApplicationService, IQuestionRelation
         {
             throw new UserFriendlyException("رکوردی برای ویرایش وجود ندارد");
         }
-        var qr = ObjectMapper.Map<QuestionRelationshipDto, QuestionRelationship>(questionRelationshipDto);
 
+        var qr = ObjectMapper.Map<QuestionRelationshipDto, QuestionRelationship>(questionRelationshipDto);
+        await _questionRelationshipRepository.UpdateAsync(qr);             
+        await CurrentUnitOfWork.SaveChangesAsync();
         return qr.Id;
+  
     }
 }

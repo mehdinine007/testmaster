@@ -1,5 +1,6 @@
 ﻿using Esale.Share.Authorize;
 using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 using Nest;
 using OrderManagement.Application.Contracts.OrderManagement;
 using OrderManagement.Application.Contracts.OrderManagement.Constants;
@@ -44,11 +45,11 @@ namespace OrderManagement.Application.OrderManagement.Implementations
                 var ex = new ValidationException(validationResult.Errors);
                 throw new UserFriendlyException(ex.Message, ValidationConstant.QuestionnerNotFound);
             }
-            questionGroupDto.Code = 1;
             var maxcod = (await _questionGroupRepository.GetQueryableAsync())
                     .Where(x => x.QuestionnaireId == questionGroupDto.QuestionnaireId)
                     .DefaultIfEmpty().Max(x => x.Code);
 
+            questionGroupDto.Code = 1;
             if (maxcod != null)
             {
                 questionGroupDto.Code = (int)(maxcod + 1);
@@ -85,6 +86,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
                 throw new UserFriendlyException(ex.Message, ValidationConstant.GetListByQuestionner);
             }
             var qusetion = (await _questionGroupRepository.GetQueryableAsync())
+                            .AsNoTracking()
                             .Where(x => x.QuestionnaireId == QuestionnaireId).ToList();
               return ObjectMapper.Map<List<QuestionGroup>, List<QuestionGroupDto>>(qusetion);
         }
@@ -100,6 +102,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
                 throw new UserFriendlyException(ex.Message, ValidationConstant.ItemNotFound);
             }
             var questiongroup = (await _questionGroupRepository.GetQueryableAsync())
+                .AsNoTracking()
                 .FirstOrDefault(x => x.Id == Id);
             return ObjectMapper.Map<QuestionGroup, QuestionGroupDto>(questiongroup);
         }

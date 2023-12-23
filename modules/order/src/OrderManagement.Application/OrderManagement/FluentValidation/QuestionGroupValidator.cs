@@ -1,14 +1,8 @@
 ﻿using FluentValidation;
 using OrderManagement.Application.Contracts.OrderManagement;
 using OrderManagement.Application.Contracts.OrderManagement.Constants;
-using OrderManagement.Application.OrderManagement.Implementations;
 using OrderManagement.Domain;
 using OrderManagement.Domain.OrderManagement;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Volo.Abp.Domain.Repositories;
 
 namespace OrderManagement.Application.OrderManagement.FluentValidation
