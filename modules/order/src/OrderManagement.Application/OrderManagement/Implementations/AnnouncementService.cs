@@ -39,9 +39,7 @@ public class AnnouncementService : ApplicationService, IAnnouncementService
     {
         var announcement = (await _announcementRepository.GetQueryableAsync()).AsNoTracking().FirstOrDefault(x => x.Id == id);
         if (announcement is null)
-        {
-            throw new UserFriendlyException("شناسه وارد شده معتبر نمیباشد.");
-        }
+            throw new UserFriendlyException(OrderConstant.AnnouncementNotFound, OrderConstant.AnnouncementNotFoundId);
         await _announcementRepository.DeleteAsync(announcement);
         await _attachmentService.DeleteByEntityId(AttachmentEntityEnum.Announcement, id);
         return true;
@@ -130,9 +128,10 @@ public class AnnouncementService : ApplicationService, IAnnouncementService
     public async Task<int> Insert(CreateAnnouncementDto announcementDto)
     {
         if(announcementDto.ToDate < announcementDto.FromDate)
-            throw new UserFriendlyException(OrderConstant.ToDateLessThanFromDate, OrderConstant.ToDateLessThanFromdateId);
+            throw new UserFriendlyException(OrderConstant.ToDateLessThanFromDate, OrderConstant.ToDateLessThanFromDateId);
         var announcement = ObjectMapper.Map<CreateAnnouncementDto, Announcement>(announcementDto);
-        await _announcementRepository.InsertAsync(announcement, autoSave: true);
+        await _announcementRepository.InsertAsync(announcement);
+        await CurrentUnitOfWork.SaveChangesAsync();
         return announcement.Id;
 
     }
@@ -142,15 +141,14 @@ public class AnnouncementService : ApplicationService, IAnnouncementService
     {
         var getAnnouncement = (await _announcementRepository.GetQueryableAsync()).AsNoTracking().FirstOrDefault(x => x.Id == announcementDto.Id);
         if (getAnnouncement is null)
-        {
-            throw new UserFriendlyException("شناسه وارد شده معتبر نمیباشد.");
-        }
-
+            throw new UserFriendlyException(OrderConstant.AnnouncementNotFound, OrderConstant.AnnouncementNotFoundId);
+      
         if (announcementDto.ToDate < announcementDto.FromDate)
-            throw new UserFriendlyException("تاریخ پایان کوچک تر از تاریخ شروع می باشد.");
+            throw new UserFriendlyException(OrderConstant.ToDateLessThanFromDate, OrderConstant.ToDateLessThanFromDateId);
 
         var announcement = ObjectMapper.Map<CreateAnnouncementDto, Announcement>(announcementDto);
-        await _announcementRepository.UpdateAsync(announcement, autoSave: true);
+        await _announcementRepository.UpdateAsync(announcement);
+        await CurrentUnitOfWork.SaveChangesAsync();
         return announcement.Id;
     }
 
@@ -181,9 +179,8 @@ public class AnnouncementService : ApplicationService, IAnnouncementService
         var announcement = (await _announcementRepository.GetQueryableAsync())
             .FirstOrDefault(x => x.Id == id);
         if (announcement is null)
-        {
-            throw new UserFriendlyException(OrderConstant.AnnouncementNotFound, OrderConstant.AnnouncementFoundId);
-        }
+            throw new UserFriendlyException(OrderConstant.AnnouncementNotFound, OrderConstant.AnnouncementNotFoundId);
+       
         return announcement;
     }
 

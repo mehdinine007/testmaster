@@ -76,7 +76,8 @@ namespace OrderManagement.Application.Contracts
         public static string ChartStructureNotFoundId = "4007";
 
         public static string AnnouncementNotFound = "آگهی وجود ندارد";
-        public static string AnnouncementFoundId = "4008";
+        public static string AnnouncementNotFoundId = "4008";
+
 
         public static string ProductAndCategoryNotFound = "دسته بندی یا محصول وجود ندارد";
         public static string ProductAndCategoryFoundId = "4009";
@@ -94,5 +95,8 @@ namespace OrderManagement.Application.Contracts
 
         public static string PspAccountNotFound = "درگاه بانکی انتخاب نشده است.";
         public static string PspAccountId = "5004";
+
+        public static string ToDateLessThanFromDate = "تاریخ پایان کوچک تر از تاریخ شروع می باشد";
+        public static string ToDateLessThanFromDateId = "5005";
     }
 }
