@@ -28,6 +28,7 @@ using OrderManagement.Application.Contracts.OrderManagement.Services;
 using Esale.Share.Authorize;
 using IFG.Core.Utility.Security;
 using Core.Utility.Tools;
+using OrderManagement.Domain.Shared.OrderManagement.Enums;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -221,7 +222,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         //_memoryCache.TryGetValue(cacheKey, out SaleDetailDto);
 
         //var paymentMethodGranted = _configuration.GetValue<bool?>("PaymentMethodGranted") ?? false;
-      
+
         if (SaleDetailDto == null)
         {
             var saleDetailQuery = await _saleDetailRepository.GetQueryableAsync();
@@ -287,11 +288,11 @@ public class OrderAppService : ApplicationService, IOrderAppService
         {
             customer = await _esaleGrpcClient.GetUserId(_commonAppService.GetUserId().ToString());
         }
-        if (SaleDetailDto.ESaleTypeId == 2 && customer.GenderCode != 2)
+        if (SaleDetailDto.ESaleTypeId == (int)ESaleTypeEnums.YouthSale || SaleDetailDto.SaleProcess == SaleProcessType.CashSale)
         {
             throw new UserFriendlyException("طرح فروش مربوط به شما نمی باشد");
         }
-        if (SaleDetailDto.SaleProcess == SaleProcessType.CashSale)
+        if (SaleDetailDto.ESaleTypeId == (int)ESaleTypeEnums.YouthSale && customer.GenderCode != 2)
         {
             if (!customer.NationalCode.Equals(nationalCode))
             {
