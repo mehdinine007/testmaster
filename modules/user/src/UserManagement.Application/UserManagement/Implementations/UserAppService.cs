@@ -33,6 +33,8 @@ using wsFava;
 using UserManagement.Application.Contracts.UserManagement.Constant;
 using UserManagement.Application.Contracts;
 using IFG.Core.Caching;
+using IFG.Core.Utility.Tools;
+using UserManagement.Domain.UserManagement.Enums;
 #endregion
 
 namespace UserManagement.Application.UserManagement.Implementations;
@@ -195,7 +197,8 @@ public class UserAppService : ApplicationService, IUserAppService
                 throw new UserFriendlyException("تاریخ صدور شناسنامه نمیتواند با تاریخ جاری برابر یا بزرگتر باشد");
             if (input.BirthDate > input.IssuingDate)
                 throw new UserFriendlyException("تاریخ تولد نمیتواند با صدور شناسنامه بزرگتر باشد");
-            if (input.Gender != Domain.UserManagement.Enums.Gender.Male && input.Gender != Domain.UserManagement.Enums.Gender.Female)
+
+            if (!EnumExtension.GetEnumValuesAndDescriptions<Gender>().Any(x=> x.Key == (int)input.Gender))
             {
                 throw new UserFriendlyException("جنست انتخاب شده،درست نمی باشد");
             }
