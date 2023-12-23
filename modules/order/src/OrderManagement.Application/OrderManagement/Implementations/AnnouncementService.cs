@@ -1,6 +1,7 @@
 ﻿using Esale.Share.Authorize;
 using IFG.Core.DataAccess;
 using IFG.Core.Utility.Tools;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.OrderManagement;
@@ -38,9 +39,7 @@ public class AnnouncementService : ApplicationService, IAnnouncementService
     {
         var announcement = (await _announcementRepository.GetQueryableAsync()).AsNoTracking().FirstOrDefault(x => x.Id == id);
         if (announcement is null)
-        {
-            throw new UserFriendlyException("شناسه وارد شده معتبر نمیباشد.");
-        }
+            throw new UserFriendlyException(OrderConstant.AnnouncementNotFound, OrderConstant.AnnouncementNotFoundId);
         await _announcementRepository.DeleteAsync(announcement);
         await _attachmentService.DeleteByEntityId(AttachmentEntityEnum.Announcement, id);
         return true;
@@ -128,8 +127,11 @@ public class AnnouncementService : ApplicationService, IAnnouncementService
     [SecuredOperation(AnnouncementServicePermissionConstants.Add)]
     public async Task<int> Insert(CreateAnnouncementDto announcementDto)
     {
+        if(announcementDto.ToDate < announcementDto.FromDate)
+            throw new UserFriendlyException(OrderConstant.ToDateLessThanFromDate, OrderConstant.ToDateLessThanFromDateId);
         var announcement = ObjectMapper.Map<CreateAnnouncementDto, Announcement>(announcementDto);
-        await _announcementRepository.InsertAsync(announcement, autoSave: true);
+        await _announcementRepository.InsertAsync(announcement);
+        await CurrentUnitOfWork.SaveChangesAsync();
         return announcement.Id;
 
     }
@@ -139,12 +141,14 @@ public class AnnouncementService : ApplicationService, IAnnouncementService
     {
         var getAnnouncement = (await _announcementRepository.GetQueryableAsync()).AsNoTracking().FirstOrDefault(x => x.Id == announcementDto.Id);
         if (getAnnouncement is null)
-        {
-            throw new UserFriendlyException("شناسه وارد شده معتبر نمیباشد.");
-        }
+            throw new UserFriendlyException(OrderConstant.AnnouncementNotFound, OrderConstant.AnnouncementNotFoundId);
+      
+        if (announcementDto.ToDate < announcementDto.FromDate)
+            throw new UserFriendlyException(OrderConstant.ToDateLessThanFromDate, OrderConstant.ToDateLessThanFromDateId);
+
         var announcement = ObjectMapper.Map<CreateAnnouncementDto, Announcement>(announcementDto);
-        await _announcementRepository.AttachAsync(announcement,
-            t => t.Title, d => d.Description, s => s.Notice, c => c.Content, f => f.FromDate, z => z.ToDate, o => o.ToDate, u => u.Date);
+        await _announcementRepository.UpdateAsync(announcement);
+        await CurrentUnitOfWork.SaveChangesAsync();
         return announcement.Id;
     }
 
@@ -175,9 +179,8 @@ public class AnnouncementService : ApplicationService, IAnnouncementService
         var announcement = (await _announcementRepository.GetQueryableAsync())
             .FirstOrDefault(x => x.Id == id);
         if (announcement is null)
-        {
-            throw new UserFriendlyException(OrderConstant.AnnouncementNotFound, OrderConstant.AnnouncementFoundId);
-        }
+            throw new UserFriendlyException(OrderConstant.AnnouncementNotFound, OrderConstant.AnnouncementNotFoundId);
+       
         return announcement;
     }
 
