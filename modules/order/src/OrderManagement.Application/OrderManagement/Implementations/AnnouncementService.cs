@@ -1,6 +1,7 @@
 ﻿using Esale.Share.Authorize;
 using IFG.Core.DataAccess;
 using IFG.Core.Utility.Tools;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.OrderManagement;
@@ -128,6 +129,8 @@ public class AnnouncementService : ApplicationService, IAnnouncementService
     [SecuredOperation(AnnouncementServicePermissionConstants.Add)]
     public async Task<int> Insert(CreateAnnouncementDto announcementDto)
     {
+        if(announcementDto.ToDate < announcementDto.FromDate)
+        throw new UserFriendlyException("تاریخ پایان کوچک تر از تاریخ شروع می باشد.");
         var announcement = ObjectMapper.Map<CreateAnnouncementDto, Announcement>(announcementDto);
         await _announcementRepository.InsertAsync(announcement, autoSave: true);
         return announcement.Id;
@@ -142,9 +145,12 @@ public class AnnouncementService : ApplicationService, IAnnouncementService
         {
             throw new UserFriendlyException("شناسه وارد شده معتبر نمیباشد.");
         }
+
+        if (announcementDto.ToDate < announcementDto.FromDate)
+            throw new UserFriendlyException("تاریخ پایان کوچک تر از تاریخ شروع می باشد.");
+
         var announcement = ObjectMapper.Map<CreateAnnouncementDto, Announcement>(announcementDto);
-        await _announcementRepository.AttachAsync(announcement,
-            t => t.Title, d => d.Description, s => s.Notice, c => c.Content, f => f.FromDate, z => z.ToDate, o => o.ToDate, u => u.Date);
+        await _announcementRepository.UpdateAsync(announcement, autoSave: true);
         return announcement.Id;
     }
 
