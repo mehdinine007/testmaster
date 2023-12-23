@@ -130,7 +130,7 @@ public class AnnouncementService : ApplicationService, IAnnouncementService
     public async Task<int> Insert(CreateAnnouncementDto announcementDto)
     {
         if(announcementDto.ToDate < announcementDto.FromDate)
-        throw new UserFriendlyException("تاریخ پایان کوچک تر از تاریخ شروع می باشد.");
+            throw new UserFriendlyException(OrderConstant.ToDateLessThanFromDate, OrderConstant.ToDateLessThanFromdateId);
         var announcement = ObjectMapper.Map<CreateAnnouncementDto, Announcement>(announcementDto);
         await _announcementRepository.InsertAsync(announcement, autoSave: true);
         return announcement.Id;
