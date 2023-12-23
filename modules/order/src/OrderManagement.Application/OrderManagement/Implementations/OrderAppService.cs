@@ -292,7 +292,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         {
             throw new UserFriendlyException("طرح فروش مربوط به شما نمی باشد");
         }
-        if (SaleDetailDto.ESaleTypeId == ESaleTypeEnums.YouthSale && customer.GenderCode != 2)
+        if (SaleDetailDto.ESaleTypeId == ESaleTypeEnums.YouthSale && customer.GenderCode != (int)GenderType.Female)
         {
             if (!customer.NationalCode.Equals(nationalCode))
             {
