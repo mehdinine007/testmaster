@@ -1,4 +1,5 @@
 ﻿using OrderManagement.Domain.Shared;
+using OrderManagement.Domain.Shared.OrderManagement.Enums;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -13,7 +14,7 @@ namespace OrderManagement.Application.Contracts.Services
         //Task<List<CarTipDto>> GetCarTipsByCompanyId(int companyId);
         List<PublicDto> GetProvince();
         List<PublicDto> GetCities(int ProvienceId);
-        void CheckBlackList(int esaleTypeId);
+        void CheckBlackList(ESaleTypeEnums esaleTypeId);
         Task CheckAdvocacyPrice(decimal MinimumAmountOfProxyDeposit);
         void RegistrationValidationWithoutCaptcha(RegistrationValidationDto input);
         void CheckWhiteList(WhiteListEnumType whiteListEnumType, string Nationalcode = "");

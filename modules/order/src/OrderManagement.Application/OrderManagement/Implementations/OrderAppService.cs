@@ -236,7 +236,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     SalePlanEndDate = x.SalePlanEndDate,
                     SalePlanStartDate = x.SalePlanStartDate,
                     UID = x.UID,
-                    ESaleTypeId = x.ESaleTypeId,
+                    ESaleTypeId = (ESaleTypeEnums)x.ESaleTypeId,
                     CarFee = x.CarFee,
                     ProductId = x.ProductId,
                     SaleProcess = x.SaleProcess
@@ -284,15 +284,15 @@ public class OrderAppService : ApplicationService, IOrderAppService
             throw new UserFriendlyException(OrderConstant.PspAccountNotFound, OrderConstant.PspAccountId);
         }
         UserDto customer = new UserDto();
-        if (SaleDetailDto.ESaleTypeId == (int)ESaleTypeEnums.YouthSale || SaleDetailDto.SaleProcess == SaleProcessType.CashSale)
+        if (SaleDetailDto.ESaleTypeId == ESaleTypeEnums.YouthSale || SaleDetailDto.SaleProcess == SaleProcessType.CashSale)
         {
             customer = await _esaleGrpcClient.GetUserId(_commonAppService.GetUserId().ToString());
         }
-        if (SaleDetailDto.ESaleTypeId == (int)ESaleTypeEnums.YouthSale || SaleDetailDto.SaleProcess == SaleProcessType.CashSale)
+        if (SaleDetailDto.ESaleTypeId == ESaleTypeEnums.YouthSale || SaleDetailDto.SaleProcess == SaleProcessType.CashSale)
         {
             throw new UserFriendlyException("طرح فروش مربوط به شما نمی باشد");
         }
-        if (SaleDetailDto.ESaleTypeId == (int)ESaleTypeEnums.YouthSale && customer.GenderCode != 2)
+        if (SaleDetailDto.ESaleTypeId == ESaleTypeEnums.YouthSale && customer.GenderCode != 2)
         {
             if (!customer.NationalCode.Equals(nationalCode))
             {
@@ -355,7 +355,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
             if (activeSuccessfulOrderExists != null)
             {
-                if (SaleDetailDto.ESaleTypeId != activeSuccessfulOrderExists.ESaleTypeId)
+                if (SaleDetailDto.ESaleTypeId != (ESaleTypeEnums)activeSuccessfulOrderExists.ESaleTypeId)
                 {
                     await _cacheManager.SetWithPrefixKeyAsync("_EsaleType",
                            RedisConstants.CommitOrderPrefix + userId.ToString(),
@@ -784,7 +784,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 DeliveryDateDescription = x.DeliveryDateDescription,
                 DeliveryDate = x.DeliveryDate,
                 OrderRejectionCode = x.OrderRejectionStatus.HasValue ? (int)x.OrderRejectionStatus : null,
-                ESaleTypeId = x.ESaleTypeId,
+                ESaleTypeId = (ESaleTypeEnums)x.ESaleTypeId,
                 ProductId = x.ProductId,
                 Product = ObjectMapper.Map<ProductAndCategory, ProductAndCategoryViewModel>(x.Product),
                 SalePlanEndDate = x.SalePlanEndDate,
@@ -1348,7 +1348,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             .Select(y => new CustomerOrder_OrderDetailDto
             {
                 CarDeliverDate = y.CarDeliverDate,
-                ESaleTypeId = y.ESaleTypeId,
+                ESaleTypeId = (ESaleTypeEnums)y.ESaleTypeId,
                 SaleDetailUid = y.UID,
                 MinimumAmountOfProxyDeposit = y.MinimumAmountOfProxyDeposit,
                 ManufactureDate = y.ManufactureDate,
@@ -1401,7 +1401,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 DeliveryDateDescription = x.DeliveryDateDescription,
                 DeliveryDate = x.DeliveryDate,
                 OrderRejectionCode = x.OrderRejectionStatus.HasValue ? (int)x.OrderRejectionStatus : null,
-                ESaleTypeId = y.ESaleTypeId,
+                ESaleTypeId = (ESaleTypeEnums)y.ESaleTypeId,
                 ManufactureDate = y.ManufactureDate,
                 SaleDetailUid = y.UID,
                 SalePlanEndDate = y.SalePlanEndDate,
