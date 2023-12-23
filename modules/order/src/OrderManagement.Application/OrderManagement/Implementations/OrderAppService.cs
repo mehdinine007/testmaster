@@ -284,7 +284,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             throw new UserFriendlyException(OrderConstant.PspAccountNotFound, OrderConstant.PspAccountId);
         }
         UserDto customer = new UserDto();
-        if (SaleDetailDto.ESaleTypeId == 2 || SaleDetailDto.SaleProcess == SaleProcessType.CashSale)
+        if (SaleDetailDto.ESaleTypeId == (int)ESaleTypeEnums.YouthSale || SaleDetailDto.SaleProcess == SaleProcessType.CashSale)
         {
             customer = await _esaleGrpcClient.GetUserId(_commonAppService.GetUserId().ToString());
         }
