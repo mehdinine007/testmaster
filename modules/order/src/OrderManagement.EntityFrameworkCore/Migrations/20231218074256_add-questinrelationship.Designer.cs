@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OrderManagement.EfCore;
 using Volo.Abp.EntityFrameworkCore;
@@ -12,9 +13,11 @@ using Volo.Abp.EntityFrameworkCore;
 namespace OrderManagement.EfCore.Migrations
 {
     [DbContext(typeof(OrderManagementDbContext))]
-    partial class OrderManagementDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231218074256_add-questinrelationship")]
+    partial class addquestinrelationship
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -287,9 +290,6 @@ namespace OrderManagement.EfCore.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<bool>("Active")
-                        .HasColumnType("bit");
 
                     b.Property<int?>("CompanyId")
                         .HasColumnType("int");
@@ -1201,63 +1201,6 @@ namespace OrderManagement.EfCore.Migrations
                     b.ToTable("CustomerOrder", (string)null);
                 });
 
-            modelBuilder.Entity("OrderManagement.Domain.CustomerPriority", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
-
-                    b.Property<int>("ApproximatePriority")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ChosenPriorityByCustomer")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("CreationTime");
-
-                    b.Property<Guid?>("CreatorId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("CreatorId");
-
-                    b.Property<Guid?>("DeleterId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("DeleterId");
-
-                    b.Property<DateTime?>("DeletionTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("DeletionTime");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false)
-                        .HasColumnName("IsDeleted");
-
-                    b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("LastModificationTime");
-
-                    b.Property<Guid?>("LastModifierId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("LastModifierId");
-
-                    b.Property<int>("SaleId")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("Uid")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex(new[] { "Uid" }, "IX_CustomerPriority_Uid");
-
-                    b.ToTable("CustomerPriority", (string)null);
-                });
-
             modelBuilder.Entity("OrderManagement.Domain.ESaleType", b =>
                 {
                     b.Property<int>("Id")
@@ -1650,9 +1593,6 @@ namespace OrderManagement.EfCore.Migrations
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Device")
-                        .HasColumnType("int");
 
                     b.Property<int>("Entity")
                         .HasColumnType("int");
@@ -2133,61 +2073,6 @@ namespace OrderManagement.EfCore.Migrations
                     b.ToTable("ProductLevel");
                 });
 
-            modelBuilder.Entity("OrderManagement.Domain.OrderManagement.QuestionGroup", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("Code")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("CreationTime");
-
-                    b.Property<Guid?>("CreatorId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("CreatorId");
-
-                    b.Property<Guid?>("DeleterId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("DeleterId");
-
-                    b.Property<DateTime?>("DeletionTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("DeletionTime");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false)
-                        .HasColumnName("IsDeleted");
-
-                    b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("LastModificationTime");
-
-                    b.Property<Guid?>("LastModifierId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("LastModifierId");
-
-                    b.Property<int>("QuestionnaireId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Title")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("QuestionnaireId");
-
-                    b.ToTable("QuestionGroup", (string)null);
-                });
-
             modelBuilder.Entity("OrderManagement.Domain.OrderManagement.SaleDetailCarColor", b =>
                 {
                     b.Property<int>("Id")
@@ -2388,9 +2273,6 @@ namespace OrderManagement.EfCore.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("LastModifierId");
 
-                    b.Property<int?>("QuestionGroupId")
-                        .HasColumnType("int");
-
                     b.Property<int>("QuestionType")
                         .HasColumnType("int");
 
@@ -2402,10 +2284,6 @@ namespace OrderManagement.EfCore.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("QuestionGroupId")
-                        .IsUnique()
-                        .HasFilter("[QuestionGroupId] IS NOT NULL");
 
                     b.HasIndex("QuestionnaireId");
 
@@ -3945,17 +3823,6 @@ namespace OrderManagement.EfCore.Migrations
                     b.Navigation("ProductLevel");
                 });
 
-            modelBuilder.Entity("OrderManagement.Domain.OrderManagement.QuestionGroup", b =>
-                {
-                    b.HasOne("OrderManagement.Domain.Questionnaire", "Questionnaire")
-                        .WithMany("QuestionGroups")
-                        .HasForeignKey("QuestionnaireId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Questionnaire");
-                });
-
             modelBuilder.Entity("OrderManagement.Domain.OrderManagement.SaleDetailCarColor", b =>
                 {
                     b.HasOne("OrderManagement.Domain.OrderManagement.Color", "Color")
@@ -3977,18 +3844,11 @@ namespace OrderManagement.EfCore.Migrations
 
             modelBuilder.Entity("OrderManagement.Domain.Question", b =>
                 {
-                    b.HasOne("OrderManagement.Domain.OrderManagement.QuestionGroup", "QuestionGroup")
-                        .WithOne("Question")
-                        .HasForeignKey("OrderManagement.Domain.Question", "QuestionGroupId")
-                        .OnDelete(DeleteBehavior.NoAction);
-
                     b.HasOne("OrderManagement.Domain.Questionnaire", "Questionnaire")
                         .WithMany("Questions")
                         .HasForeignKey("QuestionnaireId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("QuestionGroup");
 
                     b.Navigation("Questionnaire");
                 });
@@ -4248,11 +4108,6 @@ namespace OrderManagement.EfCore.Migrations
                     b.Navigation("ProductAndCategories");
                 });
 
-            modelBuilder.Entity("OrderManagement.Domain.OrderManagement.QuestionGroup", b =>
-                {
-                    b.Navigation("Question");
-                });
-
             modelBuilder.Entity("OrderManagement.Domain.Province", b =>
                 {
                     b.Navigation("Agencies");
@@ -4279,8 +4134,6 @@ namespace OrderManagement.EfCore.Migrations
             modelBuilder.Entity("OrderManagement.Domain.Questionnaire", b =>
                 {
                     b.Navigation("Answers");
-
-                    b.Navigation("QuestionGroups");
 
                     b.Navigation("Questions");
 

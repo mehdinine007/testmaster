@@ -164,6 +164,7 @@ namespace OrderManagement
             CreateMap<Question, FullQuestionDto>();
             CreateMap<QuestionAnswer, QuestionAnswerDto>();
             CreateMap<SubmittedAnswer, SubmittedAnswerDto>();
+
             CreateMap<AttachFileDto, AttachmentUpdateDto>()
               .ReverseMap();
             CreateMap<BankDto, Bank>()
@@ -193,6 +194,9 @@ namespace OrderManagement
                 .IgnoreFullAuditedObjectProperties();
 
             CreateMap<Priority, PriorityDto>().ReverseMap();
+            CreateMap<QuestionRelationship, QuestionRelationshipDto>().ReverseMap();
+
+            CreateMap<QuestionGroup, QuestionGroupDto>().ReverseMap();
         }
     }
 }

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OrderManagement.EfCore;
 using Volo.Abp.EntityFrameworkCore;
@@ -12,9 +13,11 @@ using Volo.Abp.EntityFrameworkCore;
 namespace OrderManagement.EfCore.Migrations
 {
     [DbContext(typeof(OrderManagementDbContext))]
-    partial class OrderManagementDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231220090409_addQuestionGroup-to-Question")]
+    partial class addQuestionGrouptoQuestion
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -287,9 +290,6 @@ namespace OrderManagement.EfCore.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<bool>("Active")
-                        .HasColumnType("bit");
 
                     b.Property<int?>("CompanyId")
                         .HasColumnType("int");
@@ -1201,63 +1201,6 @@ namespace OrderManagement.EfCore.Migrations
                     b.ToTable("CustomerOrder", (string)null);
                 });
 
-            modelBuilder.Entity("OrderManagement.Domain.CustomerPriority", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
-
-                    b.Property<int>("ApproximatePriority")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ChosenPriorityByCustomer")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("CreationTime");
-
-                    b.Property<Guid?>("CreatorId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("CreatorId");
-
-                    b.Property<Guid?>("DeleterId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("DeleterId");
-
-                    b.Property<DateTime?>("DeletionTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("DeletionTime");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false)
-                        .HasColumnName("IsDeleted");
-
-                    b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("LastModificationTime");
-
-                    b.Property<Guid?>("LastModifierId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("LastModifierId");
-
-                    b.Property<int>("SaleId")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("Uid")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex(new[] { "Uid" }, "IX_CustomerPriority_Uid");
-
-                    b.ToTable("CustomerPriority", (string)null);
-                });
-
             modelBuilder.Entity("OrderManagement.Domain.ESaleType", b =>
                 {
                     b.Property<int>("Id")
@@ -1549,81 +1492,6 @@ namespace OrderManagement.EfCore.Migrations
                     b.ToTable("Logs");
                 });
 
-            modelBuilder.Entity("OrderManagement.Domain.OperatorEnumReadOnly", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("Code")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Title")
-                        .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)");
-
-                    b.Property<string>("Title_En")
-                        .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("OperatorEnumReadOnly", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Code = 1,
-                            Title = "Equal",
-                            TitleEn = "Equal"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Code = 2,
-                            Title = "EqualOpposite",
-                            TitleEn = "EqualOpposite"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Code = 3,
-                            Title = "Bigger",
-                            TitleEn = "Bigger"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Code = 4,
-                            Title = "Smaller",
-                            TitleEn = "Smaller"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Code = 5,
-                            Title = "Like",
-                            TitleEn = "Like"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            Code = 6,
-                            Title = "StartWith",
-                            TitleEn = "StartWith"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            Code = 7,
-                            Title = "EndWith",
-                            TitleEn = "EndWith"
-                        });
-                });
-
             modelBuilder.Entity("OrderManagement.Domain.OrderManagement.Attachment", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1650,9 +1518,6 @@ namespace OrderManagement.EfCore.Migrations
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Device")
-                        .HasColumnType("int");
 
                     b.Property<int>("Entity")
                         .HasColumnType("int");
@@ -2481,65 +2346,6 @@ namespace OrderManagement.EfCore.Migrations
                     b.HasIndex("QuestionnaireId");
 
                     b.ToTable("QuestionAnswer", (string)null);
-                });
-
-            modelBuilder.Entity("OrderManagement.Domain.QuestionRelationship", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("CreationTime");
-
-                    b.Property<Guid?>("CreatorId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("CreatorId");
-
-                    b.Property<Guid?>("DeleterId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("DeleterId");
-
-                    b.Property<DateTime?>("DeletionTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("DeletionTime");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false)
-                        .HasColumnName("IsDeleted");
-
-                    b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("LastModificationTime");
-
-                    b.Property<Guid?>("LastModifierId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("LastModifierId");
-
-                    b.Property<int>("OperationType")
-                        .HasColumnType("int");
-
-                    b.Property<long>("QuestionAnswerId")
-                        .HasColumnType("bigint");
-
-                    b.Property<int>("QuestionId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("QuestionRelationId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("QuestionAnswerId");
-
-                    b.HasIndex("QuestionId");
-
-                    b.ToTable("QuestionRelationship", (string)null);
                 });
 
             modelBuilder.Entity("OrderManagement.Domain.QuestionTypeReadOnly", b =>
@@ -4010,25 +3816,6 @@ namespace OrderManagement.EfCore.Migrations
                     b.Navigation("Questionnaire");
                 });
 
-            modelBuilder.Entity("OrderManagement.Domain.QuestionRelationship", b =>
-                {
-                    b.HasOne("OrderManagement.Domain.QuestionAnswer", "QuestionAnswer")
-                        .WithMany("questionRelationships")
-                        .HasForeignKey("QuestionAnswerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("OrderManagement.Domain.Question", "Question")
-                        .WithMany("questionRelationships")
-                        .HasForeignKey("QuestionId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Question");
-
-                    b.Navigation("QuestionAnswer");
-                });
-
             modelBuilder.Entity("OrderManagement.Domain.SaleDetail", b =>
                 {
                     b.HasOne("OrderManagement.Domain.CarTip", "CarTip")
@@ -4265,15 +4052,11 @@ namespace OrderManagement.EfCore.Migrations
                     b.Navigation("Answers");
 
                     b.Navigation("SubmittedAnswers");
-
-                    b.Navigation("questionRelationships");
                 });
 
             modelBuilder.Entity("OrderManagement.Domain.QuestionAnswer", b =>
                 {
                     b.Navigation("SubmittedAnswers");
-
-                    b.Navigation("questionRelationships");
                 });
 
             modelBuilder.Entity("OrderManagement.Domain.Questionnaire", b =>

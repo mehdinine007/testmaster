@@ -4,8 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OrderManagement.Application.Contracts
-{
+namespace OrderManagement.Domain.Shared;
+
+
     public enum OperatorFilterEnum
     {
         Equal = 1,
@@ -16,4 +17,4 @@ namespace OrderManagement.Application.Contracts
         StartWith = 6,
         EndWith = 7
     }
-}
+
