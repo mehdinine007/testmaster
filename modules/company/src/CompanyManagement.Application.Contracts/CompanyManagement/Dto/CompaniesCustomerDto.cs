@@ -13,13 +13,13 @@ public class CompaniesCustomerDto
     public string FatherName { get; set; }
     public string BirthCertId { get; set; }
     public DateTime BirthDate { get; set; }
-    public byte Gender { get; set; }
-    public int ProvienceId { get; set; }
+    public int Gender { get; set; }
+    public int? ProvienceId { get; set; }
     public string ProvienceName { get; set; }
     public string Tel { get; set; }
     public string PostalCode { get; set; }
     public string Address { get; set; }
-    public DateTime IssuingDate { get; set; }
+    public DateTime? IssuingDate { get; set; }
     public string Shaba { get; set; }
     public string DeliveryDateDescription { get; set; }
     public int? OrderRejectionStatus { get; set; }

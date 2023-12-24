@@ -11,6 +11,7 @@
     <ItemGroup>
         <PackageReference Include="google.protobuf" Version="3.22.4" />
         <PackageReference Include="grpc.net.client" Version="2.53.0" />
+		<PackageReference Include="Abp.ZeroCore" Version="8.3.1" />
         <PackageReference Include="grpc.tools" Version="2.54.0">
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
           <PrivateAssets>all</PrivateAssets>
