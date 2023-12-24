@@ -7,6 +7,7 @@ using OrderManagement.Application.Contracts.OrderManagement;
 using OrderManagement.Application.Contracts.OrderManagement.Models;
 using OrderManagement.Domain;
 using OrderManagement.Domain.OrderManagement;
+using OrderManagement.Domain.Shared.OrderManagement.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -174,6 +175,7 @@ namespace OrderManagement
                 .ForMember(o=>o.Content,opt=> opt.MapFrom(y=> System.Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(y.Content))))
                 .ForMember(o=>o.Description,opt=> opt.MapFrom(y=> System.Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(y.Description))))
                 .ForMember(o=>o.Notice,opt=> opt.MapFrom(y=> System.Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(y.Notice))))
+                .ForMember(x => x.StatusTitle, c => c.MapFrom(m => DateTime.Now < m.FromDate ? EnumHelper.GetDescription(AnnouncementStatusEnum.Awaiting) : DateTime.Now >= m.FromDate && DateTime.Now <= m.ToDate ? EnumHelper.GetDescription(AnnouncementStatusEnum.Publishing) : DateTime.Now > m.ToDate ? EnumHelper.GetDescription(AnnouncementStatusEnum.Expired) :""))
                 .ReverseMap()
                 .IgnoreFullAuditedObjectProperties();
 
