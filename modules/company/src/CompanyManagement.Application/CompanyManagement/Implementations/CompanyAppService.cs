@@ -144,7 +144,8 @@ public class CompanyAppService : ApplicationService, ICompanyAppService
                 x.Shaba,
                 x.UID
             })
-            .FirstOrDefault(x => x.NationalCode == nationalCode);
+            .FirstOrDefault(x => x.NationalCode == nationalCode) 
+            ?? throw new UserFriendlyException("مشتری یافت نشد");
 
         var paramArray = new object[]
         {
