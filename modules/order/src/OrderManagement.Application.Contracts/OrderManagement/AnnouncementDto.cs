@@ -21,5 +21,9 @@ namespace OrderManagement.Application.Contracts.OrderManagement
         public string? AttachmentLocation { get; set; } = null;
         public bool Active { get; set; }
         public List<AttachmentViewModel> Attachments { get; set; }
+        public DateTime CreationTime { get; set; }
+        public string StatusTitle { get; set; }
+
+
     }
 }
