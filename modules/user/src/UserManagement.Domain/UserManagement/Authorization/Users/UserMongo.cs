@@ -428,3 +428,4 @@ namespace UserManagement.Domain.Authorization.Users
         public  bool IsActive  { get; set; }
     }
 }
+
