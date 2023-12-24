@@ -8,6 +8,7 @@ using CompanyManagement.Application.Contracts.CompanyManagement;
 using CompanyManagement.Domain.Shared.CompanyManagement;
 using CompanyManagement.Application.Contracts;
 using Esale.Share.Authorize;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace CompanyManagement.HttpApi.OrderManagement.Controllers;
 
@@ -34,6 +35,6 @@ public class CompanyController : Controller
     }
 
     [HttpGet]
-    public CompaniesCustomerDto GetRecentCustomerAndOrder(string nationalCode, int saleId)
-        => _companyAppService.GetRecentCustomerAndOrder(nationalCode, saleId);
+    public async Task<CompaniesCustomerDto> GetRecentCustomerAndOrder(string nationalCode, int saleId)
+        => await _companyAppService.GetRecentCustomerAndOrder(nationalCode, saleId);
 }
