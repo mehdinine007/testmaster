@@ -1,5 +1,6 @@
 ﻿using Azure.Core;
 using Elasticsearch.Net;
+using GatewayService.Host;
 using Microsoft.Extensions.Configuration;
 using MsDemo.Shared.ExtensionsInterfaces;
 using Nest;
@@ -33,7 +34,7 @@ namespace OrderService.Host.Infrastructures.Middlewares
             public int failed { get; set; }
         }
         private readonly IRepository<AuditLog, Guid> _auditLogRepository;
-        protected IAuditLogInfoToAuditLogConverter Converter { get; }
+        protected AuditLogConverter Converter { get; }
         private IConfiguration _configuration { get; set; }
 
         private IElkRepository<AuditLog, AuditLog> _elkRepository { get; set; }
@@ -41,7 +42,7 @@ namespace OrderService.Host.Infrastructures.Middlewares
         /// <summary>
         /// Creates  a new <see cref="AuditingStore"/>.
         /// </summary>
-        public AuditingStoreElk(IRepository<AuditLog, Guid> auditLogRepository, IElkRepository<AuditLog, AuditLog> ElkRepository, ElasticClient client, IConfiguration Configuration, IAuditLogInfoToAuditLogConverter converter)
+        public AuditingStoreElk(IRepository<AuditLog, Guid> auditLogRepository, IElkRepository<AuditLog, AuditLog> ElkRepository, ElasticClient client, IConfiguration Configuration, AuditLogConverter converter)
         {
             _auditLogRepository = auditLogRepository;
             _elkRepository = ElkRepository;
