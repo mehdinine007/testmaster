@@ -132,7 +132,6 @@ public class UserAppService : ApplicationService, IUserAppService
             {
                 throw new UserFriendlyException("کاربر وجود ندارد:" + input.UID);
             }
-            input.SetId(user.Id);
             await _userSQLRepository.UpdateAsync(input);
         }
         else
@@ -863,9 +862,11 @@ public class UserAppService : ApplicationService, IUserAppService
         var filter = Builders<UserMongoWrite>.Filter.Eq("UID", userFromDb.UID);
         await (await _userMongoWriteRepository.GetCollectionAsync()).ReplaceOneAsync(filter, userFromDb);
         var userSql = ObjectMapper.Map<UserMongo, UserSQL>(userFromDb);
+        userSql.EditMode = true;
         await _distributedEventBus.PublishAsync<UserSQL>(
                   userSql
                  );
+        
         return true;
     }
 }

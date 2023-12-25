@@ -36,7 +36,6 @@ namespace UserService.Host.RabbitHandlers
             }
             catch (Exception ex)
             {
-                throw ex;
             }
         }
     }
