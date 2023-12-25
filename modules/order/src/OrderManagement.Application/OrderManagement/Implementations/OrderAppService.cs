@@ -288,11 +288,11 @@ public class OrderAppService : ApplicationService, IOrderAppService
         {
             customer = await _esaleGrpcClient.GetUserId(_commonAppService.GetUserId().ToString());
         }
-        if (SaleDetailDto.ESaleTypeId == ESaleTypeEnums.YouthSale || SaleDetailDto.SaleProcess == SaleProcessType.CashSale)
+        if (SaleDetailDto.ESaleTypeId == ESaleTypeEnums.YouthSale && customer.GenderCode != (int)GenderType.Female)
         {
             throw new UserFriendlyException("طرح فروش مربوط به شما نمی باشد");
         }
-        if (SaleDetailDto.ESaleTypeId == ESaleTypeEnums.YouthSale && customer.GenderCode != (int)GenderType.Female)
+        if ( SaleDetailDto.SaleProcess == SaleProcessType.CashSale)
         {
             if (!customer.NationalCode.Equals(nationalCode))
             {
