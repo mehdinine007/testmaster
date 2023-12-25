@@ -14,7 +14,6 @@ namespace OrderManagement.Application.Contracts
 
         public DateTime SalePlanEndDate { get; set; }
 
-        public int EsaleTypeId { get; set; }
         [Column(TypeName = "decimal(15)")]
         public decimal MinimumAmountOfProxyDeposit { get; set; }
 

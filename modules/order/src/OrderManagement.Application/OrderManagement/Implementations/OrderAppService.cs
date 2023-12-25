@@ -149,9 +149,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
     }
 
-    private void RustySalePlanValidation(CommitOrderDto commitOrder, int esaleTypeId)
+    private void RustySalePlanValidation(CommitOrderDto commitOrder, ESaleTypeEnums esaleTypeId)
     {
-        if (esaleTypeId == 3)
+        if (esaleTypeId == ESaleTypeEnums.WornOutSale)
         {
             const string pattern = ".[A-Z a-z 0-9]";
             if (string.IsNullOrWhiteSpace(commitOrder.Vin) || !Regex.IsMatch(commitOrder.Vin, pattern, RegexOptions.Compiled))
@@ -229,7 +229,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             var SaleDetailFromDb = saleDetailQuery
                 .Select(x => new SaleDetailOrderDto
                 {
-                    EsaleTypeId = x.ESaleTypeId,
+                    //EsaleTypeId = x.ESaleTypeId,
                     Id = x.Id,
                     MinimumAmountOfProxyDeposit = x.MinimumAmountOfProxyDeposit,
                     SaleId = x.SaleId,
@@ -303,7 +303,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         ////////////////conntrol repeated order in saledetails// iran&&varedat
 
         CheckSaleDetailValidation(SaleDetailDto);
-        RustySalePlanValidation(commitOrderDto, SaleDetailDto.EsaleTypeId);
+        RustySalePlanValidation(commitOrderDto, SaleDetailDto.ESaleTypeId);
         if (SaleDetailDto.SaleProcess == SaleProcessType.RegularSale)
             if (!await NationalCodeExistsInPriority(nationalCode))
                 throw new UserFriendlyException("کد ملی متقاضی در لیست الویت بندی وجود نداشت");
@@ -337,7 +337,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
            });
         if (!string.IsNullOrEmpty(EsaleTypeId))
         {
-            if (EsaleTypeId != SaleDetailDto.EsaleTypeId.ToString())
+            if (EsaleTypeId != SaleDetailDto.ESaleTypeId.ToString())
             {
                 throw new UserFriendlyException("امکان انتخاب فقط یک نوع طرح فروش وجود دارد");
             }
