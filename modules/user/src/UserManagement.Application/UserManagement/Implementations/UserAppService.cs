@@ -33,6 +33,8 @@ using wsFava;
 using UserManagement.Application.Contracts.UserManagement.Constant;
 using UserManagement.Application.Contracts;
 using IFG.Core.Caching;
+using IFG.Core.Utility.Tools;
+using UserManagement.Domain.UserManagement.Enums;
 #endregion
 
 namespace UserManagement.Application.UserManagement.Implementations;
@@ -100,7 +102,7 @@ public class UserAppService : ApplicationService, IUserAppService
         await _userMongoWriteRepository.UpdateAsync(ObjectMapper.Map<UserMongo, UserMongoWrite>(user));
         return true;
     }
-   
+
     public class StockCountChangedEto
     {
         public Guid ProductId { get; set; }
@@ -120,13 +122,13 @@ public class UserAppService : ApplicationService, IUserAppService
 
     public async Task UpsertUserIntoSqlServer(UserSQL input)
     {
-        if(input.EditMode == true)
+        if (input.EditMode == true)
         {
             var iqUser = await _userSQLRepository.GetQueryableAsync();
-                
+
             var user = iqUser.AsNoTracking()
-                .Select(x => new { x.Id, x.UID}).FirstOrDefault(x => x.UID == input.UID);
-            if(user == null)
+                .Select(x => new { x.Id, x.UID }).FirstOrDefault(x => x.UID == input.UID);
+            if (user == null)
             {
                 throw new UserFriendlyException("کاربر وجود ندارد:" + input.UID);
             }
@@ -142,8 +144,8 @@ public class UserAppService : ApplicationService, IUserAppService
     }
     public async Task<UserDto> CreateAsync(CreateUserDto input)
     {
-         
-    
+
+
 
         if (!string.IsNullOrEmpty(_configuration.GetSection("CloseRegisterDate").Value)
             && DateTime.Now > DateTime.Parse(_configuration.GetSection("CloseRegisterDate").Value))
@@ -195,6 +197,11 @@ public class UserAppService : ApplicationService, IUserAppService
                 throw new UserFriendlyException("تاریخ صدور شناسنامه نمیتواند با تاریخ جاری برابر یا بزرگتر باشد");
             if (input.BirthDate > input.IssuingDate)
                 throw new UserFriendlyException("تاریخ تولد نمیتواند با صدور شناسنامه بزرگتر باشد");
+
+            if (!EnumExtension.GetEnumValuesAndDescriptions<Gender>().Any(x => x.Key == (int)input.Gender))
+            {
+                throw new UserFriendlyException("جنست انتخاب شده،درست نمی باشد");
+            }
             if (!input.IssuingCityId.HasValue)
             {
                 throw new UserFriendlyException("شهر محل صدور شناسنامه رو انتخاب نمایید");
@@ -414,7 +421,7 @@ public class UserAppService : ApplicationService, IUserAppService
 
         //if (userFromCache == null)
         {
-         
+
             var user = ObjectMapper.Map<CreateUserDto, UserMongo>(input);
             user.IsActive = true;
             //user.TenantId = CurrentTenant.Id;
@@ -429,15 +436,15 @@ public class UserAppService : ApplicationService, IUserAppService
             user.Password = _passwordHasher.HashPassword(new User(), input.Password);
             List<string> lsRols = new List<string>();
             var defultRoleCode = _configuration.GetValue<string>("CreateUser:RoleCode");
-           if (string.IsNullOrWhiteSpace(defultRoleCode))
-                throw new UserFriendlyException(UserMessageConstant.CreateUserDefultRoleCodeNotFound,UserMessageConstant.CreateUserDefultRoleCodeNotFoundId);
+            if (string.IsNullOrWhiteSpace(defultRoleCode))
+                throw new UserFriendlyException(UserMessageConstant.CreateUserDefultRoleCodeNotFound, UserMessageConstant.CreateUserDefultRoleCodeNotFoundId);
             lsRols.Add(defultRoleCode);
             user.Roles = lsRols;
             //_userManager.InitializeOptions(AbpSession.TenantId);
             user.Address = useInquiryForUserAddress
                 ? user.Address = await _commonAppService.GetAddressByZipCode(user.PostalCode, user.NationalCode)
                 : user.Address = input.Address;
-            if(user.BankId == 0)
+            if (user.BankId == 0)
             {
                 user.BankId = null;
             }
@@ -445,8 +452,8 @@ public class UserAppService : ApplicationService, IUserAppService
             {
                 //user._Id = ObjectId.GenerateNewId().ToString();
                 await _userMongoWriteRepository.InsertAsync(ObjectMapper.Map<UserMongo, UserMongoWrite>(user));
-              
-           
+
+
                 await _distributedEventBus.PublishAsync<UserSQL>(
                      ObjectMapper.Map<UserMongo, UserSQL>(user)
                     );
@@ -509,9 +516,9 @@ public class UserAppService : ApplicationService, IUserAppService
         string prefix = $"{RedisConstants.GetUserProfile}";
         Guid userId = _commonAppService.GetUID();
         string cacheKey = userId.ToString();
-        var cachedData = await _cacheManager.GetStringAsync(cacheKey, prefix, new CacheOptions 
+        var cachedData = await _cacheManager.GetStringAsync(cacheKey, prefix, new CacheOptions
         { Provider = CacheProviderEnum.Hybrid });
-        
+
         if (!string.IsNullOrEmpty(cachedData))
         {
             return JsonConvert.DeserializeObject<UserDto>(cachedData);
@@ -522,7 +529,7 @@ public class UserAppService : ApplicationService, IUserAppService
 
         if (user != null)
         {
-            await _cacheManager.SetStringAsync(cacheKey, prefix, JsonConvert.SerializeObject(user), new CacheOptions 
+            await _cacheManager.SetStringAsync(cacheKey, prefix, JsonConvert.SerializeObject(user), new CacheOptions
             { Provider = CacheProviderEnum.Hybrid }, TimeSpan.FromMinutes(8).TotalSeconds);
             var userDto = ObjectMapper.Map<UserMongo, UserDto>(user);
             return userDto;
@@ -639,7 +646,7 @@ public class UserAppService : ApplicationService, IUserAppService
             .Set(_ => _.LastModificationTime, DateTime.Now);
         (await _userMongoRepository.GetCollectionAsync())
             .UpdateOne(filter, update);
-        var userSql =  ObjectMapper.Map<UserMongo, UserSQL>(userFromDb);
+        var userSql = ObjectMapper.Map<UserMongo, UserSQL>(userFromDb);
         userSql.EditMode = true;
         await _distributedEventBus.PublishAsync<UserSQL>(
                   userSql
@@ -720,6 +727,10 @@ public class UserAppService : ApplicationService, IUserAppService
             //var requiredBirthDate = DateTime.Now.AddYears(-18);
             //if (inputUser.BirthDate > requiredBirthDate)
             //    throw new UserFriendlyException("سن متقاضی باید بیش تر از 18 سال باشد");
+            if (!EnumExtension.GetEnumValuesAndDescriptions<Gender>().Any(x => x.Key == (int)inputUser.Gender))
+            {
+                throw new UserFriendlyException("جنست انتخاب شده،درست نمی باشد");
+            }
             if (!inputUser.IssuingCityId.HasValue)
             {
                 throw new UserFriendlyException("شهر محل صدور شناسنامه رو انتخاب نمایید");
@@ -842,7 +853,7 @@ public class UserAppService : ApplicationService, IUserAppService
         userFromDb.Surname = inputUser.Surname;
         userFromDb.BirthCertId = inputUser.BirthCertId;
         userFromDb.BirthDate = inputUser.BirthDate;
-        
+
         userFromDb.Address = useInquiryForUserAddress
             ? userFromDb.Address = await _commonAppService.GetAddressByZipCode(userFromDb.PostalCode, userFromDb.NationalCode)
             : userFromDb.Address = inputUser.Address;
