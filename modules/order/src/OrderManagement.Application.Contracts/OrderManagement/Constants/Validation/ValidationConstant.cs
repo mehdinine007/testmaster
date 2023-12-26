@@ -29,6 +29,10 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Constants
         public const string AnswerNotFoundId = "0010";
         public const string OperatorNotFound = "عملگر وجود ندارد";
         public const string OperatorNotFoundId = "0011";
+        public const string NotEqualQuestionIdAndQuestionRelation = "شناسه پرسشنامه نباید با شناسه ارتباط سوال برابرباشند  ";
+        public const string NotEqualQuestionIdAndQuestionRelationId = "0012";
+        public const string EqualQuestionIdAndAnswerQuestion = "شناسه پرسشنامه باید با شناسه پرسشنامه پاسخ برابر باشد";
+        public const string EqualQuestionIdAndAnswerQuestionId = "0013";
     }
     public static class RuleSets
     {

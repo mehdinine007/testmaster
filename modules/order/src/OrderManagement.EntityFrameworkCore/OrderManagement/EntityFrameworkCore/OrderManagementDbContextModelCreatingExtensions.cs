@@ -379,7 +379,8 @@ public static class OrderManagementDbContextModelCreatingExtensions
         builder.Entity<Question>(entity =>
         {
             entity.ToTable(nameof(Question));
-
+            entity.HasIndex(x => x.QuestionGroupId)
+            .IsUnique(false);
             entity.HasOne<Questionnaire>(x => x.Questionnaire)
                 .WithMany(x => x.Questions)
                 .HasForeignKey(x => x.QuestionnaireId);
