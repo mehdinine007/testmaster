@@ -132,6 +132,7 @@ public class UserAppService : ApplicationService, IUserAppService
             {
                 throw new UserFriendlyException("کاربر وجود ندارد:" + input.UID);
             }
+            input.SetId(user.Id);
             await _userSQLRepository.UpdateAsync(input);
         }
         else
