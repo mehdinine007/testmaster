@@ -15,4 +15,7 @@ public enum SaleProcessType
 
    [Display(Name = "فروش آزاد")]
    FreeSale = 3,
+   
+   [Display(Name = "فروش نقدی")]
+   CashSale = 4
 }

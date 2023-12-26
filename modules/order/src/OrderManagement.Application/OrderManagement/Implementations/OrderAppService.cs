@@ -28,6 +28,7 @@ using OrderManagement.Application.Contracts.OrderManagement.Services;
 using Esale.Share.Authorize;
 using IFG.Core.Utility.Security;
 using Core.Utility.Tools;
+using OrderManagement.Domain.Shared.OrderManagement.Enums;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -153,9 +154,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
     }
 
-    private void RustySalePlanValidation(CommitOrderDto commitOrder, int esaleTypeId)
+    private void RustySalePlanValidation(CommitOrderDto commitOrder, ESaleTypeEnums esaleTypeId)
     {
-        if (esaleTypeId == 3)
+        if (esaleTypeId == ESaleTypeEnums.WornOutSale)
         {
             const string pattern = ".[A-Z a-z 0-9]";
             if (string.IsNullOrWhiteSpace(commitOrder.Vin) || !Regex.IsMatch(commitOrder.Vin, pattern, RegexOptions.Compiled))
@@ -225,29 +226,22 @@ public class OrderAppService : ApplicationService, IOrderAppService
         //var cacheKey = string.Format(RedisConstants.SaleDetailPrefix, commitOrderDto.SaleDetailUId);
         //_memoryCache.TryGetValue(cacheKey, out SaleDetailDto);
 
-        var paymentMethodGranted = _configuration.GetValue<bool?>("PaymentMethodGranted") ?? false;
-        if (paymentMethodGranted && commitOrderDto.AgencyId is null)
-        {
-            throw new UserFriendlyException(OrderConstant.AgencyNotFound, OrderConstant.AgencyId);
-        }
-        if (paymentMethodGranted && commitOrderDto.PspAccountId is null)
-        {
-            throw new UserFriendlyException(OrderConstant.PspAccountNotFound, OrderConstant.PspAccountId);
-        }
+        //var paymentMethodGranted = _configuration.GetValue<bool?>("PaymentMethodGranted") ?? false;
+
         if (SaleDetailDto == null)
         {
             var saleDetailQuery = await _saleDetailRepository.GetQueryableAsync();
             var SaleDetailFromDb = saleDetailQuery
                 .Select(x => new SaleDetailOrderDto
                 {
-                    EsaleTypeId = x.ESaleTypeId,
+                    //EsaleTypeId = x.ESaleTypeId,
                     Id = x.Id,
                     MinimumAmountOfProxyDeposit = x.MinimumAmountOfProxyDeposit,
                     SaleId = x.SaleId,
                     SalePlanEndDate = x.SalePlanEndDate,
                     SalePlanStartDate = x.SalePlanStartDate,
                     UID = x.UID,
-                    ESaleTypeId = x.ESaleTypeId,
+                    ESaleTypeId = (ESaleTypeEnums)x.ESaleTypeId,
                     CarFee = x.CarFee,
                     ProductId = x.ProductId,
                     SaleProcess = x.SaleProcess
@@ -285,26 +279,36 @@ public class OrderAppService : ApplicationService, IOrderAppService
             ttl = SaleDetailDto.SalePlanEndDate.Subtract(DateTime.Now);
 
         }
-        UserDto customer = new UserDto();
-        if (SaleDetailDto.ESaleTypeId == 2 || paymentMethodGranted)
+
+        if (SaleDetailDto.SaleProcess == SaleProcessType.CashSale && commitOrderDto.AgencyId is null)
         {
-             customer = await _esaleGrpcClient.GetUserId(_commonAppService.GetUserId().ToString());
+            throw new UserFriendlyException(OrderConstant.AgencyNotFound, OrderConstant.AgencyId);
         }
-        if (SaleDetailDto.ESaleTypeId == 2 && customer.GenderCode != 2)
+        if (SaleDetailDto.SaleProcess == SaleProcessType.CashSale && commitOrderDto.PspAccountId is null)
+        {
+            throw new UserFriendlyException(OrderConstant.PspAccountNotFound, OrderConstant.PspAccountId);
+        }
+        UserDto customer = new UserDto();
+        if (SaleDetailDto.ESaleTypeId == ESaleTypeEnums.YouthSale || SaleDetailDto.SaleProcess == SaleProcessType.CashSale)
+        {
+            customer = await _esaleGrpcClient.GetUserId(_commonAppService.GetUserId().ToString());
+        }
+        if (SaleDetailDto.ESaleTypeId == ESaleTypeEnums.YouthSale && customer.GenderCode != (int)GenderType.Female)
         {
             throw new UserFriendlyException("طرح فروش مربوط به شما نمی باشد");
         }
-        if (paymentMethodGranted)
+        if ( SaleDetailDto.SaleProcess == SaleProcessType.CashSale)
         {
             if (!customer.NationalCode.Equals(nationalCode))
             {
                 throw new UserFriendlyException("شما نمیتوانید سفارش شخص دیگری را پرداخت کنید");
             }
         }
+
         ////////////////conntrol repeated order in saledetails// iran&&varedat
 
         CheckSaleDetailValidation(SaleDetailDto);
-        RustySalePlanValidation(commitOrderDto, SaleDetailDto.EsaleTypeId);
+        RustySalePlanValidation(commitOrderDto, SaleDetailDto.ESaleTypeId);
         if (SaleDetailDto.SaleProcess == SaleProcessType.RegularSale)
             if (!await NationalCodeExistsInPriority(nationalCode))
                 throw new UserFriendlyException("کد ملی متقاضی در لیست الویت بندی وجود نداشت");
@@ -338,7 +342,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
            });
         if (!string.IsNullOrEmpty(EsaleTypeId))
         {
-            if (EsaleTypeId != SaleDetailDto.EsaleTypeId.ToString())
+            if (EsaleTypeId != SaleDetailDto.ESaleTypeId.ToString())
             {
                 throw new UserFriendlyException("امکان انتخاب فقط یک نوع طرح فروش وجود دارد");
             }
@@ -356,7 +360,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
             if (activeSuccessfulOrderExists != null)
             {
-                if (SaleDetailDto.ESaleTypeId != activeSuccessfulOrderExists.ESaleTypeId)
+                if (SaleDetailDto.ESaleTypeId != (ESaleTypeEnums)activeSuccessfulOrderExists.ESaleTypeId)
                 {
                     await _cacheManager.SetWithPrefixKeyAsync("_EsaleType",
                            RedisConstants.CommitOrderPrefix + userId.ToString(),
@@ -536,13 +540,13 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
 
         }
-        
-        
+
+
 
 
         CustomerOrder customerOrder = new CustomerOrder();
 
-        if (paymentMethodGranted)
+        if (SaleDetailDto.SaleProcess == SaleProcessType.CashSale)
         {
             // try
             // {
@@ -572,7 +576,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         }
 
         ApiResult<IpgApiResult> handShakeResponse = new ApiResult<IpgApiResult>();
-        if (paymentMethodGranted)
+        if (SaleDetailDto.SaleProcess == SaleProcessType.CashSale)
         {
             handShakeResponse = await _ipgServiceProvider.HandShakeWithPsp(new PspHandShakeRequest()
             {
@@ -691,10 +695,10 @@ public class OrderAppService : ApplicationService, IOrderAppService
         return new CommitOrderResultDto()
         {
             OrganizationUrl = organizationUrl,
-            PaymentGranted = paymentMethodGranted,
+            PaymentGranted = SaleDetailDto.SaleProcess == SaleProcessType.CashSale,
             UId = commitOrderDto.SaleDetailUId,
             TrackingCode = customerOrder.TrackingCode,
-            PaymentMethodConigurations = paymentMethodGranted ? new()
+            PaymentMethodConigurations = SaleDetailDto.SaleProcess == SaleProcessType.CashSale ? new()
             {
                 Message = handShakeResponse?.Result?.Message,
                 StatusCode = handShakeResponse?.Result?.StatusCode,
@@ -785,7 +789,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 DeliveryDateDescription = x.DeliveryDateDescription,
                 DeliveryDate = x.DeliveryDate,
                 OrderRejectionCode = x.OrderRejectionStatus.HasValue ? (int)x.OrderRejectionStatus : null,
-                ESaleTypeId = x.ESaleTypeId,
+                ESaleTypeId = (ESaleTypeEnums)x.ESaleTypeId,
                 ProductId = x.ProductId,
                 Product = ObjectMapper.Map<ProductAndCategory, ProductAndCategoryViewModel>(x.Product),
                 SalePlanEndDate = x.SalePlanEndDate,
@@ -1369,7 +1373,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             .Select(y => new CustomerOrder_OrderDetailDto
             {
                 CarDeliverDate = y.CarDeliverDate,
-                ESaleTypeId = y.ESaleTypeId,
+                ESaleTypeId = (ESaleTypeEnums)y.ESaleTypeId,
                 SaleDetailUid = y.UID,
                 MinimumAmountOfProxyDeposit = y.MinimumAmountOfProxyDeposit,
                 ManufactureDate = y.ManufactureDate,
@@ -1422,7 +1426,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 DeliveryDateDescription = x.DeliveryDateDescription,
                 DeliveryDate = x.DeliveryDate,
                 OrderRejectionCode = x.OrderRejectionStatus.HasValue ? (int)x.OrderRejectionStatus : null,
-                ESaleTypeId = y.ESaleTypeId,
+                ESaleTypeId = (ESaleTypeEnums)y.ESaleTypeId,
                 ManufactureDate = y.ManufactureDate,
                 SaleDetailUid = y.UID,
                 SalePlanEndDate = y.SalePlanEndDate,
