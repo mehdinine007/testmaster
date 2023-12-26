@@ -33,15 +33,18 @@ namespace OrderManagement.Application.OrderManagement.FluentValidation
             RuleFor(x => x.QuestionRelationId).NotNull().NotEmpty().WithMessage(ValidationConstant.ItemNotFound);
             RuleFor(x => x.QuestionAnswerId).NotNull().NotEmpty().WithMessage(ValidationConstant.ItemNotFound);
             RuleFor(x => x.OperationType).NotNull().NotEmpty().WithMessage(ValidationConstant.ItemNotFound);
+            RuleFor(x => x.QuestionId != x.QuestionRelationId).NotNull().NotEmpty().WithMessage(ValidationConstant.NotEqualQuestionIdAndQuestionRelation);
 
             RuleSet(RuleSets.Add, () =>
             {
                 RuleFor(x => x.QuestionId).MustAsync(async (o, e) => await _questionRepository.AnyAsync(p => p.Id == o)).WithMessage(ValidationConstant.QuestionNotFound);
                 RuleFor(x => x.QuestionRelationId).MustAsync(async (o, e) => await _questionRepository.AnyAsync(p => p.Id == o)).WithMessage(ValidationConstant.QuestionNotFound);
-                RuleFor(x => x.QuestionAnswerId).MustAsync(async (o, e) => await _questionAnswerRepository.AnyAsync(p => p.Id == o)).WithMessage(ValidationConstant.AnswerNotFound);
+                RuleFor(x => x.QuestionAnswerId).MustAsync(async (o, e) => await _questionAnswerRepository.AnyAsync(p => p.Id == o)).WithMessage(ValidationConstant.AnswerNotFound)
+                .DependentRules(() =>
+                {
+                    RuleFor(x => x).MustAsync(async (o, e) => await _questionAnswerRepository.AnyAsync(p =>p.Id==o.QuestionAnswerId && p.QuestionId == o.QuestionId)).WithName("QuestionId").WithMessage(ValidationConstant.EqualQuestionIdAndAnswerQuestion);
+                });
                 RuleFor(x => x.OperationType).Must((o, e) => EnumExtension.GetEnumValuesAndDescriptions<OperatorFilterEnum>().Any(d => d.Key == (int)o.OperationType)).WithMessage(ValidationConstant.OperatorNotFound);
-
-
             });
 
             RuleSet(RuleSets.Edit, () =>
@@ -49,7 +52,11 @@ namespace OrderManagement.Application.OrderManagement.FluentValidation
                 RuleFor(x => x.Id).MustAsync(async (o, e) => await questionRelationrepository.AnyAsync(p => p.Id == o)).WithMessage(ValidationConstant.ItemNotFound);
                 RuleFor(x => x.QuestionId).MustAsync(async (o, e) => await _questionRepository.AnyAsync(p => p.Id == o)).WithMessage(ValidationConstant.QuestionNotFound);
                 RuleFor(x => x.QuestionRelationId).MustAsync(async (o, e) => await _questionRepository.AnyAsync(p => p.Id == o)).WithMessage(ValidationConstant.QuestionNotFound);
-                RuleFor(x => x.QuestionAnswerId).MustAsync(async (o, e) => await _questionAnswerRepository.AnyAsync(p => p.Id == o)).WithMessage(ValidationConstant.AnswerNotFound);
+                RuleFor(x => x.QuestionAnswerId).MustAsync(async (o, e) => await _questionAnswerRepository.AnyAsync(p => p.Id == o)).WithMessage(ValidationConstant.AnswerNotFound)
+                .DependentRules(() =>
+                {
+                    RuleFor(x => x).MustAsync(async (o, e) => await _questionAnswerRepository.AnyAsync(p => p.Id == o.QuestionAnswerId && p.QuestionId == o.QuestionId)).WithName("QuestionId").WithMessage(ValidationConstant.EqualQuestionIdAndAnswerQuestion);
+                });
                 RuleFor(x => x.OperationType).Must((o, e) => EnumExtension.GetEnumValuesAndDescriptions<OperatorFilterEnum>().Any(d => d.Key == (int)o.OperationType)).WithMessage(ValidationConstant.OperatorNotFound);
 
             });

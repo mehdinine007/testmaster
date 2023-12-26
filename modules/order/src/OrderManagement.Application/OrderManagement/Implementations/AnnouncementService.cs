@@ -145,8 +145,7 @@ public class AnnouncementService : ApplicationService, IAnnouncementService
       
         if (announcementDto.ToDate < announcementDto.FromDate)
             throw new UserFriendlyException(OrderConstant.ToDateLessThanFromDate, OrderConstant.ToDateLessThanFromDateId);
-
-        var announcement = ObjectMapper.Map<CreateAnnouncementDto, Announcement>(announcementDto);
+        var announcement =ObjectMapper.Map<CreateAnnouncementDto, Announcement>(announcementDto, getAnnouncement);
         await _announcementRepository.UpdateAsync(announcement);
         await CurrentUnitOfWork.SaveChangesAsync();
         return announcement.Id;

@@ -56,7 +56,8 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             }
 
             var qustionGroup = ObjectMapper.Map<QuestionGroupDto, QuestionGroup>(questionGroupDto);
-            await _questionGroupRepository.InsertAsync(qustionGroup,autoSave:true);
+            await _questionGroupRepository.InsertAsync(qustionGroup);
+            await CurrentUnitOfWork.SaveChangesAsync();
             return ObjectMapper.Map<QuestionGroup, QuestionGroupDto>(qustionGroup);
 
         }
