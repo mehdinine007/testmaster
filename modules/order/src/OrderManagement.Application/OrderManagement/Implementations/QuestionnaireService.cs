@@ -201,9 +201,6 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
                 throw new UserFriendlyException("لطفا نمام فیلد ها را پر کنید");
 
             submitAnswerTreeDto.UnregisteredUserInformation.QuestionnaireId = questionnaire.Id;
-            await _unAuthorizedUserRepository.InsertAsync(
-              ObjectMapper.Map<UnregisteredUserInformation, UnAuthorizedUser>(submitAnswerTreeDto.UnregisteredUserInformation));
-
         }
         else if (questionnaire.QuestionnaireType == QuestionnaireType.AuthorizedOnly)
         {
@@ -218,8 +215,10 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
 
         //check all available questions in questionnaire being completed
         var questionIds = questionnaire.Questions.Select(x => x.Id).OrderBy(x => x).ToList();
+        var noDescriptionalquestionId = questionnaire.Questions.Where(x => x.QuestionType != QuestionType.Descriptional).Select(x => x.Id).OrderBy(x => x).ToList();
         var incomigAnswerIds = submitAnswerTreeDto.SubmitAnswerDto.Select(x => x.QuestionId).OrderBy(x => x).ToList();
-        var missedQuestionExists = !questionIds.SequenceEqual(incomigAnswerIds);
+        var noDescriptionalIncomigAnswerIds = questionnaire.Questions.Where(x=> incomigAnswerIds.Contains(x.Id) && x.QuestionType != QuestionType.Descriptional).Select(x => x.Id).OrderBy(x => x).ToList();
+        var missedQuestionExists = !noDescriptionalquestionId.SequenceEqual(noDescriptionalIncomigAnswerIds);
         if (missedQuestionExists)
             throw new UserFriendlyException("لطفا به تمام سوالات پاسخ دهید");
 
@@ -283,6 +282,11 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
         });
         //add to database
         await _submittedAnswerRepository.InsertManyAsync(submitAnswerList);
+        if (questionnaire.QuestionnaireType == QuestionnaireType.AnonymousAllowed)
+        {
+            await _unAuthorizedUserRepository.InsertAsync(
+             ObjectMapper.Map<UnregisteredUserInformation, UnAuthorizedUser>(submitAnswerTreeDto.UnregisteredUserInformation));
+        }
     }
 
     public async Task<bool> UploadFile(UploadFileDto uploadFile)
