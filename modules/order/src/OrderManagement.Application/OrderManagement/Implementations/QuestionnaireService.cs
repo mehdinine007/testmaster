@@ -216,9 +216,8 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
         //check all available questions in questionnaire being completed
         var questionIds = questionnaire.Questions.Select(x => x.Id).OrderBy(x => x).ToList();
         var noDescriptionalquestionId = questionnaire.Questions.Where(x => x.QuestionType != QuestionType.Descriptional).Select(x => x.Id).OrderBy(x => x).ToList();
-        var incomigAnswerIds = submitAnswerTreeDto.SubmitAnswerDto.Select(x => x.QuestionId).OrderBy(x => x).ToList();
-        var noDescriptionalIncomigAnswerIds = questionnaire.Questions.Where(x=> incomigAnswerIds.Contains(x.Id) && x.QuestionType != QuestionType.Descriptional).Select(x => x.Id).OrderBy(x => x).ToList();
-        var missedQuestionExists = !noDescriptionalquestionId.SequenceEqual(noDescriptionalIncomigAnswerIds);
+        var incomigAnswerIds = submitAnswerTreeDto.SubmitAnswerDto.Where(x => noDescriptionalquestionId.Contains(x.QuestionId)).Select(x => x.QuestionId).OrderBy(x => x).ToList();
+        var missedQuestionExists = !noDescriptionalquestionId.SequenceEqual(incomigAnswerIds);
         if (missedQuestionExists)
             throw new UserFriendlyException("لطفا به تمام سوالات پاسخ دهید");
 
