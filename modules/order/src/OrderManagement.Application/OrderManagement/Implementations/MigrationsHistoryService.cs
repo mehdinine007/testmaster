@@ -13,6 +13,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace OrderManagement.Application.OrderManagement.Implementations
 {
@@ -37,7 +38,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             commandText = File.ReadAllText(Directory.GetCurrentDirectory() + "\\Migrations\\dbo.__MigrationsHistory.sql");
             _migrationsHistoryDal.Execute(commandText);
 
-            var migrationsHistory = 
+            var migrationsHistory =
                 (await _migrationsHistoryRepository.GetQueryableAsync())
             .ToList();
 
@@ -89,14 +90,25 @@ namespace OrderManagement.Application.OrderManagement.Implementations
                     Created = DateTime.Now
                 }, row, true);
             }
-
-            await _migrationsHistoryRepository.InsertAsync(new MigrationsHistory()
+            var _migrationsHistory = migrationsHistory
+            .Where(x => x.MigrationId == "Version")
+                .FirstOrDefault();
+            if (_migrationsHistory is null)
             {
-                MigrationId = "Version",
-                StateName = "Completed",
-                Version = fixVersion,
-                Created = DateTime.Now
-            },autoSave:true);
+                await _migrationsHistoryRepository.InsertAsync(new MigrationsHistory()
+                {
+                    MigrationId = "Version",
+                    StateName = "Completed",
+                    Version = fixVersion,
+                    Created = DateTime.Now
+                }, autoSave: true);
+            }
+            else
+            {
+                _migrationsHistory.Version = fixVersion;
+                _migrationsHistory.Created = DateTime.Now;
+                await _migrationsHistoryRepository.UpdateAsync(_migrationsHistory, autoSave: true);
+            }
             return true;
         }
 
@@ -115,13 +127,13 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             _migrationsHistoryDal.Execute(commandText);
             if (_migrationsHistory == null)
             {
-                await _migrationsHistoryRepository.InsertAsync(data,autoSave:true);
+                await _migrationsHistoryRepository.InsertAsync(data, autoSave: true);
             }
             else
             {
                 _migrationsHistory.Version = data.Version;
                 _migrationsHistory.Created = data.Created;
-                await _migrationsHistoryRepository.UpdateAsync(_migrationsHistory,autoSave:true);
+                await _migrationsHistoryRepository.UpdateAsync(_migrationsHistory, autoSave: true);
             }
         }
 
