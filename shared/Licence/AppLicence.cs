@@ -3,6 +3,7 @@
     public class AppLicence
     {
         public static string Version = "4.1.1-rc1";
+        public static string FixVersion = "4.1.1";
         public static string ReleaseDate  = "1402/09/29";
         public static LicenceInfo GetLicence(string serialNumber)
         {
@@ -47,6 +48,7 @@
             {
                 OrganizationTitle = licenceInfo.OrganizationTitle,
                 Version = Version,
+                FixVersion = FixVersion,
                 ReleaseDate = ReleaseDate
             }; 
         }

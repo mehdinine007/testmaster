@@ -110,6 +110,11 @@ public static class OrderManagementDbContextModelCreatingExtensions
               .HasFilter($"{nameof(UserRejectionFromBank.IsDeleted)} = 0");
         });
 
+        builder.Entity<MigrationsHistory>(entity =>
+        {
+            entity.ToTable("__"+nameof(MigrationsHistory));
+        });
+
         builder.Entity<AdvocacyUser>(entity =>
         {
             entity.ToTable(nameof(AdvocacyUser));
