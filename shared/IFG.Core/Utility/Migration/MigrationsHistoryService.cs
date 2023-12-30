@@ -1,33 +1,23 @@
-﻿using Licence;
+﻿using IFG.Core.IOC;
+using IFG.Core.Utility.Migration.Domain;
+using IFG.Core.Utility.Migration.Models;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
-using OrderManagement.Application.Contracts;
-using OrderManagement.Application.Contracts.OrderManagement.Services;
-using OrderManagement.Domain;
-using OrderManagement.EntityFrameworkCore.OrderManagement.Repositories;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Volo.Abp.Application.Services;
-using Volo.Abp.Domain.Repositories;
 
-namespace OrderManagement.Application.OrderManagement.Implementations
+namespace IFG.Core.Utility.Migration
 {
-    public class MigrationsHistoryService : ApplicationService, IMigrationsHistoryService
+    public class MigrationsHistoryService 
     {
-        private readonly IRepository<MigrationsHistory, int> _migrationsHistoryRepository;
-        private readonly IMigrationsHistoryRepository _migrationsHistoryDal;
+        private readonly DpMigrationsHistory _migrationsHistoryDal;
         private readonly IConfiguration _configuration;
-        public MigrationsHistoryService(IRepository<MigrationsHistory, int> migrationsHistoryRepository, IMigrationsHistoryRepository migrationsHistoryDal, IConfiguration configuration)
+        public string Version { get; set; }
+        public MigrationsHistoryService(string connStringName,string version)
         {
-            _migrationsHistoryRepository = migrationsHistoryRepository;
-            _migrationsHistoryDal = migrationsHistoryDal;
-            _configuration = configuration;
+            _migrationsHistoryDal = new DpMigrationsHistory(connStringName);
+            Version = version;
+            _configuration = ServiceTool.Resolve<IConfiguration>();
         }
-        public async Task<bool> UpdateDatabase()
+        public bool UpdateDatabase()
         {
             string path = Directory.GetCurrentDirectory() + "\\Migrations\\Migrations.json";
             string JsonData = File.ReadAllText(path);
@@ -37,14 +27,14 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             commandText = File.ReadAllText(Directory.GetCurrentDirectory() + "\\Migrations\\dbo.__MigrationsHistory.sql");
             _migrationsHistoryDal.Execute(commandText);
 
-            var migrationsHistory = 
-                (await _migrationsHistoryRepository.GetQueryableAsync())
-            .ToList();
+            var migrationsHistory = _migrationsHistoryDal
+                .GetList()
+                .ToList();
 
-            var fixVersion = AppLicence.GetVersion("").FixVersion;
+            var fixVersion = Version;
             foreach (var row in migrationData.Schema.OrderBy(x => x.Priority))
             {
-                await Execute(migrationsHistory, new MigrationsHistory()
+                Execute(migrationsHistory, new MigrationsHistory()
                 {
                     MigrationId = row.Id,
                     StateName = "Schema",
@@ -55,7 +45,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
 
             foreach (var row in migrationData.Tables.OrderBy(x => x.Priority))
             {
-                await Execute(migrationsHistory, new MigrationsHistory()
+                Execute(migrationsHistory, new MigrationsHistory()
                 {
                     MigrationId = row.Id,
                     StateName = "Tables",
@@ -68,7 +58,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             {
                 if (!migrationsHistory.Any(x => x.MigrationId == row.Id && x.StateName == "Patch"))
                 {
-                    await Execute(migrationsHistory, new MigrationsHistory()
+                    Execute(migrationsHistory, new MigrationsHistory()
                     {
                         MigrationId = row.Id,
                         StateName = "Patch",
@@ -81,7 +71,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
 
             foreach (var row in migrationData.Programmability.OrderBy(x => x.Priority))
             {
-                await Execute(migrationsHistory, new MigrationsHistory()
+                Execute(migrationsHistory, new MigrationsHistory()
                 {
                     MigrationId = row.Id,
                     StateName = "Programmability",
@@ -89,18 +79,29 @@ namespace OrderManagement.Application.OrderManagement.Implementations
                     Created = DateTime.Now
                 }, row, true);
             }
-
-            await _migrationsHistoryRepository.InsertAsync(new MigrationsHistory()
+            var _migrationsHistory = migrationsHistory
+            .Where(x => x.MigrationId == "Version")
+                .FirstOrDefault();
+            if (_migrationsHistory is null)
             {
-                MigrationId = "Version",
-                StateName = "Completed",
-                Version = fixVersion,
-                Created = DateTime.Now
-            },autoSave:true);
+                _migrationsHistoryDal.Add(new MigrationsHistory()
+                {
+                    MigrationId = "Version",
+                    StateName = "Completed",
+                    Version = fixVersion,
+                    Created = DateTime.Now
+                });
+            }
+            else
+            {
+                _migrationsHistory.Version = fixVersion;
+                _migrationsHistory.Created = DateTime.Now;
+                _migrationsHistoryDal.Update(_migrationsHistory);
+            }
             return true;
         }
 
-        private async Task Execute(List<MigrationsHistory> migrationsHistory, MigrationsHistory data, MigrationItem migrationItem, bool dropObject)
+        private void Execute(List<MigrationsHistory> migrationsHistory, MigrationsHistory data, MigrationItem migrationItem, bool dropObject)
         {
             var _migrationsHistory = migrationsHistory
                 .Where(x => x.MigrationId == data.MigrationId && x.StateName == data.StateName)
@@ -115,13 +116,13 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             _migrationsHistoryDal.Execute(commandText);
             if (_migrationsHistory == null)
             {
-                await _migrationsHistoryRepository.InsertAsync(data,autoSave:true);
+                _migrationsHistoryDal.Add(data);
             }
             else
             {
                 _migrationsHistory.Version = data.Version;
                 _migrationsHistory.Created = data.Created;
-                await _migrationsHistoryRepository.UpdateAsync(_migrationsHistory,autoSave:true);
+                _migrationsHistoryDal.Update(_migrationsHistory);
             }
         }
 

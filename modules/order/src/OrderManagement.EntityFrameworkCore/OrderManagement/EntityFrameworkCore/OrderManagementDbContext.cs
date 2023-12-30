@@ -9,13 +9,13 @@ using Volo.Abp.Data;
 using Volo.Abp.EntityFrameworkCore;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using OrderManagement.Domain.OrderManagement;
+using IFG.Core.Utility.Migration.Domain;
 
 namespace OrderManagement.EfCore
 {
     [ConnectionStringName("OrderManagement")]
     public class OrderManagementDbContext : AbpDbContext<OrderManagementDbContext>, IOrderManagementDbContext
     {
-        public DbSet<MigrationsHistory> MigrationsHistory { get; set; }
         public DbSet<SiteStructure> SiteStructures { get; set; }
         public DbSet<Attachment> Attachments { get; set; }
         public static string TablePrefix { get; set; } = OrderManagementConsts.DefaultDbTablePrefix;

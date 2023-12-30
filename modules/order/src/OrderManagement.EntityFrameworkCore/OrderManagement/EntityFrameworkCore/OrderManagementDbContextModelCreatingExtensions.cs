@@ -9,6 +9,7 @@ using IFG.Core.DataAccess;
 using OrderManagement.Domain.Shared;
 using System.Reflection.Emit;
 using Volo.Abp.Domain.Entities;
+using IFG.Core.Utility.Migration.Domain;
 
 namespace OrderManagement.EfCore;
 
@@ -108,11 +109,6 @@ public static class OrderManagementDbContextModelCreatingExtensions
                .HasMaxLength(26);
             entity.HasIndex(u => u.nationalcode)
               .HasFilter($"{nameof(UserRejectionFromBank.IsDeleted)} = 0");
-        });
-
-        builder.Entity<MigrationsHistory>(entity =>
-        {
-            entity.ToTable("__"+nameof(MigrationsHistory));
         });
 
         builder.Entity<AdvocacyUser>(entity =>

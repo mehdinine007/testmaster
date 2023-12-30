@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace OrderManagement.Application.Contracts
+namespace IFG.Core.Utility.Migration.Models
 {
     public class MigrationData
     {
