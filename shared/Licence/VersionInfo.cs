@@ -9,6 +9,7 @@ namespace Licence
     public class VersionInfo
     {
         public string Version { get; set; }
+        public string FixVersion { get; set; }
         public string OrganizationTitle { get; set; }
         public string ReleaseDate { get; set; }
     }

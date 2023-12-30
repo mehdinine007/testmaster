@@ -1,24 +1,14 @@
-if exists(select 1 from sysObjects where upper(Name)= 'spApplicantsReport')
-	drop proc spApplicantsReport
-Go
 create proc [dbo].[spApplicantsReport]
- 
-
 @companyFilter as int null, 
 @productFilter as nvarchar(max) null,
 @modelTypeFilter as int null ,
 @fromdateFilter as datetime2 null,
 @todateFilter as datetime2 null,
-
 @saleDetailFilter as int null,
 @saleSchemaFilter as int null,
 @nationalcode nvarchar(10) null,
-
 @categoriesFilter nvarchar(max) null
-
-
 as
-
 begin
 	
 
@@ -59,14 +49,14 @@ begin
 		,cod.FactorDate
 	
 
-		from EsaleDb..ClientsOrderDetailByCompany cod 
-		inner join Esaledb_new..ProductAndCategory_CarTip pcm on pcm.cartipid=cod.CarCode
-		inner join Esaledb_new..ProductAndCategory pc on pc.Id= pcm.productid
-		inner join Esaledb_new..ProductAndCategory com on com.Code = left(pc.Code,4)
-		inner join EsaleDb_new..AbpUsers as usr on usr.NationalCode = cod.NationalCode
-		inner join Esaledb_new..customerorder co on usr.UID = co.UserId
-		left join Esaledb_new..saledetail as sd  on sd.id = co.saledetailid
-		inner join EsaleDb..CompanyPaypaidPrices cp on cod.Id = cp.ClientsOrderDetailByCompanyId
+		from [CompanyDb]..ClientsOrderDetailByCompany cod 
+		inner join ProductAndCategory_CarTip pcm on pcm.cartipid=cod.CarCode
+		inner join ProductAndCategory pc on pc.Id= pcm.productid
+		inner join ProductAndCategory com on com.Code = left(pc.Code,4)
+		inner join AbpUsers as usr on usr.NationalCode = cod.NationalCode
+		inner join customerorder co on usr.UID = co.UserId
+		left join SaleDetail as sd  on sd.id = co.saledetailid
+		inner join [CompanyDb]..CompanyPaypaidPrices cp on cod.Id = cp.ClientsOrderDetailByCompanyId
 		--left join Esaledb_new.[dbo].[UserRejectionAdvocacy] ur on  ur.NationalCode = cod.NationalCode
 
 
