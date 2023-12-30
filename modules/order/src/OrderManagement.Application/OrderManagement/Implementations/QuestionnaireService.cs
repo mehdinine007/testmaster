@@ -74,9 +74,11 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
         if (questionnaireWhitListType.WhitListRequirement.HasValue)
             _baseInformationService.CheckWhiteList((WhiteListEnumType)questionnaireWhitListType.WhitListRequirement.Value, currentUserNationalCode);
 
-        var questionnaireQuery = await _questionnaireRepository.GetQueryableAsync();
+        var questionnaireQuery =( await _questionnaireRepository.GetQueryableAsync()).AsNoTracking();
         questionnaireQuery = questionnaireQuery.Include(x => x.Questions)
-            .ThenInclude(x => x.Answers);
+            .ThenInclude(x => x.Answers)
+            .Include(x => x.Questions).ThenInclude(x => x.QuestionGroup)
+            .Include(x => x.Questions).ThenInclude(x => x.QuestionRelationships); ;
         if (currentUserId.HasValue)
         {
             if (!relatedEntityId.HasValue)
@@ -85,18 +87,18 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
                     .ThenInclude(x => x.SubmittedAnswers.Where(y => y.UserId.Value == currentUserId.Value))
                      .Include(x => x.Questions).ThenInclude(x => x.QuestionRelationships)
                     .ThenInclude(x => x.QuestionAnswer)
-                    .ThenInclude(x => x.SubmittedAnswers.Where(y => y.UserId.Value == currentUserId.Value))
-                    .Include(x=>x.Questions).ThenInclude(x=>x.QuestionGroup);
+                    .ThenInclude(x => x.SubmittedAnswers.Where(y => y.UserId.Value == currentUserId.Value));
+                  
             }
             else
             {
 
                 questionnaireQuery = questionnaireQuery.Include(x => x.Questions)
                     .ThenInclude(x => x.SubmittedAnswers.Where(y => y.UserId.Value == currentUserId.Value && y.RelatedEntityId.Value == relatedEntityId.Value))
-                    .Include(x => x.Questions).ThenInclude(x=>x.QuestionRelationships)
-                    .ThenInclude(x=>x.QuestionAnswer)
-                    .ThenInclude(x => x.SubmittedAnswers.Where(y => y.UserId.Value == currentUserId.Value && y.RelatedEntityId.Value == relatedEntityId.Value))
-                     .Include(x => x.Questions).ThenInclude(x => x.QuestionGroup);
+                    .Include(x => x.Questions).ThenInclude(x => x.QuestionRelationships)
+                    .ThenInclude(x => x.QuestionAnswer)
+                    .ThenInclude(x => x.SubmittedAnswers.Where(y => y.UserId.Value == currentUserId.Value && y.RelatedEntityId.Value == relatedEntityId.Value));
+                    
             }
         }
 
