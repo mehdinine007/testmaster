@@ -35,6 +35,7 @@ using UserManagement.Application.Contracts;
 using IFG.Core.Caching;
 using IFG.Core.Utility.Tools;
 using UserManagement.Domain.UserManagement.Enums;
+using Abp.Runtime.Caching;
 #endregion
 
 namespace UserManagement.Application.UserManagement.Implementations;
@@ -54,7 +55,7 @@ public class UserAppService : ApplicationService, IUserAppService
     private readonly IRepository<UserMongoWrite, ObjectId> _userMongoWriteRepository;
     private readonly IRepository<PermissionDefinitionWrite, ObjectId> _permissionDefinationRepository;
     private readonly IDistributedEventBus _distributedEventBus;
-    private readonly ICacheManager _cacheManager;
+    private readonly IFG.Core.Caching.ICacheManager _cacheManager;
 
 
     public UserAppService(IConfiguration configuration,
@@ -68,8 +69,9 @@ public class UserAppService : ApplicationService, IUserAppService
                           ICaptchaService captchaService,
                           IDistributedEventBus distributedEventBus,
                           IRepository<UserSQL, long> UserSQLRepository,
-                          IRepository<PermissionDefinitionWrite, ObjectId> permissionDefinationRepository,
-                          ICacheManager cacheManager)
+                          IRepository<PermissionDefinitionWrite, ObjectId> permissionDefinationRepository
+,
+IFG.Core.Caching.ICacheManager cacheManager)
     {
         _rolePermissionService = rolePermissionService;
         _userMongoRepository = userMongoRepository;
@@ -512,10 +514,11 @@ public class UserAppService : ApplicationService, IUserAppService
     public async Task<UserDto> GetUserProfile()
     {
         Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
-        string prefix = $"{RedisConstants.GetUserProfile}";
+        string prefix = $"{RedisConstants.GetUserById}";
         Guid userId = _commonAppService.GetUID();
-        string cacheKey = userId.ToString();
-        var cachedData = await _cacheManager.GetStringAsync(cacheKey, prefix, new CacheOptions
+        string cacheKey = "profile_"+userId.ToString();
+
+        var cachedData = await _cacheManager.GetStringAsync(cacheKey, prefix, new CacheOptions 
         { Provider = CacheProviderEnum.Hybrid });
 
         if (!string.IsNullOrEmpty(cachedData))
@@ -682,11 +685,11 @@ public class UserAppService : ApplicationService, IUserAppService
                 throw new UserFriendlyException(Messages.ShabaNotValid);
             }
         }
-        string prefix = $"{RedisConstants.GetUserProfile}";
+        string prefix = $"{RedisConstants.GetUserById}";
         Guid userId = _commonAppService.GetUID();
         string cacheKey = userId.ToString();
-        await _cacheManager.RemoveAsync(cacheKey, prefix, new CacheOptions
-        { Provider = CacheProviderEnum.Hybrid });
+        await _cacheManager.RemoveByPrefixAsync(RedisConstants.GetUserById, new CacheOptions
+       { Provider = CacheProviderEnum.Hybrid });
 
         var user = await (await _userMongoRepository.GetCollectionAsync())
             .Find(x => x.UID == _commonAppService.GetUID().ToString().ToLower()
@@ -859,6 +862,7 @@ public class UserAppService : ApplicationService, IUserAppService
         userFromDb.LastModifierId = _commonAppService.GetUID();
         userFromDb.LastModificationTime = DateTime.Now;
 
+      
         var filter = Builders<UserMongoWrite>.Filter.Eq("UID", userFromDb.UID);
         await (await _userMongoWriteRepository.GetCollectionAsync()).ReplaceOneAsync(filter, userFromDb);
         var userSql = ObjectMapper.Map<UserMongo, UserSQL>(userFromDb);
