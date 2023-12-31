@@ -82,21 +82,22 @@ public class PropertyCategoryService : ApplicationService, IPropertyCategoryServ
     [SecuredOperation(PropertyCategoryServicePermissionConstants.Update)]
     public async Task<PropertyCategoryDto> Update(PropertyCategoryDto propertyCategoryDto)
     {
-        var existingEntity = await _propertyCategoryWriteRepository.FirstOrDefaultAsync(x => x.Id == ObjectId.Parse(propertyCategoryDto.Id));
+        var existingEntity = await _propertyCategoryRepository.FirstOrDefaultAsync(x => x.Id == ObjectId.Parse(propertyCategoryDto.Id));
         if (existingEntity == null)
         {
             throw new UserFriendlyException(OrderConstant.ProductLevelNotFound, OrderConstant.ProductLevelNotFoundId);
         }
-        var getPropertyCategory = await _propertyCategoryWriteRepository.FirstOrDefaultAsync(x => x.Id != ObjectId.Parse(propertyCategoryDto.Id) && x.Title == propertyCategoryDto.Title);
+        var getPropertyCategory = await _propertyCategoryRepository.FirstOrDefaultAsync(x => x.Id != ObjectId.Parse(propertyCategoryDto.Id) && x.Title == propertyCategoryDto.Title);
         if (getPropertyCategory != null)
         {
             throw new UserFriendlyException(OrderConstant.DuplicatePriority, OrderConstant.DuplicatePriorityId);
         }
         existingEntity.Properties = ObjectMapper.Map<List<PropertyDto>, List<Property>>(propertyCategoryDto.Properties);
         existingEntity.Title = propertyCategoryDto.Title;
-        await _propertyCategoryWriteRepository.UpdateAsync(existingEntity, autoSave: true);
+        var mapPropertyCategory = ObjectMapper.Map<PropertyCategory, PropertyCategoryWrite>(existingEntity);
+        await _propertyCategoryWriteRepository.UpdateAsync(mapPropertyCategory, autoSave: true);
 
-        return ObjectMapper.Map<PropertyCategoryWrite, PropertyCategoryDto>(existingEntity);
+        return ObjectMapper.Map<PropertyCategory, PropertyCategoryDto>(existingEntity);
     }
 
     [SecuredOperation(PropertyCategoryServicePermissionConstants.Delete)]
