@@ -16,7 +16,7 @@ public interface IUserAppService : IApplicationService
     Task<bool> AddRole(ObjectId userid, List<string> roleCode);
     Task<UserDto> CreateAsync(CreateUserDto input);
     Task<UserDto> GetUserProfile();
-    Task<UserDto> UpdateUserProfile(UserDto inputUser);
+    Task<bool> UpdateUserProfile(UserDto inputUser);
     Task<bool> ForgotPassword(ForgetPasswordDto forgetPasswordDto);
     Task<bool> ChangePassword(ChangePasswordDto input);
 

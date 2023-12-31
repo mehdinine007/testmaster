@@ -36,7 +36,7 @@ public class UserController : AbpController
     public async Task<UserDto> GetUserProfile()
         => await _userAppService.GetUserProfile();
     [HttpPost]
-    public async Task<UserDto> UpdateUserProfile(UserDto inputUser)
+    public async Task<bool> UpdateUserProfile(UserDto inputUser)
         => await _userAppService.UpdateUserProfile(inputUser);
 
     [HttpPost]
