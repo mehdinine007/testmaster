@@ -105,13 +105,13 @@ namespace OrderManagement.Application
         public async Task<ProductPropertyDto> Update(ProductPropertyDto productPropertyDto)
         {
 
-            var existingEntity = await _productPropertyWriteRepository.FindAsync(x => x.ProductId == productPropertyDto.ProductId);
+            var existingEntity = await _productPropertyRepository.FindAsync(x => x.ProductId == productPropertyDto.ProductId);
             if (existingEntity == null)
             {
                 throw new UserFriendlyException(OrderConstant.ProductLevelNotFound, OrderConstant.ProductLevelNotFoundId);
             }
 
-            var duplicateProductProperty = await _productPropertyWriteRepository.FirstOrDefaultAsync(x => x.ProductId != existingEntity.ProductId && x.ProductId == productPropertyDto.ProductId);
+            var duplicateProductProperty = await _productPropertyRepository.FirstOrDefaultAsync(x => x.ProductId != existingEntity.ProductId && x.ProductId == productPropertyDto.ProductId);
             if (duplicateProductProperty != null)
             {
                 throw new UserFriendlyException(OrderConstant.DuplicatePriority, OrderConstant.DuplicatePriorityId);
@@ -131,9 +131,9 @@ namespace OrderManagement.Application
                     Display = pc.Display
                 })
                 .ToList();
-
-
-            await _productPropertyWriteRepository.UpdateAsync(existingEntity, autoSave: true);
+            var mapProductProperty = ObjectMapper.Map<ProductProperty, ProductPropertyWrite>(existingEntity);
+            
+            await _productPropertyWriteRepository.UpdateAsync(mapProductProperty, autoSave: true);
 
             return ObjectMapper.Map<ProductProperty, ProductPropertyDto>(existingEntity);
 
