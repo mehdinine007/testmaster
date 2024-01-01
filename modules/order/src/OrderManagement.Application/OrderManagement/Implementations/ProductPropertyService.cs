@@ -10,6 +10,7 @@ using OrderManagement.Application.Contracts.OrderManagement.Constants.Permission
 using OrderManagement.Application.Contracts.OrderManagement.Services;
 using OrderManagement.Domain;
 using OrderManagement.Domain.OrderManagement;
+using OrderManagement.Domain.OrderManagement.MongoWrite;
 using OrderManagement.Domain.Shared;
 using OrderManagement.Domain.Shared.OrderManagement.Enums;
 using System;
@@ -30,16 +31,23 @@ namespace OrderManagement.Application
     public class ProductPropertyService : ApplicationService, IProductPropertyService
     {
         private readonly IRepository<ProductProperty, ObjectId> _productPropertyRepository;
+        private readonly IRepository<ProductPropertyWrite, ObjectId> _productPropertyWriteRepository;
         private readonly IRepository<PropertyCategory, ObjectId> _propertyDefinitionRepository;
+        private readonly IRepository<PropertyCategoryWrite, ObjectId> _propertyDefinitionWriteRepository;
         private readonly IRepository<ProductAndCategory, int> _productAndCategoryRepository;
 
 
-        public ProductPropertyService(IRepository<ProductProperty, ObjectId> productPropertyRepository, IRepository<PropertyCategory, ObjectId> propertyDefinitionRepository
-            , IRepository<ProductAndCategory, int> productAndCategoryRepository)
+        public ProductPropertyService(IRepository<ProductProperty, ObjectId> productPropertyRepository,
+            IRepository<PropertyCategory, ObjectId> propertyDefinitionRepository,
+            IRepository<ProductAndCategory, int> productAndCategoryRepository,
+            IRepository<ProductPropertyWrite, ObjectId> productPropertyWriteRepository,
+            IRepository<PropertyCategoryWrite, ObjectId> propertyDefinitionWriteRepository)
         {
             _productPropertyRepository = productPropertyRepository;
             _propertyDefinitionRepository = propertyDefinitionRepository;
             _productAndCategoryRepository = productAndCategoryRepository;
+            _productPropertyWriteRepository = productPropertyWriteRepository;
+            _propertyDefinitionWriteRepository = propertyDefinitionWriteRepository;
         }
 
         public async Task<List<PropertyCategoryDto>> GetByProductId(int productId)
@@ -74,6 +82,7 @@ namespace OrderManagement.Application
                 throw new UserFriendlyException(OrderConstant.NotValid, OrderConstant.NotValidId);
             }
         }
+
         [SecuredOperation(ProductPropertyServicePermissionConstants.Add)]
         public async Task<ProductPropertyDto> Add(ProductPropertyDto productPropertyDto)
         {
@@ -87,13 +96,15 @@ namespace OrderManagement.Application
             {
                 throw new UserFriendlyException(OrderConstant.InCorrectPriorityNumber, OrderConstant.InCorrectPriorityNumberId);
             }
-            var mapProductPropertyDto = ObjectMapper.Map<ProductPropertyDto, ProductProperty>(productPropertyDto);
-            var entity = await _productPropertyRepository.InsertAsync(mapProductPropertyDto, autoSave: true);
+            var mapProductPropertyDto = ObjectMapper.Map<ProductPropertyDto, ProductPropertyWrite>(productPropertyDto);
+            var entity = await _productPropertyWriteRepository.InsertAsync(mapProductPropertyDto, autoSave: true);
             return ObjectMapper.Map<ProductProperty, ProductPropertyDto>(entity);
         }
+
         [SecuredOperation(ProductPropertyServicePermissionConstants.Update)]
         public async Task<ProductPropertyDto> Update(ProductPropertyDto productPropertyDto)
         {
+
             var existingEntity = await _productPropertyRepository.FindAsync(x => x.ProductId == productPropertyDto.ProductId);
             if (existingEntity == null)
             {
@@ -111,19 +122,31 @@ namespace OrderManagement.Application
                 throw new UserFriendlyException(OrderConstant.InCorrectPriorityNumber, OrderConstant.InCorrectPriorityNumberId);
             }
 
-            existingEntity.PropertyCategories = ObjectMapper.Map<List<ProductPropertyCategoryDto>, List<PropertyCategory>>(productPropertyDto.PropertyCategories);
-
-            await _productPropertyRepository.UpdateAsync(existingEntity, autoSave: true);
+            existingEntity.PropertyCategories = ObjectMapper.Map<List<ProductPropertyCategoryDto>, List<PropertyCategoryWrite>>(productPropertyDto.PropertyCategories)
+                .Select(pc => new PropertyCategory
+                {
+                    Title = pc.Title,
+                    Properties = pc.Properties,
+                    Priority = pc.Priority,
+                    Display = pc.Display
+                })
+                .ToList();
+            var mapProductProperty = ObjectMapper.Map<ProductProperty, ProductPropertyWrite>(existingEntity);
+            
+            await _productPropertyWriteRepository.UpdateAsync(mapProductProperty, autoSave: true);
 
             return ObjectMapper.Map<ProductProperty, ProductPropertyDto>(existingEntity);
+
+            
         }
+
         [SecuredOperation(ProductPropertyServicePermissionConstants.Delete)]
         public async Task<bool> Delete(string Id)
         {
             ObjectId objectId;
             if (ObjectId.TryParse(Id, out objectId))
             {
-                await _productPropertyRepository.DeleteAsync(x => x.Id == objectId, autoSave: true);
+                await _productPropertyWriteRepository.DeleteAsync(x => x.Id == objectId, autoSave: true);
                 return true;
             }
             else
@@ -132,7 +155,6 @@ namespace OrderManagement.Application
 
             }
         }
-
 
         public async Task SeedPeroperty(SaleTypeEnum type)
         {
@@ -177,7 +199,7 @@ namespace OrderManagement.Application
                 },
             }
                 };
-                await _propertyDefinitionRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto, PropertyCategory>(propertydto));
+                await _propertyDefinitionWriteRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto, PropertyCategoryWrite>(propertydto));
                 propertydto = new PropertyCategoryDto()
                 {
                     Title = "مشخصات فنی",
@@ -235,7 +257,7 @@ namespace OrderManagement.Application
                 },
             }
                 };
-                await _propertyDefinitionRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto, PropertyCategory>(propertydto));
+                await _propertyDefinitionWriteRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto, PropertyCategoryWrite>(propertydto));
                 propertydto = new PropertyCategoryDto()
                 {
                     Title = "عملکرد خودرو",
@@ -290,7 +312,7 @@ namespace OrderManagement.Application
                 },
             }
                 };
-                await _propertyDefinitionRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto, PropertyCategory>(propertydto));
+                await _propertyDefinitionWriteRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto, PropertyCategoryWrite>(propertydto));
                 propertydto = new PropertyCategoryDto()
                 {
                     Title = "بدنه و شاسی",
@@ -376,7 +398,7 @@ namespace OrderManagement.Application
             },
 
                 };
-                await _propertyDefinitionRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto, PropertyCategory>(propertydto));
+                await _propertyDefinitionWriteRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto, PropertyCategoryWrite>(propertydto));
                 propertydto = new PropertyCategoryDto()
                 {
                     Title = "ایمنی و امنیت",
@@ -463,7 +485,7 @@ namespace OrderManagement.Application
             },
 
                 };
-                await _propertyDefinitionRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto, PropertyCategory>(propertydto));
+                await _propertyDefinitionWriteRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto, PropertyCategoryWrite>(propertydto));
                 propertydto = new PropertyCategoryDto()
                 {
                     Title = "تجهیزات و امکانات",
@@ -609,7 +631,7 @@ namespace OrderManagement.Application
             },
 
                 };
-                await _propertyDefinitionRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto, PropertyCategory>(propertydto));
+                await _propertyDefinitionWriteRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto, PropertyCategoryWrite>(propertydto));
                 propertydto = new PropertyCategoryDto()
                 {
                     Title = "سایر ویژگی",
@@ -631,7 +653,7 @@ namespace OrderManagement.Application
             },
 
                 };
-                await _propertyDefinitionRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto, PropertyCategory>(propertydto));
+                await _propertyDefinitionWriteRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto, PropertyCategoryWrite>(propertydto));
             }
 
             else if (type == SaleTypeEnum.saleauto)
@@ -664,7 +686,7 @@ namespace OrderManagement.Application
                 },
             }
                 };
-                await _propertyDefinitionRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto, PropertyCategory>(propertydto));
+                await _propertyDefinitionWriteRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto, PropertyCategoryWrite>(propertydto));
                 propertydto = new PropertyCategoryDto()
                 {
                     Title = "مشخصات فنی",
@@ -722,7 +744,7 @@ namespace OrderManagement.Application
                 },
             }
                 };
-                await _propertyDefinitionRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto, PropertyCategory>(propertydto));
+                await _propertyDefinitionWriteRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto, PropertyCategoryWrite>(propertydto));
                 propertydto = new PropertyCategoryDto()
                 {
                     Title = "عملکرد خودرو",
@@ -777,7 +799,7 @@ namespace OrderManagement.Application
                 },
             }
                 };
-                await _propertyDefinitionRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto, PropertyCategory>(propertydto));
+                await _propertyDefinitionWriteRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto, PropertyCategoryWrite>(propertydto));
                 propertydto = new PropertyCategoryDto()
                 {
                     Title = "بدنه و شاسی",
@@ -863,7 +885,7 @@ namespace OrderManagement.Application
             },
 
                 };
-                await _propertyDefinitionRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto, PropertyCategory>(propertydto));
+                await _propertyDefinitionWriteRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto, PropertyCategoryWrite>(propertydto));
                 propertydto = new PropertyCategoryDto()
                 {
                     Title = "ایمنی و امنیت",
@@ -950,7 +972,7 @@ namespace OrderManagement.Application
             },
 
                 };
-                await _propertyDefinitionRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto, PropertyCategory>(propertydto));
+                await _propertyDefinitionWriteRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto, PropertyCategoryWrite>(propertydto));
                 propertydto = new PropertyCategoryDto()
                 {
                     Title = "تجهیزات و امکانات",
@@ -1096,7 +1118,7 @@ namespace OrderManagement.Application
             },
 
                 };
-                await _propertyDefinitionRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto, PropertyCategory>(propertydto));
+                await _propertyDefinitionWriteRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto,PropertyCategoryWrite >(propertydto));
                 propertydto = new PropertyCategoryDto()
                 {
                     Title = "سایر ویژگی",
@@ -1118,11 +1140,10 @@ namespace OrderManagement.Application
             },
 
                 };
-                await _propertyDefinitionRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto, PropertyCategory>(propertydto));
+                await _propertyDefinitionWriteRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto, PropertyCategoryWrite>(propertydto));
             }
 
         }
-
 
         public async Task Import(IFormFile file, SaleTypeEnum type)
         {
@@ -1154,25 +1175,24 @@ namespace OrderManagement.Application
                                 for (int row = 2; row <= rowcount; row++)
                                 {
 
-                                    var key = item.Cells[row, 1].Value.ToString();
-                                    var title = item.Cells[row, 2].Value.ToString();
-                                    var value = item.Cells[row, 3].Value.ToString();
-                                    foreach (var category in propertyCategories)
+                                var key = item.Cells[row, 1].Value.ToString();
+                                var title = item.Cells[row, 2].Value.ToString();
+                                var value = item.Cells[row, 3].Value.ToString();
+                                foreach (var category in propertyCategories)
+                                {
+                                    foreach (var property in category.Properties)
                                     {
-                                        foreach (var property in category.Properties)
-                                        {
-                                            if (property.Key == key)
-                                                property.Value = value;
-                                        }
+                                        if (property.Key == key)
+                                            property.Value = value;
                                     }
                                 }
-                                var productPropertyDto = new ProductPropertyDto()
-                                {
-                                    ProductId = product.Id,
-                                    PropertyCategories = ObjectMapper.Map<List<PropertyCategory>, List<ProductPropertyCategoryDto>>(propertyCategories)
-                                };
-                                await _productPropertyRepository.InsertAsync(ObjectMapper.Map<ProductPropertyDto, ProductProperty>(productPropertyDto));
-                            
+                            }
+                            var productPropertyDto = new ProductPropertyDto()
+                            {
+                                ProductId = product.Id,
+                                PropertyCategories = ObjectMapper.Map<List<PropertyCategory>, List<ProductPropertyCategoryDto>>(propertyCategories)
+                            };
+                            await _productPropertyWriteRepository.InsertAsync(ObjectMapper.Map<ProductPropertyDto, ProductPropertyWrite>(productPropertyDto));
                         }
                     }
                 }
@@ -1206,25 +1226,24 @@ namespace OrderManagement.Application
                                 for (int row = 2; row <= rowcount; row++)
                                 {
 
-                                    var key = item.Cells[row, 1].Value.ToString();
-                                    var title = item.Cells[row, 2].Value.ToString();
-                                    var value = item.Cells[row, 3].Value.ToString();
-                                    foreach (var category in propertyCategories)
+                                var key = item.Cells[row, 1].Value.ToString();
+                                var title = item.Cells[row, 2].Value.ToString();
+                                var value = item.Cells[row, 3].Value.ToString();
+                                foreach (var category in propertyCategories)
+                                {
+                                    foreach (var property in category.Properties)
                                     {
-                                        foreach (var property in category.Properties)
-                                        {
-                                            if (property.Key == key)
-                                                property.Value = value;
-                                        }
+                                        if (property.Key == key)
+                                            property.Value = value;
                                     }
                                 }
-                                var productPropertyDto = new ProductPropertyDto()
-                                {
-                                    ProductId = product.Id,
-                                    PropertyCategories = ObjectMapper.Map<List<PropertyCategory>, List<ProductPropertyCategoryDto>>(propertyCategories)
-                                };
-                                await _productPropertyRepository.InsertAsync(ObjectMapper.Map<ProductPropertyDto, ProductProperty>(productPropertyDto));
-                            
+                            }
+                            var productPropertyDto = new ProductPropertyDto()
+                            {
+                                ProductId = product.Id,
+                                PropertyCategories = ObjectMapper.Map<List<PropertyCategory>, List<ProductPropertyCategoryDto>>(propertyCategories)
+                            };
+                            await _productPropertyWriteRepository.InsertAsync(ObjectMapper.Map<ProductPropertyDto, ProductPropertyWrite>(productPropertyDto));
                         }
                     }
                 }

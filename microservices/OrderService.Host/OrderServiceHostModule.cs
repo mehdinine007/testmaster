@@ -161,8 +161,12 @@ System.AppDomain.CurrentDomain.BaseDirectory));
             {
                 options.AddDefaultRepositories(includeAllEntities: true);
             });
+            context.Services.AddMongoDbContext<OrderManagementMongoDbContextWriteOnly>(options =>
+            {
+                options.AddDefaultRepositories(includeAllEntities: true);
+            });
 
-           
+
 
             //var redis = ConnectionMultiplexer.Connect(configuration["Redis:Configuration"]);
             //context.Services.AddDataProtection()
