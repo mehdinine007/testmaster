@@ -36,7 +36,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\shared\IFG.Core\IFG.Core.csproj" />
-    <ProjectReference Include="..\..\..\report\src\ReportManagement.Application\ReportManagement.Application.csproj" />
     <ProjectReference Include="..\AdminPanelManagement.Application.Contracts\AdminPanelManagement.Application.Contracts.csproj" />
     <ProjectReference Include="..\AdminPanelManagement.Domain\AdminPanelManagement.Domain.csproj" />
     <ProjectReference Include="..\AdminPanelManagement.EntityFrameworkCore\AdminPanelManagement.EntityFrameworkCore.csproj" />

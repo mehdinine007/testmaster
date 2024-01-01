@@ -15,11 +15,10 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Grpc
     public class UserGrpcClientService : ApplicationService, IUserGrpcClientService
     {
         private IConfiguration _configuration { get; set; }
-        private readonly ICacheManager _cacheManager;
-        public UserGrpcClientService(IConfiguration configuration, ICacheManager cacheManager)
+        public UserGrpcClientService(IConfiguration configuration)
         {
             _configuration = configuration;
-            _cacheManager = cacheManager;
+           
         }
 
 
@@ -33,14 +32,7 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Grpc
             var channel = GrpcChannel.ForAddress(_configuration.GetValue<string>("Grpc:UserUrl"), new GrpcChannelOptions 
             { HttpHandler = httpHandler });
             
-            string cacheKey = $"{userId}";
-            string prefix = $"{RedisConstants.GrpcGetUserById}";
-            var cachedData = await _cacheManager.GetStringAsync(cacheKey, prefix, new CacheOptions { Provider = CacheProviderEnum.Hybrid });
-            if (!string.IsNullOrEmpty(cachedData))
-            {
-                return JsonConvert.DeserializeObject<UserDto>(cachedData);
-            }
-
+     
             var client = new UserServiceGrpc.UserServiceGrpcClient(channel);
             var user = client.GetUserById(new GetUserModel() { UserId = userId.ToString() });
             if (user.Uid is null || user.Uid == "")
@@ -64,8 +56,7 @@ namespace WorkFlowManagement.Application.WorkFlowManagement.Grpc
                 SurName = user.SurName,
                 Uid = user.Uid,
             };
-            await _cacheManager.SetStringAsync(cacheKey, prefix, JsonConvert.SerializeObject(userDto), new CacheOptions 
-            { Provider = CacheProviderEnum.Hybrid }, TimeSpan.FromMinutes(1).TotalSeconds);
+      
             return userDto;
         }
 

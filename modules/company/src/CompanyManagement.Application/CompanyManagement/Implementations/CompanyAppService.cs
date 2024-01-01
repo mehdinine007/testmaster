@@ -156,7 +156,10 @@ public class CompanyAppService : ApplicationService, ICompanyAppService
         };
 
         var companiesCustomer = _orderManagementDbContext.Set<CompaniesCustomer>().FromSqlRaw(
-            string.Format("EXEC {0} {1}", "[dbo].[GetRecentCustomerAndOrder]", "@saleId,@companyId,@userId,@provienceId"), paramArray).AsEnumerable().FirstOrDefault();
+            string.Format("EXEC {0} {1}", "[dbo].[GetRecentCustomerAndOrder]", "@saleId,@companyId,@userId,@provienceId"), paramArray)
+            .AsEnumerable()
+            .FirstOrDefault()
+            ?? throw new UserFriendlyException("سفارشی برای این شخص وجود ندارد");
         //"EXEC [dbo].[GetCompaniesCustomer] @saleId,@companyId,@nationalCode", paramArray).FirstOrDefault();
 
         return new()
