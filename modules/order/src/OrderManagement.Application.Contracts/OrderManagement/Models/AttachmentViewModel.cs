@@ -5,6 +5,7 @@ namespace OrderManagement.Application.Contracts
 {
     public class AttachmentViewModel
     {
+        public Guid Id { get; set; }
         public string Title { get; set; }
         public string FileName { get; set; }
         public AttachmentEntityTypeEnum Type { get; set; }
