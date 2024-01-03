@@ -638,9 +638,97 @@ namespace OrderManagement.Application
             {
                 propertydto = new PropertyCategoryDto()
                 {
+                    Title = "ایمنی و امنیت",
+                    Display = true,
+                    Priority =0,
+                    Properties = new List<PropertyDto>()
+
+            {
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "سیستم کروز کنترل",
+                    Key = "P019",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                    Priority=1
+                },
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "ایربگ راننده",
+                    Key = "P020",
+                    Type = PropertyTypeEnum.Boolean,
+                    Value = "",
+                    Priority=2
+                },
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "ایربگ سرنشین جلو",
+                    Key = "P021",
+                    Type = PropertyTypeEnum.Boolean,
+                    Value = "",
+                    Priority=3
+                },
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "ترمز  ABS",
+                    Key = "P022",
+                    Type = PropertyTypeEnum.Boolean,
+                    Value = "",
+                    Priority=0
+                },
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "ترمز  EBD",
+                    Key = "P023",
+                    Type = PropertyTypeEnum.Boolean,
+                    Value = "",
+                    Priority=0
+                },
+                 new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "کنترل پایداری ESP",
+                    Key = "P024",
+                    Type = PropertyTypeEnum.Boolean,
+                    Value = "",
+                    Priority=0
+                },
+                 new PropertyDto()
+                 {
+                   Id = ObjectId.GenerateNewId(),
+                    Title = "ترمز جلو",
+                    Key = "P025",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                    Priority=0
+
+                 },
+                 new PropertyDto()
+                 {
+                   Id = ObjectId.GenerateNewId(),
+                    Title = "ترمز عقب",
+                    Key = "P026",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                    Priority=0
+
+                 }
+
+            },
+
+                };
+                await _propertyDefinitionRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto, PropertyCategory>(propertydto));
+
+                propertydto = new PropertyCategoryDto()
+                {
                     Title = "مشخصات اصلی",
                     Display = false,
-                    Priority = 2,
+                    Priority = 0,
                     Properties = new List<PropertyDto>()
             {
                 new PropertyDto()
@@ -669,7 +757,7 @@ namespace OrderManagement.Application
                 {
                     Title = "مشخصات فنی",
                     Display = true,
-                    Priority = 3,
+                    Priority = 1,
                     Properties = new List<PropertyDto>()
             {
                 new PropertyDto()
@@ -727,7 +815,7 @@ namespace OrderManagement.Application
                 {
                     Title = "عملکرد خودرو",
                     Display = true,
-                    Priority = 4,
+                    Priority = 2,
                     Properties = new List<PropertyDto>()
             {
                 new PropertyDto()
@@ -782,7 +870,7 @@ namespace OrderManagement.Application
                 {
                     Title = "بدنه و شاسی",
                     Display = true,
-                    Priority = 5,
+                    Priority = 0,
                     Properties = new List<PropertyDto>()
             {
                 new PropertyDto()
@@ -866,96 +954,9 @@ namespace OrderManagement.Application
                 await _propertyDefinitionRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto, PropertyCategory>(propertydto));
                 propertydto = new PropertyCategoryDto()
                 {
-                    Title = "ایمنی و امنیت",
-                    Display = true,
-                    Priority = 1,
-                    Properties = new List<PropertyDto>()
-
-            {
-                new PropertyDto()
-                {
-                    Id = ObjectId.GenerateNewId(),
-                    Title = "سیستم کروز کنترل",
-                    Key = "P019",
-                    Type = PropertyTypeEnum.Text,
-                    Value = "",
-                    Priority=1
-                },
-                new PropertyDto()
-                {
-                    Id = ObjectId.GenerateNewId(),
-                    Title = "ایربگ راننده",
-                    Key = "P020",
-                    Type = PropertyTypeEnum.Boolean,
-                    Value = "",
-                    Priority=2
-                },
-                new PropertyDto()
-                {
-                    Id = ObjectId.GenerateNewId(),
-                    Title = "ایربگ سرنشین جلو",
-                    Key = "P021",
-                    Type = PropertyTypeEnum.Boolean,
-                    Value = "",
-                    Priority=3
-                },
-                new PropertyDto()
-                {
-                    Id = ObjectId.GenerateNewId(),
-                    Title = "ترمز  ABS",
-                    Key = "P022",
-                    Type = PropertyTypeEnum.Boolean,
-                    Value = "",
-                    Priority=0
-                },
-                new PropertyDto()
-                {
-                    Id = ObjectId.GenerateNewId(),
-                    Title = "ترمز  EBD",
-                    Key = "P023",
-                    Type = PropertyTypeEnum.Boolean,
-                    Value = "",
-                    Priority=0
-                },
-                 new PropertyDto()
-                {
-                    Id = ObjectId.GenerateNewId(),
-                    Title = "کنترل پایداری ESP",
-                    Key = "P024",
-                    Type = PropertyTypeEnum.Boolean,
-                    Value = "",
-                    Priority=0
-                },
-                 new PropertyDto()
-                 {
-                   Id = ObjectId.GenerateNewId(),
-                    Title = "ترمز جلو",
-                    Key = "P025",
-                    Type = PropertyTypeEnum.Text,
-                    Value = "",
-                    Priority=0
-
-                 },
-                 new PropertyDto()
-                 {
-                   Id = ObjectId.GenerateNewId(),
-                    Title = "ترمز عقب",
-                    Key = "P026",
-                    Type = PropertyTypeEnum.Text,
-                    Value = "",
-                    Priority=0
-
-                 }
-
-            },
-
-                };
-                await _propertyDefinitionRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto, PropertyCategory>(propertydto));
-                propertydto = new PropertyCategoryDto()
-                {
                     Title = "تجهیزات و امکانات",
                     Display = true,
-                    Priority = 6,
+                    Priority = 3,
                     Properties = new List<PropertyDto>()
             {
                 new PropertyDto()
@@ -1101,7 +1102,7 @@ namespace OrderManagement.Application
                 {
                     Title = "سایر ویژگی",
                     Display = true,
-                    Priority = 7,
+                    Priority = 0,
                     Properties = new List<PropertyDto>()
             {
                 new PropertyDto()
