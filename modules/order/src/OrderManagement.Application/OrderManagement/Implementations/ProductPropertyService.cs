@@ -640,7 +640,7 @@ namespace OrderManagement.Application
                 {
                     Title = "مشخصات اصلی",
                     Display = false,
-                    Priority = 0,
+                    Priority = 2,
                     Properties = new List<PropertyDto>()
             {
                 new PropertyDto()
@@ -669,7 +669,7 @@ namespace OrderManagement.Application
                 {
                     Title = "مشخصات فنی",
                     Display = true,
-                    Priority = 1,
+                    Priority = 3,
                     Properties = new List<PropertyDto>()
             {
                 new PropertyDto()
@@ -727,7 +727,7 @@ namespace OrderManagement.Application
                 {
                     Title = "عملکرد خودرو",
                     Display = true,
-                    Priority = 2,
+                    Priority = 4,
                     Properties = new List<PropertyDto>()
             {
                 new PropertyDto()
@@ -782,7 +782,7 @@ namespace OrderManagement.Application
                 {
                     Title = "بدنه و شاسی",
                     Display = true,
-                    Priority = 0,
+                    Priority = 5,
                     Properties = new List<PropertyDto>()
             {
                 new PropertyDto()
@@ -868,7 +868,7 @@ namespace OrderManagement.Application
                 {
                     Title = "ایمنی و امنیت",
                     Display = true,
-                    Priority = 0,
+                    Priority = 1,
                     Properties = new List<PropertyDto>()
 
             {
@@ -955,7 +955,7 @@ namespace OrderManagement.Application
                 {
                     Title = "تجهیزات و امکانات",
                     Display = true,
-                    Priority = 3,
+                    Priority = 6,
                     Properties = new List<PropertyDto>()
             {
                 new PropertyDto()
@@ -1101,7 +1101,7 @@ namespace OrderManagement.Application
                 {
                     Title = "سایر ویژگی",
                     Display = true,
-                    Priority = 0,
+                    Priority = 7,
                     Properties = new List<PropertyDto>()
             {
                 new PropertyDto()
