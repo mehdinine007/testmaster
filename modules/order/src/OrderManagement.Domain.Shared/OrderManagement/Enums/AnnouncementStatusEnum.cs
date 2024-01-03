@@ -10,12 +10,12 @@ namespace OrderManagement.Domain.Shared.OrderManagement.Enums
 {
     public enum AnnouncementStatusEnum
     {
-        [EnumProperty(Description="درحال انتشار")]
-        Publishing = 0,
         [EnumProperty(Description = "درانتظار انتشار")]
-        Awaiting = 1,
+        Awaiting =1,
+        [EnumProperty(Description = "درحال انتشار")]
+        Publishing = 2,
         [EnumProperty(Description = "منقضی شده")]
-        Expired = 2,
+        Expired = 3,
        
 
     }
