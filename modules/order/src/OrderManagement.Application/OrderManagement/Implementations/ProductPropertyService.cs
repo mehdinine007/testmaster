@@ -638,6 +638,94 @@ namespace OrderManagement.Application
             {
                 propertydto = new PropertyCategoryDto()
                 {
+                    Title = "ایمنی و امنیت",
+                    Display = true,
+                    Priority = 0,
+                    Properties = new List<PropertyDto>()
+
+            {
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "سیستم کروز کنترل",
+                    Key = "P019",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                    Priority=1
+                },
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "ایربگ راننده",
+                    Key = "P020",
+                    Type = PropertyTypeEnum.Boolean,
+                    Value = "",
+                    Priority=2
+                },
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "ایربگ سرنشین جلو",
+                    Key = "P021",
+                    Type = PropertyTypeEnum.Boolean,
+                    Value = "",
+                    Priority=3
+                },
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "ترمز  ABS",
+                    Key = "P022",
+                    Type = PropertyTypeEnum.Boolean,
+                    Value = "",
+                    Priority=0
+                },
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "ترمز  EBD",
+                    Key = "P023",
+                    Type = PropertyTypeEnum.Boolean,
+                    Value = "",
+                    Priority=0
+                },
+                 new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "کنترل پایداری ESP",
+                    Key = "P024",
+                    Type = PropertyTypeEnum.Boolean,
+                    Value = "",
+                    Priority=0
+                },
+                 new PropertyDto()
+                 {
+                   Id = ObjectId.GenerateNewId(),
+                    Title = "ترمز جلو",
+                    Key = "P025",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                    Priority=0
+
+                 },
+                 new PropertyDto()
+                 {
+                   Id = ObjectId.GenerateNewId(),
+                    Title = "ترمز عقب",
+                    Key = "P026",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                    Priority=0
+
+                 }
+
+            },
+
+                };
+                await _propertyDefinitionRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto, PropertyCategory>(propertydto));
+
+                propertydto = new PropertyCategoryDto()
+                {
                     Title = "مشخصات اصلی",
                     Display = false,
                     Priority = 0,
@@ -866,93 +954,6 @@ namespace OrderManagement.Application
                 await _propertyDefinitionRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto, PropertyCategory>(propertydto));
                 propertydto = new PropertyCategoryDto()
                 {
-                    Title = "ایمنی و امنیت",
-                    Display = true,
-                    Priority = 0,
-                    Properties = new List<PropertyDto>()
-
-            {
-                new PropertyDto()
-                {
-                    Id = ObjectId.GenerateNewId(),
-                    Title = "سیستم کروز کنترل",
-                    Key = "P019",
-                    Type = PropertyTypeEnum.Text,
-                    Value = "",
-                    Priority=1
-                },
-                new PropertyDto()
-                {
-                    Id = ObjectId.GenerateNewId(),
-                    Title = "ایربگ راننده",
-                    Key = "P020",
-                    Type = PropertyTypeEnum.Boolean,
-                    Value = "",
-                    Priority=2
-                },
-                new PropertyDto()
-                {
-                    Id = ObjectId.GenerateNewId(),
-                    Title = "ایربگ سرنشین جلو",
-                    Key = "P021",
-                    Type = PropertyTypeEnum.Boolean,
-                    Value = "",
-                    Priority=3
-                },
-                new PropertyDto()
-                {
-                    Id = ObjectId.GenerateNewId(),
-                    Title = "ترمز  ABS",
-                    Key = "P022",
-                    Type = PropertyTypeEnum.Boolean,
-                    Value = "",
-                    Priority=0
-                },
-                new PropertyDto()
-                {
-                    Id = ObjectId.GenerateNewId(),
-                    Title = "ترمز  EBD",
-                    Key = "P023",
-                    Type = PropertyTypeEnum.Boolean,
-                    Value = "",
-                    Priority=0
-                },
-                 new PropertyDto()
-                {
-                    Id = ObjectId.GenerateNewId(),
-                    Title = "کنترل پایداری ESP",
-                    Key = "P024",
-                    Type = PropertyTypeEnum.Boolean,
-                    Value = "",
-                    Priority=0
-                },
-                 new PropertyDto()
-                 {
-                   Id = ObjectId.GenerateNewId(),
-                    Title = "ترمز جلو",
-                    Key = "P025",
-                    Type = PropertyTypeEnum.Text,
-                    Value = "",
-                    Priority=0
-
-                 },
-                 new PropertyDto()
-                 {
-                   Id = ObjectId.GenerateNewId(),
-                    Title = "ترمز عقب",
-                    Key = "P026",
-                    Type = PropertyTypeEnum.Text,
-                    Value = "",
-                    Priority=0
-
-                 }
-
-            },
-
-                };
-                await _propertyDefinitionRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto, PropertyCategory>(propertydto));
-                propertydto = new PropertyCategoryDto()
-                {
                     Title = "تجهیزات و امکانات",
                     Display = true,
                     Priority = 3,
@@ -1062,7 +1063,7 @@ namespace OrderManagement.Application
                     Priority=0
 
                 },
-                  new PropertyDto()
+                 new PropertyDto()
                 {
                    Id = ObjectId.GenerateNewId(),
                     Title = "GPS",
@@ -1072,7 +1073,7 @@ namespace OrderManagement.Application
                     Priority=0
 
                 },
-                   new PropertyDto()
+                 new PropertyDto()
                 {
                    Id = ObjectId.GenerateNewId(),
                     Title = "بلوتوث",
@@ -1145,34 +1146,34 @@ namespace OrderManagement.Application
                                 throw new UserFriendlyException("محصول وجود ندارد");
                             };
                             var productMongo = (await _productPropertyRepository.GetMongoQueryableAsync()).Where(x => x.ProductId == product.Id).ToList();
-                            if (productMongo.Count>0)
+                            if (productMongo.Count > 0)
                             {
-                                    await _productPropertyRepository.HardDeleteAsync(y => y.ProductId == product.Id);
+                                await _productPropertyRepository.HardDeleteAsync(y => y.ProductId == product.Id);
                             }
-                                var propertyCategories = (await _propertyDefinitionRepository.GetMongoQueryableAsync()).ToList();
-                                List<PropertyDto> propertyList = new List<PropertyDto>();
-                                for (int row = 2; row <= rowcount; row++)
-                                {
+                            var propertyCategories = (await _propertyDefinitionRepository.GetMongoQueryableAsync()).ToList();
+                            List<PropertyDto> propertyList = new List<PropertyDto>();
+                            for (int row = 2; row <= rowcount; row++)
+                            {
 
-                                    var key = item.Cells[row, 1].Value.ToString();
-                                    var title = item.Cells[row, 2].Value.ToString();
-                                    var value = item.Cells[row, 3].Value.ToString();
-                                    foreach (var category in propertyCategories)
+                                var key = item.Cells[row, 1].Value.ToString();
+                                var title = item.Cells[row, 2].Value.ToString();
+                                var value = item.Cells[row, 3].Value.ToString();
+                                foreach (var category in propertyCategories)
+                                {
+                                    foreach (var property in category.Properties)
                                     {
-                                        foreach (var property in category.Properties)
-                                        {
-                                            if (property.Key == key)
-                                                property.Value = value;
-                                        }
+                                        if (property.Key == key)
+                                            property.Value = value;
                                     }
                                 }
-                                var productPropertyDto = new ProductPropertyDto()
-                                {
-                                    ProductId = product.Id,
-                                    PropertyCategories = ObjectMapper.Map<List<PropertyCategory>, List<ProductPropertyCategoryDto>>(propertyCategories)
-                                };
-                                await _productPropertyRepository.InsertAsync(ObjectMapper.Map<ProductPropertyDto, ProductProperty>(productPropertyDto));
-                            
+                            }
+                            var productPropertyDto = new ProductPropertyDto()
+                            {
+                                ProductId = product.Id,
+                                PropertyCategories = ObjectMapper.Map<List<PropertyCategory>, List<ProductPropertyCategoryDto>>(propertyCategories)
+                            };
+                            await _productPropertyRepository.InsertAsync(ObjectMapper.Map<ProductPropertyDto, ProductProperty>(productPropertyDto));
+
                         }
                     }
                 }
@@ -1195,36 +1196,36 @@ namespace OrderManagement.Application
                             {
                                 throw new UserFriendlyException("محصول وجود ندارد");
                             };
-                            var productMongo =(await _productPropertyRepository.GetMongoQueryableAsync()).Where(x => x.ProductId == product.Id).ToList();
+                            var productMongo = (await _productPropertyRepository.GetMongoQueryableAsync()).Where(x => x.ProductId == product.Id).ToList();
                             if (productMongo.Count > 0)
                             {
-                                    await _productPropertyRepository.HardDeleteAsync(y => y.ProductId == product.Id);
-                               
+                                await _productPropertyRepository.HardDeleteAsync(y => y.ProductId == product.Id);
+
                             }
                             var propertyCategories = (await _propertyDefinitionRepository.GetMongoQueryableAsync()).ToList();
-                                List<PropertyDto> propertyList = new List<PropertyDto>();
-                                for (int row = 2; row <= rowcount; row++)
-                                {
+                            List<PropertyDto> propertyList = new List<PropertyDto>();
+                            for (int row = 2; row <= rowcount; row++)
+                            {
 
-                                    var key = item.Cells[row, 1].Value.ToString();
-                                    var title = item.Cells[row, 2].Value.ToString();
-                                    var value = item.Cells[row, 3].Value.ToString();
-                                    foreach (var category in propertyCategories)
+                                var key = item.Cells[row, 1].Value.ToString();
+                                var title = item.Cells[row, 2].Value.ToString();
+                                var value = item.Cells[row, 3].Value.ToString();
+                                foreach (var category in propertyCategories)
+                                {
+                                    foreach (var property in category.Properties)
                                     {
-                                        foreach (var property in category.Properties)
-                                        {
-                                            if (property.Key == key)
-                                                property.Value = value;
-                                        }
+                                        if (property.Key == key)
+                                            property.Value = value;
                                     }
                                 }
-                                var productPropertyDto = new ProductPropertyDto()
-                                {
-                                    ProductId = product.Id,
-                                    PropertyCategories = ObjectMapper.Map<List<PropertyCategory>, List<ProductPropertyCategoryDto>>(propertyCategories)
-                                };
-                                await _productPropertyRepository.InsertAsync(ObjectMapper.Map<ProductPropertyDto, ProductProperty>(productPropertyDto));
-                            
+                            }
+                            var productPropertyDto = new ProductPropertyDto()
+                            {
+                                ProductId = product.Id,
+                                PropertyCategories = ObjectMapper.Map<List<PropertyCategory>, List<ProductPropertyCategoryDto>>(propertyCategories)
+                            };
+                            await _productPropertyRepository.InsertAsync(ObjectMapper.Map<ProductPropertyDto, ProductProperty>(productPropertyDto));
+
                         }
                     }
                 }
