@@ -640,7 +640,7 @@ namespace OrderManagement.Application
                 {
                     Title = "ایمنی و امنیت",
                     Display = true,
-                    Priority =0,
+                    Priority = 0,
                     Properties = new List<PropertyDto>()
 
             {
@@ -1063,7 +1063,7 @@ namespace OrderManagement.Application
                     Priority=0
 
                 },
-                  new PropertyDto()
+                 new PropertyDto()
                 {
                    Id = ObjectId.GenerateNewId(),
                     Title = "GPS",
@@ -1073,7 +1073,7 @@ namespace OrderManagement.Application
                     Priority=0
 
                 },
-                   new PropertyDto()
+                 new PropertyDto()
                 {
                    Id = ObjectId.GenerateNewId(),
                     Title = "بلوتوث",
@@ -1146,34 +1146,34 @@ namespace OrderManagement.Application
                                 throw new UserFriendlyException("محصول وجود ندارد");
                             };
                             var productMongo = (await _productPropertyRepository.GetMongoQueryableAsync()).Where(x => x.ProductId == product.Id).ToList();
-                            if (productMongo.Count>0)
+                            if (productMongo.Count > 0)
                             {
-                                    await _productPropertyRepository.HardDeleteAsync(y => y.ProductId == product.Id);
+                                await _productPropertyRepository.HardDeleteAsync(y => y.ProductId == product.Id);
                             }
-                                var propertyCategories = (await _propertyDefinitionRepository.GetMongoQueryableAsync()).ToList();
-                                List<PropertyDto> propertyList = new List<PropertyDto>();
-                                for (int row = 2; row <= rowcount; row++)
-                                {
+                            var propertyCategories = (await _propertyDefinitionRepository.GetMongoQueryableAsync()).ToList();
+                            List<PropertyDto> propertyList = new List<PropertyDto>();
+                            for (int row = 2; row <= rowcount; row++)
+                            {
 
-                                    var key = item.Cells[row, 1].Value.ToString();
-                                    var title = item.Cells[row, 2].Value.ToString();
-                                    var value = item.Cells[row, 3].Value.ToString();
-                                    foreach (var category in propertyCategories)
+                                var key = item.Cells[row, 1].Value.ToString();
+                                var title = item.Cells[row, 2].Value.ToString();
+                                var value = item.Cells[row, 3].Value.ToString();
+                                foreach (var category in propertyCategories)
+                                {
+                                    foreach (var property in category.Properties)
                                     {
-                                        foreach (var property in category.Properties)
-                                        {
-                                            if (property.Key == key)
-                                                property.Value = value;
-                                        }
+                                        if (property.Key == key)
+                                            property.Value = value;
                                     }
                                 }
-                                var productPropertyDto = new ProductPropertyDto()
-                                {
-                                    ProductId = product.Id,
-                                    PropertyCategories = ObjectMapper.Map<List<PropertyCategory>, List<ProductPropertyCategoryDto>>(propertyCategories)
-                                };
-                                await _productPropertyRepository.InsertAsync(ObjectMapper.Map<ProductPropertyDto, ProductProperty>(productPropertyDto));
-                            
+                            }
+                            var productPropertyDto = new ProductPropertyDto()
+                            {
+                                ProductId = product.Id,
+                                PropertyCategories = ObjectMapper.Map<List<PropertyCategory>, List<ProductPropertyCategoryDto>>(propertyCategories)
+                            };
+                            await _productPropertyRepository.InsertAsync(ObjectMapper.Map<ProductPropertyDto, ProductProperty>(productPropertyDto));
+
                         }
                     }
                 }
@@ -1196,36 +1196,36 @@ namespace OrderManagement.Application
                             {
                                 throw new UserFriendlyException("محصول وجود ندارد");
                             };
-                            var productMongo =(await _productPropertyRepository.GetMongoQueryableAsync()).Where(x => x.ProductId == product.Id).ToList();
+                            var productMongo = (await _productPropertyRepository.GetMongoQueryableAsync()).Where(x => x.ProductId == product.Id).ToList();
                             if (productMongo.Count > 0)
                             {
-                                    await _productPropertyRepository.HardDeleteAsync(y => y.ProductId == product.Id);
-                               
+                                await _productPropertyRepository.HardDeleteAsync(y => y.ProductId == product.Id);
+
                             }
                             var propertyCategories = (await _propertyDefinitionRepository.GetMongoQueryableAsync()).ToList();
-                                List<PropertyDto> propertyList = new List<PropertyDto>();
-                                for (int row = 2; row <= rowcount; row++)
-                                {
+                            List<PropertyDto> propertyList = new List<PropertyDto>();
+                            for (int row = 2; row <= rowcount; row++)
+                            {
 
-                                    var key = item.Cells[row, 1].Value.ToString();
-                                    var title = item.Cells[row, 2].Value.ToString();
-                                    var value = item.Cells[row, 3].Value.ToString();
-                                    foreach (var category in propertyCategories)
+                                var key = item.Cells[row, 1].Value.ToString();
+                                var title = item.Cells[row, 2].Value.ToString();
+                                var value = item.Cells[row, 3].Value.ToString();
+                                foreach (var category in propertyCategories)
+                                {
+                                    foreach (var property in category.Properties)
                                     {
-                                        foreach (var property in category.Properties)
-                                        {
-                                            if (property.Key == key)
-                                                property.Value = value;
-                                        }
+                                        if (property.Key == key)
+                                            property.Value = value;
                                     }
                                 }
-                                var productPropertyDto = new ProductPropertyDto()
-                                {
-                                    ProductId = product.Id,
-                                    PropertyCategories = ObjectMapper.Map<List<PropertyCategory>, List<ProductPropertyCategoryDto>>(propertyCategories)
-                                };
-                                await _productPropertyRepository.InsertAsync(ObjectMapper.Map<ProductPropertyDto, ProductProperty>(productPropertyDto));
-                            
+                            }
+                            var productPropertyDto = new ProductPropertyDto()
+                            {
+                                ProductId = product.Id,
+                                PropertyCategories = ObjectMapper.Map<List<PropertyCategory>, List<ProductPropertyCategoryDto>>(propertyCategories)
+                            };
+                            await _productPropertyRepository.InsertAsync(ObjectMapper.Map<ProductPropertyDto, ProductProperty>(productPropertyDto));
+
                         }
                     }
                 }
