@@ -111,5 +111,7 @@ namespace OrderManagement.EfCore
 
 
         DbSet<QuestionGroup> QuestionGroup  { get; set; }
+        DbSet<AdvertisementDetail> AdvertisementDetail { get; set; }
+        DbSet<Advertisement> Advertisement { get; set; }
     }
 }

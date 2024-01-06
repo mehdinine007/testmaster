@@ -338,9 +338,13 @@ public static class OrderManagementDbContextModelCreatingExtensions
                 .WithMany(x => x.ProductAndCategories)
                 .HasForeignKey(x => x.ProductLevelId);
         });
-
-
-
+        builder.Entity<AdvertisementDetail>(entity =>
+        {
+            entity.ToTable(nameof(AdvertisementDetail));
+            entity.HasOne<Advertisement>(x => x.Advertisement)
+                .WithMany(x => x.AdvertisementDetails)
+                .HasForeignKey(x => x.AdvertisementId);
+        });
 
 
         builder.Entity<OrderStatusInquiry>(entity =>

@@ -11,7 +11,8 @@
         Announcement = 6,
         ChartStructure = 7,
         Questionnaire = 8,
-        Organization = 9
+        Organization = 9,
+        Advertisement= 10,
     }
 }
 

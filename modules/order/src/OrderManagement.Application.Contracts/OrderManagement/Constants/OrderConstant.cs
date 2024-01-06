@@ -98,5 +98,9 @@ namespace OrderManagement.Application.Contracts
 
         public static string ToDateLessThanFromDate = "تاریخ پایان کوچک تر از تاریخ شروع می باشد";
         public static string ToDateLessThanFromDateId = "5005";
+
+        public static string AdvertisementNotFound = "جایگاه وجود ندارد";
+        public static string AdvertisementNotFoundId = "5006";
+        
     }
 }
