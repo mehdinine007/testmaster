@@ -38,7 +38,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             _advertisementDetailRepository = advertisementDetailRepository;
             _attachmentService = attachmentService;
             _advertisementDetailValidator = advertisementDetailValidator;
-         ;
+            ;
 
         }
         [SecuredOperation(AdvertisementDetailServicePermissionConstants.Add)]
@@ -50,8 +50,17 @@ namespace OrderManagement.Application.OrderManagement.Implementations
                 var ex = new ValidationException(validationResult.Errors);
                 throw new UserFriendlyException(ex.Message, ValidationConstant.QuestionnerNotFound);
             }
-            var advertisementDetail = (await _advertisementDetailRepository.GetQueryableAsync()).OrderByDescending(x => x.Priority).FirstOrDefault(x=>x.AdvertisementId== advertisementDetailCreateOrUpdateDto.Id);   
-            var entity = await _advertisementDetailRepository.InsertAsync(advertisementDetail);
+            var advertisementDetail = (await _advertisementDetailRepository.GetQueryableAsync()).OrderByDescending(x => x.Priority).FirstOrDefault(x => x.AdvertisementId == advertisementDetailCreateOrUpdateDto.AdvertisementId);
+            var advertisementDetailMap = ObjectMapper.Map<AdvertisementDetailCreateOrUpdateDto, AdvertisementDetail>(advertisementDetailCreateOrUpdateDto);
+            if (advertisementDetail == null)
+            {
+                advertisementDetailMap.Priority = 1;
+            }
+            else
+            {
+                advertisementDetailMap.Priority = advertisementDetail.Priority + 1;
+            }
+            var entity = await _advertisementDetailRepository.InsertAsync(advertisementDetailMap);
             return ObjectMapper.Map<AdvertisementDetail, AdvertisementDetailDto>(entity);
         }
         [SecuredOperation(AdvertisementDetailServicePermissionConstants.Delete)]
@@ -74,7 +83,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
         public async Task<List<AdvertisementDetailDto>> GetList(int advertisementId, List<AttachmentEntityTypeEnum> attachmentType = null, List<AttachmentLocationEnum> attachmentlocation = null)
         {
             var advertisementDetailQuery = await _advertisementDetailRepository.GetQueryableAsync();
-            var advertisementDetail = advertisementDetailQuery.Where(x=>x.AdvertisementId== advertisementId).ToList();
+            var advertisementDetail = advertisementDetailQuery.Where(x => x.AdvertisementId == advertisementId).ToList();
             var advertisementDetailDto = ObjectMapper.Map<List<AdvertisementDetail>, List<AdvertisementDetailDto>>(advertisementDetail);
             var attachments = await _attachmentService.GetList(AttachmentEntityEnum.Advertisement, advertisementDetail.Select(x => x.Id).ToList(), attachmentType, attachmentlocation);
             advertisementDetailDto.ForEach(x =>
@@ -87,8 +96,8 @@ namespace OrderManagement.Application.OrderManagement.Implementations
         public async Task<PagedResultDto<AdvertisementDetailDto>> GetPagination(AdvertisementDetailPaginationDto input)
         {
             var advertisementDetailQuery = (await _advertisementDetailRepository.GetQueryableAsync()).AsNoTracking();
-           var advertisementDetailResult= advertisementDetailQuery.Where(x=>x.AdvertisementId== input.AdvertisementId);
-                        var count = advertisementDetailResult.Count();
+            var advertisementDetailResult = advertisementDetailQuery.Where(x => x.AdvertisementId == input.AdvertisementId);
+            var count = advertisementDetailResult.Count();
             var advertisementDetails = advertisementDetailResult
                .PageBy(input)
                .SortByRule(input)
@@ -119,13 +128,10 @@ namespace OrderManagement.Application.OrderManagement.Implementations
                 throw new UserFriendlyException(ex.Message, ValidationConstant.ItemNotFound);
             }
             var advertisementDetail = (await _advertisementDetailRepository.GetQueryableAsync())
-                                        .FirstOrDefault(x => x.Id == advertisementDetailCreateOrUpdateDto.Id);
-
-            advertisementDetail.Title = advertisementDetailCreateOrUpdateDto.Title;
-
-            var result = await _advertisementDetailRepository.UpdateAsync(advertisementDetail);
+            .FirstOrDefault(x => x.Id == advertisementDetailCreateOrUpdateDto.Id);
+            var advertisementDetailMap = ObjectMapper.Map<AdvertisementDetailCreateOrUpdateDto, AdvertisementDetail>(advertisementDetailCreateOrUpdateDto, advertisementDetail);
+            var result = await _advertisementDetailRepository.UpdateAsync(advertisementDetailMap);
             await CurrentUnitOfWork.SaveChangesAsync();
-
             return ObjectMapper.Map<AdvertisementDetail, AdvertisementDetailDto>(result);
         }
         [SecuredOperation(AdvertisementDetailServicePermissionConstants.UploadFile)]
@@ -134,7 +140,8 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             return await _attachmentService.UploadFile(AttachmentEntityEnum.Advertisement, uploadFile);
         }
 
-    }
+        
 
+    }
 
 }

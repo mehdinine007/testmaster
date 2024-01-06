@@ -63,7 +63,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
 
         public async Task<AdvertisementDto> GetById(AdvertisementQueryDto advertisementQueryDto)
         {
-         var  advertisement= await Validation(advertisementQueryDto.Id);
+            var advertisement = await Validation(advertisementQueryDto.Id);
             var advertisementDto = ObjectMapper.Map<Advertisement, AdvertisementDto>(advertisement);
             var advertisementDetailIds = advertisementDto.AdvertisementDetails.Select(x => x.Id).ToList();
             var attachments = await _attachmentService.GetList(AttachmentEntityEnum.Advertisement, advertisementDetailIds, EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(advertisementQueryDto.AttachmentType), EnumHelper.ConvertStringToEnum<AttachmentLocationEnum>(advertisementQueryDto.Attachmentlocation));
@@ -102,10 +102,9 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             }
             var advertisement = (await _advertisementRepository.GetQueryableAsync())
                                         .FirstOrDefault(x => x.Id == advertisementCreateOrUpdateDto.Id);
+            var advertisementMap = ObjectMapper.Map<AdvertisementCreateOrUpdateDto, Advertisement>(advertisementCreateOrUpdateDto, advertisement);
 
-            advertisement.Title = advertisementCreateOrUpdateDto.Title;
-
-            var result = await _advertisementRepository.UpdateAsync(advertisement);
+            var result = await _advertisementRepository.UpdateAsync(advertisementMap);
             await CurrentUnitOfWork.SaveChangesAsync();
 
             return ObjectMapper.Map<Advertisement, AdvertisementDto>(result);
@@ -113,7 +112,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
 
         private async Task<Advertisement> Validation(int id)
         {
-            var advertisementQuery = (await _advertisementRepository.GetQueryableAsync()).AsNoTracking().Include(x=>x.AdvertisementDetails);
+            var advertisementQuery = (await _advertisementRepository.GetQueryableAsync()).AsNoTracking().Include(x => x.AdvertisementDetails);
             var advertisement = advertisementQuery.FirstOrDefault(x => x.Id == id);
             if (advertisement is null)
                 throw new UserFriendlyException(OrderConstant.AdvertisementNotFound, OrderConstant.AdvertisementNotFoundId);
