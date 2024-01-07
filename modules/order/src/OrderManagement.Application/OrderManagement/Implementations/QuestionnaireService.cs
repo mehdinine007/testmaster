@@ -78,7 +78,8 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
         questionnaireQuery = questionnaireQuery.Include(x => x.Questions)
             .ThenInclude(x => x.Answers)
             .Include(x => x.Questions).ThenInclude(x => x.QuestionGroup)
-            .Include(x => x.Questions).ThenInclude(x => x.QuestionRelationships); ;
+            .Include(x => x.Questions).ThenInclude(x => x.QuestionRelationships)
+            .ThenInclude(x => x.QuestionAnswer);
         if (currentUserId.HasValue)
         {
             if (!relatedEntityId.HasValue)
