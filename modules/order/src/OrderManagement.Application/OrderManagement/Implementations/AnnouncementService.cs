@@ -93,8 +93,8 @@ public class AnnouncementService : ApplicationService, IAnnouncementService
         var count = announcementResult.Count();
         var announcementList = announcementResult
             .AsNoTracking()
-            .PageBy(input)
             .SortByRule(input)
+            .PageBy(input)
             .ToList();
         var attachments = await _attachmentService.GetList(AttachmentEntityEnum.Announcement, announcementList.Select(x => x.Id).ToList()
                                                     , EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(input.AttachmentType), EnumHelper.ConvertStringToEnum<AttachmentLocationEnum>(input.AttachmentLocation));
