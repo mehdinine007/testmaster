@@ -11,6 +11,7 @@ using Volo.Abp;
 using OrderManagement.Application.Contracts.OrderManagement;
 using OrderManagement.Domain.Shared;
 using Volo.Abp.Application.Dtos;
+using OrderManagement.Domain.Shared.OrderManagement.Enums;
 
 namespace OrderManagement.HttpApi.OrderManagement.Controllers
 {
@@ -23,28 +24,29 @@ namespace OrderManagement.HttpApi.OrderManagement.Controllers
         public AdvertisementDetailController(IAdvertisementDetailService advertisementDetailService)
             => _advertisementDetailService = advertisementDetailService;
         [HttpPost]
-        public Task<AdvertisementDetailDto> Add(AdvertisementDetailCreateOrUpdateDto advertisementDetailCreateOrUpdateDto)
-        => _advertisementDetailService.Add(advertisementDetailCreateOrUpdateDto);
+        public async Task<AdvertisementDetailDto> Add(AdvertisementDetailCreateOrUpdateDto advertisementDetailCreateOrUpdateDto)
+        =>await _advertisementDetailService.Add(advertisementDetailCreateOrUpdateDto);
 
         [HttpDelete]
-        public Task<bool> Delete(int id)
-        => _advertisementDetailService.Delete(id);
+        public async Task<bool> Delete(AdvertisementDetailWithIdDto advertisementDetailWithId)
+        =>await _advertisementDetailService.Delete(advertisementDetailWithId);
         [HttpGet]
-        public Task<AdvertisementDetailDto> GetById(int id, List<AttachmentEntityTypeEnum> attachmentType = null, List<AttachmentLocationEnum> attachmentlocation = null)
-        => _advertisementDetailService.GetById(id, attachmentType, attachmentlocation);
+        public async Task<AdvertisementDetailDto> GetById(int id, List<AttachmentEntityTypeEnum> attachmentType = null, List<AttachmentLocationEnum> attachmentlocation = null)
+        =>await _advertisementDetailService.GetById(id, attachmentType, attachmentlocation);
         [HttpGet]
-        public Task<List<AdvertisementDetailDto>> GetList(int advertisementId,List<AttachmentEntityTypeEnum> attachmentType = null, List<AttachmentLocationEnum> attachmentlocation = null)
-        => _advertisementDetailService.GetList(advertisementId,attachmentType, attachmentlocation);
+        public async Task<List<AdvertisementDetailDto>> GetList(int advertisementId,List<AttachmentEntityTypeEnum> attachmentType = null, List<AttachmentLocationEnum> attachmentlocation = null)
+        =>await _advertisementDetailService.GetList(advertisementId,attachmentType, attachmentlocation);
         [HttpGet]
-        public Task<PagedResultDto<AdvertisementDetailDto>> GetPagination(AdvertisementDetailPaginationDto input)
-       => _advertisementDetailService.GetPagination(input);
-
-
+        public async Task<PagedResultDto<AdvertisementDetailDto>> GetPagination(AdvertisementDetailPaginationDto input)
+       =>await _advertisementDetailService.GetPagination(input);
         [HttpPut]
-        public Task<AdvertisementDetailDto> Update(AdvertisementDetailCreateOrUpdateDto advertisementDetailCreateOrUpdateDto)
-        => _advertisementDetailService.Update(advertisementDetailCreateOrUpdateDto);
+        public async Task<AdvertisementDetailDto> Update(AdvertisementDetailCreateOrUpdateDto advertisementDetailCreateOrUpdateDto)
+        => await _advertisementDetailService.Update(advertisementDetailCreateOrUpdateDto);
         [HttpPost]
-        public Task<Guid> UploadFile([FromForm]UploadFileDto uploadFile)
-        => _advertisementDetailService.UploadFile(uploadFile);
+        public async Task<Guid> UploadFile([FromForm]UploadFileDto uploadFile)
+        => await _advertisementDetailService.UploadFile(uploadFile);
+        [HttpGet]
+        public async Task<bool> Move(AdvertisementDetailWithIdDto advertisementDetailWithId, MoveTypeEnum moveType)
+       => await _advertisementDetailService.Move(advertisementDetailWithId, moveType);
     }
 }

@@ -23,19 +23,19 @@ namespace OrderManagement.HttpApi.OrderManagement.Controllers
         public AdvertisementController(IAdvertisementService advertisementService)
             => _advertisementService = advertisementService;
         [HttpPost]
-        public Task<AdvertisementDto> Add(AdvertisementCreateOrUpdateDto advertisementCreateOrUpdateDto)
-        =>_advertisementService.Add(advertisementCreateOrUpdateDto);
+        public async Task<AdvertisementDto> Add(AdvertisementCreateOrUpdateDto advertisementCreateOrUpdateDto)
+        =>await _advertisementService.Add(advertisementCreateOrUpdateDto);
         [HttpDelete]
-        public Task<bool> Delete(int id)
-       =>_advertisementService.Delete(id);  
+        public async Task<bool> Delete(int id)
+       => await _advertisementService.Delete(id);  
         [HttpGet]
-        public Task<AdvertisementDto> GetById(int id,string attachmentType = null, string attachmentlocation = null)
-        => _advertisementService.GetById(new AdvertisementQueryDto {  Id =id,AttachmentType= attachmentType, Attachmentlocation= attachmentlocation });
+        public async Task<AdvertisementDto> GetById(int id,string attachmentType = null, string attachmentlocation = null)
+        => await _advertisementService.GetById(new AdvertisementQueryDto {  Id =id,AttachmentType= attachmentType, Attachmentlocation= attachmentlocation });
         [HttpGet]
-        public Task<List<AdvertisementDto>> GetList(List<AttachmentEntityTypeEnum> attachmentType = null, List<AttachmentLocationEnum> attachmentlocation = null)
-        => _advertisementService.GetList(attachmentType, attachmentlocation);
+        public async Task<List<AdvertisementDto>> GetList(List<AttachmentEntityTypeEnum> attachmentType = null, List<AttachmentLocationEnum> attachmentlocation = null)
+        => await _advertisementService.GetList(attachmentType, attachmentlocation);
         [HttpPut]
-        public Task<AdvertisementDto> Update(AdvertisementCreateOrUpdateDto advertisementCreateOrUpdateDto)
-        =>_advertisementService.Update(advertisementCreateOrUpdateDto);
+        public async Task<AdvertisementDto> Update(AdvertisementCreateOrUpdateDto advertisementCreateOrUpdateDto)
+        =>await _advertisementService.Update(advertisementCreateOrUpdateDto);
     }
 }

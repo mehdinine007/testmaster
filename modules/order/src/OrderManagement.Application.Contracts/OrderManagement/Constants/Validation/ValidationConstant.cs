@@ -48,7 +48,12 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Constants
         public const string GetByIdId = "0004";
         public const string GetListByQuestionId = "GetListByQuestionId";
         public const string GetListByQuestionIdId = "0006";
-        
+        public const string Move = "Move";
+        public const string MoveId = "0007";
+        public const string UploadFile = "UploadFile";
+        public const string UploadFileId = "0008";
+
+
 
 
     }

@@ -12,6 +12,7 @@ using OrderManagement.Application.OrderManagement.FluentValidation;
 using OrderManagement.Domain;
 using OrderManagement.Domain.OrderManagement;
 using OrderManagement.Domain.Shared;
+using OrderManagement.Domain.Shared.OrderManagement.Enums;
 using System;
 using System.Collections.Generic;
 using System.Formats.Asn1;
@@ -31,14 +32,17 @@ namespace OrderManagement.Application.OrderManagement.Implementations
         private readonly IRepository<AdvertisementDetail> _advertisementDetailRepository;
         private readonly IAttachmentService _attachmentService;
         private readonly IValidator<AdvertisementDetailCreateOrUpdateDto> _advertisementDetailValidator;
+        private readonly IValidator<AdvertisementDetailWithIdDto> _advertisementDetailWithIdValidator;
 
         public AdvertisementDetailService(IRepository<AdvertisementDetail> advertisementDetailRepository, IAttachmentService attachmentService,
-            IValidator<AdvertisementDetailCreateOrUpdateDto> advertisementDetailValidator)
+            IValidator<AdvertisementDetailCreateOrUpdateDto> advertisementDetailValidator
+            , IValidator<AdvertisementDetailWithIdDto> advertisementDetailWithIdValidator)
         {
             _advertisementDetailRepository = advertisementDetailRepository;
             _attachmentService = attachmentService;
             _advertisementDetailValidator = advertisementDetailValidator;
-            ;
+            _advertisementDetailWithIdValidator= advertisementDetailWithIdValidator;
+         
 
         }
         [SecuredOperation(AdvertisementDetailServicePermissionConstants.Add)]
@@ -48,9 +52,9 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             if (!validationResult.IsValid)
             {
                 var ex = new ValidationException(validationResult.Errors);
-                throw new UserFriendlyException(ex.Message, ValidationConstant.QuestionnerNotFound);
+                throw new UserFriendlyException(ex.Message, ValidationConstant.ItemNotFoundId);
             }
-            var advertisementDetail = (await _advertisementDetailRepository.GetQueryableAsync()).OrderByDescending(x => x.Priority).FirstOrDefault(x => x.AdvertisementId == advertisementDetailCreateOrUpdateDto.AdvertisementId);
+            var advertisementDetail = (await _advertisementDetailRepository.GetQueryableAsync()).AsNoTracking().OrderByDescending(x => x.Priority).FirstOrDefault(x => x.AdvertisementId == advertisementDetailCreateOrUpdateDto.AdvertisementId);
             var advertisementDetailMap = ObjectMapper.Map<AdvertisementDetailCreateOrUpdateDto, AdvertisementDetail>(advertisementDetailCreateOrUpdateDto);
             if (advertisementDetail == null)
             {
@@ -61,12 +65,19 @@ namespace OrderManagement.Application.OrderManagement.Implementations
                 advertisementDetailMap.Priority = advertisementDetail.Priority + 1;
             }
             var entity = await _advertisementDetailRepository.InsertAsync(advertisementDetailMap);
+            await CurrentUnitOfWork.SaveChangesAsync();
             return ObjectMapper.Map<AdvertisementDetail, AdvertisementDetailDto>(entity);
         }
         [SecuredOperation(AdvertisementDetailServicePermissionConstants.Delete)]
-        public async Task<bool> Delete(int id)
+        public async Task<bool> Delete(AdvertisementDetailWithIdDto advertisementDetailWithId)
         {
-            await _advertisementDetailRepository.DeleteAsync(x => x.Id == id);
+            var validationResult = await _advertisementDetailWithIdValidator.ValidateAsync(advertisementDetailWithId, Options => Options.IncludeRuleSets(RuleSets.Delete));
+            if (!validationResult.IsValid)
+            {
+                var ex = new ValidationException(validationResult.Errors);
+                throw new UserFriendlyException(ex.Message, ValidationConstant.ItemNotFoundId);
+            }
+            await _advertisementDetailRepository.DeleteAsync(x => x.Id == advertisementDetailWithId.Id);
             return true;
         }
 
@@ -102,7 +113,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
                .PageBy(input)
                .SortByRule(input)
                .ToList();
-            var attachments = await _attachmentService.GetList(AttachmentEntityEnum.Announcement, advertisementDetails.Select(x => x.Id).ToList()
+            var attachments = await _attachmentService.GetList(AttachmentEntityEnum.Advertisement, advertisementDetails.Select(x => x.Id).ToList()
                                                         , EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(input.AttachmentType), EnumHelper.ConvertStringToEnum<AttachmentLocationEnum>(input.AttachmentLocation));
             var advertisementDetail = ObjectMapper.Map<List<AdvertisementDetail>, List<AdvertisementDetailDto>>(advertisementDetails);
             advertisementDetail.ForEach(x =>
@@ -137,11 +148,63 @@ namespace OrderManagement.Application.OrderManagement.Implementations
         [SecuredOperation(AdvertisementDetailServicePermissionConstants.UploadFile)]
         public async Task<Guid> UploadFile(UploadFileDto uploadFile)
         {
+
+
+            var validationResult = await _advertisementDetailWithIdValidator.ValidateAsync(new AdvertisementDetailWithIdDto { Id= uploadFile.Id }, Options => Options.IncludeRuleSets(RuleSets.UploadFile));
+            if (!validationResult.IsValid)
+            {
+                var ex = new ValidationException(validationResult.Errors);
+                throw new UserFriendlyException(ex.Message, ValidationConstant.ItemNotFoundId);
+            }
             return await _attachmentService.UploadFile(AttachmentEntityEnum.Advertisement, uploadFile);
         }
+        [SecuredOperation(AdvertisementDetailServicePermissionConstants.Move)]
+        public async Task<bool> Move(AdvertisementDetailWithIdDto advertisementDetailWithId, MoveTypeEnum moveType)
+        {
+            var validationResult = await _advertisementDetailWithIdValidator.ValidateAsync(advertisementDetailWithId, Options => Options.IncludeRuleSets(RuleSets.Move));
+            if (!validationResult.IsValid)
+            {
+                var ex = new ValidationException(validationResult.Errors);
+                throw new UserFriendlyException(ex.Message, ValidationConstant.QuestionnerNotFound);
+            }
+            var advertisementDetailQuery = (await _advertisementDetailRepository.GetQueryableAsync()).AsNoTracking().OrderBy(x=>x.Priority);
+            var currentAdvertisementDetail = advertisementDetailQuery.FirstOrDefault(x => x.Id == advertisementDetailWithId.Id);
+            var currentPriority = currentAdvertisementDetail.Priority;
+            var parentId = currentAdvertisementDetail.AdvertisementId;
+            if (MoveTypeEnum.Up == moveType)
+            {
+                var previousAdvertisementDetail = await advertisementDetailQuery.FirstOrDefaultAsync(x => x.Priority == currentAdvertisementDetail.Priority-1 && x.AdvertisementId == parentId);
+                if (previousAdvertisementDetail is null)
+                {
+                    throw new UserFriendlyException(OrderConstant.FirstPriority, OrderConstant.FirstPriorityId);
+                }
+                var previousPriority = previousAdvertisementDetail.Priority;
+                currentAdvertisementDetail.Priority = previousPriority;
+                await _advertisementDetailRepository.UpdateAsync(currentAdvertisementDetail);
+                previousAdvertisementDetail.Priority = currentPriority;
+                await _advertisementDetailRepository.UpdateAsync(previousAdvertisementDetail);
+            }
+            else if (MoveTypeEnum.Down == moveType)
+            {
+                var nextAdvertisementDetail = advertisementDetailQuery.FirstOrDefault(x => x.Priority > currentAdvertisementDetail.Priority && x.AdvertisementId == parentId);
+                if (nextAdvertisementDetail is null)
+                {
+                    throw new UserFriendlyException(OrderConstant.LastPriority, OrderConstant.LastPriorityId);
+                }
+                var nextPriority = nextAdvertisementDetail.Priority;
+                currentAdvertisementDetail.Priority = nextPriority;
+                await _advertisementDetailRepository.UpdateAsync(currentAdvertisementDetail);
+                nextAdvertisementDetail.Priority = currentPriority;
+                await _advertisementDetailRepository.UpdateAsync(nextAdvertisementDetail);
+            }
 
-        
 
+            return true;
+        }
     }
-
 }
+
+
+
+
+      

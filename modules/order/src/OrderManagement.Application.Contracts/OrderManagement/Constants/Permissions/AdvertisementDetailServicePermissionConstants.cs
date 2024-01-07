@@ -23,7 +23,8 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Constants.Permis
         public const string UploadFile_DisplayName = "بروزرسانی فایل";
         public const string GetPagination = ConstantInfo.ModuleOrder + ServiceIdentifier + "0007";
         public const string GetPagination_DisplayName = "نمایش جزییات تبلیغ با صفحه بندی";
-
+        public const string Move = ConstantInfo.ModuleOrder + ServiceIdentifier + "0008";
+        public const string Move_DisplayName = "ویرایش الویت ها";
         public const string ServiceIdentifier = "0026";
         public const string ServiceDisplayName = "نمایش جزییات تبلیغ";
     }

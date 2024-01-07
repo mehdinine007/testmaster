@@ -1,4 +1,5 @@
 ﻿using OrderManagement.Domain.Shared;
+using OrderManagement.Domain.Shared.OrderManagement.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,14 +10,15 @@ using Volo.Abp.Application.Services;
 
 namespace OrderManagement.Application.Contracts.OrderManagement.Services
 {
-    public interface IAdvertisementDetailService: IApplicationService
+    public interface IAdvertisementDetailService : IApplicationService
     {
-        Task<List<AdvertisementDetailDto>> GetList(int advertisementId,List<AttachmentEntityTypeEnum> attachmentType = null, List<AttachmentLocationEnum> attachmentlocation = null);
+        Task<List<AdvertisementDetailDto>> GetList(int advertisementId, List<AttachmentEntityTypeEnum> attachmentType = null, List<AttachmentLocationEnum> attachmentlocation = null);
         Task<AdvertisementDetailDto> GetById(int id, List<AttachmentEntityTypeEnum> attachmentType = null, List<AttachmentLocationEnum> attachmentlocation = null);
         Task<PagedResultDto<AdvertisementDetailDto>> GetPagination(AdvertisementDetailPaginationDto input);
         Task<AdvertisementDetailDto> Add(AdvertisementDetailCreateOrUpdateDto advertisementDetailCreateOrUpdateDto);
         Task<AdvertisementDetailDto> Update(AdvertisementDetailCreateOrUpdateDto advertisementDetailCreateOrUpdateDto);
-        Task<bool> Delete(int id);
+        Task<bool> Delete(AdvertisementDetailWithIdDto advertisementDetailWithId);
         Task<Guid> UploadFile(UploadFileDto uploadFile);
+        Task<bool> Move(AdvertisementDetailWithIdDto advertisementDetailWithId, MoveTypeEnum moveType);
     }
 }

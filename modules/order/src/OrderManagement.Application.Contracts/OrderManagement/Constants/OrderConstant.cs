@@ -101,6 +101,10 @@ namespace OrderManagement.Application.Contracts
 
         public static string AdvertisementNotFound = "جایگاه وجود ندارد";
         public static string AdvertisementNotFoundId = "5006";
-        
+        public static string FirstPriority = "اولین اولویت امکان تغییر ندارد";
+        public static string FirstPriorityId = "5007";
+        public static string LastPriority = "اخرین اولویت امکان تغییر ندارد";
+        public static string LastPriorityId = "5008";
+
     }
 }
