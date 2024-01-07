@@ -1,7 +1,4 @@
-﻿if exists(select 1 from sysObjects where Upper(Name)= 'spGetReportQuestionnaire')
-  drop  proc  spGetReportQuestionnaire
-GO
-create PROCEDURE [dbo].[spGetReportQuestionnaire]
+﻿create PROCEDURE [dbo].[spGetReportQuestionnaire]
     @nationalCode nvarchar(10)  null,
     @Type int,
 	@maxResultCount int null,

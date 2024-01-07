@@ -9,6 +9,7 @@ using IFG.Core.DataAccess;
 using OrderManagement.Domain.Shared;
 using System.Reflection.Emit;
 using Volo.Abp.Domain.Entities;
+using IFG.Core.Utility.Migration.Domain;
 
 namespace OrderManagement.EfCore;
 

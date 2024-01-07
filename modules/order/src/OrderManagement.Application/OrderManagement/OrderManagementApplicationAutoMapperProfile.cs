@@ -182,6 +182,7 @@ namespace OrderManagement
                 .ForMember(o=>o.Description,opt=> opt.MapFrom(y=> System.Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(y.Description))))
                 .ForMember(o=>o.Notice,opt=> opt.MapFrom(y=> System.Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(y.Notice))))
                 .ForMember(x => x.StatusTitle, c => c.MapFrom(m => DateTime.Now < m.FromDate ? EnumHelper.GetDescription(AnnouncementStatusEnum.Awaiting) : DateTime.Now >= m.FromDate && DateTime.Now <= m.ToDate ? EnumHelper.GetDescription(AnnouncementStatusEnum.Publishing) : DateTime.Now > m.ToDate ? EnumHelper.GetDescription(AnnouncementStatusEnum.Expired) :""))
+                .ForMember(x => x.Status, c => c.MapFrom(m => DateTime.Now < m.FromDate ? AnnouncementStatusEnum.Awaiting : DateTime.Now >= m.FromDate && DateTime.Now <= m.ToDate ? AnnouncementStatusEnum.Publishing : DateTime.Now > m.ToDate ? AnnouncementStatusEnum.Expired : 0))
                 .ReverseMap()
                 .IgnoreFullAuditedObjectProperties();
 

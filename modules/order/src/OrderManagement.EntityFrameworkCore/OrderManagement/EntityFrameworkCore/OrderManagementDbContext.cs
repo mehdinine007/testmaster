@@ -9,6 +9,7 @@ using Volo.Abp.Data;
 using Volo.Abp.EntityFrameworkCore;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using OrderManagement.Domain.OrderManagement;
+using IFG.Core.Utility.Migration.Domain;
 
 namespace OrderManagement.EfCore
 {
