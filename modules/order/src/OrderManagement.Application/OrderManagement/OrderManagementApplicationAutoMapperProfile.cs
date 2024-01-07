@@ -210,10 +210,13 @@ namespace OrderManagement
             CreateMap<Advertisement, AdvertisementCreateOrUpdateDto>().ReverseMap();
             CreateMap<AdvertisementDetail, AdvertisementDetailDto>()
                 .ForMember(o => o.Description, opt => opt.MapFrom(y => System.Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(y.Description))))
-                .ReverseMap()
-                .ForMember(o => o.Description, opt => opt.MapFrom(y => System.Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(y.Description))));
-            CreateMap<AdvertisementDetail, AdvertisementDetailCreateOrUpdateDto>().ReverseMap();
-          
+                .ReverseMap();
+
+            CreateMap<AdvertisementDetail, AdvertisementDetailCreateOrUpdateDto>().ReverseMap()
+                  .ForMember(x => x.Description, opt => opt.MapFrom(y => System.Text.Encoding.UTF8.GetString(System.Convert.FromBase64String(y.Description))))
+                  .ReverseMap();
+
+
         }
     }
 }
