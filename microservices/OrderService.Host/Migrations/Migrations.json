@@ -70,9 +70,39 @@
   ],
   "Patch": [
     {
-      "Id": "20231229_AddTableCustomerPriority",
+      "Id": "20231213112901_Add_CustomerPriority",
       "Priority": 1,
-      "Version": "4.1.1"
+      "Version": "4.2.0"
+    },
+    {
+      "Id": "20231216072246_Add_Active_Announcement",
+      "Priority": 2,
+      "Version": "4.2.0"
+    },
+    {
+      "Id": "20231218043917_add-QuestionGroup",
+      "Priority": 3,
+      "Version": "4.2.0"
+    },
+    {
+      "Id": "20231218074256_add-questinrelationship",
+      "Priority": 4,
+      "Version": "4.2.0"
+    },
+    {
+      "Id": "20231218074437_add-deviceenum",
+      "Priority": 5,
+      "Version": "4.2.0"
+    },
+    {
+      "Id": "20231220090409_addQuestionGroup-to-Question",
+      "Priority": 6,
+      "Version": "4.2.0"
+    },
+    {
+      "Id": "20231226055406_removeuniquegroupid",
+      "Priority": 7,
+      "Version": "4.2.0"
     }
   ]
 }

@@ -57,12 +57,36 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Remove="Migrations\Patch\20231229_AddTableCustomerPriority.sql" />
+      <None Remove="Migrations\Patch\20231213112901_Add_CustomerPriority.sql" />
+      <None Remove="Migrations\Patch\20231216072246_Add_Active_Announcement.sql" />
+      <None Remove="Migrations\Patch\20231218043917_add-QuestionGroup.sql" />
+      <None Remove="Migrations\Patch\20231218074256_add-questinrelationship.sql" />
+      <None Remove="Migrations\Patch\20231218074437_add-deviceenum.sql" />
+      <None Remove="Migrations\Patch\20231220090409_addQuestionGroup-to-Question.sql" />
+      <None Remove="Migrations\Patch\20231226055406_removeuniquegroupid.sql" />
       <None Remove="Migrations\Tables\ProductAndCategory_CarTip.sql" />
     </ItemGroup>
 
     <ItemGroup>
-      <Content Include="Migrations\Patch\20231229_AddTableCustomerPriority.sql">
+      <Content Include="Migrations\Patch\20231213112901_Add_CustomerPriority.sql">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="Migrations\Patch\20231216072246_Add_Active_Announcement.sql">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="Migrations\Patch\20231218043917_add-QuestionGroup.sql">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="Migrations\Patch\20231218074256_add-questinrelationship.sql">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="Migrations\Patch\20231218074437_add-deviceenum.sql">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="Migrations\Patch\20231220090409_addQuestionGroup-to-Question.sql">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="Migrations\Patch\20231226055406_removeuniquegroupid.sql">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
       <Content Include="Migrations\Tables\ProductAndCategory_CarTip.sql">
