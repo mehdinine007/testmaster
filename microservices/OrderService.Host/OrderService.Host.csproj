@@ -64,6 +64,8 @@
       <None Remove="Migrations\Patch\20231218074437_add-deviceenum.sql" />
       <None Remove="Migrations\Patch\20231220090409_addQuestionGroup-to-Question.sql" />
       <None Remove="Migrations\Patch\20231226055406_removeuniquegroupid.sql" />
+      <None Remove="Migrations\Patch\20240102103313_add-advertisement.sql" />
+      <None Remove="Migrations\Patch\20240106123506_add-priority-advertisementdetail.sql" />
       <None Remove="Migrations\Tables\ProductAndCategory_CarTip.sql" />
     </ItemGroup>
 
@@ -87,6 +89,12 @@
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
       <Content Include="Migrations\Patch\20231226055406_removeuniquegroupid.sql">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="Migrations\Patch\20240102103313_add-advertisement.sql">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="Migrations\Patch\20240106123506_add-priority-advertisementdetail.sql">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
       <Content Include="Migrations\Tables\ProductAndCategory_CarTip.sql">
