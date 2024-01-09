@@ -16,5 +16,7 @@ namespace OrderManagement.Application.Contracts.OrderManagement
         public int AdvertisementId { get; set; }
         public List<AttachmentViewModel> Attachments { get; set; }
         public int Priority { get; set; }
+        public  DateTime CreationTime { get; set; }
+
     }
 }
