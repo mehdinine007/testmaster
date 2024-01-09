@@ -1,14 +1,21 @@
 create proc [dbo].[spApplicantsReport]
+ 
+
 @companyFilter as int null, 
 @productFilter as nvarchar(max) null,
 @modelTypeFilter as int null ,
 @fromdateFilter as datetime2 null,
 @todateFilter as datetime2 null,
+
 @saleDetailFilter as int null,
 @saleSchemaFilter as int null,
 @nationalcode nvarchar(10) null,
+
 @categoriesFilter nvarchar(max) null
+
+
 as
+
 begin
 	
 
@@ -50,14 +57,14 @@ begin
 	
 
 		from [CompanyDb]..ClientsOrderDetailByCompany cod 
-		inner join ProductAndCategory_CarTip pcm on pcm.cartipid=cod.CarCode
-		inner join ProductAndCategory pc on pc.Id= pcm.productid
-		inner join ProductAndCategory com on com.Code = left(pc.Code,4)
-		inner join AbpUsers as usr on usr.NationalCode = cod.NationalCode
-		inner join customerorder co on usr.UID = co.UserId
-		left join SaleDetail as sd  on sd.id = co.saledetailid
+		inner join [OrderDb]..ProductAndCategory_CarTip pcm on pcm.cartipid=cod.CarCode
+		inner join [OrderDb]..ProductAndCategory pc on pc.Id= pcm.productid
+		inner join [OrderDb]..ProductAndCategory com on com.Code = left(pc.Code,4)
+		inner join [OrderDb]..AbpUsers as usr on usr.NationalCode = cod.NationalCode
+		inner join [OrderDb]..customerorder co on usr.UID = co.UserId
+		left join [OrderDb]..saledetail as sd  on sd.id = co.saledetailid
 		inner join [CompanyDb]..CompanyPaypaidPrices cp on cod.Id = cp.ClientsOrderDetailByCompanyId
-		--left join Esaledb_new.[dbo].[UserRejectionAdvocacy] ur on  ur.NationalCode = cod.NationalCode
+		--left join OrderDb_new.[dbo].[UserRejectionAdvocacy] ur on  ur.NationalCode = cod.NationalCode
 
 
 
