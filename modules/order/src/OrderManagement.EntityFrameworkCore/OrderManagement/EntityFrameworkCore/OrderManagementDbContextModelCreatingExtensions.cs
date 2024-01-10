@@ -345,6 +345,15 @@ public static class OrderManagementDbContextModelCreatingExtensions
             entity.HasOne<Advertisement>(x => x.Advertisement)
                 .WithMany(x => x.AdvertisementDetails)
                 .HasForeignKey(x => x.AdvertisementId);
+            entity.Property(x => x.Title)
+            .IsRequired().HasMaxLength(100);
+
+        });
+        builder.Entity<Advertisement>(entity =>
+        {
+            entity.Property(x => x.Title)
+            .IsRequired().HasMaxLength(100);
+
         });
 
 

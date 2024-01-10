@@ -113,6 +113,12 @@
       "Id": "20240106123506_add-priority-advertisementdetail",
       "Priority": 9,
       "Version": "4.2.0"
-    }
+    },
+    {
+      "Id": "20240110080635_IsRequiredtitle-title-advertisement",
+      "Priority": 10,
+      "Version": "4.2.0"
+    },
+   
   ]
 }
