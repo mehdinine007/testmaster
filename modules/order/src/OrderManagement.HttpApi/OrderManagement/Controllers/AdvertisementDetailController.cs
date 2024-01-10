@@ -12,6 +12,7 @@ using OrderManagement.Application.Contracts.OrderManagement;
 using OrderManagement.Domain.Shared;
 using Volo.Abp.Application.Dtos;
 using OrderManagement.Domain.Shared.OrderManagement.Enums;
+using IFG.Core.Utility.Tools;
 
 namespace OrderManagement.HttpApi.OrderManagement.Controllers
 {
@@ -31,11 +32,11 @@ namespace OrderManagement.HttpApi.OrderManagement.Controllers
         public async Task<bool> Delete(AdvertisementDetailWithIdDto advertisementDetailWithId)
         =>await _advertisementDetailService.Delete(advertisementDetailWithId);
         [HttpGet]
-        public async Task<AdvertisementDetailDto> GetById(int id, List<AttachmentEntityTypeEnum> attachmentType = null, List<AttachmentLocationEnum> attachmentlocation = null)
-        =>await _advertisementDetailService.GetById(id, attachmentType, attachmentlocation);
+        public async Task<AdvertisementDetailDto> GetById(int id, string attachmentType , string attachmentlocation )
+        =>await _advertisementDetailService.GetById(id, EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(attachmentType), EnumHelper.ConvertStringToEnum<AttachmentLocationEnum>(attachmentlocation));
         [HttpGet]
-        public async Task<List<AdvertisementDetailDto>> GetList(int advertisementId,List<AttachmentEntityTypeEnum> attachmentType = null, List<AttachmentLocationEnum> attachmentlocation = null)
-        =>await _advertisementDetailService.GetList(advertisementId,attachmentType, attachmentlocation);
+        public async Task<List<AdvertisementDetailDto>> GetList(int advertisementId,string attachmentType ,string attachmentlocation )
+        =>await _advertisementDetailService.GetList(advertisementId, EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(attachmentType), EnumHelper.ConvertStringToEnum<AttachmentLocationEnum>(attachmentlocation));
         [HttpGet]
         public async Task<PagedResultDto<AdvertisementDetailDto>> GetPagination(AdvertisementDetailPaginationDto input)
        =>await _advertisementDetailService.GetPagination(input);

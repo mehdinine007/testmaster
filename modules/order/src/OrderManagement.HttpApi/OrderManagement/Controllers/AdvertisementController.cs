@@ -29,11 +29,11 @@ namespace OrderManagement.HttpApi.OrderManagement.Controllers
         public async Task<bool> Delete(int id)
        => await _advertisementService.Delete(id);  
         [HttpGet]
-        public async Task<AdvertisementDto> GetById(int id,string attachmentType = null, string attachmentlocation = null)
+        public async Task<AdvertisementDto> GetById(int id,string attachmentType , string attachmentlocation )
         => await _advertisementService.GetById(new AdvertisementQueryDto {  Id =id,AttachmentType= attachmentType, Attachmentlocation= attachmentlocation });
         [HttpGet]
-        public async Task<List<AdvertisementDto>> GetList(List<AttachmentEntityTypeEnum> attachmentType = null, List<AttachmentLocationEnum> attachmentlocation = null)
-        => await _advertisementService.GetList(attachmentType, attachmentlocation);
+        public async Task<List<AdvertisementDto>> GetList(string attachmentType, string attachmentlocation)
+        => await _advertisementService.GetList(EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(attachmentType), EnumHelper.ConvertStringToEnum<AttachmentLocationEnum>(attachmentlocation));
         [HttpPut]
         public async Task<AdvertisementDto> Update(AdvertisementCreateOrUpdateDto advertisementCreateOrUpdateDto)
         =>await _advertisementService.Update(advertisementCreateOrUpdateDto);
