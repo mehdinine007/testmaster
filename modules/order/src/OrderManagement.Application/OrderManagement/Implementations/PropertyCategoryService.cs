@@ -6,6 +6,7 @@ using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.OrderManagement.Constants.Permissions;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
 using OrderManagement.Domain;
+using OrderManagement.Domain.OrderManagement.MongoWrite;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,9 +21,14 @@ namespace OrderManagement.HttpApi;
 public class PropertyCategoryService : ApplicationService, IPropertyCategoryService
 {
     private readonly IRepository<PropertyCategory, ObjectId> _propertyCategoryRepository;
-    public PropertyCategoryService(IRepository<PropertyCategory, ObjectId> propertyCategoryRepository)
+    private readonly IRepository<PropertyCategoryWrite, ObjectId> _propertyCategoryWriteRepository;
+
+
+    public PropertyCategoryService(IRepository<PropertyCategory, ObjectId> propertyCategoryRepository, 
+        IRepository<PropertyCategoryWrite, ObjectId> propertyCategoryWriteRepository)
     {
         _propertyCategoryRepository = propertyCategoryRepository;
+        _propertyCategoryWriteRepository = propertyCategoryWriteRepository;
     }
 
     public async Task<List<PropertyCategoryDto>> GetList()
@@ -60,7 +66,6 @@ public class PropertyCategoryService : ApplicationService, IPropertyCategoryServ
         {
             throw new UserFriendlyException(OrderConstant.DuplicatePriority, OrderConstant.DuplicatePriorityId);
         }
-
         if (propertyCategoryDto.Id == ObjectId.Empty.ToString())
         {
             throw new UserFriendlyException(OrderConstant.InCorrectPriorityNumber, OrderConstant.InCorrectPriorityNumberId);
@@ -68,11 +73,12 @@ public class PropertyCategoryService : ApplicationService, IPropertyCategoryServ
 
         propertyCategoryDto.Id = ObjectId.GenerateNewId().ToString();
 
-        var mapPropertyCategoryDto = ObjectMapper.Map<PropertyCategoryDto, PropertyCategory>(propertyCategoryDto);
-        var entity = await _propertyCategoryRepository.InsertAsync(mapPropertyCategoryDto, autoSave: true);
+        var mapPropertyCategoryDto = ObjectMapper.Map<PropertyCategoryDto, PropertyCategoryWrite>(propertyCategoryDto);
+        var entity = await _propertyCategoryWriteRepository.InsertAsync(mapPropertyCategoryDto, autoSave: true);
 
-        return ObjectMapper.Map<PropertyCategory, PropertyCategoryDto>(entity);
+        return ObjectMapper.Map<PropertyCategoryWrite, PropertyCategoryDto>(entity);
     }
+
     [SecuredOperation(PropertyCategoryServicePermissionConstants.Update)]
     public async Task<PropertyCategoryDto> Update(PropertyCategoryDto propertyCategoryDto)
     {
@@ -81,23 +87,26 @@ public class PropertyCategoryService : ApplicationService, IPropertyCategoryServ
         {
             throw new UserFriendlyException(OrderConstant.ProductLevelNotFound, OrderConstant.ProductLevelNotFoundId);
         }
-        var getPropertyCategory = await _propertyCategoryRepository.FirstOrDefaultAsync(x => x.Id == ObjectId.Parse(propertyCategoryDto.Id) && x.Title == existingEntity.Title);
-        if (getPropertyCategory == null)
+        var getPropertyCategory = await _propertyCategoryRepository.FirstOrDefaultAsync(x => x.Id != ObjectId.Parse(propertyCategoryDto.Id) && x.Title == propertyCategoryDto.Title);
+        if (getPropertyCategory != null)
         {
             throw new UserFriendlyException(OrderConstant.DuplicatePriority, OrderConstant.DuplicatePriorityId);
         }
         existingEntity.Properties = ObjectMapper.Map<List<PropertyDto>, List<Property>>(propertyCategoryDto.Properties);
         existingEntity.Title = propertyCategoryDto.Title;
-        await _propertyCategoryRepository.UpdateAsync(existingEntity, autoSave: true);
+        var mapPropertyCategory = ObjectMapper.Map<PropertyCategory, PropertyCategoryWrite>(existingEntity);
+        await _propertyCategoryWriteRepository.UpdateAsync(mapPropertyCategory, autoSave: true);
+
         return ObjectMapper.Map<PropertyCategory, PropertyCategoryDto>(existingEntity);
     }
+
     [SecuredOperation(PropertyCategoryServicePermissionConstants.Delete)]
     public async Task<bool> Delete(string Id)
     {
         ObjectId objectId;
         if (ObjectId.TryParse(Id, out objectId))
         {
-            await _propertyCategoryRepository.DeleteAsync(x => x.Id == objectId, autoSave: true);
+            await _propertyCategoryWriteRepository.DeleteAsync(x => x.Id == objectId, autoSave: true);
             return true;
         }
         else

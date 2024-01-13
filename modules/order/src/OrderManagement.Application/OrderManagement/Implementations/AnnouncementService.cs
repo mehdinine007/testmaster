@@ -1,6 +1,7 @@
 ﻿using Esale.Share.Authorize;
 using IFG.Core.DataAccess;
 using IFG.Core.Utility.Tools;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.OrderManagement;
@@ -38,9 +39,7 @@ public class AnnouncementService : ApplicationService, IAnnouncementService
     {
         var announcement = (await _announcementRepository.GetQueryableAsync()).AsNoTracking().FirstOrDefault(x => x.Id == id);
         if (announcement is null)
-        {
-            throw new UserFriendlyException("شناسه وارد شده معتبر نمیباشد.");
-        }
+            throw new UserFriendlyException(OrderConstant.AnnouncementNotFound, OrderConstant.AnnouncementNotFoundId);
         await _announcementRepository.DeleteAsync(announcement);
         await _attachmentService.DeleteByEntityId(AttachmentEntityEnum.Announcement, id);
         return true;
@@ -49,6 +48,7 @@ public class AnnouncementService : ApplicationService, IAnnouncementService
     public async Task<List<AnnouncementDto>> GetAllAnnouncement(AnnouncementDto input)
     {
         var announcementRepository = await _announcementRepository.GetQueryableAsync();
+        announcementRepository = announcementRepository.Where(x => x.Active);
         if (input.CompanyId.HasValue)
         {
             if (input.CompanyId != 0)
@@ -69,7 +69,8 @@ public class AnnouncementService : ApplicationService, IAnnouncementService
                  announcement.Select(x => x.Id).ToList(),
                  EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(input.AttachmentType), EnumHelper.ConvertStringToEnum<AttachmentLocationEnum>(input.AttachmentLocation), announcement);
     }
-    public async Task<List<AnnouncementDto>> getAttachment(AttachmentEntityEnum attachment, List<int> id, List<AttachmentEntityTypeEnum> typeEnum,List<AttachmentLocationEnum> attachmentlocation, List<Announcement> announcementCompany)
+
+    public async Task<List<AnnouncementDto>> getAttachment(AttachmentEntityEnum attachment, List<int> id, List<AttachmentEntityTypeEnum> typeEnum, List<AttachmentLocationEnum> attachmentlocation, List<Announcement> announcementCompany)
     {
         var attachments = await _attachmentService.GetList(attachment, id, typeEnum, attachmentlocation);
 
@@ -84,17 +85,19 @@ public class AnnouncementService : ApplicationService, IAnnouncementService
 
     public async Task<PagedResultDto<AnnouncementDto>> GetPagination(AnnouncementGetListDto input)
     {
-        var count = _announcementRepository.WithDetails().Count();
         var announcementResult = await _announcementRepository.GetQueryableAsync();
+        if (input.CompanyId.HasValue)
+            announcementResult = announcementResult.Where(x => x.CompanyId.Value == input.CompanyId.Value);
+        if (input.Active.HasValue)
+            announcementResult = announcementResult.Where(x => x.Active == input.Active.Value);
+        var count = announcementResult.Count();
         var announcementList = announcementResult
-            .Where(x => x.CompanyId == input.CompanyId)
             .AsNoTracking()
-            .OrderByDescending(x => x.Id)
-            .Skip(input.SkipCount)
-            .Take(input.MaxResultCount)
+            .SortByRule(input)
+            .PageBy(input)
             .ToList();
         var attachments = await _attachmentService.GetList(AttachmentEntityEnum.Announcement, announcementList.Select(x => x.Id).ToList()
-                                                    ,EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(input.AttachmentType), EnumHelper.ConvertStringToEnum<AttachmentLocationEnum>(input.AttachmentLocation));
+                                                    , EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(input.AttachmentType), EnumHelper.ConvertStringToEnum<AttachmentLocationEnum>(input.AttachmentLocation));
         var announcement = ObjectMapper.Map<List<Announcement>, List<AnnouncementDto>>(announcementList);
         announcement.ForEach(x =>
         {
@@ -124,8 +127,11 @@ public class AnnouncementService : ApplicationService, IAnnouncementService
     [SecuredOperation(AnnouncementServicePermissionConstants.Add)]
     public async Task<int> Insert(CreateAnnouncementDto announcementDto)
     {
+        if(announcementDto.ToDate < announcementDto.FromDate)
+            throw new UserFriendlyException(OrderConstant.ToDateLessThanFromDate, OrderConstant.ToDateLessThanFromDateId);
         var announcement = ObjectMapper.Map<CreateAnnouncementDto, Announcement>(announcementDto);
-        await _announcementRepository.InsertAsync(announcement, autoSave: true);
+        await _announcementRepository.InsertAsync(announcement);
+        await CurrentUnitOfWork.SaveChangesAsync();
         return announcement.Id;
 
     }
@@ -135,12 +141,13 @@ public class AnnouncementService : ApplicationService, IAnnouncementService
     {
         var getAnnouncement = (await _announcementRepository.GetQueryableAsync()).AsNoTracking().FirstOrDefault(x => x.Id == announcementDto.Id);
         if (getAnnouncement is null)
-        {
-            throw new UserFriendlyException("شناسه وارد شده معتبر نمیباشد.");
-        }
-        var announcement = ObjectMapper.Map<CreateAnnouncementDto, Announcement>(announcementDto);
-        await _announcementRepository.AttachAsync(announcement,
-            t => t.Title, d => d.Description, s => s.Notice, c => c.Content, f => f.FromDate, z => z.ToDate, o => o.ToDate, u => u.Date);
+            throw new UserFriendlyException(OrderConstant.AnnouncementNotFound, OrderConstant.AnnouncementNotFoundId);
+      
+        if (announcementDto.ToDate < announcementDto.FromDate)
+            throw new UserFriendlyException(OrderConstant.ToDateLessThanFromDate, OrderConstant.ToDateLessThanFromDateId);
+        var announcement =ObjectMapper.Map<CreateAnnouncementDto, Announcement>(announcementDto, getAnnouncement);
+        await _announcementRepository.UpdateAsync(announcement);
+        await CurrentUnitOfWork.SaveChangesAsync();
         return announcement.Id;
     }
 
@@ -158,7 +165,7 @@ public class AnnouncementService : ApplicationService, IAnnouncementService
         var announcement = (await _announcementRepository.GetQueryableAsync()).AsNoTracking()
             .FirstOrDefault(x => x.Id == id);
         var announcementDto = ObjectMapper.Map<Announcement, AnnouncementDto>(announcement);
-        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.Announcement,new List<int>() { id }, attachmentType, attachmentlocation);
+        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.Announcement, new List<int>() { id }, attachmentType, attachmentlocation);
 
         announcementDto.Attachments = ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(attachments);
 
@@ -171,9 +178,8 @@ public class AnnouncementService : ApplicationService, IAnnouncementService
         var announcement = (await _announcementRepository.GetQueryableAsync())
             .FirstOrDefault(x => x.Id == id);
         if (announcement is null)
-        {
-            throw new UserFriendlyException(OrderConstant.AnnouncementNotFound, OrderConstant.AnnouncementFoundId);
-        }
+            throw new UserFriendlyException(OrderConstant.AnnouncementNotFound, OrderConstant.AnnouncementNotFoundId);
+       
         return announcement;
     }
 

@@ -43,7 +43,7 @@ namespace UserManagement.HttpApi.UserManagement.Controllers
             => await _permission.Update(input);
 
         [HttpPost]
-        public async Task UpdateSecurityPolicy()
-          => await _permission.UpdateSecurityPolicy();
+        public async Task SeedPermissions()
+          => await _permission.SeedPermissions();
     }
 }

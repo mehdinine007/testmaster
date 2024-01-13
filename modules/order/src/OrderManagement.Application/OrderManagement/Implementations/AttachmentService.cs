@@ -74,6 +74,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             attachment.Location = attachmentDto.Location;
             attachment.Content = attachmentDto.Content;
             attachment.Description = attachmentDto.Description;
+            attachment.Device=attachmentDto.Device;
             await _attachementRepository.UpdateAsync(attachment, autoSave: true);
             return attachment.Id;
         }
@@ -111,14 +112,14 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             if (attachmentDto != null)
             {
                 var attachmentPriority = (await _attachementRepository.GetQueryableAsync())
-                    .FirstOrDefault(x => x.Id != id && x.Entity == attachmentDto.Entity && x.EntityId == attachmentDto.EntityId && x.EntityType == attachmentDto.EntityType);
+                    .FirstOrDefault(x => x.Id != id && x.Entity == attachmentDto.Entity && x.EntityId == attachmentDto.EntityId && x.EntityType == attachmentDto.EntityType && x.Device == attachmentDto.Device);
                 if (attachmentPriority != null && attachmentDto.EntityType != AttachmentEntityTypeEnum.Gallery)
                 {
                     throw new UserFriendlyException(OrderConstant.AttachmentDuplicate, OrderConstant.AttachmentDuplicateId);
                 }
 
                 attachmentPriority = (await _attachementRepository.GetQueryableAsync())
-                    .FirstOrDefault(x => x.Id != id && x.Priority == attachmentDto.Priority && x.Entity == attachmentDto.Entity && x.EntityId == attachmentDto.EntityId && x.EntityType == attachmentDto.EntityType);
+                    .FirstOrDefault(x => x.Id != id && x.Priority == attachmentDto.Priority && x.Entity == attachmentDto.Entity && x.EntityId == attachmentDto.EntityId && x.EntityType == attachmentDto.EntityType && x.Device == attachmentDto.Device);
                 if (attachmentPriority != null)
                 {
                     throw new UserFriendlyException(OrderConstant.AttachmentPriorityDuplicate, OrderConstant.AttachmentPriorityDuplicateId);
@@ -144,7 +145,8 @@ namespace OrderManagement.Application.OrderManagement.Implementations
                 Title = uploadFile.Title,
                 Content = uploadFile.Content,
                 Location = uploadFile.Location,
-                Priority = uploadFile.Priority
+                Priority = uploadFile.Priority,
+                Device=uploadFile.Device,
             };
             attachDto.Id = Guid.NewGuid();
             var attachment = CopyFile(attachDto);

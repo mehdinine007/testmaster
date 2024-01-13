@@ -9,6 +9,7 @@ using Volo.Abp.Data;
 using Volo.Abp.EntityFrameworkCore;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using OrderManagement.Domain.OrderManagement;
+using IFG.Core.Utility.Migration.Domain;
 
 namespace OrderManagement.EfCore
 {
@@ -115,6 +116,9 @@ namespace OrderManagement.EfCore
         public DbSet<SaleProcessTypeReadOnly> SaleProcessTypeReadOnly { get; set; }
 
         public DbSet<Priority> Priority { get; set; }
+        public DbSet<QuestionGroup> QuestionGroup { get; set; }
+
+        public DbSet<QuestionRelationship> QuestionRelationship { get ; set; }
 
         public DbSet<CustomerPriority> CustomerPriority { get; set; }
 

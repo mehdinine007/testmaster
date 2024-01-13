@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OrderManagement.Domain.Shared.OrderManagement.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,6 +20,13 @@ namespace OrderManagement.Application.Contracts.OrderManagement
         public int? CompanyId { get; set; }
         public string? AttachmentType { get; set; } = null;
         public string? AttachmentLocation { get; set; } = null;
+        public bool Active { get; set; }
         public List<AttachmentViewModel> Attachments { get; set; }
+        public DateTime CreationTime { get; set; }
+        public string StatusTitle { get; set; }
+        public AnnouncementStatusEnum Status { get; set; }
+
+
+
     }
 }

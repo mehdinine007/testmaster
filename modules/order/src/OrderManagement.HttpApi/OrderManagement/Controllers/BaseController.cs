@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.Services;
 using OrderManagement.Domain.Shared;
+using OrderManagement.Domain.Shared.OrderManagement.Enums;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -28,7 +29,7 @@ public class BaseController : IBaseInformationService
 
     [HttpGet]
     [RemoteService(IsEnabled = false)]
-    public void CheckBlackList(int esaleTypeId)
+    public void CheckBlackList(ESaleTypeEnums esaleTypeId)
         => _baseInformationService.CheckBlackList(esaleTypeId);
 
     [HttpGet]

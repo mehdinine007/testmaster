@@ -74,20 +74,32 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
         if (questionnaireWhitListType.WhitListRequirement.HasValue)
             _baseInformationService.CheckWhiteList((WhiteListEnumType)questionnaireWhitListType.WhitListRequirement.Value, currentUserNationalCode);
 
-        var questionnaireQuery = await _questionnaireRepository.GetQueryableAsync();
+        var questionnaireQuery =( await _questionnaireRepository.GetQueryableAsync()).AsNoTracking();
         questionnaireQuery = questionnaireQuery.Include(x => x.Questions)
-            .ThenInclude(x => x.Answers);
+            .ThenInclude(x => x.Answers)
+            .Include(x => x.Questions).ThenInclude(x => x.QuestionGroup)
+            .Include(x => x.Questions).ThenInclude(x => x.QuestionRelationships)
+            .ThenInclude(x => x.QuestionAnswer);
         if (currentUserId.HasValue)
         {
             if (!relatedEntityId.HasValue)
             {
                 questionnaireQuery = questionnaireQuery.Include(x => x.Questions)
+                    .ThenInclude(x => x.SubmittedAnswers.Where(y => y.UserId.Value == currentUserId.Value))
+                     .Include(x => x.Questions).ThenInclude(x => x.QuestionRelationships)
+                    .ThenInclude(x => x.QuestionAnswer)
                     .ThenInclude(x => x.SubmittedAnswers.Where(y => y.UserId.Value == currentUserId.Value));
+                  
             }
             else
             {
+
                 questionnaireQuery = questionnaireQuery.Include(x => x.Questions)
+                    .ThenInclude(x => x.SubmittedAnswers.Where(y => y.UserId.Value == currentUserId.Value && y.RelatedEntityId.Value == relatedEntityId.Value))
+                    .Include(x => x.Questions).ThenInclude(x => x.QuestionRelationships)
+                    .ThenInclude(x => x.QuestionAnswer)
                     .ThenInclude(x => x.SubmittedAnswers.Where(y => y.UserId.Value == currentUserId.Value && y.RelatedEntityId.Value == relatedEntityId.Value));
+                    
             }
         }
 
@@ -192,9 +204,6 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
                 throw new UserFriendlyException("لطفا نمام فیلد ها را پر کنید");
 
             submitAnswerTreeDto.UnregisteredUserInformation.QuestionnaireId = questionnaire.Id;
-            await _unAuthorizedUserRepository.InsertAsync(
-              ObjectMapper.Map<UnregisteredUserInformation, UnAuthorizedUser>(submitAnswerTreeDto.UnregisteredUserInformation));
-
         }
         else if (questionnaire.QuestionnaireType == QuestionnaireType.AuthorizedOnly)
         {
@@ -209,8 +218,9 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
 
         //check all available questions in questionnaire being completed
         var questionIds = questionnaire.Questions.Select(x => x.Id).OrderBy(x => x).ToList();
-        var incomigAnswerIds = submitAnswerTreeDto.SubmitAnswerDto.Select(x => x.QuestionId).OrderBy(x => x).ToList();
-        var missedQuestionExists = !questionIds.SequenceEqual(incomigAnswerIds);
+        var noDescriptionalquestionId = questionnaire.Questions.Where(x => x.QuestionType != QuestionType.Descriptional).Select(x => x.Id).OrderBy(x => x).ToList();
+        var incomigAnswerIds = submitAnswerTreeDto.SubmitAnswerDto.Where(x => noDescriptionalquestionId.Contains(x.QuestionId)).Select(x => x.QuestionId).OrderBy(x => x).ToList();
+        var missedQuestionExists = !noDescriptionalquestionId.SequenceEqual(incomigAnswerIds);
         if (missedQuestionExists)
             throw new UserFriendlyException("لطفا به تمام سوالات پاسخ دهید");
 
@@ -274,6 +284,11 @@ public class QuestionnaireService : ApplicationService, IQuestionnaireService
         });
         //add to database
         await _submittedAnswerRepository.InsertManyAsync(submitAnswerList);
+        if (questionnaire.QuestionnaireType == QuestionnaireType.AnonymousAllowed)
+        {
+            await _unAuthorizedUserRepository.InsertAsync(
+             ObjectMapper.Map<UnregisteredUserInformation, UnAuthorizedUser>(submitAnswerTreeDto.UnregisteredUserInformation));
+        }
     }
 
     public async Task<bool> UploadFile(UploadFileDto uploadFile)

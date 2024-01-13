@@ -7,6 +7,8 @@ using OrderManagement.Application.Contracts.OrderManagement;
 using OrderManagement.Application.Contracts.OrderManagement.Models;
 using OrderManagement.Domain;
 using OrderManagement.Domain.OrderManagement;
+using OrderManagement.Domain.Shared.OrderManagement.Enums;
+using OrderManagement.Domain.OrderManagement.MongoWrite;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -72,6 +74,7 @@ namespace OrderManagement
                 .ForMember(x => x.TypeTitle, c => c.MapFrom(m => m.EntityType != 0 ? EnumHelper.GetDescription(m.EntityType) : ""))
                 .ForMember(x => x.LocationTitle, c => c.MapFrom(m => m.Location != 0 ? EnumHelper.GetDescription(m.Location) : ""))
                 .ForMember(x => x.Content, c => c.MapFrom(m => !string.IsNullOrWhiteSpace(m.Content) ? JsonConvert.DeserializeObject<List<string>>(m.Content) : null))
+                     .ForMember(x => x.DeviceTitle, c => c.MapFrom(m => EnumHelper.GetDescription(m.Device)))
                 .ReverseMap();
 
             CreateMap<SiteStructure, SiteStructureDto>()
@@ -97,10 +100,15 @@ namespace OrderManagement
                 .ReverseMap();
             CreateMap<PropertyCategory, PropertyCategoryDto>()
                 .ReverseMap();
+            CreateMap<PropertyCategoryWrite, PropertyCategoryDto>()
+                .ReverseMap();
+
             CreateMap<PropertyCategory, ProductPropertyCategoryDto>()
                 .ReverseMap();
 
             CreateMap<ProductProperty, ProductPropertyDto>()
+                .ReverseMap();
+            CreateMap<ProductPropertyWrite, ProductPropertyDto>()
                 .ReverseMap();
 
             CreateMap<DropDownItem, DropDownItemDto>()
@@ -163,6 +171,7 @@ namespace OrderManagement
             CreateMap<Question, FullQuestionDto>();
             CreateMap<QuestionAnswer, QuestionAnswerDto>();
             CreateMap<SubmittedAnswer, SubmittedAnswerDto>();
+
             CreateMap<AttachFileDto, AttachmentUpdateDto>()
               .ReverseMap();
             CreateMap<BankDto, Bank>()
@@ -172,6 +181,8 @@ namespace OrderManagement
                 .ForMember(o=>o.Content,opt=> opt.MapFrom(y=> System.Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(y.Content))))
                 .ForMember(o=>o.Description,opt=> opt.MapFrom(y=> System.Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(y.Description))))
                 .ForMember(o=>o.Notice,opt=> opt.MapFrom(y=> System.Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(y.Notice))))
+                .ForMember(x => x.StatusTitle, c => c.MapFrom(m => DateTime.Now < m.FromDate ? EnumHelper.GetDescription(AnnouncementStatusEnum.Awaiting) : DateTime.Now >= m.FromDate && DateTime.Now <= m.ToDate ? EnumHelper.GetDescription(AnnouncementStatusEnum.Publishing) : DateTime.Now > m.ToDate ? EnumHelper.GetDescription(AnnouncementStatusEnum.Expired) :""))
+                .ForMember(x => x.Status, c => c.MapFrom(m => DateTime.Now < m.FromDate ? AnnouncementStatusEnum.Awaiting : DateTime.Now >= m.FromDate && DateTime.Now <= m.ToDate ? AnnouncementStatusEnum.Publishing : DateTime.Now > m.ToDate ? AnnouncementStatusEnum.Expired : 0))
                 .ReverseMap()
                 .IgnoreFullAuditedObjectProperties();
 
@@ -192,6 +203,9 @@ namespace OrderManagement
                 .IgnoreFullAuditedObjectProperties();
 
             CreateMap<Priority, PriorityDto>().ReverseMap();
+            CreateMap<QuestionRelationship, QuestionRelationshipDto>().ReverseMap();
+
+            CreateMap<QuestionGroup, QuestionGroupDto>().ReverseMap();
         }
     }
 }

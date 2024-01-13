@@ -105,7 +105,7 @@ namespace ReportService.Host
             //ConfigureHangfire(context, configuration);
 
             context.Services.AddGrpc();
-            context.Services.EasyCaching(configuration, "RedisCache:ConnectionString");
+            context.Services.EasyCaching(configuration);
             context.Services.AddEsaleResultWrapper();
             //context.Services.AddMongoDbContext<OrderManagementMongoDbContext>(options =>
             //{

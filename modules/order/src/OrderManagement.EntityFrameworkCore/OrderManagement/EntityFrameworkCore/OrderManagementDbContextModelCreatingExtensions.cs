@@ -8,6 +8,8 @@ using OrderManagement.Domain.OrderManagement;
 using IFG.Core.DataAccess;
 using OrderManagement.Domain.Shared;
 using System.Reflection.Emit;
+using Volo.Abp.Domain.Entities;
+using IFG.Core.Utility.Migration.Domain;
 
 namespace OrderManagement.EfCore;
 
@@ -378,14 +380,32 @@ public static class OrderManagementDbContextModelCreatingExtensions
         builder.Entity<Question>(entity =>
         {
             entity.ToTable(nameof(Question));
-
+            entity.HasIndex(x => x.QuestionGroupId)
+            .IsUnique(false);
             entity.HasOne<Questionnaire>(x => x.Questionnaire)
                 .WithMany(x => x.Questions)
                 .HasForeignKey(x => x.QuestionnaireId);
+
+            entity.HasOne<QuestionGroup>(x => x.QuestionGroup)
+                .WithOne(x => x.Question)
+                .HasForeignKey<Question>(x=> x.QuestionGroupId)
+                .OnDelete(DeleteBehavior.NoAction);
+
             entity.Property(x => x.Title)
                 .HasMaxLength(50);
         });
+        builder.Entity<QuestionGroup>(entity =>
+        {
+            entity.ToTable(nameof(QuestionGroup));
 
+            entity.HasOne<Questionnaire>(x => x.Questionnaire)
+                .WithMany(x => x.QuestionGroups)    
+                .HasForeignKey(x => x.QuestionnaireId)
+                .OnDelete(DeleteBehavior.NoAction);
+         
+            entity.Property(x => x.Title)
+                    .HasMaxLength(50);
+        });
         builder.Entity<QuestionAnswer>(entity =>
         {
             entity.ToTable(nameof(QuestionAnswer));
@@ -446,25 +466,7 @@ public static class OrderManagementDbContextModelCreatingExtensions
             entity.Property(x => x.Age)
                 .HasColumnType("Date");
         });
-        //builder.Entity<ClientsOrderDetailByCompany>(entity =>
-        //{
-        //    entity.ToTable(nameof(ClientsOrderDetailByCompany));
 
-        //    entity.Property(x => x.NationalCode)
-        //        .HasMaxLength(10);
-
-        //    entity.Property(x => x.SaleType)
-        //        .HasMaxLength(150);
-
-        //    entity.Property(x => x.Vin)
-        //        .HasMaxLength(50);
-
-        //    entity.Property(x => x.BodyNumber)
-        //        .HasMaxLength(50);
-
-        //    entity.Property(x => x.CarDesc)
-        //        .HasMaxLength(250);
-        //});
 
         builder.Entity<GenderTypeReadOnly>(entity =>
         {
@@ -475,8 +477,6 @@ public static class OrderManagementDbContextModelCreatingExtensions
         {
             entity.ToTable(nameof(Organization));
         });
-
-
 
         builder.Entity<SaleProcessTypeReadOnly>(entity =>
         {
@@ -495,6 +495,28 @@ public static class OrderManagementDbContextModelCreatingExtensions
             entity.ToTable(nameof(CustomerPriority));
 
             entity.HasIndex(x => x.Uid, "IX_CustomerPriority_Uid");
+        });
+
+
+
+        builder.Entity<QuestionRelationship>(entity =>
+        {
+            entity.ToTable(nameof(QuestionRelationship));
+
+            entity.HasOne<Question>(x => x.Question)
+                    .WithMany(x => x.QuestionRelationships)
+                    .HasForeignKey(x => x.QuestionId)
+                    .OnDelete(DeleteBehavior.NoAction);
+
+            entity.HasOne<QuestionAnswer>(x => x.QuestionAnswer)
+                   .WithMany(x => x.questionRelationships)
+                   .HasForeignKey(x => x.QuestionAnswerId);
+        });
+
+        builder.Entity<OperatorEnumReadOnly>(entity =>
+        {
+            entity.ToTable(nameof(OperatorEnumReadOnly));
+            entity.AddEnumChangeTracker<OperatorEnumReadOnly, OperatorFilterEnum>();
         });
     }
 }

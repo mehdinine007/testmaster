@@ -31,6 +31,7 @@ using IFG.Core.Extensions;
 using IFG.Core.Utility.Security.Encyption;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Collections.Generic;
+using Volo.Abp.FluentValidation;
 using Licence;
 
 namespace OrderService.Host
@@ -49,7 +50,9 @@ namespace OrderService.Host
         typeof(OrderManagementEntityFrameworkCoreModule),
         //typeof(AbpAspNetCoreMultiTenancyModule),
         typeof(AbpTenantManagementEntityFrameworkCoreModule),
-        typeof(AbpBackgroundJobsHangfireModule)
+        typeof(AbpBackgroundJobsHangfireModule),
+        typeof(AbpFluentValidationModule)
+
         )]
     public class OrderServiceHostModule : AbpModule
     {
@@ -104,7 +107,10 @@ namespace OrderService.Host
                             new List<string>()
                         }
                     });
+                    options.IncludeXmlComments(string.Format(@"{0}\OrderManagement.HttpApi.xml",
+System.AppDomain.CurrentDomain.BaseDirectory));
                 });
+
             }
 
             Configure<AbpLocalizationOptions>(options =>
@@ -150,13 +156,17 @@ namespace OrderService.Host
             ConfigureHangfire(context, configuration);
 
             context.Services.AddGrpc();
-            context.Services.EasyCaching(configuration, "RedisCache:ConnectionString");
+            context.Services.EasyCaching(configuration);
             context.Services.AddMongoDbContext<OrderManagementMongoDbContext>(options =>
             {
                 options.AddDefaultRepositories(includeAllEntities: true);
             });
+            context.Services.AddMongoDbContext<OrderManagementMongoDbContextWriteOnly>(options =>
+            {
+                options.AddDefaultRepositories(includeAllEntities: true);
+            });
 
-           
+
 
             //var redis = ConnectionMultiplexer.Connect(configuration["Redis:Configuration"]);
             //context.Services.AddDataProtection()

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using OrderManagement.Domain.Shared;
+using OrderManagement.Domain.Shared.OrderManagement.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -24,5 +25,6 @@ namespace OrderManagement.Domain.OrderManagement
         public string Description { get; set; }
         public string Content { get; set; }
         public int Priority { get; set; }
+        public DeviceEnum Device { get; set; }
     }
 }

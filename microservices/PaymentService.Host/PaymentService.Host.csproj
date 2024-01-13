@@ -26,10 +26,10 @@
 		<PackageReference Include="Volo.Abp.PermissionManagement.EntityFrameworkCore" Version="7.2.1" />
 		<PackageReference Include="Volo.Abp.SettingManagement.EntityFrameworkCore" Version="7.2.1" />
 		<PackageReference Include="Volo.Abp.TenantManagement.EntityFrameworkCore" Version="7.2.1" />
-		<ProjectReference Include="..\..\modules\order\src\OrderManagement.Application\OrderManagement.Application.csproj" />
 		<ProjectReference Include="..\..\modules\payment\PaymentManagement.Application\PaymentManagement.Application.csproj" />
 		<ProjectReference Include="..\..\modules\payment\PaymentManagement.EntityFrameworkCore\PaymentManagement.EntityFrameworkCore.csproj" />
 		<ProjectReference Include="..\..\modules\payment\PaymentManagement.HttpApi\PaymentManagement.HttpApi.csproj" />
+		<ProjectReference Include="..\..\shared\Extensions\Extensions.csproj" />
 		<ProjectReference Include="..\..\shared\MsDemo.Shared\MsDemo.Shared.csproj" />
 	</ItemGroup>
 

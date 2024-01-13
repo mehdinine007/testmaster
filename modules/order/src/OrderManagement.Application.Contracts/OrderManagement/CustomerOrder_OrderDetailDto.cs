@@ -1,4 +1,5 @@
 ﻿using OrderManagement.Application.Contracts.OrderManagement.Models;
+using OrderManagement.Domain.Shared.OrderManagement.Enums;
 using System;
 using System.Collections.Generic;
 
@@ -30,7 +31,7 @@ namespace OrderManagement.Application.Contracts
         public string OrderRejectionTitle { get; set; }
 
         public bool Cancelable { get; set; }
-        public int ESaleTypeId { get; set; }
+        public ESaleTypeEnums ESaleTypeId { get; set; }
 
         public Guid SaleDetailUid { get; set; }
 

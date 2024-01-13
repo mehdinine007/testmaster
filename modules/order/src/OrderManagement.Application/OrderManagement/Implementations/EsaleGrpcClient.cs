@@ -24,14 +24,13 @@ public class EsaleGrpcClient : ApplicationService, IEsaleGrpcClient
 {
     private readonly IConfiguration _configuration;
     private readonly IRepository<Logs, long> _logsRepository;
-    private readonly ICacheManager _cacheManager;
 
 
-    public EsaleGrpcClient(IConfiguration configuration, IRepository<Logs, long> logsRepository, ICacheManager cacheManager)
+    public EsaleGrpcClient(IConfiguration configuration, IRepository<Logs, long> logsRepository)
     {
         _configuration = configuration;
         _logsRepository = logsRepository;
-        _cacheManager = cacheManager;
+       
     }
 
     public async Task<UserDto> GetUserId(string userId)
@@ -41,15 +40,6 @@ public class EsaleGrpcClient : ApplicationService, IEsaleGrpcClient
         var httpHandler = new HttpClientHandler();
         httpHandler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
         var channel = GrpcChannel.ForAddress(_configuration.GetValue<string>("Esale:GrpcAddress"), new GrpcChannelOptions { HttpHandler = httpHandler });
-
-        string cacheKey = $"{userId}";
-        string prefix = $"{RedisConstants.GrpcGetUserById}";
-        var cachedData = await _cacheManager.GetStringAsync(cacheKey, prefix, new CacheOptions
-        { Provider = CacheProviderEnum.Hybrid });
-        if (!string.IsNullOrEmpty(cachedData))
-        {
-            return JsonConvert.DeserializeObject<UserDto>(cachedData);
-        }
 
         var client = new UserServiceGrpc.UserServiceGrpcClient(channel);
 
@@ -70,14 +60,13 @@ public class EsaleGrpcClient : ApplicationService, IEsaleGrpcClient
             NationalCode = user.NationalCode,
             Shaba = user.Shaba,
             MobileNumber = user.MobileNumber,
+            GenderCode = user.GenderCode,
             CompanyId = user.CompanyId,
             Name = user.Name,
             SurName = user.SurName,
             Priority = user.Priority
         };
 
-        await _cacheManager.SetStringAsync(cacheKey, prefix, JsonConvert.SerializeObject(userDto), new CacheOptions
-        { Provider = CacheProviderEnum.Hybrid }, TimeSpan.FromMinutes(1).TotalSeconds);
         return userDto;
     }
     public async Task<AdvocacyUserDto> GetUserAdvocacyByNationalCode(string nationlCode)

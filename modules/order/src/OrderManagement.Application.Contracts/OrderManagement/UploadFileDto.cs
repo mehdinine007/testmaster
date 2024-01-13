@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using OrderManagement.Domain.Shared;
+using OrderManagement.Domain.Shared.OrderManagement.Enums;
 
 namespace OrderManagement.Application.Contracts.OrderManagement
 {
@@ -13,5 +14,6 @@ namespace OrderManagement.Application.Contracts.OrderManagement
         public string? Description { get; set; }
         public int Priority { get; set; }
         public List<string>? Content { get; set; }
+        public DeviceEnum Device { get; set; }
     }
 }

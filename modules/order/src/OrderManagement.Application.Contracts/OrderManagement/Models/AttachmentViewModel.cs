@@ -1,9 +1,11 @@
 ﻿using OrderManagement.Domain.Shared;
+using OrderManagement.Domain.Shared.OrderManagement.Enums;
 
 namespace OrderManagement.Application.Contracts
 {
     public class AttachmentViewModel
     {
+        public Guid Id { get; set; }
         public string Title { get; set; }
         public string FileName { get; set; }
         public AttachmentEntityTypeEnum Type { get; set; }
@@ -14,6 +16,8 @@ namespace OrderManagement.Application.Contracts
         public List<string> Content { get; set; }
         public int Priority { get; set; }
         public int EntityId { get; set; }
+        public DeviceEnum Device { get; set; }
+        public string DeviceTitle { get; set; }
 
     }
 }

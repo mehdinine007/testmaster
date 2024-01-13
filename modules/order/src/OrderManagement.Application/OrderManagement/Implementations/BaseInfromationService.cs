@@ -19,6 +19,7 @@ using EasyCaching.Core;
 using MongoDB.Bson;
 using IFG.Core.Caching;
 using Esale.Share.Authorize;
+using OrderManagement.Domain.Shared.OrderManagement.Enums;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -173,7 +174,7 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
 
     //[UnitOfWork(System.Transactions.IsolationLevel.Unspecified)]
     [SecuredOperation(BaseServicePermissionConstants.CheckBlackList)]
-    public void CheckBlackList(int esaleTypeId)
+    public void CheckBlackList(ESaleTypeEnums esaleTypeId)
     {
         var identity = (ClaimsPrincipal)Thread.CurrentPrincipal;
         // Get the claims values
@@ -189,7 +190,7 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
             .Select(x => new { x.Nationalcode, x.EsaleTypeId })
             .FirstOrDefault(x =>
                 x.Nationalcode == Nationalcode
-                && x.EsaleTypeId == esaleTypeId);
+                && (ESaleTypeEnums)x.EsaleTypeId == esaleTypeId);
         if (blackList != null)
         {
             throw new UserFriendlyException("شما در گذشته از خودروسازان خرید داشته اید و امکان سفارش مجدد ندارید");

@@ -1,0 +1,108 @@
+{
+  "Schema": [
+    {
+      "Id": "SchemaBase",
+      "Priority": 1
+    }
+  ],
+  "Tables": [
+    {
+      "Id": "ProductAndCategory_CarTip",
+      "Priority": 1
+    }
+  ],
+  "Programmability": [
+    {
+      "Id": "spUserInfo",
+      "Priority": 1,
+      "Type": "proc"
+    },
+    {
+      "Id": "spGetUserRejectionAdvocacy",
+      "Priority": 2,
+      "Type": "proc"
+    },
+    {
+      "Id": "spGetReportQuestionnaire",
+      "Priority": 3,
+      "Type": "proc"
+    },
+    {
+      "Id": "spGetOrderStatusTypeReadOnly",
+      "Priority": 4,
+      "Type": "proc"
+    },
+    {
+      "Id": "spGetOrderRejectionTypeReadOnly",
+      "Priority": 5,
+      "Type": "proc"
+    },
+    {
+      "Id": "spGetCustomerOrderList",
+      "Priority": 6,
+      "Type": "proc"
+    },
+    {
+      "Id": "SpCompanyProductionReports",
+      "Priority": 7,
+      "Type": "proc"
+    },
+    {
+      "Id": "spClientOrderReport",
+      "Priority": 8,
+      "Type": "proc"
+    },
+    {
+      "Id": "spApplicantsReport",
+      "Priority": 9,
+      "Type": "proc"
+    },
+    {
+      "Id": "GetRecentCustomerAndOrder",
+      "Priority": 10,
+      "Type": "proc"
+    },
+    {
+      "Id": "CustomerCarDeliveryTime",
+      "Priority": 11,
+      "Type": "proc"
+    }
+  ],
+  "Patch": [
+    {
+      "Id": "20231213112901_Add_CustomerPriority",
+      "Priority": 1,
+      "Version": "4.2.0"
+    },
+    {
+      "Id": "20231216072246_Add_Active_Announcement",
+      "Priority": 2,
+      "Version": "4.2.0"
+    },
+    {
+      "Id": "20231218043917_add-QuestionGroup",
+      "Priority": 3,
+      "Version": "4.2.0"
+    },
+    {
+      "Id": "20231218074256_add-questinrelationship",
+      "Priority": 4,
+      "Version": "4.2.0"
+    },
+    {
+      "Id": "20231218074437_add-deviceenum",
+      "Priority": 5,
+      "Version": "4.2.0"
+    },
+    {
+      "Id": "20231220090409_addQuestionGroup-to-Question",
+      "Priority": 6,
+      "Version": "4.2.0"
+    },
+    {
+      "Id": "20231226055406_removeuniquegroupid",
+      "Priority": 7,
+      "Version": "4.2.0"
+    }
+  ]
+}

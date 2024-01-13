@@ -107,5 +107,9 @@ namespace OrderManagement.EfCore
         DbSet<Priority> Priority { get; set; }
 
         DbSet<CustomerPriority> CustomerPriority { get; set; }
+        DbSet<QuestionRelationship> QuestionRelationship { get; set; }
+
+
+        DbSet<QuestionGroup> QuestionGroup  { get; set; }
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace OrderManagement.Application.Contracts
+﻿using OrderManagement.Domain.Shared;
+
+namespace OrderManagement.Application.Contracts
 {
     public class AdvancedSearchDto
     {

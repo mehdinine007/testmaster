@@ -7,6 +7,8 @@ namespace OrderManagement.Domain;
 public class QuestionAnswer : FullAuditedEntity<long>
 {
     private ICollection<SubmittedAnswer> _submittedAnswers;
+    private ICollection<QuestionRelationship> _questionRelationships;
+
 
     public string Description { get; set; } 
 
@@ -28,5 +30,11 @@ public class QuestionAnswer : FullAuditedEntity<long>
     {
         get => _submittedAnswers ?? (_submittedAnswers = new List<SubmittedAnswer>());
         protected set => _submittedAnswers = value;
+    }
+
+    public virtual ICollection<QuestionRelationship> questionRelationships
+    {
+        get => _questionRelationships ?? (_questionRelationships = new List<QuestionRelationship>());
+        protected set => _questionRelationships = value;
     }
 }
