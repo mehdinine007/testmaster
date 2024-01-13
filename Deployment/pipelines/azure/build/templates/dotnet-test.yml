@@ -1,0 +1,33 @@
+parameters:
+  - name: testProject
+    default: ''
+    type: string
+
+steps:
+- task: DotNetCoreCLI@2
+  displayName: 'Restore unit test projects'
+  inputs:
+    command: restore
+    project: ${{parameters.testProject}}/**.UnitTests.csproj
+    verbosityRestore: minimal
+
+- task: DotNetCoreCLI@2
+  displayName: 'Run Unit tests'
+  inputs:
+    command: test
+    projects: ${{parameters.testProject}}/**.UnitTests.csproj
+    arguments: '-c Release'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Restore Acceptance test projects'
+  inputs:
+    command: restore
+    project: ${{parameters.testProject}}/**.AcceptanceTests.csproj
+    verbosityRestore: minimal
+
+- task: DotNetCoreCLI@2
+  displayName: 'Run Acceptance tests'
+  inputs:
+    command: test
+    projects: ${{parameters.testProject}}/**.AcceptanceTests.csproj
+    arguments: '-c Release'
