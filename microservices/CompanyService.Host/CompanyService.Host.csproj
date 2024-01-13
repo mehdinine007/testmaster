@@ -65,7 +65,7 @@
     <ItemGroup>
       <Folder Include="Infrastructures\Hangfire\Abstract\" />
       <Folder Include="Infrastructures\Hangfire\Concrete\" />
-      <Folder Include="Migrations\Programmability\" />
+      <Folder Include="Migrations\Patch\" />
     </ItemGroup>
 
 </Project>
