@@ -1,0 +1,35 @@
+parameters:
+  - name: package
+    default: ''
+    type: string
+  - name: feed
+    default: 'https://azure.iranfava.com/_packaging/StableFeed/nuget/v3/index.json'
+    type: string
+  - name: packDirectory
+    default: nugetPackage
+    type: string
+  - name: feedToPublish
+    default: 'StableFeed'
+    type: string
+
+steps:
+- task: DotNetCoreCLI@2
+  displayName: 'Nuget Pack'
+  inputs:
+    command: pack
+    packagesToPack: ${{parameters.package}}
+    majorVersion: '1'
+    minorVersion: '0'
+    patchVersion: '1'
+    feedToUse: ${{parameters.feed}}
+    verbosityPack: Minimal
+    nobuild: true
+    configuration: 'Release'
+    packDirectory: ${{parameters.packDirectory}}
+
+- task: DotNetCoreCLI@2
+  displayName: 'Nuget Push'
+  inputs:
+    command: push
+    packagesToPush: 'nugetPackage/*.nupkg'
+    publishVstsFeed: ${{ parameters.feedToPublish }}
