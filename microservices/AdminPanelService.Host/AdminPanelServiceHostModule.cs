@@ -73,22 +73,19 @@ namespace WorkFlowService.Host
             });
 
             context.Services.AddSwaggerGen(options =>
+            {
+                options.SwaggerDoc("v1", new OpenApiInfo { Title = "Admin Service API", Version = "v1" });
+                options.DocInclusionPredicate((docName, description) => true);
+                options.CustomSchemaIds(type => type.FullName);
+                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
                 {
-                    var version = AppLicence.GetVersion(configuration.GetSection("Licence:SerialNumber").Value).Version;
-                    context.Services.AddSwaggerGen(options =>
-                    {
-                        options.SwaggerDoc("v1", new OpenApiInfo { Title = "Admin Panel API", Version = version });
-                        options.DocInclusionPredicate((docName, description) => true);
-                        options.CustomSchemaIds(type => type.FullName);
-                        options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
-                        {
-                            Name = "Authorization",
-                            Description = "Enter the Bearer Authorization string as following: `Bearer Generated-JWT-Token`",
-                            In = ParameterLocation.Header,
-                            Type = SecuritySchemeType.Http,
-                            Scheme = "Bearer",
-                        });
-                        options.AddSecurityRequirement(new OpenApiSecurityRequirement
+                    Name = "Authorization",
+                    Description = "Enter the Bearer Authorization string as following: `Bearer Generated-JWT-Token`",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "Bearer",
+                });
+                options.AddSecurityRequirement(new OpenApiSecurityRequirement
                     {
                         {
                             new OpenApiSecurityScheme
@@ -104,8 +101,8 @@ namespace WorkFlowService.Host
                             new List<string>()
                         }
                     });
-                    });
-                });
+
+            });
 
 
             Configure<AbpLocalizationOptions>(options =>
