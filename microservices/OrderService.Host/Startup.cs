@@ -14,6 +14,9 @@ using OrderService.Host.Infrastructures.Hangfire.Concrete;
 using IFG.Core.IOC;
 using IFG.Core.Caching.Redis;
 using IFG.Core.Caching;
+using IFG.Core.Caching.Redis.Provider;
+using Microsoft.Extensions.Configuration;
+using System.Linq;
 #endregion
 
 
@@ -21,13 +24,24 @@ namespace OrderService.Host
 {
     public class Startup
     {
+      
         public void ConfigureServices(IServiceCollection services)
         {
+            
             var configurations = services.GetConfiguration();
+            var redisCacheSection = configurations.GetSection("RedisCache");
+            var config = redisCacheSection.Get<RedisConfig>();
+            var connectionString = "";
+            if (string.IsNullOrEmpty(config.Password))
+                connectionString = $"{config.Url}:{config.Port}";
+            else
+                connectionString = $"{config.Url}:{config.Port},password={config.Password}";
+
+
             services.AddApplication<OrderServiceHostModule>();
             services.AddStackExchangeRedisCache(options =>
             {
-                options.Configuration = configurations["RedisCache:ConnectionString"];
+                options.Configuration =connectionString;
             });
             if (configurations["IsElkEnabled"] == "1")
             {
