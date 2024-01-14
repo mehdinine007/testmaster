@@ -1,0 +1,25 @@
+trigger:
+  branches:
+    include:
+    - master
+  paths:
+    include:
+    - 'microservices/AdminPanelService.Host/*'
+    - 'microservices/AdminPanelService.Host/**/*'
+    - 'Deployment/pipelines/azure/build/apis/adminpanel-host.yml'
+
+pool:
+  name: AminCloudTest
+
+steps:
+- template: '../templates/fill-appsettings-file.yml'
+  parameters:
+    project: 'AdminPanelService.Host'
+
+- template: '../templates/step-build-and-publish.yml'
+  parameters:
+    project: 'microservices/AdminPanelService.Host/AdminPanelService.Host.csproj'
+
+- template: '../templates/publish-build-artifact.yml'
+  parameters:
+    artifactName: 'AdminPanel'
