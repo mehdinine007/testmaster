@@ -6,7 +6,7 @@ trigger:
     include:
     - 'microservices/CompanyService.Host/*'
     - 'microservices/CompanyService.Hos/**/*'
-    - 'Deployment/pipelines/azure/build/apis/Company-host.yml'
+    - 'Deployment/pipelines/azure/build/apis/company-host.yml'
 
 pool:
   name: IranFavaDevelopment
