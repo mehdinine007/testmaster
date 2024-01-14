@@ -7,5 +7,8 @@
         public const int MaxNameLength = 256;
 
         public const int MaxImageNameLength = 128;
+
+        public const string ReportSchema = "Rpt";
+
     }
 }
