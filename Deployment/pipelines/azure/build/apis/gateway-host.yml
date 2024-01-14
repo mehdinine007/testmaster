@@ -9,7 +9,7 @@ trigger:
     - 'Deployment/pipelines/azure/build/apis/gateway-host.yml'
 
 pool:
-  name: external
+  name: AminCloudTest
 
 steps:
 - template: '../templates/fill-appsettings-file.yml'
