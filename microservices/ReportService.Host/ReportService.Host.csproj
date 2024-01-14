@@ -72,7 +72,9 @@
       <Content Include="Migrations\Patch\20240114065458_add-report-schema.sql">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
-      <Content Include="Migrations\Schema\SchemaBase.sql" />
+      <Content Include="Migrations\Schema\SchemaBase.sql">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
       <Content Include="Migrations\Tables\Rpt.Dashboards.sql">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
