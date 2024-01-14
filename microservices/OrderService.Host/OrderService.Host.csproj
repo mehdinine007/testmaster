@@ -57,6 +57,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <None Remove="Migrations\dbo.__MigrationsHistory.sql" />
       <None Remove="Migrations\Patch\20231213112901_Add_CustomerPriority.sql" />
       <None Remove="Migrations\Patch\20231216072246_Add_Active_Announcement.sql" />
       <None Remove="Migrations\Patch\20231218043917_add-QuestionGroup.sql" />
@@ -64,10 +65,26 @@
       <None Remove="Migrations\Patch\20231218074437_add-deviceenum.sql" />
       <None Remove="Migrations\Patch\20231220090409_addQuestionGroup-to-Question.sql" />
       <None Remove="Migrations\Patch\20231226055406_removeuniquegroupid.sql" />
+      <None Remove="Migrations\Programmability\CustomerCarDeliveryTime.sql" />
+      <None Remove="Migrations\Programmability\GetRecentCustomerAndOrder.sql" />
+      <None Remove="Migrations\Programmability\Hangfire.sql" />
+      <None Remove="Migrations\Programmability\spApplicantsReport.sql" />
+      <None Remove="Migrations\Programmability\spClientOrderReport.sql" />
+      <None Remove="Migrations\Programmability\SpCompanyProductionReports.sql" />
+      <None Remove="Migrations\Programmability\spGetCustomerOrderList.sql" />
+      <None Remove="Migrations\Programmability\spGetOrderRejectionTypeReadOnly.sql" />
+      <None Remove="Migrations\Programmability\spGetOrderStatusTypeReadOnly.sql" />
+      <None Remove="Migrations\Programmability\spGetReportQuestionnaire.sql" />
+      <None Remove="Migrations\Programmability\spGetUserRejectionAdvocacy.sql" />
+      <None Remove="Migrations\Programmability\spUserInfo.sql" />
+      <None Remove="Migrations\Schema\SchemaBase.sql" />
       <None Remove="Migrations\Tables\ProductAndCategory_CarTip.sql" />
     </ItemGroup>
 
     <ItemGroup>
+      <Content Include="Migrations\dbo.__MigrationsHistory.sql">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
       <Content Include="Migrations\Patch\20231213112901_Add_CustomerPriority.sql">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
@@ -87,6 +104,45 @@
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
       <Content Include="Migrations\Patch\20231226055406_removeuniquegroupid.sql">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="Migrations\Programmability\CustomerCarDeliveryTime.sql">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="Migrations\Programmability\GetRecentCustomerAndOrder.sql">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="Migrations\Programmability\Hangfire.sql">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="Migrations\Programmability\spApplicantsReport.sql">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="Migrations\Programmability\spClientOrderReport.sql">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="Migrations\Programmability\SpCompanyProductionReports.sql">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="Migrations\Programmability\spGetCustomerOrderList.sql">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="Migrations\Programmability\spGetOrderRejectionTypeReadOnly.sql">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="Migrations\Programmability\spGetOrderStatusTypeReadOnly.sql">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="Migrations\Programmability\spGetReportQuestionnaire.sql">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="Migrations\Programmability\spGetUserRejectionAdvocacy.sql">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="Migrations\Programmability\spUserInfo.sql">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="Migrations\Schema\SchemaBase.sql">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
       <Content Include="Migrations\Tables\ProductAndCategory_CarTip.sql">
