@@ -229,7 +229,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReportManagement.HttpApi", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReportService.Host", "microservices\ReportService.Host\ReportService.Host.csproj", "{8275CAFB-32BE-43BC-945A-57B903FFB128}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Licence", "shared\Licence\Licence.csproj", "{57EAB7EB-1FDB-4C35-BF7F-7CD1E8376896}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Licence", "shared\Licence\Licence.csproj", "{57EAB7EB-1FDB-4C35-BF7F-7CD1E8376896}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BankManagement.HttpApi", "modules\company\src\BankManagement.HttpApi\BankManagement.HttpApi.csproj", "{7A81D716-B0F5-49A8-B21C-EF7998EBC7BC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -589,6 +591,10 @@ Global
 		{57EAB7EB-1FDB-4C35-BF7F-7CD1E8376896}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{57EAB7EB-1FDB-4C35-BF7F-7CD1E8376896}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{57EAB7EB-1FDB-4C35-BF7F-7CD1E8376896}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7A81D716-B0F5-49A8-B21C-EF7998EBC7BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7A81D716-B0F5-49A8-B21C-EF7998EBC7BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7A81D716-B0F5-49A8-B21C-EF7998EBC7BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7A81D716-B0F5-49A8-B21C-EF7998EBC7BC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -703,6 +709,7 @@ Global
 		{5753018A-A503-4715-833F-BCB3B70AC30F} = {71FD7646-2B7E-409E-8D68-15D2FCB534D4}
 		{8275CAFB-32BE-43BC-945A-57B903FFB128} = {3B26D176-390B-4F51-BE52-E9B422C28A88}
 		{57EAB7EB-1FDB-4C35-BF7F-7CD1E8376896} = {2B3B460C-0293-44A1-BEF4-91A778CE73CE}
+		{7A81D716-B0F5-49A8-B21C-EF7998EBC7BC} = {CFF27F17-3236-4564-83EB-AC7D054A56F3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {37474F0D-2E52-4D2F-B39B-7FE3FF31B4EC}

@@ -37,6 +37,7 @@
         <PackageReference Include="Volo.Abp.PermissionManagement.EntityFrameworkCore" Version="7.2.1" />
         <PackageReference Include="Volo.Abp.SettingManagement.EntityFrameworkCore" Version="7.2.1" />
         <PackageReference Include="Volo.Abp.TenantManagement.EntityFrameworkCore" Version="7.2.1" />
+        <ProjectReference Include="..\..\modules\company\src\BankManagement.HttpApi\BankManagement.HttpApi.csproj" />
         <ProjectReference Include="..\..\modules\company\src\CompanyManagement.Application\CompanyManagement.Application.csproj" />
         <ProjectReference Include="..\..\modules\company\src\CompanyManagement.EntityFrameworkCore\CompanyManagement.EntityFrameworkCore.csproj" />
         <ProjectReference Include="..\..\modules\company\src\CompanyManagement.HttpApi\CompanyManagement.HttpApi.csproj" />
@@ -65,7 +66,6 @@
     <ItemGroup>
       <Folder Include="Infrastructures\Hangfire\Abstract\" />
       <Folder Include="Infrastructures\Hangfire\Concrete\" />
-      <Folder Include="Migrations\Patch\" />
     </ItemGroup>
 
 </Project>
