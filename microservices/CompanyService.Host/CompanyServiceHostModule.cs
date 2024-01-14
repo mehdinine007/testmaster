@@ -138,11 +138,6 @@ namespace CompanyService.Host
             //    options.IsEnabled = false; //Disables the auditing system
             //});
 
-
-            context.Services.AddStackExchangeRedisCache(options =>
-            {
-                options.Configuration = configuration["RedisCache:ConnectionString"];
-            });
             context.Services.AddEsaleResultWrapper();
             IdentityModelEventSource.ShowPII = true;
             ConfigureHangfire(context, configuration);

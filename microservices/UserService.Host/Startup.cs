@@ -11,6 +11,8 @@ using WorkingWithMongoDB.WebAPI.Services;
 using UserService.Host.Infrastructures.Hangfire.Abstract;
 using UserService.Host.Infrastructures.Hangfire.Concrete;
 using UserManagement.Application.UserManagement.Implementations;
+using Microsoft.Extensions.Caching.StackExchangeRedis;
+using IFG.Core.Caching.Redis.Provider;
 #endregion
 
 namespace UserService.Host
@@ -20,10 +22,17 @@ namespace UserService.Host
         public void ConfigureServices(IServiceCollection services)
         {
             var configurations = services.GetConfiguration();
+            var redisCacheSection = configurations.GetSection("RedisCache");
+            var config = redisCacheSection.Get<RedisConfig>();
+            var connectionString = "";
+            if (config.Password.IsNullOrEmpty())
+                connectionString = $"{config.Url}:{config.Port}";
+            else
+                connectionString = $"{config.Url}:{config.Port},password={config.Password}";
             services.AddApplication<UserServiceHostModule>();
             services.AddStackExchangeRedisCache(options =>
             {
-                options.Configuration = configurations["RedisCache:ConnectionString"];
+                options.Configuration = connectionString;
             });
             if (configurations["IsElkEnabled"] == "1")
             {

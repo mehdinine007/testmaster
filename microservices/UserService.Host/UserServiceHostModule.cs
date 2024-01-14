@@ -115,11 +115,6 @@ public class UserServiceHostModule : AbpModule
             options.TransactionBehavior = UnitOfWorkTransactionBehavior.Disabled;
         });
 
-        context.Services.AddStackExchangeRedisCache(options =>
-        {
-            options.Configuration = configuration["Redis:Configuration"];
-        });
-
         Configure<AbpAuditingOptions>(options =>
         {
             options.IsEnabledForGetRequests = true;
