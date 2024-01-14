@@ -142,9 +142,7 @@
       <Content Include="Migrations\Programmability\spUserInfo.sql">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
-      <Content Include="Migrations\Schema\SchemaBase.sql">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
+      <Content Include="Migrations\Schema\SchemaBase.sql" />
       <Content Include="Migrations\Tables\ProductAndCategory_CarTip.sql">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>

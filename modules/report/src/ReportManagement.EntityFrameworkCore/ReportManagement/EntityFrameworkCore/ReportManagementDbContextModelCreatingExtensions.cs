@@ -1,6 +1,7 @@
 ﻿
 using Microsoft.EntityFrameworkCore;
 using ReportManagement.Domain.ReportManagement;
+using ReportManagement.Domain.Shared;
 using Volo.Abp;
 using Volo.Abp.Domain.Entities;
 
@@ -20,7 +21,7 @@ namespace ReportManagement.EntityFrameworkCore
 
             builder.Entity<Dashboard>(entity =>
             {
-                entity.ToTable("Dashboards")
+                entity.ToTable("Dashboards", ReportConsts.ReportSchema)
                 .HasMany(e => e.Widgets)
         .WithMany(e => e.Dashboards)
         .UsingEntity<DashboardWidget>();
@@ -30,15 +31,18 @@ namespace ReportManagement.EntityFrameworkCore
 
             builder.Entity<Dashboard>(entity =>
             {
-                entity.ToTable("Dashboards");
                 entity.Property(x => x.Title)
                     .HasMaxLength(100);
             });
             builder.Entity<Widget>(entity =>
             {
-                entity.ToTable("Widgets");
+                entity.ToTable("Widgets", ReportConsts.ReportSchema);
                 entity.Property(x => x.Title)
                     .HasMaxLength(100);
+            });
+            builder.Entity<DashboardWidget>(entity =>
+            {
+                entity.ToTable("DashboardWidgets", ReportConsts.ReportSchema);
             });
 
         }
