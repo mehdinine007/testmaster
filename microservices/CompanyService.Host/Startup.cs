@@ -14,6 +14,9 @@ using IFG.Core.Caching.Redis;
 using IFG.Core.Caching;
 using CompanyManagement.Application.CompanyManagement.Implementations;
 using OrderManagement.Application.CompanyManagement.GrpcServer;
+using System.Linq;
+using IFG.Core.Caching.Redis.Provider;
+using Microsoft.Extensions.Configuration;
 #endregion
 
 
@@ -24,10 +27,18 @@ namespace CompanyService.Host
         public void ConfigureServices(IServiceCollection services)
         {
             var configurations = services.GetConfiguration();
+            var redisCacheSection = configurations.GetSection("RedisCache");
+            var config = redisCacheSection.Get<RedisConfig>();
+            var connectionString = "";
+            if (config.Password.IsNullOrEmpty())
+                connectionString = $"{config.Url}:{config.Port}";
+            else
+                connectionString = $"{config.Url}:{config.Port},password={config.Password}";
+
             services.AddApplication<CompanyServiceHostModule>();
             services.AddStackExchangeRedisCache(options =>
             {
-                options.Configuration = configurations["RedisCache:ConnectionString"];
+                options.Configuration = connectionString;
             });
             if (configurations["IsElkEnabled"] == "1")
             {

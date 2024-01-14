@@ -147,10 +147,7 @@ System.AppDomain.CurrentDomain.BaseDirectory));
             //});
 
 
-            context.Services.AddStackExchangeRedisCache(options =>
-            {
-                options.Configuration = configuration["RedisCache:ConnectionString"];
-            });
+            
             context.Services.AddEsaleResultWrapper();
             IdentityModelEventSource.ShowPII = true;
             ConfigureHangfire(context, configuration);
