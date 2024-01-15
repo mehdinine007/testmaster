@@ -25,12 +25,12 @@ BEGIN
 			,cod.CarDesc 
 			,cod.CarCode
 			,FactorDate = FORMAT(cod.FactorDate, 'yyyy/MM/dd', 'fa')
-		 from [CompanyDb].dbo.ClientsOrderDetailByCompany cod
-		 left join [CompanyDb].dbo.CompanyPaypaidPrices cp
+		 from Esale_Company.dbo.ClientsOrderDetailByCompany cod
+		 left join Esale_Company.dbo.CompanyPaypaidPrices cp
 		 on cp.ClientsOrderDetailByCompanyId = cod.Id
-		 left join [CompanyDb].dbo.CompanySaleCallDates cs
+		 left join Esale_Company.dbo.CompanySaleCallDates cs
 		 on cs.ClientsOrderDetailByCompanyId = cod.Id
-		 inner join OrderDb.dbo.AbpUsers us
+		 inner join EsaleDb.dbo.AbpUsers us
 		 on us.NationalCode = cod.NationalCode
 		   and ((isnull(@nationalCode,'') = '' and @Type = 1) or cod.NationalCode = @nationalCode)
 
@@ -42,7 +42,8 @@ BEGIN
 		order by NationalCode
 		OFFSET (@pageSize * @pageIndex) ROWS FETCH NEXT @pageSize ROWS ONLY
 		if @Type = 1 begin
-		  select [کد ملی] = NationalCode
+		  select [id] = NationalCode
+		        ,[کد ملی] = NationalCode
 				,[تاریخ فراخوان] = IntroductionDate  
 				,[تاریخ قرارداد] = ContRowIdDate 
 				,[تاریخ فاکتور] = FactorDate 
