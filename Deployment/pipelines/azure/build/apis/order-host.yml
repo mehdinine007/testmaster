@@ -10,7 +10,7 @@ trigger:
     - 'Deployment/pipelines/azure/build/apis/order-host.yml'
 
 pool:
-  name: IranFavaDevelopment
+  name: AminCloudTest
 
 steps:
 - template: '../templates/fill-appsettings-file.yml'
