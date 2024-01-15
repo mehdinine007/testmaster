@@ -29,8 +29,11 @@ namespace OrderManagement.HttpApi.OrderManagement.Controllers
         =>await _advertisementDetailService.Add(advertisementDetailCreateOrUpdateDto);
 
         [HttpDelete]
-        public async Task<bool> Delete(AdvertisementDetailWithIdDto advertisementDetailWithId)
-        =>await _advertisementDetailService.Delete(advertisementDetailWithId);
+        public async Task<bool> Delete(int id)
+        =>await _advertisementDetailService.Delete(new AdvertisementDetailWithIdDto()
+        {
+            Id = id
+        });
         [HttpGet]
         public async Task<AdvertisementDetailDto> GetById(int id, string attachmentType , string attachmentlocation )
         =>await _advertisementDetailService.GetById(id, EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(attachmentType), EnumHelper.ConvertStringToEnum<AttachmentLocationEnum>(attachmentlocation));
@@ -46,8 +49,8 @@ namespace OrderManagement.HttpApi.OrderManagement.Controllers
         [HttpPost]
         public async Task<Guid> UploadFile([FromForm]UploadFileDto uploadFile)
         => await _advertisementDetailService.UploadFile(uploadFile);
-        [HttpGet]
-        public async Task<bool> Move(AdvertisementDetailWithIdDto advertisementDetailWithId, MoveTypeEnum moveType)
-       => await _advertisementDetailService.Move(advertisementDetailWithId, moveType);
+        [HttpPut]
+        public async Task<bool> Move(AdvertisementDetailWithIdDto advertisementDetailWithId)
+       => await _advertisementDetailService.Move(advertisementDetailWithId);
     }
 }

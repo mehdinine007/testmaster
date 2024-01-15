@@ -159,7 +159,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             return await _attachmentService.UploadFile(AttachmentEntityEnum.Advertisement, uploadFile);
         }
         [SecuredOperation(AdvertisementDetailServicePermissionConstants.Move)]
-        public async Task<bool> Move(AdvertisementDetailWithIdDto advertisementDetailWithId, MoveTypeEnum moveType)
+        public async Task<bool> Move(AdvertisementDetailWithIdDto advertisementDetailWithId)
         {
             var validationResult = await _advertisementDetailWithIdValidator.ValidateAsync(advertisementDetailWithId, Options => Options.IncludeRuleSets(RuleSets.Move));
             if (!validationResult.IsValid)
@@ -171,7 +171,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             var currentAdvertisementDetail = advertisementDetailQuery.FirstOrDefault(x => x.Id == advertisementDetailWithId.Id);
             var currentPriority = currentAdvertisementDetail.Priority;
             var parentId = currentAdvertisementDetail.AdvertisementId;
-            if (MoveTypeEnum.Up == moveType)
+            if (MoveTypeEnum.Up == advertisementDetailWithId.MoveType)
             {
                 var previousAdvertisementDetail = await advertisementDetailQuery.FirstOrDefaultAsync(x => x.Priority == currentAdvertisementDetail.Priority-1 && x.AdvertisementId == parentId);
                 if (previousAdvertisementDetail is null)
@@ -184,7 +184,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
                 previousAdvertisementDetail.Priority = currentPriority;
                 await _advertisementDetailRepository.UpdateAsync(previousAdvertisementDetail);
             }
-            else if (MoveTypeEnum.Down == moveType)
+            else if (MoveTypeEnum.Down == advertisementDetailWithId.MoveType)
             {
                 var nextAdvertisementDetail = advertisementDetailQuery.FirstOrDefault(x => x.Priority > currentAdvertisementDetail.Priority && x.AdvertisementId == parentId);
                 if (nextAdvertisementDetail is null)
