@@ -1,0 +1,15 @@
+{
+  "Schema": [
+  ],
+  "Tables": [
+  ],
+  "Programmability": [
+    {
+      "Id": "Sp_EsaleCarApplicantsReport",
+      "Priority": 1,
+      "Type": "proc"
+    }
+  ],
+  "Patch": [
+  ]
+}
