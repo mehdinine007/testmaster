@@ -6,7 +6,7 @@ trigger:
     include:
     - 'microservices/UserService.Host/*'
     - 'microservices/UserService.Hos/**/*'
-    - 'Deployment/pipelines/azure/build/apis/user-host.yml'
+    - 'Deployment/pipelines/azure/build/apis/user-test.yml'
 
 pool:
   name: AminCloudTest
