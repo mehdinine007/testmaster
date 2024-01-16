@@ -12,9 +12,11 @@ using OrderManagement.Application.OrderManagement.FluentValidation;
 using OrderManagement.Domain;
 using OrderManagement.Domain.OrderManagement;
 using OrderManagement.Domain.Shared;
+using OrderManagement.Domain.Shared.OrderManagement.Enums;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -46,24 +48,25 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             if (!validationResult.IsValid)
             {
                 var ex = new ValidationException(validationResult.Errors);
-                throw new UserFriendlyException(ex.Message, ValidationConstant.QuestionnerNotFound);
+                throw new UserFriendlyException(ex.Message, ValidationConstant.AdvertisementNotFound);
             }
 
             var advertisement = ObjectMapper.Map<AdvertisementCreateOrUpdateDto, Advertisement>(advertisementCreateOrUpdateDto);
             var entity = await _advertisementRepository.InsertAsync(advertisement);
+            await CurrentUnitOfWork.SaveChangesAsync();
             return ObjectMapper.Map<Advertisement, AdvertisementDto>(entity);
         }
         [SecuredOperation(AdvertisementServicePermissionConstants.Delete)]
         public async Task<bool> Delete(int id)
         {
-            await Validation(id);
+            await Validation(id, RuleEnum.Delete);
             await _advertisementRepository.DeleteAsync(x => x.Id == id);
             return true;
         }
 
         public async Task<AdvertisementDto> GetById(AdvertisementQueryDto advertisementQueryDto)
         {
-            var advertisement = await Validation(advertisementQueryDto.Id);
+            var advertisement = await Validation(advertisementQueryDto.Id,null);
             var advertisementDto = ObjectMapper.Map<Advertisement, AdvertisementDto>(advertisement);
             var advertisementDetailIds = advertisementDto.AdvertisementDetails.Select(x => x.Id).ToList();
             var attachments = await _attachmentService.GetList(AttachmentEntityEnum.Advertisement, advertisementDetailIds, EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(advertisementQueryDto.AttachmentType), EnumHelper.ConvertStringToEnum<AttachmentLocationEnum>(advertisementQueryDto.Attachmentlocation));
@@ -110,16 +113,24 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             return ObjectMapper.Map<Advertisement, AdvertisementDto>(result);
         }
 
-        private async Task<Advertisement> Validation(int id)
+        private async Task<Advertisement> Validation(int id, RuleEnum? rule)
         {
             var advertisementQuery = (await _advertisementRepository.GetQueryableAsync()).AsNoTracking().Include(x => x.AdvertisementDetails);
             var advertisement = advertisementQuery.FirstOrDefault(x => x.Id == id);
             if (advertisement is null)
                 throw new UserFriendlyException(OrderConstant.AdvertisementNotFound, OrderConstant.AdvertisementNotFoundId);
+            if (rule== RuleEnum.Delete)
+            {
+             if (advertisement.AdvertisementDetails.Count>0 )
+                {
+                    throw new UserFriendlyException(OrderConstant.AdvertisementDelete, OrderConstant.AdvertisementDeleteId);
+                }
+            }
+           
 
             return advertisement;
         }
-
+       
 
     }
 }

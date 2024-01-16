@@ -24,6 +24,7 @@ namespace OrderManagement.Application.OrderManagement.FluentValidation
             RuleSet(RuleSets.Add, () =>
             {
                 RuleFor(x => x.Title).NotNull().NotEmpty().WithMessage(ValidationConstant.TitleNotFound);
+                RuleFor(x => x.Id==0).NotNull().NotEmpty().WithMessage(ValidationConstant.AddAdvertisementIdValue);
                 RuleFor(x => x.AdvertisementId).MustAsync(async (o, e) => await _advertisementRepository.AnyAsync(p => p.Id == o)).WithMessage(ValidationConstant.AdvertisementNotFound);
             });
 

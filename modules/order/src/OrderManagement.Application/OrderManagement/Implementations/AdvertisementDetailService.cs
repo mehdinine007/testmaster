@@ -24,6 +24,7 @@ using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.ObjectMapping;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Model;
 
 namespace OrderManagement.Application.OrderManagement.Implementations
 {
@@ -69,22 +70,16 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             return ObjectMapper.Map<AdvertisementDetail, AdvertisementDetailDto>(entity);
         }
         [SecuredOperation(AdvertisementDetailServicePermissionConstants.Delete)]
-        public async Task<bool> Delete(AdvertisementDetailWithIdDto advertisementDetailWithId)
+        public async Task<bool> Delete(int id)
         {
-            var validationResult = await _advertisementDetailWithIdValidator.ValidateAsync(advertisementDetailWithId, Options => Options.IncludeRuleSets(RuleSets.Delete));
-            if (!validationResult.IsValid)
-            {
-                var ex = new ValidationException(validationResult.Errors);
-                throw new UserFriendlyException(ex.Message, ValidationConstant.ItemNotFoundId);
-            }
-            await _advertisementDetailRepository.DeleteAsync(x => x.Id == advertisementDetailWithId.Id);
+            await Validation(id);
+            await _advertisementDetailRepository.DeleteAsync(x => x.Id == id);
             return true;
         }
 
         public async Task<AdvertisementDetailDto> GetById(int id, List<AttachmentEntityTypeEnum> attachmentType = null, List<AttachmentLocationEnum> attachmentlocation = null)
         {
-            var advertisementDetail = (await _advertisementDetailRepository.GetQueryableAsync()).AsNoTracking()
-               .FirstOrDefault(x => x.Id == id);
+           var advertisementDetail =await Validation(id);
             var advertisementDetailDto = ObjectMapper.Map<AdvertisementDetail, AdvertisementDetailDto>(advertisementDetail);
             var attachments = await _attachmentService.GetList(AttachmentEntityEnum.Advertisement, new List<int>() { id }, attachmentType, attachmentlocation);
             advertisementDetailDto.Attachments = ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(attachments);
@@ -201,6 +196,19 @@ namespace OrderManagement.Application.OrderManagement.Implementations
 
             return true;
         }
+
+
+        private async Task<AdvertisementDetail> Validation(int id)
+        {
+            var advertisementDetailQuery = (await _advertisementDetailRepository.GetQueryableAsync()).AsNoTracking();
+            var advertisementDetail = advertisementDetailQuery.FirstOrDefault(x => x.Id == id);
+            if (advertisementDetail is null)
+                throw new UserFriendlyException(OrderConstant.AdvertisementDetailNotFound, OrderConstant.AdvertisementDetailNotFoundId);
+           
+            return advertisementDetail;
+        }
+
+
     }
 }
 

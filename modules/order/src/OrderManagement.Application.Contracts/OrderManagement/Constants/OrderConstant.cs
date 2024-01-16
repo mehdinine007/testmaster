@@ -105,6 +105,11 @@ namespace OrderManagement.Application.Contracts
         public static string FirstPriorityId = "5007";
         public static string LastPriority = "اخرین اولویت امکان تغییر ندارد";
         public static string LastPriorityId = "5008";
+        public static string AdvertisementDelete = "برای حذف جایگاه ابتدا وابستگی های آن را حذف کنید";
+        public static string AdvertisementDeleteId = "5009";
+        public static string AdvertisementDetailNotFound = "جزییات جایگاه وجود ندارد";
+        public static string AdvertisementDetailNotFoundId = "6001";
+
 
     }
 }

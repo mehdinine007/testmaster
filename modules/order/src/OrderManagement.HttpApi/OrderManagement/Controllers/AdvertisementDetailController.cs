@@ -29,8 +29,8 @@ namespace OrderManagement.HttpApi.OrderManagement.Controllers
         =>await _advertisementDetailService.Add(advertisementDetailCreateOrUpdateDto);
 
         [HttpDelete]
-        public async Task<bool> Delete(AdvertisementDetailWithIdDto advertisementDetailWithId)
-        =>await _advertisementDetailService.Delete(advertisementDetailWithId);
+        public async Task<bool> Delete(int id)
+        =>await _advertisementDetailService.Delete(id);
         [HttpGet]
         public async Task<AdvertisementDetailDto> GetById(int id, string attachmentType , string attachmentlocation )
         =>await _advertisementDetailService.GetById(id, EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(attachmentType), EnumHelper.ConvertStringToEnum<AttachmentLocationEnum>(attachmentlocation));

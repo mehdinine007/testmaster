@@ -17,7 +17,7 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Services
         Task<PagedResultDto<AdvertisementDetailDto>> GetPagination(AdvertisementDetailPaginationDto input);
         Task<AdvertisementDetailDto> Add(AdvertisementDetailCreateOrUpdateDto advertisementDetailCreateOrUpdateDto);
         Task<AdvertisementDetailDto> Update(AdvertisementDetailCreateOrUpdateDto advertisementDetailCreateOrUpdateDto);
-        Task<bool> Delete(AdvertisementDetailWithIdDto advertisementDetailWithId);
+        Task<bool> Delete(int id);
         Task<Guid> UploadFile(UploadFileDto uploadFile);
         Task<bool> Move(AdvertisementDetailWithIdDto advertisementDetailWithId, MoveTypeEnum moveType);
     }
