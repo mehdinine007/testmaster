@@ -6,7 +6,7 @@ trigger:
     include:
     - 'microservices/PaymentService.Host/*'
     - 'microservices/PaymentService.Host/**/*'
-    - 'Deployment/pipelines/azure/build/apis/payment-host.yml'
+    - 'Deployment/pipelines/azure/build/apis/payment-test.yml'
 
 pool:
   name: AminCloudTest
