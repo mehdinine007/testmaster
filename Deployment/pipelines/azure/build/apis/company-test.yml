@@ -6,10 +6,10 @@ trigger:
     include:
     - 'microservices/CompanyService.Host/*'
     - 'microservices/CompanyService.Hos/**/*'
-    - 'Deployment/pipelines/azure/build/apis/company-host.yml'
+    - 'Deployment/pipelines/azure/build/apis/company-test.yml'
 
 pool:
-  name: IranFavaDevelopment
+  name: AminCloudTest
   
 steps:
 - template: '../templates/fill-appsettings-file.yml'
