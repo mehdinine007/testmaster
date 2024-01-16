@@ -19,6 +19,6 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Services
         Task<AdvertisementDetailDto> Update(AdvertisementDetailCreateOrUpdateDto advertisementDetailCreateOrUpdateDto);
         Task<bool> Delete(int id);
         Task<Guid> UploadFile(UploadFileDto uploadFile);
-        Task<bool> Move(AdvertisementDetailWithIdDto advertisementDetailWithId, MoveTypeEnum moveType);
+        Task<bool> Move(AdvertisementDetailWithIdDto advertisementDetailWithId);
     }
 }

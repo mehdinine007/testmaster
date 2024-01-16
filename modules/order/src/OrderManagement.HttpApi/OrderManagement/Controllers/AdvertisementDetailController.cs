@@ -46,8 +46,8 @@ namespace OrderManagement.HttpApi.OrderManagement.Controllers
         [HttpPost]
         public async Task<Guid> UploadFile([FromForm]UploadFileDto uploadFile)
         => await _advertisementDetailService.UploadFile(uploadFile);
-        [HttpGet]
-        public async Task<bool> Move(AdvertisementDetailWithIdDto advertisementDetailWithId, MoveTypeEnum moveType)
-       => await _advertisementDetailService.Move(advertisementDetailWithId, moveType);
+        [HttpPut]
+        public async Task<bool> Move(AdvertisementDetailWithIdDto advertisementDetailWithId)
+       => await _advertisementDetailService.Move(advertisementDetailWithId);
     }
 }
