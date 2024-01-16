@@ -6,10 +6,10 @@ trigger:
     include:
     - 'microservices/AdminPanelService.Host/*'
     - 'microservices/AdminPanelService.Host/**/*'
-    - 'Deployment/pipelines/azure/build/apis/adminpanel-host.yml'
+    - 'Deployment/pipelines/azure/build/apis/adminpanel-test.yml'
 
 pool:
-  name: IranFavaDevelopment
+  name: AminCloudTest
 
 steps:
 - template: '../templates/fill-appsettings-file.yml'
