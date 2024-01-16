@@ -33,7 +33,7 @@ namespace CompanyManagement.Application.CompanyManagement.Implementations
 
         }
 
-        //[SecuredOperation(BankServicePermissionConstants.DeleteAdvocayUserFromBank)]
+        [SecuredOperation(BankServicePermissionConstants.DeleteAdvocayUserFromBank)]
         public async  Task<bool> DeleteAdvocayUserFromBank(string nationalCode)
         {
          var userId=  _commonAppService.GetUserId();
@@ -53,7 +53,7 @@ namespace CompanyManagement.Application.CompanyManagement.Implementations
             await _advocacyUsersFromBank.DeleteAsync(ad.Id);
             return true;
         }
-        //[SecuredOperation(BankServicePermissionConstants.SaveUserRejectionFromBank)]
+        [SecuredOperation(BankServicePermissionConstants.SaveUserRejectionFromBank)]
         public async Task<bool> SaveUserRejectionFromBank(UserRejectionFromBankDto userRejectionFromBankDto)
         {
             var userId = _commonAppService.GetUserId();
@@ -62,7 +62,7 @@ namespace CompanyManagement.Application.CompanyManagement.Implementations
             await _userRejectionFromBankFromBank.InsertAsync(userRejectionFromBank);
             return true;
         }
-        //[SecuredOperation(BankServicePermissionConstants.InquiryUserRejectionFromBank)]
+        [SecuredOperation(BankServicePermissionConstants.InquiryUserRejectionFromBank)]
         public async Task<UserRejecgtionFromBankExportDto> InquiryUserRejectionFromBank(string nationalCode)
         {
             var userId = _commonAppService.GetUserId();
@@ -96,7 +96,7 @@ namespace CompanyManagement.Application.CompanyManagement.Implementations
             }
 
         }
-        //[SecuredOperation(BankServicePermissionConstants.SaveAdvocacyUsersFromBank)]
+        [SecuredOperation(BankServicePermissionConstants.SaveAdvocacyUsersFromBank)]
         public async Task<bool> SaveAdvocacyUsersFromBank(List<AdvocacyUsersFromBankDto> advocacyUsersFromBankDto)
         {
             var userId = _commonAppService.GetUserId();

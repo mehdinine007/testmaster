@@ -9,6 +9,7 @@
         <PreserveCompilationContext>true</PreserveCompilationContext>
         <MvcRazorExcludeRefAssembliesFromPublish>false</MvcRazorExcludeRefAssembliesFromPublish>
         <PreserveCompilationReferences>true</PreserveCompilationReferences>
+		<ImplicitUsings>enable</ImplicitUsings>
     </PropertyGroup>
 
     <ItemGroup>

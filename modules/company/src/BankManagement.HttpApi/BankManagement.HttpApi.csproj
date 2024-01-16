@@ -6,6 +6,8 @@
 
 	<PropertyGroup>
 		<RootNamespace>CompanyManagement.HttpApi</RootNamespace>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+		<PublishDocumentationFile>true</PublishDocumentationFile>
 	</PropertyGroup>
 
     <ItemGroup>

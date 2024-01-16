@@ -21,15 +21,30 @@ namespace CompanyManagement.HttpApi.BankManagement.Controllers
 
         public BankController(IBankAppService bankAppService)
        => _bankAppService = bankAppService;
+        /// <summary class="header">
+        ///حذف حساب وکالتی از طرف بانک 
+        /// </summary>
         [HttpPost]
         public async Task<bool> DeleteAdvocayUserFromBank(string nationalCode)
         =>await _bankAppService.DeleteAdvocayUserFromBank(nationalCode);
+        //--------------------------------------------------
+        /// <summary class="header">
+        ///لیست افراد انصراف داده از طریق بانک 
+        /// </summary>
         [HttpGet]
         public async Task<UserRejecgtionFromBankExportDto> InquiryUserRejectionFromBank(string nationalCode)
         =>await _bankAppService.InquiryUserRejectionFromBank(nationalCode);
+        //--------------------------------------------------
+        /// <summary class="header">
+        ///ثبت حساب وکالتی از طرف بانک 
+        /// </summary>
         [HttpPost]
         public async Task<bool> SaveAdvocacyUsersFromBank(List<AdvocacyUsersFromBankDto> advocacyUsersFromBankDto)
         => await _bankAppService.SaveAdvocacyUsersFromBank(advocacyUsersFromBankDto);
+        //--------------------------------------------------
+        /// <summary class="header">
+        ///ثبت انصراف از طریق بانک 
+        /// </summary>
         [HttpPost]
         public async Task<bool> SaveUserRejectionFromBank(UserRejectionFromBankDto userRejectionFromBankDto)
         =>await _bankAppService.SaveUserRejectionFromBank(userRejectionFromBankDto);
