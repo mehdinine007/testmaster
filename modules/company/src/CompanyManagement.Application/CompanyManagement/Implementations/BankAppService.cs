@@ -119,7 +119,43 @@ namespace CompanyManagement.Application.CompanyManagement.Implementations
             //}
             return true;
         }
-      
-      
+        [SecuredOperation(BankServicePermissionConstants.InquiryAdvocacyUsersFromBank)]
+        public async Task<AdvocayUserFromBankExportDto> InquiryAdvocacyUsersFromBank(string nationalCode)
+        {
+            var userId = _commonAppService.GetUserId();
+            var ad = (await _advocacyUsersFromBank.GetQueryableAsync())
+                .OrderByDescending(x => x.Id).Select(x => new
+                {
+                    x.accountNumber,
+                    x.nationalcode,
+                    x.shabaNumber,
+                    x.UserId,
+                    x.price,
+                    x.dateTime,
+                    x.UserUid
+                }).FirstOrDefault(x => x.nationalcode == nationalCode
+                && x.UserUid == userId);
+            if (ad == null)
+            {
+                return null;
+            }
+            else
+            {
+                AdvocayUserFromBankExportDto advocacyUserFromBankExportDto = new AdvocayUserFromBankExportDto();
+                advocacyUserFromBankExportDto.NationalCode = ad.nationalcode;
+                advocacyUserFromBankExportDto.ShebaNumber = ad.shabaNumber;
+                advocacyUserFromBankExportDto.AccountNumber = ad.accountNumber;
+                advocacyUserFromBankExportDto.Price = ad.price;
+                advocacyUserFromBankExportDto.dateTime = ad.dateTime;
+
+                return advocacyUserFromBankExportDto;
+
+            }
+
+        }
+       
+
+
+
     }
 }

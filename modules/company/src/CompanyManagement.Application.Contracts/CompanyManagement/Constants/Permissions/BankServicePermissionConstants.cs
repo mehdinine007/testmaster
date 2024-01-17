@@ -18,7 +18,10 @@ namespace CompanyManagement.Application.Contracts.CompanyManagement.Constants.Pe
         public const string SaveUserRejectionFromBank_DisplayName = "ثبت انصراف از طریق بانک";
         public const string DeleteAdvocayUserFromBank = ConstantInfo.ModuleCompany + ServiceIdentifier + "0004";
         public const string DeleteAdvocayUserFromBank_DisplayName = "حذف حساب وکالتی از طریق بانک";
+        public const string InquiryAdvocacyUsersFromBank = ConstantInfo.ModuleCompany + ServiceIdentifier + "0005";
+        public const string InquiryAdvocacyUsersFromBank_DisplayName = "حساب وکالتی ثبت شده توسط بانک";
 
+        
 
         public const string ServiceIdentifier = "0002";
         public const string ServiceDisplayName = "سرویس مدیریت بانک";

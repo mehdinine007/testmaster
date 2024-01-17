@@ -14,6 +14,8 @@ namespace CompanyManagement.Application.Contracts.CompanyManagement.Services
         Task<bool> DeleteAdvocayUserFromBank(string nationalCode);
         Task<UserRejecgtionFromBankExportDto> InquiryUserRejectionFromBank(string nationalCode);
         Task<bool> SaveUserRejectionFromBank(UserRejectionFromBankDto userRejectionFromBankDto);
-     
+        Task<AdvocayUserFromBankExportDto> InquiryAdvocacyUsersFromBank(string nationalCode);
+
+
     }
 }

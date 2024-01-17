@@ -1126,6 +1126,12 @@
             "code": "000300020004",
             "displayName": "حذف حساب وکالتی از طریق بانک",
             "children": []
+          },
+          {
+            "title": "InquiryAdvocacyUsersFromBank",
+            "code": "000300020005",
+            "displayName": "حساب وکالتی ثبت شده توسط بانک",
+            "children": []
           }
         ]
       }

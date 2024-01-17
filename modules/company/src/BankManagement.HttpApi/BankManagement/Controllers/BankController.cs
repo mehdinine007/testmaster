@@ -48,5 +48,12 @@ namespace CompanyManagement.HttpApi.BankManagement.Controllers
         [HttpPost]
         public async Task<bool> SaveUserRejectionFromBank(UserRejectionFromBankDto userRejectionFromBankDto)
         =>await _bankAppService.SaveUserRejectionFromBank(userRejectionFromBankDto);
+        //--------------------------------------------------
+        /// <summary class="header">
+        ///لیست افراد انصراف داده از طریق بانک 
+        /// </summary>
+        [HttpGet]
+        public async Task<AdvocayUserFromBankExportDto> InquiryAdvocacyUsersFromBank(string nationalCode)
+        => await _bankAppService.InquiryAdvocacyUsersFromBank(nationalCode);
     }
 }
