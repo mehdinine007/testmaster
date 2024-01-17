@@ -22,8 +22,5 @@ namespace CompanyManagement.Application.Contracts.CompanyManagement.Dto.BankDtos
         [Required]
         [MaxLength(26)]
         public string shabaNumber { get; set; }
-        public long UserId { get; set; }
-        public Guid UserUid { get; set; }
-        public string CarMaker { get; set; }
     }
 }
