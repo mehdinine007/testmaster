@@ -57,7 +57,7 @@ public class BankAppService : ApplicationService, IBankAppService
         AdvocacyUserFromBankDto advocacyUserFromBankDto = new AdvocacyUserFromBankDto();
         advocacyUserFromBankDto.AccountNumber = advocacyuser.accountNumber;
         advocacyUserFromBankDto.ShebaNumber = advocacyuser.shabaNumber;
-        advocacyUserFromBankDto.BankId = (int)advocacyuser.BanksId;
+        advocacyUserFromBankDto.BankId = advocacyuser.BanksId;
 
         return advocacyUserFromBankDto;
     }
