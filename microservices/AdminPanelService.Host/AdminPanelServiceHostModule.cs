@@ -74,7 +74,8 @@ namespace WorkFlowService.Host
 
             context.Services.AddSwaggerGen(options =>
             {
-                options.SwaggerDoc("v1", new OpenApiInfo { Title = "Admin Service API", Version = "v1" });
+                var version = AppLicence.GetVersion(configuration.GetSection("Licence:SerialNumber").Value).Version;
+                options.SwaggerDoc("v1", new OpenApiInfo { Title = "Admin Service API", Version = version });
                 options.DocInclusionPredicate((docName, description) => true);
                 options.CustomSchemaIds(type => type.FullName);
                 options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
