@@ -1,0 +1,71 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net7.0</TargetFramework>
+        <AssetTargetFallback>$(AssetTargetFallback);portable-net45+win8+wp8+wpa81;</AssetTargetFallback>
+        <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+        <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
+        <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
+        <PreserveCompilationContext>true</PreserveCompilationContext>
+        <MvcRazorExcludeRefAssembliesFromPublish>false</MvcRazorExcludeRefAssembliesFromPublish>
+        <PreserveCompilationReferences>true</PreserveCompilationReferences>
+		<ImplicitUsings>enable</ImplicitUsings>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Hangfire.SqlServer" Version="1.7.29" />
+        <PackageReference Include="Serilog.AspNetCore" Version="6.1.0" />
+        <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
+        <PackageReference Include="Serilog.Sinks.Elasticsearch" Version="9.0.0" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+        <PackageReference Include="IdentityServer4.AccessTokenValidation" Version="3.0.1" />
+        <PackageReference Include="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" Version="7.0.5" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.1">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+		<PackageReference Include="NEST" Version="7.17.5" />
+		<PackageReference Include="NEST.JsonNetSerializer" Version="7.17.5" />
+	</ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Volo.Abp.Autofac" Version="7.2.1" />
+        <PackageReference Include="Volo.Abp.AspNetCore.MultiTenancy" Version="7.2.1" />
+        <PackageReference Include="Volo.Abp.BackgroundJobs.HangFire" Version="7.2.2" />
+        <PackageReference Include="Volo.Abp.EntityFrameworkCore.SqlServer" Version="7.2.1" />
+        <PackageReference Include="Volo.Abp.EventBus.RabbitMQ" Version="7.2.1" />
+        <PackageReference Include="Volo.Abp.AuditLogging.EntityFrameworkCore" Version="7.2.1" />
+        <PackageReference Include="Volo.Abp.PermissionManagement.EntityFrameworkCore" Version="7.2.1" />
+        <PackageReference Include="Volo.Abp.SettingManagement.EntityFrameworkCore" Version="7.2.1" />
+        <PackageReference Include="Volo.Abp.TenantManagement.EntityFrameworkCore" Version="7.2.1" />
+        <ProjectReference Include="..\..\modules\company\src\BankManagement.HttpApi\BankManagement.HttpApi.csproj" />
+        <ProjectReference Include="..\..\modules\company\src\CompanyManagement.Application\CompanyManagement.Application.csproj" />
+        <ProjectReference Include="..\..\modules\company\src\CompanyManagement.EntityFrameworkCore\CompanyManagement.EntityFrameworkCore.csproj" />
+        <ProjectReference Include="..\..\shared\Extensions\Extensions.csproj" />
+        <ProjectReference Include="..\..\shared\IFG.Core\IFG.Core.csproj" />
+        <ProjectReference Include="..\..\shared\MsDemo.Shared\MsDemo.Shared.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Remove="%2a%2a\**" />
+        <Compile Remove="Logs\**" />
+        <Content Remove="%2a%2a\**" />
+        <Content Remove="Logs\**" />
+        <EmbeddedResource Remove="%2a%2a\**" />
+        <EmbeddedResource Remove="Logs\**" />
+        <None Remove="%2a%2a\**" />
+        <None Remove="Logs\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Update="web.config">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Infrastructures\Hangfire\Abstract\" />
+      <Folder Include="Infrastructures\Hangfire\Concrete\" />
+    </ItemGroup>
+
+</Project>

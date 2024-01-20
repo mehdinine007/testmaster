@@ -18,6 +18,7 @@ using Licence;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Volo.Abp.ObjectMapping;
+using Microsoft.EntityFrameworkCore;
 
 namespace UserManagement.Application.UserManagement.Implementations
 {
@@ -190,6 +191,29 @@ namespace UserManagement.Application.UserManagement.Implementations
                 rolePermission.Code = ((int)RolePermissionEnum.mimt).ToString().PadLeft(4, '0');
 
                 await Add(rolePermission);
+            }
+            if (type == RolePermissionEnum.Bank || (type == null || type == RolePermissionEnum.None))
+            {
+                await DeleteRolePermission(RolePermissionEnum.Bank, rolePermissions);
+                var serviceList = new List<string>();
+                var permission = permissions.Where(x => x.Code == ConstantInfo.ModuleCompany).ToList();
+                
+                foreach (var per in permission)
+                {
+                    var children = per.Children.Where(x => x.Code == ConstantInfo.SubModuleBank).ToList();
+                    foreach (var child in children)
+                    {
+                        serviceList.AddRange(child.Children.Select(c => c.Code).ToList());
+                    }
+                }
+                rolePermission.Title = RolePermissionEnum.Bank.ToString();
+                rolePermission.Type = RolePermissionEnum.Bank;
+                rolePermission.Permissions = serviceList;
+                rolePermission.Code = ((int)RolePermissionEnum.Bank).ToString().PadLeft(4, '0');
+
+
+                await Add(rolePermission);
+
             }
             return true;
         }
