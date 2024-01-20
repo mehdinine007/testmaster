@@ -197,7 +197,7 @@ namespace UserManagement.Application.UserManagement.Implementations
                 await DeleteRolePermission(RolePermissionEnum.Bank, rolePermissions);
                 var serviceList = new List<string>();
                 var permission = permissions.Where(x => x.Code == ConstantInfo.ModuleCompany).ToList();
-                
+
                 foreach (var per in permission)
                 {
                     var children = per.Children.Where(x => x.Code == ConstantInfo.SubModuleBank).ToList();
@@ -222,8 +222,9 @@ namespace UserManagement.Application.UserManagement.Implementations
         {
             if (rolePermissions.Count() > 0)
             {
-                var existRole = rolePermissions.Where(x => x.Type == type).FirstOrDefault();
-                await _rolePermissionWritRepository.HardDeleteAsync(ObjectMapper.Map<RolePermission, RolePermissionWrite>(existRole), autoSave: true);
+                var existRole = rolePermissions.Where(x => x.Type == type).FirstOrDefault()
+                if (existRole != null)
+                    await _rolePermissionWritRepository.HardDeleteAsync(ObjectMapper.Map<RolePermission, RolePermissionWrite>(existRole), autoSave: true);
             }
         }
 
