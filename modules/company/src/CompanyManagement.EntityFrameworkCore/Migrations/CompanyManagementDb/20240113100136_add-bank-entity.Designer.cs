@@ -4,6 +4,7 @@ using CompanyManagement.EfCore.CompanyManagement.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Volo.Abp.EntityFrameworkCore;
 
@@ -12,9 +13,11 @@ using Volo.Abp.EntityFrameworkCore;
 namespace OrderManagement.EfCore.Migrations.CompanyManagementDb
 {
     [DbContext(typeof(CompanyManagementDbContext))]
-    partial class CompanyManagementDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240113100136_add-bank-entity")]
+    partial class addbankentity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -70,9 +73,6 @@ namespace OrderManagement.EfCore.Migrations.CompanyManagementDb
 
                     b.Property<long>("UserId")
                         .HasColumnType("bigint");
-
-                    b.Property<Guid>("UserUid")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("accountNumber")
                         .HasColumnType("nvarchar(max)");
@@ -418,9 +418,6 @@ namespace OrderManagement.EfCore.Migrations.CompanyManagementDb
 
                     b.Property<long>("UserId")
                         .HasColumnType("bigint");
-
-                    b.Property<Guid>("UserUid")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("accountNumber")
                         .HasColumnType("nvarchar(max)");

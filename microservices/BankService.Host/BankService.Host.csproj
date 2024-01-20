@@ -41,7 +41,6 @@
         <ProjectReference Include="..\..\modules\company\src\BankManagement.HttpApi\BankManagement.HttpApi.csproj" />
         <ProjectReference Include="..\..\modules\company\src\CompanyManagement.Application\CompanyManagement.Application.csproj" />
         <ProjectReference Include="..\..\modules\company\src\CompanyManagement.EntityFrameworkCore\CompanyManagement.EntityFrameworkCore.csproj" />
-        <ProjectReference Include="..\..\modules\company\src\CompanyManagement.HttpApi\CompanyManagement.HttpApi.csproj" />
         <ProjectReference Include="..\..\shared\Extensions\Extensions.csproj" />
         <ProjectReference Include="..\..\shared\IFG.Core\IFG.Core.csproj" />
         <ProjectReference Include="..\..\shared\MsDemo.Shared\MsDemo.Shared.csproj" />
@@ -56,20 +55,6 @@
         <EmbeddedResource Remove="Logs\**" />
         <None Remove="%2a%2a\**" />
         <None Remove="Logs\**" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <None Remove="Migrations\dbo.__MigrationsHistory.sql" />
-      <None Remove="Migrations\Programmability\Sp_EsaleCarApplicantsReport.sql" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Content Include="Migrations\dbo.__MigrationsHistory.sql">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
-      <Content Include="Migrations\Programmability\Sp_EsaleCarApplicantsReport.sql">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
     </ItemGroup>
 
     <ItemGroup>

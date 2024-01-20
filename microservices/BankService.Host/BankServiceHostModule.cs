@@ -13,7 +13,7 @@ using Volo.Abp.Localization;
 using Volo.Abp.Modularity;
 using Volo.Abp.TenantManagement.EntityFrameworkCore;
 using Volo.Abp.Threading;
-using CompanyService.Host.Infrastructures;
+using BankService.Host.Infrastructures;
 using Volo.Abp.Uow;
 using Microsoft.IdentityModel.Logging;
 using Volo.Abp.BackgroundJobs.Hangfire;
@@ -32,7 +32,7 @@ using CompanyManagement.Application.CompanyManagement.Grpc;
 using Licence;
 using System.Collections.Generic;
 
-namespace CompanyService.Host
+namespace BankService.Host
 {
     [DependsOn(
         typeof(AbpAutofacModule),
@@ -44,13 +44,12 @@ namespace CompanyService.Host
         //typeof(AbpPermissionManagementEntityFrameworkCoreModule),
         //typeof(AbpSettingManagementEntityFrameworkCoreModule),
         typeof(CompanyManagementApplicationModule),
-        typeof(CompanyManagementHttpApiModule),
         typeof(CompanyManagementEntityFrameworkCoreModule),
         //typeof(AbpAspNetCoreMultiTenancyModule),
         typeof(AbpTenantManagementEntityFrameworkCoreModule)
         //typeof(AbpBackgroundJobsHangfireModule)
         )]
-    public class CompanyServiceHostModule : AbpModule
+    public class BankServiceHostModule : AbpModule
     {
         public override void ConfigureServices(ServiceConfigurationContext context)
         {
@@ -76,7 +75,7 @@ namespace CompanyService.Host
                 var version = AppLicence.GetVersion(configuration.GetSection("Licence:SerialNumber").Value).Version;
                 context.Services.AddSwaggerGen(options =>
                 {
-                    options.SwaggerDoc("v1", new OpenApiInfo { Title = "Company Service API", Version = version });
+                    options.SwaggerDoc("v1", new OpenApiInfo { Title = "Bank Service API", Version = version });
                     options.DocInclusionPredicate((docName, description) => true);
                     options.CustomSchemaIds(type => type.FullName);
                     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
@@ -140,6 +139,11 @@ namespace CompanyService.Host
             //    options.IsEnabled = false; //Disables the auditing system
             //});
 
+
+            context.Services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = configuration["RedisCache:ConnectionString"];
+            });
             context.Services.AddEsaleResultWrapper();
             IdentityModelEventSource.ShowPII = true;
             ConfigureHangfire(context, configuration);
@@ -193,7 +197,7 @@ namespace CompanyService.Host
             app.UseSwagger();
             app.UseSwaggerUI(options =>
             {
-                options.SwaggerEndpoint("/swagger/v1/swagger.json", "Company Service API");
+                options.SwaggerEndpoint("/swagger/v1/swagger.json", "Bank Service API");
             });
 
             app.UseAuditing();

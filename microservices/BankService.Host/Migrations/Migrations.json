@@ -7,7 +7,6 @@
   ],
   "Patch": [
     {
-      "Id": "Sp_EsaleCarApplicantsReport",
       "Id": "20240113100136_add-bank-entity",
       "Priority": 1,
       "Version": "4.2.0"
@@ -17,7 +16,5 @@
       "Priority":2,
       "Version": "4.2.0"
     }
-  ],
-  "Patch": [
   ]
 }
