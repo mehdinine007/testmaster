@@ -4,20 +4,22 @@
   "Tables": [
   ],
   "Programmability": [
+    {
+      "Id": "Sp_EsaleCarApplicantsReport",
+      "Priority": 1,
+      "Type": "proc"
+    }
   ],
   "Patch": [
     {
-      "Id": "Sp_EsaleCarApplicantsReport",
       "Id": "20240113100136_add-bank-entity",
       "Priority": 1,
       "Version": "4.2.0"
     },
     {
       "Id": "20240113110628_add-useuid",
-      "Priority":2,
+      "Priority": 2,
       "Version": "4.2.0"
     }
-  ],
-  "Patch": [
   ]
 }
