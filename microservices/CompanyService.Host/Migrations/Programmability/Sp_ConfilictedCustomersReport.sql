@@ -7,6 +7,7 @@ begin
 	from ConfilictedCustomers 
 	where variz >= 1
 	group by nationalcode
+
 	having count(0) > 1
 end
 
