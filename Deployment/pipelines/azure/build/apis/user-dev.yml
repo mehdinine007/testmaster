@@ -2,6 +2,7 @@ trigger:
   branches:
     include:
     - develop
+    
   paths:
     include:
     - 'microservices/UserService.Host/*'
