@@ -2,6 +2,8 @@ trigger:
   branches:
     include:
     - master
+    - refs/tags/esalecar-*
+    - refs/tags/saleauto-*
   paths:
     include:
     - 'microservices/GatewayService.Host/*'
