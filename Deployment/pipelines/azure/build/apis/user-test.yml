@@ -2,6 +2,7 @@ trigger:
   branches:
     include:
     - master
+    - refs/tags/esalecar-*
   paths:
     include:
     - 'microservices/UserService.Host/*'
