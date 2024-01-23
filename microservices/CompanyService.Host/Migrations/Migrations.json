@@ -8,6 +8,16 @@
       "Id": "Sp_EsaleCarApplicantsReport",
       "Priority": 1,
       "Type": "proc"
+    },
+    {
+      "Id": "Job_ConfilictedCustomers",
+      "Priority": 2,
+      "Type": "proc"
+    },
+    {
+      "Id": "Sp_ConfilictedCustomersReport",
+      "Priority": 3,
+      "Type": "proc"
     }
   ],
   "Patch": [

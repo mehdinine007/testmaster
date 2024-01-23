@@ -80,7 +80,7 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
 
             if (advocacyuser == null)
             {
-                throw new UserFriendlyException("اطلاعات حساب وکالتی یافت نشد");
+                throw new UserFriendlyException(_configuration.GetSection("CheckAdvocacyMessage").Value);
             }
         }
 
@@ -229,7 +229,7 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
 
             if (advocacyuser == null)
             {
-                throw new UserFriendlyException("حساب وکالتی یافت نشد");
+                throw new UserFriendlyException(_configuration.GetSection("CheckAdvocacyMessage").Value);
             }
         }
 
