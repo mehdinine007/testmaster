@@ -215,6 +215,29 @@ namespace UserManagement.Application.UserManagement.Implementations
                 await Add(rolePermission);
 
             }
+            if (type == RolePermissionEnum.OldCar || (type == null || type == RolePermissionEnum.None))
+            {
+                await DeleteRolePermission(RolePermissionEnum.OldCar, rolePermissions);
+                var serviceList = new List<string>();
+                var permission = permissions.Where(x => x.Code == ConstantInfo.ModuleCompany).ToList();
+
+                foreach (var per in permission)
+                {
+                    var children = per.Children.Where(x => x.Code == ConstantInfo.SubModuleOldCar).ToList();
+                    foreach (var child in children)
+                    {
+                        serviceList.AddRange(child.Children.Select(c => c.Code).ToList());
+                    }
+                }
+                rolePermission.Title = RolePermissionEnum.OldCar.ToString();
+                rolePermission.Type = RolePermissionEnum.OldCar;
+                rolePermission.Permissions = serviceList;
+                rolePermission.Code = ((int)RolePermissionEnum.OldCar).ToString().PadLeft(4, '0');
+
+
+                await Add(rolePermission);
+
+            }
             return true;
         }
 
