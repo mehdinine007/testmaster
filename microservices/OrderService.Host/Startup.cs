@@ -17,6 +17,9 @@ using IFG.Core.Caching;
 using IFG.Core.Caching.Redis.Provider;
 using Microsoft.Extensions.Configuration;
 using System.Linq;
+using IFG.Core.Bases;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using RabbitMQ.Client;
 #endregion
 
 
@@ -24,24 +27,29 @@ namespace OrderService.Host
 {
     public class Startup
     {
-      
+        public IConfiguration Configuration { get; set; }
+        public Startup(IConfiguration configuration)
+        {
+            this.Configuration = configuration;
+        }
         public void ConfigureServices(IServiceCollection services)
         {
             
             var configurations = services.GetConfiguration();
             var redisCacheSection = configurations.GetSection("RedisCache");
             var config = redisCacheSection.Get<RedisConfig>();
-            var connectionString = "";
+            var redisContString = "";
             if (string.IsNullOrEmpty(config.Password))
-                connectionString = $"{config.Url}:{config.Port}";
+                redisContString = $"{config.Url}:{config.Port}";
             else
-                connectionString = $"{config.Url}:{config.Port},password={config.Password}";
+                redisContString = $"{config.Url}:{config.Port},password={config.Password}";
+            var mongoConfig = configurations.GetSection("MongoConfig").Get<MongoConfig>();
 
 
             services.AddApplication<OrderServiceHostModule>();
             services.AddStackExchangeRedisCache(options =>
             {
-                options.Configuration =connectionString;
+                options.Configuration =redisContString;
             });
             if (configurations["IsElkEnabled"] == "1")
             {
@@ -51,6 +59,12 @@ namespace OrderService.Host
             {
                 services.AddScoped<IAuditingStore, AuditingStoreDb>();
             }
+            services.AddHealthChecks()
+                .AddSqlServer(configurations.GetSection("ConnectionStrings:OrderManagement").Value)
+                .AddRedis(redisContString)
+                .AddMongoDb($"mongodb://{mongoConfig.Host}:{mongoConfig.Port}")
+                .AddElasticsearch(configurations.GetSection("ELKConnection").Value);
+                //.AddRabbitMQ(new Uri("amqp://guest:guest@localhost:5672/vhost"));
             services.AddSingleton<ICacheManager, CacheManager>();
             services.AddSingleton<IRedisCacheManager, RedisCacheManager>();
             services.AddSingleton<ICapacityControlJob, CapacityControlJob>();
@@ -64,5 +78,6 @@ namespace OrderService.Host
             app.UseMiddleware<JwtMiddleware>();
             app.InitializeApplication();
         }
+
     }
 }
