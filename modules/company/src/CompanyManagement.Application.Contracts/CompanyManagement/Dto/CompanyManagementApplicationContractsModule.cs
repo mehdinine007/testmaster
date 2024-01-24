@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Application;
+using Volo.Abp.FluentValidation;
 using Volo.Abp.Localization;
 using Volo.Abp.Modularity;
 using Volo.Abp.VirtualFileSystem;
@@ -15,7 +16,9 @@ namespace CompanyManagement.Application.Contracts.CompanyManagement
 
     [DependsOn(
         typeof(CompanyManagementDomainSharedModule),
-        typeof(AbpDddApplicationModule)
+        typeof(AbpDddApplicationModule),
+        typeof(AbpFluentValidationModule)
+
         )]
     public class CompanyManagementApplicationContractsModule: AbpModule
     {

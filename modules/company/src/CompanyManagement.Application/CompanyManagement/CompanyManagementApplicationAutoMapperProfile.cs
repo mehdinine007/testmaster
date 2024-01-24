@@ -2,6 +2,7 @@
 using CompanyManagement.Application.Contracts;
 using CompanyManagement.Application.Contracts.CompanyManagement;
 using CompanyManagement.Application.Contracts.CompanyManagement.Dto.BankDtos;
+using CompanyManagement.Application.Contracts.CompanyManagement.Dto.OldCarDtos;
 using CompanyManagement.Domain.CompanyManagement;
 using System;
 using System.Collections.Generic;
@@ -26,6 +27,8 @@ namespace CompanyManagement.Application.CompanyManagement
             //CreateMap<TurnDateDto, CompanySaleCallDates>().ReverseMap();
             CreateMap<AdvocacyUsersFromBankDto, AdvocacyUsersFromBank>().ReverseMap();
             CreateMap<UserRejectionFromBankDto, UserRejectionFromBank>().ReverseMap();
+            CreateMap<OldCarDto, OldCar>().ReverseMap();
+            CreateMap<OldCarCreateDto, OldCar>().ReverseMap();
         }
 
     }
