@@ -9,7 +9,6 @@ namespace CompanyManagement.Application.Contracts.CompanyManagement.Dto.OldCarDt
 
     public class OldCarCreateDtoList
     {
-        public string Vehicle { get; set; }
         public List<OldCarCreateDto> OldCars { get; set; }
     }
 

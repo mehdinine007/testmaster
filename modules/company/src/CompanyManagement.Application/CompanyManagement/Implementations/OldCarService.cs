@@ -29,7 +29,7 @@ namespace CompanyManagement.Application.CompanyManagement.Implementations
             _oldCarValidator = oldCarValidator;
            
         }
-        //[SecuredOperation(OldCarServicePermissionConstants.AddList)]
+        [SecuredOperation(OldCarServicePermissionConstants.AddList)]
         public async Task<bool> AddList(OldCarCreateDtoList oldCarCreateDto)
         {
             

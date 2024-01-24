@@ -30,6 +30,7 @@ using CompanyManagement.Application.CompanyManagement;
 using CompanyManagement.Application.CompanyManagement.Grpc;
 using Licence;
 using System.Collections.Generic;
+using Volo.Abp.FluentValidation;
 
 
 namespace OldCarService.Host
@@ -46,7 +47,8 @@ namespace OldCarService.Host
         typeof(CompanyManagementApplicationModule),
         typeof(CompanyManagementEntityFrameworkCoreModule),
         //typeof(AbpAspNetCoreMultiTenancyModule),
-        typeof(AbpTenantManagementEntityFrameworkCoreModule)
+        typeof(AbpTenantManagementEntityFrameworkCoreModule),
+         typeof(AbpFluentValidationModule)
 
         //typeof(AbpBackgroundJobsHangfireModule)
         )]
