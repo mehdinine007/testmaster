@@ -24,9 +24,9 @@ namespace CompanyManagement.HttpApi.OldCarManagement.Controllers
        =>_oldCarService.AddList(oldCarCreateDto);
         [HttpDelete]
         public Task<bool> Delete(string nationalcode)
-        =>_oldCarService.Delete(nationalcode);
+        =>_oldCarService.Delete(new OldCarQueryDto { NationalCode=nationalcode });
         [HttpGet]
         public Task<List<OldCarDto>> Inquiry(string nationalcode)
-       =>_oldCarService.Inquiry(nationalcode);
+       =>_oldCarService.Inquiry(new OldCarQueryDto { NationalCode = nationalcode });
     }
 }
