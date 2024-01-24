@@ -57,43 +57,9 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Remove="Migrations\dbo.__MigrationsHistory.sql" />
-      <None Remove="Migrations\Patch\20240114065458_add-report-schema.sql" />
-      <None Remove="Migrations\Schema\SchemaBase.sql" />
-      <None Remove="Migrations\Tables\Rpt.Dashboards.sql" />
-      <None Remove="Migrations\Tables\Rpt.DashboardWidgets.sql" />
-      <None Remove="Migrations\Tables\Rpt.Widgets.sql" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Content Include="Migrations\dbo.__MigrationsHistory.sql">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
-      <Content Include="Migrations\Patch\20240114065458_add-report-schema.sql">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
-      <Content Include="Migrations\Schema\SchemaBase.sql">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
-      <Content Include="Migrations\Tables\Rpt.Dashboards.sql">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
-      <Content Include="Migrations\Tables\Rpt.DashboardWidgets.sql">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
-      <Content Include="Migrations\Tables\Rpt.Widgets.sql">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
-    </ItemGroup>
-
-    <ItemGroup>
       <Content Update="web.config">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Migrations\Programmability\" />
     </ItemGroup>
 
 </Project>

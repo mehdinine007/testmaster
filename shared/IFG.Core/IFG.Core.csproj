@@ -25,6 +25,7 @@
 	  <PackageReference Include="EasyCaching.Serialization.Json" Version="1.9.0" />
 	  <PackageReference Include="Volo.Abp.Ddd.Application.Contracts" Version="7.2.1" />
 	  <PackageReference Include="Dapper" Version="2.1.11" />
+	  <PackageReference Include="Castle.Core" Version="5.1.1" />
   </ItemGroup>
 
 </Project>
