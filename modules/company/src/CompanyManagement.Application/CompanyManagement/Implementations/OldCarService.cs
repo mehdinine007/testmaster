@@ -56,16 +56,16 @@ namespace CompanyManagement.Application.CompanyManagement.Implementations
             return true;
         }
         [SecuredOperation(OldCarServicePermissionConstants.Delete)]
-        public async Task<bool> Delete(string nationalcode)
+        public async Task<bool> Delete(OldCarQueryDto oldCarQueryDto)
         {
-            var oldCar = (await _oldCarRepository.GetQueryableAsync()).FirstOrDefault(x => x.Nationalcode == nationalcode);
+            var oldCar = (await _oldCarRepository.GetQueryableAsync()).FirstOrDefault(x => x.Nationalcode == oldCarQueryDto.NationalCode);
             await _oldCarRepository.DeleteAsync(oldCar.Id);
             return true;
         }
         [SecuredOperation(OldCarServicePermissionConstants.Inquiry)]
-        public async Task<List<OldCarDto>> Inquiry(string nationalcode)
+        public async Task<List<OldCarDto>> Inquiry(OldCarQueryDto oldCarQueryDto)
         {
-            var oldCars = (await _oldCarRepository.GetQueryableAsync()).Where(x => x.Nationalcode == nationalcode).ToList();
+            var oldCars = (await _oldCarRepository.GetQueryableAsync()).Where(x => x.Nationalcode == oldCarQueryDto.NationalCode).ToList();
             var oldCarDto = ObjectMapper.Map<List<OldCar>, List<OldCarDto>>(oldCars);
             return oldCarDto;
 
