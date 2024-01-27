@@ -20,6 +20,9 @@ using System.Linq;
 using IFG.Core.Bases;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using RabbitMQ.Client;
+using System.Net.Http;
+using Microsoft.Extensions.Hosting.Internal;
+using System.Net;
 #endregion
 
 
@@ -63,8 +66,19 @@ namespace OrderService.Host
                 .AddSqlServer(configurations.GetSection("ConnectionStrings:OrderManagement").Value)
                 .AddRedis(redisContString)
                 .AddMongoDb($"mongodb://{mongoConfig.Host}:{mongoConfig.Port}")
-                .AddElasticsearch(configurations.GetSection("ELKConnection").Value);
-                //.AddRabbitMQ(new Uri("amqp://guest:guest@localhost:5672/vhost"));
+                .AddElasticsearch(configurations.GetSection("ELKConnection").Value)
+                .AddRabbitMQ(new Uri(configurations.GetSection("ConnectionStrings:RabbitConnection").Value))
+                .AddUrlGroup(new Uri($"{configurations.GetSection("Esale:GrpcAddress").Value}/api/services/app/Licence/GetInfo"), httpMethod: HttpMethod.Get, name: "grpc-user",
+                configurePrimaryHttpMessageHandler: _ => new HttpClientHandler
+                {
+                    ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; }
+                })
+                .AddUrlGroup(new Uri($"{configurations.GetSection("Company:GrpcAddress").Value}/api/services/app/Licence/GetInfo"), httpMethod: HttpMethod.Get, name: "grpc-company",
+                configurePrimaryHttpMessageHandler: _ => new HttpClientHandler
+                {
+                    ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; }
+                });
+
             services.AddSingleton<ICacheManager, CacheManager>();
             services.AddSingleton<IRedisCacheManager, RedisCacheManager>();
             services.AddSingleton<ICapacityControlJob, CapacityControlJob>();
