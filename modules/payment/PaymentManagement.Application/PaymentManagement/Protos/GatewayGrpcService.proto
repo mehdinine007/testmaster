@@ -12,6 +12,7 @@ package GatewayService;
 service GatewayServiceGrpc{
 	rpc HandShakeWithIranKish(IranKishHandShakeInput) returns (Output);
 	rpc HandShakeWithMellat(MellatHandShakeInput) returns (Output);
+	rpc HandShakeWithParsian(ParsianHandShakeInput) returns (Output);
 	rpc VerifyToIranKish(IranKishVerifyInput) returns (Output);
 	rpc VerifyToMellat(MellatVerifyInput) returns (Output);
     rpc InquiryToIranKish(IranKishInquiryInput) returns (Output);
@@ -43,6 +44,14 @@ message MellatHandShakeInput{
 	string MobileNo = 7;
 	string EncryptedNationalCode = 8;
 	int32 Switch = 9;
+}
+message ParsianHandShakeInput{
+	string LoginAccount = 1;
+	string CallBackUrl = 2;
+	int64 Amount = 3;
+	int32 OrderId = 4;
+	string AdditionalData = 5;
+	string Originator = 6;
 }
 message IranKishVerifyInput{
 	string TerminalId = 1;

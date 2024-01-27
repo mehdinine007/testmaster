@@ -3,6 +3,8 @@ using GatewayManagement.Application.Contracts.IServices;
 using GatewayManagement.Application.IranKish;
 using GatewayManagement.Application.Utilities;
 using Newtonsoft.Json;
+using ParsianSaleService;
+using System.Net;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Auditing;
 
@@ -84,6 +86,25 @@ namespace GatewayManagement.Application.Servicess
             }
 
             return new() { Result = string.Empty };
+        }
+        [Audited]
+        public async Task<OutputDto> HandShakeWithParsian(ParsianHandShakeInputDto input)
+        {
+            var parsianService = new SaleServiceSoapClient(SaleServiceSoapClient.EndpointConfiguration.SaleServiceSoap12);
+            ServicePointManager.ServerCertificateValidationCallback = (o, xc, xch, sslP) => true;
+        
+            var saleRequest = new ClientSaleRequestData
+            {
+                LoginAccount = input.LoginAccount,
+                CallBackUrl = input.CallBackUrl,
+                Amount = input.Amount,
+                OrderId = input.OrderId,
+                AdditionalData = input.AdditionalData,
+                Originator = input.Originator
+            };
+
+            SalePaymentRequestResponse saleResponse = await parsianService.SalePaymentRequestAsync(saleRequest);
+            return new() { Result = JsonConvert.SerializeObject(saleResponse) };
         }
         [Audited]
         public async Task<OutputDto> VerifyToIranKish(IranKishVerifyInputDto input)

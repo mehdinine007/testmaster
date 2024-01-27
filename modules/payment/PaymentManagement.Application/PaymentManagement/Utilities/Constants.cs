@@ -64,6 +64,10 @@
         public const string MellatRedirectUrl1 = "https://bpm.shaparak.ir/pgwchannel/startpay.mellat";
         public const string MellatRedirectUrl2 = "https://bpm.shaparak.ir/pgwchannel2/startpay.mellat";
         public const string MellatOriginUrl = "https://bpm.shaparak.ir";
+
+        public const string ParsianHandShakeUrlInGateway = "/api/services/app/GatewayService/HandShakeWithParsian";
+        public const string ParsianRedirectUrl = "https://pec.shaparak.ir/NewIPG";
+
         #endregion
     }
 }

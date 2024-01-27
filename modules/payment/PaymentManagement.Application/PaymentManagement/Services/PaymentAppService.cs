@@ -21,6 +21,8 @@ using Volo.Abp.Application.Services;
 using Volo.Abp.Auditing;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Uow;
+using System.Net;
+using System.Linq.Dynamic.Core.Tokenizer;
 
 namespace PaymentManagement.Application.Servicess
 {
@@ -162,7 +164,7 @@ namespace PaymentManagement.Application.Servicess
         [Audited]
         public async Task<HandShakeOutputDto> HandShakeAsync(HandShakeInputDto input)
         {
-         
+
             var result = new HandShakeOutputDto()
             {
                 StatusCode = (int)StatusCodeEnum.Failed,
@@ -238,6 +240,9 @@ namespace PaymentManagement.Application.Servicess
 
                     case PspEnum.IranKish:
                         return await HandShakeWithIranKishAsync(payment, pspAccount.JsonProps);
+
+                    case PspEnum.Parsian:
+                        return await HandShakeWithParsianAsync(payment, pspAccount.JsonProps);
                 }
                 #endregion
 
@@ -489,6 +494,93 @@ namespace PaymentManagement.Application.Servicess
                 {
                     PaymentId = payment.Id,
                     Psp = PspEnum.Mellat.ToString(),
+                    Message = Constants.HandShakeException,
+                    Parameter = ex.Message,
+                });
+                payment.PaymentStatusId = (int)PaymentStatusEnum.Failed;
+                await _paymentRepository.AttachAsync(ObjectMapper.Map<PaymentDto, Payment>(payment), o => o.PaymentStatusId);
+                result.Message = Constants.ErrorInConnectToPsp;
+                return result;
+            }
+        }
+        private async Task<HandShakeOutputDto> HandShakeWithParsianAsync(PaymentDto payment, string pspAccountJsonProps)
+        {
+            var result = new HandShakeOutputDto()
+            {
+                StatusCode = (int)StatusCodeEnum.Failed,
+                Message = Constants.UnknownError,
+                PaymentId = payment.Id
+            };
+            try
+            {
+                var pspAccountProps = JsonConvert.DeserializeObject<Parsian.PspAccountProps>(pspAccountJsonProps);
+                ParsianHandShakeInput input = new()
+                {
+                    LoginAccount = pspAccountProps.LoginAccount,
+                    CallBackUrl = _config.GetValue<string>("App:ParsianCallBackUrl"),
+                    Amount = (long)payment.Amount,
+                    OrderId = payment.Id,
+                    AdditionalData = payment.NationalCode ?? string.Empty,
+                    Originator = string.IsNullOrEmpty(payment.Mobile) ? string.Empty : (payment.Mobile[..1] == "0" ? string.Concat("98", payment.Mobile[1..]) : payment.Mobile),
+                };
+                await _paymentLogRepository.InsertAsync(new PaymentLog
+                {
+                    PaymentId = payment.Id,
+                    Psp = PspEnum.Parsian.ToString(),
+                    Message = Constants.HandShakeWithPspStart,
+                    Parameter = JsonConvert.SerializeObject(input),
+                });
+                string handShakeResult = string.Empty;
+                var connectToGatewayMode = _config.GetValue<bool>("App:ConnectToGatewayMode");
+                if (connectToGatewayMode) //grpc
+                {
+                    handShakeResult = (await GatewayServiceGrpcClient().HandShakeWithParsianAsync(input)).Result;
+                }
+                else //restApi
+                {
+                    string url = _config.GetValue<string>("App:GatewayApiAddress") + Constants.ParsianHandShakeUrlInGateway;
+                    HttpClient client = new();
+                    var response = await client.PostAsync(url, new StringContent(JsonConvert.SerializeObject(input), Encoding.UTF8, "application/json"));
+                    handShakeResult = response.Content.ReadAsStringAsync().Result;
+                    handShakeResult = JsonDocument.Parse(handShakeResult).RootElement.GetProperty("result").ToString();
+                }
+                await _paymentLogRepository.InsertAsync(new PaymentLog
+                {
+                    PaymentId = payment.Id,
+                    Psp = PspEnum.Parsian.ToString(),
+                    Message = Constants.HandShakeResult,
+                    Parameter = handShakeResult,
+                });
+                result.PspJsonResult = handShakeResult;
+                if (handShakeResult != null)
+                {
+                    Parsian.JsonResult jResult = JsonConvert.DeserializeObject<Parsian.JsonResult>(handShakeResult);
+
+                    payment.Token = jResult.Token.ToString();
+                    await _paymentRepository.AttachAsync(ObjectMapper.Map<PaymentDto, Payment>(payment), o => o.Token);
+
+                    if (jResult.Status == 0 && jResult.Token > 0L)
+                    {
+                        result.StatusCode = (int)StatusCodeEnum.Success;
+                        result.Token = jResult.Token.ToString();
+
+                        var inputParams = new System.Collections.Specialized.NameValueCollection { { "token", jResult.Token.ToString() } };
+                        result.HtmlContent = StringUtil.GenerateForm(Constants.ParsianRedirectUrl, "post", inputParams);
+                        result.Message = Constants.HandShakeSuccess;
+                        return result;
+                    }
+                }
+                payment.PaymentStatusId = (int)PaymentStatusEnum.Failed;
+                await _paymentRepository.AttachAsync(ObjectMapper.Map<PaymentDto, Payment>(payment), o => o.PaymentStatusId);
+                result.Message = Constants.ErrorInHandShakeResult;
+                return result;
+            }
+            catch (Exception ex)
+            {
+                await _paymentLogRepository.InsertAsync(new PaymentLog
+                {
+                    PaymentId = payment.Id,
+                    Psp = PspEnum.Parsian.ToString(),
                     Message = Constants.HandShakeException,
                     Parameter = ex.Message,
                 });
