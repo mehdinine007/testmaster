@@ -78,7 +78,7 @@ namespace OldCarService.Host
                 var version = AppLicence.GetVersion(configuration.GetSection("Licence:SerialNumber").Value).Version;
                 context.Services.AddSwaggerGen(options =>
                 {
-                    options.SwaggerDoc("v1", new OpenApiInfo { Title = "Company Service API", Version = version });
+                    options.SwaggerDoc("v1", new OpenApiInfo { Title = "OldCar Service API", Version = version });
                     options.DocInclusionPredicate((docName, description) => true);
                     options.CustomSchemaIds(type => type.FullName);
                     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()

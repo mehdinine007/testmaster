@@ -58,34 +58,13 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Remove="Migrations\dbo.__MigrationsHistory.sql" />
-      <None Remove="Migrations\Patch\20240113100136_add-bank-entity.sql" />
-      <None Remove="Migrations\Patch\20240113110628_add-useuid.sql" />
-      <None Remove="Migrations\Programmability\Sp_EsaleCarApplicantsReport.sql" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Content Include="Migrations\dbo.__MigrationsHistory.sql">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
-      <Content Include="Migrations\Patch\20240113100136_add-bank-entity.sql">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
-      <Content Include="Migrations\Patch\20240113110628_add-useuid.sql">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
-      <Content Include="Migrations\Programmability\Sp_EsaleCarApplicantsReport.sql">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
-    </ItemGroup>
-
-    <ItemGroup>
       <Content Update="web.config">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="EntityFrameworkCore\" />
       <Folder Include="Infrastructures\Hangfire\Abstract\" />
       <Folder Include="Infrastructures\Hangfire\Concrete\" />
     </ItemGroup>
