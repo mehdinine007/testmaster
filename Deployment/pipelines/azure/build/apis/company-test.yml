@@ -4,6 +4,7 @@ trigger:
     - master
     - refs/tags/esalecar-*
     - refs/tags/saleauto-*
+    - refs/tags/*-company*
 
   paths:
     include:
