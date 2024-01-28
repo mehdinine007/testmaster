@@ -19,6 +19,7 @@
         <PackageReference Include="AspNetCore.HealthChecks.SqlServer" Version="7.0.0" />
         <PackageReference Include="AspNetCore.HealthChecks.UI" Version="7.0.0" />
         <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="7.0.0" />
+        <PackageReference Include="AspNetCore.HealthChecks.Uris" Version="7.0.0" />
         <PackageReference Include="Hangfire.SqlServer" Version="1.7.29" />
         <PackageReference Include="Serilog.AspNetCore" Version="6.1.0" />
         <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />

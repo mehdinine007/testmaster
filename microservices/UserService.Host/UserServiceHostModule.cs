@@ -30,6 +30,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using IFG.Core.Utility.Security.Encyption;
 using Volo.Abp.BackgroundJobs.Hangfire;
 using Licence;
+using HealthChecks.UI.Client;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 #endregion
 
 
@@ -154,6 +156,11 @@ public class UserServiceHostModule : AbpModule
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapGrpcService<GetwayGrpcClient>();
+            endpoints.MapHealthChecks("/health", new HealthCheckOptions
+            {
+                Predicate = _ => true,
+                ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+            });
 
 
         });
