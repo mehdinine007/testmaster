@@ -1,9 +1,9 @@
 ﻿using System;
 using Volo.Abp.Domain.Entities;
 
-namespace IFG.Core.Utility.Migration.Domain
+namespace IFG.Core.DataAccess.Migration.Domain
 {
-    public class MigrationsHistory 
+    public class MigrationsHistory
     {
         public int Id { get; set; }
         public string MigrationId { get; set; }

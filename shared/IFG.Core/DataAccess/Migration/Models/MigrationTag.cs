@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace IFG.Core.Utility.Migration.Models
+namespace IFG.Core.DataAccess.Migration.Models
 {
     public class MigrationTag
     {
