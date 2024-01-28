@@ -33,6 +33,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Collections.Generic;
 using Volo.Abp.FluentValidation;
 using Licence;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using HealthChecks.UI.Client;
 
 namespace OrderService.Host
 {
@@ -194,7 +196,11 @@ System.AppDomain.CurrentDomain.BaseDirectory));
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapGrpcService<CompanyGrpcClient>();
-                
+                endpoints.MapHealthChecks("/health", new HealthCheckOptions
+                {
+                    Predicate = _=> true,
+                    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+                });
 
             });
           

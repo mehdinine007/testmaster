@@ -1,6 +1,0 @@
-
-
-ALTER TABLE [UserRejectionFromBank] ADD [UserUid] uniqueidentifier NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000';
-
-
-ALTER TABLE [AdvocacyUsersFromBank] ADD [UserUid] uniqueidentifier NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000';
