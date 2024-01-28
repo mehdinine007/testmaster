@@ -1,9 +1,8 @@
 trigger:
   branches:
     include:
-    - master
-    - refs/tags/esalecar-*
-    - refs/tags/saleauto-*
+#    - master
+    - refs/tags/*-allservice*
     - refs/tags/*-user*
     
   paths:
