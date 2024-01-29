@@ -7,7 +7,7 @@ trigger:
     include:
     - 'microservices/ReportService.Host/*'
     - 'microservices/ReportService.Host/**/*'
-    - 'Deployment/pipelines/azure/build/apis/report-test.yml'
+    - 'Deployment/pipelines/azure/build/apis/report-prd.yml'
 
 pool:
   name: AminCloudProduction
