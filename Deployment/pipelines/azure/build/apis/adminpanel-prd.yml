@@ -7,7 +7,7 @@ trigger:
     include:
     - 'microservices/AdminPanelService.Host/*'
     - 'microservices/AdminPanelService.Host/**/*'
-    - 'Deployment/pipelines/azure/build/apis/adminpanel-test.yml'
+    - 'Deployment/pipelines/azure/build/apis/adminpanel-prd.yml'
 
 pool:
   name: AminCloudProduction
