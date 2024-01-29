@@ -10,7 +10,7 @@ namespace UserManagement.Domain.UserManagement
 {
     public class UserDataAccess: FullAuditedEntity<int>
     {
-        public Guid UserId { get; set; }
+        public Guid? UserId { get; set; }
         public string Nationalcode { get; set; }
         public RoleTypeEnum RoleTypeId { get; set; }
         public string Data { get; set; }
