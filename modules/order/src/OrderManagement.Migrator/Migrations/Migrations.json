@@ -103,6 +103,11 @@
       "Id": "20231226055406_removeuniquegroupid",
       "Priority": 7,
       "Version": "4.2.0"
+    },
+    {
+      "Id": "20240129082810_add-userdataaccess",
+      "Priority": 8,
+      "Version": "4.2.0"
     }
   ]
 }

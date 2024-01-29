@@ -5,6 +5,7 @@ using UserManagement.Domain.UserManagement.Bases;
 using UserManagement.Domain.UserManagement.Authorization.Users;
 using System.Reflection.Emit;
 using UserManagement.Domain.UserManagement.CompanyService;
+using UserManagement.Domain.UserManagement;
 
 namespace UserManagement.EfCore.EntityFrameworkCore
 {
@@ -67,6 +68,14 @@ namespace UserManagement.EfCore.EntityFrameworkCore
                 entity.Property(x => x.CarDesc)
                     .HasMaxLength(250);
             });
+
+            builder.Entity<UserDataAccess>(entity =>
+            {
+                entity.ToTable(nameof(UserDataAccess));
+                entity.Property(x => x.Nationalcode).HasMaxLength(10);
+            });
+
+
         }
     }
 }
