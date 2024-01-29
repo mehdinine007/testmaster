@@ -22,14 +22,13 @@ namespace UserManagement.Application.UserManagement.Implementations
         {
             _userDataAccessRepository = userDataAccessRepository;
         }
-        [SecuredOperation(UserDataAccessPermissionConstants.GetListByNationalcode)]
         public async Task<UserDataAccessDto> GetListByNationalcode(string nationalcode)
         {
             var userDataAccessQuery = (await _userDataAccessRepository.GetQueryableAsync());
             var userDataAccess = userDataAccessQuery.Where(x => x.Nationalcode == nationalcode).ToList();
             return ObjectMapper.Map<UserDataAccessDto>(userDataAccess);
         }
-        [SecuredOperation(UserDataAccessPermissionConstants.GetListByUserId)]
+
         public async  Task<UserDataAccessDto> GetListByUserId(Guid userId)
         {
 
