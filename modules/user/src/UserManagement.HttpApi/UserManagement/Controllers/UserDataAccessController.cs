@@ -22,10 +22,10 @@ namespace UserManagement.HttpApi.UserManagement.Controllers
         =>_UserDataAccessService = UserDataAccessService;
 
         [HttpGet]
-        public Task<UserDataAccessDto> GetListByNationalcode(string nationalcode)
+        public Task<List<UserDataAccessDto>> GetListByNationalcode(string nationalcode)
        =>_UserDataAccessService.GetListByNationalcode(nationalcode);
         [HttpGet]
-        public Task<UserDataAccessDto> GetListByUserId(Guid userId)
+        public Task<List<UserDataAccessDto>> GetListByUserId(Guid userId)
         =>_UserDataAccessService.GetListByUserId(userId);
     }
 }
