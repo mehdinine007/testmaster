@@ -1,0 +1,41 @@
+﻿using Abp.Application.Services;
+using Esale.Share.Authorize;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using UserManagement.Application.Contracts.UserManagement.Constant.Permission;
+using UserManagement.Application.Contracts.UserManagement.Models;
+using UserManagement.Application.Contracts.UserManagement.Services;
+using UserManagement.Domain.UserManagement;
+using Volo.Abp.Domain.Repositories;
+
+namespace UserManagement.Application.UserManagement.Implementations
+{
+    public class UserDataAccessService : ApplicationService, IUserDataAccessService
+    {
+        private readonly IRepository<UserDataAccess, int> _userDataAccessRepository;
+     
+
+        public UserDataAccessService(IRepository<UserDataAccess, int> userDataAccessRepository)
+        {
+            _userDataAccessRepository = userDataAccessRepository;
+        }
+        [SecuredOperation(UserDataAccessPermissionConstants.GetListByNationalcode)]
+        public async Task<UserDataAccessDto> GetListByNationalcode(string nationalcode)
+        {
+            var userDataAccessQuery = (await _userDataAccessRepository.GetQueryableAsync());
+            var userDataAccess = userDataAccessQuery.Where(x => x.Nationalcode == nationalcode).ToList();
+            return ObjectMapper.Map<UserDataAccessDto>(userDataAccess);
+        }
+        [SecuredOperation(UserDataAccessPermissionConstants.GetListByUserId)]
+        public async  Task<UserDataAccessDto> GetListByUserId(Guid userId)
+        {
+
+            var userDataAccessQuery = (await _userDataAccessRepository.GetQueryableAsync());
+            var userDataAccess = userDataAccessQuery.Where(x => x.UserId == userId).ToList();
+            return ObjectMapper.Map<UserDataAccessDto>(userDataAccess);
+        }
+    }
+}
