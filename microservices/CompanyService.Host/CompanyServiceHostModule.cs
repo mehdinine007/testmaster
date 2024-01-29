@@ -31,6 +31,8 @@ using CompanyManagement.Application.CompanyManagement;
 using CompanyManagement.Application.CompanyManagement.Grpc;
 using Licence;
 using System.Collections.Generic;
+using HealthChecks.UI.Client;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
 namespace CompanyService.Host
 {
@@ -103,6 +105,8 @@ namespace CompanyService.Host
                             new List<string>()
                         }
                     });
+                    options.IncludeXmlComments(string.Format(@"{0}\BankManagement.HttpApi.xml",
+                    System.AppDomain.CurrentDomain.BaseDirectory));
                 });
             }
 
@@ -138,11 +142,6 @@ namespace CompanyService.Host
             //    options.IsEnabled = false; //Disables the auditing system
             //});
 
-
-            context.Services.AddStackExchangeRedisCache(options =>
-            {
-                options.Configuration = configuration["RedisCache:ConnectionString"];
-            });
             context.Services.AddEsaleResultWrapper();
             IdentityModelEventSource.ShowPII = true;
             ConfigureHangfire(context, configuration);
@@ -190,6 +189,11 @@ namespace CompanyService.Host
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapGrpcService<UserGrpcClientService>();
+                endpoints.MapHealthChecks("/health", new HealthCheckOptions
+                {
+                    Predicate = _ => true,
+                    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+                });
             });
 
             app.UseAbpRequestLocalization(); //TODO: localization?

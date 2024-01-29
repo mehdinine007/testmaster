@@ -74,7 +74,7 @@ namespace ReportManagement.EntityFrameworkCore.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Dashboards", (string)null);
+                    b.ToTable("Dashboards", "Rpt");
                 });
 
             modelBuilder.Entity("ReportManagement.Domain.ReportManagement.DashboardWidget", b =>
@@ -127,7 +127,7 @@ namespace ReportManagement.EntityFrameworkCore.Migrations
 
                     b.HasIndex("WidgetId");
 
-                    b.ToTable("DashboardWidgets");
+                    b.ToTable("DashboardWidgets", "Rpt");
                 });
 
             modelBuilder.Entity("ReportManagement.Domain.ReportManagement.Widget", b =>
@@ -192,7 +192,7 @@ namespace ReportManagement.EntityFrameworkCore.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Widgets", (string)null);
+                    b.ToTable("Widgets", "Rpt");
                 });
 
             modelBuilder.Entity("ReportManagement.Domain.ReportManagement.DashboardWidget", b =>

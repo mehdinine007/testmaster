@@ -24,6 +24,79 @@ namespace OrderManagement.EfCore.Migrations.CompanyManagementDb
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("CompanyManagement.Domain.CompanyManagement.AdvocacyUsersFromBank", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("BanksId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CompanyId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("CreationTime");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("CreatorId");
+
+                    b.Property<Guid?>("DeleterId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("DeleterId");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("DeletionTime");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false)
+                        .HasColumnName("IsDeleted");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("LastModificationTime");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("LastModifierId");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<Guid>("UserUid")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("accountNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("bankName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("dateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("nationalcode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("shabaNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AdvocacyUsersFromBank");
+                });
+
             modelBuilder.Entity("CompanyManagement.Domain.CompanyManagement.ClientsOrderDetailByCompany", b =>
                 {
                     b.Property<long>("Id")
@@ -297,6 +370,80 @@ namespace OrderManagement.EfCore.Migrations.CompanyManagementDb
                     b.HasIndex("ClientsOrderDetailByCompanyId");
 
                     b.ToTable("CompanySaleCallDates");
+                });
+
+            modelBuilder.Entity("CompanyManagement.Domain.CompanyManagement.UserRejectionFromBank", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("BanksId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CarMaker")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("CreationTime");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("CreatorId");
+
+                    b.Property<Guid?>("DeleterId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("DeleterId");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("DeletionTime");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false)
+                        .HasColumnName("IsDeleted");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("LastModificationTime");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("LastModifierId");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<Guid>("UserUid")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("accountNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("bankName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("dateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("nationalcode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("shabaNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UserRejectionFromBank", (string)null);
                 });
 
             modelBuilder.Entity("CompanyManagement.Domain.CompanyManagement.CompanyPaypaidPrices", b =>

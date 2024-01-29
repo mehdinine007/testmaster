@@ -13,7 +13,8 @@ namespace UserManagement.Domain.UserManagement.Enums
         Company = 3,
         InspectionOrganization =4,
         mimt = 5,
-        nicc = 6
+        nicc = 6,
+        Bank=7
 
     }
 }

@@ -39,7 +39,7 @@ namespace UserManagement.Application.UserManagement.Implementations
             return Task.FromResult(new UserAdvocacy()
             {
                 AccountNumber = userAdvocacy.AccountNumber,
-                BankId = userAdvocacy.BankId,
+                BankId = userAdvocacy.BankId??0,
                 ShebaNumber = userAdvocacy.ShebaNumber,
                 //GenderCode = userAdvocacy.GenderCode
             });

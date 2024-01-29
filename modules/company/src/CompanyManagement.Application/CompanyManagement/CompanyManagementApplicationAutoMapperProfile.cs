@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using CompanyManagement.Application.Contracts;
 using CompanyManagement.Application.Contracts.CompanyManagement;
+using CompanyManagement.Application.Contracts.CompanyManagement.Dto.BankDtos;
 using CompanyManagement.Domain.CompanyManagement;
 using System;
 using System.Collections.Generic;
@@ -23,6 +24,8 @@ namespace CompanyManagement.Application.CompanyManagement
                 .ForMember(x => x.ClientsOrderDetailByCompanyId, option => option.Ignore());
             //CreateMap<PaypaidpriceDto, CompanyPaypaidPrices>().ReverseMap();
             //CreateMap<TurnDateDto, CompanySaleCallDates>().ReverseMap();
+            CreateMap<AdvocacyUsersFromBankDto, AdvocacyUsersFromBank>().ReverseMap();
+            CreateMap<UserRejectionFromBankDto, UserRejectionFromBank>().ReverseMap();
         }
 
     }

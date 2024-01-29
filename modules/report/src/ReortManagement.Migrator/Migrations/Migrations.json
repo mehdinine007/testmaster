@@ -1,0 +1,31 @@
+{
+  "Schema": [
+    {
+      "Id": "SchemaBase",
+      "Priority": 1
+    }
+  ],
+  "Tables": [
+    {
+      "Id": "Rpt.Dashboards",
+      "Priority": 1
+    },
+    {
+      "Id": "Rpt.Widgets",
+      "Priority": 2
+    },
+    {
+      "Id": "Rpt.DashboardWidgets",
+      "Priority": 3
+    }
+  ],
+  "Programmability": [
+  ],
+  "Patch": [
+    {
+      "Id": "20240114065458_add-report-schema",
+      "Priority": 1,
+      "Version": "4.2.0"
+    }
+  ]
+}
