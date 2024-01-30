@@ -39,7 +39,7 @@ namespace UserManagement.Application.UserManagement.Implementations
             var userDataAccess = new UserDataAccessResponse();
             userDataAccess.UserDataAccessModel.AddRange(getUserDataAccess.Select(x=> new UserDataAccessModel
             {
-                UserId = x.UserId.ToString(),
+                UserId = x.UserId !=null ? x.UserId.ToString():""  ,
                 Nationalcode = x.Nationalcode,
                 RoleTypeId = (int)x.RoleTypeId,
                 Data = x.Data

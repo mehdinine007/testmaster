@@ -12,7 +12,7 @@ namespace OrderManagement.Application.Contracts
     public interface IUserDataAccessService : IApplicationService
     {
         Task<List<OldCarDto>> OldCarGetList(string nationalcode);
-        Task<List<UserDataAccessDto>> CheckOldCar(string nationalcode,string engineNo,string vin,string vehicle,string chassiNo);
+        Task<IResult> CheckOldCar(string nationalcode,string engineNo,string vin,string chassiNo);
 
         Task<List<UserDataAccessProductDto>> ProductGetList(string nationalCode);
         Task<IResult> CheckProductAccess(string nationalCode,int productId);
