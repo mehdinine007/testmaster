@@ -1,10 +1,12 @@
 ﻿
 using Esale.Share.Authorize;
+using IFG.Core.Utility.Results;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UserManagement.Application.Contracts;
 using UserManagement.Application.Contracts.Models;
 using UserManagement.Application.Contracts.UserManagement.Constant.Permission;
 using UserManagement.Application.Contracts.UserManagement.Models;
@@ -26,6 +28,15 @@ namespace UserManagement.Application.UserManagement.Implementations
         {
             _userDataAccessRepository = userDataAccessRepository;
         }
+
+        public async Task<IResult> CheckNationalCode(string nationalcode, RoleTypeEnum roleType)
+        {
+            var userDataAccess = await GetListByNationalcode(nationalcode, roleType);
+            if (!userDataAccess.Any())
+                return new ErrorResult(UserMessageConstant.UserDataAccessNationalCodeNotFound, UserMessageConstant.UserDataAccessNationalCodeNotFoundId);
+            return new SuccsessResult();
+        }
+
         public async Task<List<UserDataAccessDto>> GetListByNationalcode(string nationalcode, RoleTypeEnum roleType)
         {
             var userDataAccessQuery = (await _userDataAccessRepository.GetQueryableAsync());

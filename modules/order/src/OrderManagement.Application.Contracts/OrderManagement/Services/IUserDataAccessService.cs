@@ -11,6 +11,7 @@ namespace OrderManagement.Application.Contracts
 {
     public interface IUserDataAccessService : IApplicationService
     {
+        Task<bool> Exists(string nationalcode, RoleTypeEnum roleType);
         Task<List<OldCarDto>> OldCarGetList(string nationalcode);
         Task<List<UserDataAccessDto>> CheckOldCar(string nationalcode,string engineNo,string vin,string vehicle,string chassiNo);
 

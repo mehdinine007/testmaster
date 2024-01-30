@@ -24,6 +24,9 @@ using Volo.Abp.ObjectMapping;
 using Esale.Share.Authorize;
 using OrderManagement.Application.Contracts.OrderManagement.Constants.Permissions;
 using System.Linq.Dynamic.Core;
+using IFG.Core.IOC;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -35,14 +38,17 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
     private readonly IRepository<ProductLevel, int> _productLevelRepository;
     private readonly ICommonAppService _commonAppService;
     private readonly IRepository<ProductProperty, ObjectId> _productPropertyRepository;
-
+    private readonly IUserDataAccessService _userDataAccessService;
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IConfiguration _configuration;
     public ProductAndCategoryService(IRepository<ProductAndCategory, int> productAndCategoryRepository,
                                      IAttachmentService attachmentService,
                                      IProductPropertyService productPropertyService,
                                      IRepository<ProductLevel, int> productLevelRepository,
-                                     ICommonAppService commonAppService
-,
-                                     IRepository<ProductProperty, ObjectId> productPropertyRepository)
+                                     ICommonAppService commonAppService,
+                                     IRepository<ProductProperty, ObjectId> productPropertyRepository,
+                                     IUserDataAccessService userDataAccessService,
+                                     IConfiguration configuration)
     {
         _productAndCategoryRepository = productAndCategoryRepository;
         _attachmentService = attachmentService;
@@ -50,6 +56,9 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
         _productLevelRepository = productLevelRepository;
         _commonAppService = commonAppService;
         _productPropertyRepository = productPropertyRepository;
+        _userDataAccessService = userDataAccessService;
+        _httpContextAccessor = ServiceTool.Resolve<IHttpContextAccessor>();
+        _configuration = configuration;
     }
     [SecuredOperation(ProductAndCategoryServicePermissionConstants.Delete)]
     public async Task Delete(int id)
@@ -289,15 +298,19 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
              .ThenInclude(y => y.ESaleType)
             .Include(x => x.ProductLevel);
 
-        //var product = productQuery
-        //          .Where(x => EF.Functions.Like(x.Code, input.NodePath + "%"));
         ProductList = string.IsNullOrWhiteSpace(input.NodePath)
             ? productQuery.ToList()
             : productQuery.Where(x => EF.Functions.Like(x.Code, input.NodePath + "%")).ToList();
-        //if (input.ESaleTypeId != null)
-        //    ProductList = ProductList
-        //        .Where(x => x.SaleDetails != null && x.SaleDetails.Count > 0)
-        //        .ToList();
+        if (_httpContextAccessor.HttpContext.User.Identity.IsAuthenticated)
+        {
+            var nationalCode = _commonAppService.GetNationalCode();
+            if (_configuration.GetValue<bool?>("UserDataAccessConfig:HasProduct")?? false)
+            {
+                var products = await _userDataAccessService.ProductGetList(nationalCode);
+                ProductList = ProductList.Where(x => products.Any(p => x.Id == p.ProductId))
+                    .ToList();
+            }
+        }
         if (input.AdvancedSearch != null && input.AdvancedSearch.Count > 0)
         {
             ProductList = await GetProductFilter(input.AdvancedSearch, ProductList);

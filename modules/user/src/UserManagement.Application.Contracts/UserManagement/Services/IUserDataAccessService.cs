@@ -1,4 +1,5 @@
 ﻿
+using IFG.Core.Utility.Results;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,5 +17,7 @@ namespace UserManagement.Application.Contracts.UserManagement.Services
     {
         Task<List<UserDataAccessDto>> GetListByNationalcode(string nationalcode,RoleTypeEnum roleType);
         Task<List<UserDataAccessDto>> GetListByUserId(Guid userId, RoleTypeEnum roleType);
+
+        Task<IResult> CheckNationalCode(string nationalcode, RoleTypeEnum roleType);
     }
 }
