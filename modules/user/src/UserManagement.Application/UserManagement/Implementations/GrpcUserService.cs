@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using UserManagement.Application.Contracts.Models;
 using UserManagement.Application.Contracts.Services;
 using UserManagement.Application.Contracts.UserManagement.Services;
+using UserManagement.Domain.Shared.UserManagement.Enums;
 using UserManagement.Domain.UserManagement.Authorization;
 
 namespace UserManagement.Application.UserManagement.Implementations
@@ -34,7 +35,7 @@ namespace UserManagement.Application.UserManagement.Implementations
 
         public override async Task<UserDataAccessResponse> GetUDAByNationalCode(GetUDAByNationalCodeRequest request, ServerCallContext context)
         {
-            var getUserDataAccess = await _userDataAccessService.GetListByNationalcode(request.NationalCode);
+            var getUserDataAccess = await _userDataAccessService.GetListByNationalcode(request.NationalCode,(RoleTypeEnum)request.Type);
             var userDataAccess = new UserDataAccessResponse();
             userDataAccess.UserDataAccessModel.AddRange(getUserDataAccess.Select(x=> new UserDataAccessModel
             {
@@ -48,7 +49,7 @@ namespace UserManagement.Application.UserManagement.Implementations
 
         public override async Task<UserDataAccessResponse> GetUDAByUserId(GetUDAByUserIdRequest request, ServerCallContext context)
         {
-            var getUserDataAccess = await _userDataAccessService.GetListByUserId(Guid.Parse(request.UserId));
+            var getUserDataAccess = await _userDataAccessService.GetListByUserId(Guid.Parse(request.UserId), (RoleTypeEnum)request.Type);
             var userDataAccess = new UserDataAccessResponse();
             userDataAccess.UserDataAccessModel.AddRange(getUserDataAccess.Select(x => new UserDataAccessModel
             {

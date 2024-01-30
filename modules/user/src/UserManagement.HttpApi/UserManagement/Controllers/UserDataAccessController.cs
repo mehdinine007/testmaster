@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using UserManagement.Application.Contracts.UserManagement.Models;
 using UserManagement.Application.Contracts.UserManagement.Services;
 using UserManagement.Application.UserManagement.Implementations;
+using UserManagement.Domain.Shared.UserManagement.Enums;
 using Volo.Abp;
 using Volo.Abp.Auditing;
 
@@ -22,10 +23,10 @@ namespace UserManagement.HttpApi.UserManagement.Controllers
         =>_UserDataAccessService = UserDataAccessService;
 
         [HttpGet]
-        public Task<List<UserDataAccessDto>> GetListByNationalcode(string nationalcode)
-       =>_UserDataAccessService.GetListByNationalcode(nationalcode);
+        public Task<List<UserDataAccessDto>> GetListByNationalcode(string nationalcode, RoleTypeEnum roleType)
+       =>_UserDataAccessService.GetListByNationalcode(nationalcode, roleType);
         [HttpGet]
-        public Task<List<UserDataAccessDto>> GetListByUserId(Guid userId)
-        =>_UserDataAccessService.GetListByUserId(userId);
+        public Task<List<UserDataAccessDto>> GetListByUserId(Guid userId, RoleTypeEnum roleType)
+        =>_UserDataAccessService.GetListByUserId(userId, roleType);
     }
 }

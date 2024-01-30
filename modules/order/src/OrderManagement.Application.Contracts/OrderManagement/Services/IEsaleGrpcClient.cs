@@ -16,8 +16,8 @@ namespace OrderManagement.Application.Contracts.Services
         Task<PaymentResultViewModel> Verify(int paymentId);
         Task<PaymentResultViewModel> Reverse(int paymentId);
         Task<AuthenticateResponseDto> Athenticate(AuthenticateReqDto input);
-        Task<List<UserDataAccessDto>> GetUserDataAccessByNationalCode(string nationalCode);
-        Task<List<UserDataAccessDto>> GetUserDataAccessByUserId(Guid userId);
+        Task<List<UserDataAccessDto>> GetUserDataAccessByNationalCode(string nationalCode, RoleTypeEnum roleType);
+        Task<List<UserDataAccessDto>> GetUserDataAccessByUserId(Guid userId, RoleTypeEnum roleType);
         //Task<ClientOrderDeliveryInformationDto> ValidateClientOrderDeliveryDate(ClientOrderDeliveryInformationRequestDto clientOrderRequest);
         //Task<AuthtenticateResult>
     }

@@ -285,13 +285,13 @@ public class EsaleGrpcClient : ApplicationService, IEsaleGrpcClient
       //  return null;
     }
 
-    public async Task<List<UserDataAccessDto>> GetUserDataAccessByNationalCode(string nationalCode)
+    public async Task<List<UserDataAccessDto>> GetUserDataAccessByNationalCode(string nationalCode, RoleTypeEnum roleType)
     {
         var httpHandler = new HttpClientHandler();
         httpHandler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
         var channel = GrpcChannel.ForAddress(_configuration.GetValue<string>("Esale:GrpcAddress"), new GrpcChannelOptions { HttpHandler = httpHandler });
         var client = new UserServiceGrpc.UserServiceGrpcClient(channel);
-        var result = await client.GetUDAByNationalCodeAsync(new GetUDAByNationalCodeRequest() { NationalCode = nationalCode });
+        var result = await client.GetUDAByNationalCodeAsync(new GetUDAByNationalCodeRequest() { NationalCode = nationalCode ,Type = (int)roleType});
         var _ret = result.UserDataAccessModel.Select(x => new UserDataAccessDto
         {
             Nationalcode = x.Nationalcode,
@@ -301,13 +301,13 @@ public class EsaleGrpcClient : ApplicationService, IEsaleGrpcClient
         return _ret;
     }
 
-    public async Task<List<UserDataAccessDto>> GetUserDataAccessByUserId(Guid userId)
+    public async Task<List<UserDataAccessDto>> GetUserDataAccessByUserId(Guid userId, RoleTypeEnum roleType)
     {
         var httpHandler = new HttpClientHandler();
         httpHandler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
         var channel = GrpcChannel.ForAddress(_configuration.GetValue<string>("Esale:GrpcAddress"), new GrpcChannelOptions { HttpHandler = httpHandler });
         var client = new UserServiceGrpc.UserServiceGrpcClient(channel);
-        var result = await client.GetUDAByUserIdAsync(new GetUDAByUserIdRequest() { UserId = userId.ToString()});
+        var result = await client.GetUDAByUserIdAsync(new GetUDAByUserIdRequest() { UserId = userId.ToString(), Type = (int)roleType});
         var _ret = result.UserDataAccessModel.Select(x => new UserDataAccessDto
         {
             Nationalcode = x.Nationalcode,

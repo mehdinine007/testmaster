@@ -88,10 +88,12 @@ message AuthenticateDataModel{
 
 message GetUDAByNationalCodeRequest{
 	string NationalCode=1;
+	google.protobuf.Int32Value Type = 2;
 }
 
 message GetUDAByUserIdRequest{
 	string UserId=1;
+    google.protobuf.Int32Value Type = 2;
 }
 
 message UserDataAccessResponse{

@@ -9,6 +9,7 @@ using UserManagement.Application.Contracts.Models;
 using UserManagement.Application.Contracts.UserManagement.Constant.Permission;
 using UserManagement.Application.Contracts.UserManagement.Models;
 using UserManagement.Application.Contracts.UserManagement.Services;
+using UserManagement.Domain.Shared.UserManagement.Enums;
 using UserManagement.Domain.UserManagement;
 using UserManagement.Domain.UserManagement.Authorization.RolePermissions;
 using Volo.Abp.Application.Services;
@@ -25,18 +26,18 @@ namespace UserManagement.Application.UserManagement.Implementations
         {
             _userDataAccessRepository = userDataAccessRepository;
         }
-        public async Task<List<UserDataAccessDto>> GetListByNationalcode(string nationalcode)
+        public async Task<List<UserDataAccessDto>> GetListByNationalcode(string nationalcode, RoleTypeEnum roleType)
         {
             var userDataAccessQuery = (await _userDataAccessRepository.GetQueryableAsync());
-            var userDataAccess = userDataAccessQuery.Where(x => x.Nationalcode == nationalcode).ToList();
+            var userDataAccess = userDataAccessQuery.Where(x => x.Nationalcode == nationalcode && x.RoleTypeId == roleType).ToList();
             return ObjectMapper.Map<List<UserDataAccess>, List<UserDataAccessDto>>(userDataAccess);
         }
 
-        public async  Task<List<UserDataAccessDto>> GetListByUserId(Guid userId)
+        public async  Task<List<UserDataAccessDto>> GetListByUserId(Guid userId, RoleTypeEnum roleType)
         {
 
             var userDataAccessQuery = (await _userDataAccessRepository.GetQueryableAsync());
-            var userDataAccess = userDataAccessQuery.Where(x => x.UserId == userId).ToList();
+            var userDataAccess = userDataAccessQuery.Where(x => x.UserId == userId && x.RoleTypeId == roleType).ToList();
             return ObjectMapper.Map<List<UserDataAccess>, List<UserDataAccessDto>>(userDataAccess);
         }
     }
