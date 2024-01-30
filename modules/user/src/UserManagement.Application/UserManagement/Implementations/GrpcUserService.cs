@@ -19,15 +19,45 @@ namespace UserManagement.Application.UserManagement.Implementations
         private readonly IBaseInformationService _baseInformationSevice;
         private readonly IBankAppService _bankAppService;
         private readonly IAuthenticateAppService _authenticateAppService;
-
+        private readonly IUserDataAccessService _userDataAccessService;
 
         public GrpcUserService(IBaseInformationService baseInformationService,
                                IBankAppService bankAppService,
-                               IAuthenticateAppService authenticateAppService)
+                               IAuthenticateAppService authenticateAppService,
+                               IUserDataAccessService userDataAccessService)
         {
             _baseInformationSevice = baseInformationService;
             _bankAppService = bankAppService;
             _authenticateAppService = authenticateAppService;
+            _userDataAccessService = userDataAccessService;
+        }
+
+        public override async Task<UserDataAccessResponse> GetUDAByNationalCode(GetUDAByNationalCodeRequest request, ServerCallContext context)
+        {
+            var getUserDataAccess = await _userDataAccessService.GetListByNationalcode(request.NationalCode);
+            var userDataAccess = new UserDataAccessResponse();
+            userDataAccess.UserDataAccessModel.AddRange(getUserDataAccess.Select(x=> new UserDataAccessModel
+            {
+                UserId = x.UserId.ToString(),
+                Nationalcode = x.Nationalcode,
+                RoleTypeId = (int)x.RoleTypeId,
+                Data = x.Data
+            }));
+            return userDataAccess;
+        }
+
+        public override async Task<UserDataAccessResponse> GetUDAByUserId(GetUDAByUserIdRequest request, ServerCallContext context)
+        {
+            var getUserDataAccess = await _userDataAccessService.GetListByUserId(Guid.Parse(request.UserId));
+            var userDataAccess = new UserDataAccessResponse();
+            userDataAccess.UserDataAccessModel.AddRange(getUserDataAccess.Select(x => new UserDataAccessModel
+            {
+                UserId = x.UserId.ToString(),
+                Nationalcode = x.Nationalcode,
+                RoleTypeId = (int)x.RoleTypeId,
+                Data = x.Data
+            }));
+            return userDataAccess;
         }
 
         public override Task<UserAdvocacy> GetUserAdvocacy(UserAdvocacyRequest request, ServerCallContext context)

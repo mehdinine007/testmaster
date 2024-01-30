@@ -1,0 +1,17 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace OrderManagement.Application.Contracts
+{
+    public enum RoleTypeEnum
+    {
+
+        Registrtion=1,
+        OldCar=2,
+        SaleDetailAccess=3
+
+    }
+}
