@@ -98,5 +98,8 @@ namespace OrderManagement.Application.Contracts
 
         public static string ToDateLessThanFromDate = "تاریخ پایان کوچک تر از تاریخ شروع می باشد";
         public static string ToDateLessThanFromDateId = "5005";
+
+        public static string UserDataAccessProductNotFound = "کاربر گرامی شما مجاز به ثبت سفارش برای این برنامه فروش نمی باشید";
+        public static string UserDataAccessProductNotFoundId = "9005";
     }
 }

@@ -6,11 +6,8 @@ using System.Threading.Tasks;
 
 namespace OrderManagement.Application.Contracts
 {
-    public enum RoleTypeEnum
+    public class UserDataAccessProductDto
     {
-
-        Registrtion=1,
-        OldCar=2,
-        ProductAccess=3
+        public int ProductId { get; set; }
     }
 }
