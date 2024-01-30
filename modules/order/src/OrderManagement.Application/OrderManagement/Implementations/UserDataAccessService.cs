@@ -29,20 +29,17 @@ namespace OrderManagement.Application
         public async Task<List<OldCarDto>> OldCarGetList(string nationalcode)
         {
             var userDataAccess = await _grpcClient.GetUserDataAccessByNationalCode(nationalcode, RoleTypeEnum.OldCar);
-            List<OldCarDto> oldCarDtoList = new List<OldCarDto>();
-            userDataAccess.ForEach(x =>
-            {
-                OldCarDto oldCarDto = new OldCarDto();
-                oldCarDto = JsonConvert.DeserializeObject<OldCarDto>(x.Data);
-                oldCarDtoList.Add(oldCarDto);
-            });
-            return oldCarDtoList;
+            if (userDataAccess == null || userDataAccess.Count == 0)
+                return new List<OldCarDto>();
+            return JsonConvert.DeserializeObject<List<OldCarDto>>(userDataAccess.FirstOrDefault().Data);
 
         }
 
         public async Task<IResult> CheckOldCar(string nationalcode, string engineNo, string vin, string chassiNo)
         {
             var oldCars = await OldCarGetList(nationalcode);
+            if (oldCars == null || oldCars.Count == 0)
+                return new ErrorResult(OrderConstant.UserDataAccessOldCarNotFound, OrderConstant.UserDataAccessOldCarNotFoundId);
             var oldCar = oldCars.FirstOrDefault();
             if (oldCar != null)
             {

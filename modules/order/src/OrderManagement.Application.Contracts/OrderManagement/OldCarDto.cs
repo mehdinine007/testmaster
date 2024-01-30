@@ -13,6 +13,5 @@ namespace OrderManagement.Application.Contracts.OrderManagement
         public string Vin { get; set; }
         public string ChassiNo { get; set; }
         public string EngineNo { get; set; }
-        public int BatchNo { get; set; }
     }
 }
