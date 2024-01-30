@@ -48,13 +48,13 @@ namespace UserService.Host
             services.AddControllers();
             services.AddSingleton<UserMongoService>();
             services.AddSingleton<IRolePermissionJob, RolePermissionJob>();
-            string rabbitmqConnection = $"amqp://{configurations.GetSection("RabbitMQ:Connections:Default:UserName").Value}:{configurations.GetSection("RabbitMQ:Connections:Default:Password").Value}@{configurations.GetSection("RabbitMQ:Connections:Default:HostName").Value}:{configurations.GetSection("RabbitMQ:Connections:Default:Port").Value}/";
+            //string rabbitmqConnection = $"amqp://{configurations.GetSection("RabbitMQ:Connections:Default:UserName").Value}:{configurations.GetSection("RabbitMQ:Connections:Default:Password").Value}@{configurations.GetSection("RabbitMQ:Connections:Default:HostName").Value}:{configurations.GetSection("RabbitMQ:Connections:Default:Port").Value}/";
             services.AddHealthChecks()
                 .AddSqlServer(configurations.GetSection("ConnectionStrings:UserManagement").Value)
                 .AddRedis(redisContString)
                 //.AddMongoDb($"mongodb://{mongoConfig.Host}:{mongoConfig.Port}")
                 .AddElasticsearch(configurations.GetSection("ELKConnection").Value)
-                .AddRabbitMQ(new Uri(rabbitmqConnection))
+                //.AddRabbitMQ(new Uri(rabbitmqConnection))
                 .AddUrlGroup(new Uri($"{configurations.GetSection("GatewayManagement:GrpcAddress").Value}/api/services/app/Licence/GetInfo"), httpMethod: HttpMethod.Get, name: "grpc-gateway",
                 configurePrimaryHttpMessageHandler: _ => new HttpClientHandler
                 {
