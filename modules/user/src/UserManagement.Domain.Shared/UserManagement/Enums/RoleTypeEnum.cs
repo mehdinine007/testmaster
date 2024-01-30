@@ -8,10 +8,8 @@ namespace UserManagement.Domain.Shared.UserManagement.Enums
 {
     public enum RoleTypeEnum
     {
-
         Registrtion=1,
         OldCar=2,
-        SaleDetailAccess=3
-
+        ProductAccess = 3
     }
 }
