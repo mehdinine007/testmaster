@@ -58,6 +58,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
     private readonly IOrganizationService _organizationService;
     private readonly IRepository<CarMakerBlackList, long> _blackListRepository;
     private readonly IRepository<CustomerPriority> _customerPriorityRepository;
+    private readonly IUserDataAccessService _userDataAccessService;
 
     public OrderAppService(ICommonAppService commonAppService,
                            IBaseInformationService baseInformationAppService,
@@ -85,7 +86,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
                            IOrganizationService organizationService,
                            IRepository<CarMakerBlackList, long> blackListRepository,
                            IRepository<CustomerPriority> customerPriorityRepository
-        )
+,
+                           IUserDataAccessService userDataAccessService)
     {
         _commonAppService = commonAppService;
         _baseInformationAppService = baseInformationAppService;
@@ -111,6 +113,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         _organizationService = organizationService;
         _blackListRepository = blackListRepository;
         _customerPriorityRepository = customerPriorityRepository;
+        _userDataAccessService = userDataAccessService;
     }
 
 
@@ -222,12 +225,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
             {
                 Provider = CacheProviderEnum.Hybrid
             });
-
-        //var cacheKey = string.Format(RedisConstants.SaleDetailPrefix, commitOrderDto.SaleDetailUId);
-        //_memoryCache.TryGetValue(cacheKey, out SaleDetailDto);
-
-        //var paymentMethodGranted = _configuration.GetValue<bool?>("PaymentMethodGranted") ?? false;
-
         if (SaleDetailDto == null)
         {
             var saleDetailQuery = await _saleDetailRepository.GetQueryableAsync();
@@ -264,14 +261,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     {
                         Provider = CacheProviderEnum.Hybrid
                     });
-                //_memoryCache.Set(string.Format(RedisConstants.SaleDetailPrefix, commitOrderDto.SaleDetailUId.ToString()), SaleDetailDto, DateTime.Now.AddMinutes(4));
-
-                ////await _cacheManager.GetCache("SaleDetail").SetAsync(commitOrderDto.SaleDetailUId.ToString(), SaleDetailDto);
-                //await _distributedCache.SetStringAsync(string.Format(RedisConstants.SaleDetailPrefix, commitOrderDto.SaleDetailUId.ToString()),
-                //    JsonConvert.SerializeObject(SaleDetailDto), new DistributedCacheEntryOptions()
-                //    {
-                //        AbsoluteExpiration = new DateTimeOffset(DateTime.Now.AddSeconds(ttl.TotalSeconds))
-                //    });
             }
         }
         else
@@ -279,6 +268,23 @@ public class OrderAppService : ApplicationService, IOrderAppService
             ttl = SaleDetailDto.SalePlanEndDate.Subtract(DateTime.Now);
 
         }
+
+        #region Check ProductAccess
+        bool hasProductAccess = _configuration.GetValue<bool?>("UserDataAccessConfig:HasProduct") ?? false;
+        bool hasProductAccessExists = _configuration.GetValue<bool?>("UserDataAccessConfig:HasProductExists") ?? false;
+        if (hasProductAccess || hasProductAccessExists)
+        {
+            if (hasProductAccessExists)
+                hasProductAccess = await _userDataAccessService.Exists(nationalCode, RoleTypeEnum.ProductAccess);
+            if (hasProductAccess)
+            {
+                var productAccess = await _userDataAccessService.CheckProductAccess(nationalCode, SaleDetailDto.ProductId);
+                if (!productAccess.Success)
+                    throw new UserFriendlyException(productAccess.Message, productAccess.MessageId);
+            }
+        }
+        #endregion
+
 
         if (SaleDetailDto.SaleProcess == SaleProcessType.CashSale && commitOrderDto.AgencyId is null)
         {

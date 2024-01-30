@@ -22,6 +22,10 @@ namespace OrderManagement.Application
             _grpcClient = grpcClient;
         }
 
+        private async Task<List<UserDataAccessDto>> GetByNationalCode(string nationalCode, RoleTypeEnum roleType)
+        {
+            return await _grpcClient.GetUserDataAccessByNationalCode(nationalCode, roleType);
+        }
         public async Task<List<OldCarDto>> OldCarGetList(string nationalcode)
         {
             var userDataAccess = await _grpcClient.GetUserDataAccessByNationalCode(nationalcode, RoleTypeEnum.OldCar);
@@ -63,10 +67,16 @@ namespace OrderManagement.Application
 
         public async Task<List<UserDataAccessProductDto>> ProductGetList(string nationalCode)
         {
-            var getProducts = await _grpcClient.GetUserDataAccessByNationalCode(nationalCode, RoleTypeEnum.ProductAccess);
+            var getProducts = await GetByNationalCode(nationalCode, RoleTypeEnum.ProductAccess);
             if (getProducts == null || getProducts.Count == 0)
                 return new List<UserDataAccessProductDto>();
             return JsonConvert.DeserializeObject<List<UserDataAccessProductDto>>(getProducts.FirstOrDefault().Data);
+        }
+
+        public async Task<bool> Exists(string nationalcode, RoleTypeEnum roleType)
+        {
+            var userDataAccess = await GetByNationalCode(nationalcode,roleType);
+            return userDataAccess.Any();
         }
     }
 }
