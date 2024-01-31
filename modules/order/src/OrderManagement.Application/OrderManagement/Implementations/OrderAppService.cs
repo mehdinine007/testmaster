@@ -157,7 +157,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
     }
 
-    private void RustySalePlanValidation(CommitOrderDto commitOrder, ESaleTypeEnums esaleTypeId)
+    private async void RustySalePlanValidation(CommitOrderDto commitOrder, ESaleTypeEnums esaleTypeId,string nationalCode)
     {
         if (esaleTypeId == ESaleTypeEnums.WornOutSale)
         {
@@ -170,6 +170,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 throw new UserFriendlyException("فرمت شماره شاسی صحیح نیست");
             if (string.IsNullOrWhiteSpace(commitOrder.Vehicle))
                 throw new UserFriendlyException("نام خودرو به درستی وارد نشده است");
+            var oldCarAccess = await _userDataAccessService.CheckOldCar(nationalCode, commitOrder.EngineNo, commitOrder.Vin, commitOrder.ChassiNo);
+            if (!oldCarAccess.Success)
+                throw new UserFriendlyException(oldCarAccess.Message, oldCarAccess.MessageId);
             commitOrder.Vin = commitOrder.Vin.ToUpper();
             return;
         }
@@ -314,7 +317,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
         ////////////////conntrol repeated order in saledetails// iran&&varedat
 
         CheckSaleDetailValidation(SaleDetailDto);
-        RustySalePlanValidation(commitOrderDto, SaleDetailDto.ESaleTypeId);
+        RustySalePlanValidation(commitOrderDto, SaleDetailDto.ESaleTypeId, nationalCode);
+
         if (SaleDetailDto.SaleProcess == SaleProcessType.RegularSale)
             if (!await NationalCodeExistsInPriority(nationalCode))
                 throw new UserFriendlyException("کد ملی متقاضی در لیست الویت بندی وجود نداشت");
