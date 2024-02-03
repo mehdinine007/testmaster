@@ -5,6 +5,7 @@
         public const string UnknownError = "خطای نامشخص";
         public const string ErrorInConnectToPsp = "خطا در برقراری ارتباط با درگاه";
         public const string ErrorInHandShakeInput_NationalCode = "کدملی نامعتبر است";
+        public const string ErrorInHandShakeInput_NationalCode_Required = "کد ملی الزامیست";
         public const string ErrorInHandShakeInput_Mobile = "موبایل نامعتبر است";
         public const string ErrorInHandShakeInput_InactiveAccount = "حساب یا درگاه نامعتبر است";
         public const string ErrorInHandShakeInput_Amount = "مبلغ نامعتبر است";
@@ -47,23 +48,6 @@
         public const string ReverseStart = "ReverseStart";
         public const string ReverseException = "ReverseException";
         public const string ReverseResult = "ReverseResult";
-        #endregion
-
-        #region Url
-        public const string IranKishHandShakeUrlInGateway = "/api/services/app/GatewayService/HandShakeWithIranKish";
-        public const string IranKishVerifyUrlInGateway = "/api/services/app/GatewayService/VerifyToIranKish";
-        public const string IranKishInquiryUrlInGateway = "/api/services/app/GatewayService/InquiryToIranKish";
-        public const string IranKishReverseUrlInGateway = "/api/services/app/GatewayService/ReverseToIranKish";        
-        public const string IranKishRedirectUrl = "https://ikc.shaparak.ir/iuiv3/IPG/Index";
-        public const string IranKishOriginUrl = "https://ikc.shaparak.ir";
-
-        public const string MellatHandShakeUrlInGateway = "/api/services/app/GatewayService/HandShakeWithMellat";
-        public const string MellatVerifyUrlInGateway = "/api/services/app/GatewayService/VerifyToMellat";
-        public const string MellatInquiryUrlInGateway = "/api/services/app/GatewayService/InquiryToMellat";
-        public const string MellatReverseUrlInGateway = "/api/services/app/GatewayService/ReverseToMellat";        
-        public const string MellatRedirectUrl1 = "https://bpm.shaparak.ir/pgwchannel/startpay.mellat";
-        public const string MellatRedirectUrl2 = "https://bpm.shaparak.ir/pgwchannel2/startpay.mellat";
-        public const string MellatOriginUrl = "https://bpm.shaparak.ir";
-        #endregion
+        #endregion 
     }
 }

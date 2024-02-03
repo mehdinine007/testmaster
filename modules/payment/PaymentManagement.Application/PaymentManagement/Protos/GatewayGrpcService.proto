@@ -12,12 +12,16 @@ package GatewayService;
 service GatewayServiceGrpc{
 	rpc HandShakeWithIranKish(IranKishHandShakeInput) returns (Output);
 	rpc HandShakeWithMellat(MellatHandShakeInput) returns (Output);
+	rpc HandShakeWithParsian(ParsianHandShakeInput) returns (Output);
 	rpc VerifyToIranKish(IranKishVerifyInput) returns (Output);
 	rpc VerifyToMellat(MellatVerifyInput) returns (Output);
+	rpc VerifyToParsian(ParsianVerifyInput) returns (Output);
     rpc InquiryToIranKish(IranKishInquiryInput) returns (Output);
 	rpc InquiryToMellat(MellatInquiryInput) returns (Output);
+	rpc InquiryToParsian(ParsianInquiryInput) returns (Output);
     rpc ReverseToIranKish(IranKishReverseInput) returns (Output);
     rpc ReverseToMellat(MellatReverseInput) returns (Output);
+	rpc ReverseToParsian(ParsianReverseInput) returns (Output);
 }
 message Output{
 	string Result = 1;
@@ -44,6 +48,17 @@ message MellatHandShakeInput{
 	string EncryptedNationalCode = 8;
 	int32 Switch = 9;
 }
+message ParsianHandShakeInput{
+	string LoginAccount = 1;
+	string CallBackUrl = 2;
+	int64 Amount = 3;
+	int32 OrderId = 4;
+	string AdditionalData = 5;
+	string Originator = 6;
+	string Key = 7;
+    string IV = 8;
+    int32 ThirdPartyCode = 9;
+}
 message IranKishVerifyInput{
 	string TerminalId = 1;
 	string RetrievalReferenceNumber = 2;
@@ -59,6 +74,10 @@ message MellatVerifyInput{
 	int64 SaleReferenceId = 6;
 	int32 Switch = 7;
 }
+message ParsianVerifyInput{
+	string LoginAccount = 1;
+	int64 Token = 2;
+}
 message IranKishInquiryInput{
 	string TerminalId = 1;
 	string PassPhrase = 2;
@@ -71,6 +90,12 @@ message MellatInquiryInput{
 	string ReportServicePassword = 3;
 	int64 OrderId = 4;
 	int32 Switch = 5;
+}
+message ParsianInquiryInput{
+	int32 OrderId = 1;
+	int64 Token = 2;	
+	string ReportServiceUserName = 3;
+	string ReportServicePassword = 4;
 }
 message IranKishReverseInput{
 	string TerminalId = 1;
@@ -86,4 +111,8 @@ message MellatReverseInput{
 	int64 SaleOrderId = 5;
 	int64 SaleReferenceId = 6;
 	int32 Switch = 7;
+}
+message ParsianReverseInput{
+	string LoginAccount = 1;
+	int64 Token = 2;
 }

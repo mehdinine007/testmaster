@@ -1,0 +1,38 @@
+{
+  "Schema": [
+  ],
+  "Tables": [
+    {
+      "Id": "Psp",
+      "Priority": 1
+    },
+    {
+      "Id": "Customer",
+      "Priority": 2
+    },
+    {
+      "Id": "Account",
+      "Priority": 3
+    },
+    {
+      "Id": "PspAccount",
+      "Priority": 4
+    },
+    {
+      "Id": "PaymentStatus",
+      "Priority": 5
+    },
+    {
+      "Id": "Payment",
+      "Priority": 6
+    },
+    {
+      "Id": "PaymentLog",
+      "Priority": 7
+    }
+  ],
+  "Programmability": [
+  ],
+  "Patch": [
+  ]
+}

@@ -1,8 +1,16 @@
 ﻿using GatewayManagement.Application.Contracts.Dtos;
 using GatewayManagement.Application.Contracts.IServices;
 using GatewayManagement.Application.IranKish;
-using GatewayManagement.Application.Utilities;
+using GatewayManagement.Application.Parsian;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using Org.BouncyCastle.Ocsp;
+using ParsianConfirmService;
+using ParsianReverseService;
+using ParsianSaleService;
+using System.Net;
+using System.Net.Http.Headers;
+using System.Text;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Auditing;
 
@@ -10,6 +18,13 @@ namespace GatewayManagement.Application.Servicess
 {
     public class GatewayAppService : ApplicationService, IGatewayAppService
     {
+        private readonly IConfiguration _config;
+
+        public GatewayAppService(IConfiguration config)
+        {
+            _config = config;
+        }
+
         [Audited]
         public async Task<OutputDto> HandShakeWithIranKish(IranKishHandShakeInputDto input)
         {
@@ -30,7 +45,7 @@ namespace GatewayManagement.Application.Servicess
             };
 
             string request = CreateJsonRequest.CreateJasonRequest(iPGData);
-            Uri url = new(Constants.IranKishGetTokenUrl);
+            Uri url = new(_config.GetValue<string>("PSP:IranKishGetTokenUrl"));
             string jresponse = webHelper.Post(url, request);
             return new() { Result = jresponse };
         }
@@ -86,11 +101,28 @@ namespace GatewayManagement.Application.Servicess
             return new() { Result = string.Empty };
         }
         [Audited]
+        public async Task<OutputDto> HandShakeWithParsian(ParsianHandShakeInputDto input)
+        {
+            var service = new SaleServiceSoapClient(SaleServiceSoapClient.EndpointConfiguration.SaleServiceSoap);
+            var request = new ClientSaleRequestData
+            {
+                LoginAccount = input.LoginAccount,
+                CallBackUrl = input.CallBackUrl,
+                Amount = input.Amount,
+                OrderId = input.OrderId,
+                AdditionalData = JsonConvert.SerializeObject(new { NationalEncryptedId = AesOperation.EncryptString("0|" + input.AdditionalData + "|12345678|", input.Key, input.IV), input.ThirdPartyCode, Data = "" }),
+                Originator = input.Originator
+            };
+
+            var response = await service.SalePaymentRequestAsync(request);
+            return new() { Result = JsonConvert.SerializeObject(response.Body.SalePaymentRequestResult) };
+        }
+        [Audited]
         public async Task<OutputDto> VerifyToIranKish(IranKishVerifyInputDto input)
         {
             WebHelper webHelper = new();
             string requestVerifyJson = JsonConvert.SerializeObject(input);
-            Uri url = new(Constants.IranKishVerifyUrl);
+            Uri url = new(_config.GetValue<string>("PSP:IranKishVerifyUrl"));
             string jresponse = webHelper.Post(url, requestVerifyJson);
             return new() { Result = jresponse };
         }
@@ -122,11 +154,25 @@ namespace GatewayManagement.Application.Servicess
             return new() { Result = string.Empty };
         }
         [Audited]
+        public async Task<OutputDto> VerifyToParsian(ParsianVerifyInputDto input)
+        {
+            var service = new ConfirmServiceSoapClient(ConfirmServiceSoapClient.EndpointConfiguration.ConfirmServiceSoap);
+
+            var request = new ClientConfirmRequestData
+            {
+                LoginAccount = input.LoginAccount,
+                Token = input.Token
+            };
+
+            var response = await service.ConfirmPaymentAsync(request);
+            return new() { Result = JsonConvert.SerializeObject(response.Body.ConfirmPaymentResult) };
+        }
+        [Audited]
         public async Task<OutputDto> InquiryToIranKish(IranKishInquiryInputDto input)
         {
             WebHelper webHelper = new();
             string requestVerifyJson = JsonConvert.SerializeObject(input);
-            Uri url = new(Constants.IranKishInquiryUrl);
+            Uri url = new(_config.GetValue<string>("PSP:IranKishInquiryUrl"));
             string jresponse = webHelper.Post(url, requestVerifyJson);
             return new() { Result = jresponse };
         }
@@ -147,11 +193,36 @@ namespace GatewayManagement.Application.Servicess
             return new() { Result = inquiryResponse };
         }
         [Audited]
+        public async Task<OutputDto> InquiryToParsian(ParsianInquiryInputDto input)
+        {
+            var data = new { orderId = input.OrderId, token = input.Token };
+
+            Uri baseAddressUri = new(_config.GetValue<string>("PSP:ParsianInquiryUrl"), UriKind.Absolute);
+
+            string authParams = string.Format("{0}|{1}", input.ReportServiceUserName, input.ReportServicePassword);
+            byte[] bytes = Encoding.UTF8.GetBytes(authParams);
+            string encodedAuthParams = Convert.ToBase64String(bytes);
+
+            HttpClient client = new HttpClient();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(AuthenticationSchemes.Basic.ToString(), encodedAuthParams);
+            client.DefaultRequestHeaders.Add("apiVersion", "1.0");
+
+            var requestJson = JsonConvert.SerializeObject(data);
+
+            HttpContent queryString = new StringContent(requestJson, Encoding.UTF8, "application/json");
+
+            var res = client.PostAsync(baseAddressUri, queryString).Result;
+
+            var jresponse = res.Content.ReadAsStringAsync().Result;
+
+            return new() { Result = jresponse };
+        }
+        [Audited]
         public async Task<OutputDto> ReverseToIranKish(IranKishReverseInputDto input)
         {
             WebHelper webHelper = new();
             string requestVerifyJson = JsonConvert.SerializeObject(input);
-            Uri url = new(Constants.IranKishReverseUrl);
+            Uri url = new(_config.GetValue<string>("PSP:IranKishReverseUrl"));
             string jresponse = webHelper.Post(url, requestVerifyJson);
             return new() { Result = jresponse };
         }
@@ -181,6 +252,20 @@ namespace GatewayManagement.Application.Servicess
                 return new() { Result = JsonConvert.SerializeObject(verifyResult) };
             }
             return new() { Result = string.Empty };
+        }
+        [Audited]
+        public async Task<OutputDto> ReverseToParsian(ParsianReverseInputDto input)
+        {
+            var service = new ReversalServiceSoapClient(ReversalServiceSoapClient.EndpointConfiguration.ReversalServiceSoap);
+
+            var request = new ClientReversalRequestData
+            {
+                LoginAccount = input.LoginAccount,
+                Token = input.Token
+            };
+
+            var response = await service.ReversalRequestAsync(request);
+            return new() { Result = JsonConvert.SerializeObject(response.Body.ReversalRequestResult) };
         }
     }
 }
