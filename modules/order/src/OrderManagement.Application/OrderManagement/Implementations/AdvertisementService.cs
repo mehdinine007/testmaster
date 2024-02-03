@@ -79,7 +79,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
         }
         public async Task<List<AdvertisementDto>> GetList(List<AttachmentEntityTypeEnum> attachmentType = null, List<AttachmentLocationEnum> attachmentlocation = null)
         {
-            var advertisementQuery = (await _advertisementRepository.GetQueryableAsync()).Include(x => x.AdvertisementDetails);
+            var advertisementQuery = (await _advertisementRepository.GetQueryableAsync()).AsNoTracking().Include(x => x.AdvertisementDetails);
             var advertisement = advertisementQuery.ToList();
             var advertisementDto = ObjectMapper.Map<List<Advertisement>, List<AdvertisementDto>>(advertisement);
             advertisementDto.ForEach(async x =>
@@ -103,7 +103,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
                 var ex = new ValidationException(validationResult.Errors);
                 throw new UserFriendlyException(ex.Message, ValidationConstant.ItemNotFound);
             }
-            var advertisement = (await _advertisementRepository.GetQueryableAsync())
+            var advertisement = (await _advertisementRepository.GetQueryableAsync()).AsNoTracking()
                                         .FirstOrDefault(x => x.Id == advertisementCreateOrUpdateDto.Id);
             var advertisementMap = ObjectMapper.Map<AdvertisementCreateOrUpdateDto, Advertisement>(advertisementCreateOrUpdateDto, advertisement);
 

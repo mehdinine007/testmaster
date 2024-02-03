@@ -133,7 +133,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
                 var ex = new ValidationException(validationResult.Errors);
                 throw new UserFriendlyException(ex.Message, ValidationConstant.ItemNotFound);
             }
-            var advertisementDetail = (await _advertisementDetailRepository.GetQueryableAsync())
+            var advertisementDetail = (await _advertisementDetailRepository.GetQueryableAsync()).AsNoTracking()
             .FirstOrDefault(x => x.Id == advertisementDetailCreateOrUpdateDto.Id);
             var advertisementDetailMap = ObjectMapper.Map<AdvertisementDetailCreateOrUpdateDto, AdvertisementDetail>(advertisementDetailCreateOrUpdateDto, advertisementDetail);
             var result = await _advertisementDetailRepository.UpdateAsync(advertisementDetailMap);
