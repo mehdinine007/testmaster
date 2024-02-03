@@ -48,6 +48,18 @@ namespace CompanyManagement.EfCore
                 entity.Property(x => x.CarDesc)
                     .HasMaxLength(250);
             });
+
+            builder.Entity<UserRejectionFromBank>(entity =>
+            {
+
+                entity.ToTable(nameof(UserRejectionFromBank));
+                entity.Property(x => x.nationalcode)
+                .IsRequired();
+            });
+
+
+
+
         }
     }
 }

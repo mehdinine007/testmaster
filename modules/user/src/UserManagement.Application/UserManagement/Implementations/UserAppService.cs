@@ -304,7 +304,7 @@ IFG.Core.Caching.ICacheManager cacheManager)
                 var advocacyuser = _bankAppService.CheckAdvocacy(input.NationalCode);
                 input.Shaba = advocacyuser.ShebaNumber;
                 input.AccountNumber = advocacyuser.AccountNumber;
-                input.BankId = (int)advocacyuser.BankId;
+                input.BankId = advocacyuser.BankId;
             }
             else
             {

@@ -18,6 +18,7 @@ using Licence;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Volo.Abp.ObjectMapping;
+using Microsoft.EntityFrameworkCore;
 
 namespace UserManagement.Application.UserManagement.Implementations
 {
@@ -46,7 +47,7 @@ namespace UserManagement.Application.UserManagement.Implementations
             var roleperm = await GetList();
             foreach (var role in roleperm)
             {
-                await _cacheManager.SetAsync("Role" + role.Code, RedisCoreConstant.RolePermissionPrefix, role.Permissions, 90000, new CacheOptions { Provider = CacheProviderEnum.Hybrid });
+                await _cacheManager.SetAsync("Role" + role.Code, RedisCoreConstant.RolePermissionPrefix, role.Permissions, 2592000, new CacheOptions { Provider = CacheProviderEnum.Hybrid });
             }
         }
         [SecuredOperation(RolePermissionServicePermissionConstants.GetList)]
@@ -191,6 +192,29 @@ namespace UserManagement.Application.UserManagement.Implementations
 
                 await Add(rolePermission);
             }
+            if (type == RolePermissionEnum.Bank || (type == null || type == RolePermissionEnum.None))
+            {
+                await DeleteRolePermission(RolePermissionEnum.Bank, rolePermissions);
+                var serviceList = new List<string>();
+                var permission = permissions.Where(x => x.Code == ConstantInfo.ModuleCompany).ToList();
+
+                foreach (var per in permission)
+                {
+                    var children = per.Children.Where(x => x.Code == ConstantInfo.SubModuleBank).ToList();
+                    foreach (var child in children)
+                    {
+                        serviceList.AddRange(child.Children.Select(c => c.Code).ToList());
+                    }
+                }
+                rolePermission.Title = RolePermissionEnum.Bank.ToString();
+                rolePermission.Type = RolePermissionEnum.Bank;
+                rolePermission.Permissions = serviceList;
+                rolePermission.Code = ((int)RolePermissionEnum.Bank).ToString().PadLeft(4, '0');
+
+
+                await Add(rolePermission);
+
+            }
             return true;
         }
 
@@ -199,7 +223,8 @@ namespace UserManagement.Application.UserManagement.Implementations
             if (rolePermissions.Count() > 0)
             {
                 var existRole = rolePermissions.Where(x => x.Type == type).FirstOrDefault();
-                await _rolePermissionWritRepository.HardDeleteAsync(ObjectMapper.Map<RolePermission, RolePermissionWrite>(existRole), autoSave: true);
+                if (existRole != null)
+                    await _rolePermissionWritRepository.HardDeleteAsync(ObjectMapper.Map<RolePermission, RolePermissionWrite>(existRole), autoSave: true);
             }
         }
 

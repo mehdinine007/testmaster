@@ -13,5 +13,7 @@ namespace Licence
         public const string ModuleCompany = "0003";
         public const string ModuleWorkFlow = "0004";
         public const string ModuleAdminPanel = "0005";
+        public const string SubModuleBank = ModuleCompany+"0002";
+
     }
 }

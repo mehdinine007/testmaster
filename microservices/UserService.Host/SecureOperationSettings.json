@@ -1192,6 +1192,43 @@
             "children": []
           }
         ]
+      },
+      {
+        "title": "BankAppService",
+        "code": "00030002",
+        "displayName": "سرویس مدیریت بانک",
+        "children": [
+          {
+            "title": "InquiryUserRejectionFromBank",
+            "code": "000300020001",
+            "displayName": "لیست افراد انصراف داده از طریق بانک",
+            "children": []
+          },
+          {
+            "title": "SaveAdvocacyUsersFromBank",
+            "code": "000300020002",
+            "displayName": "ثبت حساب وکالتی از طرف بانک",
+            "children": []
+          },
+          {
+            "title": "SaveUserRejectionFromBank",
+            "code": "000300020003",
+            "displayName": "ثبت انصراف از طریق بانک",
+            "children": []
+          },
+          {
+            "title": "DeleteAdvocayUserFromBank",
+            "code": "000300020004",
+            "displayName": "حذف حساب وکالتی از طریق بانک",
+            "children": []
+          },
+          {
+            "title": "InquiryAdvocacyUsersFromBank",
+            "code": "000300020005",
+            "displayName": "حساب وکالتی ثبت شده توسط بانک",
+            "children": []
+          }
+        ]
       }
     ]
   },
