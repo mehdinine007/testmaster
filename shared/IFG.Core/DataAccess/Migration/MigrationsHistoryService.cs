@@ -1,21 +1,23 @@
 ﻿using IFG.Core.IOC;
-using IFG.Core.Utility.Migration.Domain;
-using IFG.Core.Utility.Migration.Models;
+using IFG.Core.DataAccess.Migration.Domain;
+using IFG.Core.DataAccess.Migration.Models;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
-namespace IFG.Core.Utility.Migration
+namespace IFG.Core.DataAccess.Migration
 {
     public class MigrationsHistoryService 
     {
         private readonly DpMigrationsHistory _migrationsHistoryDal;
         private readonly IConfiguration _configuration;
+        private readonly MigrationLog _log;
         public string Version { get; set; }
-        public MigrationsHistoryService(string connStringName,string version)
+        public MigrationsHistoryService(string version)
         {
-            _migrationsHistoryDal = new DpMigrationsHistory(connStringName);
+            _migrationsHistoryDal = new DpMigrationsHistory("Default");
             Version = version;
             _configuration = ServiceTool.Resolve<IConfiguration>();
+            _log = new MigrationLog();
         }
         public bool UpdateDatabase()
         {
@@ -32,6 +34,7 @@ namespace IFG.Core.Utility.Migration
                 .ToList();
 
             var fixVersion = Version;
+            _log.Write("**********Schema******************");
             foreach (var row in migrationData.Schema.OrderBy(x => x.Priority))
             {
                 Execute(migrationsHistory, new MigrationsHistory()
@@ -43,6 +46,8 @@ namespace IFG.Core.Utility.Migration
                 }, row, false);
             }
 
+            _log.Write("");
+            _log.Write("**********Tables******************");
             foreach (var row in migrationData.Tables.OrderBy(x => x.Priority))
             {
                 Execute(migrationsHistory, new MigrationsHistory()
@@ -54,6 +59,8 @@ namespace IFG.Core.Utility.Migration
                 }, row, false);
             }
 
+            _log.Write("");
+            _log.Write("**********Patch******************");
             foreach (var row in migrationData.Patch.Where(x => string.Compare(x.Version, fixVersion) <= 0).OrderBy(x => x.Priority))
             {
                 if (!migrationsHistory.Any(x => x.MigrationId == row.Id && x.StateName == "Patch"))
@@ -69,6 +76,8 @@ namespace IFG.Core.Utility.Migration
 
             }
 
+            _log.Write("");
+            _log.Write("**********Programmability********");
             foreach (var row in migrationData.Programmability.OrderBy(x => x.Priority))
             {
                 Execute(migrationsHistory, new MigrationsHistory()
@@ -103,6 +112,7 @@ namespace IFG.Core.Utility.Migration
 
         private void Execute(List<MigrationsHistory> migrationsHistory, MigrationsHistory data, MigrationItem migrationItem, bool dropObject)
         {
+            _log.Write("Migration : " + data.MigrationId);
             var _migrationsHistory = migrationsHistory
                 .Where(x => x.MigrationId == data.MigrationId && x.StateName == data.StateName)
                 .FirstOrDefault();

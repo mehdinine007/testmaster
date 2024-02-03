@@ -25,12 +25,12 @@ BEGIN
 			,cod.CarDesc 
 			,cod.CarCode
 			,FactorDate = FORMAT(cod.FactorDate, 'yyyy/MM/dd', 'fa')
-		 from Esale_Company.dbo.ClientsOrderDetailByCompany cod
-		 left join Esale_Company.dbo.CompanyPaypaidPrices cp
+		 from [CompanyDb].dbo.ClientsOrderDetailByCompany cod
+		 left join [CompanyDb].dbo.CompanyPaypaidPrices cp
 		 on cp.ClientsOrderDetailByCompanyId = cod.Id
-		 left join Esale_Company.dbo.CompanySaleCallDates cs
+		 left join [CompanyDb].dbo.CompanySaleCallDates cs
 		 on cs.ClientsOrderDetailByCompanyId = cod.Id
-		 inner join EsaleDb.dbo.AbpUsers us
+		 inner join [OrderDb].dbo.AbpUsers us
 		 on us.NationalCode = cod.NationalCode
 		   and ((isnull(@nationalCode,'') = '' and @Type = 1) or cod.NationalCode = @nationalCode)
 

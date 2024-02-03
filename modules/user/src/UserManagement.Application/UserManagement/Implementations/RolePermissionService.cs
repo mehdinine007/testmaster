@@ -47,7 +47,7 @@ namespace UserManagement.Application.UserManagement.Implementations
             var roleperm = await GetList();
             foreach (var role in roleperm)
             {
-                await _cacheManager.SetAsync("Role" + role.Code, RedisCoreConstant.RolePermissionPrefix, role.Permissions, 90000, new CacheOptions { Provider = CacheProviderEnum.Hybrid });
+                await _cacheManager.SetAsync("Role" + role.Code, RedisCoreConstant.RolePermissionPrefix, role.Permissions, 2592000, new CacheOptions { Provider = CacheProviderEnum.Hybrid });
             }
         }
         [SecuredOperation(RolePermissionServicePermissionConstants.GetList)]

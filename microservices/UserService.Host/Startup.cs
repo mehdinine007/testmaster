@@ -24,15 +24,15 @@ namespace UserService.Host
             var configurations = services.GetConfiguration();
             var redisCacheSection = configurations.GetSection("RedisCache");
             var config = redisCacheSection.Get<RedisConfig>();
-            var connectionString = "";
+            var redisContString = "";
             if (config.Password.IsNullOrEmpty())
-                connectionString = $"{config.Url}:{config.Port}";
+                redisContString = $"{config.Url}:{config.Port}";
             else
-                connectionString = $"{config.Url}:{config.Port},password={config.Password}";
+                redisContString = $"{config.Url}:{config.Port},password={config.Password}";
             services.AddApplication<UserServiceHostModule>();
             services.AddStackExchangeRedisCache(options =>
             {
-                options.Configuration = connectionString;
+                options.Configuration = redisContString;
             });
             if (configurations["IsElkEnabled"] == "1")
             {
@@ -48,7 +48,19 @@ namespace UserService.Host
             services.AddControllers();
             services.AddSingleton<UserMongoService>();
             services.AddSingleton<IRolePermissionJob, RolePermissionJob>();
-            
+            //string rabbitmqConnection = $"amqp://{configurations.GetSection("RabbitMQ:Connections:Default:UserName").Value}:{configurations.GetSection("RabbitMQ:Connections:Default:Password").Value}@{configurations.GetSection("RabbitMQ:Connections:Default:HostName").Value}:{configurations.GetSection("RabbitMQ:Connections:Default:Port").Value}/";
+            services.AddHealthChecks()
+                .AddSqlServer(configurations.GetSection("ConnectionStrings:UserManagement").Value)
+                .AddRedis(redisContString)
+                //.AddMongoDb($"mongodb://{mongoConfig.Host}:{mongoConfig.Port}")
+                .AddElasticsearch(configurations.GetSection("ELKConnection").Value)
+                //.AddRabbitMQ(new Uri(rabbitmqConnection))
+                .AddUrlGroup(new Uri($"{configurations.GetSection("GatewayManagement:GrpcAddress").Value}/api/services/app/Licence/GetInfo"), httpMethod: HttpMethod.Get, name: "grpc-gateway",
+                configurePrimaryHttpMessageHandler: _ => new HttpClientHandler
+                {
+                    ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; }
+                });
+
             ServiceTool.Create(services);
         }
 

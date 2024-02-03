@@ -4,9 +4,9 @@ using Microsoft.Extensions.Configuration;
 using System.Data;
 using Dapper;
 using Microsoft.Data.SqlClient;
-using IFG.Core.Utility.Migration.Domain;
+using IFG.Core.DataAccess.Migration.Domain;
 
-namespace IFG.Core.Utility.Migration
+namespace IFG.Core.DataAccess.Migration
 {
     public class DpMigrationsHistory
     {

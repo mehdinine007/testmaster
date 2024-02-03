@@ -31,6 +31,8 @@ using CompanyManagement.Application.CompanyManagement;
 using CompanyManagement.Application.CompanyManagement.Grpc;
 using Licence;
 using System.Collections.Generic;
+using HealthChecks.UI.Client;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
 namespace CompanyService.Host
 {
@@ -187,6 +189,11 @@ namespace CompanyService.Host
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapGrpcService<UserGrpcClientService>();
+                endpoints.MapHealthChecks("/health", new HealthCheckOptions
+                {
+                    Predicate = _ => true,
+                    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+                });
             });
 
             app.UseAbpRequestLocalization(); //TODO: localization?
