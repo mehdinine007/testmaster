@@ -8,5 +8,8 @@
         public int OrderId { get; set; }
         public string AdditionalData { get; set; }
         public string Originator { get; set; }
+        public string Key { get; set; }
+        public string IV { get; set; }
+        public int ThirdPartyCode { get; set; }
     }
 }

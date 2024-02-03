@@ -25,10 +25,16 @@ namespace GatewayManagement
         public async Task<OutputDto> HandShakeWithMellat(MellatHandShakeInputDto input) => await _gatewayAppService.HandShakeWithMellat(input);
 
         [HttpPost]
+        public async Task<OutputDto> HandShakeWithParsian(ParsianHandShakeInputDto input) => await _gatewayAppService.HandShakeWithParsian(input);
+
+        [HttpPost]
         public async Task<OutputDto> VerifyToIranKish(IranKishVerifyInputDto input) => await _gatewayAppService.VerifyToIranKish(input);
 
         [HttpPost]
         public async Task<OutputDto> VerifyToMellat(MellatVerifyInputDto input) => await _gatewayAppService.VerifyToMellat(input);
+
+        [HttpPost]
+        public async Task<OutputDto> VerifyToParsian(ParsianVerifyInputDto input) => await _gatewayAppService.VerifyToParsian(input);
 
         [HttpPost]
         public async Task<OutputDto> InquiryToIranKish(IranKishInquiryInputDto input) => await _gatewayAppService.InquiryToIranKish(input);
@@ -37,10 +43,15 @@ namespace GatewayManagement
         public async Task<OutputDto> InquiryToMellat(MellatInquiryInputDto input) => await _gatewayAppService.InquiryToMellat(input);
 
         [HttpPost]
+        public async Task<OutputDto> InquiryToParsian(ParsianInquiryInputDto input) => await _gatewayAppService.InquiryToParsian(input);
+
+        [HttpPost]
         public async Task<OutputDto> ReverseToIranKish(IranKishReverseInputDto input) => await _gatewayAppService.ReverseToIranKish(input);
 
         [HttpPost]
         public async Task<OutputDto> ReverseToMellat(MellatReverseInputDto input) => await _gatewayAppService.ReverseToMellat(input);
 
+        [HttpPost]
+        public async Task<OutputDto> ReverseToParsian(ParsianReverseInputDto input) => await _gatewayAppService.ReverseToParsian(input);
     }
 }

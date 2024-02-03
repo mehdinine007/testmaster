@@ -69,7 +69,7 @@ namespace PaymentManagement
                 PaymentId = int.Parse(keyValueList["requestId"] ?? "0"),
                 Psp = PspEnum.IranKish.ToString(),
                 Message = "BackFromPspHtmlContent",
-                Parameter = res
+                Parameter = JsonConvert.SerializeObject(result)
             });
             return Content("");
         }
@@ -103,7 +103,41 @@ namespace PaymentManagement
                 PaymentId = int.Parse(keyValueList["SaleOrderId"] ?? "0"),
                 Psp = PspEnum.Mellat.ToString(),
                 Message = "BackFromPspHtmlContent",
-                Parameter = res
+                Parameter = JsonConvert.SerializeObject(result)
+            });
+            return Content("");
+        }
+
+        [HttpPost]
+        public async Task<ContentResult> BackFromParsianAsync()
+        {
+            var keyValueList = new Dictionary<string, string>();
+
+            foreach (string key in HttpContext.Request.Form.Keys)
+            {
+                keyValueList.Add(key, HttpContext.Request.Form[key]);
+            }
+            keyValueList.Add("OriginUrl", HttpContext.Request.Headers.Origin);
+
+            var pspJsonResult = JsonConvert.SerializeObject(keyValueList);
+
+            var result = await _paymentAppService.BackFromParsianAsync(pspJsonResult);
+
+            NavigateToPsp dp = new()
+            {
+                FormName = "form1",
+                Method = "post",
+                Url = _paymentAppService.GetCallBackUrl(result.PaymentId)
+            };
+
+            dp.AddKey("data", JsonConvert.SerializeObject(result));
+            var res = dp.Post(HttpContext);
+            await _paymentAppService.InsertPaymentLogAsync(new PaymentLogDto
+            {
+                PaymentId = int.Parse(keyValueList["OrderId"] ?? "0"),
+                Psp = PspEnum.Parsian.ToString(),
+                Message = "BackFromPspHtmlContent",
+                Parameter = JsonConvert.SerializeObject(result)
             });
             return Content("");
         }
@@ -143,41 +177,6 @@ namespace PaymentManagement
         {
             var data = HttpContext.Request.Form["data"];
             var result = JsonConvert.DeserializeObject(data);
-            return null;
-        }
-
-        [HttpPost]
-        public async Task<ActionResult> RedirctToIranKish(string token)
-        {
-            NavigateToPsp dp = new()
-            {
-                FormName = "form1",
-                Method = "post"
-            };
-            dp.Url = "https://ikc.shaparak.ir/iuiv3/IPG/Index";
-            dp.AddKey("tokenIdentity", token);
-            dp.Post(HttpContext);
-
-            return null;
-        }
-
-        [HttpPost]
-        public async Task<ActionResult> RedirctToMellat(string refId, string nationalCode, string mobile)
-        {
-            NavigateToPsp dp = new()
-            {
-                FormName = "form1",
-                Method = "post"
-            };
-            dp.Url = "https://bpm.shaparak.ir/pgwchannel/startpay.mellat";
-            dp.AddKey("RefId", refId);
-            if (!string.IsNullOrEmpty(nationalCode))
-                dp.AddKey("Enc", nationalCode);
-            if (!string.IsNullOrEmpty(mobile))
-                dp.AddKey("MobileNo", mobile);
-
-            dp.Post(HttpContext);
-
             return null;
         }
     }
