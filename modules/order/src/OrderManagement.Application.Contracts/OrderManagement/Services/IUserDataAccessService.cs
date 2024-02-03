@@ -17,5 +17,6 @@ namespace OrderManagement.Application.Contracts
 
         Task<List<UserDataAccessProductDto>> ProductGetList(string nationalCode);
         Task<IResult> CheckProductAccess(string nationalCode,int productId);
+        Task<bool> ExistsAndCheckProductAccess(string nationalcode, RoleTypeEnum roleType, int productId);
     }
 }

@@ -1,6 +1,7 @@
 ﻿
 using Esale.Share.Authorize;
 using IFG.Core.Utility.Results;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,7 +23,7 @@ namespace UserManagement.Application.UserManagement.Implementations
     public class UserDataAccessService : ApplicationService, IUserDataAccessService
     {
         private readonly IRepository<UserDataAccess, int> _userDataAccessRepository;
-     
+
 
         public UserDataAccessService(IRepository<UserDataAccess, int> userDataAccessRepository)
         {
@@ -39,17 +40,31 @@ namespace UserManagement.Application.UserManagement.Implementations
 
         public async Task<List<UserDataAccessDto>> GetListByNationalcode(string nationalcode, RoleTypeEnum roleType)
         {
-            var userDataAccessQuery = (await _userDataAccessRepository.GetQueryableAsync());
-            var userDataAccess = userDataAccessQuery.Where(x => x.Nationalcode == nationalcode && x.RoleTypeId == roleType).ToList();
-            return ObjectMapper.Map<List<UserDataAccess>, List<UserDataAccessDto>>(userDataAccess);
+            var userDataAccessQuery = (await _userDataAccessRepository.GetQueryableAsync()).AsNoTracking();
+            var userDataAccess= userDataAccessQuery.Select(x => new UserDataAccessDto
+            {
+                Nationalcode = x.Nationalcode,
+                Data = x.Data,
+                RoleTypeId = x.RoleTypeId,
+                UserId = x.UserId
+
+            }).Where(x => x.Nationalcode == nationalcode && x.RoleTypeId == roleType).ToList();
+            return userDataAccess;
         }
 
-        public async  Task<List<UserDataAccessDto>> GetListByUserId(Guid userId, RoleTypeEnum roleType)
+        public async Task<List<UserDataAccessDto>> GetListByUserId(Guid userId, RoleTypeEnum roleType)
         {
 
-            var userDataAccessQuery = (await _userDataAccessRepository.GetQueryableAsync());
-            var userDataAccess = userDataAccessQuery.Where(x => x.UserId == userId && x.RoleTypeId == roleType).ToList();
-            return ObjectMapper.Map<List<UserDataAccess>, List<UserDataAccessDto>>(userDataAccess);
+            var userDataAccessQuery = (await _userDataAccessRepository.GetQueryableAsync()).AsNoTracking();
+            var userDataAccess = userDataAccessQuery.Select(x => new UserDataAccessDto
+            {
+                Nationalcode = x.Nationalcode,
+                Data = x.Data,
+                RoleTypeId = x.RoleTypeId,
+                UserId = x.UserId
+
+            }).Where(x => x.UserId == userId && x.RoleTypeId == roleType).ToList();
+            return userDataAccess;
         }
     }
 }

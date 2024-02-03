@@ -275,17 +275,13 @@ public class OrderAppService : ApplicationService, IOrderAppService
         #region Check ProductAccess
         bool hasProductAccess = _configuration.GetValue<bool?>("UserDataAccessConfig:HasProduct") ?? false;
         bool hasProductAccessExists = _configuration.GetValue<bool?>("UserDataAccessConfig:HasProductExists") ?? false;
-        if (hasProductAccess || hasProductAccessExists)
-        {
-            if (hasProductAccessExists)
-                hasProductAccess = await _userDataAccessService.Exists(nationalCode, RoleTypeEnum.ProductAccess);
             if (hasProductAccess)
             {
-                var productAccess = await _userDataAccessService.CheckProductAccess(nationalCode, SaleDetailDto.ProductId);
-                if (!productAccess.Success)
-                    throw new UserFriendlyException(productAccess.Message, productAccess.MessageId);
+                var productAccess = await _userDataAccessService.ExistsAndCheckProductAccess(nationalCode, RoleTypeEnum.ProductAccess, SaleDetailDto.ProductId);
+                if (productAccess)
+                    throw new UserFriendlyException("دسترسی کافی نمیباشد");
             }
-        }
+        
         #endregion
 
 

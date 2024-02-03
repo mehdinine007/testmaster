@@ -72,7 +72,19 @@ namespace OrderManagement.Application
 
         public async Task<bool> Exists(string nationalcode, RoleTypeEnum roleType)
         {
-            var userDataAccess = await GetByNationalCode(nationalcode,roleType);
+            var userDataAccess = await GetByNationalCode(nationalcode, roleType);
+            return userDataAccess.Any();
+        }
+
+        public async Task<bool> ExistsAndCheckProductAccess(string nationalcode, RoleTypeEnum roleType, int productId)
+        {
+            var products = await ProductGetList(nationalcode);
+            if (products.Count == 0 || !products.Any(x => x.ProductId == productId))
+            {
+                return false;
+            }
+          
+            var userDataAccess = await GetByNationalCode(nationalcode, roleType);
             return userDataAccess.Any();
         }
     }
