@@ -10,6 +10,7 @@
     <None Remove="appsettings.Development.json" />
     <None Remove="Migrations\dbo.__MigrationsHistory.sql" />
     <None Remove="Migrations\Migrations.json" />
+    <None Remove="Migrations\Patch\20240203105928_addindexToPaymentLog.sql" />
     <None Remove="Migrations\Tables\Account.sql" />
     <None Remove="Migrations\Tables\Customer.sql" />
     <None Remove="Migrations\Tables\Payment.sql" />
@@ -32,6 +33,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="Migrations\Patch\20240203105928_addindexToPaymentLog.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Migrations\Tables\Account.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -65,7 +69,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Migrations\Patch\" />
     <Folder Include="Migrations\Programmability\" />
     <Folder Include="Migrations\Schema\" />
   </ItemGroup>
