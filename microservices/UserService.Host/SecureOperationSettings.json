@@ -1059,6 +1059,101 @@
           }
 
         ]
+
+      },
+      {
+        "title": "AdvertisementService",
+        "code": "00020025",
+        "displayName": "سرویس تبلیغات",
+        "children": [
+          {
+            "title": "GetById",
+            "code": "000200250001",
+            "displayName": "نمایش تبلیغ توسط شناسه",
+            "children": []
+          },
+          {
+            "title": "GetList",
+            "code": "000200250002",
+            "displayName": "نمایش تبلیغات",
+            "children": []
+          },
+          {
+            "title": "Delete",
+            "code": "000200250003",
+            "displayName": "حذف",
+            "children": []
+          },
+          {
+            "title": "Add",
+            "code": "000200250004",
+            "displayName": "ثبت",
+            "children": []
+          },
+          {
+            "title": "Update",
+            "code": "000200250005",
+            "displayName": "بروزرسانی",
+            "children": []
+          }
+
+        ]
+      },
+      {
+        "title": "AdvertisementDetailService",
+        "code": "00020026",
+        "displayName": "سرویس جزییات تبلیغ",
+        "children": [
+          {
+            "title": "GetById",
+            "code": "000200260001",
+            "displayName": "نمایش جزییات تبلیغ توسط شناسه",
+            "children": []
+          },
+          {
+            "title": "GetList",
+            "code": "000200260002",
+            "displayName": "نمایش جزییات تبلیغ",
+            "children": []
+          },
+          {
+            "title": "Delete",
+            "code": "000200260003",
+            "displayName": "حذف",
+            "children": []
+          },
+          {
+            "title": "Add",
+            "code": "000200260004",
+            "displayName": "ثبت",
+            "children": []
+          },
+          {
+            "title": "Update",
+            "code": "000200260005",
+            "displayName": "بروزرسانی",
+            "children": []
+          },
+          {
+            "title": "UploadFile",
+            "code": "000200260006",
+            "displayName": "بروزرسانی فایل",
+            "children": []
+          },
+          {
+            "title": "GetPagination",
+            "code": "000200260007",
+            "displayName": "نمایش جزییات تبلیغ با صفحه بندی",
+            "children": []
+          },
+          {
+            "title": "Move",
+            "code": "000200260008",
+            "displayName": "ویرایش الویت ها",
+            "children": []
+          }
+
+        ]
       }
     ]
   },

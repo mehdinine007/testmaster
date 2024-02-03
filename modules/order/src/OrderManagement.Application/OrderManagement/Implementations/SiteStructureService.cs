@@ -33,8 +33,11 @@ namespace OrderManagement.Application.OrderManagement.Implementations
         private readonly IRepository<ESaleType, int> _eSaleTypeRepository;
         private readonly IBankAppService _bankAppServiceService;
         private readonly IAnnouncementService _announcementService;
+        private readonly IAdvertisementService _advertisementService;
+
         public SiteStructureService(IRepository<SiteStructure, int> siteStructureRepository, IAttachmentService attachmentService, ICarClassService carClassService, IProductAndCategoryService productAndCategoryService
-            , IRepository<ESaleType, int> eSaleTypeRepository, IBankAppService bankAppServiceService, IAnnouncementService announcementService)
+            , IRepository<ESaleType, int> eSaleTypeRepository, IBankAppService bankAppServiceService, IAnnouncementService announcementService
+            , IAdvertisementService advertisementService)
         {
             _siteStructureRepository = siteStructureRepository;
             _attachmentService = attachmentService;
@@ -43,6 +46,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             _eSaleTypeRepository = eSaleTypeRepository;
             _bankAppServiceService = bankAppServiceService;
             _announcementService = announcementService;
+            _advertisementService = advertisementService;
         }
         [SecuredOperation(SiteStructureServicePermissionConstant.Add)]
         public async Task<SiteStructureDto> Add(SiteStructureAddOrUpdateDto siteStructureDto)
@@ -141,6 +145,11 @@ namespace OrderManagement.Application.OrderManagement.Implementations
                     var announcement = await _announcementService.GetPagination(JsonConvert.DeserializeObject<AnnouncementGetListDto>(x.Content));
                     x.CarouselData = announcement.Items;
                 };
+                if(x.Type== SiteStructureTypeEnum.Advertisement)
+                {
+                 var advertisementDto =  await _advertisementService.GetById(JsonConvert.DeserializeObject<AdvertisementQueryDto>(x.Content));
+                    x.CarouselData = new List<dynamic> { advertisementDto };
+                }
 
                 x.Content = null;
             });

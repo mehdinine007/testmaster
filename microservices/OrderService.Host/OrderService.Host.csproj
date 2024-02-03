@@ -56,12 +56,16 @@
     <ItemGroup>
         <Compile Remove="%2a%2a\**" />
         <Compile Remove="Logs\**" />
+        <Compile Remove="Migrations\**" />
         <Content Remove="%2a%2a\**" />
         <Content Remove="Logs\**" />
+        <Content Remove="Migrations\**" />
         <EmbeddedResource Remove="%2a%2a\**" />
         <EmbeddedResource Remove="Logs\**" />
+        <EmbeddedResource Remove="Migrations\**" />
         <None Remove="%2a%2a\**" />
         <None Remove="Logs\**" />
+        <None Remove="Migrations\**" />
     </ItemGroup>
 
     <ItemGroup>

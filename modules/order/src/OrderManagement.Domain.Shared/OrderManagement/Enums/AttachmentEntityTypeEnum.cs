@@ -22,6 +22,8 @@ namespace OrderManagement.Domain.Shared
         [EnumProperty(Description = "آیکون")]
         Icon = 6,
         [EnumProperty(Description = "اطلاعیه")]
-        Announcement = 7
+        Announcement = 7,
+       [EnumProperty(Description = "تبلیغات")]
+        AdvertisementDetail = 8
     }
 }

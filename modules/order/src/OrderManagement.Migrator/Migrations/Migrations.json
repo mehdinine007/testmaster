@@ -103,6 +103,22 @@
       "Id": "20231226055406_removeuniquegroupid",
       "Priority": 7,
       "Version": "4.2.0"
-    }
+    },
+    {
+      "Id": "20240102103313_add-advertisement",
+      "Priority": 8,
+      "Version": "4.2.0"
+    },
+    {
+      "Id": "20240106123506_add-priority-advertisementdetail",
+      "Priority": 9,
+      "Version": "4.2.0"
+    },
+    {
+      "Id": "20240110080635_IsRequiredtitle-title-advertisement",
+      "Priority": 10,
+      "Version": "4.2.0"
+    },
+   
   ]
 }
