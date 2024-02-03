@@ -14,7 +14,8 @@ namespace UserManagement.Domain.UserManagement.Enums
         InspectionOrganization =4,
         mimt = 5,
         nicc = 6,
-        Bank=7
+        Bank=7,
+        OldCar = 8
 
     }
 }

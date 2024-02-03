@@ -4,6 +4,7 @@ using CompanyManagement.EfCore.CompanyManagement.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Volo.Abp.EntityFrameworkCore;
 
@@ -12,9 +13,11 @@ using Volo.Abp.EntityFrameworkCore;
 namespace OrderManagement.EfCore.Migrations.CompanyManagementDb
 {
     [DbContext(typeof(CompanyManagementDbContext))]
-    partial class CompanyManagementDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240120102158_addoldcar")]
+    partial class addoldcar
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -94,7 +97,7 @@ namespace OrderManagement.EfCore.Migrations.CompanyManagementDb
 
                     b.HasKey("Id");
 
-                    b.ToTable("AdvocacyUsersFromBank", (string)null);
+                    b.ToTable("AdvocacyUsersFromBank");
                 });
 
             modelBuilder.Entity("CompanyManagement.Domain.CompanyManagement.ClientsOrderDetailByCompany", b =>
@@ -315,7 +318,7 @@ namespace OrderManagement.EfCore.Migrations.CompanyManagementDb
 
                     b.HasKey("Id");
 
-                    b.ToTable("CompanyProduction", (string)null);
+                    b.ToTable("CompanyProduction");
                 });
 
             modelBuilder.Entity("CompanyManagement.Domain.CompanyManagement.CompanySaleCallDates", b =>
@@ -369,7 +372,7 @@ namespace OrderManagement.EfCore.Migrations.CompanyManagementDb
 
                     b.HasIndex("ClientsOrderDetailByCompanyId");
 
-                    b.ToTable("CompanySaleCallDates", (string)null);
+                    b.ToTable("CompanySaleCallDates");
                 });
 
             modelBuilder.Entity("CompanyManagement.Domain.CompanyManagement.OldCar", b =>
@@ -430,7 +433,7 @@ namespace OrderManagement.EfCore.Migrations.CompanyManagementDb
 
                     b.HasKey("Id");
 
-                    b.ToTable("OldCars", (string)null);
+                    b.ToTable("OldCars");
                 });
 
             modelBuilder.Entity("CompanyManagement.Domain.CompanyManagement.UserRejectionFromBank", b =>

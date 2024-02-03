@@ -1229,6 +1229,31 @@
             "children": []
           }
         ]
+      },
+      {
+        "title": "OldCarService",
+        "code": "00030003",
+        "displayName": "سرویس خودروهای فرسوده",
+        "children": [
+          {
+            "title": "AddList",
+            "code": "000300030001",
+            "displayName": "افزودن لیست خودروهای فرسوده",
+            "children": []
+          },
+          {
+            "title": "Inquiry",
+            "code": "000300030002",
+            "displayName": "لیست خودروهای فرسوده",
+            "children": []
+          },
+          {
+            "title": "Delete",
+            "code": "000300030003",
+            "displayName": "حذف خودروی فرسوده",
+            "children": []
+          }
+        ]
       }
     ]
   },

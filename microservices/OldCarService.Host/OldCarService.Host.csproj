@@ -13,15 +13,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-		<PackageReference Include="AspNetCore.HealthChecks.Elasticsearch" Version="7.0.0" />
-		<PackageReference Include="AspNetCore.HealthChecks.MongoDb" Version="7.0.0" />
-		<PackageReference Include="AspNetCore.HealthChecks.Rabbitmq" Version="7.0.0" />
-		<PackageReference Include="AspNetCore.HealthChecks.Redis" Version="7.0.0" />
-		<PackageReference Include="AspNetCore.HealthChecks.SqlServer" Version="7.0.0" />
-		<PackageReference Include="AspNetCore.HealthChecks.UI" Version="7.0.0" />
-		<PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="7.0.0" />
-		<PackageReference Include="AspNetCore.HealthChecks.Uris" Version="7.0.0" />
-		<PackageReference Include="Hangfire.SqlServer" Version="1.7.29" />
+        <PackageReference Include="Hangfire.SqlServer" Version="1.7.29" />
         <PackageReference Include="Serilog.AspNetCore" Version="6.1.0" />
         <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
         <PackageReference Include="Serilog.Sinks.Elasticsearch" Version="9.0.0" />
@@ -46,10 +38,8 @@
         <PackageReference Include="Volo.Abp.PermissionManagement.EntityFrameworkCore" Version="7.2.1" />
         <PackageReference Include="Volo.Abp.SettingManagement.EntityFrameworkCore" Version="7.2.1" />
         <PackageReference Include="Volo.Abp.TenantManagement.EntityFrameworkCore" Version="7.2.1" />
-        <ProjectReference Include="..\..\modules\company\src\BankManagement.HttpApi\BankManagement.HttpApi.csproj" />
         <ProjectReference Include="..\..\modules\company\src\CompanyManagement.Application\CompanyManagement.Application.csproj" />
         <ProjectReference Include="..\..\modules\company\src\CompanyManagement.EntityFrameworkCore\CompanyManagement.EntityFrameworkCore.csproj" />
-        <ProjectReference Include="..\..\modules\company\src\CompanyManagement.HttpApi\CompanyManagement.HttpApi.csproj" />
         <ProjectReference Include="..\..\modules\company\src\OldCarManagement.HttpApi\OldCarManagement.HttpApi.csproj" />
         <ProjectReference Include="..\..\shared\Extensions\Extensions.csproj" />
         <ProjectReference Include="..\..\shared\IFG.Core\IFG.Core.csproj" />
@@ -74,6 +64,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="EntityFrameworkCore\" />
       <Folder Include="Infrastructures\Hangfire\Abstract\" />
       <Folder Include="Infrastructures\Hangfire\Concrete\" />
     </ItemGroup>
