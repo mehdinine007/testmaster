@@ -16,7 +16,7 @@ namespace OrderManagement.Application.Contracts
         Task<IResult> CheckOldCar(string nationalcode,string engineNo,string vin,string chassiNo);
 
         Task<List<UserDataAccessProductDto>> ProductGetList(string nationalCode);
-        Task<IResult> CheckProductAccess(string nationalCode,int productId);
-        Task<bool> ExistsAndCheckProductAccess(string nationalcode, RoleTypeEnum roleType, int productId);
+        Task<IResult> CheckProductAccess(string nationalCode, int productId, bool isExists = false);
+        
     }
 }

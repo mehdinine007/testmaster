@@ -157,7 +157,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
     }
 
-    private async void RustySalePlanValidation(CommitOrderDto commitOrder, ESaleTypeEnums esaleTypeId,string nationalCode)
+    private async void RustySalePlanValidation(CommitOrderDto commitOrder, ESaleTypeEnums esaleTypeId, string nationalCode)
     {
         if (esaleTypeId == ESaleTypeEnums.WornOutSale)
         {
@@ -275,13 +275,12 @@ public class OrderAppService : ApplicationService, IOrderAppService
         #region Check ProductAccess
         bool hasProductAccess = _configuration.GetValue<bool?>("UserDataAccessConfig:HasProduct") ?? false;
         bool hasProductAccessExists = _configuration.GetValue<bool?>("UserDataAccessConfig:HasProductExists") ?? false;
-            if (hasProductAccess)
-            {
-                var productAccess = await _userDataAccessService.ExistsAndCheckProductAccess(nationalCode, RoleTypeEnum.ProductAccess, SaleDetailDto.ProductId);
-                if (productAccess)
-                    throw new UserFriendlyException("دسترسی کافی نمیباشد");
-            }
-        
+        if (hasProductAccess || hasProductAccessExists)
+        {
+            var productAccess = await _userDataAccessService.CheckProductAccess(nationalCode, SaleDetailDto.ProductId, hasProductAccessExists);
+            if (!productAccess.Success)
+                throw new UserFriendlyException(productAccess.Message, productAccess.MessageId);
+        }
         #endregion
 
 
@@ -302,7 +301,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         {
             throw new UserFriendlyException("طرح فروش مربوط به شما نمی باشد");
         }
-        if ( SaleDetailDto.SaleProcess == SaleProcessType.CashSale)
+        if (SaleDetailDto.SaleProcess == SaleProcessType.CashSale)
         {
             if (!customer.NationalCode.Equals(nationalCode))
             {

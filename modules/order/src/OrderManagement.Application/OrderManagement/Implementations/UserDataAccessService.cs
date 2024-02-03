@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Services;
 using StackExchange.Redis;
+using Google.Protobuf.Collections;
 
 namespace OrderManagement.Application
 {
@@ -52,9 +53,15 @@ namespace OrderManagement.Application
             return new ErrorResult(OrderConstant.UserDataAccessOldCarNotFound, OrderConstant.UserDataAccessOldCarNotFoundId);
         }
 
-        public async Task<IResult> CheckProductAccess(string nationalCode, int productId)
+        public async Task<IResult> CheckProductAccess(string nationalCode, int productId,bool isExists = false)
         {
             var products = await ProductGetList(nationalCode);
+            if (isExists)
+            {
+                if (!products.Any()) {
+                    return new SuccsessResult();
+                }
+            };
             if (products.Count == 0 || !products.Any(x => x.ProductId == productId))
             {
                 return new ErrorResult(OrderConstant.UserDataAccessProductNotFound, OrderConstant.UserDataAccessProductNotFoundId);
@@ -76,16 +83,5 @@ namespace OrderManagement.Application
             return userDataAccess.Any();
         }
 
-        public async Task<bool> ExistsAndCheckProductAccess(string nationalcode, RoleTypeEnum roleType, int productId)
-        {
-            var products = await ProductGetList(nationalcode);
-            if (products.Count == 0 || !products.Any(x => x.ProductId == productId))
-            {
-                return false;
-            }
-          
-            var userDataAccess = await GetByNationalCode(nationalcode, roleType);
-            return userDataAccess.Any();
-        }
     }
 }
