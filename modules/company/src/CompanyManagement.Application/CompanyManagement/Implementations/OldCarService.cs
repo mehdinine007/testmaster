@@ -16,6 +16,7 @@ using FluentValidation;
 using CompanyManagement.Application.Contracts.CompanyManagement.FluentValidation;
 using Volo.Abp;
 using CompanyManagement.Application.Contracts.CompanyManagement.Constants.Validation;
+using Microsoft.EntityFrameworkCore;
 namespace CompanyManagement.Application.CompanyManagement.Implementations
 {
     public class OldCarService : ApplicationService, IOldCarService
@@ -27,15 +28,15 @@ namespace CompanyManagement.Application.CompanyManagement.Implementations
         {
             _oldCarRepository = oldCarRepository;
             _oldCarValidator = oldCarValidator;
-           
+
         }
         [SecuredOperation(OldCarServicePermissionConstants.AddList)]
         public async Task<bool> AddList(OldCarCreateDtoList oldCarCreateDto)
         {
-            
+
 
             var oldCars = ObjectMapper.Map<List<OldCarCreateDto>, List<OldCar>>(oldCarCreateDto.OldCars, new List<OldCar>());
-            var oldCarQuery = await _oldCarRepository.GetQueryableAsync();
+            var oldCarQuery = (await _oldCarRepository.GetQueryableAsync()).AsNoTracking();
             var lastBatchNo = 0;
             if (oldCarQuery.Any())
             {
@@ -58,15 +59,18 @@ namespace CompanyManagement.Application.CompanyManagement.Implementations
         [SecuredOperation(OldCarServicePermissionConstants.Delete)]
         public async Task<bool> Delete(OldCarQueryDto oldCarQueryDto)
         {
-            var oldCar = (await _oldCarRepository.GetQueryableAsync()).FirstOrDefault(x => x.Nationalcode == oldCarQueryDto.NationalCode);
-            await _oldCarRepository.DeleteAsync(oldCar.Id);
+            var ids = (await _oldCarRepository.GetQueryableAsync()).AsNoTracking()
+                .Where(x => x.Nationalcode == oldCarQueryDto.NationalCode)
+                .Select(x => x.Id);
+            await _oldCarRepository.DeleteManyAsync(ids);
             return true;
         }
         [SecuredOperation(OldCarServicePermissionConstants.Inquiry)]
-        public async Task<List<OldCarDto>> Inquiry(OldCarQueryDto oldCarQueryDto)
+        public async Task<OldCarDto> Inquiry(OldCarQueryDto oldCarQueryDto)
         {
-            var oldCars = (await _oldCarRepository.GetQueryableAsync()).Where(x => x.Nationalcode == oldCarQueryDto.NationalCode).ToList();
-            var oldCarDto = ObjectMapper.Map<List<OldCar>, List<OldCarDto>>(oldCars);
+            var oldCars = (await _oldCarRepository.GetQueryableAsync()).AsNoTracking().
+                OrderByDescending(x => x.Id).FirstOrDefault(x => x.Nationalcode == oldCarQueryDto.NationalCode);
+            var oldCarDto = ObjectMapper.Map<OldCar, OldCarDto>(oldCars);
             return oldCarDto;
 
         }

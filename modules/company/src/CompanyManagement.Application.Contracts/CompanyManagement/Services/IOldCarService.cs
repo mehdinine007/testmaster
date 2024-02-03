@@ -12,7 +12,7 @@ namespace CompanyManagement.Application.Contracts.CompanyManagement.Services
     {
 
       public Task<bool> AddList(OldCarCreateDtoList oldCarCreateDto);
-      public Task<List<OldCarDto>> Inquiry(OldCarQueryDto oldCarQueryDto);
+      public Task<OldCarDto> Inquiry(OldCarQueryDto oldCarQueryDto);
       public Task<bool> Delete(OldCarQueryDto oldCarQueryDto);
 
     }
