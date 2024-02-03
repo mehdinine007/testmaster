@@ -12,6 +12,7 @@ namespace UserManagement.Application.Contracts
         public static string CreateUserDefultRoleCodeNotFound = "تنظیمات دسترسی تعریف نشده است";
         public static string CreateUserDefultRoleCodeNotFoundId = "1010";
 
-
+        public static string UserDataAccessNationalCodeNotFound = "کاربر گرامی شما دسترسی به انجام این عملیات را ندارید!";
+        public static string UserDataAccessNationalCodeNotFoundId = "";
     }
 }

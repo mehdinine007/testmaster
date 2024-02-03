@@ -12,7 +12,8 @@ service UserServiceGrpc{
 	rpc GetUserAdvocacy(UserAdvocacyRequest) returns (UserAdvocacy);
 	rpc GetUserById(GetUserModel) returns (UserModel);
 	rpc Authenticate(AuthenticateRequest) returns (AuthenticateResponse);
-
+	rpc GetUDAByNationalCode(GetUDAByNationalCodeRequest) returns (UserDataAccessResponse);
+	rpc GetUDAByUserId(GetUDAByUserIdRequest) returns (UserDataAccessResponse);
 }
 
 message UserAdvocacy{
@@ -82,6 +83,26 @@ message AuthenticateDataModel{
 	 string AccessToken =1;
      string EncryptedAccessToken =2;
      google.protobuf.Int32Value ExpireInSeconds=3 ;
-	
 
+}
+
+message GetUDAByNationalCodeRequest{
+	string NationalCode=1;
+	google.protobuf.Int32Value Type = 2;
+}
+
+message GetUDAByUserIdRequest{
+	string UserId=1;
+    google.protobuf.Int32Value Type = 2;
+}
+
+message UserDataAccessResponse{
+   repeated UserDataAccessModel UserDataAccessModel =1;
+}
+
+message UserDataAccessModel{
+     string UserId=1;
+	 string Nationalcode =2;
+     google.protobuf.Int32Value RoleTypeId =3;
+	 string data=4;
 }

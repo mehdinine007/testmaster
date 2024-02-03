@@ -151,6 +151,26 @@
             "children": []
           }
         ]
+      },
+      {
+        "title": "UserDataAccessService",
+        "code": "00010005",
+        "displayName": " سرویس نمایش مجوز کاربران",
+        "children": [
+          {
+            "title": "GetListByNationalcode",
+            "code": "000100050001",
+            "displayName": "سرویس نمایش دسترسی کاربران با کدملی",
+            "children": []
+          },
+          {
+            "title": "GetListByUserId",
+            "code": "000100050002",
+            "displayName": "سرویس نمایش دسترسی کاربران با شناسه",
+            "children": []
+          }
+
+        ]
       }
     ]
   },

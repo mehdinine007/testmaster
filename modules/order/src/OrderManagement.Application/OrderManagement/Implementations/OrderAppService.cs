@@ -58,6 +58,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
     private readonly IOrganizationService _organizationService;
     private readonly IRepository<CarMakerBlackList, long> _blackListRepository;
     private readonly IRepository<CustomerPriority> _customerPriorityRepository;
+    private readonly IUserDataAccessService _userDataAccessService;
 
     public OrderAppService(ICommonAppService commonAppService,
                            IBaseInformationService baseInformationAppService,
@@ -85,7 +86,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
                            IOrganizationService organizationService,
                            IRepository<CarMakerBlackList, long> blackListRepository,
                            IRepository<CustomerPriority> customerPriorityRepository
-        )
+,
+                           IUserDataAccessService userDataAccessService)
     {
         _commonAppService = commonAppService;
         _baseInformationAppService = baseInformationAppService;
@@ -111,6 +113,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         _organizationService = organizationService;
         _blackListRepository = blackListRepository;
         _customerPriorityRepository = customerPriorityRepository;
+        _userDataAccessService = userDataAccessService;
     }
 
 
@@ -154,7 +157,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
     }
 
-    private void RustySalePlanValidation(CommitOrderDto commitOrder, ESaleTypeEnums esaleTypeId)
+    private async Task RustySalePlanValidation(CommitOrderDto commitOrder, ESaleTypeEnums esaleTypeId, string nationalCode)
     {
         if (esaleTypeId == ESaleTypeEnums.WornOutSale)
         {
@@ -167,6 +170,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 throw new UserFriendlyException("فرمت شماره شاسی صحیح نیست");
             if (string.IsNullOrWhiteSpace(commitOrder.Vehicle))
                 throw new UserFriendlyException("نام خودرو به درستی وارد نشده است");
+            var oldCarAccess = await _userDataAccessService.CheckOldCar(nationalCode, commitOrder.EngineNo, commitOrder.Vin, commitOrder.ChassiNo);
+            if (!oldCarAccess.Success)
+                throw new UserFriendlyException(oldCarAccess.Message, oldCarAccess.MessageId);
             commitOrder.Vin = commitOrder.Vin.ToUpper();
             return;
         }
@@ -222,12 +228,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
             {
                 Provider = CacheProviderEnum.Hybrid
             });
-
-        //var cacheKey = string.Format(RedisConstants.SaleDetailPrefix, commitOrderDto.SaleDetailUId);
-        //_memoryCache.TryGetValue(cacheKey, out SaleDetailDto);
-
-        //var paymentMethodGranted = _configuration.GetValue<bool?>("PaymentMethodGranted") ?? false;
-
         if (SaleDetailDto == null)
         {
             var saleDetailQuery = await _saleDetailRepository.GetQueryableAsync();
@@ -264,14 +264,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     {
                         Provider = CacheProviderEnum.Hybrid
                     });
-                //_memoryCache.Set(string.Format(RedisConstants.SaleDetailPrefix, commitOrderDto.SaleDetailUId.ToString()), SaleDetailDto, DateTime.Now.AddMinutes(4));
-
-                ////await _cacheManager.GetCache("SaleDetail").SetAsync(commitOrderDto.SaleDetailUId.ToString(), SaleDetailDto);
-                //await _distributedCache.SetStringAsync(string.Format(RedisConstants.SaleDetailPrefix, commitOrderDto.SaleDetailUId.ToString()),
-                //    JsonConvert.SerializeObject(SaleDetailDto), new DistributedCacheEntryOptions()
-                //    {
-                //        AbsoluteExpiration = new DateTimeOffset(DateTime.Now.AddSeconds(ttl.TotalSeconds))
-                //    });
             }
         }
         else
@@ -279,6 +271,18 @@ public class OrderAppService : ApplicationService, IOrderAppService
             ttl = SaleDetailDto.SalePlanEndDate.Subtract(DateTime.Now);
 
         }
+
+        #region Check ProductAccess
+        bool hasProductAccess = _configuration.GetValue<bool?>("UserDataAccessConfig:HasProduct") ?? false;
+        bool hasProductAccessExists = _configuration.GetValue<bool?>("UserDataAccessConfig:HasProductExists") ?? false;
+        if (hasProductAccess || hasProductAccessExists)
+        {
+            var productAccess = await _userDataAccessService.CheckProductAccess(nationalCode, SaleDetailDto.ProductId, hasProductAccessExists);
+            if (!productAccess.Success)
+                throw new UserFriendlyException(productAccess.Message, productAccess.MessageId);
+        }
+        #endregion
+
 
         if (SaleDetailDto.SaleProcess == SaleProcessType.CashSale && commitOrderDto.AgencyId is null)
         {
@@ -297,7 +301,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         {
             throw new UserFriendlyException("طرح فروش مربوط به شما نمی باشد");
         }
-        if ( SaleDetailDto.SaleProcess == SaleProcessType.CashSale)
+        if (SaleDetailDto.SaleProcess == SaleProcessType.CashSale)
         {
             if (!customer.NationalCode.Equals(nationalCode))
             {
@@ -308,7 +312,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
         ////////////////conntrol repeated order in saledetails// iran&&varedat
 
         CheckSaleDetailValidation(SaleDetailDto);
-        RustySalePlanValidation(commitOrderDto, SaleDetailDto.ESaleTypeId);
+        await RustySalePlanValidation(commitOrderDto, SaleDetailDto.ESaleTypeId, nationalCode);
+
         if (SaleDetailDto.SaleProcess == SaleProcessType.RegularSale)
             if (!await NationalCodeExistsInPriority(nationalCode))
                 throw new UserFriendlyException("کد ملی متقاضی در لیست الویت بندی وجود نداشت");

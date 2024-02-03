@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <None Remove="appsettings.Development.json" />
+    <None Remove="appsettings.json" />
     <None Remove="Migrations\dbo.__MigrationsHistory.sql" />
     <None Remove="Migrations\Migrations.json" />
     <None Remove="Migrations\Patch\20231213112901_Add_CustomerPriority.sql" />
@@ -17,6 +18,8 @@
     <None Remove="Migrations\Patch\20231218074437_add-deviceenum.sql" />
     <None Remove="Migrations\Patch\20231220090409_addQuestionGroup-to-Question.sql" />
     <None Remove="Migrations\Patch\20231226055406_removeuniquegroupid.sql" />
+    <None Remove="Migrations\Patch\20240129082810_add-userdataaccess.sql" />
+    <None Remove="Migrations\Patch\20240129124922_nullableuserid.sql" />
     <None Remove="Migrations\Programmability\CustomerCarDeliveryTime.sql" />
     <None Remove="Migrations\Programmability\GetRecentCustomerAndOrder.sql" />
     <None Remove="Migrations\Programmability\Hangfire.sql" />
@@ -34,6 +37,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
     <Content Include="appsettings.Development.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
@@ -64,6 +72,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Migrations\Patch\20231226055406_removeuniquegroupid.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Migrations\Patch\20240129082810_add-userdataaccess.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Migrations\Patch\20240129124922_nullableuserid.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Migrations\Programmability\CustomerCarDeliveryTime.sql">

@@ -111,5 +111,10 @@ namespace OrderManagement.Application.Contracts
         public static string AdvertisementDetailNotFoundId = "6001";
 
 
+
+        public static string UserDataAccessProductNotFound = "کاربر گرامی شما مجاز به ثبت سفارش برای این برنامه فروش نمی باشید";
+        public static string UserDataAccessProductNotFoundId = "9005";
+        public static string UserDataAccessOldCarNotFound = "خودروفرسوده موجود نمیباشد";
+        public static string UserDataAccessOldCarNotFoundId = "9006";
     }
 }
