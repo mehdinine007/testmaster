@@ -35,6 +35,8 @@ namespace PaymentManagement.EntityFrameworkCore
                 //options.TablePrefix = TablePrefix;
                 //options.Schema = Schema;
             });
+
+            builder.Entity<PaymentLog>().HasIndex(p => p.Message);
         }
     }
 }
