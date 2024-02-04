@@ -119,16 +119,14 @@
       "Priority": 10,
       "Version": "4.2.0"
     },
-   
-    },
     {
       "Id": "20240129082810_add-userdataaccess",
-      "Priority": 8,
+      "Priority": 11,
       "Version": "4.2.0"
     },
     {
       "Id": "20240129124922_nullableuserid",
-      "Priority": 9,
+      "Priority": 12,
       "Version": "4.2.0"
     }
   ]
