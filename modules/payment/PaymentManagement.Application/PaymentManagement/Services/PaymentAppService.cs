@@ -1549,17 +1549,17 @@ namespace PaymentManagement.Application.Servicess
                 {
                     Parsian.InquiryJsonResult jResult = JsonConvert.DeserializeObject<Parsian.InquiryJsonResult>(inquiryResult);
 
-                    if (jResult.Status == 0)
-                    {
-                        payment.TransactionCode = jResult.Data[0].RRN.ToString();
-                        payment.PaymentStatusId = (int)PaymentStatusEnum.Success;
-                        await _paymentRepository.AttachAsync(ObjectMapper.Map<PaymentDto, Payment>(payment), o => o.TransactionCode, o => o.PaymentStatusId);
-                    }
-                    else
-                    {
-                        payment.PaymentStatusId = (int)PaymentStatusEnum.Failed;
-                        await _paymentRepository.AttachAsync(ObjectMapper.Map<PaymentDto, Payment>(payment), o => o.PaymentStatusId);
-                    }
+                    //if (jResult.Status == 0)
+                    //{
+                    //    payment.TransactionCode = jResult.Data[0].RRN.ToString();
+                    //    payment.PaymentStatusId = (int)PaymentStatusEnum.Success;
+                    //    await _paymentRepository.AttachAsync(ObjectMapper.Map<PaymentDto, Payment>(payment), o => o.TransactionCode, o => o.PaymentStatusId);
+                    //}
+                    //else
+                    //{
+                    //    payment.PaymentStatusId = (int)PaymentStatusEnum.Failed;
+                    //    await _paymentRepository.AttachAsync(ObjectMapper.Map<PaymentDto, Payment>(payment), o => o.PaymentStatusId);
+                    //}
                     result.PaymentStatus = payment.PaymentStatusId;
                     result.PaymentStatusDescription = EnumExtension.GetEnumDescription((PaymentStatusEnum)payment.PaymentStatusId);
                     result.StatusCode = (int)StatusCodeEnum.Success;
@@ -1959,8 +1959,8 @@ namespace PaymentManagement.Application.Servicess
             }
             else
             {
-                await InquiryToParsianAsync(payment, pspAccountJsonProps);
-                if (payment.PaymentStatusId == (int)PaymentStatusEnum.InProgress)
+                //await InquiryToParsianAsync(payment, pspAccountJsonProps);
+                //if (payment.PaymentStatusId == (int)PaymentStatusEnum.InProgress)
                 { await VerifyToParsianAsync(payment, pspAccountJsonProps, true); }
             }
             payment.RetryCount += 1;
