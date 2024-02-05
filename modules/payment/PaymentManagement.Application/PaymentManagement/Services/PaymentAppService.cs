@@ -1256,7 +1256,7 @@ namespace PaymentManagement.Application.Servicess
                 if (verifyResult != null)
                 {
                     Parsian.VerifyJsonResult jResult = JsonConvert.DeserializeObject<Parsian.VerifyJsonResult>(verifyResult);
-                    if (jResult.Status is 0 or -1533)
+                    if (jResult.Status == 0)
                     {
                         payment.PaymentStatusId = (int)PaymentStatusEnum.Success;
                         await _paymentRepository.AttachAsync(ObjectMapper.Map<PaymentDto, Payment>(payment), o => o.PaymentStatusId);
@@ -1512,7 +1512,7 @@ namespace PaymentManagement.Application.Servicess
                 ParsianInquiryInput input = new()
                 {
                     OrderId = payment.Id,
-                    Token = long.Parse(payment.Token),
+                    LoginAccount = pspAccountProps.LoginAccount,
                     ReportServiceUserName = pspAccountProps.ReportServiceUserName,
                     ReportServicePassword = pspAccountProps.ReportServicePassword,
                 };
@@ -1548,23 +1548,29 @@ namespace PaymentManagement.Application.Servicess
                 if (inquiryResult != null)
                 {
                     Parsian.InquiryJsonResult jResult = JsonConvert.DeserializeObject<Parsian.InquiryJsonResult>(inquiryResult);
-
-                    //if (jResult.Status == 0)
-                    //{
-                    //    payment.TransactionCode = jResult.Data[0].RRN.ToString();
-                    //    payment.PaymentStatusId = (int)PaymentStatusEnum.Success;
-                    //    await _paymentRepository.AttachAsync(ObjectMapper.Map<PaymentDto, Payment>(payment), o => o.TransactionCode, o => o.PaymentStatusId);
-                    //}
-                    //else
-                    //{
-                    //    payment.PaymentStatusId = (int)PaymentStatusEnum.Failed;
-                    //    await _paymentRepository.AttachAsync(ObjectMapper.Map<PaymentDto, Payment>(payment), o => o.PaymentStatusId);
-                    //}
-                    result.PaymentStatus = payment.PaymentStatusId;
-                    result.PaymentStatusDescription = EnumExtension.GetEnumDescription((PaymentStatusEnum)payment.PaymentStatusId);
-                    result.StatusCode = (int)StatusCodeEnum.Success;
-                    result.Message = Constants.InquirySuccess;
-                    return result;
+                    if (jResult.Status == 0)
+                    {
+                        if (jResult.Data != null)
+                        {
+                            if (jResult.Data.PGWStatusId == 0)
+                            {
+                                payment.TransactionCode = jResult.Data.RRN.ToString();
+                                payment.TraceNo = jResult.Data.PTraceNo.ToString();
+                                payment.PaymentStatusId = (int)PaymentStatusEnum.Success;
+                                await _paymentRepository.AttachAsync(ObjectMapper.Map<PaymentDto, Payment>(payment), o => o.TransactionCode, o => o.PaymentStatusId, o => o.TraceNo);
+                            }
+                            else if (jResult.Data.PGWStatusId is not (-1425 or -1532 or -1533 or -1542 or -1544))
+                            {
+                                payment.PaymentStatusId = (int)PaymentStatusEnum.Failed;
+                                await _paymentRepository.AttachAsync(ObjectMapper.Map<PaymentDto, Payment>(payment), o => o.PaymentStatusId);
+                            }
+                        }
+                        result.PaymentStatus = payment.PaymentStatusId;
+                        result.PaymentStatusDescription = EnumExtension.GetEnumDescription((PaymentStatusEnum)payment.PaymentStatusId);
+                        result.StatusCode = (int)StatusCodeEnum.Success;
+                        result.Message = Constants.InquirySuccess;
+                        return result;
+                    }
                 }
                 result.Message = Constants.InquiryFailed;
                 return result;

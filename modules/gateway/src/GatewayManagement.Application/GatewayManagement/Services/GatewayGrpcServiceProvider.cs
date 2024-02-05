@@ -120,7 +120,7 @@ namespace GatewayManagement.Application.Servicess
             var output = await _gatewayAppService.InquiryToParsian(new ParsianInquiryInputDto
             {
                 OrderId = input.OrderId,
-                Token = input.Token,
+                LoginAccount = input.LoginAccount,
                 ReportServiceUserName = input.ReportServiceUserName,
                 ReportServicePassword = input.ReportServicePassword
             });
