@@ -29,6 +29,9 @@ using Esale.Share.Authorize;
 using IFG.Core.Utility.Security;
 using Core.Utility.Tools;
 using OrderManagement.Domain.Shared.OrderManagement.Enums;
+using Volo.Abp.Data;
+
+
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -1159,97 +1162,123 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
     public async Task<IPaymentResult> CheckoutPayment(IPgCallBackRequest callBackRequest)
     {
-        var (status, paymentId, paymentSecret) =
-            (callBackRequest.StatusCode, callBackRequest.PaymentId, callBackRequest.AdditionalData);
-        List<Exception> exceptionCollection = new();
-        int orderId = default;
-        try
+        using (var auditingScope = _auditingManager.BeginScope())
         {
-            var order = (await _commitOrderRepository.GetQueryableAsync())
-                .AsNoTracking()
-                .FirstOrDefault(x => x.PaymentId == paymentId);
-
-            if (order.OrderStatus != OrderStatusType.RecentlyAdded)
+            _auditingManager.Current.Log.SetProperty("IPgCallBackRequest", callBackRequest);
+            var (status, paymentId, paymentSecret) =
+            (callBackRequest.StatusCode, callBackRequest.PaymentId, callBackRequest.AdditionalData);
+            List<Exception> exceptionCollection = new();
+            int orderId = default;
+            try
             {
-                exceptionCollection.Add(new UserFriendlyException("سفارش معتبر نمیباشد"));
-                return new PaymentResult()
+                var order = (await _commitOrderRepository.GetQueryableAsync())
+                    .AsNoTracking()
+                    .FirstOrDefault(x => x.PaymentId == paymentId);
+                if (order is null)
                 {
-                    Message = exceptionCollection.ConcatErrorMessages(),
-                    Status = 1,
-                    PaymentId = 0,
-                    OrderId = order.Id
-                };
-            }
-            //var orderId = (await _commitOrderRepository.GetQueryableAsync())
-            //    .AsNoTracking()
-            //    .Select(x => new { x.PaymentId, x.Id })
-            //    .FirstOrDefault(x => x.PaymentId == paymentId);
-            //var order = (await _commitOrderRepository.GetQueryableAsync())
-            //    .AsNoTracking()
-            //    .FirstOrDefault(x => x.Id == orderId.Id);
+                    _auditingManager.Current.Log.Comments.Add("سفارش  وجود ندارد: " + "1500");
+                    exceptionCollection.Add(new UserFriendlyException("سفارش  وجود ندارد"));
+                    return new PaymentResult()
+                    {
+                        Message = exceptionCollection.ConcatErrorMessages(),
+                        Status = 1,
+                        PaymentId = 0,
+                        OrderId = 0
+                    };
+                }
+                if (order.OrderStatus != OrderStatusType.RecentlyAdded)
+                {
+                    _auditingManager.Current.Log.Comments.Add("سفارش معتبر نمیباشد: " + "1501");
+                    exceptionCollection.Add(new UserFriendlyException("سفارش معتبر نمیباشد"));
+                    return new PaymentResult()
+                    {
+                        Message = exceptionCollection.ConcatErrorMessages(),
+                        Status = 1,
+                        PaymentId = 0,
+                        OrderId = order.Id
+                    };
+                }
+                //var orderId = (await _commitOrderRepository.GetQueryableAsync())
+                //    .AsNoTracking()
+                //    .Select(x => new { x.PaymentId, x.Id })
+                //    .FirstOrDefault(x => x.PaymentId == paymentId);
+                //var order = (await _commitOrderRepository.GetQueryableAsync())
+                //    .AsNoTracking()
+                //    .FirstOrDefault(x => x.Id == orderId.Id);
 
-            if (order is null || (!int.TryParse(paymentSecret, out var numericPaymentSecret) || (order.PaymentSecret.HasValue && order.PaymentSecret.Value != numericPaymentSecret)))
+                if (order is null || (!int.TryParse(paymentSecret, out var numericPaymentSecret) || (order.PaymentSecret.HasValue && order.PaymentSecret.Value != numericPaymentSecret)))
+                    _auditingManager.Current.Log.Comments.Add("درخواست معتبر نیست: " + "1502");
                 exceptionCollection.Add(new UserFriendlyException("درخواست معتبر نیست"));
 
-            if (order != null)
-                orderId = order.Id;
+                if (order != null)
+                    orderId = order.Id;
 
-            if (status != 0)
+                if (status != 0)
+                {
+                    _auditingManager.Current.Log.Comments.Add("عملیات پرداخت ناموفق بود: " + "1503");
+                    exceptionCollection.Add(new UserFriendlyException("عملیات پرداخت ناموفق بود"));
+                    exceptionCollection.Add(new UserFriendlyException(callBackRequest.Message));
+                    await NotVerifyActions(order.UserId, order.Id);
+                    return new PaymentResult()
+                    {
+                        Message = exceptionCollection.ConcatErrorMessages(),
+                        Status = 1,
+                        PaymentId = 0,
+                        OrderId = order.Id
+                    };
+                }
+
+
+                var capacityControl = await _capacityControlAppService.Validation(order.SaleDetailId, order.AgencyId);
+                if (!capacityControl.Success)
+                {
+                    await _ipgServiceProvider.ReverseTransaction(paymentId);
+                    _auditingManager.Current.Log.Comments.Add(capacityControl.Message + "1504");
+                    exceptionCollection.Add(new UserFriendlyException(capacityControl.Message));
+                    await NotVerifyActions(order.UserId, order.Id);
+                    return new PaymentResult()
+                    {
+                        Message = exceptionCollection.ConcatErrorMessages(),
+                        Status = 1,
+                        PaymentId = 0,
+                        OrderId = order.Id
+                    };
+                }
+
+                var verificationResponse = await _ipgServiceProvider.VerifyTransaction(paymentId);
+
+                await UpdateStatus(new()
+                {
+                    Id = order.Id,
+                    OrderStatus = (int)OrderStatusType.PaymentSucceeded
+                });
+                return new PaymentResult()
+                {
+                    PaymentId = paymentId,
+                    Message = verificationResponse.Result.Message,
+                    OrderId = order.Id,
+                    Status = status
+                };
+            }
+            catch (Exception e)
             {
-                exceptionCollection.Add(new UserFriendlyException("عملیات پرداخت ناموفق بود"));
-                exceptionCollection.Add(new UserFriendlyException(callBackRequest.Message));
-                await NotVerifyActions(order.UserId, order.Id);
+                exceptionCollection.Add(e);
+                _auditingManager.Current.Log.Exceptions.Add(new NullReferenceException($"Exceptions{e}"));
                 return new PaymentResult()
                 {
                     Message = exceptionCollection.ConcatErrorMessages(),
-                    Status = 1,
-                    PaymentId = 0,
-                    OrderId = order.Id
+                    PaymentId = paymentId,
+                    Status = 2,
+                    OrderId = orderId
                 };
+
             }
-
-
-            var capacityControl = await _capacityControlAppService.Validation(order.SaleDetailId, order.AgencyId);
-            if (!capacityControl.Success)
+            finally
             {
-                await _ipgServiceProvider.ReverseTransaction(paymentId);
-                exceptionCollection.Add(new UserFriendlyException(capacityControl.Message));
-                await NotVerifyActions(order.UserId, order.Id);
-                return new PaymentResult()
-                {
-                    Message = exceptionCollection.ConcatErrorMessages(),
-                    Status = 1,
-                    PaymentId = 0,
-                    OrderId = order.Id
-                };
+                await auditingScope.SaveAsync();
             }
-
-            var verificationResponse = await _ipgServiceProvider.VerifyTransaction(paymentId);
-
-            await UpdateStatus(new()
-            {
-                Id = order.Id,
-                OrderStatus = (int)OrderStatusType.PaymentSucceeded
-            });
-            return new PaymentResult()
-            {
-                PaymentId = paymentId,
-                Message = verificationResponse.Result.Message,
-                OrderId = order.Id,
-                Status = status
-            };
         }
-        catch (Exception e)
-        {
-            exceptionCollection.Add(e);
-            return new PaymentResult()
-            {
-                Message = exceptionCollection.ConcatErrorMessages(),
-                PaymentId = paymentId,
-                Status = 2,
-                OrderId = orderId
-            };
-        }
+
     }
     private async Task NotVerifyActions(Guid UserId, int OrderId)
     {
