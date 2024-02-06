@@ -566,7 +566,7 @@ namespace PaymentManagement.Application.Servicess
                     {
                         result.StatusCode = (int)StatusCodeEnum.Success;
                         var inputParams = new System.Collections.Specialized.NameValueCollection { { "token", jResult.Token.ToString() } };
-                        result.HtmlContent = StringUtil.GenerateForm(_config.GetValue<string>("ParsianUrls:RedirectUrl"), "post", inputParams);
+                        result.HtmlContent = StringUtil.GenerateForm(_config.GetValue<string>("ParsianUrls:RedirectUrl"), "get", inputParams);
                         result.Message = Constants.HandShakeSuccess;
                         return result;
                     }
