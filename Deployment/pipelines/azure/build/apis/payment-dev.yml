@@ -1,0 +1,26 @@
+trigger:
+  branches:
+    include:
+    - develop
+    
+  paths:
+    include:
+    - 'microservices/PaymentService.Host/*'
+    - 'microservices/PaymentService.Host/**/*'
+    - 'Deployment/pipelines/azure/build/apis/payment-dev.yml'
+
+pool:
+  name: IranFavaDevelopment
+
+steps:
+- template: '../templates/fill-appsettings-file.yml'
+  parameters:
+    project: 'PaymentService.Host'
+
+- template: '../templates/step-build-and-publish.yml'
+  parameters:
+    project: 'microservices/PaymentService.Host/PaymentService.Host.csproj'
+
+- template: '../templates/publish-build-artifact.yml'
+  parameters:
+    artifactName: 'Payment'

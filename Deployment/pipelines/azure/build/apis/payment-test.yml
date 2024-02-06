@@ -1,0 +1,28 @@
+trigger:
+  branches:
+    include:
+#    - master
+    - refs/tags/*-allservice*
+    - refs/tags/*-payment*
+
+  paths:
+    include:
+    - 'microservices/PaymentService.Host/*'
+    - 'microservices/PaymentService.Host/**/*'
+    - 'Deployment/pipelines/azure/build/apis/payment-test.yml'
+
+pool:
+  name: AminCloudTest
+
+steps:
+- template: '../templates/fill-appsettings-file.yml'
+  parameters:
+    project: 'PaymentService.Host'
+
+- template: '../templates/step-build-and-publish.yml'
+  parameters:
+    project: 'microservices/PaymentService.Host/PaymentService.Host.csproj'
+
+- template: '../templates/publish-build-artifact.yml'
+  parameters:
+    artifactName: 'Payment'

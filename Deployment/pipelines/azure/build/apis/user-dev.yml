@@ -1,0 +1,27 @@
+trigger:
+  branches:
+    include:
+    - develop
+    
+  paths:
+    include:
+    - 'microservices/UserService.Host/*'
+    - 'microservices/UserService.Hos/**/*'
+    - 'Deployment/pipelines/azure/build/apis/user-dev.yml'
+
+pool:
+  name: IranFavaDevelopment
+  
+steps:
+- template: '../templates/fill-appsettings-file.yml'
+  parameters:
+    project: 'UserService.Host'
+
+- template: '../templates/step-build-and-publish.yml'
+  parameters:
+    project: 'microservices/UserService.Host/UserService.Host.csproj'
+
+- template: '../templates/publish-build-artifact.yml'
+  parameters:
+    artifactName: 'User'
+    

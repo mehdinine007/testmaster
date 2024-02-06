@@ -1,0 +1,28 @@
+trigger:
+  branches:
+    include:
+#    - master
+    - refs/tags/*-allservice*
+    - refs/tags/*-gateway*
+    
+  paths:
+    include:
+    - 'microservices/GatewayService.Host/*'
+    - 'microservices/GatewayService.Host/**/*'
+    - 'Deployment/pipelines/azure/build/apis/gateway-test.yml'
+
+pool:
+  name: AminCloudTest
+
+steps:
+- template: '../templates/fill-appsettings-file.yml'
+  parameters:
+    project: 'GatewayService.Host'
+
+- template: '../templates/step-build-and-publish.yml'
+  parameters:
+    project: 'microservices/GatewayService.Host/GatewayService.Host.csproj'
+
+- template: '../templates/publish-build-artifact.yml'
+  parameters:
+    artifactName: 'Gateway'

@@ -1,0 +1,29 @@
+trigger:
+  branches:
+    include:
+#    - master
+    - refs/tags/*-allservice*
+    - refs/tags/*-user*
+    
+  paths:
+    include:
+    - 'microservices/UserService.Host/*'
+    - 'microservices/UserService.Hos/**/*'
+    - 'Deployment/pipelines/azure/build/apis/user-test.yml'
+
+pool:
+  name: AminCloudTest
+  
+steps:
+- template: '../templates/fill-appsettings-file.yml'
+  parameters:
+    project: 'UserService.Host'
+
+- template: '../templates/step-build-and-publish.yml'
+  parameters:
+    project: 'microservices/UserService.Host/UserService.Host.csproj'
+
+- template: '../templates/publish-build-artifact.yml'
+  parameters:
+    artifactName: 'User'
+    

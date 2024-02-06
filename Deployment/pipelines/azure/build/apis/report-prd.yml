@@ -1,0 +1,26 @@
+trigger:
+  branches:
+    include:
+    - production
+
+  paths:
+    include:
+    - 'microservices/ReportService.Host/*'
+    - 'microservices/ReportService.Host/**/*'
+    - 'Deployment/pipelines/azure/build/apis/report-prd.yml'
+
+pool:
+  name: AminCloudProduction
+
+steps:
+- template: '../templates/fill-appsettings-file.yml'
+  parameters:
+    project: 'ReportService.Host'
+
+- template: '../templates/step-build-and-publish.yml'
+  parameters:
+    project: 'microservices/ReportService.Host/ReportService.Host.csproj'
+
+- template: '../templates/publish-build-artifact.yml'
+  parameters:
+    artifactName: 'Report'

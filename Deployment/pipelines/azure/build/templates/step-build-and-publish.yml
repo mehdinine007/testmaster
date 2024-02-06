@@ -1,0 +1,35 @@
+parameters:
+  - name: project
+    default: ''
+    type: string
+  - name: testProject
+    default: ''
+    type: string
+
+steps:
+- task: DotNetCoreCLI@2
+  displayName: 'Dotnet Restore .csproj files'
+  inputs:
+    command: restore
+    projects: ${{ parameters.project }}
+    verbosityRestore: minimal
+
+- task: DotNetCoreCLI@2
+  displayName: 'Dotnet build .csproj files'
+  inputs:
+    command: build
+    projects: ${{ parameters.project }}
+    arguments: '--no-restore -c Release'
+
+- ${{ if ne(parameters.testProject, '') }}:
+  - template: './dotnet-test.yml'
+    parameters:
+      testProject: ${{ parameters.testProject }}
+
+- task: DotNetCoreCLI@2
+  displayName: 'Dotnet publish .csproj files'
+  inputs:
+    projects: ${{ parameters.project }}
+    command: publish
+    arguments: '--no-restore -c Release -o publish'
+    publishWebProjects: false

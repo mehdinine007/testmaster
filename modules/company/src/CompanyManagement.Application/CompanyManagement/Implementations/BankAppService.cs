@@ -114,7 +114,6 @@ namespace CompanyManagement.Application.CompanyManagement.Implementations
                 x.UserUid = userId;
             });
             await _advocacyUsersFromBank.InsertManyAsync(advocacyUsersFromBanks);
-            CurrentUnitOfWork.SaveChangesAsync();
             //    unitOfWork.Complete();
             //}
             return true;

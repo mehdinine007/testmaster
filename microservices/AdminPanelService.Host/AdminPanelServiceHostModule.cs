@@ -201,7 +201,7 @@ namespace WorkFlowService.Host
             app.UseSwagger();
             app.UseSwaggerUI(options =>
             {
-                options.SwaggerEndpoint("/swagger/v1/swagger.json", "Order Service API");
+                options.SwaggerEndpoint("/swagger/v1/swagger.json", "Admin Service API");
             });
 
             app.UseAuditing();

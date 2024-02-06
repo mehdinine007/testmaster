@@ -1,0 +1,26 @@
+trigger:
+  branches:
+    include:
+    - develop
+    
+  paths:
+    include:
+    - 'microservices/OrderService.Host/*'
+    - 'microservices/OrderService.Host/**/*'
+    - 'Deployment/pipelines/azure/build/apis/order-dev.yml'
+
+pool:
+  name: IranFavaDevelopment
+
+steps:
+- template: '../templates/fill-appsettings-file.yml'
+  parameters:
+    project: 'OrderService.Host'
+
+- template: '../templates/step-build-and-publish.yml'
+  parameters:
+    project: 'microservices/OrderService.Host/OrderService.Host.csproj'
+
+- template: '../templates/publish-build-artifact.yml'
+  parameters:
+    artifactName: 'Order'

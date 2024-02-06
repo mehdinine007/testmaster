@@ -1,0 +1,11 @@
+parameters:
+  name: prject
+  default: ''
+  type: string
+
+steps:
+- task: FileTransform@1
+  inputs:
+    folderPath: '$(System.DefaultWorkingDirectory)/microservices/${{parameters.project}}'
+    fileType: 'json'
+    targetFiles: appsettings.Development.json
