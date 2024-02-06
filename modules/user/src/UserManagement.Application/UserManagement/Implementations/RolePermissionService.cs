@@ -42,13 +42,14 @@ namespace UserManagement.Application.UserManagement.Implementations
         }
 
 
-        public async Task AddToRedis()
+        public async Task<bool> AddToRedis()
         {
             var roleperm = await GetList();
             foreach (var role in roleperm)
             {
                 await _cacheManager.SetAsync("Role" + role.Code, RedisCoreConstant.RolePermissionPrefix, role.Permissions, 2592000, new CacheOptions { Provider = CacheProviderEnum.Hybrid });
             }
+            return true;
         }
         [SecuredOperation(RolePermissionServicePermissionConstants.GetList)]
         public async Task<List<RolePermissionDto>> GetList()
