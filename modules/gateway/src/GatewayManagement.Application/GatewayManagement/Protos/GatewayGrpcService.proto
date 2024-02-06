@@ -93,7 +93,7 @@ message MellatInquiryInput{
 }
 message ParsianInquiryInput{
 	int32 OrderId = 1;
-	int64 Token = 2;
+	string LoginAccount = 2;
 	string ReportServiceUserName = 3;
 	string ReportServicePassword = 4;
 }

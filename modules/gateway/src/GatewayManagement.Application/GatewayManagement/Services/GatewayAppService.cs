@@ -195,7 +195,7 @@ namespace GatewayManagement.Application.Servicess
         [Audited]
         public async Task<OutputDto> InquiryToParsian(ParsianInquiryInputDto input)
         {
-            var data = new { orderId = input.OrderId, token = input.Token };
+            var data = new { input.OrderId, input.LoginAccount };
 
             Uri baseAddressUri = new(_config.GetValue<string>("PSP:ParsianInquiryUrl"), UriKind.Absolute);
 
