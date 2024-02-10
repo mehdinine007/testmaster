@@ -7,6 +7,9 @@ using Volo.Abp.Auditing;
 using Microsoft.Extensions.Configuration;
 using System;
 using Volo.Abp;
+using Newtonsoft.Json;
+using Volo.Abp.Data;
+using OrderManagement.Application.Contracts.OrderManagement;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -32,26 +35,69 @@ public class IpgGrpcServiceProvider : ApplicationService, IIpgServiceProvider
 
     public async Task<ApiResult<IpgApiResult>> HandShakeWithPsp(PspHandShakeRequest handShakeRequest)
     {
-        try
+        using (var auditingScope = _auditingManager.BeginScope())
         {
-            var handshakeResult = await _esaleGrpcClient.HandShake(ObjectMapper.Map<PspHandShakeRequest, PaymentHandShakeDto>(handShakeRequest));
-            if (handshakeResult != null && handshakeResult.StatusCode == 0)
+            List<OrderLog> comments = new List<OrderLog>();
+
+            try
+            {
+
+                comments.Add(new OrderLog
+                {
+                    Description = "Start HandShakeWithPsp",
+                    Data = JsonConvert.DeserializeObject<Dictionary<string, object>>(JsonConvert.SerializeObject(handShakeRequest))
+                });
+
+                var handshakeResult = await _esaleGrpcClient.HandShake(ObjectMapper.Map<PspHandShakeRequest, PaymentHandShakeDto>(handShakeRequest));
+                comments.Add(new OrderLog
+                {
+                    Description = "OutPut EsaleGrpcClient",
+                    Data = JsonConvert.DeserializeObject<Dictionary<string, object>>(JsonConvert.SerializeObject(handshakeResult))
+                });
+
+                if (handshakeResult != null && handshakeResult.StatusCode == 0)
+                {
+                    comments.Add(new OrderLog
+                    {
+                        Description = "Success EsaleGrpcClient",
+                    });
+
+                    return new ApiResult<IpgApiResult>
+                    {
+                        Result = ObjectMapper.Map<PaymentHandShakeViewModel, IpgApiResult>(handshakeResult),
+                        Success = true
+                    };
+                }
+                else
+                {
+                    return new ApiResult<IpgApiResult>
+                    {
+                        Success = false,
+                        Message = "در حال حاظر پرداخت از طریق این درگاه امکان پذیر نمی باشد"
+                    };
+                }
+
+            }
+            catch (Exception ex)
+            {
+                comments.Add(new OrderLog
+                {
+                    Description = $"عملیات با خطا مواجه شد"
+                });
+                _auditingManager.Current.Log.Exceptions.Add(ex);
                 return new ApiResult<IpgApiResult>
                 {
-                    Result = ObjectMapper.Map<PaymentHandShakeViewModel, IpgApiResult>(handshakeResult),
-                    Success = true
+                    Success = false,
+                    Message = "اتصال به درگاه با خطا مواجه شد!"
                 };
-
-            _auditingManager.Current.Log.Exceptions.Add(
-                new UserFriendlyException(handshakeResult?.Message ?? "Handshake proccess with psp has been failed"));
+            }
+            finally
+            {
+                _auditingManager.Current.Log.SetProperty("PspHandShakeLog", comments);
+                _auditingManager.Current.Log.Comments.Add(JsonConvert.SerializeObject(handShakeRequest));
+                await auditingScope.SaveAsync();
+            }
         }
-        catch(Exception ex)
-        {
-            _auditingManager.Current.Log.Exceptions.Add(
-              new UserFriendlyException(ex.Message));
-        }
-      
-        return null;
     }
 
     public async Task ReverseTransaction(int paymentId)

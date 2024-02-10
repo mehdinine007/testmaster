@@ -31,8 +31,8 @@ using Core.Utility.Tools;
 using OrderManagement.Domain.Shared.OrderManagement.Enums;
 using Volo.Abp.Data;
 using Newtonsoft.Json;
-using OrderManagement.Application.Contracts.OrderManagement.Dtos;
 using StackExchange.Redis;
+using OrderManagement.Application.Contracts.OrderManagement;
 
 
 
@@ -601,12 +601,12 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 FilterParam2 = customerOrder.AgencyId.HasValue ? customerOrder.AgencyId.Value : default,
                 FilterParam3 = customerOrder.Id
             });
-            if (handShakeResponse == null)
+            if (!handShakeResponse.Success)
             {
                 customerOrder.OrderStatus = OrderStatusType.PaymentNotVerified;
                 await _commitOrderRepository.UpdateAsync(customerOrder);
                 await CurrentUnitOfWork.SaveChangesAsync();
-                throw new UserFriendlyException("در حال حاظر پرداخت از طریق این درگاه امکان پذیر نمی باشد");
+                throw new UserFriendlyException(handShakeResponse.Message);
             }
             customerOrder.PaymentId = handShakeResponse.Result.PaymentId;
             await _commitOrderRepository.UpdateAsync(customerOrder, autoSave: true);
@@ -1171,11 +1171,11 @@ public class OrderAppService : ApplicationService, IOrderAppService
             var (status, paymentId, paymentSecret) =
             (callBackRequest.StatusCode, callBackRequest.PaymentId, callBackRequest.AdditionalData);
             int orderId = default;
-            List<IPgCallBackLog> comments = new List<IPgCallBackLog>();
+            List<OrderLog> comments = new List<OrderLog>();
             var _iPgCallBackLogData = JsonConvert.DeserializeObject<IPgCallBackLogData>(JsonConvert.SerializeObject(callBackRequest));
             try
             {
-                comments.Add(new IPgCallBackLog
+                comments.Add(new OrderLog
                 {
                     Description = "Start CheckPayment",
                     Data = JsonConvert.DeserializeObject<Dictionary<string, object>>(JsonConvert.SerializeObject(_iPgCallBackLogData))
@@ -1185,7 +1185,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                   .FirstOrDefault(x => x.PaymentId == paymentId);
                 if (order is null)
                 {
-                    comments.Add(new IPgCallBackLog
+                    comments.Add(new OrderLog
                     {
                         Description = $"سفارش  وجود ندارد"
                     });
@@ -1198,14 +1198,14 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     };
                 }
                 _iPgCallBackLogData.OrderId = order.Id;
-                comments.Add(new IPgCallBackLog
+                comments.Add(new OrderLog
                 {
                     Description = "GetOrder",
                     Data = JsonConvert.DeserializeObject<Dictionary<string, object>>(JsonConvert.SerializeObject(order))
                 });
                 if (order.OrderStatus != OrderStatusType.RecentlyAdded)
                 {
-                    comments.Add(new IPgCallBackLog
+                    comments.Add(new OrderLog
                     {
                         Description = "Check OrderStatus"
                     });
@@ -1220,7 +1220,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 if (order is null || (!int.TryParse(paymentSecret, out var numericPaymentSecret) || (order.PaymentSecret.HasValue && order.PaymentSecret.Value != numericPaymentSecret)))
                 {
 
-                    comments.Add(new IPgCallBackLog
+                    comments.Add(new OrderLog
                     {
                         Description = "Check Payment Secret"
                     });
@@ -1237,7 +1237,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
                 if (status != 0)
                 {
-                    comments.Add(new IPgCallBackLog
+                    comments.Add(new OrderLog
                     {
                         Description = "Payment Canceled"
                     });
@@ -1252,7 +1252,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 }
 
 
-                comments.Add(new IPgCallBackLog
+                comments.Add(new OrderLog
                 {
                     Description = "Check Capacity Control"
                 });
@@ -1260,7 +1260,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 if (!capacityControl.Success)
                 {
                     await _ipgServiceProvider.ReverseTransaction(paymentId);
-                    comments.Add(new IPgCallBackLog
+                    comments.Add(new OrderLog
                     {
                         Description = capacityControl.Message
                     });
@@ -1274,7 +1274,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     };
                 }
 
-                comments.Add(new IPgCallBackLog
+                comments.Add(new OrderLog
                 {
                     Description = "VerifyTransaction"
                 });
@@ -1284,7 +1284,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     Id = order.Id,
                     OrderStatus = (int)OrderStatusType.PaymentSucceeded
                 });
-                comments.Add(new IPgCallBackLog
+                comments.Add(new OrderLog
                 {
                     Description = "Payment Succeeded"
                 });
@@ -1300,7 +1300,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             
             catch (Exception e)
             {
-                comments.Add(new IPgCallBackLog
+                comments.Add(new OrderLog
                 {
                     Description = $"عملیات با خطا مواجه شد"
                 });
