@@ -30,6 +30,9 @@ using IFG.Core.Utility.Security;
 using Core.Utility.Tools;
 using OrderManagement.Domain.Shared.OrderManagement.Enums;
 using Volo.Abp.Data;
+using Newtonsoft.Json;
+using OrderManagement.Application.Contracts.OrderManagement.Dtos;
+using StackExchange.Redis;
 
 
 
@@ -1164,64 +1167,84 @@ public class OrderAppService : ApplicationService, IOrderAppService
     {
         using (var auditingScope = _auditingManager.BeginScope())
         {
-            _auditingManager.Current.Log.SetProperty("IPgCallBackRequest", callBackRequest);
+            
             var (status, paymentId, paymentSecret) =
             (callBackRequest.StatusCode, callBackRequest.PaymentId, callBackRequest.AdditionalData);
-            List<Exception> exceptionCollection = new();
             int orderId = default;
+            List<IPgCallBackLog> comments = new List<IPgCallBackLog>();
+            var _iPgCallBackLogData = JsonConvert.DeserializeObject<IPgCallBackLogData>(JsonConvert.SerializeObject(callBackRequest));
             try
             {
+                comments.Add(new IPgCallBackLog
+                {
+                    Description = "Start CheckPayment",
+                    Data = JsonConvert.DeserializeObject<Dictionary<string, object>>(JsonConvert.SerializeObject(_iPgCallBackLogData))
+                });
                 var order = (await _commitOrderRepository.GetQueryableAsync())
-                    .AsNoTracking()
-                    .FirstOrDefault(x => x.PaymentId == paymentId);
+                  .AsNoTracking()
+                  .FirstOrDefault(x => x.PaymentId == paymentId);
                 if (order is null)
                 {
-                    _auditingManager.Current.Log.Comments.Add("سفارش  وجود ندارد: " + "1500");
-                    exceptionCollection.Add(new UserFriendlyException("سفارش  وجود ندارد"));
+                    comments.Add(new IPgCallBackLog
+                    {
+                        Description = $"سفارش  وجود ندارد"
+                    });
                     return new PaymentResult()
                     {
-                        Message = exceptionCollection.ConcatErrorMessages(),
+                        Message = "سفارش  وجود ندارد",
                         Status = 1,
                         PaymentId = 0,
                         OrderId = 0
                     };
                 }
+                _iPgCallBackLogData.OrderId = order.Id;
+                comments.Add(new IPgCallBackLog
+                {
+                    Description = "GetOrder",
+                    Data = JsonConvert.DeserializeObject<Dictionary<string, object>>(JsonConvert.SerializeObject(order))
+                });
                 if (order.OrderStatus != OrderStatusType.RecentlyAdded)
                 {
-                    _auditingManager.Current.Log.Comments.Add("سفارش معتبر نمیباشد: " + "1501");
-                    exceptionCollection.Add(new UserFriendlyException("سفارش معتبر نمیباشد"));
+                    comments.Add(new IPgCallBackLog
+                    {
+                        Description = "Check OrderStatus"
+                    });
                     return new PaymentResult()
                     {
-                        Message = exceptionCollection.ConcatErrorMessages(),
+                        Message = "سفارش معتبر نمیباشد",
                         Status = 1,
                         PaymentId = 0,
                         OrderId = order.Id
                     };
                 }
-                //var orderId = (await _commitOrderRepository.GetQueryableAsync())
-                //    .AsNoTracking()
-                //    .Select(x => new { x.PaymentId, x.Id })
-                //    .FirstOrDefault(x => x.PaymentId == paymentId);
-                //var order = (await _commitOrderRepository.GetQueryableAsync())
-                //    .AsNoTracking()
-                //    .FirstOrDefault(x => x.Id == orderId.Id);
-
                 if (order is null || (!int.TryParse(paymentSecret, out var numericPaymentSecret) || (order.PaymentSecret.HasValue && order.PaymentSecret.Value != numericPaymentSecret)))
-                    _auditingManager.Current.Log.Comments.Add("درخواست معتبر نیست: " + "1502");
-                exceptionCollection.Add(new UserFriendlyException("درخواست معتبر نیست"));
+                {
 
+                    comments.Add(new IPgCallBackLog
+                    {
+                        Description = "Check Payment Secret"
+                    });
+                    return new PaymentResult()
+                    {
+                        Message = "درخواست معتبر نیست",
+                        Status = 1,
+                        PaymentId = 0,
+                        OrderId = order.Id
+                    };
+                }
                 if (order != null)
                     orderId = order.Id;
 
                 if (status != 0)
                 {
-                    _auditingManager.Current.Log.Comments.Add("عملیات پرداخت ناموفق بود: " + "1503");
-                    exceptionCollection.Add(new UserFriendlyException("عملیات پرداخت ناموفق بود"));
-                    exceptionCollection.Add(new UserFriendlyException(callBackRequest.Message));
+                    comments.Add(new IPgCallBackLog
+                    {
+                        Description = "Payment Canceled"
+                    });
                     await NotVerifyActions(order.UserId, order.Id);
                     return new PaymentResult()
                     {
-                        Message = exceptionCollection.ConcatErrorMessages(),
+                        Message = "عملیات پرداخت ناموفق بود",
                         Status = 1,
                         PaymentId = 0,
                         OrderId = order.Id
@@ -1229,28 +1252,41 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 }
 
 
+                comments.Add(new IPgCallBackLog
+                {
+                    Description = "Check Capacity Control"
+                });
                 var capacityControl = await _capacityControlAppService.Validation(order.SaleDetailId, order.AgencyId);
                 if (!capacityControl.Success)
                 {
                     await _ipgServiceProvider.ReverseTransaction(paymentId);
-                    _auditingManager.Current.Log.Comments.Add(capacityControl.Message + "1504");
-                    exceptionCollection.Add(new UserFriendlyException(capacityControl.Message));
+                    comments.Add(new IPgCallBackLog
+                    {
+                        Description = capacityControl.Message
+                    });
                     await NotVerifyActions(order.UserId, order.Id);
                     return new PaymentResult()
                     {
-                        Message = exceptionCollection.ConcatErrorMessages(),
+                        Message = capacityControl.Message,
                         Status = 1,
                         PaymentId = 0,
                         OrderId = order.Id
                     };
                 }
 
+                comments.Add(new IPgCallBackLog
+                {
+                    Description = "VerifyTransaction"
+                });
                 var verificationResponse = await _ipgServiceProvider.VerifyTransaction(paymentId);
-
                 await UpdateStatus(new()
                 {
                     Id = order.Id,
                     OrderStatus = (int)OrderStatusType.PaymentSucceeded
+                });
+                comments.Add(new IPgCallBackLog
+                {
+                    Description = "Payment Succeeded"
                 });
                 return new PaymentResult()
                 {
@@ -1259,22 +1295,35 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     OrderId = order.Id,
                     Status = status
                 };
+               
             }
+            
             catch (Exception e)
             {
-                exceptionCollection.Add(e);
-                _auditingManager.Current.Log.Exceptions.Add(new NullReferenceException($"Exceptions{e}"));
+                comments.Add(new IPgCallBackLog
+                {
+                    Description = $"عملیات با خطا مواجه شد"
+                });
+                _auditingManager.Current.Log.Exceptions.Add(e);
                 return new PaymentResult()
                 {
-                    Message = exceptionCollection.ConcatErrorMessages(),
+                    Message = "عملیات با خطا مواجه شد",
                     PaymentId = paymentId,
                     Status = 2,
                     OrderId = orderId
                 };
-
             }
+           
             finally
             {
+                _auditingManager.Current.Log.SetProperty("IPgCallBackLog", comments);
+                _auditingManager.Current.Log.Comments.Add(JsonConvert.SerializeObject(new Dictionary<string, object>
+                {
+                    { "TransactionCode",_iPgCallBackLogData.TransactionCode},
+                    { "PaymentId",_iPgCallBackLogData.PaymentId},
+                    { "StatusCode",_iPgCallBackLogData.StatusCode},
+                    { "OrderId",_iPgCallBackLogData.OrderId}
+                }));
                 await auditingScope.SaveAsync();
             }
         }
