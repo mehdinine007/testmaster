@@ -112,17 +112,26 @@ namespace ReportManagement.Application.ReportManagement.Implementations
             {
                 var data = _getdata
                     .Cast<IDictionary<string, object>>()
-                    .Select(x => x.ToDictionary(x => x.Key, x => x.Value)).FirstOrDefault();
+                    .Select(x => x.ToDictionary(x => x.Key, x => x.Value)).ToList();
                 if (data != null)
                 {
-                    categories = data.Keys.Select(x => new CategoryData()
+                    categories = data[0].Keys
+                        .Where(x => x != data[0].Keys.FirstOrDefault())
+                        .Select(x => new CategoryData()
+                        {
+                            Title = x
+                        }).ToList();
+                    foreach (var row in data)
                     {
-                        Title = x
-                    }).ToList();
-                    seriDataList.Add(new ChartSeriesData()
-                    {
-                        Data = data.Select(x => long.Parse(x.Value.ToString()!)).ToList()
-                    });
+                        seriDataList.Add(new ChartSeriesData()
+                        {
+                            Name = row[data[0].Keys.FirstOrDefault()].ToString(),
+                            Data = row
+                            .Where(x => x.Key != data[0].Keys.FirstOrDefault())
+                            .Select(x => long.Parse(x.Value.ToString()!))
+                            .ToList()
+                        });
+                    }
                 }
 
             }

@@ -66,6 +66,11 @@
       "Id": "CustomerCarDeliveryTime",
       "Priority": 11,
       "Type": "proc"
+    },
+    {
+      "Id": "Sp_EsaleCarApplicantCountChart",
+      "Priority": 12,
+      "Type": "proc"
     }
   ],
   "Patch": [
