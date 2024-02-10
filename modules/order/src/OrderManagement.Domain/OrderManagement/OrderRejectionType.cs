@@ -48,6 +48,12 @@ namespace OrderManagement.Domain
         [Display(Name = "عدم احراز در طرح جوانی توسط ثبت احول")]
         YoungPlan = 14,
         [Display(Name = "عدم احراز خودرو فرسوده")]
-        OldPlan = 15
+        OldPlan = 15,
+        [Display(Name = "Reservation1")]
+        Reservation1 = 16,
+        [Display(Name = "Reservation2")]
+        Reservation2 = 17,
+        [Display(Name = "Reservation3")]
+        Reservation3 = 18,
     }
 }
