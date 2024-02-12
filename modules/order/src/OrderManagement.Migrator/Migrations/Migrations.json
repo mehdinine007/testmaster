@@ -68,8 +68,13 @@
       "Type": "proc"
     },
     {
-      "Id": "spInsertUserDataAccess",
+      "Id": "Sp_EsaleCarApplicantCountChart",
       "Priority": 12,
+      "Type": "proc"
+    },
+    {
+      "Id": "spInsertUserDataAccess",
+      "Priority": 13,
       "Type": "proc"
     }
   ],
