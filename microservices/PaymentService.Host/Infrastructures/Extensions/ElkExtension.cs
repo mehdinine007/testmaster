@@ -2,7 +2,6 @@
 using MsDemo.Shared.ExtensionsImplementions;
 using MsDemo.Shared.ExtensionsInterfaces;
 using Nest;
-using OrderService.Host.Infrastructures.Middlewares;
 using PaymentService.Host.Infrastructures.Middlewares;
 using Volo.Abp.Auditing;
 
