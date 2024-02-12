@@ -14,6 +14,7 @@ namespace CompanyManagement.EfCore.CompanyManagement.EntityFrameworkCore
         DbSet<CompanyProduction> CompanyProduction { get; set; }
         DbSet<AdvocacyUsersFromBank> AdvocacyUsersFromBank { get; set; }
         DbSet<UserRejectionFromBank> UserRejectionFromBank { get; set; }
+        DbSet<OldCar> OldCars { get; set; }
 
     }
 }

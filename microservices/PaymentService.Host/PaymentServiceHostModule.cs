@@ -32,6 +32,7 @@ using PaymentManagement.Application.PaymentManagement.Services;
 using Volo.Abp.Uow;
 using Microsoft.EntityFrameworkCore;
 using IFG.Core.Extensions;
+using Licence;
 
 namespace PaymentService.Host
 {
@@ -70,10 +71,37 @@ namespace PaymentService.Host
 
             context.Services.AddSwaggerGen(options =>
             {
-                options.SwaggerDoc("v1", new OpenApiInfo {Title = "Payment Service API", Version = "v1"});
+                var version = AppLicence.GetVersion(configuration.GetSection("Licence:SerialNumber").Value).Version;
+                options.SwaggerDoc("v1", new OpenApiInfo { Title = "Payment Service API", Version = version });
                 options.DocInclusionPredicate((docName, description) => true);
                 options.CustomSchemaIds(type => type.FullName);
+                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+                {
+                    Name = "Authorization",
+                    Description = "Enter the Bearer Authorization string as following: `Bearer Generated-JWT-Token`",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "Bearer",
+                });
+                options.AddSecurityRequirement(new OpenApiSecurityRequirement
+                    {
+                        {
+                            new OpenApiSecurityScheme
+                            {
+                                Name = "Bearer",
+                                In = ParameterLocation.Header,
+                                Reference = new OpenApiReference
+                                {
+                                    Id = "Bearer",
+                                    Type = ReferenceType.SecurityScheme
+                                }
+                            },
+                            new List<string>()
+                        }
+                    });
+
             });
+
             Configure<AbpUnitOfWorkDefaultOptions>(options =>
             {
                 options.TransactionBehavior = UnitOfWorkTransactionBehavior.Disabled;

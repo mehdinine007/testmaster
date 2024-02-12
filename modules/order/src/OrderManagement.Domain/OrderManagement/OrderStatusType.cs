@@ -23,6 +23,12 @@ namespace OrderManagement.Domain
         [Display(Name = "پرداخت با موفقیت انجام شد")]
         PaymentSucceeded = 70,
         [Display(Name = "پرداخت ناموفق")]
-        PaymentNotVerified = 80
+        PaymentNotVerified = 80,
+        [Display(Name = "Reservation1")]
+        Reservation1 = 90,
+        [Display(Name = "Reservation2")]
+        Reservation2 = 91,
+        [Display(Name = "Reservation3")]
+        Reservation3 = 92,
     }
 }

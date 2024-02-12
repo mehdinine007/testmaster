@@ -7,6 +7,8 @@ namespace PaymentManagement.Application.Contracts.Enums
         [Description("به پرداخت ملت")]        
         Mellat = 1,
         [Description("ایران کیش")]
-        IranKish = 2
+        IranKish = 2,
+        [Description("تجارت الکترونیک پارسیان")]
+        Parsian = 3
     }
 }

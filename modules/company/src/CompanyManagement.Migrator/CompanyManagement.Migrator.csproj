@@ -15,6 +15,9 @@
     <None Remove="Migrations\Programmability\Job_ConfilictedCustomers.sql" />
     <None Remove="Migrations\Programmability\Sp_ConfilictedCustomersReport.sql" />
     <None Remove="Migrations\Programmability\Sp_EsaleCarApplicantsReport.sql" />
+    <None Remove="Migrations\Programmability\Sp_EsaleCarCompanyObligationsChart.sql" />
+    <None Remove="Migrations\Programmability\Sp_EsaleCarPayDuration.sql" />
+    <None Remove="Migrations\Programmability\Sp_EsaleCarPaypaidPrice.sql" />
   </ItemGroup>
 
   <ItemGroup>
@@ -44,6 +47,15 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Migrations\Programmability\Sp_EsaleCarApplicantsReport.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Migrations\Programmability\Sp_EsaleCarCompanyObligationsChart.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Migrations\Programmability\Sp_EsaleCarPayDuration.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Migrations\Programmability\Sp_EsaleCarPaypaidPrice.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

@@ -18,6 +18,21 @@
       "Id": "Sp_ConfilictedCustomersReport",
       "Priority": 3,
       "Type": "proc"
+    },
+    {
+      "Id": "Sp_EsaleCarPayDuration",
+      "Priority": 4,
+      "Type": "proc"
+    },
+    {
+      "Id": "Sp_EsaleCarPaypaidPrice",
+      "Priority": 5,
+      "Type": "proc"
+    },
+    {
+      "Id": "Sp_EsaleCarCompanyObligationsChart",
+      "Priority": 6,
+      "Type": "proc"
     }
   ],
   "Patch": [
@@ -29,6 +44,11 @@
     {
       "Id": "20240113110628_add-useuid",
       "Priority": 2,
+      "Version": "4.2.0"
+    },
+    {
+      "Id": "20240120102158_addoldcar",
+      "Priority": 3,
       "Version": "4.2.0"
     }
   ]

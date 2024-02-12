@@ -154,7 +154,6 @@ public class CompanyAppService : ApplicationService, ICompanyAppService
             new SqlParameter("@userId",SqlDbType.UniqueIdentifier){Value = new Guid(user.UID)},
             new SqlParameter("@provienceId",SqlDbType.Int){Value = user.ProvienceId.HasValue ? user.ProvienceId.Value : -1}
         };
-
         var companiesCustomer = _orderManagementDbContext.Set<CompaniesCustomer>().FromSqlRaw(
             string.Format("EXEC {0} {1}", "[dbo].[GetRecentCustomerAndOrder]", "@saleId,@companyId,@userId,@provienceId"), paramArray)
             .AsEnumerable()

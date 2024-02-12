@@ -27,6 +27,7 @@ namespace UserManagement.EfCore.EntityFrameworkCore
         public DbSet<ClientsOrderDetailByCompany> ClientsOrderDetailByCompany { get; set; }
         public DbSet<CompanyPaypaidPrices> CompanyPaypaidPrices { get; set; }
         public DbSet<UserSQL> UserSQL { get; set; }
+        public DbSet<UserDataAccess> UserDataAccess { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder builder)

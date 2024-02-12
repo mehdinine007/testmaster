@@ -275,17 +275,22 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
 
     public async Task<List<AgencyDto>> GetAgencies()
     {
+        bool hasProvince = _configuration.GetValue<bool?>("AgencyControlConfig:HasProvince") ?? false;
         var user = await _esaleGrpcClient.GetUserId(_commonAppService.GetUserId().ToString());
-        var agencyQuery = await _agencyRepository.GetQueryableAsync();
-        var agencies = agencyQuery.Where(x => x.ProvinceId == user.HabitationProvinceId).ToList();
+        var agencies = (await _agencyRepository.GetQueryableAsync()).AsNoTracking()
+            .ToList();
+        if (hasProvince)
+          agencies = agencies.Where(x => x.ProvinceId == user.HabitationProvinceId)
+                .ToList();
         return ObjectMapper.Map<List<Agency>, List<AgencyDto>>(agencies);
     }
 
     [SecuredOperation(BaseServicePermissionConstants.GetAgencies)]
     public async Task<List<AgencyDto>> GetAgencies(Guid saleDetailUid)
     {
+        bool hasProvince = _configuration.GetValue<bool?>("AgencyControlConfig:HasProvince") ?? false;
         var user = await _esaleGrpcClient.GetUserId(_commonAppService.GetUserId().ToString());
-        var agencyQuery = await _agencyRepository.GetQueryableAsync();
+        var agencyQuery = (await _agencyRepository.GetQueryableAsync()).AsNoTracking();
         var cacheKey = string.Format(RedisConstants.SaleDetailAgenciesCacheName, saleDetailUid);
         var agencySaleDetailIds = await _cacheManager.GetAsync<List<int>>(cacheKey, RedisConstants.AgencyPrefix, new CacheOptions()
         {
@@ -317,7 +322,12 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
                 Provider = CacheProviderEnum.Hybrid
             });
         }
-        var agencies = agencyQuery.Where(x => x.ProvinceId == (user.HabitationProvinceId ?? 0) && agencySaleDetailIds.Any(y => y == x.Id)).ToList();
+        var agencies = agencyQuery.Where(x => agencySaleDetailIds.Any(y => y == x.Id)).ToList();
+        if (hasProvince)
+        {
+            agencies = agencies.Where(x => x.ProvinceId == user.HabitationProvinceId).ToList();
+        }
+
         return ObjectMapper.Map<List<Agency>, List<AgencyDto>>(agencies);
     }
 

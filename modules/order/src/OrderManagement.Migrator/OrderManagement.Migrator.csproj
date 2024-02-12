@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <None Remove="appsettings.Development.json" />
+    <None Remove="appsettings.json" />
     <None Remove="Migrations\dbo.__MigrationsHistory.sql" />
     <None Remove="Migrations\Migrations.json" />
     <None Remove="Migrations\Patch\20231213112901_Add_CustomerPriority.sql" />
@@ -17,6 +18,11 @@
     <None Remove="Migrations\Patch\20231218074437_add-deviceenum.sql" />
     <None Remove="Migrations\Patch\20231220090409_addQuestionGroup-to-Question.sql" />
     <None Remove="Migrations\Patch\20231226055406_removeuniquegroupid.sql" />
+    <None Remove="Migrations\Patch\20240102103313_add-advertisement.sql" />
+    <None Remove="Migrations\Patch\20240106123506_add-priority-advertisementdetail.sql" />
+    <None Remove="Migrations\Patch\20240110080635_IsRequiredtitle-title-advertisement.sql" />
+    <None Remove="Migrations\Patch\20240129082810_add-userdataaccess.sql" />
+    <None Remove="Migrations\Patch\20240129124922_nullableuserid.sql" />
     <None Remove="Migrations\Programmability\CustomerCarDeliveryTime.sql" />
     <None Remove="Migrations\Programmability\GetRecentCustomerAndOrder.sql" />
     <None Remove="Migrations\Programmability\Hangfire.sql" />
@@ -28,12 +34,19 @@
     <None Remove="Migrations\Programmability\spGetOrderStatusTypeReadOnly.sql" />
     <None Remove="Migrations\Programmability\spGetReportQuestionnaire.sql" />
     <None Remove="Migrations\Programmability\spGetUserRejectionAdvocacy.sql" />
+    <None Remove="Migrations\Programmability\spInsertUserDataAccess.sql" />
     <None Remove="Migrations\Programmability\spUserInfo.sql" />
+    <None Remove="Migrations\Programmability\Sp_EsaleCarApplicantCountChart.sql" />
     <None Remove="Migrations\Schema\SchemaBase.sql" />
     <None Remove="Migrations\Tables\ProductAndCategory_CarTip.sql" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
     <Content Include="appsettings.Development.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
@@ -64,6 +77,21 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Migrations\Patch\20231226055406_removeuniquegroupid.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Migrations\Patch\20240102103313_add-advertisement.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Migrations\Patch\20240106123506_add-priority-advertisementdetail.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Migrations\Patch\20240110080635_IsRequiredtitle-title-advertisement.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Migrations\Patch\20240129082810_add-userdataaccess.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Migrations\Patch\20240129124922_nullableuserid.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Migrations\Programmability\CustomerCarDeliveryTime.sql">
@@ -99,7 +127,13 @@
     <Content Include="Migrations\Programmability\spGetUserRejectionAdvocacy.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Migrations\Programmability\spInsertUserDataAccess.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Migrations\Programmability\spUserInfo.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Migrations\Programmability\Sp_EsaleCarApplicantCountChart.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Migrations\Schema\SchemaBase.sql">

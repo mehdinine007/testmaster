@@ -92,7 +92,7 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
         return ObjectMapper.Map<List<SaleDetail>, List<SaleDetailDto>>(saledetails);
     }
 
-    [SecuredOperation(SaleDetailServicePermissionConstants.GetById)]
+    //[SecuredOperation(SaleDetailServicePermissionConstants.GetById)]
     public SaleDetailDto GetById(int id)
     {
         var saleDetail = _saleDetailRepository

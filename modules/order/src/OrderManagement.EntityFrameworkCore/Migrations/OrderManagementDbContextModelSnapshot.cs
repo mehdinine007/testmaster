@@ -1624,6 +1624,116 @@ namespace OrderManagement.EfCore.Migrations
                         });
                 });
 
+            modelBuilder.Entity("OrderManagement.Domain.OrderManagement.Advertisement", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("CreationTime");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("CreatorId");
+
+                    b.Property<Guid?>("DeleterId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("DeleterId");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("DeletionTime");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false)
+                        .HasColumnName("IsDeleted");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("LastModificationTime");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("LastModifierId");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Advertisement");
+                });
+
+            modelBuilder.Entity("OrderManagement.Domain.OrderManagement.AdvertisementDetail", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AdvertisementId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("CreationTime");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("CreatorId");
+
+                    b.Property<Guid?>("DeleterId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("DeleterId");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("DeletionTime");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false)
+                        .HasColumnName("IsDeleted");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("LastModificationTime");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("LastModifierId");
+
+                    b.Property<int>("Priority")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Url")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AdvertisementId");
+
+                    b.ToTable("AdvertisementDetail", (string)null);
+                });
+
             modelBuilder.Entity("OrderManagement.Domain.OrderManagement.Attachment", b =>
                 {
                     b.Property<Guid>("Id")
@@ -2862,6 +2972,13 @@ namespace OrderManagement.EfCore.Migrations
                             Code = 3,
                             Title = "فروش آزاد",
                             TitleEn = "FreeSale"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Code = 4,
+                            Title = "فروش نقدی",
+                            TitleEn = "CashSale"
                         });
                 });
 
@@ -3914,6 +4031,17 @@ namespace OrderManagement.EfCore.Migrations
                     b.Navigation("SaleDetail");
                 });
 
+            modelBuilder.Entity("OrderManagement.Domain.OrderManagement.AdvertisementDetail", b =>
+                {
+                    b.HasOne("OrderManagement.Domain.OrderManagement.Advertisement", "Advertisement")
+                        .WithMany("AdvertisementDetails")
+                        .HasForeignKey("AdvertisementId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Advertisement");
+                });
+
             modelBuilder.Entity("OrderManagement.Domain.OrderManagement.OrderStatusInquiry", b =>
                 {
                     b.HasOne("OrderManagement.Domain.OrderManagement.ProductAndCategory", "CompanyCategory")
@@ -4219,6 +4347,11 @@ namespace OrderManagement.EfCore.Migrations
                     b.Navigation("CompanyLogo");
 
                     b.Navigation("CompanyLogoInPage");
+                });
+
+            modelBuilder.Entity("OrderManagement.Domain.OrderManagement.Advertisement", b =>
+                {
+                    b.Navigation("AdvertisementDetails");
                 });
 
             modelBuilder.Entity("OrderManagement.Domain.OrderManagement.Color", b =>

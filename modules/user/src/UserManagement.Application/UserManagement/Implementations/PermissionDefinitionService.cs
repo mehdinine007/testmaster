@@ -243,7 +243,7 @@ namespace UserManagement.Application.UserManagement.Implementations
         }
 
         //[SecuredOperation(UserServicePermissionConstants.UpdateSecuritPolicy)]
-        public async Task SeedPermissions()
+        public async Task<bool> SeedPermissions()
         {
             var permissionQuery = await _permissionRepository.GetQueryableAsync();
             var permissions = permissionQuery.ToList();
@@ -256,6 +256,7 @@ namespace UserManagement.Application.UserManagement.Implementations
             var content = File.ReadAllText(fullPath);
             var ls = new List<PermissionDefinitionWrite>(JsonConvert.DeserializeObject<List<PermissionDefinitionWrite>>(content));
             await _permissionWriteRepository.InsertManyAsync(ls);
+            return true;
         }
     }
 }

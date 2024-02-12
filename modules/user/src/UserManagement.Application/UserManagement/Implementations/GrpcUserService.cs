@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using UserManagement.Application.Contracts.Models;
 using UserManagement.Application.Contracts.Services;
 using UserManagement.Application.Contracts.UserManagement.Services;
+using UserManagement.Domain.Shared.UserManagement.Enums;
 using UserManagement.Domain.UserManagement.Authorization;
 
 namespace UserManagement.Application.UserManagement.Implementations
@@ -19,15 +20,45 @@ namespace UserManagement.Application.UserManagement.Implementations
         private readonly IBaseInformationService _baseInformationSevice;
         private readonly IBankAppService _bankAppService;
         private readonly IAuthenticateAppService _authenticateAppService;
-
+        private readonly IUserDataAccessService _userDataAccessService;
 
         public GrpcUserService(IBaseInformationService baseInformationService,
                                IBankAppService bankAppService,
-                               IAuthenticateAppService authenticateAppService)
+                               IAuthenticateAppService authenticateAppService,
+                               IUserDataAccessService userDataAccessService)
         {
             _baseInformationSevice = baseInformationService;
             _bankAppService = bankAppService;
             _authenticateAppService = authenticateAppService;
+            _userDataAccessService = userDataAccessService;
+        }
+
+        public override async Task<UserDataAccessResponse> GetUDAByNationalCode(GetUDAByNationalCodeRequest request, ServerCallContext context)
+        {
+            var getUserDataAccess = await _userDataAccessService.GetListByNationalcode(request.NationalCode,(RoleTypeEnum)request.Type);
+            var userDataAccess = new UserDataAccessResponse();
+            userDataAccess.UserDataAccessModel.AddRange(getUserDataAccess.Select(x=> new UserDataAccessModel
+            {
+                UserId = x.UserId !=null ? x.UserId.ToString():""  ,
+                Nationalcode = x.Nationalcode,
+                RoleTypeId = (int)x.RoleTypeId,
+                Data = x.Data
+            }));
+            return userDataAccess;
+        }
+
+        public override async Task<UserDataAccessResponse> GetUDAByUserId(GetUDAByUserIdRequest request, ServerCallContext context)
+        {
+            var getUserDataAccess = await _userDataAccessService.GetListByUserId(Guid.Parse(request.UserId), (RoleTypeEnum)request.Type);
+            var userDataAccess = new UserDataAccessResponse();
+            userDataAccess.UserDataAccessModel.AddRange(getUserDataAccess.Select(x => new UserDataAccessModel
+            {
+                UserId = x.UserId.ToString(),
+                Nationalcode = x.Nationalcode,
+                RoleTypeId = (int)x.RoleTypeId,
+                Data = x.Data
+            }));
+            return userDataAccess;
         }
 
         public override Task<UserAdvocacy> GetUserAdvocacy(UserAdvocacyRequest request, ServerCallContext context)

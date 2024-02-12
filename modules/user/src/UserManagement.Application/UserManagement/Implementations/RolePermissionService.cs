@@ -42,13 +42,14 @@ namespace UserManagement.Application.UserManagement.Implementations
         }
 
 
-        public async Task AddToRedis()
+        public async Task<bool> AddToRedis()
         {
             var roleperm = await GetList();
             foreach (var role in roleperm)
             {
                 await _cacheManager.SetAsync("Role" + role.Code, RedisCoreConstant.RolePermissionPrefix, role.Permissions, 2592000, new CacheOptions { Provider = CacheProviderEnum.Hybrid });
             }
+            return true;
         }
         [SecuredOperation(RolePermissionServicePermissionConstants.GetList)]
         public async Task<List<RolePermissionDto>> GetList()
@@ -210,6 +211,29 @@ namespace UserManagement.Application.UserManagement.Implementations
                 rolePermission.Type = RolePermissionEnum.Bank;
                 rolePermission.Permissions = serviceList;
                 rolePermission.Code = ((int)RolePermissionEnum.Bank).ToString().PadLeft(4, '0');
+
+
+                await Add(rolePermission);
+
+            }
+            if (type == RolePermissionEnum.OldCar || (type == null || type == RolePermissionEnum.None))
+            {
+                await DeleteRolePermission(RolePermissionEnum.OldCar, rolePermissions);
+                var serviceList = new List<string>();
+                var permission = permissions.Where(x => x.Code == ConstantInfo.ModuleCompany).ToList();
+
+                foreach (var per in permission)
+                {
+                    var children = per.Children.Where(x => x.Code == ConstantInfo.SubModuleOldCar).ToList();
+                    foreach (var child in children)
+                    {
+                        serviceList.AddRange(child.Children.Select(c => c.Code).ToList());
+                    }
+                }
+                rolePermission.Title = RolePermissionEnum.OldCar.ToString();
+                rolePermission.Type = RolePermissionEnum.OldCar;
+                rolePermission.Permissions = serviceList;
+                rolePermission.Code = ((int)RolePermissionEnum.OldCar).ToString().PadLeft(4, '0');
 
 
                 await Add(rolePermission);

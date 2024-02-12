@@ -33,6 +33,10 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Constants
         public const string NotEqualQuestionIdAndQuestionRelationId = "0012";
         public const string EqualQuestionIdAndAnswerQuestion = "شناسه پرسشنامه باید با شناسه پرسشنامه پاسخ برابر باشد";
         public const string EqualQuestionIdAndAnswerQuestionId = "0013";
+        public const string AdvertisementNotFound = "جایگاه وجود ندارد";
+        public const string AdvertisementNotFoundId = "0014";
+        public const string AddAdvertisementIdValue = "شناسه وارد شده معتبر نمیباشد";
+        public const string AddAdvertisementIdValueid = "0015";
     }
     public static class RuleSets
     {
@@ -46,7 +50,12 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Constants
         public const string GetByIdId = "0004";
         public const string GetListByQuestionId = "GetListByQuestionId";
         public const string GetListByQuestionIdId = "0006";
-        
+        public const string Move = "Move";
+        public const string MoveId = "0007";
+        public const string UploadFile = "UploadFile";
+        public const string UploadFileId = "0008";
+
+
 
 
     }

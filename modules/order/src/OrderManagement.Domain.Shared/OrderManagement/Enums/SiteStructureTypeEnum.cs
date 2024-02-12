@@ -16,4 +16,7 @@ public enum SiteStructureTypeEnum
     Bank = 5,
     [EnumProperty(Description = "اطلاعیه")]
     Announcement = 6,
+    [EnumProperty(Description = "تبلیغات")]
+    Advertisement = 7,
+
 }

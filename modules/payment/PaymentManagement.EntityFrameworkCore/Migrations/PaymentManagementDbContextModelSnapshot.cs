@@ -300,6 +300,8 @@ namespace PaymentManagement.EntityFrameworkCore.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Message");
+
                     b.HasIndex("PaymentId", "Message");
 
                     b.ToTable("PaymentLog", "dbo");

@@ -7,7 +7,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "ProductService.Host": {
+    "PaymentService.Host": {
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {

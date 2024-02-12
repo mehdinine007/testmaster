@@ -94,7 +94,7 @@ namespace OrderManagement.EfCore.Migrations.CompanyManagementDb
 
                     b.HasKey("Id");
 
-                    b.ToTable("AdvocacyUsersFromBank");
+                    b.ToTable("AdvocacyUsersFromBank", (string)null);
                 });
 
             modelBuilder.Entity("CompanyManagement.Domain.CompanyManagement.ClientsOrderDetailByCompany", b =>
@@ -315,7 +315,7 @@ namespace OrderManagement.EfCore.Migrations.CompanyManagementDb
 
                     b.HasKey("Id");
 
-                    b.ToTable("CompanyProduction");
+                    b.ToTable("CompanyProduction", (string)null);
                 });
 
             modelBuilder.Entity("CompanyManagement.Domain.CompanyManagement.CompanySaleCallDates", b =>
@@ -369,7 +369,68 @@ namespace OrderManagement.EfCore.Migrations.CompanyManagementDb
 
                     b.HasIndex("ClientsOrderDetailByCompanyId");
 
-                    b.ToTable("CompanySaleCallDates");
+                    b.ToTable("CompanySaleCallDates", (string)null);
+                });
+
+            modelBuilder.Entity("CompanyManagement.Domain.CompanyManagement.OldCar", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BatchNo")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ChassiNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("CreationTime");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("CreatorId");
+
+                    b.Property<Guid?>("DeleterId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("DeleterId");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("DeletionTime");
+
+                    b.Property<string>("EngineNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false)
+                        .HasColumnName("IsDeleted");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("LastModificationTime");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("LastModifierId");
+
+                    b.Property<string>("Nationalcode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Vehicle")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Vin")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("OldCars", (string)null);
                 });
 
             modelBuilder.Entity("CompanyManagement.Domain.CompanyManagement.UserRejectionFromBank", b =>

@@ -120,6 +120,8 @@ namespace OrderManagement.EfCore
         public DbSet<QuestionRelationship> QuestionRelationship { get ; set; }
 
         public DbSet<CustomerPriority> CustomerPriority { get; set; }
+        public DbSet<Advertisement> Advertisement { get; set; }
+        public DbSet<AdvertisementDetail> AdvertisementDetail { get; set; }
 
         public OrderManagementDbContext(DbContextOptions<OrderManagementDbContext> options)
             : base(options)

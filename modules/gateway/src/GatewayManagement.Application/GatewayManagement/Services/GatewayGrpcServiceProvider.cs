@@ -48,6 +48,23 @@ namespace GatewayManagement.Application.Servicess
             return new Output() { Result = output.Result };
         }
         [Audited]
+        public override async Task<Output> HandShakeWithParsian(ParsianHandShakeInput input, ServerCallContext context)
+        {
+            var output = await _gatewayAppService.HandShakeWithParsian(new ParsianHandShakeInputDto
+            {
+                LoginAccount = input.LoginAccount,
+                CallBackUrl = input.CallBackUrl,
+                Amount = input.Amount,
+                OrderId = input.OrderId,
+                AdditionalData = input.AdditionalData,
+                Originator = input.Originator,
+                Key = input.Key,
+                IV = input.IV,
+                ThirdPartyCode = input.ThirdPartyCode
+            });
+            return new Output() { Result = output.Result };
+        }
+        [Audited]
         public override async Task<Output> VerifyToIranKish(IranKishVerifyInput input, ServerCallContext context)
         {
             var output = await _gatewayAppService.VerifyToIranKish(new IranKishVerifyInputDto
@@ -75,6 +92,16 @@ namespace GatewayManagement.Application.Servicess
             return new Output() { Result = output.Result };
         }
         [Audited]
+        public override async Task<Output> VerifyToParsian(ParsianVerifyInput input, ServerCallContext context)
+        {
+            var output = await _gatewayAppService.VerifyToParsian(new ParsianVerifyInputDto
+            {
+                LoginAccount = input.LoginAccount,
+                Token = input.Token,
+            });
+            return new Output() { Result = output.Result };
+        }
+        [Audited]
         public override async Task<Output> InquiryToIranKish(IranKishInquiryInput input, ServerCallContext context)
         {
             var output = await _gatewayAppService.InquiryToIranKish(new IranKishInquiryInputDto
@@ -83,6 +110,19 @@ namespace GatewayManagement.Application.Servicess
                 PassPhrase = input.PassPhrase,
                 TokenIdentity = input.TokenIdentity,
                 FindOption = input.FindOption
+            });
+            return new Output() { Result = output.Result };
+        }
+
+        [Audited]
+        public override async Task<Output> InquiryToParsian(ParsianInquiryInput input, ServerCallContext context)
+        {
+            var output = await _gatewayAppService.InquiryToParsian(new ParsianInquiryInputDto
+            {
+                OrderId = input.OrderId,
+                LoginAccount = input.LoginAccount,
+                ReportServiceUserName = input.ReportServiceUserName,
+                ReportServicePassword = input.ReportServicePassword
             });
             return new Output() { Result = output.Result };
         }
@@ -110,6 +150,16 @@ namespace GatewayManagement.Application.Servicess
                 SaleOrderId = input.SaleOrderId,
                 SaleReferenceId = input.SaleReferenceId,
                 Switch = input.Switch
+            });
+            return new Output() { Result = output.Result };
+        }
+        [Audited]
+        public override async Task<Output> ReverseToParsian(ParsianReverseInput input, ServerCallContext context)
+        {
+            var output = await _gatewayAppService.ReverseToParsian(new ParsianReverseInputDto
+            {
+                LoginAccount = input.LoginAccount,
+                Token = input.Token,
             });
             return new Output() { Result = output.Result };
         }

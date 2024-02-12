@@ -14,6 +14,7 @@ namespace Licence
         public const string ModuleWorkFlow = "0004";
         public const string ModuleAdminPanel = "0005";
         public const string SubModuleBank = ModuleCompany+"0002";
+        public const string SubModuleOldCar = ModuleCompany + "0003";
 
     }
 }

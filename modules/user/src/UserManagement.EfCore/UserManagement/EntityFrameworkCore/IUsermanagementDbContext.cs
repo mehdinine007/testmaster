@@ -19,5 +19,6 @@ namespace UserManagement.EfCore.EntityFrameworkCore
         DbSet<UserRejectionFromBank> UserRejectionFromBank { get; set; }
         DbSet<ClientsOrderDetailByCompany> ClientsOrderDetailByCompany { get; set; }
         DbSet<CompanyPaypaidPrices> CompanyPaypaidPrices { get; set; }
+        DbSet<UserDataAccess> UserDataAccess { get; set; }
     }
 }

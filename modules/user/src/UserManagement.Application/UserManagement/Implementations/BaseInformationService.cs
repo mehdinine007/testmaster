@@ -21,6 +21,8 @@ using IFG.Core.Caching;
 using Abp.Runtime.Caching;
 using UserManagement.Application.Contracts.UserManagement.Constant;
 using Newtonsoft.Json;
+using UserManagement.Application.Contracts.UserManagement.Services;
+using UserManagement.Domain.Shared.UserManagement.Enums;
 #endregion
 
 namespace UserManagement.Application.Implementations;
@@ -36,7 +38,7 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
     private readonly IRepository<ClientsOrderDetailByCompany, long> _clientsOrderDetailByCompany;
     private readonly IRepository<CompanyPaypaidPrices, long> _companyPaypaidPricesRepository;
     private readonly IFG.Core.Caching.ICacheManager _cacheManager;
-
+    private readonly IUserDataAccessService _userDataAccessService;
 
     public BaseInformationService(IConfiguration configuration,
                                   IRepository<AdvocacyUsers, int> advocacyUsersRepository,
@@ -46,7 +48,8 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
                                   ICommonAppService commonAppService,
                                   IRepository<ClientsOrderDetailByCompany, long> clientsOrderDetailByCompany,
                                   IRepository<CompanyPaypaidPrices, long> companyPaypaidPricesRepository,
-                                  IFG.Core.Caching.ICacheManager cacheManager)
+                                  IFG.Core.Caching.ICacheManager cacheManager,
+                                  IUserDataAccessService userDataAccessService)
     {
         _configuration = configuration;
         _advocacyUsersRepository = advocacyUsersRepository;
@@ -57,6 +60,7 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
         _clientsOrderDetailByCompany = clientsOrderDetailByCompany;
         _companyPaypaidPricesRepository = companyPaypaidPricesRepository;
         _cacheManager = cacheManager;
+        _userDataAccessService = userDataAccessService;
     }
 
     public async Task RegistrationValidationWithoutCaptcha(RegistrationValidationDto input)
@@ -65,25 +69,12 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
         {
             throw new UserFriendlyException(Messages.NationalCodeNotValid);
         }
-        if (_configuration.GetSection("IsCheckAdvocacy").Value == "1")
+        if (_configuration.GetValue<bool?>("UserDataAccessConfig:HasRegistration") ?? false)
         {
-            var advocacyuser = _advocacyUsersRepository.WithDetails()
-          .Select(x => new
-          {
-              x.shabaNumber,
-              x.accountNumber,
-              x.Id,
-              x.nationalcode,
-              x.BanksId
-          })
-          .OrderByDescending(x => x.Id).FirstOrDefault(x => x.nationalcode == input.Nationalcode);
-
-            if (advocacyuser == null)
-            {
-                throw new UserFriendlyException(_configuration.GetSection("CheckAdvocacyMessage").Value);
-            }
+            var userAccess = await _userDataAccessService.CheckNationalCode(input.Nationalcode,RoleTypeEnum.Registrtion);
+            if (!userAccess.Success)
+                throw new UserFriendlyException(_configuration.GetSection("CheckAdvocacyMessage").Value, userAccess.MessageId);
         }
-
         var user = (await _userMongoRepository
                     .GetQueryableAsync())
                     .FirstOrDefault(a => a.NormalizedUserName == input.Nationalcode && a.IsDeleted == false);
@@ -134,14 +125,15 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
     {
         System.Diagnostics.Debugger.Launch();
         object UserFromCache = null;
-      
+
         string prefix = $"{RedisConstants.GetUserById}";
-        string cacheKey = "GetUser_"+ userId;
+        string cacheKey = "GetUser_" + userId;
 
         var cachedData = await _cacheManager.GetStringAsync(cacheKey, prefix, new CacheOptions
         { Provider = CacheProviderEnum.Hybrid });
 
-        if (!string.IsNullOrEmpty(cachedData)) {
+        if (!string.IsNullOrEmpty(cachedData))
+        {
             return JsonConvert.DeserializeObject<UserGrpcDto>(cachedData);
         }
 
@@ -189,7 +181,7 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
             CompanyId = user.CompanyId,
             SurName = user.Surname,
             Name = user.Name,
-            Uid=user.UID,
+            Uid = user.UID,
             Priority = user.Priority
         };
 
@@ -214,23 +206,11 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
             throw new UserFriendlyException("زمان ثبت نام به پایان رسیده است");
         }
 
-        if (_configuration.GetSection("IsCheckAdvocacy").Value == "1")
+        if (_configuration.GetValue<bool?>("UserDataAccessConfig:HasRegistration") ?? false)
         {
-            var advocacyuser =(await _advocacyUsersRepository.GetQueryableAsync())
-           .Select(x => new
-           {
-               x.shabaNumber,
-               x.accountNumber,
-               x.Id,
-               x.nationalcode,
-               x.BanksId
-           })
-           .FirstOrDefault(x => x.nationalcode == input.Nationalcode);
-
-            if (advocacyuser == null)
-            {
-                throw new UserFriendlyException(_configuration.GetSection("CheckAdvocacyMessage").Value);
-            }
+            var userAccess = await _userDataAccessService.CheckNationalCode(input.Nationalcode, RoleTypeEnum.Registrtion);
+            if (!userAccess.Success)
+                throw new UserFriendlyException(_configuration.GetSection("CheckAdvocacyMessage").Value, userAccess.MessageId);
         }
 
         var user = (await _userMongoRepository.GetQueryableAsync())
@@ -258,7 +238,7 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
         var useInquiryForUserAddress = _configuration.GetValue<bool?>("Inquiry:UseInquiryForUserAddress") ?? false;
         if (!useInquiryForUserAddress)
             throw new UserFriendlyException("استعلام شماره موبایل ممکن نیست");
-        var zipCodeInquiry =await _commonAppService.GetAddressByZipCode(input.zipCod, input.nationalCode);
+        var zipCodeInquiry = await _commonAppService.GetAddressByZipCode(input.zipCod, input.nationalCode);
         return zipCodeInquiry;
     }
 

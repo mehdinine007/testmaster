@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using UserManagement.Application.Contracts.Models;
 using UserManagement.Application.Contracts.UserManagement;
+using UserManagement.Application.Contracts.UserManagement.Models;
 using UserManagement.Domain.Authorization.Users;
+using UserManagement.Domain.UserManagement;
 using UserManagement.Domain.UserManagement.Advocacy;
 using UserManagement.Domain.UserManagement.Authorization.RolePermissions;
 using UserManagement.Domain.UserManagement.Authorization.Users;
@@ -49,5 +51,6 @@ public class UserManagementApplciationMapperProfile : Profile
             .ReverseMap();
         CreateMap<Menu, MenuDto>().ReverseMap();
         CreateMap<MenuChild, MenuChildDto>().ReverseMap();
+        CreateMap<UserDataAccess, UserDataAccessDto>().ReverseMap();
     }
 }
