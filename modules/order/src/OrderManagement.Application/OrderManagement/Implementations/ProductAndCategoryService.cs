@@ -175,7 +175,7 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
         productAndCategoryCreateDto.ParentId = productAndCategoryCreateDto.ParentId.HasValue && productAndCategoryCreateDto.ParentId.Value > 0
             ? productAndCategoryCreateDto.ParentId.Value
             : null;
-        productAndCategoryCreateDto.Active = true;
+        //productAndCategoryCreateDto.Active = true;
         var productAndCategory = ObjectMapper.Map<ProductAndCategoryCreateDto, ProductAndCategory>(productAndCategoryCreateDto);
         productAndCategory.LevelId = levelId;
         productAndCategory.ProductLevelId = productLevelId;
