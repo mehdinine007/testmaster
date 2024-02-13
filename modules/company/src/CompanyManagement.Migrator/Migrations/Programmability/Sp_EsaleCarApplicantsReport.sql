@@ -6,7 +6,7 @@ AS
 begin
 	DROP TABLE IF EXISTS #TmpOrderCopmany
 	DROP TABLE IF EXISTS #TmpRes
-	select ROW_NUMBER() OVER(PARTITION BY  cod.NationalCode ORDER BY cod.id desc ) rownum 
+	select ROW_NUMBER() OVER(PARTITION BY  cod.NationalCode,u.CompanyId ORDER BY cod.id desc ) rownum 
 			,Id = cod.Id
 			,cod.NationalCode
 			,cod.ModelType 
