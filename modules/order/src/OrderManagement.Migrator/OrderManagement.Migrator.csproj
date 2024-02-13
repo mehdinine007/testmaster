@@ -127,9 +127,6 @@
     <Content Include="Migrations\Programmability\spGetUserRejectionAdvocacy.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Migrations\Programmability\spInsertUserDataAccess.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="Migrations\Programmability\spUserInfo.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
