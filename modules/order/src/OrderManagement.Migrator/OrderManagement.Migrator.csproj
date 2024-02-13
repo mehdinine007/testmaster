@@ -37,6 +37,7 @@
     <None Remove="Migrations\Programmability\spInsertUserDataAccess.sql" />
     <None Remove="Migrations\Programmability\spUserInfo.sql" />
     <None Remove="Migrations\Programmability\Sp_EsaleCarApplicantCountChart.sql" />
+    <None Remove="Migrations\Programmability\sp_InsertUserDataAccess.sql" />
     <None Remove="Migrations\Schema\SchemaBase.sql" />
     <None Remove="Migrations\Tables\ProductAndCategory_CarTip.sql" />
   </ItemGroup>
@@ -131,6 +132,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Migrations\Programmability\Sp_EsaleCarApplicantCountChart.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Migrations\Programmability\sp_InsertUserDataAccess.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Migrations\Schema\SchemaBase.sql">
