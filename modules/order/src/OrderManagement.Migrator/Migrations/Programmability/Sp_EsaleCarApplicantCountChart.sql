@@ -20,7 +20,7 @@ begin
 				@EndDate DATE = '''+@EndDate+''';
 		DROP TABLE IF EXISTS #TmpDate
 		select TOP (DATEDIFF('+@Type+', @StartDate, @EndDate) + 1)
-			   Date = DATEADD('+@Type+', ROW_NUMBER() OVER(ORDER BY a.object_id) - 1, @StartDate)
+			   Date = EOMONTH(DATEADD('+@Type+', ROW_NUMBER() OVER(ORDER BY a.object_id) - 1, @StartDate))
 		into #TmpDate
 		from    sys.all_objects a
 				CROSS JOIN sys.all_objects b;

@@ -11,6 +11,7 @@ namespace OrderManagement.Application.Contracts
         public  string attachmentType { get; set; }
         public string attachmentlocation { get; set; }
         public bool HasProperty { get; set; }
+        public bool IsActive { get; set; }= true;
 
     }
 

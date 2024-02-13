@@ -57,7 +57,7 @@ namespace ReportManagement.Application.ReportManagement.Implementations
             return widgetDto;
         }
 
-      
+
 
         public async Task<List<WidgetDto>> GetList(int dashboardId, string roles)
         {
@@ -142,19 +142,24 @@ namespace ReportManagement.Application.ReportManagement.Implementations
                     .Select(x => x.ToDictionary(x => x.Key, x => x.Value)).ToList();
                 if (data.Count > 0)
                 {
-                    var keys = data.FirstOrDefault()!.Keys.Select(x => x)
+                    categories = data
+                        .Select(x => new CategoryData()
+                        {
+                            Title = x[data[0].Keys.FirstOrDefault()].ToString()
+                        }).ToList();
+                    var columns = data[0].Keys
+                        .Where(x => x != data[0].Keys.FirstOrDefault())
                         .ToList();
-                    string _category = keys[0];
-                    string _value = keys[1];
-                    categories = data.Select(x => new CategoryData()
+                    foreach (var column in columns)
                     {
-                        Title = x[_category].ToString()!
-                    }).ToList();
-
-                    seriDataList.Add(new ChartSeriesData()
-                    {
-                        Data = data.Select(x => long.Parse(x[_value].ToString()!)).ToList()
-                    });
+                        seriDataList.Add(new ChartSeriesData()
+                        {
+                            Name = column,
+                            Data = data
+                            .Select(x => long.Parse(x[column.ToString()].ToString()!))
+                            .ToList()
+                        });
+                    }
                 }
             }
             var chartDto = new ChartDto()
@@ -173,7 +178,7 @@ namespace ReportManagement.Application.ReportManagement.Implementations
         {
             var widget = await Validation(widgetId, null);
             var categories = new List<CategoryData>();
-            var _getdata = await GetData(widget.Command ,await CreateCondition(conditionValue));
+            var _getdata = await GetData(widget.Command, await CreateCondition(conditionValue));
 
             var data = _getdata
                    .Cast<IDictionary<string, object>>()
@@ -248,7 +253,7 @@ namespace ReportManagement.Application.ReportManagement.Implementations
 
         private async Task<IEnumerable<dynamic>> GetData(string command, string condition)
         {
-            string _command = condition+ " " +command;
+            string _command = condition + " " + command;
             var _getdata = _repository.GetReportData(_command);
             return _getdata;
         }
