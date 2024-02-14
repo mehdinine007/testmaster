@@ -31,7 +31,10 @@ namespace CompanyManagement.Application.CompanyManagement
             .ForMember(x => x.IntroductionYear, opt => opt.MapFrom(x => x.IntroductionDate == null ? 0 : pc.GetYear(x.IntroductionDate.Value)))
             .ForMember(x => x.IntroductionMonth, opt => opt.MapFrom(x => x.IntroductionDate == null ? 0 : pc.GetMonth(x.IntroductionDate.Value)))
             .ForMember(x => x.IntroductionDay, opt => opt.MapFrom(x => x.IntroductionDate == null ? 0 : pc.GetDayOfMonth(x.IntroductionDate.Value)));
-            CreateMap<PaypaidpriceDto, CompanyPaypaidPrices>();
+            CreateMap<PaypaidpriceDto, CompanyPaypaidPrices>()
+            .ForMember(x => x.TranYear, opt => opt.MapFrom(x =>  pc.GetYear(x.TranDate)))
+            .ForMember(x => x.TranMonth, opt => opt.MapFrom(x => pc.GetMonth(x.TranDate)))
+            .ForMember(x => x.TranDay, opt => opt.MapFrom(x =>   pc.GetDayOfMonth(x.TranDate)));
             CreateMap<CompanyProductionDto, CompanyProduction>();
             CreateMap<TurnDateDto, CompanySaleCallDates>()
                 .ForMember(x => x.ClientsOrderDetailByCompanyId, option => option.Ignore());
