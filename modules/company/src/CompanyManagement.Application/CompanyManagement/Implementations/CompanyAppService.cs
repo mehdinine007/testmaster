@@ -85,9 +85,13 @@ public class CompanyAppService : ApplicationService, ICompanyAppService
     [SecuredOperation(CompanyServicePermissionConstants.SubmitOrderInformations)]
     public async Task<bool> SubmitOrderInformations(List<ClientsOrderDetailByCompanyDto> clientsOrderDetailByCompnayDtos)
     {
-        var x = ObjectMapper.Map<List<ClientsOrderDetailByCompanyDto>, List<ClientsOrderDetailByCompany>>(clientsOrderDetailByCompnayDtos, new List<ClientsOrderDetailByCompany>());
-
-        await _clientsOrderDetailByCompanyRepository.InsertManyAsync(
+        var clientsOrderDetailByCompnay = ObjectMapper.Map<List<ClientsOrderDetailByCompanyDto>, List<ClientsOrderDetailByCompany>>(clientsOrderDetailByCompnayDtos, new List<ClientsOrderDetailByCompany>());
+       var companyId= GetCompanyId();
+        clientsOrderDetailByCompnay.ForEach(x =>
+        {
+            x.CompanyId = int.Parse(companyId);
+        });
+         await _clientsOrderDetailByCompanyRepository.InsertManyAsync(
             ObjectMapper.Map<List<ClientsOrderDetailByCompanyDto>, List<ClientsOrderDetailByCompany>>(clientsOrderDetailByCompnayDtos, new List<ClientsOrderDetailByCompany>()));
         return true;
     }
