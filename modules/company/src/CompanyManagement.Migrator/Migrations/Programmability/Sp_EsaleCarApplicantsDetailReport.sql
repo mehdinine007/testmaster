@@ -25,8 +25,7 @@ begin
    inner join [OrderDb].dbo.Organization org  on org.Id = cod.CompanyId
    where cod.Id = @Id
    ---------------------------------------------------------------------------------
-   select id 
-		,[کد ملی] = NationalCode
+   select [کد ملی] = NationalCode
 		,[کد نوع فروش] = ModelType 
 		,[کد نوع طرح] = SaleType  
 		,[تاریخ فراخوان] = IntroductionDate  
