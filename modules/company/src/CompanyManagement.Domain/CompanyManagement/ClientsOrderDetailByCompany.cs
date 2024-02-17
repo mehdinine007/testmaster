@@ -33,5 +33,15 @@ namespace CompanyManagement.Domain.CompanyManagement
         public string TrackingCode { get; set; }
         public virtual ICollection<CompanyPaypaidPrices> Paypaidprice { get; set; }
         public virtual ICollection<CompanySaleCallDates> TurnDate { get; set; }
+        public int DeliveryYear { get; set; }
+        public int DeliveryMonth { get; set; }
+        public int DeliveryDay { get; set; }
+        public int IntroductionYear { get; set; }
+        public int IntroductionMonth { get; set; }
+        public int IntroductionDay { get; set; }
+        public int FactorYear { get; set; }
+        public int FactorMonth { get; set; }
+        public int FactorDay { get; set; }
+        public int CompanyId { get; set; }
     }
 }

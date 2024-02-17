@@ -13,5 +13,8 @@ namespace CompanyManagement.Domain.CompanyManagement
         public long PayedPrice { get; set; }
         public long ClientsOrderDetailByCompanyId { get; set; }
         public virtual ClientsOrderDetailByCompany ClientsOrderDetailByCompany { get; set; }
+        public int TranYear { get; set; }
+        public int TranMonth { get; set; }
+        public int TranDay { get; set; }
     }
 }
