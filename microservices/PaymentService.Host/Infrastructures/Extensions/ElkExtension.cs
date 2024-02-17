@@ -2,7 +2,6 @@
 using MsDemo.Shared.ExtensionsImplementions;
 using MsDemo.Shared.ExtensionsInterfaces;
 using Nest;
-using OrderService.Host.Infrastructures.Middlewares;
 using PaymentService.Host.Infrastructures.Middlewares;
 using Volo.Abp.Auditing;
 
@@ -12,7 +11,7 @@ namespace PaymentService.Host.Infrastructures.Extensions
     {
         public static IServiceCollection ElkNest(this IServiceCollection services, IConfiguration configuration, string IndexName)
         {
-            var pool = new SingleNodeConnectionPool(new Uri("http://localhost:9200"));
+            var pool = new SingleNodeConnectionPool(new Uri(configuration["ElasticSearch:Url"]));
             var settings = new ConnectionSettings(pool).
                 DisableDirectStreaming().
                 // DefaultIndex($"{IndexName}-{DateTime.UtcNow:yyyy-MM}")
