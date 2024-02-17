@@ -33,6 +33,11 @@
       "Id": "Sp_EsaleCarCompanyObligationsChart",
       "Priority": 6,
       "Type": "proc"
+    },
+    {
+      "Id": "Sp_EsaleCarApplicantsDetailReport",
+      "Priority": 7,
+      "Type": "proc"
     }
   ],
   "Patch": [

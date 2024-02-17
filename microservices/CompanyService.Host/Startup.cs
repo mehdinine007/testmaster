@@ -56,8 +56,8 @@ namespace CompanyService.Host
                 .AddSqlServer(configurations.GetSection("ConnectionStrings:CompanyManagement").Value)
                 .AddRedis(redisContString)
                 //.AddMongoDb($"mongodb://{mongoConfig.Host}:{mongoConfig.Port}")
-                .AddElasticsearch(configurations.GetSection("ELKConnection").Value)
-                .AddUrlGroup(new Uri($"{configurations.GetSection("Grpc:UserUrl").Value}/api/services/app/Licence/GetInfo"), httpMethod: HttpMethod.Get, name: "grpc-user",
+                .AddElasticsearch(configurations.GetSection("ElasticSearch:Url").Value ?? "http://localhost:9200")
+                .AddUrlGroup(new Uri($"{configurations.GetSection("Grpc:UserUrl").Value ?? "http://localhost:9100"}/api/services/app/Licence/GetInfo"), httpMethod: HttpMethod.Get, name: "grpc-user",
                 configurePrimaryHttpMessageHandler: _ => new HttpClientHandler
                 {
                     ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; }

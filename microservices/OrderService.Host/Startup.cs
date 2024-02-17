@@ -66,13 +66,13 @@ namespace OrderService.Host
                 .AddSqlServer(configurations.GetSection("ConnectionStrings:OrderManagement").Value)
                 .AddRedis(redisContString)
                 //.AddMongoDb($"mongodb://{mongoConfig.Host}:{mongoConfig.Port}")
-                .AddElasticsearch(configurations.GetSection("ELKConnection").Value)
-                .AddUrlGroup(new Uri($"{configurations.GetSection("Esale:GrpcAddress").Value}/api/services/app/Licence/GetInfo"), httpMethod: HttpMethod.Get, name: "grpc-user",
+                .AddElasticsearch(configurations.GetSection("ElasticSearch:Url").Value ?? "http://localhost:9200")
+                .AddUrlGroup(new Uri($"{configurations.GetSection("Esale:GrpcAddress").Value??"http://localhost:9100"}/api/services/app/Licence/GetInfo"), httpMethod: HttpMethod.Get, name: "grpc-user",
                 configurePrimaryHttpMessageHandler: _ => new HttpClientHandler
                 {
                     ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; }
                 })
-                .AddUrlGroup(new Uri($"{configurations.GetSection("Company:GrpcAddress").Value}/api/services/app/Licence/GetInfo"), httpMethod: HttpMethod.Get, name: "grpc-company",
+                .AddUrlGroup(new Uri($"{configurations.GetSection("Company:GrpcAddress").Value ?? "http://localhost:9000"}/api/services/app/Licence/GetInfo"), httpMethod: HttpMethod.Get, name: "grpc-company",
                 configurePrimaryHttpMessageHandler: _ => new HttpClientHandler
                 {
                     ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; }
