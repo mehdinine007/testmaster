@@ -31,7 +31,7 @@ namespace IFG.Core.DataAccess.Migration
         {
             using (var connection = new SqlConnection(_connectionStrings))
             {
-                connection.Execute(commandText, commandType: CommandType.Text);
+                connection.Execute(commandText, commandType: CommandType.Text,commandTimeout:0);
             }
         }
 
