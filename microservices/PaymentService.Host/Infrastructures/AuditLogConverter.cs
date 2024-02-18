@@ -1,4 +1,8 @@
 ﻿#region NS
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using Volo.Abp.AspNetCore.ExceptionHandling;
 using Volo.Abp.Auditing;
@@ -6,7 +10,6 @@ using Volo.Abp.AuditLogging;
 using Volo.Abp.Data;
 using Volo.Abp.DependencyInjection;
 using Volo.Abp.Guids;
-using Volo.Abp.Http;
 using Volo.Abp.Json;
 #endregion
 
@@ -20,7 +23,6 @@ namespace PaymentService.Host
         protected IExceptionToErrorInfoConverter ExceptionToErrorInfoConverter { get; }
         protected IJsonSerializer JsonSerializer { get; }
         protected AbpExceptionHandlingOptions ExceptionHandlingOptions { get; }
-
         #endregion
 
         #region CTOR
@@ -37,7 +39,6 @@ namespace PaymentService.Host
         public virtual Task<AuditLog> ConvertAsync(AuditLogInfo auditLogInfo)
         {
             var auditLogId = GuidGenerator.Create();
-
             var extraProperties = new ExtraPropertyDictionary();
             if (auditLogInfo.ExtraProperties != null)
             {
@@ -51,12 +52,13 @@ namespace PaymentService.Host
                                     .Select(entityChangeInfo => new EntityChange(GuidGenerator, auditLogId, entityChangeInfo, tenantId: auditLogInfo.TenantId))
                                     .ToList()
                                 ?? new List<EntityChange>();
+
             var actions = auditLogInfo
                               .Actions?
                               .Select(auditLogActionInfo => new AuditLogAction(GuidGenerator.Create(), auditLogId, auditLogActionInfo, tenantId: auditLogInfo.TenantId))
                               .ToList()
                           ?? new List<AuditLogAction>();
-           var exceptions = "";
+            var exceptions = "";
             if (auditLogInfo.Exceptions != null)
             {
                 var exception = auditLogInfo.Exceptions.FirstOrDefault();
@@ -101,8 +103,7 @@ namespace PaymentService.Host
                 auditLogInfo.ImpersonatorTenantName,
                 extraProperties,
                 entityChanges,
-                // actions,
-                null,
+                actions,
                 exceptions,
                 comments
             );

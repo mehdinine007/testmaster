@@ -23,6 +23,7 @@ namespace ReportManagement.EntityFrameworkCore.ReportManagement.EntityFrameworkC
     {
         private readonly IConfiguration _configuration;
         private string _connectionStrings;
+        private int _commandTimeout = 1800;
         public WidgetRepository(IConfiguration configuration, IDbContextProvider<ReportManagementDbContext> dbContextProvider)
           : base(dbContextProvider)
         {
@@ -34,7 +35,7 @@ namespace ReportManagement.EntityFrameworkCore.ReportManagement.EntityFrameworkC
         {
             using (var connection = new SqlConnection(_connectionStrings))
             {
-                var _ret = connection.Query(command,commandType: CommandType.Text).ToList();
+                var _ret = connection.Query(command,commandType: CommandType.Text,commandTimeout : _commandTimeout).ToList();
                 return _ret;
             }
         }

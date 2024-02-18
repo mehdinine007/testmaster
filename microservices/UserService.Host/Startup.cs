@@ -53,9 +53,9 @@ namespace UserService.Host
                 .AddSqlServer(configurations.GetSection("ConnectionStrings:UserManagement").Value)
                 .AddRedis(redisContString)
                 //.AddMongoDb($"mongodb://{mongoConfig.Host}:{mongoConfig.Port}")
-                .AddElasticsearch(configurations.GetSection("ELKConnection").Value)
+                .AddElasticsearch(configurations.GetSection("ElasticSearch:Url").Value?? "http://localhost:9200")
                 //.AddRabbitMQ(new Uri(rabbitmqConnection))
-                .AddUrlGroup(new Uri($"{configurations.GetSection("GatewayManagement:GrpcAddress").Value}/api/services/app/Licence/GetInfo"), httpMethod: HttpMethod.Get, name: "grpc-gateway",
+                .AddUrlGroup(new Uri($"{configurations.GetSection("GatewayManagement:GrpcAddress").Value??"http://localhost:9000"}/api/services/app/Licence/GetInfo"), httpMethod: HttpMethod.Get, name: "grpc-gateway",
                 configurePrimaryHttpMessageHandler: _ => new HttpClientHandler
                 {
                     ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; }

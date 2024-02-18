@@ -47,6 +47,8 @@ namespace CompanyManagement.EfCore
 
                 entity.Property(x => x.CarDesc)
                     .HasMaxLength(250);
+
+                entity.HasIndex(x => x.CompanyId);
             });
 
             builder.Entity<UserRejectionFromBank>(entity =>

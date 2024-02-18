@@ -21,6 +21,7 @@ begin
 		DROP TABLE IF EXISTS #TmpDate
 		select TOP (DATEDIFF('+@Type+', @StartDate, @EndDate) + 1)
 			   Date = EOMONTH(DATEADD('+@Type+', ROW_NUMBER() OVER(ORDER BY a.object_id) - 1, @StartDate))
+
 		into #TmpDate
 		from    sys.all_objects a
 				CROSS JOIN sys.all_objects b;
@@ -40,10 +41,9 @@ begin
 	
 		select Date=FORMAT(d.Date,'''+@FormatDispaly+''',''fa''),sum(case when co.Id is not null then 1 else 0 end) 
 		from #TmpDate d
-		left join #TmpGetOrder co on FORMAT(co.CreationTime,'''+@TypeFormat+''') = FORMAT(d.Date,'''+@TypeFormat+''')
-
-		group by Date
-		order by date
+		left join #TmpGetOrder co on FORMAT(co.CreationTime,'''+@TypeFormat+''',''fa'') = FORMAT(d.Date,'''+@TypeFormat+''',''fa'')
+		group by FORMAT(d.Date,'''+@FormatDispaly+''',''fa'')
+		order by Date
 	'
 	exec(@Command)
 end

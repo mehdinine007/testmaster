@@ -33,6 +33,11 @@
       "Id": "Sp_EsaleCarCompanyObligationsChart",
       "Priority": 6,
       "Type": "proc"
+    },
+    {
+      "Id": "Sp_EsaleCarApplicantsDetailReport",
+      "Priority": 7,
+      "Type": "proc"
     }
   ],
   "Patch": [
@@ -49,6 +54,11 @@
     {
       "Id": "20240120102158_addoldcar",
       "Priority": 3,
+      "Version": "4.2.0"
+    },
+    {
+      "Id": "20240214082855_company-shamsidate",
+      "Priority": 4,
       "Version": "4.2.0"
     }
   ]
