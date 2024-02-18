@@ -116,14 +116,25 @@ namespace IFG.Core.DataAccess.Migration
             var _migrationsHistory = migrationsHistory
                 .Where(x => x.MigrationId == data.MigrationId && x.StateName == data.StateName)
                 .FirstOrDefault();
+            var permissions = new List<MigrationPermission>();
             if (dropObject)
             {
+                permissions = _migrationsHistoryDal
+                    .GetPermissionList(data.MigrationId)
+                    .ToList();
                 _migrationsHistoryDal.Drop(data.MigrationId, migrationItem.Type);
             }
             string commandText = File.ReadAllText(Directory.GetCurrentDirectory() + $"\\Migrations\\{data.StateName}\\{data.MigrationId}.sql");
             var migtationTags = _configuration.GetSection("MigrationTags").Get<MigrationTag>();
             commandText = commandText.Replace(nameof(migtationTags.OrderDb), migtationTags.OrderDb).Replace(nameof(migtationTags.CompanyDb), migtationTags.CompanyDb);
             _migrationsHistoryDal.Execute(commandText);
+            if (permissions.Count > 0)
+            {
+                foreach ( var permission in permissions)
+                {
+                    _migrationsHistoryDal.ExecutePermission(permission.UserName, data.MigrationId);
+                }
+            }
             if (_migrationsHistory == null)
             {
                 _migrationsHistoryDal.Add(data);

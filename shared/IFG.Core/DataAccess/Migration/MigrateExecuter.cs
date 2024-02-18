@@ -45,7 +45,7 @@ namespace IFG.Core.DataAccess.Migration
             try
             {
                 _migrationsHistoryService.UpdateDatabase();
-            }
+            }   
             catch (Exception ex)
             {
                 _log.Write("An error occured during migration of host database:");
