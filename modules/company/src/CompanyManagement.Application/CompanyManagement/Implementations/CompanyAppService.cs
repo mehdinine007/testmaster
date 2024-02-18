@@ -91,8 +91,7 @@ public class CompanyAppService : ApplicationService, ICompanyAppService
         {
             x.CompanyId = int.Parse(companyId);
         });
-         await _clientsOrderDetailByCompanyRepository.InsertManyAsync(
-            ObjectMapper.Map<List<ClientsOrderDetailByCompanyDto>, List<ClientsOrderDetailByCompany>>(clientsOrderDetailByCompnayDtos, new List<ClientsOrderDetailByCompany>()));
+         await _clientsOrderDetailByCompanyRepository.InsertManyAsync(clientsOrderDetailByCompnay);
         return true;
     }
 
