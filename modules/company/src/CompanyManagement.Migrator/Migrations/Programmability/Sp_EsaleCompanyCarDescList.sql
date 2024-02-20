@@ -7,7 +7,7 @@ begin
 	;with TmpOrderCompany
 		AS
 		(
-		select CarDesc
+		select distinct CarDesc
 			  ,ROW_NUMBER() OVER(PARTITION BY  cod.NationalCode,CompanyId ORDER BY cod.id desc ) rownum 
 		from [CompanyDb].dbo.ClientsOrderDetailByCompany cod
 		where cod.CompanyId in ('+@CompanyId+')
