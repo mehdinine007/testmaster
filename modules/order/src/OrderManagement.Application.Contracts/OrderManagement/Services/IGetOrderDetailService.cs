@@ -8,9 +8,8 @@ using Volo.Abp.Application.Services;
 
 namespace OrderManagement.Application.Contracts.OrderManagement.Services
 {
-    public interface ICompanyGrpcClient : IApplicationService
+    public interface IGetOrderDetailService: IApplicationService
     {
-        Task<ClientOrderDeliveryInformationDto> ValidateClientOrderDeliveryDate(ClientOrderDeliveryInformationRequestDto clientOrderRequest);
         Task<List<ClientOrderDetailDto>> GetOrderDetailGetList(string nationalCode);
     }
 }

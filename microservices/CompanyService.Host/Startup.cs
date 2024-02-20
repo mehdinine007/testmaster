@@ -72,7 +72,7 @@ namespace CompanyService.Host
             app.UseRouting();
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGrpcService<GrpcOrderService>();
+                endpoints.MapGrpcService<GrpcCompanyService>();
             });
             app.InitializeApplication();
 

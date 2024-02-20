@@ -48,7 +48,7 @@ namespace CompanyManagement.Application.Contracts.CompanyManagement
         public bool? IsCanceled { get; set; }
         public DateTime? IntroductionDate { get; set; }
         public DateTime? FactorDate { get; set; }
-        public virtual ICollection<PaypaidpriceDto> Paypaidprice { get; set; }
+        public virtual ICollection<PaypaidPriceDto> PaypaidPrice { get; set; }
         public virtual ICollection<TurnDateDto> TurnDate { get; set; }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)

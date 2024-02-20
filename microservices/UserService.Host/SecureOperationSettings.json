@@ -1274,7 +1274,27 @@
             "children": []
           }
         ]
+      },
+      {
+        "title": "ClientOrderDetailCompanyService",
+        "code": "00030004",
+        "displayName": "سرویس خودروساز ",
+        "children": [
+          {
+            "title": "Save",
+            "code": "000300040001",
+            "displayName": "ثبت سفارش خودروساز",
+            "children": []
+          },
+          {
+            "title": "GetList",
+            "code": "000300040002",
+            "displayName": "نمایش  سفارش خودروساز",
+            "children": []
+          }
+        ]
       }
+
     ]
   },
   {
