@@ -11,6 +11,7 @@ namespace AdminPanelManagement.Application.Contracts.AdminPanelManagement.Dtos.r
     {
         public string Name { get; set; }
         public string Value { get; set; }
+        public List<string> Values { get; set; }
         public ConditionTypeEnum Type { get; set; }
         public bool MultiSelect { get; set; } = false;
     }

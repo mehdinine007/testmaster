@@ -219,6 +219,8 @@ namespace ReportManagement.Application.ReportManagement.Implementations
                         type = "nvarchar(max)";
                         if (!string.IsNullOrWhiteSpace(condition.Value))
                             value = "'" + condition.Value + "'";
+                        else if (condition.Values != null && condition.Values.Count > 0 && condition.MultiSelect)
+                            value = "'" + JsonConvert.SerializeObject(condition.Values) + "'";
                         break;
                     case ConditionTypeEnum.Numerical:
                         type = "int";

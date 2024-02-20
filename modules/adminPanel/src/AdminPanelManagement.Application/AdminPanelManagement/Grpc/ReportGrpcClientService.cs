@@ -100,6 +100,7 @@ namespace AdminPanelManagement.Application.AdminPanelManagement.Grpc
                 MultiSelect = x.MultiSelect,
                 Name = x.Name,
                 Value = x.Value,
+                Values = x.Values != null && x.Values.Count>0 ? JsonConvert.SerializeObject(x.Values) : "",
                 Type = (ConditionTypeEnum)x.Type
             });
             httpHandler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
@@ -140,6 +141,7 @@ namespace AdminPanelManagement.Application.AdminPanelManagement.Grpc
                 MultiSelect = x.MultiSelect,
                 Name = x.Name,
                 Value = x.Value,
+                Values = x.Values != null && x.Values.Count > 0 ? JsonConvert.SerializeObject(x.Values) : "",
                 Type = (ConditionTypeEnum)x.Type
             });
             httpHandler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;

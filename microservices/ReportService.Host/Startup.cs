@@ -21,8 +21,7 @@ namespace Reportervice.Host
         {
             var configurations = services.GetConfiguration();
             services.AddApplication<ReportServiceHostModule>();
-           
-            
+            services.AddScoped<IAuditingStore, AuditingStoreDb>();
             services.AddSingleton<ICacheManager, CacheManager>();
             services.AddSingleton<IRedisCacheManager, RedisCacheManager>();
             ServiceTool.Create(services);
