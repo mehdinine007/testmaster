@@ -2,6 +2,7 @@
 using Google.Protobuf.Collections;
 using Grpc.Core;
 using JetBrains.Annotations;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using NPOI.SS.Formula.Functions;
 using NPOI.XSSF.UserModel.Helpers;
@@ -95,6 +96,7 @@ namespace ReportManagement.Application.ReportManagement.Grpc
                 MultiSelect = x.MultiSelect,
                 Name = x.Name,
                 Value = x.Value,
+                Values = !string.IsNullOrEmpty(x.Values) ? JsonConvert.DeserializeObject<List<string>>(x.Values) : null,
                 Type = (Domain.Shared.ReportManagement.Enums.ConditionTypeEnum)x.Type,
             }).ToList();
 
@@ -130,6 +132,7 @@ namespace ReportManagement.Application.ReportManagement.Grpc
                 MultiSelect = x.MultiSelect,
                 Name = x.Name,
                 Value = x.Value,
+                Values = !string.IsNullOrEmpty(x.Values) ? JsonConvert.DeserializeObject<List<string>>(x.Values) : null,
                 Type = (Domain.Shared.ReportManagement.Enums.ConditionTypeEnum)x.Type,
             }).ToList();
 

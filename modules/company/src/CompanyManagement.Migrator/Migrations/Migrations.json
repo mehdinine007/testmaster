@@ -38,6 +38,11 @@
       "Id": "Sp_EsaleCarApplicantsDetailReport",
       "Priority": 7,
       "Type": "proc"
+    },
+    {
+      "Id": "Sp_EsaleCompanyCarDescList",
+      "Priority": 8,
+      "Type": "proc"
     }
   ],
   "Patch": [
