@@ -124,8 +124,9 @@ message ChartModel{
 message ConditionValueModel{
          string Name =1;
          string Value =2;
-         ConditionTypeEnum Type =3;
-         bool MultiSelect =4;
+         string Values =3;
+         ConditionTypeEnum Type =4;
+         bool MultiSelect =5;
 }
 
 

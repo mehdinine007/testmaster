@@ -20,6 +20,7 @@
     <None Remove="Migrations\Programmability\Sp_EsaleCarCompanyObligationsChart.sql" />
     <None Remove="Migrations\Programmability\Sp_EsaleCarPayDuration.sql" />
     <None Remove="Migrations\Programmability\Sp_EsaleCarPaypaidPrice.sql" />
+    <None Remove="Migrations\Programmability\Sp_EsaleCompanyCarDescList.sql" />
   </ItemGroup>
 
   <ItemGroup>
@@ -64,6 +65,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Migrations\Programmability\Sp_EsaleCarPaypaidPrice.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Migrations\Programmability\Sp_EsaleCompanyCarDescList.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
