@@ -2,6 +2,7 @@
 using Esale.Share.Authorize;
 using IFG.Core.DataAccess;
 using IFG.Core.Utility.Tools;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.OrderManagement;
@@ -52,7 +53,7 @@ public class OrganizationService : ApplicationService, IOrganizationService
         return true;
     }
 
-    [SecuredOperation(OrganizationServicePermissionConstants.GetAll)]
+    // [SecuredOperation(OrganizationServicePermissionConstants.GetAll)]
     public async Task<List<OrganizationDto>> GetAll()
     {
         var organ = await _organizationRepository.GetListAsync();
@@ -86,7 +87,8 @@ public class OrganizationService : ApplicationService, IOrganizationService
             throw new UserFriendlyException("رکوردی برای ویرایش وجود ندارد");
         }
         var organ = ObjectMapper.Map<OrganizationUpdateDto, Organization>(organDto);
-        await _organizationRepository.AttachAsync(organ, c => c.Title, c => c.Url, c => c.EncryptKey);
+        await _organizationRepository.AttachAsync(organ, c => c.Title, c => c.Url,
+            c => c.EncryptKey, c => c.SupportingPhone, c => c.UrlSite, c => c.IsActive);
 
         return organ.Id;
     }
@@ -114,7 +116,6 @@ public class OrganizationService : ApplicationService, IOrganizationService
         return true;
     }
 
-
     private async Task<Organization> Validation(int id, OrganizationUpdateDto organDto)
     {
         var organ = (await _organizationRepository.GetQueryableAsync())
@@ -125,37 +126,39 @@ public class OrganizationService : ApplicationService, IOrganizationService
         }
         return organ;
     }
-
+    [SecuredOperation(OrganizationServicePermissionConstants.Move)]
     public async Task<bool> Move(OrganizationPriorityDto input)
     {
-        var organizationQuery = (await _organizationRepository.GetQueryableAsync())
-            .AsNoTracking().OrderBy(x => x.Priority);
-        var organizationId = organizationQuery.FirstOrDefault(x => x.Id == input.Id);
-        var priority = organizationId.Priority;
+        var organizationQuery = (await _organizationRepository.GetQueryableAsync()).AsNoTracking().OrderBy(x => x.Priority);
+        var currentorganization = organizationQuery.FirstOrDefault(x => x.Id == input.Id);
+        var currentPriority = currentorganization.Priority;
 
         if (MoveTypeEnum.Up == input.MoveType)
         {
-            var organization = await organizationQuery.FirstOrDefaultAsync(x => x.Priority == organizationId.Priority - 1);
-            var previousPriority = organization.Priority;
+            var previousorganization = await organizationQuery.FirstOrDefaultAsync(x => x.Priority == currentorganization.Priority - 1);
 
-            organizationId.Priority = previousPriority;
+            var previousPriority = previousorganization.Priority;
 
-            await _organizationRepository.UpdateAsync(organizationId);
-            organization.Priority = priority;
-            await _organizationRepository.UpdateAsync(organization);
+            currentorganization.Priority = previousPriority;
+
+            await _organizationRepository.UpdateAsync(currentorganization);
+            previousorganization.Priority = currentPriority;
+            await _organizationRepository.UpdateAsync(previousorganization);
         }
         else if (MoveTypeEnum.Down == input.MoveType)
         {
-            var organization = await organizationQuery.FirstOrDefaultAsync(x => x.Priority == organizationId.Priority - 1);
-            var nextPriority = organization.Priority;
-
-            organizationId.Priority = nextPriority;
-
-            await _organizationRepository.UpdateAsync(organizationId);
-            organization.Priority = priority;
-            await _organizationRepository.UpdateAsync(organization);
+            var nextorganization = await organizationQuery.FirstOrDefaultAsync(x => x.Priority > currentorganization.Priority);
+            var orgId = await organizationQuery.FirstOrDefaultAsync(x => x.Id == input.Id);
+            if (nextorganization is null)
+            {
+                throw new UserFriendlyException(OrderConstant.LastPriority, OrderConstant.LastPriorityId);
+            }
+            var nextpriority = nextorganization.Priority;
+            currentorganization.Priority = nextpriority;
+            await _organizationRepository.UpdateAsync(currentorganization);
+            nextorganization.Priority = currentPriority;
+            await _organizationRepository.UpdateAsync(nextorganization);
         }
         return true;
-
     }
 }
