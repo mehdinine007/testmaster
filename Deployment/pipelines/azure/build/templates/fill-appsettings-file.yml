@@ -5,6 +5,7 @@ parameters:
 
 steps:
 - task: FileTransform@1
+  displayName: 'File Transform'
   inputs:
     folderPath: '$(System.DefaultWorkingDirectory)/microservices/${{parameters.project}}'
     fileType: 'json'
