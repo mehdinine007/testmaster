@@ -5,6 +5,7 @@ parameters:
 
 steps:
 - task: PublishBuildArtifacts@1
+  displayName: 'Publish Build Artifacts'
   inputs:
     PathtoPublish: publish
     ArtifactName: ${{ parameters.artifactName }}
