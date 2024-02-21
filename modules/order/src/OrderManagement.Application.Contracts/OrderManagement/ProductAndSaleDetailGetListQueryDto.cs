@@ -17,5 +17,6 @@ namespace OrderManagement.Application.Contracts.OrderManagement
         public string? attachmentLocation { get; set; }
         public bool HasProperty { get; set; }
         public int? ESaleTypeId { get; set; }
+        public int? OrganizationId { get; set; }
     }
 }

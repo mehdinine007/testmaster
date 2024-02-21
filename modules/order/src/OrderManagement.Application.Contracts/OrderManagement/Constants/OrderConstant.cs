@@ -116,5 +116,7 @@ namespace OrderManagement.Application.Contracts
         public static string UserDataAccessProductNotFoundId = "9005";
         public static string UserDataAccessOldCarNotFound = "خودروفرسوده موجود نمیباشد";
         public static string UserDataAccessOldCarNotFoundId = "9006";
+        public const string OrganizationNotFound = "سازمان وجود ندارد";
+        public const string OrganizationNotFoundId = "9007";
     }
 }

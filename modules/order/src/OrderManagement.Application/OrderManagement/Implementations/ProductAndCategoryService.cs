@@ -41,6 +41,7 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
     private readonly IUserDataAccessService _userDataAccessService;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IConfiguration _configuration;
+    private readonly IRepository<Organization, int> _organizationRepository;
     public ProductAndCategoryService(IRepository<ProductAndCategory, int> productAndCategoryRepository,
                                      IAttachmentService attachmentService,
                                      IProductPropertyService productPropertyService,
@@ -48,7 +49,8 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
                                      ICommonAppService commonAppService,
                                      IRepository<ProductProperty, ObjectId> productPropertyRepository,
                                      IUserDataAccessService userDataAccessService,
-                                     IConfiguration configuration)
+                                     IConfiguration configuration,
+                                     IRepository<Organization, int> organizationRepository)
     {
         _productAndCategoryRepository = productAndCategoryRepository;
         _attachmentService = attachmentService;
@@ -59,6 +61,7 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
         _userDataAccessService = userDataAccessService;
         _httpContextAccessor = ServiceTool.Resolve<IHttpContextAccessor>();
         _configuration = configuration;
+        _organizationRepository = organizationRepository;
     }
     [SecuredOperation(ProductAndCategoryServicePermissionConstants.Delete)]
     public async Task Delete(int id)
@@ -98,7 +101,12 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
         var productLevelId = 0;
         var code = "";
         var productLevelQuery = (await _productLevelRepository.GetQueryableAsync()).OrderBy(x => x.Priority);
-
+        var oganizationQuery = (await _organizationRepository.GetQueryableAsync()).AsNoTracking();
+        var oganization = oganizationQuery.FirstOrDefault(x => x.Id == productAndCategoryCreateDto.OrganizationId);
+        if (oganization is null)
+        {
+            throw new UserFriendlyException(OrderConstant.OrganizationNotFound, OrderConstant.OrganizationNotFoundId);
+        }
         if (productAndCategoryCreateDto.Priority == 0)
         {
             var lastPriority = (await _productAndCategoryRepository.GetQueryableAsync()).OrderByDescending(x => x.Priority)
@@ -163,6 +171,8 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
         int codeLength = 4;
         if (productAndCategoryCreateDto.ParentId.HasValue && productAndCategoryCreateDto.ParentId.Value > 0)
             _parentCode = igResult.FirstOrDefault(x => x.Id == productAndCategoryCreateDto.ParentId).Code;
+        else
+            _parentCode = oganization.Code.ToString();
 
         var _maxCode = igResult
             .Where(x => x.ParentId == productAndCategoryCreateDto.ParentId)
@@ -233,7 +243,10 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
         productAndCategoryQuery = productAndCategoryQuery.Include(x => x.ProductLevel);
         if (input.IsActive)
             productAndCategoryQuery = productAndCategoryQuery.Where(x => x.Active);
-        var attachments = new List<AttachmentDto>();
+        if (input.OrganizationId != null && input.OrganizationId > 0)
+            productAndCategoryQuery= productAndCategoryQuery.Where(x=>x.OrganizationId == input.OrganizationId);
+       
+            var attachments = new List<AttachmentDto>();
         switch (input.Type)
         {
             case ProductAndCategoryType.Category:
@@ -298,14 +311,15 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
             .Include(x => x.SaleDetails.Where(x => x.SalePlanStartDate <= currentTime && currentTime <= x.SalePlanEndDate && x.Visible && (input.ESaleTypeId == null || x.ESaleTypeId == input.ESaleTypeId)))
              .ThenInclude(y => y.ESaleType)
             .Include(x => x.ProductLevel);
-
         ProductList = string.IsNullOrWhiteSpace(input.NodePath)
             ? productQuery.ToList()
             : productQuery.Where(x => EF.Functions.Like(x.Code, input.NodePath + "%")).ToList();
+        if (input.OrganizationId != null && input.OrganizationId > 0)
+            ProductList = ProductList.Where(x => x.OrganizationId == input.OrganizationId).ToList();
         if (_httpContextAccessor.HttpContext.User.Identity.IsAuthenticated)
         {
             var nationalCode = _commonAppService.GetNationalCode();
-            if (_configuration.GetValue<bool?>("UserDataAccessConfig:HasProduct")?? false)
+            if (_configuration.GetValue<bool?>("UserDataAccessConfig:HasProduct") ?? false)
             {
                 var products = await _userDataAccessService.ProductGetList(nationalCode);
                 ProductList = ProductList.Where(x => products.Any(p => x.Id == p.ProductId))
