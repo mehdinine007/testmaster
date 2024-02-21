@@ -66,7 +66,8 @@ namespace OrderManagement.Domain.OrderManagement
         public virtual ICollection<SaleDetail> SaleDetails { get; set; }
         public virtual Announcement Announcement { get; set; }
 
-
+        public int OrganizationId { get; set; }
+        public Organization Organization { get; set; }
 
 
     }

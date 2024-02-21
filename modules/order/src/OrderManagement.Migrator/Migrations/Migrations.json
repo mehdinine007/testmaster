@@ -138,6 +138,21 @@
       "Id": "20240129124922_nullableuserid",
       "Priority": 12,
       "Version": "4.2.0"
+    },
+    {
+      "Id": "20240221065931_addorganizationid",
+      "Priority": 13,
+      "Version": "4.2.0"
+    },
+    {
+      "Id": "20240221065931_addorganizationidindex",
+      "Priority": 14,
+      "Version": "4.2.0"
+    },
+    {
+      "Id": "20240221065931_deleteandupdatelevel1product",
+      "Priority": 15,
+      "Version": "4.2.0"
     }
   ]
 }

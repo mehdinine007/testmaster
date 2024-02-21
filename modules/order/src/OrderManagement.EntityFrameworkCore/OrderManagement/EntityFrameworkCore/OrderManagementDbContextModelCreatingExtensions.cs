@@ -337,6 +337,10 @@ public static class OrderManagementDbContextModelCreatingExtensions
             entity.HasOne<ProductLevel>(x => x.ProductLevel)
                 .WithMany(x => x.ProductAndCategories)
                 .HasForeignKey(x => x.ProductLevelId);
+            entity.HasOne<Organization>(x => x.Organization)
+                .WithMany(x => x.ProductAndCategories)
+                .HasForeignKey(x => x.OrganizationId)
+                .IsRequired();
         });
         builder.Entity<AdvertisementDetail>(entity =>
         {
@@ -400,7 +404,7 @@ public static class OrderManagementDbContextModelCreatingExtensions
 
             entity.HasOne<QuestionGroup>(x => x.QuestionGroup)
                 .WithOne(x => x.Question)
-                .HasForeignKey<Question>(x=> x.QuestionGroupId)
+                .HasForeignKey<Question>(x => x.QuestionGroupId)
                 .OnDelete(DeleteBehavior.NoAction);
 
             entity.Property(x => x.Title)
@@ -411,10 +415,10 @@ public static class OrderManagementDbContextModelCreatingExtensions
             entity.ToTable(nameof(QuestionGroup));
 
             entity.HasOne<Questionnaire>(x => x.Questionnaire)
-                .WithMany(x => x.QuestionGroups)    
+                .WithMany(x => x.QuestionGroups)
                 .HasForeignKey(x => x.QuestionnaireId)
                 .OnDelete(DeleteBehavior.NoAction);
-         
+
             entity.Property(x => x.Title)
                     .HasMaxLength(50);
         });
