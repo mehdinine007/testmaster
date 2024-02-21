@@ -1,4 +1,5 @@
-﻿using Esale.Share.Authorize;
+﻿using Core.Utility.Tools;
+using Esale.Share.Authorize;
 using IFG.Core.DataAccess;
 using IFG.Core.Utility.Tools;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +10,7 @@ using OrderManagement.Application.Contracts.OrderManagement.Services;
 using OrderManagement.Domain;
 using OrderManagement.Domain.OrderManagement;
 using OrderManagement.Domain.Shared;
+using OrderManagement.Domain.Shared.OrderManagement.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -56,17 +58,22 @@ public class OrganizationService : ApplicationService, IOrganizationService
         var organ = await _organizationRepository.GetListAsync();
         var organdto = ObjectMapper.Map<List<Organization>, List<OrganizationDto>>(organ);
         return organdto;
-    }   
+    }
 
     [SecuredOperation(OrganizationServicePermissionConstants.Save)]
     public async Task<int> Save(OrganizationInsertDto organDto)
     {
 
-        var maxCode = await _organizationRepository.MaxAsync(o => o.Code);
-        organDto.Code = ++maxCode;
+        var organization = await _organizationRepository.GetQueryableAsync();
+        var maxCode = await organization.MaxAsync(o => o.Code);
+        var maxPriority = await organization.MaxAsync(o => o.Priority);
+
         var organ = ObjectMapper.Map<OrganizationInsertDto, Organization>(organDto);
+        organ.Code = StringHelper.GenerateTreeNodePath(maxCode, null, 4);
+        organ.Priority = maxPriority + 1;
         await _organizationRepository.InsertAsync(organ, autoSave: true);
         return organ.Id;
+
     }
 
     [SecuredOperation(OrganizationServicePermissionConstants.Update)]
@@ -79,12 +86,12 @@ public class OrganizationService : ApplicationService, IOrganizationService
             throw new UserFriendlyException("رکوردی برای ویرایش وجود ندارد");
         }
         var organ = ObjectMapper.Map<OrganizationUpdateDto, Organization>(organDto);
-        await _organizationRepository.AttachAsync(organ, c=>c.Title,c=>c.Url, c => c.EncryptKey);
+        await _organizationRepository.AttachAsync(organ, c => c.Title, c => c.Url, c => c.EncryptKey);
 
         return organ.Id;
     }
 
-    //[SecuredOperation(OrganizationServicePermissionConstants.GetById)]
+    [SecuredOperation(OrganizationServicePermissionConstants.GetById)]
     public async Task<OrganizationDto> GetById(int id, List<AttachmentEntityTypeEnum> attachmentType = null, List<AttachmentLocationEnum> attachmentlocation = null)
     {
         var organ = await Validation(id, null);
@@ -110,12 +117,45 @@ public class OrganizationService : ApplicationService, IOrganizationService
 
     private async Task<Organization> Validation(int id, OrganizationUpdateDto organDto)
     {
-        var organ =(await  _organizationRepository.GetQueryableAsync())
+        var organ = (await _organizationRepository.GetQueryableAsync())
             .FirstOrDefault(x => x.Id == id);
         if (organ is null)
         {
             throw new UserFriendlyException(OrderConstant.BankNotFound, OrderConstant.BankNotFoundId);
         }
         return organ;
+    }
+
+    public async Task<bool> Move(OrganizationPriorityDto input)
+    {
+        var organizationQuery = (await _organizationRepository.GetQueryableAsync())
+            .AsNoTracking().OrderBy(x => x.Priority);
+        var organizationId = organizationQuery.FirstOrDefault(x => x.Id == input.Id);
+        var priority = organizationId.Priority;
+
+        if (MoveTypeEnum.Up == input.MoveType)
+        {
+            var organization = await organizationQuery.FirstOrDefaultAsync(x => x.Priority == organizationId.Priority - 1);
+            var previousPriority = organization.Priority;
+
+            organizationId.Priority = previousPriority;
+
+            await _organizationRepository.UpdateAsync(organizationId);
+            organization.Priority = priority;
+            await _organizationRepository.UpdateAsync(organization);
+        }
+        else if (MoveTypeEnum.Down == input.MoveType)
+        {
+            var organization = await organizationQuery.FirstOrDefaultAsync(x => x.Priority == organizationId.Priority - 1);
+            var nextPriority = organization.Priority;
+
+            organizationId.Priority = nextPriority;
+
+            await _organizationRepository.UpdateAsync(organizationId);
+            organization.Priority = priority;
+            await _organizationRepository.UpdateAsync(organization);
+        }
+        return true;
+
     }
 }
