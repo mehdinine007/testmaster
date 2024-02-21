@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OrderManagement.EfCore;
 using Volo.Abp.EntityFrameworkCore;
@@ -12,9 +13,11 @@ using Volo.Abp.EntityFrameworkCore;
 namespace OrderManagement.EfCore.Migrations
 {
     [DbContext(typeof(OrderManagementDbContext))]
-    partial class OrderManagementDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240221080039_update-organization")]
+    partial class updateorganization
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2183,9 +2186,6 @@ namespace OrderManagement.EfCore.Migrations
                     b.Property<int>("LevelId")
                         .HasColumnType("int");
 
-                    b.Property<int>("OrganizationId")
-                        .HasColumnType("int");
-
                     b.Property<int?>("ParentId")
                         .HasColumnType("int");
 
@@ -2203,8 +2203,6 @@ namespace OrderManagement.EfCore.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("OrganizationId");
 
                     b.HasIndex("ParentId");
 
@@ -4114,12 +4112,6 @@ namespace OrderManagement.EfCore.Migrations
 
             modelBuilder.Entity("OrderManagement.Domain.OrderManagement.ProductAndCategory", b =>
                 {
-                    b.HasOne("OrderManagement.Domain.OrderManagement.Organization", "Organization")
-                        .WithMany("ProductAndCategories")
-                        .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("OrderManagement.Domain.OrderManagement.ProductAndCategory", "Parent")
                         .WithMany("Childrens")
                         .HasForeignKey("ParentId")
@@ -4130,8 +4122,6 @@ namespace OrderManagement.EfCore.Migrations
                         .HasForeignKey("ProductLevelId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Organization");
 
                     b.Navigation("Parent");
 
@@ -4424,11 +4414,6 @@ namespace OrderManagement.EfCore.Migrations
             modelBuilder.Entity("OrderManagement.Domain.OrderManagement.Color", b =>
                 {
                     b.Navigation("SaleDetailCarColor");
-                });
-
-            modelBuilder.Entity("OrderManagement.Domain.OrderManagement.Organization", b =>
-                {
-                    b.Navigation("ProductAndCategories");
                 });
 
             modelBuilder.Entity("OrderManagement.Domain.OrderManagement.ProductAndCategory", b =>

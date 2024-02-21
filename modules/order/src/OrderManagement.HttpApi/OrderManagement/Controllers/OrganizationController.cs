@@ -42,4 +42,7 @@ public class OrganizationController : Controller
     [HttpPost]
     public Task<bool> UploadFile(UploadFileDto uploadFile)
          => _organizationService.UploadFile(uploadFile);
+    [HttpPost]
+    public Task<bool> Move(OrganizationPriorityDto input)
+      => _organizationService.Move(input);
 }

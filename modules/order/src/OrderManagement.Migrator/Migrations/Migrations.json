@@ -140,18 +140,23 @@
       "Version": "4.2.0"
     },
     {
-      "Id": "20240221065931_addorganizationid",
+      "Id": "20240221080039_update-organization",
       "Priority": 13,
       "Version": "4.2.0"
     },
     {
-      "Id": "20240221065931_addorganizationidindex",
+      "Id": "20240221065931_addorganizationid",
       "Priority": 14,
       "Version": "4.2.0"
     },
     {
-      "Id": "20240221065931_deleteandupdatelevel1product",
+      "Id": "20240221065931_addorganizationidindex",
       "Priority": 15,
+      "Version": "4.2.0"
+    },
+    {
+      "Id": "20240221065931_deleteandupdatelevel1product",
+      "Priority": 16,
       "Version": "4.2.0"
     }
   ]
