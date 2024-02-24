@@ -8,5 +8,6 @@ public enum SMSType
     Login = 4,
     UserRejectionAdvocacy = 5,
     ChangePassword = 6,
-    AnonymousQuestionnaireSubmitation = 7
+    AnonymousQuestionnaireSubmitation = 7,
+    UpdatePhoneNumber = 8
 }

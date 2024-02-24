@@ -23,6 +23,8 @@ using UserManagement.Application.Contracts.UserManagement.Constant;
 using Newtonsoft.Json;
 using UserManagement.Application.Contracts.UserManagement.Services;
 using UserManagement.Domain.Shared.UserManagement.Enums;
+using Esale.Share.Authorize;
+using Microsoft.AspNetCore.Server.IIS.Core;
 #endregion
 
 namespace UserManagement.Application.Implementations;
@@ -71,7 +73,7 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
         }
         if (_configuration.GetValue<bool?>("UserDataAccessConfig:HasRegistration") ?? false)
         {
-            var userAccess = await _userDataAccessService.CheckNationalCode(input.Nationalcode,RoleTypeEnum.Registrtion);
+            var userAccess = await _userDataAccessService.CheckNationalCode(input.Nationalcode, RoleTypeEnum.Registrtion);
             if (!userAccess.Success)
                 throw new UserFriendlyException(_configuration.GetSection("CheckAdvocacyMessage").Value, userAccess.MessageId);
         }
@@ -240,6 +242,29 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
             throw new UserFriendlyException("استعلام شماره موبایل ممکن نیست");
         var zipCodeInquiry = await _commonAppService.GetAddressByZipCode(input.zipCod, input.nationalCode);
         return zipCodeInquiry;
+    }
+
+    [SecuredOperation(BaseInformationServicePermissionConstants.UpdateUserPhoneNumber)]
+    public async Task UpdateUserPhoneNumber(UpdateUserPhoneNumber updateUserPhoneNumber)
+    {
+        if (string.IsNullOrEmpty(updateUserPhoneNumber.NewPhoneNumber) ||
+            updateUserPhoneNumber.NewPhoneNumber.AsParallel().Any(x => !char.IsDigit(x)))
+            throw new UserFriendlyException("شماره تلفن معتبر نیست");
+
+        if (!ObjectId.TryParse(updateUserPhoneNumber.UserId.ToString(), out var objectId))
+            throw new UserFriendlyException("شناسه کاربر صحیح نیست");
+
+        var user = await _userMongoRepository.GetAsync(objectId);
+
+        var validateMessageRequest = await _commonAppService.ValidateSMS(updateUserPhoneNumber.NewPhoneNumber,
+            user.NationalCode,
+            updateUserPhoneNumber.SmsCode,
+            SMSType.UpdatePhoneNumber);
+        if (!validateMessageRequest)
+            throw new UserFriendlyException("کد پیامک ارسالی صحیح نمی باشد");
+
+        user.PhoneNumber = updateUserPhoneNumber.NewPhoneNumber;
+        await _userMongoRepository.UpdateAsync(user);
     }
 
 }

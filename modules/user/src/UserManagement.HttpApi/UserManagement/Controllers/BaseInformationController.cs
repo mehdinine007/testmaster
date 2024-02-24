@@ -1,11 +1,7 @@
 ﻿using Volo.Abp.Auditing;
 using Volo.Abp;
 using Microsoft.AspNetCore.Mvc;
-using Volo.Abp.AspNetCore.Mvc;
-using UserManagement.Application.Contracts.UserManagement.Services;
-using UserManagement.Application.Contracts.UserManagement;
 using UserManagement.Application.Contracts.Models;
-using MongoDB.Bson;
 using UserManagement.Application.Contracts.Services;
 using UserManagement.Domain.UserManagement.Bases;
 
@@ -36,7 +32,7 @@ namespace UserManagement.HttpApi.UserManagement.Controllers
         [HttpPost]
         public async Task<bool> RegistrationValidationAsync(RegistrationValidationDto input)
          => await _baseInformationService.RegistrationValidationAsync(input);
-        
+
         [HttpPost]
         public void RegistrationValidationWithoutCaptcha(RegistrationValidationDto input)
         {
@@ -45,5 +41,9 @@ namespace UserManagement.HttpApi.UserManagement.Controllers
         [HttpGet]
         public async Task<string> AddressInquiry(AddressInquiryDto input)
             => await _baseInformationService.AddressInquiry(input);
+
+        [HttpPost]
+        public async Task UpdateUserPhoneNumber([FromBody] UpdateUserPhoneNumber updateUserPhoneNumber)
+            => await _baseInformationService.UpdateUserPhoneNumber(updateUserPhoneNumber);
     }
 }
