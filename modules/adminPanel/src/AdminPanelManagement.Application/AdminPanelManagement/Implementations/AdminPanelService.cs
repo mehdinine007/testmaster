@@ -2,11 +2,6 @@
 using AdminPanelManagement.Application.Contracts.AdminPanelManagement.IServices;
 using AdminPanelManagement.Domain.Shared.AdminPanelManagement.Db;
 using AdminPanelManagement.EntityFrameworkCore.AdminPanelManagement.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Volo.Abp.Application.Services;
 
 namespace AdminPanelManagement.Application.AdminPanelManagement.Implementations
@@ -36,7 +31,7 @@ namespace AdminPanelManagement.Application.AdminPanelManagement.Implementations
             });
 
 
-            if (userInfoDb.UID != null)
+            if (userInfoDb.UID != Guid.Empty)
             {
 
                 userInfo_CustomerOrderDto.UserId = userInfoDb.Id;
@@ -62,7 +57,7 @@ namespace AdminPanelManagement.Application.AdminPanelManagement.Implementations
                         }
 
                     }
-                    if (o.OrderStatus != null)
+                    if (o.OrderStatus != default)
                     {
                         var orderStatus = orderStatusTypes.FirstOrDefault(x => x.Code == o.OrderStatus);
                         if (orderStatus != null)
