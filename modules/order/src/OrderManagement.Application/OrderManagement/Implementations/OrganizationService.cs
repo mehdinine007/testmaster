@@ -136,7 +136,10 @@ public class OrganizationService : ApplicationService, IOrganizationService
         if (MoveTypeEnum.Up == input.MoveType)
         {
             var previousorganization = await organizationQuery.FirstOrDefaultAsync(x => x.Priority == currentorganization.Priority - 1);
-
+            if (previousorganization is null)
+            {
+                throw new UserFriendlyException(OrderConstant.FirstPriority, OrderConstant.FirstPriorityId);
+            }
             var previousPriority = previousorganization.Priority;
 
             currentorganization.Priority = previousPriority;
