@@ -27,6 +27,8 @@ using System.Linq.Dynamic.Core;
 using IFG.Core.IOC;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using OrderManagement.Domain.Shared.OrderManagement.Enums;
+using Microsoft.AspNetCore.Mvc;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -244,9 +246,9 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
         if (input.IsActive)
             productAndCategoryQuery = productAndCategoryQuery.Where(x => x.Active);
         if (input.OrganizationId != null && input.OrganizationId > 0)
-            productAndCategoryQuery= productAndCategoryQuery.Where(x=>x.OrganizationId == input.OrganizationId);
-       
-            var attachments = new List<AttachmentDto>();
+            productAndCategoryQuery = productAndCategoryQuery.Where(x => x.OrganizationId == input.OrganizationId);
+
+        var attachments = new List<AttachmentDto>();
         switch (input.Type)
         {
             case ProductAndCategoryType.Category:
@@ -417,4 +419,47 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
         }
         return result;
     }
+    [SecuredOperation(ProductAndCategoryServicePermissionConstants.Move)]
+    public async Task<bool> Move(MoveDto move)
+    {
+        var productAndCategoryQuery = (await _productAndCategoryRepository.GetQueryableAsync()).AsNoTracking().OrderBy(x => x.Priority);
+        var currentproductAndCategory = productAndCategoryQuery.FirstOrDefault(x => x.Id == move.Id);
+        if (currentproductAndCategory == null)
+        {
+            throw new UserFriendlyException(OrderConstant.ProductAndCategoryNotFound, OrderConstant.ProductAndCategoryFoundId);
+        }
+        var currentPriority = currentproductAndCategory.Priority;
+        var parentId = currentproductAndCategory.ParentId;
+        if (MoveTypeEnum.Up == move.MoveType)
+        {
+            var previousProductAndCategory = await productAndCategoryQuery.FirstOrDefaultAsync(x => x.Priority == currentproductAndCategory.Priority - 1 && x.ParentId == parentId);
+            if (previousProductAndCategory == null)
+            {
+                throw new UserFriendlyException(OrderConstant.FirstPriority, OrderConstant.FirstPriorityId);
+            }
+            var previousPriority = previousProductAndCategory.Priority;
+            currentproductAndCategory.Priority = previousPriority;
+            await _productAndCategoryRepository.UpdateAsync(currentproductAndCategory);
+            previousProductAndCategory.Priority = currentPriority;
+            await _productAndCategoryRepository.UpdateAsync(previousProductAndCategory);
+        }
+        else if (MoveTypeEnum.Down == move.MoveType)
+        {
+            var nextProductAndCategory = productAndCategoryQuery.FirstOrDefault(x => x.Priority > currentproductAndCategory.Priority && x.ParentId == parentId);
+            if (nextProductAndCategory == null)
+            {
+                throw new UserFriendlyException(OrderConstant.LastPriority, OrderConstant.LastPriorityId);
+            }
+            var nextPriority = nextProductAndCategory.Priority;
+            currentproductAndCategory.Priority = nextPriority;
+            await _productAndCategoryRepository.UpdateAsync(currentproductAndCategory);
+            nextProductAndCategory.Priority = currentPriority;
+            await _productAndCategoryRepository.UpdateAsync(nextProductAndCategory);
+        }
+
+
+        return true;
+    }
+
+
 }

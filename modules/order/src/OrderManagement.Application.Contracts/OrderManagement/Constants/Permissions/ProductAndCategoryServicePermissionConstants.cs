@@ -22,6 +22,8 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Constants.Permis
         public const string Update_DisplayName = "بروزرسانی";
         public const string UploadFile = ConstantInfo.ModuleOrder + ServiceIdentifier + "0006";
         public const string UploadFile_DisplayName = "بروزرسانی فایل";
+        public const string Move = ConstantInfo.ModuleOrder + ServiceIdentifier + "0007";
+        public const string Move_DisplayName = "جابه جایی اولویت ها";
 
         public const string ServiceIdentifier = "0016";
         public const string ServiceDisplayName = "نمایش دسته بندی محصولات";

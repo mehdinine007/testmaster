@@ -60,4 +60,8 @@ public class ProductAndCategoryController : AbpController //, IProductAndCategor
     [HttpGet]
     public async Task<List<ProductAndCategoryWithChildDto>> GetProductAndSaleDetailList([FromQuery]ProductAndSaleDetailGetListQueryDto input)
         => await _productAndCategoryService.GetProductAndSaleDetailList(input);
+    [HttpPut]
+    public async Task<bool> Move(MoveDto moveDto)
+       => await _productAndCategoryService.Move(moveDto);
+
 }
