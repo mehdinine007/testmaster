@@ -242,7 +242,7 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
     {
         List<ProductAndCategory> ls = new();
         var productAndCategoryQuery = await _productAndCategoryRepository.GetQueryableAsync();
-        productAndCategoryQuery = productAndCategoryQuery.Include(x => x.ProductLevel);
+        productAndCategoryQuery = productAndCategoryQuery.Include(x => x.ProductLevel).OrderBy(x => x.Priority);
         if (input.IsActive)
             productAndCategoryQuery = productAndCategoryQuery.Where(x => x.Active);
         if (input.OrganizationId != null && input.OrganizationId > 0)
@@ -312,7 +312,8 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
             .Where(x => x.Active && x.Type == ProductAndCategoryType.Product)
             .Include(x => x.SaleDetails.Where(x => x.SalePlanStartDate <= currentTime && currentTime <= x.SalePlanEndDate && x.Visible && (input.ESaleTypeId == null || x.ESaleTypeId == input.ESaleTypeId)))
              .ThenInclude(y => y.ESaleType)
-            .Include(x => x.ProductLevel);
+            .Include(x => x.ProductLevel)
+            .OrderBy(x => x.Priority);
         ProductList = string.IsNullOrWhiteSpace(input.NodePath)
             ? productQuery.ToList()
             : productQuery.Where(x => EF.Functions.Like(x.Code, input.NodePath + "%")).ToList();
