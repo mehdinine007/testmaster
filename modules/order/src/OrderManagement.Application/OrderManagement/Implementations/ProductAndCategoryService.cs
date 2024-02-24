@@ -29,6 +29,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using OrderManagement.Domain.Shared.OrderManagement.Enums;
 using Microsoft.AspNetCore.Mvc;
+using OfficeOpenXml;
+using OrderManagement.Domain.OrderManagement.MongoWrite;
+using System.IO;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -44,6 +47,8 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IConfiguration _configuration;
     private readonly IRepository<Organization, int> _organizationRepository;
+    private readonly IRepository<PropertyCategory, ObjectId> _propertyDefinitionRepository;
+    private readonly IRepository<ProductPropertyWrite, ObjectId> _productPropertyWriteRepository;
     public ProductAndCategoryService(IRepository<ProductAndCategory, int> productAndCategoryRepository,
                                      IAttachmentService attachmentService,
                                      IProductPropertyService productPropertyService,
@@ -52,7 +57,9 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
                                      IRepository<ProductProperty, ObjectId> productPropertyRepository,
                                      IUserDataAccessService userDataAccessService,
                                      IConfiguration configuration,
-                                     IRepository<Organization, int> organizationRepository)
+                                     IRepository<Organization, int> organizationRepository,
+                                     IRepository<PropertyCategory, ObjectId> propertyDefinitionRepository,
+                                     IRepository<ProductPropertyWrite, ObjectId> productPropertyWriteRepository)
     {
         _productAndCategoryRepository = productAndCategoryRepository;
         _attachmentService = attachmentService;
@@ -64,6 +71,8 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
         _httpContextAccessor = ServiceTool.Resolve<IHttpContextAccessor>();
         _configuration = configuration;
         _organizationRepository = organizationRepository;
+        _propertyDefinitionRepository = propertyDefinitionRepository;
+        _productPropertyWriteRepository = productPropertyWriteRepository;
     }
     [SecuredOperation(ProductAndCategoryServicePermissionConstants.Delete)]
     public async Task Delete(int id)
@@ -461,6 +470,115 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
 
         return true;
     }
+    [SecuredOperation(ProductAndCategoryServicePermissionConstants.Import)]
+    public async Task Import(IFormFile file, SaleTypeEnum type)
+    {
+        if (type == SaleTypeEnum.esalecar)
+        {
+            using (var stream = new MemoryStream())
+            {
+                await file.CopyToAsync(stream);
+                using (var package = new ExcelPackage(stream))
+                {
+                    ExcelWorksheet worksheet = package.Workbook.Worksheets.FirstOrDefault();
+                    if (worksheet.Dimension is null )
+                    {
+                        throw new UserFriendlyException("دیتا صحیح نمیباشد");
+                    }
+
+                    var rowcount = worksheet.Dimension.Rows;
+                    var colcount = worksheet.Dimension.Columns;
+                    var code = worksheet.Name;
+                    var productQuery = await _productAndCategoryRepository.GetQueryableAsync();
+                    var product = productQuery.FirstOrDefault(x => x.Code == code);
+                    if (product is null)
+                    {
+                        throw new UserFriendlyException("محصول وجود ندارد");
+                    };
+                    var productMongo = (await _productPropertyRepository.GetMongoQueryableAsync()).Where(x => x.ProductId == product.Id).ToList();
+                    if (productMongo.Count > 0)
+                    {
+                        await _productPropertyRepository.HardDeleteAsync(y => y.ProductId == product.Id);
+                    }
+                    var propertyCategories = (await _propertyDefinitionRepository.GetMongoQueryableAsync()).ToList();
+                    List<PropertyDto> propertyList = new List<PropertyDto>();
+                    for (int row = 2; row <= rowcount; row++)
+                    {
+
+                        var key = worksheet.Cells[row, 1].Value.ToString();
+                        var title = worksheet.Cells[row, 2].Value.ToString();
+                        var value = worksheet.Cells[row, 3].Value.ToString();
+                        foreach (var category in propertyCategories)
+                        {
+                            foreach (var property in category.Properties)
+                            {
+                                if (property.Key == key)
+                                    property.Value = value;
+                            }
+                        }
+                    }
+                    var productPropertyDto = new ProductPropertyDto()
+                    {
+                        ProductId = product.Id,
+                        PropertyCategories = ObjectMapper.Map<List<PropertyCategory>, List<ProductPropertyCategoryDto>>(propertyCategories)
+                    };
+                    await _productPropertyWriteRepository.InsertAsync(ObjectMapper.Map<ProductPropertyDto, ProductPropertyWrite>(productPropertyDto));
+
+                }
+            }
+        }
+        else if (type == SaleTypeEnum.saleauto)
+        {
+            using (var stream = new MemoryStream())
+            {
+                await file.CopyToAsync(stream);
+                using (var package = new ExcelPackage(stream))
+                {
+                    ExcelWorksheet worksheet = package.Workbook.Worksheets.FirstOrDefault();
+                    var rowcount = worksheet.Dimension.Rows;
+                    var colcount = worksheet.Dimension.Columns;
+                    var code = worksheet.Name;
+                    var productQuery = await _productAndCategoryRepository.GetQueryableAsync();
+                    var product = productQuery.FirstOrDefault(x => x.Code == code);
+                    if (product is null)
+                    {
+                        throw new UserFriendlyException("محصول وجود ندارد");
+                    };
+                    var productMongo = (await _productPropertyRepository.GetMongoQueryableAsync()).Where(x => x.ProductId == product.Id).ToList();
+                    if (productMongo.Count > 0)
+                    {
+                        await _productPropertyRepository.HardDeleteAsync(y => y.ProductId == product.Id);
+
+                    }
+                    var propertyCategories = (await _propertyDefinitionRepository.GetMongoQueryableAsync()).ToList();
+                    List<PropertyDto> propertyList = new List<PropertyDto>();
+                    for (int row = 2; row <= rowcount; row++)
+                    {
+
+                        var key = worksheet.Cells[row, 1].Value.ToString();
+                        var title = worksheet.Cells[row, 2].Value.ToString();
+                        var value = worksheet.Cells[row, 3].Value.ToString();
+                        foreach (var category in propertyCategories)
+                        {
+                            foreach (var property in category.Properties)
+                            {
+                                if (property.Key == key)
+                                    property.Value = value;
+                            }
+                        }
+                    }
+                    var productPropertyDto = new ProductPropertyDto()
+                    {
+                        ProductId = product.Id,
+                        PropertyCategories = ObjectMapper.Map<List<PropertyCategory>, List<ProductPropertyCategoryDto>>(propertyCategories)
+                    };
+                    await _productPropertyWriteRepository.InsertAsync(ObjectMapper.Map<ProductPropertyDto, ProductPropertyWrite>(productPropertyDto));
+
+                }
+            }
+        }
+    }
+
 
 
 }

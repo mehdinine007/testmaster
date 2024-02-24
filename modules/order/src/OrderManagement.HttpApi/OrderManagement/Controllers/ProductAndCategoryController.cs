@@ -12,6 +12,8 @@ using Nest;
 using System;
 using OrderManagement.Domain.Shared;
 using IFG.Core.Utility.Tools;
+using Microsoft.AspNetCore.Http;
+using OrderManagement.Domain.Shared.OrderManagement.Enums;
 
 namespace OrderManagement.HttpApi.OrderManagement.Controllers;
 
@@ -63,5 +65,8 @@ public class ProductAndCategoryController : AbpController //, IProductAndCategor
     [HttpPut]
     public async Task<bool> Move(MoveDto moveDto)
        => await _productAndCategoryService.Move(moveDto);
+    [HttpPost]
+    public async Task Import(IFormFile file, SaleTypeEnum type)
+      => await _productAndCategoryService.Import(file,type);
 
 }
