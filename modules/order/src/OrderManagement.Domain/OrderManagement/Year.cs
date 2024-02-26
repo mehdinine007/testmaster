@@ -5,9 +5,15 @@ namespace OrderManagement.Domain
 {
     public class Year : FullAuditedEntity<int>
     {
-        public string Title { get; set; }
-        public virtual ICollection<Season_Product_Category> SeasonCompanyCarTip { get; set; }
+        private ICollection<SeasonCompanyProduct> _seasonCompanyProducts;
 
+        public string Title { get; set; }
+
+        public ICollection<SeasonCompanyProduct> SeasonCompanyProducts
+        {
+            get => _seasonCompanyProducts ?? (_seasonCompanyProducts = new List<SeasonCompanyProduct>());
+            protected set => _seasonCompanyProducts = value;
+        }
     }
 
 }

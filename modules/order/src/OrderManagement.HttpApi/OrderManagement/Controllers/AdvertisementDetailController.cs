@@ -1,17 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
-using OrderManagement.Domain.OrderManagement;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Auditing;
 using Volo.Abp;
 using OrderManagement.Application.Contracts.OrderManagement;
 using OrderManagement.Domain.Shared;
 using Volo.Abp.Application.Dtos;
-using OrderManagement.Domain.Shared.OrderManagement.Enums;
 using IFG.Core.Utility.Tools;
 
 namespace OrderManagement.HttpApi.OrderManagement.Controllers

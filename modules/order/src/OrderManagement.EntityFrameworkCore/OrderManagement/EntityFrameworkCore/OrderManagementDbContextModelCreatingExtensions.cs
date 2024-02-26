@@ -400,7 +400,7 @@ public static class OrderManagementDbContextModelCreatingExtensions
 
             entity.HasOne<QuestionGroup>(x => x.QuestionGroup)
                 .WithOne(x => x.Question)
-                .HasForeignKey<Question>(x=> x.QuestionGroupId)
+                .HasForeignKey<Question>(x => x.QuestionGroupId)
                 .OnDelete(DeleteBehavior.NoAction);
 
             entity.Property(x => x.Title)
@@ -411,10 +411,10 @@ public static class OrderManagementDbContextModelCreatingExtensions
             entity.ToTable(nameof(QuestionGroup));
 
             entity.HasOne<Questionnaire>(x => x.Questionnaire)
-                .WithMany(x => x.QuestionGroups)    
+                .WithMany(x => x.QuestionGroups)
                 .HasForeignKey(x => x.QuestionnaireId)
                 .OnDelete(DeleteBehavior.NoAction);
-         
+
             entity.Property(x => x.Title)
                     .HasMaxLength(50);
         });
@@ -529,6 +529,27 @@ public static class OrderManagementDbContextModelCreatingExtensions
         {
             entity.ToTable(nameof(OperatorEnumReadOnly));
             entity.AddEnumChangeTracker<OperatorEnumReadOnly, OperatorFilterEnum>();
+        });
+
+        builder.Entity<SeasonCompanyProduct>(entity =>
+        {
+            entity.ToTable(nameof(SeasonCompanyProduct));
+
+            entity.HasOne<ProductAndCategory>(x => x.Company)
+                .WithMany(x => x.SeasonCompanyProducts_Company)
+                .HasForeignKey(x => x.CompanyId);
+
+            entity.HasOne<ProductAndCategory>(x => x.Product)
+                .WithMany(x => x.SeasonCompanyProducts_Product)
+                .HasForeignKey(x => x.ProductId);
+
+            entity.HasOne<Year>(x => x.Year)
+                .WithMany(x => x.SeasonCompanyProducts)
+                .HasForeignKey(x => x.YearId);
+
+            entity.HasOne<ESaleType>(x => x.EsaleType)
+                .WithMany(x => x.SeasonCompanyProducts)
+                .HasForeignKey(x => x.EsaleTypeId);
         });
     }
 }

@@ -14,7 +14,6 @@ namespace OrderManagement.Domain
         public int? EsaleTypeId { get; set; }
         public virtual ESaleType ESaleType { get; set; }
         public int? YearId { get; set; }
-        public virtual Year Year { get; set; }
         public int? ProductId { get; set; }
         public virtual ProductAndCategory Product { get; set; }
         public int? CategoryId { get; set; }
