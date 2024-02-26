@@ -20,7 +20,7 @@ public class SeasonCompanyProduct : FullAuditedEntity<int>
 
     public int? EsaleTypeId { get; set; }
 
-    public int IsComplete { get; set; }
+    public bool IsComplete { get; set; }
 
     public int? YearId { get; set; }
 
