@@ -29,34 +29,30 @@ namespace OrderManagement.Application.OrderManagement.Implementations;
 public class OrganizationService : ApplicationService, IOrganizationService
 {
 
-    private readonly IRepository<Organization> _organizationRepository;
+    private readonly IRepository<Organization, int> _organizationRepository;
     private readonly IAttachmentService _attachmentService;
 
 
 
-    public OrganizationService(IRepository<Organization> organizationRepository, IAttachmentService attachmentService)
+    public OrganizationService(IRepository<Organization, int> organizationRepository, IAttachmentService attachmentService)
     {
         _organizationRepository = organizationRepository;
         _attachmentService = attachmentService;
     }
 
-    [SecuredOperation(OrganizationServicePermissionConstants.Delete)]
+   // [SecuredOperation(OrganizationServicePermissionConstants.Delete)]
     public async Task<bool> Delete(int id)
     {
-        var organ = (await _organizationRepository.GetQueryableAsync()).AsNoTracking().FirstOrDefault(x => x.Id == id);
-        if (organ is null)
-        {
-            throw new UserFriendlyException("شناسه وارد شده معتبر نمیباشد.");
-        }
-        await _organizationRepository.DeleteAsync(organ);
+        var Result = await Validation(id, null);
+        await _organizationRepository.DeleteAsync(x => x.Id == id);
         await _attachmentService.DeleteByEntityId(AttachmentEntityEnum.Organization, id);
         return true;
     }
 
-    // [SecuredOperation(OrganizationServicePermissionConstants.GetAll)]
+    //[SecuredOperation(OrganizationServicePermissionConstants.GetAll)]
     public async Task<List<OrganizationDto>> GetAll()
     {
-        var organ = await _organizationRepository.GetListAsync();
+        var organ = (await _organizationRepository.GetQueryableAsync()).AsNoTracking().ToList();
         var organdto = ObjectMapper.Map<List<Organization>, List<OrganizationDto>>(organ);
         return organdto;
     }
@@ -65,7 +61,7 @@ public class OrganizationService : ApplicationService, IOrganizationService
     public async Task<int> Save(OrganizationInsertDto organDto)
     {
 
-        var organization = await _organizationRepository.GetQueryableAsync();
+        var organization = (await _organizationRepository.GetQueryableAsync()).AsNoTracking();
         var maxCode = await organization.MaxAsync(o => o.Code);
         var maxPriority = await organization.MaxAsync(o => o.Priority);
 
@@ -79,29 +75,23 @@ public class OrganizationService : ApplicationService, IOrganizationService
 
     [SecuredOperation(OrganizationServicePermissionConstants.Update)]
     public async Task<int> Update(OrganizationUpdateDto organDto)
-
     {
-        var result = await _organizationRepository.WithDetails().AsNoTracking().FirstOrDefaultAsync(x => x.Id == organDto.Id);
-        if (result == null)
-        {
-            throw new UserFriendlyException("رکوردی برای ویرایش وجود ندارد");
-        }
+        var _organ = await Validation(organDto.Id, null);
         var organ = ObjectMapper.Map<OrganizationUpdateDto, Organization>(organDto);
-        await _organizationRepository.AttachAsync(organ, c => c.Title, c => c.Url,
-            c => c.EncryptKey, c => c.SupportingPhone, c => c.UrlSite, c => c.IsActive);
-
+        organ.Code = _organ.Code;
+        organ.Priority = _organ.Priority;
+        await _organizationRepository.UpdateAsync(organ);
+        await CurrentUnitOfWork.SaveChangesAsync();
         return organ.Id;
     }
 
-    [SecuredOperation(OrganizationServicePermissionConstants.GetById)]
+    //[SecuredOperation(OrganizationServicePermissionConstants.GetById)]
     public async Task<OrganizationDto> GetById(int id, List<AttachmentEntityTypeEnum> attachmentType = null, List<AttachmentLocationEnum> attachmentlocation = null)
     {
         var organ = await Validation(id, null);
-        var announcement = (await _organizationRepository.GetQueryableAsync()).AsNoTracking()
-           .FirstOrDefault(x => x.Id == id)
-           ?? throw new UserFriendlyException("شرکت مورد نظر یافت نشد");
-        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.Organization, new List<int>() { id }, attachmentType, attachmentlocation);
         var organDto = ObjectMapper.Map<Organization, OrganizationDto>(organ);
+       
+        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.Organization, new List<int>() { id }, attachmentType, attachmentlocation);
 
         organDto.Attachments = ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(attachments);
         return organDto;
@@ -118,17 +108,18 @@ public class OrganizationService : ApplicationService, IOrganizationService
 
     private async Task<Organization> Validation(int id, OrganizationUpdateDto organDto)
     {
-        var organ = (await _organizationRepository.GetQueryableAsync())
+        var organ = (await _organizationRepository.GetQueryableAsync()).AsNoTracking()
             .FirstOrDefault(x => x.Id == id);
         if (organ is null)
         {
-            throw new UserFriendlyException(OrderConstant.BankNotFound, OrderConstant.BankNotFoundId);
+            throw new UserFriendlyException(OrderConstant.OrganizationNotFound, OrderConstant.OrganizationNotFoundId);
         }
         return organ;
     }
     [SecuredOperation(OrganizationServicePermissionConstants.Move)]
     public async Task<bool> Move(OrganizationPriorityDto input)
     {
+        var organ = await Validation(input.Id, null);
         var organizationQuery = (await _organizationRepository.GetQueryableAsync()).AsNoTracking().OrderBy(x => x.Priority);
         var currentorganization = organizationQuery.FirstOrDefault(x => x.Id == input.Id);
         var currentPriority = currentorganization.Priority;
