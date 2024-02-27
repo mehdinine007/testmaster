@@ -24,8 +24,8 @@ public class OrganizationController : Controller
     public Task<bool> Delete(int id)
     => _organizationService.Delete(id);
     [HttpGet]
-    public Task<List<OrganizationDto>> GetAll()
-    => _organizationService.GetAll();
+    public Task<List<OrganizationDto>> GetAll(string attachmentType, string attachmentlocation)
+    => _organizationService.GetAll(EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(attachmentType), EnumHelper.ConvertStringToEnum<AttachmentLocationEnum>(attachmentlocation));
 
     [HttpGet]
     public Task<OrganizationDto> GetById(int id, string attachmentType, string attachmentlocation)

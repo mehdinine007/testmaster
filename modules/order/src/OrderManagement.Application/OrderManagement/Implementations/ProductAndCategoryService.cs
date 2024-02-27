@@ -470,7 +470,7 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
 
         return true;
     }
-    //[SecuredOperation(ProductAndCategoryServicePermissionConstants.Import)]
+    [SecuredOperation(ProductAndCategoryServicePermissionConstants.Import)]
     public async Task<bool> Import(ImportExcelDto importExcelDto)
     {
         using (var stream = new MemoryStream())

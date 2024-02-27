@@ -50,10 +50,16 @@ public class OrganizationService : ApplicationService, IOrganizationService
     }
 
     //[SecuredOperation(OrganizationServicePermissionConstants.GetAll)]
-    public async Task<List<OrganizationDto>> GetAll()
+    public async Task<List<OrganizationDto>> GetAll(List<AttachmentEntityTypeEnum> attachmentType = null, List<AttachmentLocationEnum> attachmentlocation = null)
     {
         var organ = (await _organizationRepository.GetQueryableAsync()).AsNoTracking().ToList();
         var organdto = ObjectMapper.Map<List<Organization>, List<OrganizationDto>>(organ);
+        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.Organization, organdto.Select(x => x.Id).ToList(), attachmentType, attachmentlocation);
+        organdto.ForEach(x =>
+        {
+            var attachment = attachments.Where(y => y.EntityId == x.Id).ToList();
+            x.Attachments = ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(attachment);
+        });
         return organdto;
     }
 
