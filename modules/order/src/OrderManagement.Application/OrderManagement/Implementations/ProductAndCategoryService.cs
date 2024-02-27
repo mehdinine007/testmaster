@@ -470,113 +470,57 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
 
         return true;
     }
-    [SecuredOperation(ProductAndCategoryServicePermissionConstants.Import)]
-    public async Task Import(IFormFile file, SaleTypeEnum type)
+    //[SecuredOperation(ProductAndCategoryServicePermissionConstants.Import)]
+    public async Task<bool> Import(ImportExcelDto importExcelDto)
     {
-        if (type == SaleTypeEnum.esalecar)
+        using (var stream = new MemoryStream())
         {
-            using (var stream = new MemoryStream())
+            await importExcelDto.File.CopyToAsync(stream);
+            using (var package = new ExcelPackage(stream))
             {
-                await file.CopyToAsync(stream);
-                using (var package = new ExcelPackage(stream))
+                ExcelWorksheet worksheet = package.Workbook.Worksheets.FirstOrDefault();
+                var rowcount = worksheet.Dimension.Rows;
+                var colcount = worksheet.Dimension.Columns;
+                var code = worksheet.Name;
+                var productQuery = (await _productAndCategoryRepository.GetQueryableAsync()).AsNoTracking();
+                var product = productQuery.FirstOrDefault(x => x.Id == importExcelDto.ProductId);
+                if (product is null)
                 {
-                    ExcelWorksheet worksheet = package.Workbook.Worksheets.FirstOrDefault();
-                    if (worksheet.Dimension is null )
-                    {
-                        throw new UserFriendlyException("دیتا صحیح نمیباشد");
-                    }
-
-                    var rowcount = worksheet.Dimension.Rows;
-                    var colcount = worksheet.Dimension.Columns;
-                    var code = worksheet.Name;
-                    var productQuery = await _productAndCategoryRepository.GetQueryableAsync();
-                    var product = productQuery.FirstOrDefault(x => x.Code == code);
-                    if (product is null)
-                    {
-                        throw new UserFriendlyException("محصول وجود ندارد");
-                    };
-                    var productMongo = (await _productPropertyRepository.GetMongoQueryableAsync()).Where(x => x.ProductId == product.Id).ToList();
-                    if (productMongo.Count > 0)
-                    {
-                        await _productPropertyRepository.HardDeleteAsync(y => y.ProductId == product.Id);
-                    }
-                    var propertyCategories = (await _propertyDefinitionRepository.GetMongoQueryableAsync()).ToList();
-                    List<PropertyDto> propertyList = new List<PropertyDto>();
-                    for (int row = 2; row <= rowcount; row++)
-                    {
-
-                        var key = worksheet.Cells[row, 1].Value.ToString();
-                        var title = worksheet.Cells[row, 2].Value.ToString();
-                        var value = worksheet.Cells[row, 3].Value.ToString();
-                        foreach (var category in propertyCategories)
-                        {
-                            foreach (var property in category.Properties)
-                            {
-                                if (property.Key == key)
-                                    property.Value = value;
-                            }
-                        }
-                    }
-                    var productPropertyDto = new ProductPropertyDto()
-                    {
-                        ProductId = product.Id,
-                        PropertyCategories = ObjectMapper.Map<List<PropertyCategory>, List<ProductPropertyCategoryDto>>(propertyCategories)
-                    };
-                    await _productPropertyWriteRepository.InsertAsync(ObjectMapper.Map<ProductPropertyDto, ProductPropertyWrite>(productPropertyDto));
+                    throw new UserFriendlyException(OrderConstant.ProductNotFound, OrderConstant.ProductNotFound);
+                };
+                var productMongo = (await _productPropertyRepository.GetMongoQueryableAsync()).Where(x => x.ProductId == product.Id).ToList();
+                if (productMongo.Count > 0)
+                {
+                    await _productPropertyRepository.HardDeleteAsync(y => y.ProductId == product.Id);
 
                 }
-            }
-        }
-        else if (type == SaleTypeEnum.saleauto)
-        {
-            using (var stream = new MemoryStream())
-            {
-                await file.CopyToAsync(stream);
-                using (var package = new ExcelPackage(stream))
+                var propertyCategories = (await _propertyDefinitionRepository.GetMongoQueryableAsync()).ToList();
+                List<PropertyDto> propertyList = new List<PropertyDto>();
+                for (int row = 2; row <= rowcount; row++)
                 {
-                    ExcelWorksheet worksheet = package.Workbook.Worksheets.FirstOrDefault();
-                    var rowcount = worksheet.Dimension.Rows;
-                    var colcount = worksheet.Dimension.Columns;
-                    var code = worksheet.Name;
-                    var productQuery = await _productAndCategoryRepository.GetQueryableAsync();
-                    var product = productQuery.FirstOrDefault(x => x.Code == code);
-                    if (product is null)
-                    {
-                        throw new UserFriendlyException("محصول وجود ندارد");
-                    };
-                    var productMongo = (await _productPropertyRepository.GetMongoQueryableAsync()).Where(x => x.ProductId == product.Id).ToList();
-                    if (productMongo.Count > 0)
-                    {
-                        await _productPropertyRepository.HardDeleteAsync(y => y.ProductId == product.Id);
 
-                    }
-                    var propertyCategories = (await _propertyDefinitionRepository.GetMongoQueryableAsync()).ToList();
-                    List<PropertyDto> propertyList = new List<PropertyDto>();
-                    for (int row = 2; row <= rowcount; row++)
+                    var key = worksheet.Cells[row, 1].Value.ToString();
+                    var title = worksheet.Cells[row, 2].Value.ToString();
+                    var value = worksheet.Cells[row, 3].Value.ToString();
+                    foreach (var category in propertyCategories)
                     {
-
-                        var key = worksheet.Cells[row, 1].Value.ToString();
-                        var title = worksheet.Cells[row, 2].Value.ToString();
-                        var value = worksheet.Cells[row, 3].Value.ToString();
-                        foreach (var category in propertyCategories)
+                        foreach (var property in category.Properties)
                         {
-                            foreach (var property in category.Properties)
-                            {
-                                if (property.Key == key)
-                                    property.Value = value;
-                            }
+                            if (property.Key == key)
+                                property.Value = value;
                         }
                     }
-                    var productPropertyDto = new ProductPropertyDto()
-                    {
-                        ProductId = product.Id,
-                        PropertyCategories = ObjectMapper.Map<List<PropertyCategory>, List<ProductPropertyCategoryDto>>(propertyCategories)
-                    };
-                    await _productPropertyWriteRepository.InsertAsync(ObjectMapper.Map<ProductPropertyDto, ProductPropertyWrite>(productPropertyDto));
-
                 }
+                var productPropertyDto = new ProductPropertyDto()
+                {
+                    ProductId = importExcelDto.ProductId,
+                    PropertyCategories = ObjectMapper.Map<List<PropertyCategory>, List<ProductPropertyCategoryDto>>(propertyCategories)
+                };
+                await _productPropertyWriteRepository.InsertAsync(ObjectMapper.Map<ProductPropertyDto, ProductPropertyWrite>(productPropertyDto));
+
             }
         }
+        return true;
     }
 
 

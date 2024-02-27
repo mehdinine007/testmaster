@@ -66,7 +66,7 @@ public class ProductAndCategoryController : AbpController //, IProductAndCategor
     public async Task<bool> Move(MoveDto moveDto)
        => await _productAndCategoryService.Move(moveDto);
     [HttpPost]
-    public async Task Import(IFormFile file, SaleTypeEnum type)
-      => await _productAndCategoryService.Import(file,type);
+    public async Task<bool> Import([FromForm] ImportExcelDto importExcelDto)
+      => await _productAndCategoryService.Import(importExcelDto);
 
 }
