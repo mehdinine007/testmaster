@@ -27,6 +27,11 @@ using System.Linq.Dynamic.Core;
 using IFG.Core.IOC;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using OrderManagement.Domain.Shared.OrderManagement.Enums;
+using Microsoft.AspNetCore.Mvc;
+using OfficeOpenXml;
+using OrderManagement.Domain.OrderManagement.MongoWrite;
+using System.IO;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -41,6 +46,9 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
     private readonly IUserDataAccessService _userDataAccessService;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IConfiguration _configuration;
+    private readonly IRepository<Organization, int> _organizationRepository;
+    private readonly IRepository<PropertyCategory, ObjectId> _propertyDefinitionRepository;
+    private readonly IRepository<ProductPropertyWrite, ObjectId> _productPropertyWriteRepository;
     public ProductAndCategoryService(IRepository<ProductAndCategory, int> productAndCategoryRepository,
                                      IAttachmentService attachmentService,
                                      IProductPropertyService productPropertyService,
@@ -48,7 +56,10 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
                                      ICommonAppService commonAppService,
                                      IRepository<ProductProperty, ObjectId> productPropertyRepository,
                                      IUserDataAccessService userDataAccessService,
-                                     IConfiguration configuration)
+                                     IConfiguration configuration,
+                                     IRepository<Organization, int> organizationRepository,
+                                     IRepository<PropertyCategory, ObjectId> propertyDefinitionRepository,
+                                     IRepository<ProductPropertyWrite, ObjectId> productPropertyWriteRepository)
     {
         _productAndCategoryRepository = productAndCategoryRepository;
         _attachmentService = attachmentService;
@@ -59,6 +70,9 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
         _userDataAccessService = userDataAccessService;
         _httpContextAccessor = ServiceTool.Resolve<IHttpContextAccessor>();
         _configuration = configuration;
+        _organizationRepository = organizationRepository;
+        _propertyDefinitionRepository = propertyDefinitionRepository;
+        _productPropertyWriteRepository = productPropertyWriteRepository;
     }
     [SecuredOperation(ProductAndCategoryServicePermissionConstants.Delete)]
     public async Task Delete(int id)
@@ -98,7 +112,12 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
         var productLevelId = 0;
         var code = "";
         var productLevelQuery = (await _productLevelRepository.GetQueryableAsync()).OrderBy(x => x.Priority);
-
+        var oganizationQuery = (await _organizationRepository.GetQueryableAsync()).AsNoTracking();
+        var oganization = oganizationQuery.FirstOrDefault(x => x.Id == productAndCategoryCreateDto.OrganizationId);
+        if (oganization is null)
+        {
+            throw new UserFriendlyException(OrderConstant.OrganizationNotFound, OrderConstant.OrganizationNotFoundId);
+        }
         if (productAndCategoryCreateDto.Priority == 0)
         {
             var lastPriority = (await _productAndCategoryRepository.GetQueryableAsync()).OrderByDescending(x => x.Priority)
@@ -163,6 +182,8 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
         int codeLength = 4;
         if (productAndCategoryCreateDto.ParentId.HasValue && productAndCategoryCreateDto.ParentId.Value > 0)
             _parentCode = igResult.FirstOrDefault(x => x.Id == productAndCategoryCreateDto.ParentId).Code;
+        else
+            _parentCode = oganization.Code.ToString();
 
         var _maxCode = igResult
             .Where(x => x.ParentId == productAndCategoryCreateDto.ParentId)
@@ -230,9 +251,12 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
     {
         List<ProductAndCategory> ls = new();
         var productAndCategoryQuery = await _productAndCategoryRepository.GetQueryableAsync();
-        productAndCategoryQuery = productAndCategoryQuery.Include(x => x.ProductLevel);
+        productAndCategoryQuery = productAndCategoryQuery.Include(x => x.ProductLevel).OrderBy(x => x.Priority);
         if (input.IsActive)
             productAndCategoryQuery = productAndCategoryQuery.Where(x => x.Active);
+        if (input.OrganizationId != null && input.OrganizationId > 0)
+            productAndCategoryQuery = productAndCategoryQuery.Where(x => x.OrganizationId == input.OrganizationId);
+
         var attachments = new List<AttachmentDto>();
         switch (input.Type)
         {
@@ -297,15 +321,17 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
             .Where(x => x.Active && x.Type == ProductAndCategoryType.Product)
             .Include(x => x.SaleDetails.Where(x => x.SalePlanStartDate <= currentTime && currentTime <= x.SalePlanEndDate && x.Visible && (input.ESaleTypeId == null || x.ESaleTypeId == input.ESaleTypeId)))
              .ThenInclude(y => y.ESaleType)
-            .Include(x => x.ProductLevel);
-
+            .Include(x => x.ProductLevel)
+            .OrderBy(x => x.Priority);
         ProductList = string.IsNullOrWhiteSpace(input.NodePath)
             ? productQuery.ToList()
             : productQuery.Where(x => EF.Functions.Like(x.Code, input.NodePath + "%")).ToList();
+        if (input.OrganizationId != null && input.OrganizationId > 0)
+            ProductList = ProductList.Where(x => x.OrganizationId == input.OrganizationId).ToList();
         if (_httpContextAccessor.HttpContext.User.Identity.IsAuthenticated)
         {
             var nationalCode = _commonAppService.GetNationalCode();
-            if (_configuration.GetValue<bool?>("UserDataAccessConfig:HasProduct")?? false)
+            if (_configuration.GetValue<bool?>("UserDataAccessConfig:HasProduct") ?? false)
             {
                 var products = await _userDataAccessService.ProductGetList(nationalCode);
                 ProductList = ProductList.Where(x => products.Any(p => x.Id == p.ProductId))
@@ -403,4 +429,100 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
         }
         return result;
     }
+    [SecuredOperation(ProductAndCategoryServicePermissionConstants.Move)]
+    public async Task<bool> Move(MoveDto move)
+    {
+        var productAndCategoryQuery = (await _productAndCategoryRepository.GetQueryableAsync()).AsNoTracking().OrderBy(x => x.Priority);
+        var currentproductAndCategory = productAndCategoryQuery.FirstOrDefault(x => x.Id == move.Id);
+        if (currentproductAndCategory == null)
+        {
+            throw new UserFriendlyException(OrderConstant.ProductAndCategoryNotFound, OrderConstant.ProductAndCategoryFoundId);
+        }
+        var currentPriority = currentproductAndCategory.Priority;
+        var parentId = currentproductAndCategory.ParentId;
+        if (MoveTypeEnum.Up == move.MoveType)
+        {
+            var previousProductAndCategory = await productAndCategoryQuery.OrderByDescending(x => x.Priority).FirstOrDefaultAsync(x => x.Priority < currentproductAndCategory.Priority  && x.ParentId == parentId);
+            if (previousProductAndCategory == null)
+            {
+                throw new UserFriendlyException(OrderConstant.FirstPriority, OrderConstant.FirstPriorityId);
+            }
+            var previousPriority = previousProductAndCategory.Priority;
+            currentproductAndCategory.Priority = previousPriority;
+            await _productAndCategoryRepository.UpdateAsync(currentproductAndCategory);
+            previousProductAndCategory.Priority = currentPriority;
+            await _productAndCategoryRepository.UpdateAsync(previousProductAndCategory);
+        }
+        else if (MoveTypeEnum.Down == move.MoveType)
+        {
+            var nextProductAndCategory = productAndCategoryQuery.FirstOrDefault(x => x.Priority > currentproductAndCategory.Priority && x.ParentId == parentId);
+            if (nextProductAndCategory == null)
+            {
+                throw new UserFriendlyException(OrderConstant.LastPriority, OrderConstant.LastPriorityId);
+            }
+            var nextPriority = nextProductAndCategory.Priority;
+            currentproductAndCategory.Priority = nextPriority;
+            await _productAndCategoryRepository.UpdateAsync(currentproductAndCategory);
+            nextProductAndCategory.Priority = currentPriority;
+            await _productAndCategoryRepository.UpdateAsync(nextProductAndCategory);
+        }
+
+
+        return true;
+    }
+    [SecuredOperation(ProductAndCategoryServicePermissionConstants.Import)]
+    public async Task<bool> Import(ImportExcelDto importExcelDto)
+    {
+        using (var stream = new MemoryStream())
+        {
+            await importExcelDto.File.CopyToAsync(stream);
+            using (var package = new ExcelPackage(stream))
+            {
+                ExcelWorksheet worksheet = package.Workbook.Worksheets.FirstOrDefault();
+                var rowcount = worksheet.Dimension.Rows;
+                var colcount = worksheet.Dimension.Columns;
+                var code = worksheet.Name;
+                var productQuery = (await _productAndCategoryRepository.GetQueryableAsync()).AsNoTracking();
+                var product = productQuery.FirstOrDefault(x => x.Id == importExcelDto.ProductId);
+                if (product is null)
+                {
+                    throw new UserFriendlyException(OrderConstant.ProductNotFound, OrderConstant.ProductNotFound);
+                };
+                var productMongo = (await _productPropertyRepository.GetMongoQueryableAsync()).Where(x => x.ProductId == product.Id).ToList();
+                if (productMongo.Count > 0)
+                {
+                    await _productPropertyRepository.HardDeleteAsync(y => y.ProductId == product.Id);
+
+                }
+                var propertyCategories = (await _propertyDefinitionRepository.GetMongoQueryableAsync()).ToList();
+                List<PropertyDto> propertyList = new List<PropertyDto>();
+                for (int row = 2; row <= rowcount; row++)
+                {
+
+                    var key = worksheet.Cells[row, 1].Value.ToString();
+                    var title = worksheet.Cells[row, 2].Value.ToString();
+                    var value = worksheet.Cells[row, 3].Value.ToString();
+                    foreach (var category in propertyCategories)
+                    {
+                        foreach (var property in category.Properties)
+                        {
+                            if (property.Key == key)
+                                property.Value = value;
+                        }
+                    }
+                }
+                var productPropertyDto = new ProductPropertyDto()
+                {
+                    ProductId = importExcelDto.ProductId,
+                    PropertyCategories = ObjectMapper.Map<List<PropertyCategory>, List<ProductPropertyCategoryDto>>(propertyCategories)
+                };
+                await _productPropertyWriteRepository.InsertAsync(ObjectMapper.Map<ProductPropertyDto, ProductPropertyWrite>(productPropertyDto));
+
+            }
+        }
+        return true;
+    }
+
+
+
 }

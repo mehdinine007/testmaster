@@ -739,6 +739,18 @@
             "code": "000200160006",
             "displayName": "بروزرسانی فایل",
             "children": []
+          },
+          {
+            "title": "Move",
+            "code": "000200160007",
+            "displayName": "جابه جایی اولویت ها",
+            "children": []
+          },
+          {
+            "title": "Import",
+            "code": "000200160008",
+            "displayName": "وارد کردن اکسل مشخصات",
+            "children": []
           }
         ]
       },
@@ -1001,8 +1013,13 @@
             "code": "000200220006",
             "displayName": "آپلود فایل",
             "children": []
+          },
+          {
+            "title": "Move",
+            "code": "000200220007",
+            "displayName": "ویرایش الویت ها",
+            "children": []
           }
-
         ]
       },
       {

@@ -1,4 +1,6 @@
-﻿using OrderManagement.Domain.Shared;
+﻿using Microsoft.AspNetCore.Http;
+using OrderManagement.Domain.Shared;
+using OrderManagement.Domain.Shared.OrderManagement.Enums;
 using Volo.Abp.Application.Services;
 
 namespace OrderManagement.Application.Contracts.OrderManagement.Services
@@ -26,6 +28,7 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Services
         Task<List<ProductAndCategoryDto>> GetAllParent();
 
         Task<ProductAndCategoryDto> GetProductAndCategoryByCode(string code, List<AttachmentEntityTypeEnum>? attachmentType = null, List<AttachmentLocationEnum>? attachmentlocation = null);
-
+        Task<bool> Move(MoveDto move);
+        Task<bool> Import(ImportExcelDto importExcelDto);
     }
 }

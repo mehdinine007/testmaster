@@ -10,5 +10,6 @@ namespace OrderManagement.Application.Contracts
         public ProductAndCategoryType Type { get; set; }
         public bool Active { get; set; }
         public int Priority { get; set; }
+        public int OrganizationId { get; set; }
     }
 }

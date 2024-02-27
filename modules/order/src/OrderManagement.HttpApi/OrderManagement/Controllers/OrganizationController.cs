@@ -24,8 +24,8 @@ public class OrganizationController : Controller
     public Task<bool> Delete(int id)
     => _organizationService.Delete(id);
     [HttpGet]
-    public Task<List<OrganizationDto>> GetAll()
-    => _organizationService.GetAll();
+    public Task<List<OrganizationDto>> GetList(string attachmentType, string attachmentlocation)
+    => _organizationService.GetList(EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(attachmentType), EnumHelper.ConvertStringToEnum<AttachmentLocationEnum>(attachmentlocation));
 
     [HttpGet]
     public Task<OrganizationDto> GetById(int id, string attachmentType, string attachmentlocation)
@@ -33,8 +33,8 @@ public class OrganizationController : Controller
   
 
     [HttpPost]
-    public Task<int> Save(OrganizationInsertDto orgDto)
-    => _organizationService.Save(orgDto);
+    public Task<int> Add(OrganizationInsertDto orgDto)
+    => _organizationService.Add(orgDto);
     [HttpPut]
     public Task<int> Update(OrganizationUpdateDto orgDto)
     => _organizationService.Update(orgDto);
@@ -42,4 +42,7 @@ public class OrganizationController : Controller
     [HttpPost]
     public Task<bool> UploadFile(UploadFileDto uploadFile)
          => _organizationService.UploadFile(uploadFile);
+    [HttpPost]
+    public Task<bool> Move(OrganizationPriorityDto input)
+      => _organizationService.Move(input);
 }

@@ -11,10 +11,14 @@ namespace OrderManagement.Domain.OrderManagement
     public class Organization : FullAuditedEntity<int>
     {
         
-        public int Code { get; set; }  
+        public string Code { get; set; }  
         public string Title { get; set; }
         public string Url { get; set; }
         public string EncryptKey { get; set; }
-
+        public string SupportingPhone { get; set; }
+        public string UrlSite { get; set; }
+        public int Priority { get; set; }
+        public bool IsActive { get; set; }
+        public virtual ICollection<ProductAndCategory> ProductAndCategories { get; set; }
     }
 }

@@ -168,12 +168,13 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             var parentId = currentAdvertisementDetail.AdvertisementId;
             if (MoveTypeEnum.Up == advertisementDetailWithId.MoveType)
             {
-                var previousAdvertisementDetail = await advertisementDetailQuery.FirstOrDefaultAsync(x => x.Priority == currentAdvertisementDetail.Priority-1 && x.AdvertisementId == parentId);
+                var previousAdvertisementDetail = await advertisementDetailQuery.OrderByDescending(x=>x.Priority).FirstOrDefaultAsync(x => x.Priority < currentAdvertisementDetail.Priority && x.AdvertisementId == parentId);
                 if (previousAdvertisementDetail is null)
                 {
                     throw new UserFriendlyException(OrderConstant.FirstPriority, OrderConstant.FirstPriorityId);
                 }
                 var previousPriority = previousAdvertisementDetail.Priority;
+                
                 currentAdvertisementDetail.Priority = previousPriority;
                 await _advertisementDetailRepository.UpdateAsync(currentAdvertisementDetail);
                 previousAdvertisementDetail.Priority = currentPriority;

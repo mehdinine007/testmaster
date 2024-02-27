@@ -34,10 +34,11 @@ namespace OrderManagement.Application.OrderManagement.Implementations
         private readonly IBankAppService _bankAppServiceService;
         private readonly IAnnouncementService _announcementService;
         private readonly IAdvertisementService _advertisementService;
+        private readonly IOrganizationService _organizationService;
 
         public SiteStructureService(IRepository<SiteStructure, int> siteStructureRepository, IAttachmentService attachmentService, ICarClassService carClassService, IProductAndCategoryService productAndCategoryService
             , IRepository<ESaleType, int> eSaleTypeRepository, IBankAppService bankAppServiceService, IAnnouncementService announcementService
-            , IAdvertisementService advertisementService)
+            , IAdvertisementService advertisementService, IOrganizationService organizationService)
         {
             _siteStructureRepository = siteStructureRepository;
             _attachmentService = attachmentService;
@@ -47,6 +48,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             _bankAppServiceService = bankAppServiceService;
             _announcementService = announcementService;
             _advertisementService = advertisementService;
+            _organizationService = organizationService;
         }
         [SecuredOperation(SiteStructureServicePermissionConstant.Add)]
         public async Task<SiteStructureDto> Add(SiteStructureAddOrUpdateDto siteStructureDto)
@@ -149,6 +151,11 @@ namespace OrderManagement.Application.OrderManagement.Implementations
                 {
                  var advertisementDto =  await _advertisementService.GetById(JsonConvert.DeserializeObject<AdvertisementQueryDto>(x.Content));
                     x.CarouselData = new List<dynamic> { advertisementDto };
+                }
+                if (x.Type == SiteStructureTypeEnum.Organization)
+                {
+                    var organizations = await _organizationService.GetList(EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(siteStructureQuery.AttachmentType), EnumHelper.ConvertStringToEnum<AttachmentLocationEnum>(siteStructureQuery.AttachmentLocation));
+                    x.CarouselData = new List<dynamic> { organizations };
                 }
 
                 x.Content = null;

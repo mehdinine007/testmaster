@@ -109,12 +109,14 @@ namespace OrderManagement.Application.Contracts
         public static string AdvertisementDeleteId = "5009";
         public static string AdvertisementDetailNotFound = "جزییات جایگاه وجود ندارد";
         public static string AdvertisementDetailNotFoundId = "6001";
-
-
+        public static string OrganizationNotFound = "سازمان وجود ندارد";
+        public static string OrganizationNotFoundId = "6002";
 
         public static string UserDataAccessProductNotFound = "کاربر گرامی شما مجاز به ثبت سفارش برای این برنامه فروش نمی باشید";
         public static string UserDataAccessProductNotFoundId = "9005";
         public static string UserDataAccessOldCarNotFound = "خودروفرسوده موجود نمیباشد";
         public static string UserDataAccessOldCarNotFoundId = "9006";
+        public const string ProductNotFound = "محصول وجود ندارد";
+        public const string ProductNotFoundId = "9008";
     }
 }

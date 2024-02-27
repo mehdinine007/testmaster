@@ -12,6 +12,8 @@ using Nest;
 using System;
 using OrderManagement.Domain.Shared;
 using IFG.Core.Utility.Tools;
+using Microsoft.AspNetCore.Http;
+using OrderManagement.Domain.Shared.OrderManagement.Enums;
 
 namespace OrderManagement.HttpApi.OrderManagement.Controllers;
 
@@ -60,4 +62,11 @@ public class ProductAndCategoryController : AbpController //, IProductAndCategor
     [HttpGet]
     public async Task<List<ProductAndCategoryWithChildDto>> GetProductAndSaleDetailList([FromQuery]ProductAndSaleDetailGetListQueryDto input)
         => await _productAndCategoryService.GetProductAndSaleDetailList(input);
+    [HttpPut]
+    public async Task<bool> Move(MoveDto moveDto)
+       => await _productAndCategoryService.Move(moveDto);
+    [HttpPost]
+    public async Task<bool> Import([FromForm] ImportExcelDto importExcelDto)
+      => await _productAndCategoryService.Import(importExcelDto);
+
 }
