@@ -174,6 +174,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
                     throw new UserFriendlyException(OrderConstant.FirstPriority, OrderConstant.FirstPriorityId);
                 }
                 var previousPriority = previousAdvertisementDetail.Priority;
+                
                 currentAdvertisementDetail.Priority = previousPriority;
                 await _advertisementDetailRepository.UpdateAsync(currentAdvertisementDetail);
                 previousAdvertisementDetail.Priority = currentPriority;
