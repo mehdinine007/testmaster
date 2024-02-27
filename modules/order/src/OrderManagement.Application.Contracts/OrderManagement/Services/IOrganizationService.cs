@@ -11,8 +11,8 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Services
 {
     public interface IOrganizationService : IApplicationService
     {
-        Task<List<OrganizationDto>> GetAll(List<AttachmentEntityTypeEnum> attachmentType = null, List<AttachmentLocationEnum> attachmentlocation = null);
-        Task<int> Save(OrganizationInsertDto orgDto);
+        Task<List<OrganizationDto>> GetList(List<AttachmentEntityTypeEnum> attachmentType = null, List<AttachmentLocationEnum> attachmentlocation = null);
+        Task<int> Add(OrganizationInsertDto orgDto);
         Task<int> Update(OrganizationUpdateDto orgDto);
         Task<bool> Delete(int id);
         Task<OrganizationDto> GetById(int id, List<AttachmentEntityTypeEnum>? attachmentType = null, List<AttachmentLocationEnum> attachmentlocation = null);

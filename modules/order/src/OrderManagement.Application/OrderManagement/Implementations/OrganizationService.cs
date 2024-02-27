@@ -50,7 +50,7 @@ public class OrganizationService : ApplicationService, IOrganizationService
     }
 
     //[SecuredOperation(OrganizationServicePermissionConstants.GetAll)]
-    public async Task<List<OrganizationDto>> GetAll(List<AttachmentEntityTypeEnum> attachmentType = null, List<AttachmentLocationEnum> attachmentlocation = null)
+    public async Task<List<OrganizationDto>> GetList(List<AttachmentEntityTypeEnum> attachmentType = null, List<AttachmentLocationEnum> attachmentlocation = null)
     {
         var organ = (await _organizationRepository.GetQueryableAsync()).AsNoTracking().ToList();
         var organdto = ObjectMapper.Map<List<Organization>, List<OrganizationDto>>(organ);
@@ -64,7 +64,7 @@ public class OrganizationService : ApplicationService, IOrganizationService
     }
 
     [SecuredOperation(OrganizationServicePermissionConstants.Save)]
-    public async Task<int> Save(OrganizationInsertDto organDto)
+    public async Task<int> Add(OrganizationInsertDto organDto)
     {
 
         var organization = (await _organizationRepository.GetQueryableAsync()).AsNoTracking();
@@ -83,11 +83,8 @@ public class OrganizationService : ApplicationService, IOrganizationService
     public async Task<int> Update(OrganizationUpdateDto organDto)
     {
         var _organ = await Validation(organDto.Id, null);
-        var organ = ObjectMapper.Map<OrganizationUpdateDto, Organization>(organDto);
-        organ.Code = _organ.Code;
-        organ.Priority = _organ.Priority;
+        var organ = ObjectMapper.Map<OrganizationUpdateDto, Organization>(organDto, _organ);
         await _organizationRepository.UpdateAsync(organ);
-        await CurrentUnitOfWork.SaveChangesAsync();
         return organ.Id;
     }
 
@@ -125,14 +122,14 @@ public class OrganizationService : ApplicationService, IOrganizationService
     [SecuredOperation(OrganizationServicePermissionConstants.Move)]
     public async Task<bool> Move(OrganizationPriorityDto input)
     {
-        var organ = await Validation(input.Id, null);
+        await Validation(input.Id, null);
         var organizationQuery = (await _organizationRepository.GetQueryableAsync()).AsNoTracking().OrderBy(x => x.Priority);
         var currentorganization = organizationQuery.FirstOrDefault(x => x.Id == input.Id);
         var currentPriority = currentorganization.Priority;
 
         if (MoveTypeEnum.Up == input.MoveType)
         {
-            var previousorganization = await organizationQuery.FirstOrDefaultAsync(x => x.Priority == currentorganization.Priority - 1);
+            var previousorganization = await organizationQuery.OrderByDescending(x => x.Priority).FirstOrDefaultAsync(x => x.Priority < currentorganization.Priority);
             if (previousorganization is null)
             {
                 throw new UserFriendlyException(OrderConstant.FirstPriority, OrderConstant.FirstPriorityId);

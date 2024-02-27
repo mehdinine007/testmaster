@@ -154,7 +154,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
                 }
                 if (x.Type == SiteStructureTypeEnum.Organization)
                 {
-                    var organizations = await _organizationService.GetAll(EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(siteStructureQuery.AttachmentType), EnumHelper.ConvertStringToEnum<AttachmentLocationEnum>(siteStructureQuery.AttachmentLocation));
+                    var organizations = await _organizationService.GetList(EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(siteStructureQuery.AttachmentType), EnumHelper.ConvertStringToEnum<AttachmentLocationEnum>(siteStructureQuery.AttachmentLocation));
                     x.CarouselData = new List<dynamic> { organizations };
                 }
 

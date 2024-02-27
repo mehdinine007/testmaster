@@ -442,7 +442,7 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
         var parentId = currentproductAndCategory.ParentId;
         if (MoveTypeEnum.Up == move.MoveType)
         {
-            var previousProductAndCategory = await productAndCategoryQuery.FirstOrDefaultAsync(x => x.Priority == currentproductAndCategory.Priority - 1 && x.ParentId == parentId);
+            var previousProductAndCategory = await productAndCategoryQuery.OrderByDescending(x => x.Priority).FirstOrDefaultAsync(x => x.Priority < currentproductAndCategory.Priority  && x.ParentId == parentId);
             if (previousProductAndCategory == null)
             {
                 throw new UserFriendlyException(OrderConstant.FirstPriority, OrderConstant.FirstPriorityId);
