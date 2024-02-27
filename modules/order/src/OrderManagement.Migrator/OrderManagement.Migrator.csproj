@@ -23,6 +23,8 @@
     <None Remove="Migrations\Patch\20240110080635_IsRequiredtitle-title-advertisement.sql" />
     <None Remove="Migrations\Patch\20240129082810_add-userdataaccess.sql" />
     <None Remove="Migrations\Patch\20240129124922_nullableuserid.sql" />
+    <None Remove="Migrations\Patch\20240224142027_Add_SeasonCompanyProduct.sql" />
+    <None Remove="Migrations\Patch\20240226082020_Change_IsComplete_Type_SeasonCompanyProduct.sql" />
     <None Remove="Migrations\Programmability\CustomerCarDeliveryTime.sql" />
     <None Remove="Migrations\Programmability\GetRecentCustomerAndOrder.sql" />
     <None Remove="Migrations\Programmability\Hangfire.sql" />
@@ -90,6 +92,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Migrations\Patch\20240129082810_add-userdataaccess.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Migrations\Patch\20240226082020_Change_IsComplete_Type_SeasonCompanyProduct.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Migrations\Patch\20240224142027_Add_SeasonCompanyProduct.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Migrations\Patch\20240129124922_nullableuserid.sql">
