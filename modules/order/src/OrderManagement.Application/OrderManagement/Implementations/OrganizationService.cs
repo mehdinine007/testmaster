@@ -40,7 +40,7 @@ public class OrganizationService : ApplicationService, IOrganizationService
         _attachmentService = attachmentService;
     }
 
-   // [SecuredOperation(OrganizationServicePermissionConstants.Delete)]
+    [SecuredOperation(OrganizationServicePermissionConstants.Delete)]
     public async Task<bool> Delete(int id)
     {
         var Result = await Validation(id, null);
