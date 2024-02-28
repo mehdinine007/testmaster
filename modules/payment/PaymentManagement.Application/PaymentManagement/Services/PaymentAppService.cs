@@ -1259,7 +1259,7 @@ namespace PaymentManagement.Application.Servicess
                     return result;
                 }
 
-                switch (pspResult.Status)
+                switch (pspResult.Status.ToLower())
                 {
                     case "success":
                         result.StatusCode = (int)StatusCodeEnum.Success;
