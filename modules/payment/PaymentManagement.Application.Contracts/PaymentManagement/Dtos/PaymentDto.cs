@@ -17,5 +17,6 @@
         public int? FilterParam2 { get; set; }
         public int? FilterParam3 { get; set; }
         public int? FilterParam4 { get; set; }
+        public DateTime TransactionDate { get; set; }
     }
 }

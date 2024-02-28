@@ -1,7 +1,7 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
 
-namespace GatewayManagement.Application.Parsian
+namespace GatewayManagement.Application.Utilities
 {
     public class AesOperation
     {

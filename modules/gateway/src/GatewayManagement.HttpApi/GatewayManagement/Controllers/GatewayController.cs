@@ -17,6 +17,8 @@ namespace GatewayManagement
         {
             _gatewayAppService = gatewayAppService;
         }
+        [HttpPost]
+        public async Task<OutputDto> Authenticate(AuthenticateInputDto input) => await _gatewayAppService.Authenticate(input);
 
         [HttpPost]
         public async Task<OutputDto> HandShakeWithIranKish(IranKishHandShakeInputDto input) => await _gatewayAppService.HandShakeWithIranKish(input);
@@ -28,6 +30,9 @@ namespace GatewayManagement
         public async Task<OutputDto> HandShakeWithParsian(ParsianHandShakeInputDto input) => await _gatewayAppService.HandShakeWithParsian(input);
 
         [HttpPost]
+        public async Task<OutputDto> HandShakeWithPasargad(PasargadHandShakeInputDto input) => await _gatewayAppService.HandShakeWithPasargad(input);
+
+        [HttpPost]
         public async Task<OutputDto> VerifyToIranKish(IranKishVerifyInputDto input) => await _gatewayAppService.VerifyToIranKish(input);
 
         [HttpPost]
@@ -35,6 +40,9 @@ namespace GatewayManagement
 
         [HttpPost]
         public async Task<OutputDto> VerifyToParsian(ParsianVerifyInputDto input) => await _gatewayAppService.VerifyToParsian(input);
+
+        [HttpPost]
+        public async Task<OutputDto> VerifyToPasargad(PasargadVerifyInputDto input) => await _gatewayAppService.VerifyToPasargad(input);
 
         [HttpPost]
         public async Task<OutputDto> InquiryToIranKish(IranKishInquiryInputDto input) => await _gatewayAppService.InquiryToIranKish(input);
@@ -46,6 +54,9 @@ namespace GatewayManagement
         public async Task<OutputDto> InquiryToParsian(ParsianInquiryInputDto input) => await _gatewayAppService.InquiryToParsian(input);
 
         [HttpPost]
+        public async Task<OutputDto> InquiryToPasargad(PasargadInquiryInputDto input) => await _gatewayAppService.InquiryToPasargad(input);
+
+        [HttpPost]
         public async Task<OutputDto> ReverseToIranKish(IranKishReverseInputDto input) => await _gatewayAppService.ReverseToIranKish(input);
 
         [HttpPost]
@@ -53,5 +64,8 @@ namespace GatewayManagement
 
         [HttpPost]
         public async Task<OutputDto> ReverseToParsian(ParsianReverseInputDto input) => await _gatewayAppService.ReverseToParsian(input);
+
+        [HttpPost]
+        public async Task<OutputDto> ReverseToPasargad(PasargadReverseInputDto input) => await _gatewayAppService.ReverseToPasargad(input);
     }
 }

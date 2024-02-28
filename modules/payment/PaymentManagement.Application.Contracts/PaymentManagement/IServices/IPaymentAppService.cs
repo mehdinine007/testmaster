@@ -11,6 +11,7 @@ namespace PaymentManagement.Application.Contracts.IServices
         Task<BackFromPspOutputDto> BackFromIranKishAsync(string pspJsonResult);
         Task<BackFromPspOutputDto> BackFromMellatAsync(string pspJsonResult);
         Task<BackFromPspOutputDto> BackFromParsianAsync(string pspJsonResult);
+        Task<BackFromPspOutputDto> BackFromPasargadAsync(string pspJsonResult);
         string GetCallBackUrl(int paymentId);
         Task<VerifyOutputDto> VerifyAsync(int paymentId);
         Task<InquiryOutputDto> InquiryAsync(int paymentId);

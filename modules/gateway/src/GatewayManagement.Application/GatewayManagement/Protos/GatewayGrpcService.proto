@@ -10,21 +10,31 @@ import "google/protobuf/wrappers.proto";
 package GatewayService;
 
 service GatewayServiceGrpc{
+	rpc Authenticate(AuthenticateInput) returns (Output);
 	rpc HandShakeWithIranKish(IranKishHandShakeInput) returns (Output);
 	rpc HandShakeWithMellat(MellatHandShakeInput) returns (Output);
 	rpc HandShakeWithParsian(ParsianHandShakeInput) returns (Output);
+	rpc HandShakeWithPasargad(PasargadHandShakeInput) returns (Output);
 	rpc VerifyToIranKish(IranKishVerifyInput) returns (Output);
 	rpc VerifyToMellat(MellatVerifyInput) returns (Output);
 	rpc VerifyToParsian(ParsianVerifyInput) returns (Output);
+	rpc VerifyToPasargad(PasargadVerifyInput) returns (Output);
     rpc InquiryToIranKish(IranKishInquiryInput) returns (Output);
 	rpc InquiryToMellat(MellatInquiryInput) returns (Output);
 	rpc InquiryToParsian(ParsianInquiryInput) returns (Output);
+	rpc InquiryToPasargad(PasargadInquiryInput) returns (Output);
     rpc ReverseToIranKish(IranKishReverseInput) returns (Output);
     rpc ReverseToMellat(MellatReverseInput) returns (Output);
 	rpc ReverseToParsian(ParsianReverseInput) returns (Output);
+	rpc ReverseToPasargad(PasargadReverseInput) returns (Output);
 }
 message Output{
 	string Result = 1;
+}
+message AuthenticateInput{
+	string Type = 1;
+	string UserName = 2;
+	string Password = 3;
 }
 message IranKishHandShakeInput{
 	string TerminalId = 1;
@@ -59,6 +69,24 @@ message ParsianHandShakeInput{
     string IV = 8;
     int32 ThirdPartyCode = 9;
 }
+message PasargadHandShakeInput{
+	string Token = 1;
+	int64 Amount = 2;
+	string CallbackApi = 3;
+	string Description = 4;
+	string Invoice = 5;
+	string InvoiceDate = 6;
+	string MobileNumber = 7;
+	string PayerMail = 8;
+	string PayerName = 9;
+	int32 ServiceCode = 10;
+	string ServiceType = 11;
+	int32 TerminalNumber = 12;
+	string NationalCode = 13;
+	string Key = 14;
+    string IV = 15;
+    int32 ThirdPartyCode = 16;
+}
 message IranKishVerifyInput{
 	string TerminalId = 1;
 	string RetrievalReferenceNumber = 2;
@@ -77,6 +105,11 @@ message MellatVerifyInput{
 message ParsianVerifyInput{
 	string LoginAccount = 1;
 	int64 Token = 2;
+}
+message PasargadVerifyInput{
+	string Token = 1;
+	string Invoice = 2;
+	string UrlId = 3;
 }
 message IranKishInquiryInput{
 	string TerminalId = 1;
@@ -97,6 +130,10 @@ message ParsianInquiryInput{
 	string ReportServiceUserName = 3;
 	string ReportServicePassword = 4;
 }
+message PasargadInquiryInput{
+	string Token = 1;
+	string InvoiceId = 2;
+}
 message IranKishReverseInput{
 	string TerminalId = 1;
 	string RetrievalReferenceNumber = 2;
@@ -115,4 +152,9 @@ message MellatReverseInput{
 message ParsianReverseInput{
 	string LoginAccount = 1;
 	int64 Token = 2;
+}
+message PasargadReverseInput{
+	string Token = 1;
+	string Invoice = 2;
+	string UrlId = 3;
 }
