@@ -673,8 +673,7 @@ namespace PaymentManagement.Application.Servicess
                     TerminalNumber = pspAccountProps.TerminalNumber,
                     NationalCode = payment.NationalCode,
                     Key = pspAccountProps.Key,
-                    IV = pspAccountProps.IV,
-                    ThirdPartyCode = pspAccountProps.ThirdPartyCode
+                    IV = pspAccountProps.IV
                 };
 
                 await _paymentLogRepository.InsertAsync(new PaymentLog

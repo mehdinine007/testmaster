@@ -85,7 +85,6 @@ message PasargadHandShakeInput{
 	string NationalCode = 13;
 	string Key = 14;
     string IV = 15;
-    int32 ThirdPartyCode = 16;
 }
 message IranKishVerifyInput{
 	string TerminalId = 1;

@@ -89,8 +89,7 @@ namespace GatewayManagement.Application.Servicess
                 TerminalNumber = input.TerminalNumber,
                 NationalCode = input.NationalCode,
                 Key = input.Key,
-                IV = input.IV,
-                ThirdPartyCode = input.ThirdPartyCode
+                IV = input.IV
             });
             return new Output() { Result = output.Result };
         }
