@@ -10,6 +10,7 @@ using OrderManagement.Application.Contracts.OrderManagement.Constants.Permission
 using OrderManagement.Application.Contracts.OrderManagement.Services;
 using OrderManagement.Domain;
 using OrderManagement.Domain.OrderManagement;
+using OrderManagement.Domain.OrderManagement.MongoWrite;
 using OrderManagement.Domain.Shared;
 using OrderManagement.Domain.Shared.OrderManagement.Enums;
 using System;
@@ -20,6 +21,7 @@ using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
+using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.ObjectMapping;
 using Volo.Abp.Uow;
@@ -50,11 +52,12 @@ public class OrganizationService : ApplicationService, IOrganizationService
     }
 
     //[SecuredOperation(OrganizationServicePermissionConstants.GetAll)]
-    public async Task<List<OrganizationDto>> GetList(List<AttachmentEntityTypeEnum> attachmentType = null, List<AttachmentLocationEnum> attachmentlocation = null)
+    public async Task<List<OrganizationDto>> GetList(OrganizationQueryDto organizationQueryDto)
     {
-        var organ = (await _organizationRepository.GetQueryableAsync()).AsNoTracking().ToList();
-        var organdto = ObjectMapper.Map<List<Organization>, List<OrganizationDto>>(organ);
-        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.Organization, organdto.Select(x => x.Id).ToList(), attachmentType, attachmentlocation);
+        var organizationQuery = (await _organizationRepository.GetQueryableAsync()).AsNoTracking();
+        var organization = organizationQueryDto.IsActive is not null ? organizationQuery.Where(x => x.IsActive == organizationQueryDto.IsActive).ToList() : organizationQuery.ToList();
+        var organdto = ObjectMapper.Map<List<Organization>, List<OrganizationDto>>(organization);
+        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.Organization, organdto.Select(x => x.Id).ToList(), organizationQueryDto.AttachmentEntityType, organizationQueryDto.AttachmentLocation);
         organdto.ForEach(x =>
         {
             var attachment = attachments.Where(y => y.EntityId == x.Id).ToList();
@@ -64,28 +67,31 @@ public class OrganizationService : ApplicationService, IOrganizationService
     }
 
     [SecuredOperation(OrganizationServicePermissionConstants.Save)]
-    public async Task<int> Add(OrganizationInsertDto organDto)
+    public async Task<OrganizationDto> Add(OrganizationAddOrUpdateDto organDto)
     {
-
+        if (organDto.Id != 0)
+        {
+            throw new UserFriendlyException(OrderConstant.NotValid, OrderConstant.NotValidId);
+        }
         var organization = (await _organizationRepository.GetQueryableAsync()).AsNoTracking();
         var maxCode = await organization.MaxAsync(o => o.Code);
         var maxPriority = await organization.MaxAsync(o => o.Priority);
 
-        var organ = ObjectMapper.Map<OrganizationInsertDto, Organization>(organDto);
+        var organ = ObjectMapper.Map<OrganizationAddOrUpdateDto, Organization>(organDto);
         organ.Code = StringHelper.GenerateTreeNodePath(maxCode, null, 4);
         organ.Priority = maxPriority + 1;
-        await _organizationRepository.InsertAsync(organ, autoSave: true);
-        return organ.Id;
+        var entity = await _organizationRepository.InsertAsync(organ, autoSave: true);
+        return ObjectMapper.Map<Organization, OrganizationDto>(entity);
 
     }
 
     [SecuredOperation(OrganizationServicePermissionConstants.Update)]
-    public async Task<int> Update(OrganizationUpdateDto organDto)
+    public async Task<OrganizationDto> Update(OrganizationAddOrUpdateDto organDto)
     {
         var _organ = await Validation(organDto.Id, null);
-        var organ = ObjectMapper.Map<OrganizationUpdateDto, Organization>(organDto, _organ);
-        await _organizationRepository.UpdateAsync(organ);
-        return organ.Id;
+        var organ = ObjectMapper.Map<OrganizationAddOrUpdateDto, Organization>(organDto, _organ);
+        var entity = await _organizationRepository.UpdateAsync(organ);
+        return ObjectMapper.Map<Organization, OrganizationDto>(entity);
     }
 
     //[SecuredOperation(OrganizationServicePermissionConstants.GetById)]
@@ -93,7 +99,7 @@ public class OrganizationService : ApplicationService, IOrganizationService
     {
         var organ = await Validation(id, null);
         var organDto = ObjectMapper.Map<Organization, OrganizationDto>(organ);
-       
+
         var attachments = await _attachmentService.GetList(AttachmentEntityEnum.Organization, new List<int>() { id }, attachmentType, attachmentlocation);
 
         organDto.Attachments = ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(attachments);
@@ -109,7 +115,7 @@ public class OrganizationService : ApplicationService, IOrganizationService
         return true;
     }
 
-    private async Task<Organization> Validation(int id, OrganizationUpdateDto organDto)
+    private async Task<Organization> Validation(int id, OrganizationAddOrUpdateDto organDto)
     {
         var organ = (await _organizationRepository.GetQueryableAsync()).AsNoTracking()
             .FirstOrDefault(x => x.Id == id);
