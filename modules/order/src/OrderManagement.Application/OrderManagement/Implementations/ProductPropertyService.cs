@@ -132,12 +132,12 @@ namespace OrderManagement.Application
                 })
                 .ToList();
             var mapProductProperty = ObjectMapper.Map<ProductProperty, ProductPropertyWrite>(existingEntity);
-            
+
             await _productPropertyWriteRepository.UpdateAsync(mapProductProperty, autoSave: true);
 
             return ObjectMapper.Map<ProductProperty, ProductPropertyDto>(existingEntity);
 
-            
+
         }
 
         [SecuredOperation(ProductPropertyServicePermissionConstants.Delete)]
@@ -1119,7 +1119,7 @@ namespace OrderManagement.Application
             },
 
                 };
-                await _propertyDefinitionWriteRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto,PropertyCategoryWrite >(propertydto));
+                await _propertyDefinitionWriteRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto, PropertyCategoryWrite>(propertydto));
                 propertydto = new PropertyCategoryDto()
                 {
                     Title = "سایر ویژگی",
@@ -1143,7 +1143,436 @@ namespace OrderManagement.Application
                 };
                 await _propertyDefinitionWriteRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto, PropertyCategoryWrite>(propertydto));
             }
+            else if (type == SaleTypeEnum.evauto)
+            {
+                propertydto = new PropertyCategoryDto()
+                {
+                    Title = "مشخصات فنی",
+                    Display = true,
+                    Priority = 1,
+                    Properties = new List<PropertyDto>()
+                    {
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "محور محرک",
+                    Key = "P001",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                    Priority=1
+                },
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "گیربکس تک سرعته کاهشی",
+                    Key = "P002",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                    Priority=2,
+                },
+                 new PropertyDto()
+                    {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "توان موتور",
+                    Key = "P003",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                    Priority=3,
+                    },
+                }
 
+                };
+                await _propertyDefinitionWriteRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto, PropertyCategoryWrite>(propertydto));
+                propertydto = new PropertyCategoryDto()
+                {
+                    Title = "عملکرد خودرو",
+                    Display = true,
+                    Priority = 2,
+                    Properties = new List<PropertyDto>()
+                    {
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "سرعت",
+                    Key = "P004",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                    Priority=1
+                },
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "شتاب",
+                    Key = "P005",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                    Priority=2,
+                },
+                 new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "ظرفیت باتری",
+                    Key = "P006",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                    Priority=3,
+                },
+                  new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "حداکثر مسافت پیمایش با شارژ کامل",
+                    Key = "P007",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                    Priority=4,
+                },
+                   new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "مدت زمان شارژ عادی DC",
+                    Key = "P008",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                    Priority=5,
+                },
+                    new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "مدت زمان شارژ سریع  AC",
+                    Key = "P009",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                    Priority=6,
+                },
+                     new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "گشتاور",
+                    Key = "P010",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                    Priority=7,
+                     },
+                    }
+
+                };
+                await _propertyDefinitionWriteRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto, PropertyCategoryWrite>(propertydto));
+                propertydto = new PropertyCategoryDto()
+                {
+                    Title = "بدنه و شاسی",
+                    Display = true,
+                    Priority = 0,
+                    Properties = new List<PropertyDto>()
+                    {
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "طول (میلیمتر)",
+                    Key = "P011",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                    Priority=1
+                },
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "عرض(میلیمتر)",
+                    Key = "P012",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                    Priority=2,
+                },
+                 new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "ارتفاع",
+                    Key = "P013",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                    Priority=3,
+                },
+                  new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "نوع شاسی",
+                    Key = "P014",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                    Priority=4,
+                },
+                   new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "سیستم تعلیق جلو",
+                    Key = "P015",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                    Priority=5,
+                },
+                    new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "سیستم تعلیق عقب",
+                    Key = "P016",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                    Priority=6,
+                },
+                     new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "فرمان",
+                    Key = "P017",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                    Priority=7,
+                     },
+                      new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "سیستم کروز کنترل ",
+                    Key = "P018",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                    Priority=8,
+                     },
+                       new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "ایربگ راننده",
+                    Key = "P019",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                    Priority=9,
+                       },
+                       new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "ایربگ سرنشین جلو",
+                    Key = "P020",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                    Priority=10,
+                       },
+                   new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "ترمز  ABS",
+                    Key = "P021",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                    Priority=11,
+                       },
+                   new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "ترمز  EBD ",
+                    Key = "P022",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                    Priority=12,
+                       },
+                    new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "کنترل پایداری ESP",
+                    Key = "P023",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                    Priority=13,
+                       },
+                    new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "ترمز جلو",
+                    Key = "P024",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                    Priority=14,
+                       },
+                    new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "ترمز عقب",
+                    Key = "P025",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                    Priority=15,
+},
+
+                        }
+
+                };
+                await _propertyDefinitionWriteRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto, PropertyCategoryWrite>(propertydto));
+                propertydto = new PropertyCategoryDto()
+                {
+                    Title = "تجهیزات و امکانات",
+                    Display = true,
+                    Priority = 3,
+                    Properties = new List<PropertyDto>()
+                    {
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "استارت",
+                    Key = "P026",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                    Priority=1
+                },
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "صفحه نمایش مرکزی",
+                    Key = "P027",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                    Priority=2,
+                },
+                 new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "دوربین عقب",
+                    Key = "P028",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                    Priority=3,
+                },
+                  new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "مه شکن عقب",
+                    Key = "P029",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                    Priority=4,
+                },
+                   new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "سنسور پارک جلو",
+                    Key = "P030",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                    Priority=5,
+                },
+                    new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "سنسور پارک عقب",
+                    Key = "P031",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                    Priority=6,
+                },
+                     new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "سنسور باران",
+                    Key = "P032",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                    Priority=7,
+                    },
+                      new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "تعداد بلندگو",
+                    Key = "P033",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                    Priority=8,
+                     },
+                       new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "صندلی راننده ",
+                    Key = "P034",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                    Priority=9,
+                       },
+                       new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "تعداد صندلی",
+                    Key = "P035",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                    Priority=10,
+                       },
+                    new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "تهویه خودکار",
+                    Key = "P036",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                    Priority=11,
+                       },
+                    new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "GPS",
+                    Key = "P037",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                    Priority=12,
+                       },
+                    new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "بلوتوث",
+                    Key = "P038",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                    Priority=13,
+                       },
+                    new PropertyDto()
+                    {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "USB",
+                    Key = "P039",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                    Priority=14,
+                       }
+                 }
+
+
+
+                };
+                await _propertyDefinitionWriteRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto, PropertyCategoryWrite>(propertydto));
+                propertydto = new PropertyCategoryDto()
+                {
+                    Title = "سایر ویژگی",
+                    Display = true,
+                    Priority = 0,
+                    Properties = new List<PropertyDto>()
+            {
+                new PropertyDto()
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "ویژگی ها",
+                    Key = "P040",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                    Priority=1
+                },
+                    new PropertyDto()
+                    {
+                    Id = ObjectId.GenerateNewId(),
+                    Title = "کلاس بدنه خودرو",
+                    Key = "carclass",
+                    Type = PropertyTypeEnum.Text,
+                    Value = "",
+                    Priority=2
+                    }
+            },
+
+                };
+                await _propertyDefinitionWriteRepository.InsertAsync(ObjectMapper.Map<PropertyCategoryDto, PropertyCategoryWrite>(propertydto));
+            }
         }
 
         public async Task Import(IFormFile file, SaleTypeEnum type)
