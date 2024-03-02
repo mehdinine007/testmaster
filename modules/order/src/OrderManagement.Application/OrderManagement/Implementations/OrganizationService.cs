@@ -54,7 +54,7 @@ public class OrganizationService : ApplicationService, IOrganizationService
     //[SecuredOperation(OrganizationServicePermissionConstants.GetAll)]
     public async Task<List<OrganizationDto>> GetList(OrganizationQueryDto organizationQueryDto)
     {
-        var organizationQuery = (await _organizationRepository.GetQueryableAsync()).AsNoTracking();
+        var organizationQuery = (await _organizationRepository.GetQueryableAsync()).AsNoTracking().OrderBy(x=>x.Priority);
         var organization = organizationQueryDto.IsActive is not null ? organizationQuery.Where(x => x.IsActive == organizationQueryDto.IsActive).ToList() : organizationQuery.ToList();
         var organdto = ObjectMapper.Map<List<Organization>, List<OrganizationDto>>(organization);
         var attachments = await _attachmentService.GetList(AttachmentEntityEnum.Organization, organdto.Select(x => x.Id).ToList(), organizationQueryDto.AttachmentEntityType, organizationQueryDto.AttachmentLocation);
