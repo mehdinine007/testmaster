@@ -141,7 +141,40 @@ namespace PaymentManagement
             });
             return Content("");
         }
+        [HttpGet]
+        public async Task<ContentResult> BackFromPasargadAsync(string status, string invoiceId, string referenceNumber, string trackId)
+        {
+            var keyValueList = new Dictionary<string, string>
+            {
+                { "Status", status },
+                { "InvoiceId", invoiceId },
+                { "ReferenceNumber", referenceNumber },
+                { "TrackId", trackId },
+                { "OriginUrl", HttpContext.Request.Headers.Referer }
+            };
 
+            var pspJsonResult = JsonConvert.SerializeObject(keyValueList);
+
+            var result = await _paymentAppService.BackFromPasargadAsync(pspJsonResult);
+
+            NavigateToPsp dp = new()
+            {
+                FormName = "form1",
+                Method = "post",
+                Url = _paymentAppService.GetCallBackUrl(result.PaymentId)
+            };
+
+            dp.AddKey("data", JsonConvert.SerializeObject(result));
+            dp.Post(HttpContext);
+            await _paymentAppService.InsertPaymentLogAsync(new PaymentLogDto
+            {
+                PaymentId = int.Parse(keyValueList["InvoiceId"] ?? "0"),
+                Psp = PspEnum.Pasargad.ToString(),
+                Message = "BackFromPspHtmlContent",
+                Parameter = JsonConvert.SerializeObject(result)
+            });
+            return Content("");
+        }
         [HttpPost]
         public async Task<VerifyOutputDto> VerifyAsync(int paymentId)
         {

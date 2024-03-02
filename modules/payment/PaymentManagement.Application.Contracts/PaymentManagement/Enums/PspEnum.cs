@@ -9,6 +9,8 @@ namespace PaymentManagement.Application.Contracts.Enums
         [Description("ایران کیش")]
         IranKish = 2,
         [Description("تجارت الکترونیک پارسیان")]
-        Parsian = 3
+        Parsian = 3,
+        [Description("تجارت الکترونیک پاسارگاد")]
+        Pasargad = 4
     }
 }

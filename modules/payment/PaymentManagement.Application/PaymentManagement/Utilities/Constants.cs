@@ -24,8 +24,11 @@
         public const string ReverseSuccess = "برگشت وجه با موفقیت انجام شد";
         public const string ReverseFailed = "برگشت وجه ناموفق می باشد";
         public const string ErrorInReverse = "خطا در ارسال درخواست برگشت وجه";
+        public const string ErrorInAuthenticate = "خطا در سرویس احراز";
 
         #region PaymentLog
+        public const string AuthenticateStart = "AuthenticateStart";
+        public const string AuthenticateResult = "AuthenticateResult";
         public const string HandShakeWithPaymentStart = "HandShakeWithPaymentStart";
         public const string HandShakeWithPspStart = "HandShakeWithPspStart";
         public const string HandShakeResult = "HandShakeResult";
