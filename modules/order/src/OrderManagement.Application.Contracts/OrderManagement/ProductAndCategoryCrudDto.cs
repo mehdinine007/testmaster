@@ -9,7 +9,6 @@ namespace OrderManagement.Application.Contracts
         public int? ParentId { get; set; }
         public ProductAndCategoryType Type { get; set; }
         public bool Active { get; set; }
-        public int Priority { get; set; }
         public int OrganizationId { get; set; }
     }
 }

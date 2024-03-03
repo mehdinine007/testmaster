@@ -21,28 +21,27 @@ public class OrganizationController : Controller
         => _organizationService = organizationService;
 
     [HttpDelete]
-    public Task<bool> Delete(int id)
-    => _organizationService.Delete(id);
+    public async Task<bool> Delete(int id)
+    =>await _organizationService.Delete(id);
     [HttpGet]
-    public Task<List<OrganizationDto>> GetList(string attachmentType, string attachmentlocation)
-    => _organizationService.GetList(EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(attachmentType), EnumHelper.ConvertStringToEnum<AttachmentLocationEnum>(attachmentlocation));
-
+    public async Task<List<OrganizationDto>> GetList(bool? isActive,string attachmentType, string attachmentlocation)
+    => await  _organizationService.GetList(new OrganizationQueryDto { IsActive = isActive ,AttachmentEntityType= EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(attachmentType),AttachmentLocation= EnumHelper.ConvertStringToEnum<AttachmentLocationEnum>(attachmentlocation) });
     [HttpGet]
-    public Task<OrganizationDto> GetById(int id, string attachmentType, string attachmentlocation)
-    => _organizationService.GetById(id, EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(attachmentType), EnumHelper.ConvertStringToEnum<AttachmentLocationEnum>(attachmentlocation));
+    public async Task<OrganizationDto> GetById(int id, string attachmentType, string attachmentlocation)
+    => await _organizationService.GetById(id, EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(attachmentType), EnumHelper.ConvertStringToEnum<AttachmentLocationEnum>(attachmentlocation));
   
 
     [HttpPost]
-    public Task<int> Add(OrganizationInsertDto orgDto)
-    => _organizationService.Add(orgDto);
+    public async Task<OrganizationDto> Add(OrganizationAddOrUpdateDto orgDto)
+    =>await _organizationService.Add(orgDto);
     [HttpPut]
-    public Task<int> Update(OrganizationUpdateDto orgDto)
-    => _organizationService.Update(orgDto);
+    public async Task<OrganizationDto> Update(OrganizationAddOrUpdateDto orgDto)
+    => await _organizationService.Update(orgDto);
 
     [HttpPost]
-    public Task<bool> UploadFile(UploadFileDto uploadFile)
-         => _organizationService.UploadFile(uploadFile);
+    public async Task<bool> UploadFile([FromForm] UploadFileDto uploadFile)
+         =>await _organizationService.UploadFile(uploadFile);
     [HttpPost]
-    public Task<bool> Move(OrganizationPriorityDto input)
-      => _organizationService.Move(input);
+    public async Task<bool> Move(OrganizationPriorityDto input)
+      =>await _organizationService.Move(input);
 }

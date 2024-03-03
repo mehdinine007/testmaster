@@ -118,28 +118,16 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
         {
             throw new UserFriendlyException(OrderConstant.OrganizationNotFound, OrderConstant.OrganizationNotFoundId);
         }
-        if (productAndCategoryCreateDto.Priority == 0)
-        {
-            var lastPriority = (await _productAndCategoryRepository.GetQueryableAsync()).OrderByDescending(x => x.Priority)
-                          .FirstOrDefault(x => x.ParentId == productAndCategoryCreateDto.ParentId);
-            if (lastPriority == null)
-            {
-                productAndCategoryCreateDto.Priority = 1;
-            }
-            else
-                productAndCategoryCreateDto.Priority = lastPriority.Priority + 1;
 
+        var lastPriority = (await _productAndCategoryRepository.GetQueryableAsync()).OrderByDescending(x => x.Priority)
+                      .FirstOrDefault(x => x.ParentId == productAndCategoryCreateDto.ParentId && x.OrganizationId == productAndCategoryCreateDto.OrganizationId);
+        var priority = 0;
+        if (lastPriority == null)
+        {
+            priority = 1;
         }
         else
-        {
-            var duplicatePriority = (await _productAndCategoryRepository.GetQueryableAsync()).
-                FirstOrDefault(x => x.ParentId == productAndCategoryCreateDto.ParentId && x.Priority == productAndCategoryCreateDto.Priority);
-            if (duplicatePriority != null)
-            {
-                throw new UserFriendlyException(OrderConstant.DuplicatePriority, OrderConstant.DuplicatePriorityId);
-            }
-        }
-
+            priority = lastPriority.Priority + 1;
         if (productAndCategoryCreateDto.ParentId.HasValue && productAndCategoryCreateDto.ParentId.Value > 0)
         {
             var parent = (await _productAndCategoryRepository.GetQueryableAsync())
@@ -201,6 +189,7 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
         productAndCategory.LevelId = levelId;
         productAndCategory.ProductLevelId = productLevelId;
         productAndCategory.Code = code;
+        productAndCategory.Priority = priority;
         var entity = await _productAndCategoryRepository.InsertAsync(productAndCategory, autoSave: true);
         return ObjectMapper.Map<ProductAndCategory, ProductAndCategoryDto>(entity);
     }
@@ -442,7 +431,7 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
         var parentId = currentproductAndCategory.ParentId;
         if (MoveTypeEnum.Up == move.MoveType)
         {
-            var previousProductAndCategory = await productAndCategoryQuery.OrderByDescending(x => x.Priority).FirstOrDefaultAsync(x => x.Priority < currentproductAndCategory.Priority  && x.ParentId == parentId);
+            var previousProductAndCategory = await productAndCategoryQuery.OrderByDescending(x => x.Priority).FirstOrDefaultAsync(x => x.Priority < currentproductAndCategory.Priority && x.ParentId == parentId);
             if (previousProductAndCategory == null)
             {
                 throw new UserFriendlyException(OrderConstant.FirstPriority, OrderConstant.FirstPriorityId);

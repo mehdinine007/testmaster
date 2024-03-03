@@ -193,9 +193,8 @@ namespace OrderManagement
 
 
             CreateMap<Bank, BankCreateOrUpdateDto>().ReverseMap();
-            CreateMap<Organization, OrganizationInsertDto>().ReverseMap();
+            CreateMap<Organization, OrganizationAddOrUpdateDto>().ReverseMap();
             CreateMap<Organization, OrganizationDto>().ReverseMap();
-            CreateMap<Organization, OrganizationUpdateDto>().ReverseMap();
 
             CreateMap<UnAuthorizedUser, UnregisteredUserInformation>()
                 .ForMember(x => x.SmsCode, opt => opt.Ignore())
