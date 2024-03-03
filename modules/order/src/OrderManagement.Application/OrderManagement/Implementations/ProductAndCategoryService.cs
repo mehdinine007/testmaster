@@ -174,7 +174,7 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
             _parentCode = oganization.Code.ToString();
 
         var _maxCode = igResult
-            .Where(x => x.ParentId == productAndCategoryCreateDto.ParentId)
+            .Where(x => x.ParentId == productAndCategoryCreateDto.ParentId && x.OrganizationId== productAndCategoryCreateDto.OrganizationId)
             .Max(x => x.Code);
         if (!string.IsNullOrWhiteSpace(_maxCode))
             _maxCode = (Convert.ToInt32(_maxCode.Substring(_maxCode.Length - codeLength)) + 1).ToString();

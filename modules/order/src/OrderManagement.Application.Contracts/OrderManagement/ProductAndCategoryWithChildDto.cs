@@ -27,5 +27,6 @@ namespace OrderManagement.Application.Contracts
         public virtual ICollection<ProductAndCategoryWithChildDto> Childrens { get; set; }
         public List<SaleDetailListDto> SaleDetails { get; set; }
         public ProductLevelDto ProductLevel { get; protected set; }
+        public int OrganizationId { get; set; }
     }
 }
