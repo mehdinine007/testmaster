@@ -1,4 +1,5 @@
-﻿using OrderManagement.Domain.Shared;
+﻿using OrderManagement.Application.Contracts.OrderManagement;
+using OrderManagement.Domain.Shared;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -8,7 +9,7 @@ namespace OrderManagement.Application.Contracts.Services
 {
     public interface IOrderAppService : IApplicationService
     {
-        Task<CustomerOrder_OrderDetailTreeDto> GetCustomerOrderList(List<AttachmentEntityTypeEnum>? attachmentType=null, List<AttachmentLocationEnum>? attachmentlocation = null);
+        Task<CustomerOrder_OrderDetailTreeDto> GetCustomerOrderList(CustomerOrderQueryDto customerOrderQueryDto);
 
         Task<CustomerOrder_OrderDetailDto> GetOrderDetailById(int id, List<AttachmentEntityTypeEnum>? attachmentType = null, List<AttachmentLocationEnum>? attachmentlocation = null);
 
@@ -34,5 +35,6 @@ namespace OrderManagement.Application.Contracts.Services
         Task<IPaymentResult> CheckoutPayment(IPgCallBackRequest callBackRequest);
 
         Task<bool> NationalCodeExistsInPriority(string nationalCode);
+        Task<CustomerOrder_OrderDetailTreeDto> GetActiveCustomerOrder(CustomerOrderQueryDto customerOrderQueryDto);
     }
 }

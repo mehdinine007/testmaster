@@ -15,5 +15,7 @@ namespace OrderManagement.Application.Contracts
         public int? AgencyId { get; set; }
         public int? PspAccountId { get; set; }
         public int? OrderId { get; set; }
+        public int? CancelOrderId { get; set; }
+
     }
 }

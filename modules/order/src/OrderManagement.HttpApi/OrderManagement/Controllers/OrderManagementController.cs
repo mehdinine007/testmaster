@@ -8,6 +8,7 @@ using Volo.Abp.Auditing;
 using System;
 using OrderManagement.Domain.Shared;
 using IFG.Core.Utility.Tools;
+using OrderManagement.Application.Contracts.OrderManagement;
 
 namespace OrderManagement.HttpApi;
 
@@ -52,7 +53,7 @@ public class OrderManagementController
     [HttpGet]
 
     public async Task<CustomerOrder_OrderDetailTreeDto> GetCustomerOrderList(string attachmentEntityType, string attachmentlocation)
-        => await _orderAppService.GetCustomerOrderList(EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(attachmentEntityType), EnumHelper.ConvertStringToEnum<AttachmentLocationEnum>(attachmentlocation));
+        => await _orderAppService.GetCustomerOrderList(new CustomerOrderQueryDto { AttachmentType= EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(attachmentEntityType),Attachmentlocation= EnumHelper.ConvertStringToEnum<AttachmentLocationEnum>(attachmentlocation) });
 
     [RemoteService(IsEnabled = false)]
     public async Task<CustomerOrder_OrderDetailDto> GetOrderDetailById(int id, string attachmentEntityType, string attachmentlocation)
@@ -93,5 +94,9 @@ public class OrderManagementController
     [HttpPost]
     public async Task RetryPaymentForVerify()
         => await _orderAppService.RetryPaymentForVerify();
+
+    [HttpGet]
+    public async Task<CustomerOrder_OrderDetailTreeDto> GetActiveCustomerOrder(int saleId, string attachmentEntityType, string attachmentlocation)
+        => await _orderAppService.GetActiveCustomerOrder(new CustomerOrderQueryDto { SaleId = saleId ,AttachmentType= EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(attachmentEntityType),Attachmentlocation= EnumHelper.ConvertStringToEnum<AttachmentLocationEnum>(attachmentlocation) });
 
 }

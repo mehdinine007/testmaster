@@ -194,9 +194,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
     [SecuredOperation(OrderAppServicePermissionConstants.CommitOrder)]
     public async Task<CommitOrderResultDto> CommitOrder(CommitOrderDto commitOrderDto)
     {
-
-
-
         await _commonAppService.ValidateOrderStep(OrderStepEnum.SaveOrder);
         var allowedStatusTypes = new List<int>() { (int)OrderStatusType.RecentlyAdded, (int)OrderStatusType.PaymentSucceeded };
 
@@ -331,6 +328,10 @@ public class OrderAppService : ApplicationService, IOrderAppService
         var orderQuery = await _commitOrderRepository.GetQueryableAsync();
         var userId = _commonAppService.GetUserId();
 
+        if (commitOrderDto.CancelOrderId.HasValue && commitOrderDto.CancelOrderId != 0)
+        {
+            await CancelOrder(commitOrderDto.CancelOrderId.Value);
+        }
         _baseInformationAppService.CheckBlackList(SaleDetailDto.ESaleTypeId); //if user reject from advocacy
         var CustomerOrderWinner = orderQuery
             .AsNoTracking()
@@ -342,8 +343,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
          );
         if (CustomerOrderWinner != null)
         {
-            throw new UserFriendlyException("جهت ثبت سفارش جدید لطفا ابتدا از جزئیات سفارش، سفارش قبلی خود که احراز شده اید یا در حال بررسی می باشد را لغو نمایید");
-
+            throw new UserFriendlyException(OrderConstant.OrderWinnerFound, OrderConstant.OrderWinnerFoundId);
         }
 
         string EsaleTypeId = await _cacheManager.GetStringAsync("_EsaleType", RedisConstants.CommitOrderPrefix + userId.ToString()
@@ -402,7 +402,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 });
             if (objectCommitOrderIran != null)
             {
-                throw new UserFriendlyException("درخواست شما برای خودروی دیگری در حال بررسی می باشد. جهت سفارش جدید از درخواست قبلی خود انصراف دهید");
+                throw new UserFriendlyException(OrderConstant.OrderWinnerFound, OrderConstant.OrderWinnerFoundId);
             }
             else
             {
@@ -440,7 +440,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                            {
                                Provider = CacheProviderEnum.Redis
                            }, ttl.TotalSeconds);
-                    throw new UserFriendlyException("درخواست شما برای خودروی دیگری در حال بررسی می باشد. جهت سفارش جدید از درخواست قبلی خود انصراف دهید");
+                    throw new UserFriendlyException(OrderConstant.OrderWinnerFound, OrderConstant.OrderWinnerFoundId);
 
 
                 }
@@ -463,7 +463,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
             if (objectCommitOrderIran != null && !commitOrderDto.OrderId.HasValue)
             {
-                throw new UserFriendlyException("درخواست شما برای خودروی دیگری در حال بررسی می باشد. جهت سفارش جدید، درخواست قبلی خود را لغو نمایید یا اولویت دیگری را انتخاب نمایید");
+                throw new UserFriendlyException(OrderConstant.OrderWinnerFound, OrderConstant.OrderWinnerFoundId);
             }
             else
             {
@@ -493,7 +493,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                            RedisConstants.CommitOrderPrefix + userId.ToString(),
                            customerOrderIranFromDb.Id.ToString(),
                            ttl.TotalSeconds);
-                    throw new UserFriendlyException("درخواست شما برای خودروی دیگری در حال بررسی می باشد. جهت سفارش جدید، درخواست قبلی خود را لغو نمایید یا اولویت دیگری را انتخاب نمایید");
+                    throw new UserFriendlyException(OrderConstant.OrderWinnerFound, OrderConstant.OrderWinnerFoundId);
                 }
 
             }
@@ -755,9 +755,12 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
     [UnitOfWork(false, IsolationLevel.ReadUncommitted)]
     [SecuredOperation(OrderAppServicePermissionConstants.GetCustomerOrderList)]
-    public async Task<CustomerOrder_OrderDetailTreeDto> GetCustomerOrderList(List<AttachmentEntityTypeEnum> attachmentType = null, List<AttachmentLocationEnum> attachmentlocation = null)
+    public async Task<CustomerOrder_OrderDetailTreeDto> GetCustomerOrderList(CustomerOrderQueryDto  customerOrderQueryDto)
     {
-
+       return await GetAllCustomerOrder(new CustomerOrderQueryDto { AttachmentType= customerOrderQueryDto.AttachmentType, Attachmentlocation= customerOrderQueryDto.Attachmentlocation });
+    }
+    private async Task<CustomerOrder_OrderDetailTreeDto> GetAllCustomerOrder(CustomerOrderQueryDto customerOrderQueryDto)
+    {
         var userId = _commonAppService.GetUserId();
         var orderRejections = _orderRejectionTypeReadOnlyRepository.WithDetails().ToList();
         var orderStatusTypes = _orderStatusTypeReadOnlyRepository.WithDetails().ToList();
@@ -807,9 +810,17 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 Id = x.Id,
                 SaleId = x.SaleId,
                 TrackingCode = x.TrackingCode
-            }).ToList();
+            });
+        if (customerOrderQueryDto.SaleId.HasValue)
+        {
+            customerOrders = customerOrders.Where(x => x.SaleId == customerOrderQueryDto.SaleId.Value);
+        }
+        if (customerOrderQueryDto.OrderStatus is not null)
+        {
+            customerOrders = customerOrders.Where(x=> customerOrderQueryDto.OrderStatus.Any(y => x.OrderStatusCode == y));
+        }
         var cancleableDate = _configuration.GetValue<string>("CancelableDate");
-        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, customerOrders.Select(x => x.ProductId).ToList(), attachmentType, attachmentlocation);
+        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, customerOrders.Select(x => x.ProductId).ToList(), customerOrderQueryDto.AttachmentType, customerOrderQueryDto.Attachmentlocation);
         CustomerOrder_OrderDetailTreeDto resultObject = new();
         var enableExactPriorityCalculation = _configuration.GetValue<bool>("EnableExactPriorityCalculation");
         if (enableExactPriorityCalculation)
@@ -833,7 +844,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             }
         }
 
-        customerOrders.ForEach(x =>
+        customerOrders.ToList().ForEach(x =>
         {
             var attachment = attachments.Where(y => y.EntityId == x.ProductId).ToList();
             x.Product.Attachments = ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(attachment);
@@ -876,6 +887,13 @@ public class OrderAppService : ApplicationService, IOrderAppService
         return resultObject;
 
 
+    }
+
+    [SecuredOperation(OrderAppServicePermissionConstants.GetActiveCustomerOrder)]
+    public async Task<CustomerOrder_OrderDetailTreeDto> GetActiveCustomerOrder(CustomerOrderQueryDto customerOrderQueryDto)
+    {
+        var activeStatus = new List<int>() { (int)OrderStatusType.RecentlyAdded, (int)OrderStatusType.PaymentNotVerified };
+        return await GetAllCustomerOrder(new CustomerOrderQueryDto {  SaleId= customerOrderQueryDto.SaleId,OrderStatus= activeStatus, AttachmentType = customerOrderQueryDto.AttachmentType, Attachmentlocation = customerOrderQueryDto.Attachmentlocation });
     }
     [Audited]
     [UnitOfWork(isTransactional: false)]
@@ -1167,7 +1185,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
     {
         using (var auditingScope = _auditingManager.BeginScope())
         {
-            
+
             var (status, paymentId, paymentSecret) =
             (callBackRequest.StatusCode, callBackRequest.PaymentId, callBackRequest.AdditionalData);
             int orderId = default;
@@ -1295,9 +1313,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     OrderId = order.Id,
                     Status = status
                 };
-               
+
             }
-            
+
             catch (Exception e)
             {
                 comments.Add(new OrderLog
@@ -1313,7 +1331,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     OrderId = orderId
                 };
             }
-           
+
             finally
             {
                 _auditingManager.Current.Log.SetProperty("IPgCallBackLog", comments);
@@ -1559,4 +1577,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
             .FirstOrDefault(x => x == nationalCode);
         return !string.IsNullOrEmpty(priority);
     }
+
+
 }

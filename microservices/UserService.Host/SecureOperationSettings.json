@@ -293,6 +293,12 @@
             "code": "000200030010",
             "displayName": "نمایش جزییات سفارش توسط شناسه",
             "children": []
+          },
+          {
+            "title": "GetActiveCustomerOrder",
+            "code": "000200030011",
+            "displayName": "نمایش سفارشات فعال مشتریان",
+            "children": []
           }
         ]
       },
