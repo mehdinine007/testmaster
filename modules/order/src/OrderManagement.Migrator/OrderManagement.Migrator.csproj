@@ -167,10 +167,10 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
 	  <PackageReference Include="Microsoft.Data.SqlClient" Version="4.1.1" />
+	  <PackageReference Include="IFG.Core" Version="1.1.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\shared\IFG.Core\IFG.Core.csproj" />
     <ProjectReference Include="..\..\..\..\shared\Licence\Licence.csproj" />
   </ItemGroup>
 

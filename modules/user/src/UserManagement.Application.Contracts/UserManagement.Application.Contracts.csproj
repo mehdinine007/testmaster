@@ -1,12 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<ItemGroup>
-	  <Compile Remove="UserManagement\Models\User\UserMapProfile.cs" />
+		<Compile Remove="UserManagement\Models\User\UserMapProfile.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\UserManagement.Domain.Shared\UserManagement.Domain.Shared.csproj" />
-		<ProjectReference Include="..\..\..\..\shared\IFG.Core\IFG.Core.csproj" />
 		<ProjectReference Include="..\..\..\..\shared\Licence\Licence.csproj" />
 		<ProjectReference Include="..\UserManagement.Domain\UserManagement.Domain.csproj" />
 	</ItemGroup>
@@ -23,7 +22,7 @@
 		<PackageReference Include="Volo.Abp.Ddd.Application" Version="7.2.1" />
 	</ItemGroup>
 	<ItemGroup>
-	  <Folder Include="UserManagement\PermissionRole\" />
+		<Folder Include="UserManagement\PermissionRole\" />
 	</ItemGroup>
 
 </Project>

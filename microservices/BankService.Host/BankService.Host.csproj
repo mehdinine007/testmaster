@@ -42,7 +42,6 @@
         <ProjectReference Include="..\..\modules\company\src\CompanyManagement.Application\CompanyManagement.Application.csproj" />
         <ProjectReference Include="..\..\modules\company\src\CompanyManagement.EntityFrameworkCore\CompanyManagement.EntityFrameworkCore.csproj" />
         <ProjectReference Include="..\..\shared\Extensions\Extensions.csproj" />
-        <ProjectReference Include="..\..\shared\IFG.Core\IFG.Core.csproj" />
         <ProjectReference Include="..\..\shared\MsDemo.Shared\MsDemo.Shared.csproj" />
     </ItemGroup>
 

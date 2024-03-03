@@ -40,7 +40,6 @@
         <ProjectReference Include="..\..\modules\report\src\ReportManagement.Application\ReportManagement.Application.csproj" />
         <ProjectReference Include="..\..\modules\report\src\ReportManagement.EntityFrameworkCore\ReportManagement.EntityFrameworkCore.csproj" />
         <ProjectReference Include="..\..\modules\report\src\ReportManagement.HttpApi\ReportManagement.HttpApi.csproj" />
-        <ProjectReference Include="..\..\shared\IFG.Core\IFG.Core.csproj" />
         <ProjectReference Include="..\..\shared\Extensions\Extensions.csproj" />
         <ProjectReference Include="..\..\shared\MsDemo.Shared\MsDemo.Shared.csproj" />
     </ItemGroup>

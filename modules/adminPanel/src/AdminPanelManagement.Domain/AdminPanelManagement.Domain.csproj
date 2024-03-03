@@ -13,10 +13,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Volo.Abp.EntityFrameworkCore" Version="7.2.1" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\AdminPanelManagement.Domain.Shared\AdminPanelManagement.Domain.Shared.csproj" />
   </ItemGroup>
 

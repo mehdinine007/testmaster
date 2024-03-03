@@ -1,88 +1,88 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net7.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-  </PropertyGroup>
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net7.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <None Remove="appsettings.Development.json" />
-    <None Remove="Migrations\dbo.__MigrationsHistory.sql" />
-    <None Remove="Migrations\Migrations.json" />
-    <None Remove="Migrations\Patch\20240113100136_add-bank-entity.sql" />
-    <None Remove="Migrations\Patch\20240113110628_add-useuid.sql" />
-    <None Remove="Migrations\Patch\20240214082855_company-shamsidate.sql" />
-    <None Remove="Migrations\Programmability\Job_ConfilictedCustomers.sql" />
-    <None Remove="Migrations\Programmability\Sp_ConfilictedCustomersReport.sql" />
-    <None Remove="Migrations\Programmability\Sp_EsaleCarApplicantsDetailReport.sql" />
-    <None Remove="Migrations\Programmability\Sp_EsaleCarApplicantsReport.sql" />
-    <None Remove="Migrations\Programmability\Sp_EsaleCarCompanyObligationsChart.sql" />
-    <None Remove="Migrations\Programmability\Sp_EsaleCarPayDuration.sql" />
-    <None Remove="Migrations\Programmability\Sp_EsaleCarPaypaidPrice.sql" />
-    <None Remove="Migrations\Programmability\Sp_EsaleCompanyCarDescList.sql" />
-  </ItemGroup>
+	<ItemGroup>
+		<None Remove="appsettings.Development.json" />
+		<None Remove="Migrations\dbo.__MigrationsHistory.sql" />
+		<None Remove="Migrations\Migrations.json" />
+		<None Remove="Migrations\Patch\20240113100136_add-bank-entity.sql" />
+		<None Remove="Migrations\Patch\20240113110628_add-useuid.sql" />
+		<None Remove="Migrations\Patch\20240214082855_company-shamsidate.sql" />
+		<None Remove="Migrations\Programmability\Job_ConfilictedCustomers.sql" />
+		<None Remove="Migrations\Programmability\Sp_ConfilictedCustomersReport.sql" />
+		<None Remove="Migrations\Programmability\Sp_EsaleCarApplicantsDetailReport.sql" />
+		<None Remove="Migrations\Programmability\Sp_EsaleCarApplicantsReport.sql" />
+		<None Remove="Migrations\Programmability\Sp_EsaleCarCompanyObligationsChart.sql" />
+		<None Remove="Migrations\Programmability\Sp_EsaleCarPayDuration.sql" />
+		<None Remove="Migrations\Programmability\Sp_EsaleCarPaypaidPrice.sql" />
+		<None Remove="Migrations\Programmability\Sp_EsaleCompanyCarDescList.sql" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Content Include="appsettings.Development.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="Migrations\dbo.__MigrationsHistory.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Migrations\Migrations.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="Migrations\Patch\20240113100136_add-bank-entity.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Migrations\Patch\20240113110628_add-useuid.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Migrations\Patch\20240214082855_company-shamsidate.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Migrations\Programmability\Job_ConfilictedCustomers.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Migrations\Programmability\Sp_ConfilictedCustomersReport.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Migrations\Programmability\Sp_EsaleCarApplicantsDetailReport.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Migrations\Programmability\Sp_EsaleCarApplicantsReport.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Migrations\Programmability\Sp_EsaleCarCompanyObligationsChart.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Migrations\Programmability\Sp_EsaleCarPayDuration.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Migrations\Programmability\Sp_EsaleCarPaypaidPrice.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Migrations\Programmability\Sp_EsaleCompanyCarDescList.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
+	<ItemGroup>
+		<Content Include="appsettings.Development.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+		</Content>
+		<Content Include="Migrations\dbo.__MigrationsHistory.sql">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Migrations\Migrations.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+		</Content>
+		<Content Include="Migrations\Patch\20240113100136_add-bank-entity.sql">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Migrations\Patch\20240113110628_add-useuid.sql">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Migrations\Patch\20240214082855_company-shamsidate.sql">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Migrations\Programmability\Job_ConfilictedCustomers.sql">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Migrations\Programmability\Sp_ConfilictedCustomersReport.sql">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Migrations\Programmability\Sp_EsaleCarApplicantsDetailReport.sql">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Migrations\Programmability\Sp_EsaleCarApplicantsReport.sql">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Migrations\Programmability\Sp_EsaleCarCompanyObligationsChart.sql">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Migrations\Programmability\Sp_EsaleCarPayDuration.sql">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Migrations\Programmability\Sp_EsaleCarPaypaidPrice.sql">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Migrations\Programmability\Sp_EsaleCompanyCarDescList.sql">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="7.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="7.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
-	  <PackageReference Include="Microsoft.Data.SqlClient" Version="4.1.1" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="7.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="7.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
+		<PackageReference Include="Microsoft.Data.SqlClient" Version="4.1.1" />
+		<PackageReference Include="IFG.Core" Version="1.1.0" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\..\shared\IFG.Core\IFG.Core.csproj" />
-    <ProjectReference Include="..\..\..\..\shared\Licence\Licence.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\..\..\..\shared\Licence\Licence.csproj" />
+	</ItemGroup>
 
 </Project>

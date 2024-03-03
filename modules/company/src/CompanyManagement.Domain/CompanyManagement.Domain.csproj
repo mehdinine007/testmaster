@@ -1,36 +1,25 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFramework>net7.0</TargetFramework>
-    </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net7.0</TargetFramework>
+	</PropertyGroup>
 
 	<PropertyGroup>
 		<RootNamespace>CompanyManagement.Domain</RootNamespace>
 	</PropertyGroup>
-	
-    <ItemGroup>
-        <PackageReference Include="google.protobuf" Version="3.22.4" />
-        <PackageReference Include="grpc.net.client" Version="2.53.0" />
+
+	<ItemGroup>
+		<PackageReference Include="google.protobuf" Version="3.22.4" />
+		<PackageReference Include="grpc.net.client" Version="2.53.0" />
 		<PackageReference Include="Abp.ZeroCore" Version="8.3.1" />
-        <PackageReference Include="grpc.tools" Version="2.54.0">
-          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-          <PrivateAssets>all</PrivateAssets>
-        </PackageReference>
-        <PackageReference Include="MongoDB.Bson" Version="2.15.1" />
-        <PackageReference Include="Volo.Abp.EntityFrameworkCore" Version="7.2.1" />
-    </ItemGroup>
-
-    <!--<ItemGroup>
-        <EmbeddedResource Include="ProductManagement\Localization\Domain\*.json" />
-        <Content Remove="ProductManagement\Localization\Domain\*.json" />
-    </ItemGroup>-->
-
-    <ItemGroup>
-      <ProjectReference Include="..\..\..\..\shared\IFG.Core\IFG.Core.csproj" />
-      <ProjectReference Include="..\CompanyManagement.Domain.Shared\CompanyManagement.Domain.Shared.csproj" />
-    </ItemGroup>
-    <!--<ItemGroup>
-      <Folder Include="OrderManagement\Protos\" />
-    </ItemGroup>-->
-
+		<PackageReference Include="grpc.tools" Version="2.54.0">
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+			<PrivateAssets>all</PrivateAssets>
+		</PackageReference>
+		<PackageReference Include="MongoDB.Bson" Version="2.15.1" />
+		<PackageReference Include="Volo.Abp.EntityFrameworkCore" Version="7.2.1" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\CompanyManagement.Domain.Shared\CompanyManagement.Domain.Shared.csproj" />
+	</ItemGroup>
 </Project>
