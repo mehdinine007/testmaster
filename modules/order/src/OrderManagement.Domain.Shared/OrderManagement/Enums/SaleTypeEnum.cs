@@ -12,6 +12,8 @@ namespace OrderManagement.Domain.Shared.OrderManagement.Enums
         [EnumProperty(Description = "خودروهای وارداتی")]
         saleauto = 1,
         [EnumProperty(Description = "خودروهای داخلی")]
-        esalecar =2
+        esalecar =2,
+        [EnumProperty(Description = "خودروهای برقی")]
+        evauto = 3
     }
 }
