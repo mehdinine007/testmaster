@@ -118,11 +118,11 @@ namespace PaymentManagement.Application.PaymentManagement.Services
             }
             return new HandShakeViewModel()
             {
-                Token = handShake.Token,
-                HtmlContent = handShake.HtmlContent,
-                Message = handShake.Message,
+                Token = handShake.Token ?? "",
+                HtmlContent = handShake.HtmlContent ?? "",
+                Message = handShake.Message ?? "",
                 PaymentId = handShake.PaymentId,
-                PspJsonResult = handShake.PspJsonResult,
+                PspJsonResult = handShake.PspJsonResult ?? "",
                 StatusCode = handShake.StatusCode
             };
         }

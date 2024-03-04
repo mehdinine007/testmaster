@@ -73,7 +73,7 @@ public class IpgGrpcServiceProvider : ApplicationService, IIpgServiceProvider
                     return new ApiResult<IpgApiResult>
                     {
                         Success = false,
-                        Message = "در حال حاظر پرداخت از طریق این درگاه امکان پذیر نمی باشد"
+                        Message = "در حال حاضر پرداخت از طریق این درگاه امکان پذیر نمی باشد"
                     };
                 }
 
@@ -94,7 +94,9 @@ public class IpgGrpcServiceProvider : ApplicationService, IIpgServiceProvider
             finally
             {
                 _auditingManager.Current.Log.SetProperty("PspHandShakeLog", comments);
+                _auditingManager.Current.Log.Url = "/api/services/app/OrderService/HandShake";
                 _auditingManager.Current.Log.Comments.Add(JsonConvert.SerializeObject(handShakeRequest));
+
                 await auditingScope.SaveAsync();
             }
         }
