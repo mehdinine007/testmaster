@@ -429,9 +429,11 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
         }
         var currentPriority = currentproductAndCategory.Priority;
         var parentId = currentproductAndCategory.ParentId;
+        var organizationId = currentproductAndCategory.OrganizationId;
         if (MoveTypeEnum.Up == move.MoveType)
         {
-            var previousProductAndCategory = await productAndCategoryQuery.OrderByDescending(x => x.Priority).FirstOrDefaultAsync(x => x.Priority < currentproductAndCategory.Priority && x.ParentId == parentId);
+            var previousProductAndCategory = await productAndCategoryQuery.OrderByDescending(x => x.Priority).FirstOrDefaultAsync(x => x.Priority < currentproductAndCategory.Priority && x.ParentId == parentId 
+            && x.OrganizationId== organizationId);
             if (previousProductAndCategory == null)
             {
                 throw new UserFriendlyException(OrderConstant.FirstPriority, OrderConstant.FirstPriorityId);
@@ -444,7 +446,8 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
         }
         else if (MoveTypeEnum.Down == move.MoveType)
         {
-            var nextProductAndCategory = productAndCategoryQuery.FirstOrDefault(x => x.Priority > currentproductAndCategory.Priority && x.ParentId == parentId);
+            var nextProductAndCategory = productAndCategoryQuery.FirstOrDefault(x => x.Priority > currentproductAndCategory.Priority && x.ParentId == parentId
+            && x.OrganizationId == organizationId);
             if (nextProductAndCategory == null)
             {
                 throw new UserFriendlyException(OrderConstant.LastPriority, OrderConstant.LastPriorityId);
