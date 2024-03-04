@@ -174,7 +174,7 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
             _parentCode = oganization.Code.ToString();
 
         var _maxCode = igResult
-            .Where(x => x.ParentId == productAndCategoryCreateDto.ParentId)
+            .Where(x => x.ParentId == productAndCategoryCreateDto.ParentId && x.OrganizationId== productAndCategoryCreateDto.OrganizationId)
             .Max(x => x.Code);
         if (!string.IsNullOrWhiteSpace(_maxCode))
             _maxCode = (Convert.ToInt32(_maxCode.Substring(_maxCode.Length - codeLength)) + 1).ToString();
@@ -429,9 +429,11 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
         }
         var currentPriority = currentproductAndCategory.Priority;
         var parentId = currentproductAndCategory.ParentId;
+        var organizationId = currentproductAndCategory.OrganizationId;
         if (MoveTypeEnum.Up == move.MoveType)
         {
-            var previousProductAndCategory = await productAndCategoryQuery.OrderByDescending(x => x.Priority).FirstOrDefaultAsync(x => x.Priority < currentproductAndCategory.Priority && x.ParentId == parentId);
+            var previousProductAndCategory = await productAndCategoryQuery.OrderByDescending(x => x.Priority).FirstOrDefaultAsync(x => x.Priority < currentproductAndCategory.Priority && x.ParentId == parentId 
+            && x.OrganizationId== organizationId);
             if (previousProductAndCategory == null)
             {
                 throw new UserFriendlyException(OrderConstant.FirstPriority, OrderConstant.FirstPriorityId);
@@ -444,7 +446,8 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
         }
         else if (MoveTypeEnum.Down == move.MoveType)
         {
-            var nextProductAndCategory = productAndCategoryQuery.FirstOrDefault(x => x.Priority > currentproductAndCategory.Priority && x.ParentId == parentId);
+            var nextProductAndCategory = productAndCategoryQuery.FirstOrDefault(x => x.Priority > currentproductAndCategory.Priority && x.ParentId == parentId
+            && x.OrganizationId == organizationId);
             if (nextProductAndCategory == null)
             {
                 throw new UserFriendlyException(OrderConstant.LastPriority, OrderConstant.LastPriorityId);
