@@ -7,6 +7,7 @@
 	<PropertyGroup>
 		<RootNamespace>OrderManagement.HttpApi</RootNamespace>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+		<NoWarn>1591</NoWarn>
 	</PropertyGroup>
 
     <ItemGroup>

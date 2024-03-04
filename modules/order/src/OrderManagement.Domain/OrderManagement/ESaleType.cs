@@ -9,6 +9,8 @@ namespace OrderManagement.Domain
 
         private ICollection<SaleDetail> _saleDetail;
 
+        private ICollection<SeasonCompanyProduct> _seasonCompanyProducts;
+
         public string SaleTypeName { get; set; }
 
         //public virtual ICollection<SalePlan> SalePlans
@@ -26,6 +28,11 @@ namespace OrderManagement.Domain
 
         public virtual ICollection<Season_Product_Category> SeasonCompanyCarTip { get; set; }
 
+        public ICollection<SeasonCompanyProduct> SeasonCompanyProducts
+        {
+            get => _seasonCompanyProducts ?? (_seasonCompanyProducts = new List<SeasonCompanyProduct>());
+            protected set => _seasonCompanyProducts = value;
+        }
     }
 
 }

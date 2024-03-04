@@ -110,8 +110,10 @@ namespace OrderManagement.EfCore
         DbSet<QuestionRelationship> QuestionRelationship { get; set; }
 
 
-        DbSet<QuestionGroup> QuestionGroup  { get; set; }
+        DbSet<QuestionGroup> QuestionGroup { get; set; }
         DbSet<AdvertisementDetail> AdvertisementDetail { get; set; }
         DbSet<Advertisement> Advertisement { get; set; }
+
+        DbSet<SeasonCompanyProduct> SeasonCompanyProduct { get; set; }
     }
 }

@@ -534,5 +534,26 @@ public static class OrderManagementDbContextModelCreatingExtensions
             entity.ToTable(nameof(OperatorEnumReadOnly));
             entity.AddEnumChangeTracker<OperatorEnumReadOnly, OperatorFilterEnum>();
         });
+
+        builder.Entity<SeasonCompanyProduct>(entity =>
+        {
+            entity.ToTable(nameof(SeasonCompanyProduct));
+
+            entity.HasOne<ProductAndCategory>(x => x.Company)
+                .WithMany(x => x.SeasonCompanyProducts_Company)
+                .HasForeignKey(x => x.CompanyId);
+
+            entity.HasOne<ProductAndCategory>(x => x.Product)
+                .WithMany(x => x.SeasonCompanyProducts_Product)
+                .HasForeignKey(x => x.ProductId);
+
+            entity.HasOne<Year>(x => x.Year)
+                .WithMany(x => x.SeasonCompanyProducts)
+                .HasForeignKey(x => x.YearId);
+
+            entity.HasOne<ESaleType>(x => x.EsaleType)
+                .WithMany(x => x.SeasonCompanyProducts)
+                .HasForeignKey(x => x.EsaleTypeId);
+        });
     }
 }
