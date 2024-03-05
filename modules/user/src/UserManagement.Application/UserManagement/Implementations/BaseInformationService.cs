@@ -1,5 +1,4 @@
-﻿#region NS
-using Volo.Abp.Domain.Repositories;
+﻿using Volo.Abp.Domain.Repositories;
 using Microsoft.Extensions.Configuration;
 using UserManagement.Application.Contracts.Models;
 using UserManagement.Application.Contracts.Services;
@@ -14,18 +13,15 @@ using UserManagement.Domain.Authorization.Users;
 using MongoDB.Bson;
 using Volo.Abp.Uow;
 using Volo.Abp.Auditing;
-using Microsoft.EntityFrameworkCore;
 using UserManagement.Domain.Shared;
 using UserManagement.Domain.UserManagement.CompanyService;
 using IFG.Core.Caching;
-using Abp.Runtime.Caching;
 using UserManagement.Application.Contracts.UserManagement.Constant;
 using Newtonsoft.Json;
 using UserManagement.Application.Contracts.UserManagement.Services;
 using UserManagement.Domain.Shared.UserManagement.Enums;
 using Esale.Share.Authorize;
-using Microsoft.AspNetCore.Server.IIS.Core;
-#endregion
+using UserManagement.Application.Contracts;
 
 namespace UserManagement.Application.Implementations;
 
@@ -247,12 +243,11 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
     [SecuredOperation(BaseInformationServicePermissionConstants.UpdateUserPhoneNumber)]
     public async Task UpdateUserPhoneNumber(UpdateUserPhoneNumber updateUserPhoneNumber)
     {
-        if (string.IsNullOrEmpty(updateUserPhoneNumber.NewPhoneNumber) ||
-            updateUserPhoneNumber.NewPhoneNumber.AsParallel().Any(x => !char.IsDigit(x)))
-            throw new UserFriendlyException("شماره تلفن معتبر نیست");
+        if (_commonAppService.ValidateMobileNumberFormat(updateUserPhoneNumber.NewPhoneNumber))
+            throw new UserFriendlyException(UserMessageConstant.UpdatePhoneNumberInvalidFormat);
 
         if (!ObjectId.TryParse(updateUserPhoneNumber.UserId.ToString(), out var objectId))
-            throw new UserFriendlyException("شناسه کاربر صحیح نیست");
+            throw new UserFriendlyException(UserMessageConstant.UpdatePhoneNumberUserIdIsWrong);
 
         var user = await _userMongoRepository.GetAsync(objectId);
 
@@ -261,7 +256,7 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
             updateUserPhoneNumber.SmsCode,
             SMSType.UpdatePhoneNumber);
         if (!validateMessageRequest)
-            throw new UserFriendlyException("کد پیامک ارسالی صحیح نمی باشد");
+            throw new UserFriendlyException(UserMessageConstant.UpdatePhoneNumberWrongSmsCode);
 
         user.PhoneNumber = updateUserPhoneNumber.NewPhoneNumber;
         await _userMongoRepository.UpdateAsync(user);

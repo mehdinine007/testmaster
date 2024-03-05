@@ -18,4 +18,6 @@ public interface ICommonAppService : IApplicationService
 
     string GetRole();
     Task ValidateVisualizeCaptcha(VisualCaptchaInput input);
+
+    bool ValidateMobileNumberFormat(string mobileNo);
 }

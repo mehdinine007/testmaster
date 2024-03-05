@@ -51,7 +51,7 @@ public class CommonAppService : ApplicationService, ICommonAppService
             throw new UserFriendlyException("کد ملی صحیح نیست");
 
         const string cacheKey = "zip_{0}, ntnl_{1}";
-        var zipCache = await _cacheManager.GetStringAsync(string.Format(cacheKey, zipCode, nationalCode), "",new CacheOptions { Provider = CacheProviderEnum.Redis });
+        var zipCache = await _cacheManager.GetStringAsync(string.Format(cacheKey, zipCode, nationalCode), "", new CacheOptions { Provider = CacheProviderEnum.Redis });
 
 
         if (string.IsNullOrWhiteSpace(zipCache))
@@ -69,7 +69,7 @@ public class CommonAppService : ApplicationService, ICommonAppService
             if (inquiry.Success)
             {
                 var inquiryResponse = JsonConvert.DeserializeObject<FaraBoomZipCodeInquiryResponse>(inquiry.Data);
-                await _cacheManager.SetStringAsync(string.Format(cacheKey, zipCode, nationalCode),"", inquiryResponse.Addresss,new CacheOptions { Provider = CacheProviderEnum.Redis });
+                await _cacheManager.SetStringAsync(string.Format(cacheKey, zipCode, nationalCode), "", inquiryResponse.Addresss, new CacheOptions { Provider = CacheProviderEnum.Redis });
 
                 return inquiryResponse.Addresss;
             }
@@ -80,13 +80,13 @@ public class CommonAppService : ApplicationService, ICommonAppService
 
     public async Task<bool> ValidateMobileNumber(string nationalCode, string mobileNo)
     {
-        if (nationalCode.Length != 10 || nationalCode.AsParallel().Any(x => !char.IsDigit(x)))
+        if (ValidateMobileNumberFormat(mobileNo))
             throw new UserFriendlyException("کد ملی صحیح نیست");
         if (mobileNo.AsParallel().Any(x => !char.IsDigit(x)))
             throw new UserFriendlyException("شماره موبایل صحیح نیست");
         const string cacheKey = "mobileNo_{0}, ntnl{1}";
 
-        var validationResultCache = await _cacheManager.GetStringAsync(string.Format(cacheKey, mobileNo, nationalCode),"", new CacheOptions { Provider = CacheProviderEnum.Redis });
+        var validationResultCache = await _cacheManager.GetStringAsync(string.Format(cacheKey, mobileNo, nationalCode), "", new CacheOptions { Provider = CacheProviderEnum.Redis });
         if (string.IsNullOrWhiteSpace(validationResultCache))
         {
             var inquiryBuilder = new InquiryBuilder(new FaraBoomInquiryConfig()
@@ -98,14 +98,14 @@ public class CommonAppService : ApplicationService, ICommonAppService
             if (inquiry.Success)
             {
                 var inquiryResponse = JsonConvert.DeserializeObject<FaraBoomInquiryResponse>(inquiry.Data);
-                await _cacheManager.SetStringAsync(string.Format(cacheKey, mobileNo, nationalCode), "", inquiryResponse.match.ToString(),new CacheOptions { Provider = CacheProviderEnum.Redis });
+                await _cacheManager.SetStringAsync(string.Format(cacheKey, mobileNo, nationalCode), "", inquiryResponse.match.ToString(), new CacheOptions { Provider = CacheProviderEnum.Redis });
 
                 return inquiryResponse.match;
             }
             if (!inquiry.Success && inquiry.MessageId.Equals("200", StringComparison.InvariantCultureIgnoreCase))
             {
                 var inquiryResponse = JsonConvert.DeserializeObject<FaraBoomInquiryResponse>(inquiry.Data);
-                await _cacheManager.SetStringAsync(string.Format(cacheKey, mobileNo, nationalCode),"", inquiryResponse.match.ToString(),new CacheOptions { Provider = CacheProviderEnum.Redis });
+                await _cacheManager.SetStringAsync(string.Format(cacheKey, mobileNo, nationalCode), "", inquiryResponse.match.ToString(), new CacheOptions { Provider = CacheProviderEnum.Redis });
 
                 return inquiryResponse.match;
             }
@@ -114,7 +114,7 @@ public class CommonAppService : ApplicationService, ICommonAppService
         }
         if (!bool.TryParse(validationResultCache, out bool isValid))
         {
-            _cacheManager.RemoveAsync(string.Format(cacheKey, mobileNo, nationalCode), "",new CacheOptions { Provider = CacheProviderEnum.Redis });
+            _cacheManager.RemoveAsync(string.Format(cacheKey, mobileNo, nationalCode), "", new CacheOptions { Provider = CacheProviderEnum.Redis });
 
             return false;
         }
@@ -132,7 +132,7 @@ public class CommonAppService : ApplicationService, ICommonAppService
 
         //string ObjectSMSCode = RedisHelper.GetDatabase().StringGet(sMSType.ToString() + Mobile + NationalCode);
         //var ObjectSMSCode = await _distributedCache.GetStringAsync(sMSType.ToString() + Mobile + NationalCode);
-        var ObjectSMSCode = await _cacheManager.GetStringAsync(Mobile + NationalCode, sMSType.ToString(), new() { Provider = CacheProviderEnum.Redis,RedisHash = false });
+        var ObjectSMSCode = await _cacheManager.GetStringAsync(Mobile + NationalCode, sMSType.ToString(), new() { Provider = CacheProviderEnum.Redis, RedisHash = false });
 
 
         if (ObjectSMSCode == null)
@@ -169,9 +169,9 @@ public class CommonAppService : ApplicationService, ICommonAppService
             //    throw new UserFriendlyException(Messages.CaptchaNotValid);
             //}
 
-            string objectCaptcha = await _cacheManager.GetStringAsync("cap_" + input.CIT,"", new CacheOptions { Provider = CacheProviderEnum.Redis });
+            string objectCaptcha = await _cacheManager.GetStringAsync("cap_" + input.CIT, "", new CacheOptions { Provider = CacheProviderEnum.Redis });
 
-            await _cacheManager.RemoveAsync("cap_" + input.CIT,"", new CacheOptions { Provider = CacheProviderEnum.Redis });
+            await _cacheManager.RemoveAsync("cap_" + input.CIT, "", new CacheOptions { Provider = CacheProviderEnum.Redis });
 
 
             if (objectCaptcha == null)
@@ -184,6 +184,13 @@ public class CommonAppService : ApplicationService, ICommonAppService
             }
         }
     }
+
+    public bool ValidateMobileNumberFormat(string mobileNo)
+    {
+        return string.IsNullOrEmpty(mobileNo) ||
+            mobileNo.AsParallel().Any(x => !char.IsDigit(x));
+    }
+
     public bool IsInRole(string Role)
     {
         var identity = (ClaimsPrincipal)Thread.CurrentPrincipal;
