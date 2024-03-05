@@ -165,6 +165,11 @@ public class SendBoxAppService : ApplicationService, ISendBoxAppService
                 PreFix = SMSType.AnonymousQuestionnaireSubmitation.ToString();
                 Message = _configuration.GetSection("RegisterText").Value.Replace("{0}", sendSMSDto.SMSCode);
             }
+            if (input.SMSLocation == SMSType.UpdatePhoneNumber)
+            {
+                PreFix = SMSType.UpdatePhoneNumber.ToString();
+                Message = _configuration.GetSection("RegisterText").Value.Replace("{0}", sendSMSDto.SMSCode);
+            }
             //_cacheManager.GetCache("SMS").TryGetValue(PreFix + input.Recipient + input.NationalCode, out objectSMS);
             //string objectSMSString = RedisHelper.Connection.GetDatabase().StringGet(PreFix + input.Recipient + input.NationalCode);
             string objectSMSString = await _cacheManager.GetStringAsync(input.Recipient + input.NationalCode, PreFix, new() { Provider = CacheProviderEnum.Redis,RedisHash = false});
