@@ -811,10 +811,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 SaleId = x.SaleId,
                 TrackingCode = x.TrackingCode
             });
-        if (customerOrderQueryDto.SaleId.HasValue)
-        {
-            customerOrders = customerOrders.Where(x => x.SaleId == customerOrderQueryDto.SaleId.Value);
-        }
         if (customerOrderQueryDto.OrderStatus is not null)
         {
             customerOrders = customerOrders.Where(x=> customerOrderQueryDto.OrderStatus.Any(y => x.OrderStatusCode == y));
@@ -893,7 +889,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
     public async Task<CustomerOrder_OrderDetailTreeDto> GetActiveCustomerOrder(CustomerOrderQueryDto customerOrderQueryDto)
     {
         var activeStatus = new List<int>() { (int)OrderStatusType.RecentlyAdded, (int)OrderStatusType.PaymentNotVerified };
-        return await GetAllCustomerOrder(new CustomerOrderQueryDto {  SaleId= customerOrderQueryDto.SaleId,OrderStatus= activeStatus, AttachmentType = customerOrderQueryDto.AttachmentType, Attachmentlocation = customerOrderQueryDto.Attachmentlocation });
+        return await GetAllCustomerOrder(new CustomerOrderQueryDto { OrderStatus= activeStatus, AttachmentType = customerOrderQueryDto.AttachmentType, Attachmentlocation = customerOrderQueryDto.Attachmentlocation });
     }
     [Audited]
     [UnitOfWork(isTransactional: false)]

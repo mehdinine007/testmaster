@@ -96,7 +96,7 @@ public class OrderManagementController
         => await _orderAppService.RetryPaymentForVerify();
 
     [HttpGet]
-    public async Task<CustomerOrder_OrderDetailTreeDto> GetActiveCustomerOrder(int saleId, string attachmentEntityType, string attachmentlocation)
-        => await _orderAppService.GetActiveCustomerOrder(new CustomerOrderQueryDto { SaleId = saleId ,AttachmentType= EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(attachmentEntityType),Attachmentlocation= EnumHelper.ConvertStringToEnum<AttachmentLocationEnum>(attachmentlocation) });
+    public async Task<CustomerOrder_OrderDetailTreeDto> GetActiveCustomerOrder(string attachmentEntityType, string attachmentlocation)
+        => await _orderAppService.GetActiveCustomerOrder(new CustomerOrderQueryDto {AttachmentType= EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(attachmentEntityType),Attachmentlocation= EnumHelper.ConvertStringToEnum<AttachmentLocationEnum>(attachmentlocation) });
 
 }
