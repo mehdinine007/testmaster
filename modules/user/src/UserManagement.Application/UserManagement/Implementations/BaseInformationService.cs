@@ -22,6 +22,8 @@ using UserManagement.Application.Contracts.UserManagement.Services;
 using UserManagement.Domain.Shared.UserManagement.Enums;
 using Esale.Share.Authorize;
 using UserManagement.Application.Contracts;
+using UserManagement.Domain.Shared;
+using ValidationHelper = IFG.Core.Validation.ValidationHelper;
 
 namespace UserManagement.Application.Implementations;
 
@@ -63,7 +65,7 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
 
     public async Task RegistrationValidationWithoutCaptcha(RegistrationValidationDto input)
     {
-        if (!ValidationHelper.IsNationalCode(input.Nationalcode))
+        if (!ValidationHelper.IsValidNationalCode(input.Nationalcode))
         {
             throw new UserFriendlyException(Messages.NationalCodeNotValid);
         }
@@ -194,7 +196,7 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
     {
         await _commonAppService.ValidateVisualizeCaptcha(new VisualCaptchaInput(input.CK, input.CIT));
         Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
-        if (!ValidationHelper.IsNationalCode(input.Nationalcode))
+        if (!ValidationHelper.IsValidNationalCode(input.Nationalcode))
         {
             throw new UserFriendlyException(Messages.NationalCodeNotValid);
         }
