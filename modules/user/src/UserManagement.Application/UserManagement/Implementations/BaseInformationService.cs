@@ -223,7 +223,6 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
     }
 
     public async Task<string> AddressInquiry(AddressInquiryDto input)
-
     {
         if (input.nationalCode == null)
         {
@@ -243,7 +242,7 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
     [SecuredOperation(BaseInformationServicePermissionConstants.UpdateUserPhoneNumber)]
     public async Task UpdateUserPhoneNumber(UpdateUserPhoneNumber updateUserPhoneNumber)
     {
-        if (_commonAppService.ValidateMobileNumberFormat(updateUserPhoneNumber.NewPhoneNumber))
+        if (!_commonAppService.ValidateNumericInputFormat(updateUserPhoneNumber.NewPhoneNumber))
             throw new UserFriendlyException(UserMessageConstant.UpdatePhoneNumberInvalidFormat);
 
         if (!ObjectId.TryParse(updateUserPhoneNumber.UserId.ToString(), out var objectId))

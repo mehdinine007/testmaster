@@ -80,9 +80,9 @@ public class CommonAppService : ApplicationService, ICommonAppService
 
     public async Task<bool> ValidateMobileNumber(string nationalCode, string mobileNo)
     {
-        if (ValidateMobileNumberFormat(mobileNo))
+        if (!ValidateNumericInputFormat(nationalCode))
             throw new UserFriendlyException("کد ملی صحیح نیست");
-        if (mobileNo.AsParallel().Any(x => !char.IsDigit(x)))
+        if (!ValidateNumericInputFormat(mobileNo))
             throw new UserFriendlyException("شماره موبایل صحیح نیست");
         const string cacheKey = "mobileNo_{0}, ntnl{1}";
 
@@ -185,10 +185,10 @@ public class CommonAppService : ApplicationService, ICommonAppService
         }
     }
 
-    public bool ValidateMobileNumberFormat(string mobileNo)
+    public bool ValidateNumericInputFormat(string numericString)
     {
-        return string.IsNullOrEmpty(mobileNo) ||
-            mobileNo.AsParallel().Any(x => !char.IsDigit(x));
+        return !string.IsNullOrEmpty(numericString) &&
+            numericString.AsParallel().All(char.IsDigit);
     }
 
     public bool IsInRole(string Role)
