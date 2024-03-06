@@ -18,11 +18,6 @@
       "Type": "proc"
     },
     {
-      "Id": "spGetUserRejectionAdvocacy",
-      "Priority": 2,
-      "Type": "proc"
-    },
-    {
       "Id": "spGetReportQuestionnaire",
       "Priority": 3,
       "Type": "proc"
