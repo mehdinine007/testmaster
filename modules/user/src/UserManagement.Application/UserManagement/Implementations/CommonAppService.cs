@@ -9,7 +9,7 @@ using System.Security.Claims;
 using UserManagement.Application.Contracts.Models;
 using UserManagement.Application.Contracts.Services;
 using UserManagement.Application.InquiryService;
-using UserManagement.Domain.Shared;
+using IFG.Core.Validation;
 using Volo.Abp;
 using Volo.Abp.Application.Services;
 #endregion
@@ -80,9 +80,9 @@ public class CommonAppService : ApplicationService, ICommonAppService
 
     public async Task<bool> ValidateMobileNumber(string nationalCode, string mobileNo)
     {
-        if (!ValidateNumericInputFormat(nationalCode))
+        if (!ValidationHelper.IsValidNationalCode(nationalCode))
             throw new UserFriendlyException("کد ملی صحیح نیست");
-        if (!ValidateNumericInputFormat(mobileNo))
+        if (!ValidationHelper.IsValidMobileNumber(mobileNo))
             throw new UserFriendlyException("شماره موبایل صحیح نیست");
         const string cacheKey = "mobileNo_{0}, ntnl{1}";
 

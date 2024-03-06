@@ -13,7 +13,7 @@ using UserManagement.Domain.Authorization.Users;
 using MongoDB.Bson;
 using Volo.Abp.Uow;
 using Volo.Abp.Auditing;
-using UserManagement.Domain.Shared;
+using IFG.Core.Validation;
 using UserManagement.Domain.UserManagement.CompanyService;
 using IFG.Core.Caching;
 using UserManagement.Application.Contracts.UserManagement.Constant;
@@ -242,7 +242,7 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
     [SecuredOperation(BaseInformationServicePermissionConstants.UpdateUserPhoneNumber)]
     public async Task UpdateUserPhoneNumber(UpdateUserPhoneNumber updateUserPhoneNumber)
     {
-        if (!_commonAppService.ValidateNumericInputFormat(updateUserPhoneNumber.NewPhoneNumber))
+        if (!ValidationHelper.IsValidMobileNumber(updateUserPhoneNumber.NewPhoneNumber))
             throw new UserFriendlyException(UserMessageConstant.UpdatePhoneNumberInvalidFormat);
 
         if (!ObjectId.TryParse(updateUserPhoneNumber.UserId.ToString(), out var objectId))
