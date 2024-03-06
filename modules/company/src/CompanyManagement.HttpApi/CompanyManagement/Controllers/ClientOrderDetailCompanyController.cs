@@ -21,8 +21,6 @@ namespace CompanyManagement.HttpApi.CompanyManagement.Controllers
         public ClientOrderDetailCompanyController(IClientOrderDetailCompanyService clientOrderDetailCompanyService)
         => _clientOrderDetailCompanyService = clientOrderDetailCompanyService;
 
-        [HttpGet]
-        public async Task<List<ClientOrderDetailDto>> GetList(string nationalCode)
-        => await _clientOrderDetailCompanyService.GetList(nationalCode);
+        
     }
 }

@@ -6,28 +6,44 @@ using System;
 using System.Threading.Tasks;
 using System.Net.Http;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
-using OrderManagement.Application.CompanyService;
 using OrderManagement.Application.Contracts.OrderManagement.Dtos.Grpc.Client;
 using System.Linq;
 using System.Collections.Generic;
+using IFG.Core.Caching;
+using Newtonsoft.Json;
+using OrderManagement.Application.CompanyService;
 
 namespace OrderManagement.Application.OrderManagement.Implementations
 {
     public class CompanyGrpcClient : ApplicationService, ICompanyGrpcClient
     {
         private readonly IConfiguration _configuration;
-        public CompanyGrpcClient(IConfiguration configuration)
+        private readonly ICacheManager _cacheManager;
+        public CompanyGrpcClient(IConfiguration configuration, ICacheManager cacheManager)
         {
             _configuration = configuration;
+            _cacheManager = cacheManager;
         }
-        public async Task<List<ClientOrderDetailDto>> GetOrderDetailGetList(string nationalCode)
+
+        public async Task<List<ClientOrderDetailDto>> GetOrderDetailList(string nationalCode)
         {
             var httpHandler = new HttpClientHandler();
             httpHandler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
             var channel = GrpcChannel.ForAddress(_configuration.GetValue<string>("Company:GrpcAddress"), new GrpcChannelOptions { HttpHandler = httpHandler });
             var client = new CompanyServiceGrpc.CompanyServiceGrpcClient(channel);
-            var result = await client.GetOrderDetailGetListAsync(new ClientOrderDetailGetListRequest { NationalCode = nationalCode });
+            TimeSpan secondsInDay = TimeSpan.FromDays(1);
+            var ttl = secondsInDay.TotalSeconds;
+            string OrderDetailList = await _cacheManager.GetStringAsync(nationalCode, RedisConstants.ClientOrderDetailPrefix
+           , new CacheOptions()
+           {
+               Provider = CacheProviderEnum.Redis
+           });
 
+            if (!string.IsNullOrEmpty(OrderDetailList))
+            {
+                return JsonConvert.DeserializeObject<List<ClientOrderDetailDto>>(OrderDetailList);
+            }
+            var result = await client.GetOrderDetailListAsync(new ClientOrderDetailListRequest { NationalCode = nationalCode });
             var orderDetails = result.ClientOrderDetail.Select(x => new ClientOrderDetailDto
             {
                 DeliveryDate = x.DeliveryDate?.ToDateTime(),
@@ -50,7 +66,15 @@ namespace OrderManagement.Application.OrderManagement.Implementations
                 }).ToList(),
 
             }).ToList();
-            return orderDetails; ;
+            if (orderDetails.Count>0)
+            {
+                var json = JsonConvert.SerializeObject(orderDetails);
+                await _cacheManager.SetStringAsync(nationalCode, RedisConstants.ClientOrderDetailPrefix, json, new CacheOptions()
+                {
+                    Provider = CacheProviderEnum.Redis
+                }, ttl);
+            }
+            return orderDetails;
         }
         public async Task<ClientOrderDeliveryInformationDto> ValidateClientOrderDeliveryDate(ClientOrderDeliveryInformationRequestDto clientOrderRequest)
         {

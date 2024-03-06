@@ -11,6 +11,6 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Services
     public interface ICompanyGrpcClient : IApplicationService
     {
         Task<ClientOrderDeliveryInformationDto> ValidateClientOrderDeliveryDate(ClientOrderDeliveryInformationRequestDto clientOrderRequest);
-        Task<List<ClientOrderDetailDto>> GetOrderDetailGetList(string nationalCode);
+        Task<List<ClientOrderDetailDto>> GetOrderDetailList(string nationalCode);
     }
 }

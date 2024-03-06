@@ -10,6 +10,6 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Services
 {
     public interface IGetOrderDetailService: IApplicationService
     {
-        Task<List<ClientOrderDetailDto>> GetOrderDetailGetList(string nationalCode);
+        Task<List<ClientOrderDetailDto>> GetOrderDetailList(string nationalCode);
     }
 }

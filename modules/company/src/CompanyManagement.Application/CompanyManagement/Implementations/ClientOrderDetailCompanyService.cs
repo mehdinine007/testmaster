@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp.ObjectMapping;
 using Volo.Abp.Uow;
 
 namespace CompanyManagement.Application.CompanyManagement.Implementations
@@ -71,17 +72,44 @@ namespace CompanyManagement.Application.CompanyManagement.Implementations
 
         public async Task<List<ClientOrderDetailDto>> GetList(string nationalCode)
         {
-            var clientsOrderDetailByCompany = (await _clientsOrderDetailByCompanyRepository.GetQueryableAsync())
+            var clientsOrderDetailByCompany = (await _clientsOrderDetailByCompanyRepository.GetQueryableAsync()).AsNoTracking()
                 .Include(x => x.Paypaidprice)
                 .Include(x => x.TurnDate)
+                .Select(x => new
+                {
+                    x.Id,
+                    x.NationalCode,
+                    x.CompanyId,
+                    x.DeliveryDate,
+                    x.FactorDate,
+                    x.IntroductionDate,
+                    x.SaleType,
+                    x.CarCode,
+                    x.CarDesc,
+                    x.ModelType,
+                    x.Paypaidprice,
+                    x.TurnDate
+
+                })
                 .Where(x => x.NationalCode == nationalCode)
                 .GroupBy(x => x.CompanyId)
                 .Select(x => x.OrderByDescending(o => o.Id).FirstOrDefault())
+                .ToList()
+                .Select(x => new ClientOrderDetailDto
+                {
+                    DeliveryDate = x.DeliveryDate,
+                    FactorDate = x.FactorDate,
+                    IntroductionDate = x.IntroductionDate,
+                    SaleType = x.SaleType,
+                    CarCode = x.CarCode,
+                    CarDesc = x.CarDesc,
+                    ModelType = x.ModelType,
+                    PaypaidPrice = ObjectMapper.Map<List<CompanyPaypaidPrices>, List<PaypaidPriceDto>>(x.Paypaidprice.ToList()),
+                    TurnDate = ObjectMapper.Map<List<CompanySaleCallDates>, List<TurnDateDto>>(x.TurnDate.ToList())
+                })
                 .ToList();
-            var clientsOrderDetailByCompnayDto = ObjectMapper.Map<List<ClientsOrderDetailByCompany>, List<ClientOrderDetailDto>>(clientsOrderDetailByCompany, new List<ClientOrderDetailDto>());
 
-            return clientsOrderDetailByCompnayDto;
-
+            return clientsOrderDetailByCompany;
         }
         //[SecuredOperation(ClientOrderDetailCompanyPermission.Save)]
         public async Task<bool> Save(List<ClientsOrderDetailByCompanyDto> clientsOrderDetailByCompnayDtos)

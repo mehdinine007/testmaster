@@ -10,7 +10,7 @@ package CompanyService;
 
 service CompanyServiceGrpc{
 	rpc CheckOrderDeliveryDate(ClientOrderDetailRequest) returns (ClientOrderDetailResponse);
-	rpc GetOrderDetailGetList(ClientOrderDetailGetListRequest) returns (ClientOrderDetailGetListResponse);
+	rpc GetOrderDetailList(ClientOrderDetailListRequest) returns (ClientOrderDetailListResponse);
 }
 
 message PaypaidPrice
@@ -24,7 +24,7 @@ message TurnDate
          google.protobuf.Timestamp EndTurnDate =2;
         
 }
-message ClientOrderDetailGetListResponse
+message ClientOrderDetailListResponse
 {
    repeated ClientOrderDetail ClientOrderDetail =1;
        
@@ -42,7 +42,7 @@ message ClientOrderDetail
        repeated TurnDate TurnDate =9;
 }
 
-message ClientOrderDetailGetListRequest{
+message ClientOrderDetailListRequest{
 	string NationalCode = 1;
 }
 

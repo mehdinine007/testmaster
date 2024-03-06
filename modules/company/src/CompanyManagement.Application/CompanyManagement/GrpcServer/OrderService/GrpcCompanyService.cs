@@ -47,10 +47,10 @@ namespace OrderManagement.Application.CompanyManagement.GrpcServer
             //return null;
         }
 
-        public async override Task<ClientOrderDetailGetListResponse> GetOrderDetailGetList(ClientOrderDetailGetListRequest request, ServerCallContext context)
+        public async override Task<ClientOrderDetailListResponse> GetOrderDetailList(ClientOrderDetailListRequest request, ServerCallContext context)
         {
             var clientOrderDetails = await _ClientOrderDetailCompanyService.GetList(request.NationalCode);
-            var clientOrderDetailResponse = new ClientOrderDetailGetListResponse();
+            var clientOrderDetailResponse = new ClientOrderDetailListResponse();
             clientOrderDetails.ForEach(x =>
             {
                 var clientOrderDetail = new ClientOrderDetail
