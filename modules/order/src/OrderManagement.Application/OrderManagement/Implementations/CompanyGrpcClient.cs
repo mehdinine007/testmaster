@@ -31,8 +31,6 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             httpHandler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
             var channel = GrpcChannel.ForAddress(_configuration.GetValue<string>("Company:GrpcAddress"), new GrpcChannelOptions { HttpHandler = httpHandler });
             var client = new CompanyServiceGrpc.CompanyServiceGrpcClient(channel);
-            TimeSpan secondsInDay = TimeSpan.FromDays(1);
-            var ttl = secondsInDay.TotalSeconds;
             string OrderDetailList = await _cacheManager.GetStringAsync(nationalCode, RedisConstants.ClientOrderDetailPrefix
            , new CacheOptions()
            {
@@ -66,14 +64,12 @@ namespace OrderManagement.Application.OrderManagement.Implementations
                 }).ToList(),
 
             }).ToList();
-            if (orderDetails.Count>0)
+            var json = JsonConvert.SerializeObject(orderDetails);
+            await _cacheManager.SetStringAsync(nationalCode, RedisConstants.ClientOrderDetailPrefix, json, new CacheOptions()
             {
-                var json = JsonConvert.SerializeObject(orderDetails);
-                await _cacheManager.SetStringAsync(nationalCode, RedisConstants.ClientOrderDetailPrefix, json, new CacheOptions()
-                {
-                    Provider = CacheProviderEnum.Redis
-                }, ttl);
-            }
+                Provider = CacheProviderEnum.Redis
+            }, TimeSpan.FromDays(1).TotalSeconds);
+
             return orderDetails;
         }
         public async Task<ClientOrderDeliveryInformationDto> ValidateClientOrderDeliveryDate(ClientOrderDeliveryInformationRequestDto clientOrderRequest)
