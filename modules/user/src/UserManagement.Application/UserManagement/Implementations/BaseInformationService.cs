@@ -1,5 +1,4 @@
-﻿#region NS
-using Volo.Abp.Domain.Repositories;
+﻿using Volo.Abp.Domain.Repositories;
 using Microsoft.Extensions.Configuration;
 using UserManagement.Application.Contracts.Models;
 using UserManagement.Application.Contracts.Services;
@@ -14,16 +13,17 @@ using UserManagement.Domain.Authorization.Users;
 using MongoDB.Bson;
 using Volo.Abp.Uow;
 using Volo.Abp.Auditing;
-using Microsoft.EntityFrameworkCore;
-using UserManagement.Domain.Shared;
+using IFG.Core.Validation;
 using UserManagement.Domain.UserManagement.CompanyService;
 using IFG.Core.Caching;
-using Abp.Runtime.Caching;
 using UserManagement.Application.Contracts.UserManagement.Constant;
 using Newtonsoft.Json;
 using UserManagement.Application.Contracts.UserManagement.Services;
 using UserManagement.Domain.Shared.UserManagement.Enums;
-#endregion
+using Esale.Share.Authorize;
+using UserManagement.Application.Contracts;
+using UserManagement.Domain.Shared;
+using ValidationHelper = IFG.Core.Validation.ValidationHelper;
 
 namespace UserManagement.Application.Implementations;
 
@@ -65,13 +65,13 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
 
     public async Task RegistrationValidationWithoutCaptcha(RegistrationValidationDto input)
     {
-        if (!ValidationHelper.IsNationalCode(input.Nationalcode))
+        if (!ValidationHelper.IsValidNationalCode(input.Nationalcode))
         {
             throw new UserFriendlyException(Messages.NationalCodeNotValid);
         }
         if (_configuration.GetValue<bool?>("UserDataAccessConfig:HasRegistration") ?? false)
         {
-            var userAccess = await _userDataAccessService.CheckNationalCode(input.Nationalcode,RoleTypeEnum.Registrtion);
+            var userAccess = await _userDataAccessService.CheckNationalCode(input.Nationalcode, RoleTypeEnum.Registrtion);
             if (!userAccess.Success)
                 throw new UserFriendlyException(_configuration.GetSection("CheckAdvocacyMessage").Value, userAccess.MessageId);
         }
@@ -196,7 +196,7 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
     {
         await _commonAppService.ValidateVisualizeCaptcha(new VisualCaptchaInput(input.CK, input.CIT));
         Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
-        if (!ValidationHelper.IsNationalCode(input.Nationalcode))
+        if (!ValidationHelper.IsValidNationalCode(input.Nationalcode))
         {
             throw new UserFriendlyException(Messages.NationalCodeNotValid);
         }
@@ -225,7 +225,6 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
     }
 
     public async Task<string> AddressInquiry(AddressInquiryDto input)
-
     {
         if (input.nationalCode == null)
         {
@@ -240,6 +239,28 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
             throw new UserFriendlyException("استعلام شماره موبایل ممکن نیست");
         var zipCodeInquiry = await _commonAppService.GetAddressByZipCode(input.zipCod, input.nationalCode);
         return zipCodeInquiry;
+    }
+
+    [SecuredOperation(BaseInformationServicePermissionConstants.UpdateUserPhoneNumber)]
+    public async Task UpdateUserPhoneNumber(UpdateUserPhoneNumber updateUserPhoneNumber)
+    {
+        if (!ValidationHelper.IsValidMobileNumber(updateUserPhoneNumber.NewPhoneNumber))
+            throw new UserFriendlyException(UserMessageConstant.UpdatePhoneNumberInvalidFormat);
+
+        if (!ObjectId.TryParse(updateUserPhoneNumber.UserId.ToString(), out var objectId))
+            throw new UserFriendlyException(UserMessageConstant.UpdatePhoneNumberUserIdIsWrong);
+
+        var user = await _userMongoRepository.GetAsync(objectId);
+
+        var validateMessageRequest = await _commonAppService.ValidateSMS(updateUserPhoneNumber.NewPhoneNumber,
+            user.NationalCode,
+            updateUserPhoneNumber.SmsCode,
+            SMSType.UpdatePhoneNumber);
+        if (!validateMessageRequest)
+            throw new UserFriendlyException(UserMessageConstant.UpdatePhoneNumberWrongSmsCode);
+
+        user.PhoneNumber = updateUserPhoneNumber.NewPhoneNumber;
+        await _userMongoRepository.UpdateAsync(user);
     }
 
 }

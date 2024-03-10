@@ -171,6 +171,19 @@
           }
 
         ]
+      },
+      {
+        "title": "BaseInformationService",
+        "code": "00010006",
+        "displayName": "سرویس مدیریت اطلاعات پایه ای کاربران",
+        "children": [
+          {
+            "title": "UpdateUserPhoneNumber",
+            "code": "000100060001",
+            "displayName": "بروز رسانی شماره تلفن کاربر",
+            "children": []
+          }
+        ]
       }
     ]
   },

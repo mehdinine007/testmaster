@@ -65,13 +65,6 @@ public class SendBoxAppService : ApplicationService, ISendBoxAppService
         }
         Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
         RegistrationSMSDto sendSMSDto = new RegistrationSMSDto();
-        //Logs logs = new Logs();
-        //logs.StartDate = DateTime.Now;
-        //logs.LocationId = 10;
-        //logs.Method = "SendSMS";
-        //logs.Type = 0;
-        //logs.Ip = Utility.utilities.GetIpAddress(_contextAccessor);
-        //logs.Servername = Utility.utilities.GetServerIPAddress();
         await _commonAppService.ValidateVisualizeCaptcha(new VisualCaptchaInput(input.CK, input.CIT));
         var _magfa = new MagfaSendSms(new MagfaConfig()
         {
@@ -81,7 +74,6 @@ public class SendBoxAppService : ApplicationService, ISendBoxAppService
             UserName = _configuration.GetValue<string>("SendBoxConfig:Sms:Magfa:UserName"),
             Password = _configuration.GetValue<string>("SendBoxConfig:Sms:Magfa:Password")
         });
-        // await _commonAppService.ValidateVisualizeCaptcha(new CommonService.Dto.VisualCaptchaInput(input.CT,input.CK, input.CIT));
         if (_configuration.GetSection("IsRecaptchaEnabled").Value == "1")
         {
             var response = await _captchaService.ReCaptcha(new CaptchaInputDto(input.CK, "CreateUser"));
@@ -92,34 +84,30 @@ public class SendBoxAppService : ApplicationService, ISendBoxAppService
 
         }
 
-        // if (input.type == ProviderSmsTypeEnum.Magfa)
+        (string Message, string PreFix, UserMongo userFromDb) = (string.Empty, string.Empty, null);
+        sendSMSDto.SMSCode = Core.Utility.Tools.RandomGenerator.GetUniqueInt(6).ToString();
+        switch (input.SMSLocation)
         {
-            //  var _magfa = new MagfaSendSms(JsonConvert.DeserializeObject<MagfaConfig>(_configuration.GetSection("SendBoxConfig:Sms:Magfa").Value));
-            string Message = "";
-            string PreFix = "";
-            sendSMSDto.SMSCode = Core.Utility.Tools.RandomGenerator.GetUniqueInt(6).ToString();
-            if (input.SMSLocation == SMSType.Register)
-            {
-                PreFix = SMSType.Register.ToString();
+            case SMSType smsType when input.SMSLocation
+                is SMSType.Register
+                or SMSType.UpdateProfile
+                or SMSType.AnonymousQuestionnaireSubmitation
+                or SMSType.UpdatePhoneNumber:
+
+                PreFix = smsType.ToString();
                 Message = _configuration.GetSection("RegisterText").Value.Replace("{0}", sendSMSDto.SMSCode);
-            }
-            if (input.SMSLocation == SMSType.UpdateProfile)
-            {
-                PreFix = SMSType.UpdateProfile.ToString();
-                Message = _configuration.GetSection("RegisterText").Value.Replace("{0}", sendSMSDto.SMSCode);
-            }
-            if (input.SMSLocation == SMSType.UserRejectionAdvocacy)
-            {
+
+                break;
+            case SMSType.UserRejectionAdvocacy:
                 PreFix = SMSType.UserRejectionAdvocacy.ToString();
 
-                _baseInformationService.CheckWhiteListAsync(WhiteListEnumType.WhiteListOrder, input.NationalCode);
+                await _baseInformationService.CheckWhiteListAsync(WhiteListEnumType.WhiteListOrder, input.NationalCode);
                 Message = _configuration.GetSection("RegisterText").Value.Replace("{0}", sendSMSDto.SMSCode);
-            }
-            if (input.SMSLocation == SMSType.Login)
-            {
-                var userFromDb = (await _userMongoRepository
-                                  .GetQueryableAsync())
-                                  .FirstOrDefault(a => a.NationalCode == input.NationalCode);
+                break;
+            case SMSType.Login:
+                userFromDb = (await _userMongoRepository
+                              .GetQueryableAsync())
+                              .FirstOrDefault(a => a.NationalCode == input.NationalCode);
 
                 if (userFromDb == null)
                 {
@@ -128,12 +116,11 @@ public class SendBoxAppService : ApplicationService, ISendBoxAppService
                 input.Recipient = userFromDb.Mobile;
                 PreFix = SMSType.UpdateProfile.ToString();
                 Message = _configuration.GetSection("RegisterText").Value.Replace("{0}", sendSMSDto.SMSCode);
-            }
-            else if (input.SMSLocation == SMSType.ForgetPassword)
-            {
-                var userFromDb = (await _userMongoRepository
-                                  .GetQueryableAsync())
-                                  .FirstOrDefault(a => a.NationalCode == input.NationalCode && a.IsDeleted == false);
+                break;
+            case SMSType.ForgetPassword:
+                userFromDb = (await _userMongoRepository
+                              .GetQueryableAsync())
+                              .FirstOrDefault(a => a.NationalCode == input.NationalCode && a.IsDeleted == false);
 
                 if (userFromDb == null || userFromDb.Mobile.Replace(" ", "") != input.Recipient)
                 {
@@ -141,15 +128,14 @@ public class SendBoxAppService : ApplicationService, ISendBoxAppService
                 }
                 PreFix = SMSType.ForgetPassword.ToString();
                 Message = _configuration.GetSection("ForgetPassText").Value.Replace("{0}", sendSMSDto.SMSCode);
-            }
-            else if (input.SMSLocation == SMSType.ChangePassword)
-            {
+                break;
+            case SMSType.ChangePassword:
                 string uid = _commonAppService.GetUID().ToString();
                 var filter = Builders<UserMongo>.Filter.Where(e => e.UID == uid && e.IsDeleted == false);
 
-                var userFromDb = (await _userMongoRepository
+                userFromDb = (await _userMongoRepository
                                 .GetQueryableAsync())
-                                .FirstOrDefault(a =>a.UID == uid && a.IsDeleted == false);
+                                .FirstOrDefault(a => a.UID == uid && a.IsDeleted == false);
 
                 if (userFromDb == null)
                 {
@@ -159,77 +145,71 @@ public class SendBoxAppService : ApplicationService, ISendBoxAppService
                 Message = _configuration.GetSection("RegisterText").Value.Replace("{0}", sendSMSDto.SMSCode);
                 input.Recipient = userFromDb.Mobile;
                 input.NationalCode = userFromDb.NationalCode;
-            }
-            if (input.SMSLocation == SMSType.AnonymousQuestionnaireSubmitation)
-            {
-                PreFix = SMSType.AnonymousQuestionnaireSubmitation.ToString();
-                Message = _configuration.GetSection("RegisterText").Value.Replace("{0}", sendSMSDto.SMSCode);
-            }
-            //_cacheManager.GetCache("SMS").TryGetValue(PreFix + input.Recipient + input.NationalCode, out objectSMS);
-            //string objectSMSString = RedisHelper.Connection.GetDatabase().StringGet(PreFix + input.Recipient + input.NationalCode);
-            string objectSMSString = await _cacheManager.GetStringAsync(input.Recipient + input.NationalCode, PreFix, new() { Provider = CacheProviderEnum.Redis,RedisHash = false});
-            if (objectSMSString == null)
-            {
-                objectSMSString = "";
-            }
-            RegistrationSMSDto sendSMSDFromCache = Newtonsoft.Json.JsonConvert.DeserializeObject<RegistrationSMSDto>(objectSMSString);
+                break;
+            default:
+                throw new ArgumentException($"unhandeled exception occurred for type {input.SMSLocation}");
+        }
 
-            if (sendSMSDFromCache != null)
+        string objectSMSString = await _cacheManager.GetStringAsync(
+            input.Recipient + input.NationalCode,
+            PreFix, new() { Provider = CacheProviderEnum.Redis, RedisHash = false })
+            ?? string.Empty;
+        RegistrationSMSDto sendSMSDFromCache = Newtonsoft.Json.JsonConvert.DeserializeObject<RegistrationSMSDto>(objectSMSString);
+
+        if (sendSMSDFromCache != null)
+        {
+            if (!string.IsNullOrEmpty(_configuration.GetSection("SMSValidation").Value))
             {
-                if (!string.IsNullOrEmpty(_configuration.GetSection("SMSValidation").Value))
+                if (sendSMSDFromCache != null)
                 {
-                    if (sendSMSDFromCache != null)
+                    if (DateTime.Now.Subtract(sendSMSDFromCache.LastSMSSend).TotalSeconds < 120)
                     {
-                        if (DateTime.Now.Subtract(sendSMSDFromCache.LastSMSSend).TotalSeconds < 120)
-                        {
-                            throw new UserFriendlyException("در دو دقیقه گذشته برای شما پیامک ارسال شده است");
-                        }
+                        throw new UserFriendlyException("در دو دقیقه گذشته برای شما پیامک ارسال شده است");
                     }
                 }
             }
-
-            IDataResult<string> _ret1 = null;
-
-            SendBoxServiceDto _ret = null;
-
-            if (!string.IsNullOrWhiteSpace(_configuration.GetSection("DisableSendSMS").Value))
-            {
-                sendSMSDto.SMSCode = "1";
-
-                return new SuccsessResult();
-
-            }
-            else
-            {
-                //_ret = await _magfa.Send(Message, input.Recipient);
-                //grpc
-                SendBoxServiceInput sendService = new SendBoxServiceInput
-                {
-                    Recipient = input.Recipient,
-                    Text = Message,
-                    Provider = ProviderSmsTypeEnum.Magfa,
-                    Type = TypeMessageEnum.Sms
-                };
-
-                //_ret = await _magfa.Send(Message, input.Recipient);
-                //_ret = (IDataResult<string>)await _getwayGrpcClient.SendService(sendService);
-                var _retgrpc = await _getwayGrpcClient.SendService(sendService);
-                if (_retgrpc.Success)
-                {
-                    sendSMSDto.LastSMSSend = DateTime.Now;
-                    await _cacheManager.SetStringAsync(input.Recipient + input.NationalCode, PreFix, JsonConvert.SerializeObject(sendSMSDto)
-                        , new CacheOptions() 
-                        { 
-                            Provider = CacheProviderEnum.Redis,
-                            RedisHash = false 
-                        },120);
-                }
-
-                return new SuccsessResult();
-                //grpc
-
-            }
         }
-        return new ErrorResult();
+
+        IDataResult<string> _ret1 = null;
+
+        SendBoxServiceDto _ret = null;
+
+        if (!string.IsNullOrWhiteSpace(_configuration.GetSection("DisableSendSMS").Value))
+        {
+            sendSMSDto.SMSCode = "1";
+
+            return new SuccsessResult();
+
+        }
+        else
+        {
+            //_ret = await _magfa.Send(Message, input.Recipient);
+            //grpc
+            SendBoxServiceInput sendService = new SendBoxServiceInput
+            {
+                Recipient = input.Recipient,
+                Text = Message,
+                Provider = ProviderSmsTypeEnum.Magfa,
+                Type = TypeMessageEnum.Sms
+            };
+
+            //_ret = await _magfa.Send(Message, input.Recipient);
+            //_ret = (IDataResult<string>)await _getwayGrpcClient.SendService(sendService);
+            var _retgrpc = await _getwayGrpcClient.SendService(sendService);
+            if (_retgrpc.Success)
+            {
+                sendSMSDto.LastSMSSend = DateTime.Now;
+                await _cacheManager.SetStringAsync(input.Recipient + input.NationalCode, PreFix, JsonConvert.SerializeObject(sendSMSDto)
+                    , new CacheOptions()
+                    {
+                        Provider = CacheProviderEnum.Redis,
+                        RedisHash = false
+                    }, 120);
+            }
+
+            return new SuccsessResult();
+            //grpc
+
+        }
     }
 }

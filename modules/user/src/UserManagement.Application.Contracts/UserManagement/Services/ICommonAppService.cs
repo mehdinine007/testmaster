@@ -17,5 +17,8 @@ public interface ICommonAppService : IApplicationService
     bool IsInRole(string Role);
 
     string GetRole();
+
     Task ValidateVisualizeCaptcha(VisualCaptchaInput input);
+
+    bool ValidateNumericInputFormat(string numericString);
 }
