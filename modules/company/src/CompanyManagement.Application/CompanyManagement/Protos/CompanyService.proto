@@ -9,8 +9,41 @@ package CompanyService;
 
 service CompanyServiceGrpc{
 	rpc CheckOrderDeliveryDate(ClientOrderDetailRequest) returns (ClientOrderDetailResponse);
+	rpc GetOrderDetailList(ClientOrderDetailListRequest) returns (ClientOrderDetailListResponse);
 
 }
+message PaypaidPrice
+{
+	     google.protobuf.Timestamp TranDate =1;
+         int64 PayedPrice =2;
+}
+message TurnDate
+{
+	     google.protobuf.Timestamp StartTurnDate =1;
+         google.protobuf.Timestamp EndTurnDate =2;
+}
+message ClientOrderDetailListResponse
+{
+   repeated ClientOrderDetail ClientOrderDetail =1;
+       
+}
+message ClientOrderDetail
+{
+	   google.protobuf.Timestamp DeliveryDate =1;
+	   google.protobuf.Timestamp FactorDate =2;
+	   google.protobuf.Timestamp IntroductionDate =3;
+       int32 SaleType =4;
+	   string CarCode =5;
+	   string CarDesc =6;
+       int32 ModelType =7;
+       repeated PaypaidPrice PaypaidPrice =8;
+       repeated TurnDate TurnDate =9;
+}
+
+message ClientOrderDetailListRequest{
+	string NationalCode = 1;
+}
+
 message ClientOrderDetailRequest{
 	string NationalCode = 1;
 	int64 OrderId = 2;

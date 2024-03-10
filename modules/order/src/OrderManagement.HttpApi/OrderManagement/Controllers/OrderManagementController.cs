@@ -8,6 +8,7 @@ using Volo.Abp.Auditing;
 using System;
 using OrderManagement.Domain.Shared;
 using IFG.Core.Utility.Tools;
+using OrderManagement.Application.Contracts.OrderManagement.Dtos.Grpc.Client;
 
 namespace OrderManagement.HttpApi;
 
@@ -93,5 +94,8 @@ public class OrderManagementController
     [HttpPost]
     public async Task RetryPaymentForVerify()
         => await _orderAppService.RetryPaymentForVerify();
+    [HttpGet]
+    public async Task<List<ClientOrderDetailDto>> GetOrderDetailList(string nationalCode)
+        => await _orderAppService.GetOrderDetailList(nationalCode);
 
 }

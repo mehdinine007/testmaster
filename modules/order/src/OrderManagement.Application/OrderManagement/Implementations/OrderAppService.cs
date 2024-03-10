@@ -33,6 +33,7 @@ using Volo.Abp.Data;
 using Newtonsoft.Json;
 using StackExchange.Redis;
 using OrderManagement.Application.Contracts.OrderManagement;
+using OrderManagement.Application.Contracts.OrderManagement.Dtos.Grpc.Client;
 
 
 
@@ -65,6 +66,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
     private readonly IRepository<CarMakerBlackList, long> _blackListRepository;
     private readonly IRepository<CustomerPriority> _customerPriorityRepository;
     private readonly IUserDataAccessService _userDataAccessService;
+    private readonly ICompanyGrpcClient _companyGrpcClient;
 
     public OrderAppService(ICommonAppService commonAppService,
                            IBaseInformationService baseInformationAppService,
@@ -91,7 +93,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
                            IRepository<Priority, int> priorityRepository,
                            IOrganizationService organizationService,
                            IRepository<CarMakerBlackList, long> blackListRepository,
-                           IRepository<CustomerPriority> customerPriorityRepository
+                           IRepository<CustomerPriority> customerPriorityRepository,
+                           ICompanyGrpcClient companyGrpcClient
 ,
                            IUserDataAccessService userDataAccessService)
     {
@@ -120,6 +123,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         _blackListRepository = blackListRepository;
         _customerPriorityRepository = customerPriorityRepository;
         _userDataAccessService = userDataAccessService;
+        _companyGrpcClient = companyGrpcClient;
     }
 
 
@@ -1167,7 +1171,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
     {
         using (var auditingScope = _auditingManager.BeginScope())
         {
-            
+
             var (status, paymentId, paymentSecret) =
             (callBackRequest.StatusCode, callBackRequest.PaymentId, callBackRequest.AdditionalData);
             int orderId = default;
@@ -1295,9 +1299,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     OrderId = order.Id,
                     Status = status
                 };
-               
+
             }
-            
+
             catch (Exception e)
             {
                 comments.Add(new OrderLog
@@ -1313,7 +1317,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     OrderId = orderId
                 };
             }
-           
+
             finally
             {
                 _auditingManager.Current.Log.SetProperty("IPgCallBackLog", comments);
@@ -1559,4 +1563,12 @@ public class OrderAppService : ApplicationService, IOrderAppService
             .FirstOrDefault(x => x == nationalCode);
         return !string.IsNullOrEmpty(priority);
     }
+
+    public async Task<List<ClientOrderDetailDto>> GetOrderDetailList(string nationalCode)
+    {
+        var clientOrderDetailDto = await _companyGrpcClient.GetOrderDetailList(nationalCode);
+        return clientOrderDetailDto;
+
+    }
+
 }

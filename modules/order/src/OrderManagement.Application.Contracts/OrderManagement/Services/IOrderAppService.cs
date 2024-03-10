@@ -1,4 +1,5 @@
-﻿using OrderManagement.Domain.Shared;
+﻿using OrderManagement.Application.Contracts.OrderManagement.Dtos.Grpc.Client;
+using OrderManagement.Domain.Shared;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -34,5 +35,6 @@ namespace OrderManagement.Application.Contracts.Services
         Task<IPaymentResult> CheckoutPayment(IPgCallBackRequest callBackRequest);
 
         Task<bool> NationalCodeExistsInPriority(string nationalCode);
+        public Task<List<ClientOrderDetailDto>> GetOrderDetailList(string nationalCode);
     }
 }

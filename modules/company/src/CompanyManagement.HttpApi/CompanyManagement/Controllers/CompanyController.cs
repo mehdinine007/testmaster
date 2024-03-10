@@ -9,6 +9,7 @@ using CompanyManagement.Domain.Shared.CompanyManagement;
 using CompanyManagement.Application.Contracts;
 using Esale.Share.Authorize;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using CompanyManagement.Application.CompanyManagement.Implementations;
 
 namespace CompanyManagement.HttpApi.OrderManagement.Controllers;
 
@@ -18,8 +19,12 @@ namespace CompanyManagement.HttpApi.OrderManagement.Controllers;
 public class CompanyController : Controller
 {
     private readonly ICompanyAppService _companyAppService;
-    public CompanyController(ICompanyAppService companyAppService)
-        => _companyAppService = companyAppService;
+    private readonly IClientOrderDetailCompanyService _clientOrderDetailCompanyService;
+    public CompanyController(ICompanyAppService companyAppService, IClientOrderDetailCompanyService clientOrderDetailCompanyService)
+    { _companyAppService = companyAppService;
+        _clientOrderDetailCompanyService = clientOrderDetailCompanyService;
+    }
+        
     [HttpPost]
     public List<CustomersWithCars> GetCustomersAndCars(GetCustomersAndCarsDto input)
     => _companyAppService.GetCustomersAndCars(input);
@@ -31,7 +36,7 @@ public class CompanyController : Controller
     [HttpPost]
     public async Task<bool> SubmitOrderInformations(List<ClientsOrderDetailByCompanyDto> clientsOrderDetailByCompnayDtos)
     {
-        return await _companyAppService.SubmitOrderInformations(clientsOrderDetailByCompnayDtos);
+        return await _clientOrderDetailCompanyService.Save(clientsOrderDetailByCompnayDtos);
     }
 
     [HttpGet]

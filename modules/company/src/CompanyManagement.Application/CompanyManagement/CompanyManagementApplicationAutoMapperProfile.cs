@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using CompanyManagement.Application.Contracts;
 using CompanyManagement.Application.Contracts.CompanyManagement;
+using CompanyManagement.Application.Contracts.CompanyManagement.Dto;
 using CompanyManagement.Application.Contracts.CompanyManagement.Dto.BankDtos;
 using CompanyManagement.Application.Contracts.CompanyManagement.Dto.OldCarDtos;
 using CompanyManagement.Domain.CompanyManagement;
@@ -31,19 +32,22 @@ namespace CompanyManagement.Application.CompanyManagement
             .ForMember(x => x.IntroductionYear, opt => opt.MapFrom(x => x.IntroductionDate == null ? 0 : pc.GetYear(x.IntroductionDate.Value)))
             .ForMember(x => x.IntroductionMonth, opt => opt.MapFrom(x => x.IntroductionDate == null ? 0 : pc.GetMonth(x.IntroductionDate.Value)))
             .ForMember(x => x.IntroductionDay, opt => opt.MapFrom(x => x.IntroductionDate == null ? 0 : pc.GetDayOfMonth(x.IntroductionDate.Value)));
-            CreateMap<PaypaidpriceDto, CompanyPaypaidPrices>()
+            CreateMap<PaypaidPriceDto, CompanyPaypaidPrices>()
             .ForMember(x => x.TranYear, opt => opt.MapFrom(x =>  pc.GetYear(x.TranDate)))
             .ForMember(x => x.TranMonth, opt => opt.MapFrom(x => pc.GetMonth(x.TranDate)))
-            .ForMember(x => x.TranDay, opt => opt.MapFrom(x =>   pc.GetDayOfMonth(x.TranDate)));
+            .ForMember(x => x.TranDay, opt => opt.MapFrom(x =>   pc.GetDayOfMonth(x.TranDate)))
+            .ReverseMap();
             CreateMap<CompanyProductionDto, CompanyProduction>();
             CreateMap<TurnDateDto, CompanySaleCallDates>()
-                .ForMember(x => x.ClientsOrderDetailByCompanyId, option => option.Ignore());
+                .ForMember(x => x.ClientsOrderDetailByCompanyId, option => option.Ignore())
+                .ReverseMap();
             //CreateMap<PaypaidpriceDto, CompanyPaypaidPrices>().ReverseMap();
             //CreateMap<TurnDateDto, CompanySaleCallDates>().ReverseMap();
             CreateMap<AdvocacyUsersFromBankDto, AdvocacyUsersFromBank>().ReverseMap();
             CreateMap<UserRejectionFromBankDto, UserRejectionFromBank>().ReverseMap();
             CreateMap<OldCarDto, OldCar>().ReverseMap();
             CreateMap<OldCarCreateDto, OldCar>().ReverseMap();
+            CreateMap<ClientOrderDetailDto, ClientsOrderDetailByCompany>().ReverseMap();
         }
 
     }
