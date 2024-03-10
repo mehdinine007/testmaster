@@ -1,23 +1,17 @@
 ﻿using IFG.Core.Attributes;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace ReportManagement.Domain.Shared.ReportManagement.Enums
+namespace ReportManagement.Domain.Shared.ReportManagement.Enums;
+
+public enum WidgetTypeEnum
 {
-    public enum WidgetTypeEnum
-    {
-        [EnumProperty(Description = "میله ای")]
-        Bar = 1,
-        [EnumProperty(Description = "ستونی")]
-        Column = 2,
-        [EnumProperty(Description = "دایره ای")]
-        Pie = 3,
-        [EnumProperty(Description = "خطی")]
-        Line = 4,
-        [EnumProperty(Description = "گرید")]
-        Grid = 5
-    }
+    [EnumProperty(Description = "میله ای")]
+    Bar = 1,
+    [EnumProperty(Description = "ستونی")]
+    Column = 2,
+    [EnumProperty(Description = "دایره ای")]
+    Pie = 3,
+    [EnumProperty(Description = "خطی")]
+    Line = 4,
+    [EnumProperty(Description = "گرید")]
+    Grid = 5
 }

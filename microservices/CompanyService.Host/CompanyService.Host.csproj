@@ -52,7 +52,6 @@
         <ProjectReference Include="..\..\modules\company\src\CompanyManagement.HttpApi\CompanyManagement.HttpApi.csproj" />
         <ProjectReference Include="..\..\modules\company\src\OldCarManagement.HttpApi\OldCarManagement.HttpApi.csproj" />
         <ProjectReference Include="..\..\shared\Extensions\Extensions.csproj" />
-        <ProjectReference Include="..\..\shared\IFG.Core\IFG.Core.csproj" />
         <ProjectReference Include="..\..\shared\MsDemo.Shared\MsDemo.Shared.csproj" />
     </ItemGroup>
 

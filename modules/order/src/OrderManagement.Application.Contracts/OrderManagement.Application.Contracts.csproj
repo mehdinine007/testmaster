@@ -1,32 +1,32 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
+	<PropertyGroup>
 		<TargetFramework>net7.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<RootNamespace />
-    </PropertyGroup>
+	</PropertyGroup>
 
 	<PropertyGroup>
 		<RootNamespace>OrderManagement.Application.Contracts</RootNamespace>
 	</PropertyGroup>
-	
-    <ItemGroup>
-        <PackageReference Include="AutoMapper" Version="12.0.0" />
-        <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
-        <PackageReference Include="Volo.Abp.Ddd.Application" Version="7.2.1" />
+
+	<ItemGroup>
+		<PackageReference Include="AutoMapper" Version="12.0.0" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+		<PackageReference Include="Volo.Abp.Ddd.Application" Version="7.2.1" />
 		<PackageReference Include="Volo.Abp.MongoDB" Version="7.2.1" />
+		<PackageReference Include="IFG.Core" Version="1.1.0" />
 	</ItemGroup>
 
-    <ItemGroup>
-        <EmbeddedResource Include="ProductManagement\Localization\ApplicationContracts\*.json" />
-        <Content Remove="ProductManagement\Localization\ApplicationContracts\*.json" />
-    </ItemGroup>
+	<ItemGroup>
+		<EmbeddedResource Include="ProductManagement\Localization\ApplicationContracts\*.json" />
+		<Content Remove="ProductManagement\Localization\ApplicationContracts\*.json" />
+	</ItemGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\..\..\..\shared\IFG.Core\IFG.Core.csproj" />
-      <ProjectReference Include="..\OrderManagement.Domain.Shared\OrderManagement.Domain.Shared.csproj" />
-	  <ProjectReference Include="..\..\..\..\shared\Licence\Licence.csproj" />
-	  <ProjectReference Include="..\OrderManagement.Domain\OrderManagement.Domain.csproj" />
-    </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\OrderManagement.Domain.Shared\OrderManagement.Domain.Shared.csproj" />
+		<ProjectReference Include="..\..\..\..\shared\Licence\Licence.csproj" />
+		<ProjectReference Include="..\OrderManagement.Domain\OrderManagement.Domain.csproj" />
+	</ItemGroup>
 
 </Project>

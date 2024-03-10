@@ -1,5 +1,4 @@
-﻿using IFG.Core.Bases;
-using Licence;
+﻿using Licence;
 
 namespace CompanyManagement.Application.Contracts;
 

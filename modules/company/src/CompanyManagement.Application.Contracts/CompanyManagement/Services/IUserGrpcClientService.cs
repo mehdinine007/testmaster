@@ -1,10 +1,9 @@
 ﻿using IFG.Core.Infrastructures.TokenAuth;
 using Volo.Abp.Application.Services;
 
-namespace CompanyManagement.Application.Contracts.CompanyManagement.IServices
+namespace CompanyManagement.Application.Contracts.CompanyManagement.IServices;
+
+public interface IUserGrpcClientService : IApplicationService
 {
-    public interface IUserGrpcClientService : IApplicationService
-    {
-        Task<AuthenticateResponseDto> Athenticate(AuthenticateReqDto input);
-    }
+    Task<AuthenticateResponseDto> Athenticate(AuthenticateReqDto input);
 }
