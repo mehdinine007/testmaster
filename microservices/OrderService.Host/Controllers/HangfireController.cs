@@ -38,14 +38,14 @@ namespace NoyanHangFire.Controllers
         [HttpPost("addRetryForVerify")]
         public async Task<IActionResult> AddRetryForVerify()
         {
-            _pgJob.RetryForVerify();
+            await _pgJob.RetryForVerify();
             return Ok($"BackgroundJob Job Scheduled Inserted");
         }
 
         [HttpPost("addRetryOrderForVerify")]
         public async Task<IActionResult> AddRetryOrderForVerify()
         {
-            _pgJob.RetryOrderForVerify();
+            await _pgJob.RetryOrderForVerify();
             return Ok($"BackgroundJob Job Scheduled Inserted");
         }
     }
