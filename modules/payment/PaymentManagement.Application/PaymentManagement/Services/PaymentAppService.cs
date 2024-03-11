@@ -2560,7 +2560,7 @@ namespace PaymentManagement.Application.Servicess
         }
         private async Task RetryForVerifyToPasargadAsync(PaymentDto payment, string pspAccountJsonProps)
         {
-            await VerifyToParsianAsync(payment, pspAccountJsonProps, true);
+            await VerifyToPasargadAsync(payment, pspAccountJsonProps, true);
             payment.RetryCount += 1;
             await _paymentRepository.AttachAsync(ObjectMapper.Map<PaymentDto, Payment>(payment), o => o.RetryCount);
         }
