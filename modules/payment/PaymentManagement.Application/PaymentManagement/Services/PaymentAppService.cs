@@ -318,6 +318,7 @@ namespace PaymentManagement.Application.Servicess
                 NationalCode = input.NationalCode,
                 Mobile = input.Mobile,
                 AdditionalData = input.AdditionalData,
+                TransactionCode = string.Empty,
                 TransactionDate = DateTime.Now,
                 TransactionPersianDate = DateUtil.Now,
                 FilterParam1 = input.FilterParam1,
