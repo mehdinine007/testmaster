@@ -339,23 +339,30 @@ public class OrderAppService : ApplicationService, IOrderAppService
         if (SaleDetailDto.SaleProcess == SaleProcessType.CashSale)
         {
 
-            var recentlyAdded = orderQueryResult.Where(x => x.OrderStatus == OrderStatusType.RecentlyAdded).FirstOrDefault();
-            if (recentlyAdded != null)
+            var order = orderQueryResult.FirstOrDefault(x => x.OrderStatus == OrderStatusType.RecentlyAdded || x.OrderStatus== OrderStatusType.PaymentSucceeded);
+            if (order != null)
             {
-                throw new UserFriendlyException(OrderConstant.RecentlyAdded, OrderConstant.RecentlyAddedId);
+                if (order.OrderStatus == OrderStatusType.RecentlyAdded)
+                {
+                    throw new UserFriendlyException(OrderConstant.RecentlyAdded, OrderConstant.RecentlyAddedId);
+                }
+
+                if (order.OrderStatus == OrderStatusType.PaymentSucceeded)
+                {
+                    throw new UserFriendlyException(OrderConstant.PaymentSucceeded, OrderConstant.PaymentSucceededId);
+                }
             };
-            var paymentSucceeded = orderQueryResult.Where(x => x.OrderStatus == OrderStatusType.PaymentSucceeded).FirstOrDefault();
-            if (paymentSucceeded != null)
+        }
+        else
+        {
+            var CustomerOrderWinner = orderQueryResult.FirstOrDefault(x => x.OrderStatus == OrderStatusType.Winner);
+            if (CustomerOrderWinner != null)
             {
-                throw new UserFriendlyException(OrderConstant.PaymentSucceeded, OrderConstant.PaymentSucceededId);
+                throw new UserFriendlyException(OrderConstant.OrderWinnerFound, OrderConstant.OrderWinnerFoundId).WithData("CustomerOrderId", CustomerOrderWinner.Id);
             }
         }
 
-        var CustomerOrderWinner = orderQueryResult.Where(x => x.OrderStatus == OrderStatusType.Winner).FirstOrDefault();
-        if (CustomerOrderWinner != null)
-        {
-            throw new UserFriendlyException(OrderConstant.OrderWinnerFound, OrderConstant.OrderWinnerFoundId).WithData("CustomerOrderId", CustomerOrderWinner.Id);
-        }
+        
 
         string EsaleTypeId = await _cacheManager.GetStringAsync("_EsaleType", RedisConstants.CommitOrderPrefix + userId.ToString()
            , new CacheOptions()
