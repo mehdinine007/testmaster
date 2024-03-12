@@ -296,7 +296,7 @@ namespace PaymentManagement.Application.Servicess
                     PaymentId = result.PaymentId,
                     Psp = pspTitle,
                     Message = Constants.HandShakeException,
-                    Parameter = ex.Message,
+                    Parameter = ex.Message + (ex.InnerException == null ? string.Empty : " InnerException: " + ex.InnerException.Message),
                 });
                 if (payment != null)
                 {
@@ -710,11 +710,11 @@ namespace PaymentManagement.Application.Servicess
                 {
                     Pasargad.HandShakeJsonResult jResult = JsonConvert.DeserializeObject<Pasargad.HandShakeJsonResult>(handShakeResult);
 
-                    result.Token = payment.Token = jResult.Data.UrlId;
-                    await _paymentRepository.AttachAsync(ObjectMapper.Map<PaymentDto, Payment>(payment), o => o.Token);
-
                     if (jResult.ResultCode == 0)
                     {
+                        result.Token = payment.Token = jResult.Data.UrlId;
+                        await _paymentRepository.AttachAsync(ObjectMapper.Map<PaymentDto, Payment>(payment), o => o.Token);
+
                         result.StatusCode = (int)StatusCodeEnum.Success;
                         var inputParams = new System.Collections.Specialized.NameValueCollection();
                         result.HtmlContent = StringUtil.GenerateForm(jResult.Data.Url, "get", inputParams);
@@ -734,7 +734,7 @@ namespace PaymentManagement.Application.Servicess
                     PaymentId = payment.Id,
                     Psp = PspEnum.Pasargad.ToString(),
                     Message = Constants.HandShakeException,
-                    Parameter = ex.Message,
+                    Parameter = ex.Message + (ex.InnerException == null ? string.Empty : " InnerException: " + ex.InnerException.Message),
                 });
                 payment.PaymentStatusId = (int)PaymentStatusEnum.Failed;
                 await _paymentRepository.AttachAsync(ObjectMapper.Map<PaymentDto, Payment>(payment), o => o.PaymentStatusId);
