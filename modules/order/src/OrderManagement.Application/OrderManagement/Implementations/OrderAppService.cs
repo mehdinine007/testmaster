@@ -596,7 +596,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             handShakeResponse = await _ipgServiceProvider.HandShakeWithPsp(new PspHandShakeRequest()
             {
                 CallBackUrl = _configuration.GetValue<string>("CallBackUrl"),
-                Amount = (long)SaleDetailDto.CarFee,
+                Amount = (long)SaleDetailDto.MinimumAmountOfProxyDeposit,
                 Mobile = customer.MobileNumber,
                 AdditionalData = customerOrder.PaymentSecret.HasValue ? customerOrder.PaymentSecret.Value.ToString() : string.Empty,
                 NationalCode = nationalCode,
