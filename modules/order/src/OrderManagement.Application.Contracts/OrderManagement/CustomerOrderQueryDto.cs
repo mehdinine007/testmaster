@@ -12,6 +12,5 @@ namespace OrderManagement.Application.Contracts.OrderManagement
     {
         public List<AttachmentEntityTypeEnum> AttachmentType { get; set; }
         public List<AttachmentLocationEnum> Attachmentlocation { get; set; }
-        public List<int> OrderStatus { get; set; }
     }
 }

@@ -94,9 +94,4 @@ public class OrderManagementController
     [HttpPost]
     public async Task RetryPaymentForVerify()
         => await _orderAppService.RetryPaymentForVerify();
-
-    [HttpGet]
-    public async Task<CustomerOrder_OrderDetailTreeDto> GetActiveCustomerOrder(string attachmentEntityType, string attachmentlocation)
-        => await _orderAppService.GetActiveCustomerOrder(new CustomerOrderQueryDto {AttachmentType= EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(attachmentEntityType),Attachmentlocation= EnumHelper.ConvertStringToEnum<AttachmentLocationEnum>(attachmentlocation) });
-
 }

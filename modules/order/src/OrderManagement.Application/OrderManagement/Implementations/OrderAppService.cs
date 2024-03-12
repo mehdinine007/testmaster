@@ -195,8 +195,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
     public async Task<CommitOrderResultDto> CommitOrder(CommitOrderDto commitOrderDto)
     {
         await _commonAppService.ValidateOrderStep(OrderStepEnum.SaveOrder);
-        var allowedStatusTypes = new List<int>() { (int)OrderStatusType.RecentlyAdded, (int)OrderStatusType.PaymentSucceeded };
-
         Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
         TimeSpan ttl = DateTime.Now.Subtract(DateTime.Now);
 
@@ -333,17 +331,30 @@ public class OrderAppService : ApplicationService, IOrderAppService
             await CancelOrder(commitOrderDto.CancelOrderId.Value);
         }
         _baseInformationAppService.CheckBlackList(SaleDetailDto.ESaleTypeId); //if user reject from advocacy
-        var CustomerOrderWinner = orderQuery
-            .AsNoTracking()
-            .Select(x => new { x.UserId, x.OrderStatus, x.SaleDetailId, x.DeliveryDateDescription, x.Id })
-            .OrderByDescending(x => x.Id)
-            .FirstOrDefault(
-                y => y.UserId == userId &&
-             (y.OrderStatus == OrderStatusType.Winner)
-         );
+        var orderQueryResult = orderQuery
+           .AsNoTracking()
+           .Select(x => new { x.UserId, x.OrderStatus, x.SaleDetailId, x.DeliveryDateDescription, x.Id })
+           .OrderByDescending(x => x.Id);
+
+        if (SaleDetailDto.SaleProcess == SaleProcessType.CashSale)
+        {
+
+            var recentlyAdded = orderQueryResult.Where(x => x.OrderStatus == OrderStatusType.RecentlyAdded).FirstOrDefault();
+            if (recentlyAdded != null)
+            {
+                throw new UserFriendlyException(OrderConstant.RecentlyAdded, OrderConstant.RecentlyAddedId);
+            };
+            var paymentSucceeded = orderQueryResult.Where(x => x.OrderStatus == OrderStatusType.PaymentSucceeded).FirstOrDefault();
+            if (paymentSucceeded != null)
+            {
+                throw new UserFriendlyException(OrderConstant.PaymentSucceeded, OrderConstant.PaymentSucceededId);
+            }
+        }
+
+        var CustomerOrderWinner = orderQueryResult.Where(x => x.OrderStatus == OrderStatusType.Winner).FirstOrDefault();
         if (CustomerOrderWinner != null)
         {
-            throw new UserFriendlyException(OrderConstant.OrderWinnerFound, OrderConstant.OrderWinnerFoundId);
+            throw new UserFriendlyException(OrderConstant.OrderWinnerFound, OrderConstant.OrderWinnerFoundId).WithData("CustomerOrderId", CustomerOrderWinner.Id);
         }
 
         string EsaleTypeId = await _cacheManager.GetStringAsync("_EsaleType", RedisConstants.CommitOrderPrefix + userId.ToString()
@@ -384,173 +395,109 @@ public class OrderAppService : ApplicationService, IOrderAppService
         }
         Console.WriteLine("aftercachecchek");
 
-
-
-        ///////////////////////////////////iran/////////////
-        if (_configuration.GetSection("IsIranCellActive").Value == "7")
-        {
-            object objectCommitOrderIran = null;
-            //_cacheManager.GetCache("CommitOrderIran").
-            //TryGetValue(
-            //    userId.ToString() + "_" +
-            //    SaleDetailDto.SaleId.ToString()
-            //    , out objectCommitOrderIran);
-            objectCommitOrderIran = await _cacheManager.GetStringAsync(userId.ToString() + "_" + SaleDetailDto.SaleId.ToString(), "",
-                new CacheOptions()
-                {
-                    Provider = CacheProviderEnum.Redis
-                });
-            if (objectCommitOrderIran != null)
-            {
-                throw new UserFriendlyException(OrderConstant.OrderWinnerFound, OrderConstant.OrderWinnerFoundId);
-            }
-            else
-            {
-                var allowedOrderStatuses = new List<int>() { (int)OrderStatusType.RecentlyAdded, (int)OrderStatusType.PaymentNotVerified };
-                CustomerOrder customerOrderIranFromDb =
-                _commitOrderRepository
-                .ToListAsync()
-                .Result
-                .Select(x => new CustomerOrder
-                {
-                    UserId = x.UserId,
-                    SaleId = x.SaleId,
-                    OrderStatus = x.OrderStatus
-                })
-                .FirstOrDefault(x =>
-                   x.UserId == userId &&
-                   x.SaleId == SaleDetailDto.SaleId &&
-                   //x.OrderStatus == OrderStatusType.RecentlyAdded
-                   allowedOrderStatuses.Any(y => (int)x.OrderStatus == y)
-                   );
-                if (customerOrderIranFromDb != null)
-                {
-                    //await _cacheManager.GetCache("CommitOrderIran").
-                    //   SetAsync(
-                    //       userId.ToString() + "_" +
-                    //       SaleDetailDto.SaleId.ToString()
-                    //       , customerOrderIranFromDb.Id
-                    //       , TimeSpan.FromSeconds(ttl.TotalSeconds));
-
-                    await _cacheManager.SetStringAsync(userId.ToString() + "_" +
-                           SaleDetailDto.SaleId.ToString(),
-                           "",
-                           customerOrderIranFromDb.Id.ToString(),
-                           new CacheOptions()
-                           {
-                               Provider = CacheProviderEnum.Redis
-                           }, ttl.TotalSeconds);
-                    throw new UserFriendlyException(OrderConstant.OrderWinnerFound, OrderConstant.OrderWinnerFoundId);
-
-
-                }
-            }
-        }
         ///////////////////////////////vardati chek dar bakhshnameh///////////////////////////
+
+        object objectCommitOrderIran = null;
+
+
+        objectCommitOrderIran = await _cacheManager.GetStringAsync(userId.ToString() + "_" +
+            commitOrderDto.PriorityId.ToString() + "_" +
+            SaleDetailDto.SaleId.ToString(),
+            RedisConstants.CommitOrderPrefix,
+            new CacheOptions()
+            {
+                Provider = CacheProviderEnum.Redis
+            });
+
+        if (objectCommitOrderIran != null && !commitOrderDto.OrderId.HasValue)
+        {
+            throw new UserFriendlyException(OrderConstant.OrderWinnerFound, OrderConstant.OrderWinnerFoundId);
+        }
         else
         {
-            object objectCommitOrderIran = null;
+            var customerOrderIranFromDb =
+            orderQuery
+            .AsNoTracking()
+            .Select(x => new CustomerOrderDto
+            {
+                OrderStatus = (int)x.OrderStatus,
+                SaleId = x.SaleId,
+                PriorityId = x.PriorityId,
+                UserId = x.UserId,
+                Id = x.Id
+            })
+            .FirstOrDefault(y =>
+               y.UserId == userId
+               //y.OrderStatus == OrderStatusType.RecentlyAdded
+               && y.SaleId == SaleDetailDto.SaleId
+               && y.PriorityId == (PriorityEnum)commitOrderDto.PriorityId
+               && y.OrderStatus == (int)OrderStatusType.RecentlyAdded);
 
 
-            objectCommitOrderIran = await _cacheManager.GetStringAsync(userId.ToString() + "_" +
-                commitOrderDto.PriorityId.ToString() + "_" +
-                SaleDetailDto.SaleId.ToString(),
+            if (customerOrderIranFromDb != null && (!commitOrderDto.OrderId.HasValue || customerOrderIranFromDb.Id != commitOrderDto.OrderId.Value))
+            {
+
+                await _cacheManager.SetWithPrefixKeyAsync("_" + commitOrderDto.PriorityId.ToString() + "_" + SaleDetailDto.SaleId.ToString(),
+                       RedisConstants.CommitOrderPrefix + userId.ToString(),
+                       customerOrderIranFromDb.Id.ToString(),
+                       ttl.TotalSeconds);
+                throw new UserFriendlyException(OrderConstant.OrderWinnerFound, OrderConstant.OrderWinnerFoundId).WithData("CustomerOrderId", customerOrderIranFromDb.Id);
+            }
+
+        }
+        object objectCustomerOrderFromCache = null;
+
+
+        objectCustomerOrderFromCache = await _cacheManager.GetStringAsync(
+                userId.ToString() + "_" +
+                SaleDetailDto.Id.ToString(),
                 RedisConstants.CommitOrderPrefix,
                 new CacheOptions()
                 {
                     Provider = CacheProviderEnum.Redis
                 });
 
-            if (objectCommitOrderIran != null && !commitOrderDto.OrderId.HasValue)
-            {
-                throw new UserFriendlyException(OrderConstant.OrderWinnerFound, OrderConstant.OrderWinnerFoundId);
-            }
-            else
-            {
-                var customerOrderIranFromDb =
-                orderQuery
-                .AsNoTracking()
-                .Select(x => new CustomerOrderDto
+        if (objectCustomerOrderFromCache != null
+
+
+                )
+        {
+            throw new UserFriendlyException("این خودرو را قبلا انتخاب نموده اید");
+        }
+        if (objectCustomerOrderFromCache == null)
+        {
+            var CustomerOrderFromDb = orderQuery
+                 .AsNoTracking()
+                .Select(x => new CustomerOrder
                 {
-                    OrderStatus = (int)x.OrderStatus,
+                    SaleDetailId = x.SaleDetailId,
                     SaleId = x.SaleId,
-                    PriorityId = x.PriorityId,
                     UserId = x.UserId,
-                    Id = x.Id
+                    OrderStatus = x.OrderStatus
                 })
-                .FirstOrDefault(y =>
-                   y.UserId == userId
-                   //y.OrderStatus == OrderStatusType.RecentlyAdded
-                   && y.SaleId == SaleDetailDto.SaleId
-                   && y.PriorityId == (PriorityEnum)commitOrderDto.PriorityId
-                   && allowedStatusTypes.Any(d => y.OrderStatus == d));
+                .FirstOrDefault(x =>
+            x.UserId == userId
+            && x.SaleDetailId == (int)SaleDetailDto.Id
+            && x.OrderStatus == OrderStatusType.RecentlyAdded);
 
 
-                if (customerOrderIranFromDb != null && (!commitOrderDto.OrderId.HasValue || customerOrderIranFromDb.Id != commitOrderDto.OrderId.Value))
-                {
-
-                    await _cacheManager.SetWithPrefixKeyAsync("_" + commitOrderDto.PriorityId.ToString() + "_" + SaleDetailDto.SaleId.ToString(),
-                           RedisConstants.CommitOrderPrefix + userId.ToString(),
-                           customerOrderIranFromDb.Id.ToString(),
-                           ttl.TotalSeconds);
-                    throw new UserFriendlyException(OrderConstant.OrderWinnerFound, OrderConstant.OrderWinnerFoundId);
-                }
-
-            }
-            object objectCustomerOrderFromCache = null;
-
-
-            objectCustomerOrderFromCache = await _cacheManager.GetStringAsync(
-                    userId.ToString() + "_" +
-                    SaleDetailDto.Id.ToString(),
-                    RedisConstants.CommitOrderPrefix,
-                    new CacheOptions()
-                    {
-                        Provider = CacheProviderEnum.Redis
-                    });
-
-            if (objectCustomerOrderFromCache != null
+            if (CustomerOrderFromDb != null
 
 
                     )
             {
-                throw new UserFriendlyException("این خودرو را قبلا انتخاب نموده اید");
+
+                await _cacheManager.SetWithPrefixKeyAsync("_" + SaleDetailDto.Id.ToString(),
+                          RedisConstants.CommitOrderPrefix + userId.ToString(),
+                          CustomerOrderFromDb.Id.ToString(),
+                          ttl.TotalSeconds);
+                throw new UserFriendlyException("این خودرو را قبلا انتخاب نموده اید.");
+
             }
-            if (objectCustomerOrderFromCache == null)
-            {
-                var CustomerOrderFromDb = orderQuery
-                     .AsNoTracking()
-                    .Select(x => new CustomerOrder
-                    {
-                        SaleDetailId = x.SaleDetailId,
-                        SaleId = x.SaleId,
-                        UserId = x.UserId,
-                        OrderStatus = x.OrderStatus
-                    })
-                    .FirstOrDefault(x =>
-                x.UserId == userId
-                && x.SaleDetailId == (int)SaleDetailDto.Id
-                && allowedStatusTypes.Any(y => y == (int)x.OrderStatus));
-
-
-                if (CustomerOrderFromDb != null
-
-
-                        )
-                {
-
-                    await _cacheManager.SetWithPrefixKeyAsync("_" + SaleDetailDto.Id.ToString(),
-                              RedisConstants.CommitOrderPrefix + userId.ToString(),
-                              CustomerOrderFromDb.Id.ToString(),
-                              ttl.TotalSeconds);
-                    throw new UserFriendlyException("این خودرو را قبلا انتخاب نموده اید.");
-
-                }
-            }
-
-
-
         }
+
+
+
 
 
 
@@ -755,11 +702,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
     [UnitOfWork(false, IsolationLevel.ReadUncommitted)]
     [SecuredOperation(OrderAppServicePermissionConstants.GetCustomerOrderList)]
-    public async Task<CustomerOrder_OrderDetailTreeDto> GetCustomerOrderList(CustomerOrderQueryDto  customerOrderQueryDto)
-    {
-       return await GetAllCustomerOrder(new CustomerOrderQueryDto { AttachmentType= customerOrderQueryDto.AttachmentType, Attachmentlocation= customerOrderQueryDto.Attachmentlocation });
-    }
-    private async Task<CustomerOrder_OrderDetailTreeDto> GetAllCustomerOrder(CustomerOrderQueryDto customerOrderQueryDto)
+    public async Task<CustomerOrder_OrderDetailTreeDto> GetCustomerOrderList(CustomerOrderQueryDto customerOrderQueryDto)
     {
         var userId = _commonAppService.GetUserId();
         var orderRejections = _orderRejectionTypeReadOnlyRepository.WithDetails().ToList();
@@ -811,10 +754,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 SaleId = x.SaleId,
                 TrackingCode = x.TrackingCode
             });
-        if (customerOrderQueryDto.OrderStatus is not null)
-        {
-            customerOrders = customerOrders.Where(x=> customerOrderQueryDto.OrderStatus.Any(y => x.OrderStatusCode == y));
-        }
         var cancleableDate = _configuration.GetValue<string>("CancelableDate");
         var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, customerOrders.Select(x => x.ProductId).ToList(), customerOrderQueryDto.AttachmentType, customerOrderQueryDto.Attachmentlocation);
         CustomerOrder_OrderDetailTreeDto resultObject = new();
@@ -881,15 +820,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
         });
         resultObject.OrderList = customerOrders.OrderByDescending(x => x.OrderId).ToList();
         return resultObject;
-
-
-    }
-
-    [SecuredOperation(OrderAppServicePermissionConstants.GetActiveCustomerOrder)]
-    public async Task<CustomerOrder_OrderDetailTreeDto> GetActiveCustomerOrder(CustomerOrderQueryDto customerOrderQueryDto)
-    {
-        var activeStatus = new List<int>() { (int)OrderStatusType.RecentlyAdded, (int)OrderStatusType.PaymentNotVerified };
-        return await GetAllCustomerOrder(new CustomerOrderQueryDto { OrderStatus= activeStatus, AttachmentType = customerOrderQueryDto.AttachmentType, Attachmentlocation = customerOrderQueryDto.Attachmentlocation });
     }
     [Audited]
     [UnitOfWork(isTransactional: false)]

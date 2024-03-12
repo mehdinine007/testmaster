@@ -25,8 +25,7 @@ public class OrderAppServicePermissionConstants
     public const string GetSaleDetailByUid_DisplayName = "نمایش برنامه فروش توسط UID";
     public const string GetOrderDetailById = ConstantInfo.ModuleOrder + ServiceIdentifier + "0010";
     public const string GetOrderDetailById_DisplayName = "نمایش جزییات سفارش توسط شناسه";
-    public const string GetActiveCustomerOrder = ConstantInfo.ModuleOrder + ServiceIdentifier + "0011";
-    public const string GetActiveCustomerOrder_DisplayName = "نمایش سفارشات فعال مشتریان";
+    
 
     public const string ServiceIdentifier = "0003";
     public const string ServiceDisplayName = "سرویس مدیریت سفارشات";

@@ -120,5 +120,12 @@ namespace OrderManagement.Application.Contracts
         public const string ProductNotFoundId = "9008";
         public const string OrderWinnerFound = "جهت ثبت سفارش جدید لطفا ابتدا از جزئیات سفارش، سفارش قبلی خود که احراز شده اید یا در حال بررسی می باشد را لغو نمایید";
         public const string OrderWinnerFoundId = "9009";
+        public const string RecentlyAdded = "سفارش درحال پرداخت می باشد.شما مجاز به ثبت سفارش جدید نمی باشید.";
+        public const string RecentlyAddedId = "1001";
+        public const string PaymentSucceeded = "شما قبلا سفارش از نوع موفق درسامانه دارید.مجاز به ثبت سفارش جدید نمی باشید.";
+        public const string PaymentSucceededId = "1002";
+
+
+        
     }
 }
