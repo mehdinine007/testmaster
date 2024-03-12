@@ -5,14 +5,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="IFG.Core" Version="1.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.11.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\IFG.Core\IFG.Core.csproj" />
   </ItemGroup>
 
 </Project>

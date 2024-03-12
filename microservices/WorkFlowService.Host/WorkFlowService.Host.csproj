@@ -13,6 +13,7 @@
 
     <ItemGroup>
         <PackageReference Include="Hangfire.SqlServer" Version="1.7.29" />
+        <PackageReference Include="IFG.Core" Version="1.1.0" />
         <PackageReference Include="Serilog.AspNetCore" Version="6.1.0" />
         <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
         <PackageReference Include="Serilog.Sinks.Elasticsearch" Version="9.0.0" />
@@ -40,7 +41,6 @@
         <ProjectReference Include="..\..\modules\workflow\src\WorkFlowManagement.Application\WorkFlowManagement.Application.csproj" />
         <ProjectReference Include="..\..\modules\workflow\src\WorkFlowManagement.EntityFrameworkCore\WorkFlowManagement.EntityFrameworkCore.csproj" />
         <ProjectReference Include="..\..\modules\workflow\src\WorkFlowManagement.HttpApi\WorkFlowManagement.HttpApi.csproj" />
-        <ProjectReference Include="..\..\shared\IFG.Core\IFG.Core.csproj" />
         <ProjectReference Include="..\..\shared\Extensions\Extensions.csproj" />
         <ProjectReference Include="..\..\shared\MsDemo.Shared\MsDemo.Shared.csproj" />
     </ItemGroup>
