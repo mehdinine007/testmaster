@@ -2056,7 +2056,7 @@ namespace PaymentManagement.Application.Servicess
                     bool isPaymentFailed = false;
 
                     //13031 => تراکنش در انتظار تایید است
-                    if (jResult.ResultCode == 0 && jResult.Data != null && jResult.Data.Status is not (2 or 13031))
+                    if (jResult.ResultCode == 0 && jResult.Data != null && jResult.Data.Status is not (2 or 13031 or 13029))
                     { isPaymentFailed = true; }
 
                     //13018 => یافت نشد                

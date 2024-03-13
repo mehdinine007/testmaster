@@ -15,6 +15,6 @@
         public string MaskedCardNumber { get; set; }
         public string HashedCardNumber { get; set; }
         public string RequestDate { get; set; }
-        public int Amount { get; set; }
+        public long Amount { get; set; }
     }
 }
