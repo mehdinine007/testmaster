@@ -29,7 +29,7 @@
     <None Remove="Migrations\Patch\20240221065931_addorganizationidindex.sql" />
     <None Remove="Migrations\Patch\20240221065931_deleteandupdatelevel1product.sql" />
     <None Remove="Migrations\Patch\20240221080039_update-organization.sql" />
-    <None Remove="Migrations\Programmability\CustomerCarDeliveryTime.sql" />
+    <None Remove="Migrations\Patch\20240313074425_nationalcode-index-userdataaccess.sql" />
     <None Remove="Migrations\Programmability\GetRecentCustomerAndOrder.sql" />
     <None Remove="Migrations\Programmability\Hangfire.sql" />
     <None Remove="Migrations\Programmability\spApplicantsReport.sql" />
@@ -44,6 +44,7 @@
     <None Remove="Migrations\Programmability\Sp_EsaleCarApplicantCountChart.sql" />
     <None Remove="Migrations\Programmability\sp_InsertUserDataAccess.sql" />
     <None Remove="Migrations\Schema\SchemaBase.sql" />
+    <None Remove="Migrations\Tables\AbpUsers.sql" />
     <None Remove="Migrations\Tables\ProductAndCategory_CarTip.sql" />
   </ItemGroup>
 
@@ -118,7 +119,7 @@
     <Content Include="Migrations\Patch\20240221065931_deleteandupdatelevel1product.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Migrations\Programmability\CustomerCarDeliveryTime.sql">
+    <Content Include="Migrations\Patch\20240313074425_nationalcode-index-userdataaccess.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Migrations\Programmability\GetRecentCustomerAndOrder.sql">
@@ -151,7 +152,6 @@
     <Content Include="Migrations\Programmability\spGetUserRejectionAdvocacy.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Migrations\Programmability\sp_InsertUserDataAccess.sql">
     <Content Include="Migrations\Programmability\spUserInfo.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -162,6 +162,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Migrations\Schema\SchemaBase.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Migrations\Tables\AbpUsers.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Migrations\Tables\ProductAndCategory_CarTip.sql">

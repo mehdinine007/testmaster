@@ -206,6 +206,10 @@ public class SendBoxAppService : ApplicationService, ISendBoxAppService
                         RedisHash = false
                     }, 120);
             }
+            else
+            {
+                throw new UserFriendlyException("ارسال پیامک با خطا مواجه شد.");
+            } 
 
             return new SuccsessResult();
             //grpc
