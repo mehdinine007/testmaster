@@ -16,13 +16,9 @@ using System.Text;
 using System.Text.Json;
 using System.Xml.Serialization;
 using Volo.Abp.Application.Services;
-using Volo.Abp.Auditing;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Uow;
-using Microsoft.AspNetCore.Authentication;
 using PaymentManagement.Application.Pasargad;
-using System.Linq.Dynamic.Core.Tokenizer;
-using PaymentManagement.Application.Parsian;
 
 namespace PaymentManagement.Application.Servicess
 {
@@ -141,7 +137,6 @@ namespace PaymentManagement.Application.Servicess
                 PaymentStatusId = o.PaymentStatusId
             }).FirstOrDefault(o => o.PaymentId == paymentId);
         }
-
         public async Task InsertPaymentLogAsync(PaymentLogDto input)
         {
             if (input.PaymentId != 0)
@@ -193,6 +188,11 @@ namespace PaymentManagement.Application.Servicess
             });
 
             return JsonConvert.DeserializeObject<AuthenticateJsonResult>(authenticateResult);
+        }
+        private string GetExceptionMessage(Exception ex)
+        {
+            if (ex == null || string.IsNullOrEmpty(ex.Message)) { return string.Empty; }
+            return ex.Message + ((ex.InnerException == null || string.IsNullOrEmpty(ex.InnerException.Message)) ? string.Empty : " InnerException: " + ex.InnerException.Message);
         }
 
         #region HandShake
@@ -296,7 +296,7 @@ namespace PaymentManagement.Application.Servicess
                     PaymentId = result.PaymentId,
                     Psp = pspTitle,
                     Message = Constants.HandShakeException,
-                    Parameter = ex.Message + (ex.InnerException == null ? string.Empty : " InnerException: " + ex.InnerException.Message),
+                    Parameter = GetExceptionMessage(ex),
                 });
                 if (payment != null)
                 {
@@ -427,7 +427,7 @@ namespace PaymentManagement.Application.Servicess
                     PaymentId = payment.Id,
                     Psp = PspEnum.IranKish.ToString(),
                     Message = Constants.HandShakeException,
-                    Parameter = ex.Message,
+                    Parameter = GetExceptionMessage(ex),
                 });
                 payment.PaymentStatusId = (int)PaymentStatusEnum.Failed;
                 await _paymentRepository.AttachAsync(ObjectMapper.Map<PaymentDto, Payment>(payment), o => o.PaymentStatusId);
@@ -538,7 +538,7 @@ namespace PaymentManagement.Application.Servicess
                     PaymentId = payment.Id,
                     Psp = PspEnum.Mellat.ToString(),
                     Message = Constants.HandShakeException,
-                    Parameter = ex.Message,
+                    Parameter = GetExceptionMessage(ex),
                 });
                 payment.PaymentStatusId = (int)PaymentStatusEnum.Failed;
                 await _paymentRepository.AttachAsync(ObjectMapper.Map<PaymentDto, Payment>(payment), o => o.PaymentStatusId);
@@ -626,7 +626,7 @@ namespace PaymentManagement.Application.Servicess
                     PaymentId = payment.Id,
                     Psp = PspEnum.Parsian.ToString(),
                     Message = Constants.HandShakeException,
-                    Parameter = ex.Message,
+                    Parameter = GetExceptionMessage(ex),
                 });
                 payment.PaymentStatusId = (int)PaymentStatusEnum.Failed;
                 await _paymentRepository.AttachAsync(ObjectMapper.Map<PaymentDto, Payment>(payment), o => o.PaymentStatusId);
@@ -734,7 +734,7 @@ namespace PaymentManagement.Application.Servicess
                     PaymentId = payment.Id,
                     Psp = PspEnum.Pasargad.ToString(),
                     Message = Constants.HandShakeException,
-                    Parameter = ex.Message + (ex.InnerException == null ? string.Empty : " InnerException: " + ex.InnerException.Message),
+                    Parameter = GetExceptionMessage(ex),
                 });
                 payment.PaymentStatusId = (int)PaymentStatusEnum.Failed;
                 await _paymentRepository.AttachAsync(ObjectMapper.Map<PaymentDto, Payment>(payment), o => o.PaymentStatusId);
@@ -875,7 +875,7 @@ namespace PaymentManagement.Application.Servicess
                     PaymentId = payment.Id,
                     Psp = PspEnum.IranKish.ToString(),
                     Message = Constants.BackFromPspException,
-                    Parameter = ex.Message
+                    Parameter = GetExceptionMessage(ex)
                 });
 
                 result.Message = Constants.ErrorInBackFromPsp;
@@ -1015,7 +1015,7 @@ namespace PaymentManagement.Application.Servicess
                     PaymentId = payment.Id,
                     Psp = PspEnum.Mellat.ToString(),
                     Message = Constants.BackFromPspException,
-                    Parameter = ex.Message
+                    Parameter = GetExceptionMessage(ex)
                 });
                 //   await CurrentUnitOfWork.CompleteAsync();
 
@@ -1148,7 +1148,7 @@ namespace PaymentManagement.Application.Servicess
                     PaymentId = payment.Id,
                     Psp = PspEnum.Parsian.ToString(),
                     Message = Constants.BackFromPspException,
-                    Parameter = ex.Message
+                    Parameter = GetExceptionMessage(ex)
                 });
 
                 result.Message = Constants.ErrorInBackFromPsp;
@@ -1286,7 +1286,7 @@ namespace PaymentManagement.Application.Servicess
                     PaymentId = payment.Id,
                     Psp = PspEnum.Pasargad.ToString(),
                     Message = Constants.BackFromPspException,
-                    Parameter = ex.Message
+                    Parameter = GetExceptionMessage(ex)
                 });
 
                 result.Message = Constants.ErrorInBackFromPsp;
@@ -1311,6 +1311,7 @@ namespace PaymentManagement.Application.Servicess
                     Id = o.Id,
                     TraceNo = o.TraceNo,
                     TransactionCode = o.TransactionCode,
+                    TransactionDate = o.TransactionDate,
                     Token = o.Token,
                     PspAccountId = o.PspAccountId,
                     PaymentStatusId = o.PaymentStatusId
@@ -1403,7 +1404,7 @@ namespace PaymentManagement.Application.Servicess
                     PaymentId = payment.Id,
                     Psp = PspEnum.IranKish.ToString(),
                     Message = isRetryForVerify ? Constants.RetryForVerifyException : Constants.VerifyException,
-                    Parameter = ex.Message
+                    Parameter = GetExceptionMessage(ex)
                 });
                 result.Message = Constants.ErrorInVerify;
                 return result;
@@ -1492,7 +1493,7 @@ namespace PaymentManagement.Application.Servicess
                     PaymentId = payment.Id,
                     Psp = PspEnum.Mellat.ToString(),
                     Message = isRetryForVerify ? Constants.RetryForVerifyException : Constants.VerifyException,
-                    Parameter = ex.Message
+                    Parameter = GetExceptionMessage(ex)
                 });
                 result.Message = Constants.ErrorInVerify;
                 return result;
@@ -1569,7 +1570,7 @@ namespace PaymentManagement.Application.Servicess
                     PaymentId = payment.Id,
                     Psp = PspEnum.Parsian.ToString(),
                     Message = isRetryForVerify ? Constants.RetryForVerifyException : Constants.VerifyException,
-                    Parameter = ex.Message
+                    Parameter = GetExceptionMessage(ex)
                 });
                 result.Message = Constants.ErrorInVerify;
                 return result;
@@ -1586,13 +1587,6 @@ namespace PaymentManagement.Application.Servicess
             try
             {
                 var pspAccountProps = JsonConvert.DeserializeObject<Pasargad.PspAccountProps>(pspAccountJsonProps);
-                var authResult = await AuthenticatePasargadAsync(payment.Id, pspAccountProps.UserName, pspAccountProps.Password);
-                if (authResult == null || string.IsNullOrEmpty(authResult.Token))
-                {
-                    result.PspJsonResult = authResult != null ? JsonConvert.SerializeObject(authResult) : string.Empty;
-                    result.Message = Constants.ErrorInAuthenticate;
-                    return result;
-                }
 
                 var inquiryResult = await InquiryToPasargadAsync(payment, pspAccountJsonProps);
                 if (inquiryResult.StatusCode != (int)StatusCodeEnum.Success || payment.PaymentStatusId != (int)PaymentStatusEnum.InProgress)
@@ -1608,7 +1602,6 @@ namespace PaymentManagement.Application.Servicess
                         {
                             result.StatusCode = (int)StatusCodeEnum.Success;
                             result.Message = Constants.VerifySuccess;
-
                         }
                         else if (payment.PaymentStatusId == (int)PaymentStatusEnum.Failed)
                         {
@@ -1618,6 +1611,14 @@ namespace PaymentManagement.Application.Servicess
                     }
                     result.PaymentId = inquiryResult.PaymentId;
                     result.PspJsonResult = inquiryResult.PspJsonResult;
+                    return result;
+                }
+
+                var authResult = await AuthenticatePasargadAsync(payment.Id, pspAccountProps.UserName, pspAccountProps.Password);
+                if (authResult == null || string.IsNullOrEmpty(authResult.Token))
+                {
+                    result.PspJsonResult = authResult != null ? JsonConvert.SerializeObject(authResult) : string.Empty;
+                    result.Message = Constants.ErrorInAuthenticate;
                     return result;
                 }
 
@@ -1684,7 +1685,7 @@ namespace PaymentManagement.Application.Servicess
                     PaymentId = payment.Id,
                     Psp = PspEnum.Pasargad.ToString(),
                     Message = isRetryForVerify ? Constants.RetryForVerifyException : Constants.VerifyException,
-                    Parameter = ex.Message
+                    Parameter = GetExceptionMessage(ex)
                 });
                 result.Message = Constants.ErrorInVerify;
                 return result;
@@ -1708,6 +1709,7 @@ namespace PaymentManagement.Application.Servicess
                     Id = o.Id,
                     TraceNo = o.TraceNo,
                     TransactionCode = o.TransactionCode,
+                    TransactionDate = o.TransactionDate,
                     Token = o.Token,
                     PspAccountId = o.PspAccountId,
                     PaymentStatusId = o.PaymentStatusId
@@ -1809,7 +1811,7 @@ namespace PaymentManagement.Application.Servicess
                     PaymentId = payment.Id,
                     Psp = PspEnum.IranKish.ToString(),
                     Message = Constants.InquiryException,
-                    Parameter = ex.Message
+                    Parameter = GetExceptionMessage(ex)
                 });
                 result.Message = Constants.ErrorInInquiry;
                 return result;
@@ -1898,7 +1900,7 @@ namespace PaymentManagement.Application.Servicess
                     PaymentId = payment.Id,
                     Psp = PspEnum.IranKish.ToString(),
                     Message = Constants.InquiryException,
-                    Parameter = ex.Message
+                    Parameter = GetExceptionMessage(ex)
                 });
                 result.Message = Constants.ErrorInInquiry;
                 return result;
@@ -1989,7 +1991,7 @@ namespace PaymentManagement.Application.Servicess
                     PaymentId = payment.Id,
                     Psp = PspEnum.Parsian.ToString(),
                     Message = Constants.InquiryException,
-                    Parameter = ex.Message
+                    Parameter = GetExceptionMessage(ex)
                 });
                 result.Message = Constants.ErrorInInquiry;
                 return result;
@@ -2051,28 +2053,27 @@ namespace PaymentManagement.Application.Servicess
                 if (inquiryResult != null)
                 {
                     Pasargad.Inquiry.InquiryJsonResult jResult = JsonConvert.DeserializeObject<Pasargad.Inquiry.InquiryJsonResult>(inquiryResult);
-                    if (jResult.ResultCode == 0 && jResult.Data != null)
-                    {
-                        //if (jResult.Data.Status == 0)
-                        //{
-                        //    payment.TransactionCode = jResult.Data.ReferenceNumber;
-                        //    payment.TraceNo = jResult.Data.TrackId;
-                        //    payment.PaymentStatusId = (int)PaymentStatusEnum.Success;
-                        //    await _paymentRepository.AttachAsync(ObjectMapper.Map<PaymentDto, Payment>(payment), o => o.TransactionCode, o => o.PaymentStatusId, o => o.TraceNo);
-                        //}
-                        //else 
-                        if (jResult.Data.Status is not (2 or 13031)) //13031 => تراکنش در انتظار تایید است 
-                        {
-                            payment.PaymentStatusId = (int)PaymentStatusEnum.Failed;
-                            await _paymentRepository.AttachAsync(ObjectMapper.Map<PaymentDto, Payment>(payment), o => o.PaymentStatusId);
-                        }
+                    bool isPaymentFailed = false;
 
-                        result.PaymentStatus = payment.PaymentStatusId;
-                        result.PaymentStatusDescription = EnumExtension.GetEnumDescription((PaymentStatusEnum)payment.PaymentStatusId);
-                        result.StatusCode = (int)StatusCodeEnum.Success;
-                        result.Message = Constants.InquirySuccess;
-                        return result;
+                    //13031 => تراکنش در انتظار تایید است
+                    if (jResult.ResultCode == 0 && jResult.Data != null && jResult.Data.Status is not (2 or 13031))
+                    { isPaymentFailed = true; }
+
+                    //13018 => یافت نشد                
+                    if (jResult.ResultCode == 13018 && payment.TransactionDate.AddMinutes(_config.GetValue<int>("App:PasargadDeadLine")) < DateTime.Now)
+                    { isPaymentFailed = true; }
+
+                    if (isPaymentFailed)
+                    {
+                        payment.PaymentStatusId = (int)PaymentStatusEnum.Failed;
+                        await _paymentRepository.AttachAsync(ObjectMapper.Map<PaymentDto, Payment>(payment), o => o.PaymentStatusId);
                     }
+
+                    result.PaymentStatus = payment.PaymentStatusId;
+                    result.PaymentStatusDescription = EnumExtension.GetEnumDescription((PaymentStatusEnum)payment.PaymentStatusId);
+                    result.StatusCode = (int)StatusCodeEnum.Success;
+                    result.Message = Constants.InquirySuccess;
+                    return result;
                 }
                 result.Message = Constants.InquiryFailed;
                 return result;
@@ -2084,7 +2085,7 @@ namespace PaymentManagement.Application.Servicess
                     PaymentId = payment.Id,
                     Psp = PspEnum.Pasargad.ToString(),
                     Message = Constants.InquiryException,
-                    Parameter = ex.Message
+                    Parameter = GetExceptionMessage(ex)
                 });
                 result.Message = Constants.ErrorInInquiry;
                 return result;
@@ -2202,7 +2203,7 @@ namespace PaymentManagement.Application.Servicess
                     PaymentId = payment.Id,
                     Psp = PspEnum.IranKish.ToString(),
                     Message = Constants.ReverseException,
-                    Parameter = ex.Message
+                    Parameter = GetExceptionMessage(ex)
                 });
 
                 result.Message = Constants.ErrorInReverse;
@@ -2280,7 +2281,7 @@ namespace PaymentManagement.Application.Servicess
                     PaymentId = payment.Id,
                     Psp = PspEnum.Mellat.ToString(),
                     Message = Constants.ReverseException,
-                    Parameter = ex.Message
+                    Parameter = GetExceptionMessage(ex)
                 });
                 result.Message = Constants.ErrorInReverse;
                 return result;
@@ -2353,7 +2354,7 @@ namespace PaymentManagement.Application.Servicess
                     PaymentId = payment.Id,
                     Psp = PspEnum.Parsian.ToString(),
                     Message = Constants.ReverseException,
-                    Parameter = ex.Message
+                    Parameter = GetExceptionMessage(ex)
                 });
 
                 result.Message = Constants.ErrorInReverse;
@@ -2436,7 +2437,7 @@ namespace PaymentManagement.Application.Servicess
                     PaymentId = payment.Id,
                     Psp = PspEnum.Pasargad.ToString(),
                     Message = Constants.ReverseException,
-                    Parameter = ex.Message
+                    Parameter = GetExceptionMessage(ex)
                 });
                 result.Message = Constants.ErrorInReverse;
                 return result;
