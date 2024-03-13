@@ -2449,7 +2449,7 @@ namespace PaymentManagement.Application.Servicess
         [UnitOfWork(isTransactional: false)]
         public async Task<List<RetryForVerifyOutputDto>> RetryForVerify()
         {
-            var deadLine = DateTime.Now.AddMinutes(_config.GetValue<int>("App:RetryForVerifyFromDateMinute"));
+            var deadLine = DateTime.Now.AddMinutes(_config.GetValue<int>("App:RetryForVerifyFromDateMinute") * -1);
             var retryCount = _config.GetValue<int>("App:RetryCount");
             var condidateCount = _config.GetValue<int>("App:CondidateCount");
 
