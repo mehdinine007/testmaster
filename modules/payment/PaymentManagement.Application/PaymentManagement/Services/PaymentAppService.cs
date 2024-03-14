@@ -1663,7 +1663,7 @@ namespace PaymentManagement.Application.Servicess
                     Pasargad.Verify.VerifyJsonResult jResult = JsonConvert.DeserializeObject<Pasargad.Verify.VerifyJsonResult>(verifyResult);
                     //13031 => تراکنش در انتظار تایید است
                     //13029 => تراکنش قبلا تایید شده است 
-                    if (jResult.ResultCode is 0 or 2 or 13029 or 13031)
+                    if (jResult.ResultCode is 0 or 13029 or 13031)
                     {
                         payment.PaymentStatusId = (int)PaymentStatusEnum.Success;
                         await _paymentRepository.AttachAsync(ObjectMapper.Map<PaymentDto, Payment>(payment), o => o.PaymentStatusId);
@@ -2062,6 +2062,20 @@ namespace PaymentManagement.Application.Servicess
                     //13018 => یافت نشد                
                     if (jResult.ResultCode == 13018 && payment.TransactionDate.AddMinutes(_config.GetValue<int>("App:PasargadDeadLine")) < DateTime.Now)
                     { isPaymentFailed = true; }
+                    if(jResult.Data == null)
+                    {
+                        await _paymentLogRepository.InsertAsync(new PaymentLog
+                        {
+                            PaymentId = payment.Id,
+                            Psp = PspEnum.Pasargad.ToString(),
+                            Message = Constants.InquiryException,
+                            Parameter = Constants.ErrorInquiryResponse
+                        });
+                        result.Message = Constants.ErrorInInquiry;
+                        return result;
+
+                    }
+
 
                     if (isPaymentFailed)
                     {

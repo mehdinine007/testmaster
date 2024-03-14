@@ -19,6 +19,8 @@
         public const string VerifyFailed = "پرداخت ناموفق می باشد";
         public const string ErrorInVerify = "خطا در ارسال درخواست تایید پرداخت";
         public const string InquirySuccess = "استعلام پرداخت با موفقیت انجام شد";
+        public const string ErrorInquiryResponse = "خروجی سرویس صحیح نمی باشد";
+
         public const string InquiryFailed = "استعلام پرداخت ناموفق می باشد";
         public const string ErrorInInquiry = "خطا در ارسال درخواست استعلام پرداخت";
         public const string ReverseSuccess = "برگشت وجه با موفقیت انجام شد";
