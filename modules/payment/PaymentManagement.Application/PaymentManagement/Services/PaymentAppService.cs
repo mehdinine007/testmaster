@@ -2062,19 +2062,24 @@ namespace PaymentManagement.Application.Servicess
                     //13018 => یافت نشد                
                     if (jResult.ResultCode == 13018 && payment.TransactionDate.AddMinutes(_config.GetValue<int>("App:PasargadDeadLine")) < DateTime.Now)
                     { isPaymentFailed = true; }
-                    if(jResult.Data == null)
+                    if (jResult.ResultCode != 13018 && jResult.Data == null) //تراکنش نامشخص است
                     {
                         await _paymentLogRepository.InsertAsync(new PaymentLog
                         {
                             PaymentId = payment.Id,
                             Psp = PspEnum.Pasargad.ToString(),
-                            Message = Constants.InquiryException,
-                            Parameter = Constants.ErrorInquiryResponse
+                            Message = Constants.ErrorInquiryResponse,
+                            Parameter = inquiryResult
                         });
                         result.Message = Constants.ErrorInInquiry;
                         return result;
 
                     }
+                    if(jResult.ResultCode != 0 && jResult.ResultCode != 13018) // تراکنش ناموفق  است
+                    {
+                        isPaymentFailed = true;
+                    }
+
 
 
                     if (isPaymentFailed)
