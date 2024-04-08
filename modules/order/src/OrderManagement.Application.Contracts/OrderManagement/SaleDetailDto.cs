@@ -9,9 +9,6 @@ namespace OrderManagement.Application.Contracts
     {
         public int Id { get; set; }
         public Guid UID { get; set; }
- 
-        public int CircularSaleCode { get; set; } // شماره بخشنامه فروش
-
         public int SalePlanCode { get; set; }
 
         public string SalePlanDescription { get; set; }

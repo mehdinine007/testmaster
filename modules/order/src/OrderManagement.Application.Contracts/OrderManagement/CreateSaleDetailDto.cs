@@ -6,7 +6,6 @@ namespace OrderManagement.Application.Contracts.OrderManagement
     {
         public Guid Uid { get; set; } 
         public int Id { get; set; } 
-        public int CircularSaleCode { get; set; } // شماره بخشنامه فروش
        
         public int SaleId { get; set; }
         public int SalePlanCode { get; set; } // شماره برنامه فروش 

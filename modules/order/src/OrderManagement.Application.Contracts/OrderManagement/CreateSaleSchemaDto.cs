@@ -15,6 +15,6 @@ namespace OrderManagement.Application.Contracts.OrderManagement
 
         public string Description { get; set; }
 
-        public int SaleStatus { get; set; }
+        public int Code { get; set; }
     }
 }

@@ -16,8 +16,6 @@ public class SaleDetail : FullAuditedEntity<int>
     private ICollection<SaleDetailCarColor> _saleDetailCarColors;
 
     public Guid UID { get; set; }
-
-    public int CircularSaleCode { get; set; } // شماره بخشنامه فروش
     public int SaleId { get; set; }
     public int SalePlanCode { get; set; } // شماره برنامه فروش 
 

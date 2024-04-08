@@ -118,7 +118,7 @@ namespace OrderManagement.Application.Contracts
         public static string UserDataAccessOldCarNotFoundId = "9006";
         public const string ProductNotFound = "محصول وجود ندارد";
         public const string ProductNotFoundId = "9008";
-        public const string OrderWinnerFound = "جهت ثبت سفارش جدید لطفا ابتدا از جزئیات سفارش، سفارش قبلی خود که احراز شده اید یا در حال بررسی می باشد را لغو نمایید";
+        public const string OrderWinnerFound = "شما قبلا سفارش ثبت نموده اید لطفا نسبت به جایگزینی آن اقدام فرمایید";
         public const string OrderWinnerFoundId = "9009";
         public const string RecentlyAdded = "سفارش درحال پرداخت می باشد.شما مجاز به ثبت سفارش جدید نمی باشید.";
         public const string RecentlyAddedId = "1001";

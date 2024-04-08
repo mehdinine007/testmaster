@@ -418,7 +418,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         if (objectCommitOrderIran != null && !commitOrderDto.OrderId.HasValue)
         {
-            throw new UserFriendlyException(OrderConstant.OrderWinnerFound, OrderConstant.OrderWinnerFoundId);
+            throw new UserFriendlyException(OrderConstant.OrderWinnerFound, OrderConstant.OrderWinnerFoundId).WithData("OrderId", objectCommitOrderIran);
         }
         else
         {

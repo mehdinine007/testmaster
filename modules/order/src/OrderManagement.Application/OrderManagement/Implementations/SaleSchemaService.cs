@@ -60,16 +60,16 @@ public class SaleSchemaService : ApplicationService, ISaleSchemaService
     public async Task<SaleSchemaDto> Add(CreateSaleSchemaDto saleSchemaDto)
     {
         var saleSchema = ObjectMapper.Map<CreateSaleSchemaDto, SaleSchema>(saleSchemaDto);
-        var entity = await _saleSchemaRepository.InsertAsync(saleSchema, autoSave: true);
+        var entity = await _saleSchemaRepository.InsertAsync(saleSchema);
         return ObjectMapper.Map<SaleSchema, SaleSchemaDto>(entity);
     }
 
     [SecuredOperation(SaleSchemaServicePermissionConstants.Update)]
     public async Task<SaleSchemaDto> Update(CreateSaleSchemaDto saleSchemaDto)
     {
-        await Validation(saleSchemaDto.Id, null);
-        var saleSchema = ObjectMapper.Map<CreateSaleSchemaDto, SaleSchema>(saleSchemaDto);
-        await _saleSchemaRepository.AttachAsync(saleSchema, t => t.Title, d => d.Description, s => s.SaleStatus);
+        var saleSchemaEntity = await Validation(saleSchemaDto.Id, null);
+        var saleSchema = ObjectMapper.Map<CreateSaleSchemaDto, SaleSchema>(saleSchemaDto, saleSchemaEntity);
+        await _saleSchemaRepository.UpdateAsync(saleSchema);
         return await GetById(saleSchemaDto.Id);
     }
 
@@ -81,8 +81,8 @@ public class SaleSchemaService : ApplicationService, ISaleSchemaService
             .FirstOrDefault(x => x.Id == id);
         var saleSchemaDto = ObjectMapper.Map<SaleSchema, SaleSchemaDto>(saleSchema);
 
-        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.SaleSchema, new List<int>() { id },attachmentType, attachmentlocation);
-         saleSchemaDto.Attachments = ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(attachments);
+        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.SaleSchema, new List<int>() { id }, attachmentType, attachmentlocation);
+        saleSchemaDto.Attachments = ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(attachments);
         return saleSchemaDto;
 
     }

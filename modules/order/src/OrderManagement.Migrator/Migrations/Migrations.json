@@ -158,6 +158,11 @@
       "Id": "20240221065931_deleteandupdatelevel1product",
       "Priority": 16,
       "Version": "4.2.0"
+    },
+    {
+      "Id": "20240407120546_remove-CircularSaleCode_SaleStatus",
+      "Priority": 17,
+      "Version": "4.2.0"
     }
   ]
 }
