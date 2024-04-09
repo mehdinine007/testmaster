@@ -47,5 +47,7 @@ public class UserController : AbpController
     public async Task<bool> ChangePassword(ChangePasswordDto input)
         => await _userAppService.ChangePassword(input);
 
-    
+    [HttpPost]
+    public async Task<bool> ChangeMobile(ChangeMobileDto changeMobileDto)
+            => await _userAppService.ChangeMobile(changeMobileDto);
 }

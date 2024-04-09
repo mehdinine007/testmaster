@@ -19,7 +19,7 @@ public interface IUserAppService : IApplicationService
     Task<bool> UpdateUserProfile(UserDto inputUser);
     Task<bool> ForgotPassword(ForgetPasswordDto forgetPasswordDto);
     Task<bool> ChangePassword(ChangePasswordDto input);
-
+    Task<bool> ChangeMobile(ChangeMobileDto changeMobileDto);
     Task UpsertUserIntoSqlServer(UserSQL input);
 }
 

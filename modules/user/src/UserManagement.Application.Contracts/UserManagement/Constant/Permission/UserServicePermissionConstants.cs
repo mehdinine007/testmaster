@@ -12,6 +12,8 @@ public class UserServicePermissionConstants
     public const string ChangePassword_DisplayName = "تغییر رمز کاربری";
     public const string UpdateUserProfile = ConstantInfo.ModuleIUser + ServiceIdentifier + "0004";
     public const string UpdateUserProfile_DisplayName = "بروز رسانی حساب کاربری";
+    public const string ChangeMobile = ConstantInfo.ModuleIUser + ServiceIdentifier + "0005";
+    public const string ChangeMobile_DisplayName = "تغییر شماره موبایل";
 
     public const string ServiceIdentifier = "0001";
     public string ServiceDisplayName = "سرویس مدیریت کاربران";

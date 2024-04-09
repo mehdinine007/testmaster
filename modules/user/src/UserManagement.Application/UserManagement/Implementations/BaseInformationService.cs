@@ -241,30 +241,4 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
         return zipCodeInquiry;
     }
 
-    [SecuredOperation(BaseInformationServicePermissionConstants.UpdateUserPhoneNumber)]
-    public async Task<bool> UpdateUserPhoneNumber(UpdateUserPhoneNumber updateUserPhoneNumber)
-    {
-        if (!ValidationHelper.IsValidMobileNumber(updateUserPhoneNumber.NewPhoneNumber))
-            throw new UserFriendlyException(UserMessageConstant.UpdatePhoneNumberInvalidFormat);
-
-        var user = (await _userMongoRepository.GetQueryableAsync())
-            .FirstOrDefault(x=> x.UID == updateUserPhoneNumber.UserId.ToString());
-
-        if (user is null)
-            throw new UserFriendlyException(UserMessageConstant.UpdatePhoneNumberUserIdIsWrong);
-
-        var validateMessageRequest = await _commonAppService.ValidateSMS(updateUserPhoneNumber.NewPhoneNumber,
-            user.NationalCode,
-            updateUserPhoneNumber.SmsCode,
-            SMSType.UpdatePhoneNumber);
-        if (!validateMessageRequest)
-            throw new UserFriendlyException(UserMessageConstant.UpdatePhoneNumberWrongSmsCode);
-
-        user.PhoneNumber = updateUserPhoneNumber.NewPhoneNumber;
-        await _userMongoRepository.UpdateAsync(user);
-
-        await _cacheManager.RemoveByPrefixAsync(RedisConstants.GetUserById, new CacheOptions{ Provider = CacheProviderEnum.Hybrid });
-        return true;
-    }
-
 }

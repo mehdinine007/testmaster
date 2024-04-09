@@ -18,7 +18,6 @@ using UserManagement.Application.Contracts.Models;
 using UserManagement.Application.Contracts.Services;
 using UserManagement.Application.Contracts.UserManagement.Services;
 using UserManagement.Domain.Authorization.Users;
-using UserManagement.Domain.Shared;
 using UserManagement.Domain.UserManagement.bases;
 using UserManagement.Domain.UserManagement.Advocacy;
 using UserManagement.Domain.UserManagement.Authorization.Users;
@@ -36,6 +35,7 @@ using IFG.Core.Caching;
 using IFG.Core.Utility.Tools;
 using UserManagement.Domain.UserManagement.Enums;
 using Abp.Runtime.Caching;
+using IFG.Core.Validation;
 #endregion
 
 namespace UserManagement.Application.UserManagement.Implementations;
@@ -333,7 +333,7 @@ IFG.Core.Caching.ICacheManager cacheManager)
             input.Shaba = input.Shaba.Replace(" ", "");
             if (!ValidationHelper.IsShaba(input.Shaba))
             {
-                throw new UserFriendlyException(Messages.ShabaNotValid);
+                throw new UserFriendlyException(UserMessageConstant.ShabaNotValid);
             }
             if (_configuration.GetValue<bool?>("AccountNumberIsRequired") ?? false && string.IsNullOrEmpty(input.AccountNumber))
             {
@@ -387,9 +387,9 @@ IFG.Core.Caching.ICacheManager cacheManager)
             throw new UserFriendlyException("ساختار کلمه عبور صحیح نمی باشد");
         }
 
-        if (!ValidationHelper.IsNationalCode(input.NationalCode))
+        if (!ValidationHelper.IsValidMobileNumber(input.NationalCode))
         {
-            throw new UserFriendlyException(Messages.NationalCodeNotValid);
+            throw new UserFriendlyException(UserMessageConstant.NationalCodeNotValid);
         }
         var useShahkarInquiry = _configuration.GetValue<bool?>("Inquiry:UseShahkarInquiryInRegister") ?? false;
         var shahkarResult = useShahkarInquiry
@@ -468,8 +468,6 @@ IFG.Core.Caching.ICacheManager cacheManager)
                     errorCode = sqlex.Number;
                 switch (errorCode)
                 {
-                    case 2601://duplicate
-                        throw new UserFriendlyException(Messages.NationalCodeExists);
                     default:
                         throw ex;
                 }
@@ -683,7 +681,7 @@ IFG.Core.Caching.ICacheManager cacheManager)
             inputUser.Shaba = inputUser.Shaba.Replace(" ", "");
             if (!ValidationHelper.IsShaba(inputUser.Shaba))
             {
-                throw new UserFriendlyException(Messages.ShabaNotValid);
+                throw new UserFriendlyException(UserMessageConstant.ShabaNotValid);
             }
         }
         string prefix = $"{RedisConstants.GetUserById}";
@@ -873,5 +871,32 @@ IFG.Core.Caching.ICacheManager cacheManager)
                  );
         
         return true;
+    }
+
+    [SecuredOperation(UserServicePermissionConstants.ChangeMobile)]
+    public async Task<bool> ChangeMobile(ChangeMobileDto changeMobileDto)
+    {
+        if (!ValidationHelper.IsValidMobileNumber(changeMobileDto.Mobile))
+            throw new UserFriendlyException(UserMessageConstant.UpdatePhoneNumberInvalidFormat);
+
+        var user = (await _userMongoWriteRepository.GetQueryableAsync())
+            .FirstOrDefault(x => x.UID == changeMobileDto.UserId.ToString());
+
+        if (user is null)
+            throw new UserFriendlyException(UserMessageConstant.UpdatePhoneNumberUserIdIsWrong);
+
+        var validateMessageRequest = await _commonAppService.ValidateSMS(changeMobileDto.Mobile,
+            user.NationalCode,
+            changeMobileDto.SmsCode,
+            SMSType.UpdatePhoneNumber);
+        if (!validateMessageRequest)
+            throw new UserFriendlyException(UserMessageConstant.UpdatePhoneNumberWrongSmsCode);
+
+        user.Mobile = changeMobileDto.Mobile;
+        await _userMongoWriteRepository.UpdateAsync(user);
+
+        await _cacheManager.RemoveByPrefixAsync(RedisConstants.GetUserById, new CacheOptions { Provider = CacheProviderEnum.Hybrid });
+        return true;
+
     }
 }
