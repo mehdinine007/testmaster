@@ -11,6 +11,7 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Services
 
         Task<ProductAndCategoryDto> Insert(ProductAndCategoryCreateDto productAndCategoryCreateDto);
 
+        Task<ProductAndCategoryAddDto> GetByAdd(int? productId);
         Task Delete(int id);
 
         Task<Guid> UploadFile(UploadFileDto uploadFileDto);
