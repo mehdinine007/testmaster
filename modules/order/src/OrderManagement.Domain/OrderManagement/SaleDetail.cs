@@ -15,6 +15,8 @@ public class SaleDetail : FullAuditedEntity<int>
 
     private ICollection<SaleDetailCarColor> _saleDetailCarColors;
 
+    private ICollection<SaleDetailAllocation> _seasonCompanyProducts;
+
     public Guid UID { get; set; }
 
     public int CircularSaleCode { get; set; } // شماره بخشنامه فروش
@@ -74,6 +76,12 @@ public class SaleDetail : FullAuditedEntity<int>
     {
         get => _saleDetailCarColors ?? (_saleDetailCarColors = new List<SaleDetailCarColor>());
         protected set => _saleDetailCarColors = value;
+    }
+
+    public ICollection<SaleDetailAllocation> SeasonCompanyProducts
+    {
+        get => _seasonCompanyProducts ??= new List<SaleDetailAllocation>();
+        protected set => _seasonCompanyProducts = value;
     }
 
     [ForeignKey("ProductAndCategory")]

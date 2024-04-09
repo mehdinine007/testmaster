@@ -7,8 +7,6 @@ using Volo.Abp.EntityFrameworkCore.Modeling;
 using OrderManagement.Domain.OrderManagement;
 using IFG.Core.DataAccess;
 using OrderManagement.Domain.Shared;
-using System.Reflection.Emit;
-using Volo.Abp.Domain.Entities;
 
 namespace OrderManagement.EfCore;
 
@@ -535,25 +533,17 @@ public static class OrderManagementDbContextModelCreatingExtensions
             entity.AddEnumChangeTracker<OperatorEnumReadOnly, OperatorFilterEnum>();
         });
 
-        builder.Entity<SeasonCompanyProduct>(entity =>
+        builder.Entity<SaleDetailAllocation>(entity =>
         {
-            entity.ToTable(nameof(SeasonCompanyProduct));
-
-            entity.HasOne<ProductAndCategory>(x => x.Company)
-                .WithMany(x => x.SeasonCompanyProducts_Company)
-                .HasForeignKey(x => x.CompanyId);
-
-            entity.HasOne<ProductAndCategory>(x => x.Product)
-                .WithMany(x => x.SeasonCompanyProducts_Product)
-                .HasForeignKey(x => x.ProductId);
+            entity.ToTable(nameof(SaleDetailAllocation));
 
             entity.HasOne<Year>(x => x.Year)
                 .WithMany(x => x.SeasonCompanyProducts)
                 .HasForeignKey(x => x.YearId);
 
-            entity.HasOne<ESaleType>(x => x.EsaleType)
+            entity.HasOne<SaleDetail>(x => x.SaleDetail)
                 .WithMany(x => x.SeasonCompanyProducts)
-                .HasForeignKey(x => x.EsaleTypeId);
+                .HasForeignKey(x => x.SaleDetailId);
         });
     }
 }

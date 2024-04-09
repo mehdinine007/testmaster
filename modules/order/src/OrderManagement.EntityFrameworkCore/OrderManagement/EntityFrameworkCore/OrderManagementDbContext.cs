@@ -123,7 +123,7 @@ namespace OrderManagement.EfCore
         public DbSet<Advertisement> Advertisement { get; set; }
         public DbSet<AdvertisementDetail> AdvertisementDetail { get; set; }
 
-        public DbSet<SeasonCompanyProduct> SeasonCompanyProduct { get; set; }
+        public DbSet<SaleDetailAllocation> SeasonCompanyProduct { get; set; }
 
         public OrderManagementDbContext(DbContextOptions<OrderManagementDbContext> options)
             : base(options)
