@@ -262,6 +262,8 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
 
         user.PhoneNumber = updateUserPhoneNumber.NewPhoneNumber;
         await _userMongoRepository.UpdateAsync(user);
+
+        await _cacheManager.RemoveByPrefixAsync(RedisConstants.GetUserById, new CacheOptions{ Provider = CacheProviderEnum.Hybrid });
         return true;
     }
 
