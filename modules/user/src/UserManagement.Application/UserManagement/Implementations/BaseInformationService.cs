@@ -247,10 +247,11 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
         if (!ValidationHelper.IsValidMobileNumber(updateUserPhoneNumber.NewPhoneNumber))
             throw new UserFriendlyException(UserMessageConstant.UpdatePhoneNumberInvalidFormat);
 
-        if (!ObjectId.TryParse(updateUserPhoneNumber.UserId.ToString(), out var objectId))
-            throw new UserFriendlyException(UserMessageConstant.UpdatePhoneNumberUserIdIsWrong);
+        var user = (await _userMongoRepository.GetQueryableAsync())
+            .FirstOrDefault(x=> x.UID == updateUserPhoneNumber.UserId.ToString());
 
-        var user = await _userMongoRepository.GetAsync(objectId);
+        if (user is null)
+            throw new UserFriendlyException(UserMessageConstant.UpdatePhoneNumberUserIdIsWrong);
 
         var validateMessageRequest = await _commonAppService.ValidateSMS(updateUserPhoneNumber.NewPhoneNumber,
             user.NationalCode,
