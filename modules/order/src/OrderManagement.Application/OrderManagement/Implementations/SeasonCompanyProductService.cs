@@ -11,21 +11,30 @@ using Volo.Abp.Domain.Repositories;
 
 namespace OrderManagement.Application.Implementations;
 
-public class SeasonCompanyProductService : ApplicationService, ISeasonCompanyProductService
+public class SaleDetailAllocationService : ApplicationService, ISaleDetailAllocationService
 {
-    private readonly IRepository<SeasonCompanyProduct, int> _seasonCompanyProductRepository;
+    private readonly IRepository<SaleDetailAllocation, int> _seasonCompanyProductRepository;
 
-    public SeasonCompanyProductService(IRepository<SeasonCompanyProduct, int> seasonCompanyProductRepository)
+    public SaleDetailAllocationService(IRepository<SaleDetailAllocation, int> seasonCompanyProductRepository)
     {
         _seasonCompanyProductRepository = seasonCompanyProductRepository;
     }
 
-    [SecuredOperation(SeasonCompanyProductServicePermissionConstants.Create)]
-    public async Task<SeasonCompanyProductDto> Create(SeasonCompanyProductDto seasonCompanyProductDto)
+    //[SecuredOperation(SeasonCompanyProductServicePermissionConstants.Create)]
+    public async Task<SaleDetailAllocationDto> Create(SaleDetailAllocationDto seasonCompanyProductDto)
     {
-        var entity = await _seasonCompanyProductRepository.InsertAsync(
-            ObjectMapper.Map<SeasonCompanyProductDto, SeasonCompanyProduct>(seasonCompanyProductDto));
-        return ObjectMapper.Map<SeasonCompanyProduct, SeasonCompanyProductDto>(entity);
+        var input = ObjectMapper.Map<SaleDetailAllocationDto, SaleDetailAllocation>(seasonCompanyProductDto);
+        input.IsComplete = false;
+        try
+        {
+
+            var entity = await _seasonCompanyProductRepository.InsertAsync(input);
+            return ObjectMapper.Map<SaleDetailAllocation, SaleDetailAllocationDto>(entity);
+        }
+        catch (System.Exception ex)
+        {
+            throw;
+        }
     }
 
     [SecuredOperation(SeasonCompanyProductServicePermissionConstants.Delete)]
@@ -36,24 +45,24 @@ public class SeasonCompanyProductService : ApplicationService, ISeasonCompanyPro
     }
 
     [SecuredOperation(SeasonCompanyProductServicePermissionConstants.GetById)]
-    public async Task<SeasonCompanyProductDto> GetById(int seasonCompanyProductId)
+    public async Task<SaleDetailAllocationDto> GetById(int seasonCompanyProductId)
     {
         var seasonCompanyProduct = await _seasonCompanyProductRepository.FindAsync(seasonCompanyProductId)
             ?? throw new UserFriendlyException("آیتم مورد نظر یافت نشد");
 
-        return ObjectMapper.Map<SeasonCompanyProduct, SeasonCompanyProductDto>(seasonCompanyProduct);
+        return ObjectMapper.Map<SaleDetailAllocation, SaleDetailAllocationDto>(seasonCompanyProduct);
     }
 
     [SecuredOperation(SeasonCompanyProductServicePermissionConstants.Update)]
-    public async Task<SeasonCompanyProductDto> Update(SeasonCompanyProductDto seasonCompanyProductDto)
+    public async Task<SaleDetailAllocationDto> Update(SaleDetailAllocationDto seasonCompanyProductDto)
     {
         var seasonCompanyProduct = (await _seasonCompanyProductRepository.GetQueryableAsync())
             .FirstOrDefault(x => x.Id == seasonCompanyProductDto.Id)
             ?? throw new UserFriendlyException("آیتم مورد نظر یافت نشد");
+        var mappedEntity = ObjectMapper.Map<SaleDetailAllocationDto, SaleDetailAllocation>(seasonCompanyProductDto, seasonCompanyProduct);
+        mappedEntity.IsComplete = seasonCompanyProduct.IsComplete;
+        var result = await _seasonCompanyProductRepository.UpdateAsync(mappedEntity);
 
-        var result = await _seasonCompanyProductRepository.UpdateAsync(
-            ObjectMapper.Map<SeasonCompanyProductDto, SeasonCompanyProduct>(seasonCompanyProductDto, seasonCompanyProduct));
-
-        return ObjectMapper.Map<SeasonCompanyProduct, SeasonCompanyProductDto>(result);
+        return ObjectMapper.Map<SaleDetailAllocation, SaleDetailAllocationDto>(result);
     }
 }

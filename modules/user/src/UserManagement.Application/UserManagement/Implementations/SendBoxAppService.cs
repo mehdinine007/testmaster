@@ -19,6 +19,7 @@ using Newtonsoft.Json;
 using UserManagement.Domain.Shared;
 using MongoDB.Driver;
 using WorkingWithMongoDB.WebAPI.Services;
+using IResult = IFG.Core.Utility.Results.IResult;
 #endregion
 
 namespace UserManagement.Application.UserManagement.Implementations;
@@ -53,7 +54,7 @@ public class SendBoxAppService : ApplicationService, ISendBoxAppService
 
 
     [Audited]
-    public async Task<IFG.Core.Utility.Results.IResult> SendSms(SendSMSDto input)
+    public async Task<IResult> SendSms(SendSMSDto input)
     {
         if (!string.IsNullOrEmpty(input.NationalCode) && !ValidationHelper.IsNationalCode(input.NationalCode))
         {

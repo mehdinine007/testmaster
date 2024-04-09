@@ -9,16 +9,16 @@ namespace OrderManagement.HttpApi.Controllers;
 
 [DisableAuditing]
 [RemoteService]
-[Route("api/services/app/SeasonCompanyProductService/[action]")]
-public class SeasonCompanyProductController : Controller
+[Route("api/services/app/SaleDetailAllocationService/[action]")]
+public class SaleDetailAllocationController : Controller
 {
-    private readonly ISeasonCompanyProductService _seasonCompanyProductService;
+    private readonly ISaleDetailAllocationService _seasonCompanyProductService;
 
-    public SeasonCompanyProductController(ISeasonCompanyProductService seasonCompanyProductService)
+    public SaleDetailAllocationController(ISaleDetailAllocationService seasonCompanyProductService)
         => _seasonCompanyProductService = seasonCompanyProductService;
 
     [HttpPost]
-    public async Task<SeasonCompanyProductDto> Create([FromBody] SeasonCompanyProductDto seasonCompanyProductDto)
+    public async Task<SaleDetailAllocationDto> Create([FromBody] SaleDetailAllocationDto seasonCompanyProductDto)
         => await _seasonCompanyProductService.Create(seasonCompanyProductDto);
 
     [HttpDelete]
@@ -26,10 +26,10 @@ public class SeasonCompanyProductController : Controller
         => await _seasonCompanyProductService.Delete(seasonCompanyProductId);
 
     [HttpGet]
-    public async Task<SeasonCompanyProductDto> GetById(int seasonCompanyProductId)
+    public async Task<SaleDetailAllocationDto> GetById(int seasonCompanyProductId)
         => await _seasonCompanyProductService.GetById(seasonCompanyProductId);
 
     [HttpPut]
-    public async Task<SeasonCompanyProductDto> Update(SeasonCompanyProductDto seasonCompanyProductDto)
+    public async Task<SaleDetailAllocationDto> Update(SaleDetailAllocationDto seasonCompanyProductDto)
         => await _seasonCompanyProductService.Update(seasonCompanyProductDto);
 }

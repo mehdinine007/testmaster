@@ -169,6 +169,11 @@
       "Id": "20240226082020_Change_IsComplete_Type_SeasonCompanyProduct",
       "Priority": 18,
       "Version": "4.4.0"
+    },
+    {
+      "Id": "20240408091808_Update_SeasonCompanyProduct_2",
+      "Priority": 19,
+      "Version": "4.5.0"
     }
   ]
 }
