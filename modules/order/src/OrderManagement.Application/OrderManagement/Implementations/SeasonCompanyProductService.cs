@@ -15,26 +15,19 @@ public class SaleDetailAllocationService : ApplicationService, ISaleDetailAlloca
 {
     private readonly IRepository<SaleDetailAllocation, int> _seasonCompanyProductRepository;
 
+
     public SaleDetailAllocationService(IRepository<SaleDetailAllocation, int> seasonCompanyProductRepository)
     {
         _seasonCompanyProductRepository = seasonCompanyProductRepository;
     }
 
-    //[SecuredOperation(SeasonCompanyProductServicePermissionConstants.Create)]
+    [SecuredOperation(SeasonCompanyProductServicePermissionConstants.Create)]
     public async Task<SaleDetailAllocationDto> Create(SaleDetailAllocationDto seasonCompanyProductDto)
     {
         var input = ObjectMapper.Map<SaleDetailAllocationDto, SaleDetailAllocation>(seasonCompanyProductDto);
         input.IsComplete = false;
-        try
-        {
-
-            var entity = await _seasonCompanyProductRepository.InsertAsync(input);
-            return ObjectMapper.Map<SaleDetailAllocation, SaleDetailAllocationDto>(entity);
-        }
-        catch (System.Exception ex)
-        {
-            throw;
-        }
+        var entity = await _seasonCompanyProductRepository.InsertAsync(input, autoSave: true);
+        return ObjectMapper.Map<SaleDetailAllocation, SaleDetailAllocationDto>(entity);
     }
 
     [SecuredOperation(SeasonCompanyProductServicePermissionConstants.Delete)]

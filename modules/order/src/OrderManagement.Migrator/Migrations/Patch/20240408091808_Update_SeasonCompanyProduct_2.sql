@@ -14,6 +14,11 @@ WHERE ([d].[parent_object_id] = OBJECT_ID(N'[SeasonCompanyProduct]') AND [c].[na
 IF @var3 IS NOT NULL EXEC(N'ALTER TABLE [SeasonCompanyProduct] DROP CONSTRAINT [' + @var3 + '];');
 exec ('ALTER TABLE [SeasonCompanyProduct] DROP COLUMN [DeleterUserId]');
 
+EXEC('ALTER TABLE [SeasonCompanyProduct] ALTER COLUMN CompanyId int null');
+
+EXEC('ALTER TABLE [SeasonCompanyProduct] ALTER COLUMN ProductId int null');
+
+EXEC('ALTER TABLE [SeasonCompanyProduct] ALTER COLUMN EsaleTypeId int null');
 
 EXEC('ALTER TABLE [SeasonCompanyProduct] ADD SaleDetailId int not null DEFAULT (0)');
 
