@@ -515,6 +515,39 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
         return true;
     }
 
-
-
+    public async Task<ProductAndCategoryAddDto> GetByAdd(int? productId)
+    {
+        var productlevelQuery = (await _productLevelRepository.GetQueryableAsync());
+        if (productId is null)
+        {
+            var productlevel = productlevelQuery
+                .OrderBy(x => x.Priority)
+                .FirstOrDefault();
+            var ret = ObjectMapper.Map<ProductLevel, ProductAndCategoryAddDto>(productlevel);
+            ret.Type = ProductAndCategoryType.Category;
+            return ret;
+        }
+        var product = (await _productAndCategoryRepository.GetQueryableAsync())
+            .Include(x=> x.ProductLevel)
+            .FirstOrDefault(x => x.Id == productId);
+        if (product is null)
+        {
+            throw new UserFriendlyException(OrderConstant.ProductAndCategoryNotFound, OrderConstant.ProductAndCategoryFoundId);
+        }
+        var _productlevel = productlevelQuery
+            .OrderBy(x => x.Priority)
+            .Where(x=> x.Priority > product.ProductLevel.Priority)
+            .FirstOrDefault();
+        if (_productlevel is null)
+        {
+            throw new UserFriendlyException(OrderConstant.LastProductLevel, OrderConstant.LastProductLevelId);
+        }
+        var _ret = ObjectMapper.Map<ProductLevel, ProductAndCategoryAddDto>(_productlevel);
+        var lastProductLevel = productlevelQuery
+            .OrderBy(x => x.Priority)
+            .Where(x => x.Priority > _productlevel.Priority)
+            .FirstOrDefault();
+        _ret.Type = lastProductLevel is null ? ProductAndCategoryType.Product : ProductAndCategoryType.Category;
+        return _ret;
+    }
 }

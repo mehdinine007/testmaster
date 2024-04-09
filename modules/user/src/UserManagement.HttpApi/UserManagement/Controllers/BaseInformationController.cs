@@ -43,7 +43,7 @@ namespace UserManagement.HttpApi.UserManagement.Controllers
             => await _baseInformationService.AddressInquiry(input);
 
         [HttpPost]
-        public async Task UpdateUserPhoneNumber([FromBody] UpdateUserPhoneNumber updateUserPhoneNumber)
+        public async Task<bool> UpdateUserPhoneNumber([FromBody] UpdateUserPhoneNumber updateUserPhoneNumber)
             => await _baseInformationService.UpdateUserPhoneNumber(updateUserPhoneNumber);
     }
 }

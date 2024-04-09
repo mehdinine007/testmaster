@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OrderManagement.Domain.Shared;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,5 +12,10 @@ namespace OrderManagement.Application.Contracts.OrderManagement
         public int Id { get; set; }
         public string Title { get; set; }
         public int Priority { get; set; }
+    }
+
+    public class ProductAndCategoryAddDto : ProductLevelDto
+    {
+        public ProductAndCategoryType Type { get; set; }
     }
 }

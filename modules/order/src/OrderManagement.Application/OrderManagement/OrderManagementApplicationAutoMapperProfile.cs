@@ -148,6 +148,7 @@ namespace OrderManagement
 
             CreateMap<ProductAndCategory, ProductAndCategoryViewModel>().ReverseMap();
             CreateMap<ProductLevel, ProductLevelDto>().ReverseMap();
+            CreateMap<ProductLevel, ProductAndCategoryAddDto>().ReverseMap();
             CreateMap<OrderStatusInquiry, OrderStatusInquiryDto>()
                 .ReverseMap()
                 .IgnoreFullAuditedObjectProperties();

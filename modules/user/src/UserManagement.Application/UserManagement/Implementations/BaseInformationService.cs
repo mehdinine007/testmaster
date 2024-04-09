@@ -242,15 +242,16 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
     }
 
     [SecuredOperation(BaseInformationServicePermissionConstants.UpdateUserPhoneNumber)]
-    public async Task UpdateUserPhoneNumber(UpdateUserPhoneNumber updateUserPhoneNumber)
+    public async Task<bool> UpdateUserPhoneNumber(UpdateUserPhoneNumber updateUserPhoneNumber)
     {
         if (!ValidationHelper.IsValidMobileNumber(updateUserPhoneNumber.NewPhoneNumber))
             throw new UserFriendlyException(UserMessageConstant.UpdatePhoneNumberInvalidFormat);
 
-        if (!ObjectId.TryParse(updateUserPhoneNumber.UserId.ToString(), out var objectId))
-            throw new UserFriendlyException(UserMessageConstant.UpdatePhoneNumberUserIdIsWrong);
+        var user = (await _userMongoRepository.GetQueryableAsync())
+            .FirstOrDefault(x=> x.UID == updateUserPhoneNumber.UserId.ToString());
 
-        var user = await _userMongoRepository.GetAsync(objectId);
+        if (user is null)
+            throw new UserFriendlyException(UserMessageConstant.UpdatePhoneNumberUserIdIsWrong);
 
         var validateMessageRequest = await _commonAppService.ValidateSMS(updateUserPhoneNumber.NewPhoneNumber,
             user.NationalCode,
@@ -261,6 +262,9 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
 
         user.PhoneNumber = updateUserPhoneNumber.NewPhoneNumber;
         await _userMongoRepository.UpdateAsync(user);
+
+        await _cacheManager.RemoveByPrefixAsync(RedisConstants.GetUserById, new CacheOptions{ Provider = CacheProviderEnum.Hybrid });
+        return true;
     }
 
 }

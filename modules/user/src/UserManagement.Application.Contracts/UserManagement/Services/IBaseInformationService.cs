@@ -12,5 +12,5 @@ public interface IBaseInformationService : IApplicationService
     Task<UserGrpcDto> GetUserByIdAsync(string userId);
     Task<bool> RegistrationValidationAsync(RegistrationValidationDto input);
     Task<string> AddressInquiry(AddressInquiryDto input);
-    Task UpdateUserPhoneNumber(UpdateUserPhoneNumber updateUserPhoneNumber);
+    Task<bool> UpdateUserPhoneNumber(UpdateUserPhoneNumber updateUserPhoneNumber);
 }
