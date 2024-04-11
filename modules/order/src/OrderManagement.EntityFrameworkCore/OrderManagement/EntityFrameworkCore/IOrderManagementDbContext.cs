@@ -114,6 +114,6 @@ namespace OrderManagement.EfCore
         DbSet<AdvertisementDetail> AdvertisementDetail { get; set; }
         DbSet<Advertisement> Advertisement { get; set; }
 
-        DbSet<SeasonCompanyProduct> SeasonCompanyProduct { get; set; }
+        DbSet<SaleDetailAllocation> SeasonCompanyProduct { get; set; }
     }
 }

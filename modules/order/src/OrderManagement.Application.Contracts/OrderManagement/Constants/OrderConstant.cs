@@ -55,7 +55,7 @@ namespace OrderManagement.Application.Contracts
         public static string SiteStuctureNotFound = "ساختار سایت وجود ندارد";
         public static string SiteStuctureNotFoundId = "3001";
 
-        public static string LastProductLevel = "سطح آخر دسنه بسندی میباشد";
+        public static string LastProductLevel = "سطح آخر دسته بندی میباشد";
         public static string LastProductLevelId = "4001";
 
         public static string DuplicatePriority = "شماره اولویت بندی تکراری میباشد";

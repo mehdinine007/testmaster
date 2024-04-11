@@ -241,26 +241,4 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
         return zipCodeInquiry;
     }
 
-    [SecuredOperation(BaseInformationServicePermissionConstants.UpdateUserPhoneNumber)]
-    public async Task UpdateUserPhoneNumber(UpdateUserPhoneNumber updateUserPhoneNumber)
-    {
-        if (!ValidationHelper.IsValidMobileNumber(updateUserPhoneNumber.NewPhoneNumber))
-            throw new UserFriendlyException(UserMessageConstant.UpdatePhoneNumberInvalidFormat);
-
-        if (!ObjectId.TryParse(updateUserPhoneNumber.UserId.ToString(), out var objectId))
-            throw new UserFriendlyException(UserMessageConstant.UpdatePhoneNumberUserIdIsWrong);
-
-        var user = await _userMongoRepository.GetAsync(objectId);
-
-        var validateMessageRequest = await _commonAppService.ValidateSMS(updateUserPhoneNumber.NewPhoneNumber,
-            user.NationalCode,
-            updateUserPhoneNumber.SmsCode,
-            SMSType.UpdatePhoneNumber);
-        if (!validateMessageRequest)
-            throw new UserFriendlyException(UserMessageConstant.UpdatePhoneNumberWrongSmsCode);
-
-        user.PhoneNumber = updateUserPhoneNumber.NewPhoneNumber;
-        await _userMongoRepository.UpdateAsync(user);
-    }
-
 }

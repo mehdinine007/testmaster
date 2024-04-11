@@ -148,6 +148,7 @@ namespace OrderManagement
 
             CreateMap<ProductAndCategory, ProductAndCategoryViewModel>().ReverseMap();
             CreateMap<ProductLevel, ProductLevelDto>().ReverseMap();
+            CreateMap<ProductLevel, ProductAndCategoryAddDto>().ReverseMap();
             CreateMap<OrderStatusInquiry, OrderStatusInquiryDto>()
                 .ReverseMap()
                 .IgnoreFullAuditedObjectProperties();
@@ -215,7 +216,7 @@ namespace OrderManagement
                   .ForMember(x => x.Description, opt => opt.MapFrom(y => System.Text.Encoding.UTF8.GetString(System.Convert.FromBase64String(y.Description))))
                   .ReverseMap();
 
-            CreateMap<SeasonCompanyProduct, SeasonCompanyProductDto>()
+            CreateMap<SaleDetailAllocation, SaleDetailAllocationDto>()
                 .ReverseMap()
                 .IgnoreFullAuditedObjectProperties();
         }

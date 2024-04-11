@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OrderManagement.EfCore;
 using Volo.Abp.EntityFrameworkCore;
@@ -12,9 +13,11 @@ using Volo.Abp.EntityFrameworkCore;
 namespace OrderManagement.EfCore.Migrations
 {
     [DbContext(typeof(OrderManagementDbContext))]
-    partial class OrderManagementDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240408091808_Update_SeasonCompanyProduct_2")]
+    partial class Update_SeasonCompanyProduct_2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2980,71 +2983,6 @@ namespace OrderManagement.EfCore.Migrations
                     b.ToTable("SaleDetail", (string)null);
                 });
 
-            modelBuilder.Entity("OrderManagement.Domain.SaleDetailAllocation", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("Count")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("CreationTime");
-
-                    b.Property<Guid?>("CreatorId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("CreatorId");
-
-                    b.Property<Guid?>("DeleterId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("DeleterId");
-
-                    b.Property<DateTime?>("DeletionTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("DeletionTime");
-
-                    b.Property<bool>("IsComplete")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false)
-                        .HasColumnName("IsDeleted");
-
-                    b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("LastModificationTime");
-
-                    b.Property<Guid?>("LastModifierId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("LastModifierId");
-
-                    b.Property<int>("SaleDetailId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SeasonId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("TotalCount")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("YearId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SaleDetailId");
-
-                    b.HasIndex("YearId");
-
-                    b.ToTable("SaleDetailAllocation", (string)null);
-                });
-
             modelBuilder.Entity("OrderManagement.Domain.SaleProcessTypeReadOnly", b =>
                 {
                     b.Property<int>("Id")
@@ -3202,6 +3140,71 @@ namespace OrderManagement.EfCore.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Season", (string)null);
+                });
+
+            modelBuilder.Entity("OrderManagement.Domain.SeasonCompanyProduct", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("CreationTime");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("CreatorId");
+
+                    b.Property<Guid?>("DeleterId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("DeleterId");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("DeletionTime");
+
+                    b.Property<bool>("IsComplete")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false)
+                        .HasColumnName("IsDeleted");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("LastModificationTime");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("LastModifierId");
+
+                    b.Property<int>("SaleDetailId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SeasonId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TotalCount")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("YearId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("count")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SaleDetailId");
+
+                    b.HasIndex("YearId");
+
+                    b.ToTable("SeasonCompanyProduct", (string)null);
                 });
 
             modelBuilder.Entity("OrderManagement.Domain.Season_Product_Category", b =>
@@ -4318,7 +4321,7 @@ namespace OrderManagement.EfCore.Migrations
                     b.Navigation("SaleSchema");
                 });
 
-            modelBuilder.Entity("OrderManagement.Domain.SaleDetailAllocation", b =>
+            modelBuilder.Entity("OrderManagement.Domain.SeasonCompanyProduct", b =>
                 {
                     b.HasOne("OrderManagement.Domain.SaleDetail", "SaleDetail")
                         .WithMany("SeasonCompanyProducts")

@@ -5,13 +5,13 @@ namespace OrderManagement.Domain
 {
     public class Year : FullAuditedEntity<int>
     {
-        private ICollection<SeasonCompanyProduct> _seasonCompanyProducts;
+        private ICollection<SaleDetailAllocation> _seasonCompanyProducts;
 
         public string Title { get; set; }
 
-        public ICollection<SeasonCompanyProduct> SeasonCompanyProducts
+        public ICollection<SaleDetailAllocation> SeasonCompanyProducts
         {
-            get => _seasonCompanyProducts ?? (_seasonCompanyProducts = new List<SeasonCompanyProduct>());
+            get => _seasonCompanyProducts ?? (_seasonCompanyProducts = new List<SaleDetailAllocation>());
             protected set => _seasonCompanyProducts = value;
         }
     }

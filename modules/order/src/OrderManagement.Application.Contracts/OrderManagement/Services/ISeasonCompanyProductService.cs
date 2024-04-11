@@ -2,13 +2,13 @@
 
 namespace OrderManagement.Application.Contracts.Services;
 
-public interface ISeasonCompanyProductService : IApplicationService
+public interface ISaleDetailAllocationService : IApplicationService
 {
-    Task<SeasonCompanyProductDto> Create(SeasonCompanyProductDto seasonCompanyProductDto);
+    Task<SaleDetailAllocationDto> Create(SaleDetailAllocationDto seasonCompanyProductDto);
 
-    Task<SeasonCompanyProductDto> Update(SeasonCompanyProductDto seasonCompanyProductDto);
+    Task<SaleDetailAllocationDto> Update(SaleDetailAllocationDto seasonCompanyProductDto);
 
-    Task<SeasonCompanyProductDto> GetById(int seasonCompanyProductId);
+    Task<SaleDetailAllocationDto> GetById(int seasonCompanyProductId);
 
     Task Delete(int seasonCompanyProductId);
 }

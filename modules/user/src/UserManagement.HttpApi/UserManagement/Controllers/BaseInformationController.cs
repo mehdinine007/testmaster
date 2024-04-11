@@ -42,8 +42,5 @@ namespace UserManagement.HttpApi.UserManagement.Controllers
         public async Task<string> AddressInquiry(AddressInquiryDto input)
             => await _baseInformationService.AddressInquiry(input);
 
-        [HttpPost]
-        public async Task UpdateUserPhoneNumber([FromBody] UpdateUserPhoneNumber updateUserPhoneNumber)
-            => await _baseInformationService.UpdateUserPhoneNumber(updateUserPhoneNumber);
     }
 }

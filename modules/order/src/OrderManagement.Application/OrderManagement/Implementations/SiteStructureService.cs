@@ -155,7 +155,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
                 if (x.Type == SiteStructureTypeEnum.Organization)
                 {
                     var organizations = await _organizationService.GetList(JsonConvert.DeserializeObject<OrganizationQueryDto>(x.Content));
-                    x.CarouselData = new List<dynamic> { organizations };
+                    x.CarouselData = organizations;
                 }
 
                 x.Content = null;

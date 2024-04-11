@@ -15,10 +15,6 @@ namespace OrderManagement.Domain.OrderManagement
 
         private ICollection<OrderStatusInquiry> _orderStatusInquiries;
 
-        private ICollection<SeasonCompanyProduct> _seasonCompanyProducts_Company;
-
-        private ICollection<SeasonCompanyProduct> _seasonCompanyProducts_Product;
-
         public string Code { get; set; }
 
         public string Title { get; set; }
@@ -55,19 +51,6 @@ namespace OrderManagement.Domain.OrderManagement
         {
             get => _orderStatusInquiries ?? (_orderStatusInquiries = new List<OrderStatusInquiry>());
             protected set => _orderStatusInquiries = value;
-        }
-
-
-        public ICollection<SeasonCompanyProduct> SeasonCompanyProducts_Company
-        {
-            get => _seasonCompanyProducts_Company ?? (_seasonCompanyProducts_Company = new List<SeasonCompanyProduct>());
-            protected set => _seasonCompanyProducts_Company = value;
-        }
-
-        public ICollection<SeasonCompanyProduct> SeasonCompanyProducts_Product
-        {
-            get => _seasonCompanyProducts_Product ?? (_seasonCompanyProducts_Product = new List<SeasonCompanyProduct>());
-            protected set => _seasonCompanyProducts_Product = value;
         }
 
         public ProductAndCategory()
