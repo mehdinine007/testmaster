@@ -41,7 +41,7 @@
     <None Remove="Migrations\Programmability\spGetOrderRejectionTypeReadOnly.sql" />
     <None Remove="Migrations\Programmability\spGetOrderStatusTypeReadOnly.sql" />
     <None Remove="Migrations\Programmability\spGetReportQuestionnaire.sql" />
-    <None Remove="Migrations\Programmability\spGetUserRejectionAdvocacy.sql" />
+    <None Remove="Migrations\Programmability\spInsertUserDataAccess.sql" />
     <None Remove="Migrations\Programmability\spUserInfo.sql" />
     <None Remove="Migrations\Programmability\Sp_EsaleCarApplicantCountChart.sql" />
     <None Remove="Migrations\Programmability\sp_InsertUserDataAccess.sql" />
@@ -154,9 +154,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Migrations\Programmability\spGetReportQuestionnaire.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Migrations\Programmability\spGetUserRejectionAdvocacy.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Migrations\Programmability\spUserInfo.sql">

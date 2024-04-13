@@ -1402,8 +1402,11 @@ public class OrderAppService : ApplicationService, IOrderAppService
         var orders = _commitOrderRepository
             .WithDetails()
             .AsNoTracking()
-            .Where(x => x.OrderStatus == OrderStatusType.RecentlyAdded && x.PaymentId != null && (DateTime.Now - x.CreationTime).TotalMinutes > deadLine)
+            .Where(x => x.OrderStatus == OrderStatusType.RecentlyAdded && x.PaymentId != null)
+            .ToList()
+            .Where(x => (DateTime.Now - x.CreationTime).TotalMinutes > deadLine)
             .ToList();
+            
         if (orders == null || orders.Count == 0)
             return;
         foreach (var order in orders)
