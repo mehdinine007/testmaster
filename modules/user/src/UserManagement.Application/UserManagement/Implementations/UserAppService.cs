@@ -387,7 +387,7 @@ IFG.Core.Caching.ICacheManager cacheManager)
             throw new UserFriendlyException("ساختار کلمه عبور صحیح نمی باشد");
         }
 
-        if (!ValidationHelper.IsValidMobileNumber(input.NationalCode))
+        if (!ValidationHelper.IsValidNationalCode(input.NationalCode))
         {
             throw new UserFriendlyException(UserMessageConstant.NationalCodeNotValid);
         }
