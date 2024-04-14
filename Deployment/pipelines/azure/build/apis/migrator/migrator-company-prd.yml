@@ -1,0 +1,26 @@
+trigger:
+  branches:
+    include:
+    - production
+    
+  paths:
+    include:
+    - 'modules/company/src/CompanyManagement.Migrator/*'
+    - 'modules/company/src/CompanyManagement.Migrator/**/*'
+    - 'Deployment/pipelines/azure/build/apis/migrator-company-prd.yml'
+
+pool:
+  name: AminCloudProduction
+  
+steps:
+- template: '../templates/fill-appsettings-file.yml'
+  parameters:
+    project: 'CompanyManagement.Migrator'
+
+- template: '../templates/step-build-and-publish.yml'
+  parameters:
+    project: 'modules/company/src/CompanyManagement.Migrator/CompanyManagement.Migrator.csproj'
+
+- template: '../templates/publish-build-artifact.yml'
+  parameters:
+    artifactName: 'Migrator-Company'  
