@@ -1,0 +1,26 @@
+trigger:
+  branches:
+    include:
+    - production
+    
+  paths:
+    include:
+    - 'modules/order/src/OrderManagement.Migrator/*'
+    - 'modules/order/src/OrderManagement.Migrator/**/*'
+    - 'Deployment/pipelines/azure/build/apis/migrator-order-prd.yml'
+
+pool:
+  name: AminCloudProduction
+  
+steps:
+- template: '../templates/fill-appsettings-file.yml'
+  parameters:
+    project: 'OrderManagement.Migrator'
+
+- template: '../templates/step-build-and-publish.yml'
+  parameters:
+    project: 'modules/order/src/OrderManagement.Migrator/OrderManagement.Migrator.csproj'
+
+- template: '../templates/publish-build-artifact.yml'
+  parameters:
+    artifactName: 'Migrator-Order'  
