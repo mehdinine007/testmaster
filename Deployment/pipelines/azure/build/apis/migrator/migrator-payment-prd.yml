@@ -5,8 +5,8 @@ trigger:
     
   paths:
     include:
-    - 'modules/payment/src/PaymentManagement.Migrator/*'
-    - 'modules/payment/src/PaymentManagement.Migrator/**/*'
+    - 'modules/payment/PaymentManagement.Migrator/*'
+    - 'modules/payment/PaymentManagement.Migrator/**/*'
     - 'Deployment/pipelines/azure/build/apis/migrator-payment-prd.yml'
 
 pool:
@@ -15,7 +15,7 @@ pool:
 steps:
 - template: '../../templates/step-build-and-publish.yml'
   parameters:
-    project: 'modules/payment/src/PaymentManagement.Migrator/PaymentManagement.Migrator.csproj'
+    project: 'modules/payment/PaymentManagement.Migrator/PaymentManagement.Migrator.csproj'
 
 - template: '../../templates/publish-build-artifact.yml'
   parameters:
