@@ -6,7 +6,7 @@ trigger:
   paths:
     include:
     - 'microservices/UserService.Host/*'
-    - 'microservices/UserService.Hos/**/*'
+    - 'microservices/UserService.Host/**/*'
     - 'Deployment/pipelines/azure/build/apis/user-prd.yml'
 
 pool:
