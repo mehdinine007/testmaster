@@ -6,7 +6,7 @@ trigger:
   paths:
     include:
     - 'microservices/CompanyService.Host/*'
-    - 'microservices/CompanyService.Hos/**/*'
+    - 'microservices/CompanyService.Host/**/*'
     - 'Deployment/pipelines/azure/build/apis/company-dev.yml'
 
 pool:
