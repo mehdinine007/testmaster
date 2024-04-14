@@ -13,10 +13,6 @@ pool:
   name: AminCloudProduction
   
 steps:
-- template: '../../templates/fill-appsettings-file.yml'
-  parameters:
-    project: 'CompanyManagement.Migrator'
-
 - template: '../../templates/step-build-and-publish.yml'
   parameters:
     project: 'modules/company/src/CompanyManagement.Migrator/CompanyManagement.Migrator.csproj'
