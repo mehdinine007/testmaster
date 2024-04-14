@@ -13,14 +13,14 @@ pool:
   name: AminCloudProduction
   
 steps:
-- template: '../templates/fill-appsettings-file.yml'
+- template: '../../templates/fill-appsettings-file.yml'
   parameters:
     project: 'OrderManagement.Migrator'
 
-- template: '../templates/step-build-and-publish.yml'
+- template: '../../templates/step-build-and-publish.yml'
   parameters:
     project: 'modules/order/src/OrderManagement.Migrator/OrderManagement.Migrator.csproj'
 
-- template: '../templates/publish-build-artifact.yml'
+- template: '../../templates/publish-build-artifact.yml'
   parameters:
     artifactName: 'Migrator-Order'  
