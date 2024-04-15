@@ -15,6 +15,9 @@ exec(N'
    SET IDENTITY_INSERT [dbo].[Organization] OFF 
 ')
 
+update Attachments
+set Entity = 9
+where Entity = 1 and EntityId in (select o.Id from Organization o)
 
 
 
