@@ -112,7 +112,8 @@ public class EsaleGrpcClient : ApplicationService, IEsaleGrpcClient
             TransactionCode = paymentInformation.TransactionCode,
             TransactionDate = paymentInformation.TransactionDate.ToDateTime(),
             TransactionPersianDate = paymentInformation.TransactionPersianDate,
-            PaymentStatusId = paymentInformation.PaymentStatusId
+            PaymentStatusId = paymentInformation.PaymentStatusId,
+            Amount=paymentInformation.Amount,
         });
     }
 

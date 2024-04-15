@@ -31,5 +31,10 @@ namespace OrderManagement.Domain
         public DateTime? SendToManufacturerDate { get; set; }
         public DateTime? OrderRejectionDate { get; set; }
         public string TrackingCode { get; set; }
+        public DateTime? TransactionCommitDate { get; set; }
+        public string TransactionId { get; set; }
+        public long? PaymentPrice { get; set; }
+
+
     }
 }
