@@ -68,9 +68,23 @@
     </ItemGroup>
 
     <ItemGroup>
+      <None Remove="Reports\RptOrderDetail.mrt" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="Reports\RptOrderDetail.mrt">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
+
+    <ItemGroup>
       <Content Update="web.config">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
     </ItemGroup>
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+		<Exec Command="xcopy /y /d &quot;$(ProjectDir)ExteraPackages\*.*&quot; &quot;$(ProjectDir)$(OutDir)&quot;" />
+	</Target>
+
 
 </Project>
