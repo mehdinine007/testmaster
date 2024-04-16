@@ -20,12 +20,14 @@ EXEC('ALTER TABLE [SeasonCompanyProduct] ALTER COLUMN ProductId int null');
 
 EXEC('ALTER TABLE [SeasonCompanyProduct] ALTER COLUMN EsaleTypeId int null');
 
-EXEC('ALTER TABLE [SeasonCompanyProduct] ADD SaleDetailId int not null DEFAULT (0)');
+EXEC('ALTER TABLE [SeasonCompanyProduct] ADD SaleDetailId int null');
 
 EXEC ('CREATE INDEX [IX_SeasonCompanyProduct_SaleDetailId] ON [SeasonCompanyProduct] ([SaleDetailId])');
 
-EXEC('ALTER TABLE [SeasonCompanyProduct] ADD CONSTRAINT [FK_SeasonCompanyProduct_SaleDetail_SaleDetailId] FOREIGN KEY ([SaleDetailId]) REFERENCES [SaleDetail] ([Id]) ON DELETE CASCADE');
+EXEC('ALTER TABLE [dbo].[SeasonCompanyProduct]  WITH CHECK ADD  CONSTRAINT [FK_SeasonCompanyProduct_SaleDetail] FOREIGN KEY([SaleDetailId])
+REFERENCES [dbo].[SaleDetail] ([Id])');
 
+EXEC('ALTER TABLE [dbo].[SeasonCompanyProduct] CHECK CONSTRAINT [FK_SeasonCompanyProduct_SaleDetail]')
 
 
 
