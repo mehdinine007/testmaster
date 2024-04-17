@@ -17,6 +17,6 @@
         public string NationalCode { get; set; }
         public string Key { get; set; }
         public string IV { get; set; }
-        public int ThirdPartyCode { get; set; }
+        public string Pans { get; set; }
     }
 }

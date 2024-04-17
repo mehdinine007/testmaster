@@ -199,7 +199,6 @@ namespace PaymentManagement.Application.Servicess
         [UnitOfWork(isTransactional: false)]
         public async Task<HandShakeOutputDto> HandShakeAsync(HandShakeInputDto input)
         {
-
             var result = new HandShakeOutputDto()
             {
                 StatusCode = (int)StatusCodeEnum.Failed,
@@ -399,7 +398,7 @@ namespace PaymentManagement.Application.Servicess
                 result.PspJsonResult = handShakeResult;
                 if (handShakeResult != null)
                 {
-                    JsonResult jResult = JsonConvert.DeserializeObject<JsonResult>(handShakeResult);
+                    IranKish.HandShakeJsonResult jResult = JsonConvert.DeserializeObject<IranKish.HandShakeJsonResult>(handShakeResult);
                     if (jResult.status)
                     {
                         payment.Token = jResult.result.token;
@@ -674,7 +673,8 @@ namespace PaymentManagement.Application.Servicess
                     TerminalNumber = pspAccountProps.TerminalNumber,
                     NationalCode = payment.NationalCode,
                     Key = pspAccountProps.Key,
-                    IV = pspAccountProps.IV
+                    IV = pspAccountProps.IV,
+                    Pans = string.Empty
                 };
 
                 await _paymentLogRepository.InsertAsync(new PaymentLog
@@ -710,7 +710,7 @@ namespace PaymentManagement.Application.Servicess
                 {
                     Pasargad.HandShakeJsonResult jResult = JsonConvert.DeserializeObject<Pasargad.HandShakeJsonResult>(handShakeResult);
 
-                    if (jResult.ResultCode == 0)
+                    if (jResult.ResultCode == 0 && jResult.Data != null)
                     {
                         result.Token = payment.Token = jResult.Data.UrlId;
                         await _paymentRepository.AttachAsync(ObjectMapper.Map<PaymentDto, Payment>(payment), o => o.Token);
@@ -1661,9 +1661,8 @@ namespace PaymentManagement.Application.Servicess
                 if (verifyResult != null)
                 {
                     Pasargad.Verify.VerifyJsonResult jResult = JsonConvert.DeserializeObject<Pasargad.Verify.VerifyJsonResult>(verifyResult);
-                    //13031 => تراکنش در انتظار تایید است
                     //13029 => تراکنش قبلا تایید شده است 
-                    if (jResult.ResultCode is 0 or 13029 or 13031)
+                    if (jResult.ResultCode is 0 or 13029)
                     {
                         payment.PaymentStatusId = (int)PaymentStatusEnum.Success;
                         await _paymentRepository.AttachAsync(ObjectMapper.Map<PaymentDto, Payment>(payment), o => o.PaymentStatusId);
@@ -2055,32 +2054,14 @@ namespace PaymentManagement.Application.Servicess
                     Pasargad.Inquiry.InquiryJsonResult jResult = JsonConvert.DeserializeObject<Pasargad.Inquiry.InquiryJsonResult>(inquiryResult);
                     bool isPaymentFailed = false;
 
-                    //13031 => تراکنش در انتظار تایید است
-                    if (jResult.ResultCode == 0 && jResult.Data != null && jResult.Data.Status is not (2 or 13031 or 13029))
-                    { isPaymentFailed = true; }
-
-                    //13018 => یافت نشد                
-                    if (jResult.ResultCode == 13018 && payment.TransactionDate.AddMinutes(_config.GetValue<int>("App:PasargadDeadLine")) < DateTime.Now)
-                    { isPaymentFailed = true; }
-                    if (jResult.ResultCode != 13018 && jResult.Data == null) //تراکنش نامشخص است
+                    if (jResult.ResultCode == 0 && jResult.ResultMsg == "Successful")
                     {
-                        await _paymentLogRepository.InsertAsync(new PaymentLog
-                        {
-                            PaymentId = payment.Id,
-                            Psp = PspEnum.Pasargad.ToString(),
-                            Message = Constants.ErrorInquiryResponse,
-                            Parameter = inquiryResult
-                        });
-                        result.Message = Constants.ErrorInInquiry;
-                        return result;
-
+                        //13033 => reverse تراکنش به کارت مشتری عودت شده است
+                        if (jResult.Data != null && jResult.Data.Status == 13033)
+                        { isPaymentFailed = true; }
                     }
-                    if(jResult.ResultCode != 0 && jResult.ResultCode != 13018) // تراکنش ناموفق  است
-                    {
-                        isPaymentFailed = true;
-                    }
-
-
+                    else
+                    { isPaymentFailed = true; }
 
                     if (isPaymentFailed)
                     {
@@ -2110,6 +2091,119 @@ namespace PaymentManagement.Application.Servicess
                 return result;
             }
         }
+        //private async Task<InquiryOutputDto> InquiryToPasargadAsync(PaymentDto payment, string pspAccountJsonProps)
+        //{
+        //    var result = new InquiryOutputDto()
+        //    {
+        //        StatusCode = (int)StatusCodeEnum.Unknown,
+        //        Message = Constants.UnknownError,
+        //        PaymentId = payment.Id
+        //    };
+        //    try
+        //    {
+        //        var pspAccountProps = JsonConvert.DeserializeObject<Pasargad.PspAccountProps>(pspAccountJsonProps);
+        //        var authResult = await AuthenticatePasargadAsync(payment.Id, pspAccountProps.UserName, pspAccountProps.Password);
+        //        if (authResult == null || string.IsNullOrEmpty(authResult.Token))
+        //        {
+        //            result.PspJsonResult = authResult != null ? JsonConvert.SerializeObject(authResult) : string.Empty;
+        //            result.Message = Constants.ErrorInAuthenticate;
+        //            return result;
+        //        }
+
+        //        PasargadInquiryInput input = new()
+        //        {
+        //            Token = authResult.Token,
+        //            InvoiceId = payment.Id.ToString()
+        //        };
+        //        await _paymentLogRepository.InsertAsync(new PaymentLog
+        //        {
+        //            PaymentId = payment.Id,
+        //            Psp = PspEnum.Pasargad.ToString(),
+        //            Message = Constants.InquiryStart,
+        //            Parameter = JsonConvert.SerializeObject(input),
+        //        });
+        //        string inquiryResult = string.Empty;
+        //        var connectToGatewayMode = _config.GetValue<bool>("App:ConnectToGatewayMode");
+        //        if (connectToGatewayMode) //grpc
+        //        {
+        //            inquiryResult = (await GatewayServiceGrpcClient().InquiryToPasargadAsync(input)).Result;
+        //        }
+        //        else //restApi
+        //        {
+        //            string url = _config.GetValue<string>("AppUrls:GatewayApi") + _config.GetValue<string>("PasargadUrls:Inquiry");
+        //            HttpClient client = new();
+        //            var response = await client.PostAsync(url, new StringContent(JsonConvert.SerializeObject(input), Encoding.UTF8, "application/json"));
+        //            inquiryResult = response.Content.ReadAsStringAsync().Result;
+        //            inquiryResult = JsonDocument.Parse(inquiryResult).RootElement.GetProperty("result").ToString();
+        //        }
+        //        await _paymentLogRepository.InsertAsync(new PaymentLog
+        //        {
+        //            PaymentId = payment.Id,
+        //            Psp = PspEnum.Pasargad.ToString(),
+        //            Message = Constants.InquiryResult,
+        //            Parameter = inquiryResult
+        //        });
+        //        result.PspJsonResult = inquiryResult;
+        //        if (inquiryResult != null)
+        //        {
+        //            Pasargad.Inquiry.InquiryJsonResult jResult = JsonConvert.DeserializeObject<Pasargad.Inquiry.InquiryJsonResult>(inquiryResult);
+        //            bool isPaymentFailed = false;
+
+        //            //13031 => تراکنش در انتظار تایید است
+        //            if (jResult.ResultCode == 0 && jResult.Data != null && jResult.Data.Status is not (2 or 13031 or 13029))
+        //            { isPaymentFailed = true; }
+
+        //            //13018 => یافت نشد                
+        //            if (jResult.ResultCode == 13018 && payment.TransactionDate.AddMinutes(_config.GetValue<int>("App:PasargadDeadLine")) < DateTime.Now)
+        //            { isPaymentFailed = true; }
+        //            if (jResult.ResultCode != 13018 && jResult.Data == null) //تراکنش نامشخص است
+        //            {
+        //                await _paymentLogRepository.InsertAsync(new PaymentLog
+        //                {
+        //                    PaymentId = payment.Id,
+        //                    Psp = PspEnum.Pasargad.ToString(),
+        //                    Message = Constants.ErrorInquiryResponse,
+        //                    Parameter = inquiryResult
+        //                });
+        //                result.Message = Constants.ErrorInInquiry;
+        //                return result;
+
+        //            }
+        //            if (jResult.ResultCode != 0 && jResult.ResultCode != 13018) // تراکنش ناموفق  است
+        //            {
+        //                isPaymentFailed = true;
+        //            }
+
+
+
+        //            if (isPaymentFailed)
+        //            {
+        //                payment.PaymentStatusId = (int)PaymentStatusEnum.Failed;
+        //                await _paymentRepository.AttachAsync(ObjectMapper.Map<PaymentDto, Payment>(payment), o => o.PaymentStatusId);
+        //            }
+
+        //            result.PaymentStatus = payment.PaymentStatusId;
+        //            result.PaymentStatusDescription = EnumExtension.GetEnumDescription((PaymentStatusEnum)payment.PaymentStatusId);
+        //            result.StatusCode = (int)StatusCodeEnum.Success;
+        //            result.Message = Constants.InquirySuccess;
+        //            return result;
+        //        }
+        //        result.Message = Constants.InquiryFailed;
+        //        return result;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        await _paymentLogRepository.InsertAsync(new PaymentLog
+        //        {
+        //            PaymentId = payment.Id,
+        //            Psp = PspEnum.Pasargad.ToString(),
+        //            Message = Constants.InquiryException,
+        //            Parameter = GetExceptionMessage(ex)
+        //        });
+        //        result.Message = Constants.ErrorInInquiry;
+        //        return result;
+        //    }
+        //}
         #endregion
 
         #region Reverse
@@ -2420,7 +2514,7 @@ namespace PaymentManagement.Application.Servicess
                 }
                 else //restApi
                 {
-                    string url = _config.GetValue<string>("AppUrls:GatewayApi") + _config.GetValue<string>("PasargadUrls:Verify");
+                    string url = _config.GetValue<string>("AppUrls:GatewayApi") + _config.GetValue<string>("PasargadUrls:Reverse");
                     HttpClient client = new();
                     var response = await client.PostAsync(url, new StringContent(JsonConvert.SerializeObject(input), Encoding.UTF8, "application/json"));
                     reverseResult = response.Content.ReadAsStringAsync().Result;

@@ -23,6 +23,8 @@ namespace GatewayManagement.Application.Servicess
             });
             return new Output() { Result = output.Result };
         }
+
+        #region HandShake
         public override async Task<Output> HandShakeWithIranKish(IranKishHandShakeInput input, ServerCallContext context)
         {
             var output = await _gatewayAppService.HandShakeWithIranKish(new IranKishHandShakeInputDto
@@ -89,10 +91,14 @@ namespace GatewayManagement.Application.Servicess
                 TerminalNumber = input.TerminalNumber,
                 NationalCode = input.NationalCode,
                 Key = input.Key,
-                IV = input.IV
+                IV = input.IV,
+                Pans = input.Pans,
             });
             return new Output() { Result = output.Result };
         }
+        #endregion
+
+        #region Verify
         public override async Task<Output> VerifyToIranKish(IranKishVerifyInput input, ServerCallContext context)
         {
             var output = await _gatewayAppService.VerifyToIranKish(new IranKishVerifyInputDto
@@ -137,6 +143,9 @@ namespace GatewayManagement.Application.Servicess
             });
             return new Output() { Result = output.Result };
         }
+        #endregion
+
+        #region Inquiry
         public override async Task<Output> InquiryToIranKish(IranKishInquiryInput input, ServerCallContext context)
         {
             var output = await _gatewayAppService.InquiryToIranKish(new IranKishInquiryInputDto
@@ -168,6 +177,9 @@ namespace GatewayManagement.Application.Servicess
             });
             return new Output() { Result = output.Result };
         }
+        #endregion
+
+        #region Reverse
         public override async Task<Output> ReverseToIranKish(IranKishReverseInput input, ServerCallContext context)
         {
             var output = await _gatewayAppService.ReverseToIranKish(new IranKishReverseInputDto
@@ -212,5 +224,6 @@ namespace GatewayManagement.Application.Servicess
             });
             return new Output() { Result = output.Result };
         }
+        #endregion
     }
 }
