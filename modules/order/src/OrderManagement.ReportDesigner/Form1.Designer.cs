@@ -33,11 +33,11 @@
             // 
             // button1
             // 
-            button1.Location = new System.Drawing.Point(207, 78);
+            button1.Location = new System.Drawing.Point(236, 88);
             button1.Name = "button1";
             button1.Size = new System.Drawing.Size(234, 86);
             button1.TabIndex = 0;
-            button1.Text = "Create Report";
+            button1.Text = "Contract Form Design";
             button1.UseVisualStyleBackColor = true;
             button1.Click += button1_Click;
             // 
@@ -49,6 +49,7 @@
             Controls.Add(button1);
             Name = "Form1";
             Text = "OrderManagement.ReportDesigner";
+            Load += Form1_Load;
             ResumeLayout(false);
         }
 

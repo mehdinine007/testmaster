@@ -68,11 +68,11 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Remove="Reports\RptOrderDetail.mrt" />
+      <None Remove="Reports\RptContractForm.mrt" />
     </ItemGroup>
 
     <ItemGroup>
-      <Content Include="Reports\RptOrderDetail.mrt">
+      <Content Include="Reports\RptContractForm.mrt">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
     </ItemGroup>

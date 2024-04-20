@@ -10,6 +10,6 @@ namespace OrderManagement.Application.Contracts
 {
     public interface IOrderReportService : IApplicationService
     {
-        Task<string> RptOrderDetail(int orderId);
+        Task<string> RptOrderDetail(int orderId,string reportName);
     }
 }

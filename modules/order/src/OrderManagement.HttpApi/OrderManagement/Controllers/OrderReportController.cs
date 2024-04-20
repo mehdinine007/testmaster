@@ -17,6 +17,6 @@ public class OrderReportController : Controller
         => _orderReportService = orderReportService;
 
     [HttpGet]
-    public Task<string> RptOrderDetail(int orderId)
-    => _orderReportService.RptOrderDetail(orderId);
+    public Task<string> RptContractForm(int orderId)
+    => _orderReportService.RptOrderDetail(orderId, "RptContractForm");
 }

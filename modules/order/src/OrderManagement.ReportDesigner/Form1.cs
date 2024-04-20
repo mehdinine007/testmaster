@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -32,17 +33,26 @@ namespace OrderManagement.ReportDesigner
 
             var report = ((IStiDesignerBase)sender).Report;
 
-            report.Save(@"Reports\RptOrderDetail.mrt");
-            
+            report.Save(Properties.Settings.Default.ReportPath + "RptContractForm.mrt");
+
         }
         private void button1_Click(object sender, EventArgs e)
         {
             var report = new StiReport();
             report.Dictionary.Databases.Clear();
             var orderdata = new List<CustomerOrder_OrderDetailDto>();
-            //report.Load(@"Reports\RptOrderDetail.mrt");
+            string fileName = Properties.Settings.Default.ReportPath + "RptContractForm.mrt";
+            if (File.Exists(fileName))
+            {
+                report.Load(fileName);
+            }
             report.RegData("Table", orderdata);
             report.Design();
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            this.button1_Click(button1, null);
         }
     }
 }

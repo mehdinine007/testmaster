@@ -22,10 +22,10 @@ namespace OrderManagement.Application.OrderManagement.Implementations
         }
 
         [SecuredOperation(OrderAppServicePermissionConstants.GetOrderDetailById)]
-        public async Task<string> RptOrderDetail(int orderId)
+        public async Task<string> RptOrderDetail(int orderId, string reportName)
         {
             var orderDetail = await _orderAppService.GetOrderDetailById(orderId);
-            return await _reportService.Execute("RptOrderDetail", orderDetail);
+            return await _reportService.Execute(reportName, orderDetail);
         }
     }
 }
