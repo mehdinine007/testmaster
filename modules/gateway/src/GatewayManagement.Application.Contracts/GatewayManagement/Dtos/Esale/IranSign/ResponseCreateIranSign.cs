@@ -15,15 +15,6 @@ namespace GatewayManagement.Application.Contracts.GatewayManagement.Dtos.Esale.I
         public List<ResponseWorkFlowRecipients> workflowRecipients { get; set; }
     }
 
-    public class CreateIranSignOutput
-    {
-        public string Message { get; set; }
-        public int ResultCode { get; set; }
-        public bool Success { get; set; }
-        public string ResponseBody { get; set; }
-        public string WorkflowRecipients { get; set; }
-    }
-
     public class ErrorResponseIranSign
     {
         public string message { get; set; }

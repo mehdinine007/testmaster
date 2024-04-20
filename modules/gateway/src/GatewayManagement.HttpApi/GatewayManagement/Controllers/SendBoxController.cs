@@ -4,6 +4,9 @@ using Volo.Abp;
 using GatewayManagement.Application.Contracts.GatewayManagement.Dtos;
 using Volo.Abp.Auditing;
 using GatewayManagement.Application.Contracts.GatewayManagement.IServices;
+using GatewayManagement.Application.Contracts.GatewayManagement.Dtos.Esale.IranSign;
+using GatewayManagement.Application.Contracts.GatewayManagement.Dtos.Esale;
+using GatewayManagement.Application.Contracts.Dtos.Esale;
 #endregion
 
 namespace SendBoxController
@@ -14,6 +17,7 @@ namespace SendBoxController
     public class SendBoxController : Controller
     {
         private readonly ISendBoxService _sendBoxService;
+
         public SendBoxController(ISendBoxService sendBoxService)
         {
             _sendBoxService = sendBoxService;
@@ -25,5 +29,16 @@ namespace SendBoxController
             return await _sendBoxService.SendService(input);
         }
 
+
+        [HttpPost]
+        public async Task<CreateSignOutputDto> Create(CreateSignDto input)
+        {
+            return await _sendBoxService.CreateSign(input);
+        }
+        [HttpGet]
+        public async Task<ResponseInquiryIranSign> Inquiry(Guid workflowTicket)
+        {
+            return await _sendBoxService.InquirySign(workflowTicket);
+        }
     }
 }

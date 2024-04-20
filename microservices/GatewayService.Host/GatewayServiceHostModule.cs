@@ -118,6 +118,7 @@ namespace GatewayService.Host
                 endpoints.MapGrpcService<UserGrpcService>();
                 //endpoints.MapGet("/grpc", () => "grpc");
                 endpoints.MapGrpcService<GatewayGrpcServiceProvider>();
+                endpoints.MapGrpcService<SignGrpcServiceProvider>();
             });
 
             app.UseAbpRequestLocalization(); //TODO: localization?

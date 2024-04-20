@@ -1,6 +1,6 @@
 ﻿#region NS
 using Esale.SendBox.Providers.Magfa;
-using GatewayManagement.Application.Contracts.Dtos.Esale.IranSign;
+using GatewayManagement.Application.Contracts.Dtos.Esale;
 using GatewayManagement.Application.Contracts.GatewayManagement.Dtos;
 using GatewayManagement.Application.Contracts.GatewayManagement.Dtos.Esale;
 using GatewayManagement.Application.Contracts.GatewayManagement.Dtos.Esale.IranSign;
@@ -23,7 +23,7 @@ namespace GatewayManagement.Application.GatewayManagement.Services.SendBox
             _configuration = configuration;
         }
 
-        public async  Task<CreateIranSignOutput> CreateSign(CreateIranSignDto createIranSignDto)
+        public async  Task<CreateSignOutputDto> CreateSign(CreateSignDto createSignDto)
         {
             var _iranConfig = _configuration.GetSection("SendBoxConfig:Sign:IranSign").Get<IranSignConfig>();
             var _iranSign = new IranSign(_iranConfig);
@@ -32,8 +32,8 @@ namespace GatewayManagement.Application.GatewayManagement.Services.SendBox
                 workflowInfo = new WorkFlowInfo()
                 {
                     ownerUsername = _iranConfig.OwnerUserName,
-                    title = createIranSignDto.Title,
-                    description = createIranSignDto.Description,
+                    title = createSignDto.Title,
+                    description = createSignDto.Description,
                     workflowLanguage = "PERSIAN",
                     workflowPolicyType = "REJECT_WF_IF_REJECT_REQ",
                     workflowType = "INDIVIDUAL",
@@ -41,8 +41,8 @@ namespace GatewayManagement.Application.GatewayManagement.Services.SendBox
                     {
                         documentData = new DocumentData()
                         {
-                            name = createIranSignDto.DocumentName,
-                            data = createIranSignDto.DocumentData
+                            name = createSignDto.DocumentName,
+                            data = createSignDto.DocumentData
                         }
                     }
 
@@ -52,7 +52,7 @@ namespace GatewayManagement.Application.GatewayManagement.Services.SendBox
                     new WorkFlowRecipients()
                     {
                         recipientOrder = 0,
-                        recipientUsername = createIranSignDto.RecipientUsername,
+                        recipientUsername = createSignDto.RecipientUsername,
                         recipientRole = "SIGNER",
                         reminder = new Reminder()
                         {
@@ -67,12 +67,12 @@ namespace GatewayManagement.Application.GatewayManagement.Services.SendBox
                         {
                             downloadPermission = true
                         },
-                        documentParameter = JsonConvert.DeserializeObject<DocumentParameter>(createIranSignDto.DocumentParameter)
+                        documentParameter = JsonConvert.DeserializeObject<DocumentParameter>(createSignDto.DocumentParameter)
                     }
                 }
             };
             var _ret = await _iranSign.Create(_createDto);
-            return new CreateIranSignOutput()
+            return new CreateSignOutputDto()
             {
                 Message = _ret.message,
                 Success = _ret.Success,  

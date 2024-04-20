@@ -43,6 +43,7 @@ namespace GatewayManagement.Application.GatewayManagement.Services.SendBox.Sign.
                 {
                     ResponseCreateIranSign result = null;
                     result = JsonConvert.DeserializeObject<ResponseCreateIranSign>(readContent);
+                    result.Success = true;
                     return result;
                 }
                 else

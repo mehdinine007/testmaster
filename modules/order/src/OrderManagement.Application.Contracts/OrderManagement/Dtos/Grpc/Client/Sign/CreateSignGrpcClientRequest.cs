@@ -1,13 +1,12 @@
-﻿using GatewayManagement.Application.Contracts.GatewayManagement.Dtos.Esale.IranSign;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GatewayManagement.Application.Contracts.Dtos.Esale.IranSign
+namespace OrderManagement.Application.Contracts.OrderManagement.Dtos.Grpc.Client.Sign
 {
-    public class CreateIranSignDto
+    public class CreateSignGrpcClientRequest
     {
         public string Title { get; set; }
         public string Description { get; set; }
