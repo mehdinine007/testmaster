@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.OrderManagement;
+using OrderManagement.Application.Contracts.OrderManagement.Dtos.Sign;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
 using OrderManagement.Application.Contracts.Services;
 using System;
@@ -24,10 +25,7 @@ public class SignController : Controller
 
 
     [HttpPost]
-    public async Task<bool> CreateSign()
-          => await _signService.CreateSign();
-
-
-   
+    public async Task<Guid> ContractSign(ContractSignDto contractSignDto)
+          => await _signService.ContractSign(contractSignDto);
 
 }

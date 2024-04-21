@@ -6,15 +6,12 @@ using System.Threading.Tasks;
 
 namespace OrderManagement.Application.Contracts.OrderManagement.Dtos.Grpc.Client.Sign
 {
-    public class CreateSignGrpcClientResponse
+    public class InquiryGrpcClientResponse
     {
         public string Message { get; set; }
         public int ResultCode { get; set; }
         public bool Success { get; set; }
-        public string ResponseBody { get; set; }
+        public string State { get; set; }
+        public string DocumentLink { get; set; }
     }
-
-
-
-
 }

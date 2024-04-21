@@ -23,7 +23,7 @@ namespace GatewayManagement.Application.GatewayManagement.Services.SendBox
             _configuration = configuration;
         }
 
-        public async  Task<CreateSignOutputDto> CreateSign(CreateSignDto createSignDto)
+        public async Task<CreateSignOutputDto> CreateSign(CreateSignDto createSignDto)
         {
             var _iranConfig = _configuration.GetSection("SendBoxConfig:Sign:IranSign").Get<IranSignConfig>();
             var _iranSign = new IranSign(_iranConfig);
@@ -60,8 +60,8 @@ namespace GatewayManagement.Application.GatewayManagement.Services.SendBox
                         },
                         certificate = new Certificate()
                         {
-                            productUid = 1,
-                            keyStoreType = "pkcs12"
+                            productUid = _iranConfig.ProductUid,
+                            keyStoreType = _iranConfig.KeyStoreType
                         },
                         recipientConfig = new RecipientConfig()
                         {
@@ -75,19 +75,33 @@ namespace GatewayManagement.Application.GatewayManagement.Services.SendBox
             return new CreateSignOutputDto()
             {
                 Message = _ret.message,
-                Success = _ret.Success,  
+                Success = _ret.Success,
                 ResultCode = _ret.resultCode,
                 ResponseBody = JsonConvert.SerializeObject(_ret.responseBody),
             };
-     
+
         }
 
-        public async Task<ResponseInquiryIranSign> InquirySign(Guid workflowTicket)
+        public async Task<InquirySignOutputDto> InquirySign(Guid workflowTicket)
         {
             var _iranConfig = _configuration.GetSection("SendBoxConfig:Sign:IranSign").Get<IranSignConfig>();
             var _iranSign = new IranSign(_iranConfig);
-            var _ret = await _iranSign.Inquiry(workflowTicket);
-            return _ret;
+            var result = await _iranSign.Inquiry(workflowTicket);
+            if (result.Success)
+            {
+                return new InquirySignOutputDto
+                {
+                    Message = result.message,
+                    Success = true,
+                    State = result.responseBody.state,
+                    DocumentLink = result.responseBody.documentInfo.documentLink
+                };
+            }
+            return new InquirySignOutputDto
+            {
+                Message = result.message,
+                Success = result.Success
+            };
         }
         public async Task<SendBoxServiceDto> SendService(SendBoxServiceInput sendBoxService)
         {

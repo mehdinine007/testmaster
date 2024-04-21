@@ -31,6 +31,7 @@
     <None Remove="Migrations\Patch\20240221080039_update-organization.sql" />
     <None Remove="Migrations\Patch\20240408091808_Update_SeasonCompanyProduct_2.sql" />
     <None Remove="Migrations\Patch\20240409082357_RenamingSeasonSaleDetail_To_SaleDetailAllocation.sql" />
+    <None Remove="Migrations\Patch\20240421063529_add-sign-customerorder.sql" />
     <None Remove="Migrations\Programmability\CustomerCarDeliveryTime.sql" />
     <None Remove="Migrations\Programmability\GetRecentCustomerAndOrder.sql" />
     <None Remove="Migrations\Programmability\Hangfire.sql" />
@@ -124,6 +125,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Migrations\Patch\20240221065931_deleteandupdatelevel1product.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Migrations\Patch\20240421063529_add-sign-customerorder.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Migrations\Programmability\CustomerCarDeliveryTime.sql">

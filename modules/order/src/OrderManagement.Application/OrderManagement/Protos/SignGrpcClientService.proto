@@ -11,7 +11,7 @@ package SignGrpcService;
 
 service SignGrpcService{
 	rpc CreateSign(CreateSignGrpcInput) returns (CreateSignGrpcOutput);
-	
+	rpc InquirySign(InquirySignInput) returns (InquirySignOutput);
 }
 message CreateSignGrpcInput{
 	string Title = 1;
@@ -22,6 +22,16 @@ message CreateSignGrpcInput{
 	string DocumentParameter = 6;
 }
 message CreateSignGrpcOutput{
+	string Message = 1;
+	int32 ResultCode = 2;
+	bool Success = 3;
+	string ResponseBody = 4;
+}
+message InquirySignInput{
+	string WorkflowTicket = 1;
+}
+
+message InquirySignOutput{
 	string Message = 1;
 	int32 ResultCode = 2;
 	bool Success = 3;
