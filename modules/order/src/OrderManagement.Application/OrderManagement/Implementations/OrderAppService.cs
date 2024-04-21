@@ -765,7 +765,11 @@ public class OrderAppService : ApplicationService, IOrderAppService
         var userId = _commonAppService.GetUserId();
         var orderRejections = _orderRejectionTypeReadOnlyRepository.WithDetails().ToList();
         var orderStatusTypes = _orderStatusTypeReadOnlyRepository.WithDetails().ToList();
-        var parents = await _productAndCategoryService.GetAllParent();
+        var organizations = await _organizationService.GetList(new OrganizationQueryDto() 
+        {
+            AttachmentLocation = new List<AttachmentLocationEnum>(),
+            AttachmentEntityType = new List<AttachmentEntityTypeEnum>()
+        });
         var customerOrders = _commitOrderRepository.WithDetails()
             .AsNoTracking()
             .Join(_saleDetailRepository.WithDetails(x => x.Product),
@@ -870,11 +874,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
             //else if (x.OrderStatusCode == 40 && x.DeliveryDateDescription.Contains(cancleableDate, StringComparison.InvariantCultureIgnoreCase)) // OrderStatusType.Winner
             //    x.Cancelable = true;
-            var Parent = parents.FirstOrDefault(y => y.Code == x.Product.Code.Substring(0, 4));
-            if (Parent is not null)
-            {
-                x.CompanyName = Parent.Title;
-            }
+            var organization = organizations.FirstOrDefault(y => y.Id == x.Product.OrganizationId);
+            x.CompanyName = organization?.Title;
         });
         resultObject.OrderList = customerOrders.OrderByDescending(x => x.OrderId).ToList();
         return resultObject;
