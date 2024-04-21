@@ -78,7 +78,6 @@ namespace GatewayManagement.Application.GatewayManagement.Services.SendBox
                 Success = _ret.Success,  
                 ResultCode = _ret.resultCode,
                 ResponseBody = JsonConvert.SerializeObject(_ret.responseBody),
-                WorkflowRecipients = JsonConvert.SerializeObject(_ret.workflowRecipients)
             };
      
         }

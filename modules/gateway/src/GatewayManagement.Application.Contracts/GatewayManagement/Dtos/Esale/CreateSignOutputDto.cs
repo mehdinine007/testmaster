@@ -12,6 +12,5 @@ namespace GatewayManagement.Application.Contracts.GatewayManagement.Dtos.Esale
         public int ResultCode { get; set; }
         public bool Success { get; set; }
         public string ResponseBody { get; set; }
-        public string WorkflowRecipients { get; set; }
     }
 }

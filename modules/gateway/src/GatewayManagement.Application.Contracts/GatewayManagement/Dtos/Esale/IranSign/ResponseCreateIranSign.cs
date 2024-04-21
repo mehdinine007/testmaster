@@ -12,7 +12,6 @@ namespace GatewayManagement.Application.Contracts.GatewayManagement.Dtos.Esale.I
         public int resultCode { get; set; }
         public bool Success { get; set; }
         public List<ResponseBodies> responseBody { get; set; }
-        public List<ResponseWorkFlowRecipients> workflowRecipients { get; set; }
     }
 
     public class ErrorResponseIranSign

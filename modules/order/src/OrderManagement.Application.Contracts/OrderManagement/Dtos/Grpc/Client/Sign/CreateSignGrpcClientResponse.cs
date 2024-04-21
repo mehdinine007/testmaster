@@ -12,6 +12,5 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Dtos.Grpc.Client
         public int ResultCode { get; set; }
         public bool Success { get; set; }
         public string ResponseBody { get; set; }
-        public string WorkflowRecipients { get; set; }
     }
 }

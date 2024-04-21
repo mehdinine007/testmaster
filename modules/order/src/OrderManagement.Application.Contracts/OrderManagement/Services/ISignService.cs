@@ -1,4 +1,5 @@
-﻿using System;
+﻿using IFG.Core.Utility.Results;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,6 +10,6 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Services
 {
     public interface ISignService : IApplicationService
     {
-        Task<bool> CreateSign();
+        Task<IDataResult<string>> ContractSign(int orderId, string title);
     }
 }

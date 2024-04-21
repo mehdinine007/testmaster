@@ -26,7 +26,6 @@ message CreateSignGrpcOutput{
 	int32 ResultCode = 2;
 	bool Success = 3;
 	string ResponseBody = 4;
-	string WorkflowRecipients = 5;
 }
 
 
