@@ -90,6 +90,20 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
         await _attachmentService.DeleteByEntityId(AttachmentEntityEnum.ProductAndCategory, id);
     }
 
+    public async Task<int> GetCompanyIdByCompanyCode(string code)
+    {
+        var company = (await _productAndCategoryRepository.GetQueryableAsync())
+            .Select(x => new
+            {
+                x.Code,
+                x.Id
+            })
+            .FirstOrDefault(x => x.Code == code);
+        if (company is null)
+            return -1;
+        return company.Id;
+    }
+
     public async Task<ProductAndCategoryWithChildDto> GetById(int id, bool hasProperty, List<AttachmentEntityTypeEnum> attachmentType = null, List<AttachmentLocationEnum> locationType = null)
     {
         await Validation(id, null);
@@ -174,7 +188,7 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
             _parentCode = oganization.Code.ToString();
 
         var _maxCode = igResult
-            .Where(x => x.ParentId == productAndCategoryCreateDto.ParentId && x.OrganizationId== productAndCategoryCreateDto.OrganizationId)
+            .Where(x => x.ParentId == productAndCategoryCreateDto.ParentId && x.OrganizationId == productAndCategoryCreateDto.OrganizationId)
             .Max(x => x.Code);
         if (!string.IsNullOrWhiteSpace(_maxCode))
             _maxCode = (Convert.ToInt32(_maxCode.Substring(_maxCode.Length - codeLength)) + 1).ToString();
@@ -432,8 +446,8 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
         var organizationId = currentproductAndCategory.OrganizationId;
         if (MoveTypeEnum.Up == move.MoveType)
         {
-            var previousProductAndCategory = await productAndCategoryQuery.OrderByDescending(x => x.Priority).FirstOrDefaultAsync(x => x.Priority < currentproductAndCategory.Priority && x.ParentId == parentId 
-            && x.OrganizationId== organizationId);
+            var previousProductAndCategory = await productAndCategoryQuery.OrderByDescending(x => x.Priority).FirstOrDefaultAsync(x => x.Priority < currentproductAndCategory.Priority && x.ParentId == parentId
+            && x.OrganizationId == organizationId);
             if (previousProductAndCategory == null)
             {
                 throw new UserFriendlyException(OrderConstant.FirstPriority, OrderConstant.FirstPriorityId);
@@ -528,7 +542,7 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
             return ret;
         }
         var product = (await _productAndCategoryRepository.GetQueryableAsync())
-            .Include(x=> x.ProductLevel)
+            .Include(x => x.ProductLevel)
             .FirstOrDefault(x => x.Id == productId);
         if (product is null)
         {
@@ -536,7 +550,7 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
         }
         var _productlevel = productlevelQuery
             .OrderBy(x => x.Priority)
-            .Where(x=> x.Priority > product.ProductLevel.Priority)
+            .Where(x => x.Priority > product.ProductLevel.Priority)
             .FirstOrDefault();
         if (_productlevel is null)
         {

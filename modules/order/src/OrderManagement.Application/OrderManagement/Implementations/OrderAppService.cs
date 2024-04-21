@@ -18,7 +18,6 @@ using Microsoft.EntityFrameworkCore;
 using System.Data;
 using OrderManagement.Domain.Shared;
 using IFG.Core.Utility.Results;
-using OrderManagement.Application.Helpers;
 using IFG.Core.DataAccess;
 using Volo.Abp.ObjectMapping;
 using IFG.Core.Caching;
@@ -31,11 +30,8 @@ using Core.Utility.Tools;
 using OrderManagement.Domain.Shared.OrderManagement.Enums;
 using Volo.Abp.Data;
 using Newtonsoft.Json;
-using StackExchange.Redis;
 using OrderManagement.Application.Contracts.OrderManagement;
 using OrderManagement.Application.Contracts.OrderManagement.Dtos.Grpc.Client;
-
-
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -190,6 +186,28 @@ public class OrderAppService : ApplicationService, IOrderAppService
         commitOrder.ChassiNo = "";
         commitOrder.Vin = "";
         commitOrder.Vehicle = "";
+    }
+
+    [UnitOfWork(false)]
+    public async Task<GetOrderByIdResponseDto> GetOrderById(int orderId)
+    {
+        var query = (await _commitOrderRepository.WithDetailsAsync(x => x.SaleDetail.Product)).AsNoTracking();
+        var queryResult = query.Select(x => new
+        {
+            OrderId = x.Id,
+            x.OrderStatus,
+            x.SaleDetail.Product.OrganizationId,
+            ProductCode = x.SaleDetail.Product.Code,
+            ProductId = x.SaleDetail.Product.Id
+        })
+        .FirstOrDefault(x => x.OrderId == orderId);
+        if (queryResult is null)
+            return null;
+
+        return new(queryResult.ProductId,
+            queryResult.ProductCode,
+            queryResult.OrganizationId,
+            (int)queryResult.OrderStatus);
     }
 
 
@@ -1406,7 +1424,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             .ToList()
             .Where(x => (DateTime.Now - x.CreationTime).TotalMinutes > deadLine)
             .ToList();
-            
+
         if (orders == null || orders.Count == 0)
             return;
         foreach (var order in orders)

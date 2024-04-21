@@ -1,18 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
-using Volo.Abp.Domain.Entities;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace CompanyManagement.Application.Contracts.CompanyManagement
 {
     public class ClientsOrderDetailByCompanyDto: IValidatableObject
     {
+        public long Id { get; set; }
         [Required]
-        public  long Id { get;  set; }
+        public  int OrderId { get;  set; }
         [Required]
         public string NationalCode { get; set; }
         public string CompanySaleId { get; set; }
@@ -53,7 +47,7 @@ namespace CompanyManagement.Application.Contracts.CompanyManagement
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
-            if (!(Id > 0))
+            if (!(OrderId > 0))
             {
                 yield return new ValidationResult(
                     "Id Is Required!",

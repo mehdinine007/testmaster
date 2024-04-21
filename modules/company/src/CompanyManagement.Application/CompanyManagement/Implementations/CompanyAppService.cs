@@ -1,11 +1,14 @@
 ﻿using CompanyManagement.Application.Contracts;
 using CompanyManagement.Application.Contracts.CompanyManagement;
+using CompanyManagement.Application.Contracts.CompanyManagement.Constants.Validation;
 using CompanyManagement.Application.Contracts.CompanyManagement.Services;
+using CompanyManagement.Application.Contracts.Services;
 using CompanyManagement.Domain.CompanyManagement;
 using CompanyManagement.Domain.Shared.CompanyManagement;
 using CompanyManagement.EfCore.CompanyManagement.EntityFrameworkCore;
 using CompanyManagement.EfCore.CompanyManagement.Repositories;
 using Esale.Share.Authorize;
+using IFG.Core.Validation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -22,43 +25,96 @@ using Volo.Abp;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
 
-
 namespace CompanyManagement.Application.CompanyManagement.Implementations;
 
 public class CompanyAppService : ApplicationService, ICompanyAppService
 {
     private readonly IRepository<ClientsOrderDetailByCompany, long> _clientsOrderDetailByCompanyRepository;
-    private readonly IRepository<CompanyPaypaidPrices, long> _companyPaypaidPricesRepository;
-    private readonly IRepository<CompanySaleCallDates, long> _companySaleCallDatesRepository;
     private readonly IRepository<CompanyProduction, long> _companyProductionRepository;
-    private IConfiguration _configuration;
-    private ICompanyRepository _companyRepository;
+    private readonly ICompanyRepository _companyRepository;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly OrderManagementDbContext _orderManagementDbContext;
     private readonly IRepository<UserMongo, ObjectId> _usermongoRepository;
-
+    private readonly ICommonAppService _commonAppService;
+    private readonly IOrderGrpcClientService _orderGrpcClientService;
 
     public CompanyAppService(IRepository<ClientsOrderDetailByCompany, long> clientsOrderDetailByCompanyRepository,
-                            IConfiguration configuration,
-                            IRepository<CompanyPaypaidPrices, long> CompanyPaypaidPricesRepository,
-                            IRepository<CompanySaleCallDates, long> CompanySaleCallDatesRepository,
                             IRepository<CompanyProduction, long> companyProductionRepository,
                             ICompanyRepository companyRepository,
                             IHttpContextAccessor HttpContextAccessor,
                             OrderManagementDbContext orderManagementDbContext,
-                            IRepository<UserMongo, ObjectId> userMongoRepository
+                            IRepository<UserMongo, ObjectId> userMongoRepository,
+                            ICommonAppService commonAppService,
+                            IOrderGrpcClientService orderGrpcClientService
                             )
     {
         _clientsOrderDetailByCompanyRepository = clientsOrderDetailByCompanyRepository;
-        _configuration = configuration;
-        _companyPaypaidPricesRepository = CompanyPaypaidPricesRepository;
-        _companySaleCallDatesRepository = CompanySaleCallDatesRepository;
         _companyProductionRepository = companyProductionRepository;
         _companyRepository = companyRepository;
         _httpContextAccessor = HttpContextAccessor;
         _orderManagementDbContext = orderManagementDbContext;
         _usermongoRepository = userMongoRepository;
+        _commonAppService = commonAppService;
+        _orderGrpcClientService = orderGrpcClientService;
     }
+
+    [SecuredOperation(CompanyServicePermissionConstants.SaveOrderInformation)]
+    public async Task SaveOrderInformation(ClientsOrderDetailByCompanyDto clientsOrderDetailByCompanyDto)
+    {
+        if (!ValidationHelper.IsValidNationalCode(clientsOrderDetailByCompanyDto.NationalCode))
+            throw new UserFriendlyException(ValidationConstant.NationalCodeIsWrong,
+                code: ValidationConstant.NationalCodeIsWrongId);
+
+        var userCompanyId = _commonAppService.GetUserCompanyId();
+        if (userCompanyId <= 0)
+            throw new UserFriendlyException(ValidationConstant.Forbiden, code: ValidationConstant.ForbidenId);
+
+        var companyIdFromInquiry = await _orderGrpcClientService.GetCompanyIdByOrderId(clientsOrderDetailByCompanyDto.OrderId);
+        if (companyIdFromInquiry is null)
+            throw new UserFriendlyException(ValidationConstant.CompanyIdNotFound, code: ValidationConstant.CompanyIdNotFoundId);
+        if (userCompanyId != companyIdFromInquiry.OrganizationId)
+            throw new UserFriendlyException(ValidationConstant.OrderIsNotRelatedToThisCompany,
+                code: ValidationConstant.OrderIsNotRelatedToThisCompanyId);
+
+        var clientOrderDetailsByCompany = (await _clientsOrderDetailByCompanyRepository.GetQueryableAsync())
+            .AsNoTracking()
+            .Include(x => x.Paypaidprice)
+            .Where(x => x.OrderId == clientsOrderDetailByCompanyDto.OrderId)
+            .OrderByDescending(x => x.Id)
+            .FirstOrDefault();
+        if (clientOrderDetailsByCompany is not null)
+        {
+            if (clientOrderDetailsByCompany.FactorDate.HasValue && clientOrderDetailsByCompany.FactorDate != clientsOrderDetailByCompanyDto.FactorDate)
+                throw new UserFriendlyException(ValidationConstant.FactorDateConflict,
+                    code: ValidationConstant.FactorDateConflictId);
+            if (clientOrderDetailsByCompany.InviteDate.HasValue && clientOrderDetailsByCompany.InviteDate != clientsOrderDetailByCompanyDto.InviteDate)
+                throw new UserFriendlyException(ValidationConstant.InviteDateConflict,
+                    code: ValidationConstant.InviteDateConflictId);
+            if (clientOrderDetailsByCompany.DeliveryDate.HasValue && clientOrderDetailsByCompany.DeliveryDate != clientsOrderDetailByCompanyDto.DeliveryDate)
+                throw new UserFriendlyException(ValidationConstant.DeliveryDateConflict,
+                    code: ValidationConstant.DeliveryDateConflictId);
+
+            if (clientOrderDetailsByCompany?.Paypaidprice is not null)
+            {
+                if (!(clientsOrderDetailByCompanyDto.PaypaidPrice ?? new List<PaypaidPriceDto>()).Any())
+                    throw new UserFriendlyException(ValidationConstant.CompanyPayedPriceIsNotAllowedToBeNull,
+                        code: ValidationConstant.CompanyPayedPriceIsNotAllowedToBeNullId);
+
+                if (clientsOrderDetailByCompanyDto.IsCanceled is not null and true)
+                    throw new UserFriendlyException(ValidationConstant.UnableToCancelOrderWhichHavePayment,
+                        code: ValidationConstant.UnableToCancelOrderWhichHavePaymentId);
+            }
+        }
+
+        var clientsOrderDetailByCompany = ObjectMapper.Map<ClientsOrderDetailByCompanyDto, ClientsOrderDetailByCompany>(clientsOrderDetailByCompanyDto);
+        await _clientsOrderDetailByCompanyRepository.InsertAsync(clientsOrderDetailByCompany);
+    }
+
+    #region Validations
+
+    #endregion
+
+
 
     [SecuredOperation(CompanyServicePermissionConstants.GetCustomersAndCars)]
     public List<CustomersWithCars> GetCustomersAndCars(GetCustomersAndCarsDto input)
@@ -86,12 +142,12 @@ public class CompanyAppService : ApplicationService, ICompanyAppService
     public async Task<bool> SubmitOrderInformations(List<ClientsOrderDetailByCompanyDto> clientsOrderDetailByCompnayDtos)
     {
         var clientsOrderDetailByCompnay = ObjectMapper.Map<List<ClientsOrderDetailByCompanyDto>, List<ClientsOrderDetailByCompany>>(clientsOrderDetailByCompnayDtos, new List<ClientsOrderDetailByCompany>());
-       var companyId= GetCompanyId();
+        var companyId = GetCompanyId();
         clientsOrderDetailByCompnay.ForEach(x =>
         {
             x.CompanyId = int.Parse(companyId);
         });
-         await _clientsOrderDetailByCompanyRepository.InsertManyAsync(clientsOrderDetailByCompnay);
+        await _clientsOrderDetailByCompanyRepository.InsertManyAsync(clientsOrderDetailByCompnay);
         return true;
     }
 
@@ -147,7 +203,7 @@ public class CompanyAppService : ApplicationService, ICompanyAppService
                 x.Shaba,
                 x.UID
             })
-            .FirstOrDefault(x => x.NationalCode == nationalCode) 
+            .FirstOrDefault(x => x.NationalCode == nationalCode)
             ?? throw new UserFriendlyException("مشتری یافت نشد");
 
         var paramArray = new object[]
@@ -191,7 +247,6 @@ public class CompanyAppService : ApplicationService, ICompanyAppService
             Surname = user.Surname,
             Tel = user.Tel,
             TrackingCode = companiesCustomer.TrackingCode,
-
         };
     }
 }

@@ -33,6 +33,7 @@ using Licence;
 using System.Collections.Generic;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using CompanyManagement.Application.Implementations;
 
 namespace CompanyService.Host
 {
@@ -189,6 +190,7 @@ namespace CompanyService.Host
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapGrpcService<UserGrpcClientService>();
+                endpoints.MapGrpcService<OrderGrpcClientService>();
                 endpoints.MapHealthChecks("/health", new HealthCheckOptions
                 {
                     Predicate = _ => true,

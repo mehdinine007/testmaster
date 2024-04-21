@@ -21,8 +21,8 @@ namespace CompanyManagement.Application.CompanyManagement
         public CompanyManagementApplicationAutoMapperProfile()
         {
             CreateMap<ClientsOrderDetailByCompanyDto, ClientsOrderDetailByCompany>()
-            .ForMember(u => u.OrderId, options => options.MapFrom(input => input.Id))
-            .ForMember(u => u.Id, option => option.Ignore())
+            .ForMember(u => u.OrderId, options => options.MapFrom(input => input.OrderId))
+            //.ForMember(u => u.Id, option => option.Ignore())
             .ForMember(x => x.FactorYear, opt => opt.MapFrom(x => x.FactorDate == null ? 0 : pc.GetYear(x.FactorDate.Value)))
             .ForMember(x => x.FactorMonth, opt => opt.MapFrom(x => x.FactorDate == null ? 0 : pc.GetMonth(x.FactorDate.Value)))
             .ForMember(x => x.FactorDay, opt => opt.MapFrom(x => x.FactorDate == null ? 0 : pc.GetDayOfMonth(x.FactorDate.Value)))

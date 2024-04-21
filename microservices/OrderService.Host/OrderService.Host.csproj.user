@@ -6,6 +6,6 @@
   <PropertyGroup>
     <ActiveDebugProfile>IIS Express</ActiveDebugProfile>
     <NameOfLastUsedPublishProfile>D:\Works\Web\Fava\Ecommerce\healthchecks\E-commerce\microservices\OrderService.Host\Properties\PublishProfiles\carsupply-test-order.pubxml</NameOfLastUsedPublishProfile>
-    <ActiveDebugProfile>IIS Express</ActiveDebugProfile>
+    <ActiveDebugProfile>ProductService.Host</ActiveDebugProfile>
   </PropertyGroup>
 </Project>
