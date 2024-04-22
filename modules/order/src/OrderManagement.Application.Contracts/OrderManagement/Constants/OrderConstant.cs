@@ -18,6 +18,8 @@ namespace OrderManagement.Application.Contracts
         public static string NoValidFlowOrderStep = "عدم رعایت ترتیب مراحل سفارش";
         public static string NoValidFlowOrderStepId = "1005";
 
+        public static string ContractReportName = "RptContractForm";
+
         public static List<OrderStepEnum> OrderStepWithoutPayment = new List<OrderStepEnum>
         {
             OrderStepEnum.Start,

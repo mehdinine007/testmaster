@@ -1202,6 +1202,12 @@ namespace OrderManagement.EfCore.Migrations
                     b.Property<DateTime?>("SendToManufacturerDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("SignStatus")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("SignTicketId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("TrackingCode")
                         .HasColumnType("nvarchar(450)");
 

@@ -1,4 +1,5 @@
 ﻿using OrderManagement.Domain.Shared;
+using OrderManagement.Domain.Shared.OrderManagement.Enums;
 using System;
 
 namespace OrderManagement.Application.Contracts
@@ -20,5 +21,7 @@ namespace OrderManagement.Application.Contracts
         public int PaymentSecret { get; set; }
         public OrderDeliveryStatusType? OrderDeliveryStatus { get; set; }
         public string OrderDeliveryStatusDesc { get; set; }
+        public Guid? SignTicketId { get; set; }
+        public SignStatusEnum? SignStatus { get; set; }
     }
 }

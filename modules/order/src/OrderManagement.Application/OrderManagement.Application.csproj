@@ -18,6 +18,7 @@
 	<ItemGroup>
 	  <None Remove="OrderManagement\Protos\CompanyServiceClient.proto" />
 	  <None Remove="OrderManagement\Protos\PaymentGrpcService.proto" />
+	  <None Remove="OrderManagement\Protos\SignGrpcClientService.proto" />
 	</ItemGroup>
 
     <ItemGroup>
@@ -27,7 +28,9 @@
 		<PackageReference Include="grpc.net.client" Version="2.53.0" />
 		<PackageReference Include="grpc.tools" Version="2.54.0" />
         <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
-        <PackageReference Include="Volo.Abp.AutoMapper" Version="7.2.1" />
+		<PackageReference Include="Stimulsoft.Reports.Engine.NetCore" Version="2020.2.1" />
+		<PackageReference Include="Stimulsoft.Reports.Web.NetCore" Version="2020.2.1" />
+		<PackageReference Include="Volo.Abp.AutoMapper" Version="7.2.1" />
 		<PackageReference Include="restsharp" Version="110.2.0" />
 		<PackageReference Include="StackExchange.Redis.Extensions.Newtonsoft" Version="9.1.0" />
 		<PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="7.0.1" />
@@ -39,6 +42,9 @@
 	<ItemGroup>
 		<Protobuf Include="OrderManagement\Protos\CompanyServiceClient.proto" GrpcServices="Client" />
 		<Protobuf Include="OrderManagement\Protos\EsaleUserService.proto" GrpcService="Client" />
+		<Protobuf Include="OrderManagement\Protos\SignGrpcClientService.proto">
+		  <GrpcService>Server</GrpcService>
+		</Protobuf>
 		<Protobuf Include="OrderManagement\Protos\PaymentGrpcService.proto" GrpcService="Client">
 		  <GrpcService>Server</GrpcService>
 		</Protobuf>
