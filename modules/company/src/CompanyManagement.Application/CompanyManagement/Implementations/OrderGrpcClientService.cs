@@ -19,7 +19,7 @@ public class OrderGrpcClientService : ApplicationService, IOrderGrpcClientServic
         _configuration = configuration;
     }
 
-    public async Task<GetOrderByIdResponseDto> GetCompanyIdByOrderId(int orderId)
+    public async Task<GetOrderByIdResponseDto> GetOrderById(int orderId)
     {
         AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2Support", true);
         AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);

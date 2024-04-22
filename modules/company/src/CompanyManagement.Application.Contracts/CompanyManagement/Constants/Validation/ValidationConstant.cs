@@ -20,9 +20,9 @@ public class ValidationConstant
     public const string CompanyIdNotFoundId = "0008";
     public const string OrderIsNotRelatedToThisCompany = "این سفارش مربوط به شرکت شما نیست";
     public const string OrderIsNotRelatedToThisCompanyId = "0009";
-    public const string CompanyPayedPriceIsNotAllowedToBeNull = "برای این سفارش قبلا پرداخت ثبت شده و نمیتواند پرداخت هایش خلی باشد";
+    public const string CompanyPayedPriceIsNotAllowedToBeNull = "برای این سفارش قبلا پرداخت ثبت شده و نمیتواند پرداخت هایش خالی باشد";
     public const string CompanyPayedPriceIsNotAllowedToBeNullId = "0010";
-    public const string UnableToCancelOrderWhichHavePayment = "سفارشی که پرداخت داشته باشد قابل کنسسل کردن نیست";
+    public const string UnableToCancelOrderWhichHavePayment = "سفارشی که پرداخت داشته باشد امکان تغییر وضعیت به انصراف را ندارد";
     public const string UnableToCancelOrderWhichHavePaymentId = "0011";
     public const string NationalCodeIsWrong = "کدملی صحیح نیست";
     public const string NationalCodeIsWrongId = "0012";

@@ -31,6 +31,5 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Services
         Task<ProductAndCategoryDto> GetProductAndCategoryByCode(string code, List<AttachmentEntityTypeEnum>? attachmentType = null, List<AttachmentLocationEnum>? attachmentlocation = null);
         Task<bool> Move(MoveDto move);
         Task<bool> Import(ImportExcelDto importExcelDto);
-        Task<int> GetCompanyIdByCompanyCode(string code);
     }
 }

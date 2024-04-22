@@ -13,14 +13,11 @@ using OrderManagement.Application.Contracts.OrderManagement;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using OrderManagement.Application.Contracts.Services;
-using Nest;
 using OrderManagement.Domain;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Bson.Serialization;
-using System.ComponentModel;
 using IFG.Core.Utility.Tools;
-using Volo.Abp.ObjectMapping;
 using Esale.Share.Authorize;
 using OrderManagement.Application.Contracts.OrderManagement.Constants.Permissions;
 using System.Linq.Dynamic.Core;
@@ -28,7 +25,6 @@ using IFG.Core.IOC;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using OrderManagement.Domain.Shared.OrderManagement.Enums;
-using Microsoft.AspNetCore.Mvc;
 using OfficeOpenXml;
 using OrderManagement.Domain.OrderManagement.MongoWrite;
 using System.IO;
@@ -88,20 +84,6 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
         }
         await _productAndCategoryRepository.DeleteAsync(id);
         await _attachmentService.DeleteByEntityId(AttachmentEntityEnum.ProductAndCategory, id);
-    }
-
-    public async Task<int> GetCompanyIdByCompanyCode(string code)
-    {
-        var company = (await _productAndCategoryRepository.GetQueryableAsync())
-            .Select(x => new
-            {
-                x.Code,
-                x.Id
-            })
-            .FirstOrDefault(x => x.Code == code);
-        if (company is null)
-            return -1;
-        return company.Id;
     }
 
     public async Task<ProductAndCategoryWithChildDto> GetById(int id, bool hasProperty, List<AttachmentEntityTypeEnum> attachmentType = null, List<AttachmentLocationEnum> locationType = null)

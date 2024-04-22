@@ -69,7 +69,7 @@ public class CompanyAppService : ApplicationService, ICompanyAppService
         if (userCompanyId <= 0)
             throw new UserFriendlyException(ValidationConstant.Forbiden, code: ValidationConstant.ForbidenId);
 
-        var companyIdFromInquiry = await _orderGrpcClientService.GetCompanyIdByOrderId(clientsOrderDetailByCompanyDto.OrderId);
+        var companyIdFromInquiry = await _orderGrpcClientService.GetOrderById(clientsOrderDetailByCompanyDto.OrderId);
         if (companyIdFromInquiry is null)
             throw new UserFriendlyException(ValidationConstant.CompanyIdNotFound, code: ValidationConstant.CompanyIdNotFoundId);
         if (userCompanyId != companyIdFromInquiry.OrganizationId)

@@ -5,5 +5,5 @@ namespace CompanyManagement.Application.Contracts.Services;
 
 public interface IOrderGrpcClientService : IApplicationService
 {
-    Task<GetOrderByIdResponseDto> GetCompanyIdByOrderId(int orderId);
+    Task<GetOrderByIdResponseDto> GetOrderById(int orderId);
 }
