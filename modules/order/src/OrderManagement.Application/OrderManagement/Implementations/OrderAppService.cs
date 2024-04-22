@@ -1368,27 +1368,24 @@ public class OrderAppService : ApplicationService, IOrderAppService
     }
     public async Task UpdateStatus(CustomerOrderDto customerOrderDto)
     {
-        try
+        var order = _objectMapper.Map<CustomerOrderDto, CustomerOrder>(customerOrderDto);
+
+        if (customerOrderDto.OrderStatus == (int)OrderStatusType.PaymentSucceeded)
         {
-
-            var order = _objectMapper.Map<CustomerOrderDto, CustomerOrder>(customerOrderDto);
-
-            if (customerOrderDto.OrderStatus == (int)OrderStatusType.PaymentSucceeded)
-            {
-                await _commitOrderRepository.AttachAsync(order, o => o.OrderStatus, o => o.TransactionCommitDate, o => o.PaymentPrice, o => o.TransactionId);
-            }
-            else
-            {
-                await _commitOrderRepository.AttachAsync(order, o => o.OrderStatus);
-            }
-
-            await CurrentUnitOfWork.SaveChangesAsync();
+            await _commitOrderRepository.AttachAsync(order, o => o.OrderStatus, o => o.TransactionCommitDate, o => o.PaymentPrice, o => o.TransactionId, o => o.SignStatus);
         }
-        catch (Exception ex)
+        else
         {
-            throw ex;
+            await _commitOrderRepository.AttachAsync(order, o => o.OrderStatus);
         }
+        await CurrentUnitOfWork.SaveChangesAsync();
+    }
 
+    public async Task UpdateSignStatus(CustomerOrderDto customerOrderDto)
+    {
+        var order = _objectMapper.Map<CustomerOrderDto, CustomerOrder>(customerOrderDto);
+        await _commitOrderRepository.AttachAsync(order, o => o.SignStatus, o => o.ContractNumber);
+        await CurrentUnitOfWork.SaveChangesAsync();
     }
 
     public async Task RetryPaymentForVerify()
@@ -1446,10 +1443,12 @@ public class OrderAppService : ApplicationService, IOrderAppService
             var payment = await _esaleGrpcClient.GetPaymentInformation(order.PaymentId ?? 0);
             if (payment != null && payment.PaymentStatusId > 1)
             {
+                var orderstatus = payment.PaymentStatusId == 2 ? (int)OrderStatusType.PaymentSucceeded : (int)OrderStatusType.PaymentNotVerified;
                 await UpdateStatus(new CustomerOrderDto()
                 {
                     Id = order.Id,
-                    OrderStatus = payment.PaymentStatusId == 2 ? (int)OrderStatusType.PaymentSucceeded : (int)OrderStatusType.PaymentNotVerified
+                    OrderStatus = orderstatus,
+                    SignStatus = orderstatus == (int)OrderStatusType.PaymentSucceeded ? SignStatusEnum.PreparingContract : null
                 });
                 if (payment.PaymentStatusId == 3)
                     await _cacheManager.RemoveWithPrefixKeyAsync(RedisConstants.CommitOrderPrefix + order.UserId.ToString());
@@ -1567,7 +1566,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         if (customerOrder.SalePlanEndDate <= DateTime.Now)
             throw new UserFriendlyException("تاریخ برنامه فروش به پایان و سفارش قابل مشاده نیست");
 
-        
+
         var user = await _esaleGrpcClient.GetUserId(customerOrder.UserId.ToString());
         customerOrder.SurName = user.SurName;
         customerOrder.Name = user.Name;

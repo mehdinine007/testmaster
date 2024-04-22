@@ -184,6 +184,12 @@
       "Id": "20240415060532_add-payment-customerorder",
       "Priority": 22,
       "Version": "4.5.0"
+    },
+    {
+      "Id": "20240422132448_Add-ContractNumber-CustomerOrder",
+      "Priority": 23,
+      "Version": "4.5.0"
     }
+
   ]
 }
