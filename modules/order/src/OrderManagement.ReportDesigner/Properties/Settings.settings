@@ -3,7 +3,7 @@
   <Profiles />
   <Settings>
     <Setting Name="ReportPath" Type="System.String" Scope="User">
-      <Value Profile="(Default)">D:\Works\Web\Fava\Ecommerce\designerreport\E-commerce\microservices\OrderService.Host\Reports\</Value>
+      <Value Profile="(Default)">C:\dev\e-commerce\E-commerce\microservices\OrderService.Host\Reports\</Value>
     </Setting>
   </Settings>
 </SettingsFile>

@@ -23,9 +23,9 @@ public class SignController : Controller
         => _signService = signService;
 
 
-    [HttpPost]
-    public async Task<bool> CreateSign()
-          => await _signService.CreateSign();
+    //[HttpPost]
+    //public async Task<bool> CreateSign()
+    //      => await _signService.CreateSign();
 
 
    

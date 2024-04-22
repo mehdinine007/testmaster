@@ -32,27 +32,54 @@ namespace OrderManagement.ReportDesigner
             }
 
             var report = ((IStiDesignerBase)sender).Report;
-
-            report.Save(Properties.Settings.Default.ReportPath + "RptContractForm.mrt");
+            report.Save(report.ReportFile);
 
         }
-        private void button1_Click(object sender, EventArgs e)
+        private StiReport ReportConfig(string reportName)
         {
             var report = new StiReport();
             report.Dictionary.Databases.Clear();
-            var orderdata = new List<CustomerOrder_OrderDetailDto>();
-            string fileName = Properties.Settings.Default.ReportPath + "RptContractForm.mrt";
+            string fileName = Properties.Settings.Default.ReportPath + reportName + ".mrt";
+            report.ReportFile = fileName;
             if (File.Exists(fileName))
             {
                 report.Load(fileName);
             }
+            return report;
+        }
+        private void button1_Click(object sender, EventArgs e)
+        {
+
+            var report = ReportConfig("RptContractForm");
+            var orderdata = new List<CustomerOrder_OrderDetailDto>();
             report.RegData("Table", orderdata);
             report.Design();
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            this.button1_Click(button1, null);
+            //this.button1_Click(button1, null);
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            var report = ReportConfig("RptFactor");
+            var orderdata = new List<CustomerOrder_OrderDetailDto>
+            {
+                new CustomerOrder_OrderDetailDto
+                {
+                    CreationTime = DateTime.Now,
+                    SurName = "حسنی",
+                    Name = "مصطفی",
+                    OrderId = 0943870293,
+                    PaymentPrice = 90_000_000,
+                    ProductTitle = "بنز در عقب صندلی جلو",
+                    TransactionId = "qdd1eddsd211dda",
+                    TransactionCommitDate = DateTime.Now
+                }
+            };
+            report.RegData("Table", orderdata);
+            report.Design();
         }
     }
 }
