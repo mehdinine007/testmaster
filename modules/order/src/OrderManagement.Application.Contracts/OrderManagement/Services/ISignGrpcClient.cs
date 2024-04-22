@@ -11,5 +11,6 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Services
     public interface ISignGrpcClient: IApplicationService
     {
         Task<CreateSignGrpcClientResponse> CreateSign(CreateSignGrpcClientRequest createSignGrpcClientRequest);
+        Task<InquiryGrpcClientResponse> InquirySign(Guid workflowTicket);
     }
 }

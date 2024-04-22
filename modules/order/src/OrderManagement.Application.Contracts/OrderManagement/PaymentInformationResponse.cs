@@ -12,5 +12,6 @@ namespace OrderManagement.Application.Contracts
 
         public string TransactionPersianDate {get;set;}
         public int PaymentStatusId { get; set; }
+        public long Amount { get; set; }
     }
 }

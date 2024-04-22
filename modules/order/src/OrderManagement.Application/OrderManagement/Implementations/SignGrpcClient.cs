@@ -37,5 +37,13 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             return await Task.FromResult(_ret);
 
         }
+
+        public async Task<InquiryGrpcClientResponse> InquirySign(Guid workflowTicket)
+        {
+            var inquirySign = SignGrpcServiceClient().InquirySign(new InquirySignInput { WorkflowTicket= workflowTicket.ToString() });
+            var _ret = JsonConvert.DeserializeObject<InquiryGrpcClientResponse>(JsonConvert.SerializeObject(inquirySign));
+            return await Task.FromResult(_ret);
+        }
+
     }
 }

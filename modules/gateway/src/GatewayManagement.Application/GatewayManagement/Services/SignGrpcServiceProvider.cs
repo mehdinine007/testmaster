@@ -25,6 +25,14 @@ namespace GatewayManagement.Application.GatewayManagement.Services
             var _ret = JsonConvert.DeserializeObject<CreateSignGrpcOutput>(JsonConvert.SerializeObject(result));
             return _ret;
         }
+
+        public override async Task<InquirySignOutput> InquirySign(InquirySignInput request, ServerCallContext context)
+        {
+            var result = await _sendBoxervice.InquirySign(Guid.Parse(request.WorkflowTicket));
+            var _ret = JsonConvert.DeserializeObject<InquirySignOutput>(JsonConvert.SerializeObject(result));
+            return _ret;
+        }
+
     }
 
 }

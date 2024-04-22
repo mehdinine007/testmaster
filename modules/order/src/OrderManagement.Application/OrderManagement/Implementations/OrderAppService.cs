@@ -34,6 +34,7 @@ using Newtonsoft.Json;
 using StackExchange.Redis;
 using OrderManagement.Application.Contracts.OrderManagement;
 using OrderManagement.Application.Contracts.OrderManagement.Dtos.Grpc.Client;
+using IFG.Core.Utility.Tools;
 
 
 
@@ -67,7 +68,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
     private readonly IRepository<CustomerPriority> _customerPriorityRepository;
     private readonly IUserDataAccessService _userDataAccessService;
     private readonly ICompanyGrpcClient _companyGrpcClient;
-
     public OrderAppService(ICommonAppService commonAppService,
                            IBaseInformationService baseInformationAppService,
                            IRepository<SaleDetail, int> saleDetailRepository,
@@ -96,7 +96,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
                            IRepository<CustomerPriority> customerPriorityRepository,
                            ICompanyGrpcClient companyGrpcClient
 ,
-                           IUserDataAccessService userDataAccessService)
+                           IUserDataAccessService userDataAccessService
+                           )
     {
         _commonAppService = commonAppService;
         _baseInformationAppService = baseInformationAppService;
@@ -789,7 +790,12 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 y.SalePlanEndDate,
                 y.Id,
                 y.SaleId,
-                x.TrackingCode
+                x.TrackingCode,
+                x.TransactionCommitDate,
+                x.PaymentPrice,
+                x.TransactionId,
+                x.SignTicketId,
+                x.SignStatus
 
             }).Where(x => x.UserId == userId)
             .Select(x => new CustomerOrder_OrderDetailDto
@@ -810,7 +816,13 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 SalePlanEndDate = x.SalePlanEndDate,
                 Id = x.Id,
                 SaleId = x.SaleId,
-                TrackingCode = x.TrackingCode
+                TrackingCode = x.TrackingCode,
+                SignTicketId = x.SignTicketId,
+                SignStatusId = x.SignStatus,
+                SignStatusTitle = x.SignStatus != null ? EnumHelper.GetDisplayName(x.SignStatus) : null,
+                TransactionCommitDate = x.TransactionCommitDate,
+                PaymentPrice = x.PaymentPrice,
+                TransactionId = x.TransactionId,
             }).ToList();
         var cancleableDate = _configuration.GetValue<string>("CancelableDate");
         var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, customerOrders.Select(x => x.ProductId).ToList(), attachmentType, attachmentlocation);
@@ -1277,16 +1289,26 @@ public class OrderAppService : ApplicationService, IOrderAppService
                         OrderId = order.Id
                     };
                 }
+                comments.Add(new OrderLog
+                {
+                    Description = "callgrpc GetPaymentInformation"
+                });
 
+                var paymentInformation = await _esaleGrpcClient.GetPaymentInformation(paymentId);
                 comments.Add(new OrderLog
                 {
                     Description = "VerifyTransaction"
                 });
                 var verificationResponse = await _ipgServiceProvider.VerifyTransaction(paymentId);
+
                 await UpdateStatus(new()
                 {
                     Id = order.Id,
-                    OrderStatus = (int)OrderStatusType.PaymentSucceeded
+                    OrderStatus = (int)OrderStatusType.PaymentSucceeded,
+                    SignStatus = SignStatusEnum.PreparingContract,
+                    TransactionCommitDate = paymentInformation.TransactionDate,
+                    TransactionId = paymentInformation.TransactionCode,
+                    PaymentPrice = paymentInformation.Amount
                 });
                 comments.Add(new OrderLog
                 {
@@ -1351,7 +1373,15 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
             var order = _objectMapper.Map<CustomerOrderDto, CustomerOrder>(customerOrderDto);
 
-            await _commitOrderRepository.AttachAsync(order, o => o.OrderStatus);
+            if (customerOrderDto.OrderStatus == (int)OrderStatusType.PaymentSucceeded)
+            {
+                await _commitOrderRepository.AttachAsync(order, o => o.OrderStatus, o => o.TransactionCommitDate, o => o.PaymentPrice, o => o.TransactionId);
+            }
+            else
+            {
+                await _commitOrderRepository.AttachAsync(order, o => o.OrderStatus);
+            }
+
             await CurrentUnitOfWork.SaveChangesAsync();
         }
         catch (Exception ex)
@@ -1372,10 +1402,12 @@ public class OrderAppService : ApplicationService, IOrderAppService
         foreach (var payment in payments)
         {
             int orderId = payment.FilterParam3 ?? 0;
+            var orderstatus = payment.PaymentStatus == 2 ? (int)OrderStatusType.PaymentSucceeded : (int)OrderStatusType.PaymentNotVerified;
             await UpdateStatus(new CustomerOrderDto()
             {
                 Id = orderId,
-                OrderStatus = payment.PaymentStatus == 2 ? (int)OrderStatusType.PaymentSucceeded : (int)OrderStatusType.PaymentNotVerified
+                OrderStatus = orderstatus,
+                SignStatus = orderstatus == (int)OrderStatusType.PaymentSucceeded ? SignStatusEnum.PreparingContract : null
             });
             if (payment.PaymentStatus == 3)
             {
@@ -1406,7 +1438,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             .ToList()
             .Where(x => (DateTime.Now - x.CreationTime).TotalMinutes > deadLine)
             .ToList();
-            
+
         if (orders == null || orders.Count == 0)
             return;
         foreach (var order in orders)
@@ -1522,13 +1554,10 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 SalePlanEndDate = y.SalePlanEndDate,
                 ProductId = y.ProductId,
                 Product = ObjectMapper.Map<ProductAndCategory, ProductAndCategoryViewModel>(y.Product),
-                //TransactionCommitDate = paymentInformation != null
-                //    ? paymentInformation.TransactionDate
-                //    : null,
-                //TransactionId = paymentInformation != null
-                //    ? paymentInformation.TransactionCode
-                //    : string.Empty,
-                PaymentId = x.PaymentId
+                PaymentId = x.PaymentId,
+                TransactionCommitDate = x.TransactionCommitDate,
+                PaymentPrice = x.PaymentPrice,
+                TransactionId = x.TransactionId,
             }).FirstOrDefault(x => x.UserId == userId && x.OrderId == id);
 
         var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, new List<int> { customerOrder.ProductId }.ToList(), attachmentType, attachmentlocation);
@@ -1538,19 +1567,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         if (customerOrder.SalePlanEndDate <= DateTime.Now)
             throw new UserFriendlyException("تاریخ برنامه فروش به پایان و سفارش قابل مشاده نیست");
 
-        if (customerOrder.PaymentId.HasValue)
-        {
-            try
-            {
-                paymentInformation = await _esaleGrpcClient.GetPaymentInformation(customerOrder.PaymentId.Value);
-                customerOrder.TransactionCommitDate = paymentInformation.TransactionDate;
-                customerOrder.TransactionId = paymentInformation.TransactionCode;
-            }
-            catch (Exception ex)
-            {
-                _auditingManager.Current.Log.Exceptions.Add(new NullReferenceException($"Payment grpc service result was null for order id [{id}]"));
-            }
-        }
+        
         var user = await _esaleGrpcClient.GetUserId(customerOrder.UserId.ToString());
         customerOrder.SurName = user.SurName;
         customerOrder.Name = user.Name;
@@ -1573,5 +1590,4 @@ public class OrderAppService : ApplicationService, IOrderAppService
         return clientOrderDetailDto;
 
     }
-
 }
