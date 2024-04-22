@@ -51,7 +51,7 @@ namespace OrderManagement.ReportDesigner
         {
 
             var report = ReportConfig("RptContractForm");
-            var orderdata = new List<CustomerOrder_OrderDetailDto>();
+            var orderdata = new List<OrderDetailDto>();
             report.RegData("Table", orderdata);
             report.Design();
         }
@@ -64,20 +64,7 @@ namespace OrderManagement.ReportDesigner
         private void button2_Click(object sender, EventArgs e)
         {
             var report = ReportConfig("RptFactor");
-            var orderdata = new List<CustomerOrder_OrderDetailDto>
-            {
-                new CustomerOrder_OrderDetailDto
-                {
-                    CreationTime = DateTime.Now,
-                    SurName = "حسنی",
-                    Name = "مصطفی",
-                    OrderId = 0943870293,
-                    PaymentPrice = 90_000_000,
-                    ProductTitle = "بنز در عقب صندلی جلو",
-                    TransactionId = "qdd1eddsd211dda",
-                    TransactionCommitDate = DateTime.Now
-                }
-            };
+            var orderdata = new List<OrderDetailDto>();
             report.RegData("Table", orderdata);
             report.Design();
         }

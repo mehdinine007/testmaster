@@ -1406,7 +1406,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             .ToList()
             .Where(x => (DateTime.Now - x.CreationTime).TotalMinutes > deadLine)
             .ToList();
-            
+
         if (orders == null || orders.Count == 0)
             return;
         foreach (var order in orders)
@@ -1486,6 +1486,33 @@ public class OrderAppService : ApplicationService, IOrderAppService
         saleDetail.Name = user.Name;
         saleDetail.NationalCode = user.NationalCode;
         return saleDetail;
+    }
+
+    [SecuredOperation(OrderAppServicePermissionConstants.GetOrderDetailById)]
+    public async Task<OrderDetailDto> GetReportOrderDetail(int id)
+    {
+        var userId = _commonAppService.GetUserId();
+        var orderStatusTypes = _orderStatusTypeReadOnlyRepository.WithDetails().ToList();
+        var customerOrderQuery = await _commitOrderRepository.GetQueryableAsync();
+        PaymentInformationResponseDto paymentInformation = new();
+        var customerOrder = customerOrderQuery
+            .AsNoTracking()
+            .Join(_saleDetailRepository.WithDetails(x => x.Product),
+            x => x.SaleDetailId,
+            y => y.Id,
+            (x, y) => new OrderDetailDto()
+            {
+                UserId = x.UserId,
+                CreationTime = x.CreationTime,
+                OrderId = x.Id,
+                ProductTitle = y.Product.Title,
+                PaymentPrice = (long)y.CarFee,
+            }).FirstOrDefault(x => x.UserId == userId && x.OrderId == id);
+        var user = await _esaleGrpcClient.GetUserId(customerOrder.UserId.ToString());
+        customerOrder.SurName = user.SurName;
+        customerOrder.Name = user.Name;
+        customerOrder.NationalCode = user.NationalCode;
+        return customerOrder;
     }
 
     [SecuredOperation(OrderAppServicePermissionConstants.GetOrderDetailById)]
