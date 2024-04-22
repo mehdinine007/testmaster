@@ -68,7 +68,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
     private readonly IRepository<CustomerPriority> _customerPriorityRepository;
     private readonly IUserDataAccessService _userDataAccessService;
     private readonly ICompanyGrpcClient _companyGrpcClient;
-
     public OrderAppService(ICommonAppService commonAppService,
                            IBaseInformationService baseInformationAppService,
                            IRepository<SaleDetail, int> saleDetailRepository,
@@ -97,7 +96,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
                            IRepository<CustomerPriority> customerPriorityRepository,
                            ICompanyGrpcClient companyGrpcClient
 ,
-                           IUserDataAccessService userDataAccessService)
+                           IUserDataAccessService userDataAccessService
+                           )
     {
         _commonAppService = commonAppService;
         _baseInformationAppService = baseInformationAppService;
@@ -814,9 +814,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 Id = x.Id,
                 SaleId = x.SaleId,
                 TrackingCode = x.TrackingCode,
-                SignTicketId=x.SignTicketId,
+                SignTicketId = x.SignTicketId,
                 SignStatusId = x.SignStatus,
-                SignStatusTitle= x.SignStatus !=null ? EnumHelper.GetDisplayName(x.SignStatus):null
+                SignStatusTitle = x.SignStatus != null ? EnumHelper.GetDisplayName(x.SignStatus) : null
             }).ToList();
         var cancleableDate = _configuration.GetValue<string>("CancelableDate");
         var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, customerOrders.Select(x => x.ProductId).ToList(), attachmentType, attachmentlocation);
@@ -1384,7 +1384,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             {
                 Id = orderId,
                 OrderStatus = orderstatus,
-                SignStatus = orderstatus== (int)OrderStatusType.PaymentSucceeded ? SignStatusEnum.PreparingContract : null
+                SignStatus = orderstatus == (int)OrderStatusType.PaymentSucceeded ? SignStatusEnum.PreparingContract : null
             });
             if (payment.PaymentStatus == 3)
             {
@@ -1415,7 +1415,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             .ToList()
             .Where(x => (DateTime.Now - x.CreationTime).TotalMinutes > deadLine)
             .ToList();
-            
+
         if (orders == null || orders.Count == 0)
             return;
         foreach (var order in orders)
@@ -1582,5 +1582,4 @@ public class OrderAppService : ApplicationService, IOrderAppService
         return clientOrderDetailDto;
 
     }
-
 }

@@ -13,5 +13,6 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Services
     {
         Task<Guid> ContractSign(ContractSignDto contractSignDto);
         Task<IDataResult<InquirySignDto>> Inquiry(Guid ticketId);
+        Task<bool> CheckSignStatus();
     }
 }

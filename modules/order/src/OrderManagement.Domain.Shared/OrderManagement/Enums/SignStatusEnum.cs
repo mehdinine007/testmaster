@@ -17,7 +17,10 @@ namespace OrderManagement.Domain.Shared.OrderManagement.Enums
         AwaitingSignature = 3,
         [Display(Name = "امضاشده")]
         Signed = 4,
+        [Display(Name = "لغو شده")]
+        Canceled = 5,
         [Display(Name = "منقضی شده")]
-        Expired = 5,
+        Expired = 6,
+       
     }
 }
