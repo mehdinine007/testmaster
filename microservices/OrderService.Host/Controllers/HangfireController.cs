@@ -15,10 +15,12 @@ namespace NoyanHangFire.Controllers
     {
         private readonly ICapacityControlJob _capacityControlJob;
         private readonly IIpgJob _pgJob;
-        public HangfireController(ICapacityControlJob capacityControlJob, IIpgJob pgJob)
+        private readonly ISignJob _signJob;
+        public HangfireController(ICapacityControlJob capacityControlJob, IIpgJob pgJob, ISignJob signJob)
         {
             _capacityControlJob = capacityControlJob;
             _pgJob = pgJob;
+            _signJob = signJob;
         }
 
         [HttpPost("addSalDetailCapacity")]
@@ -48,5 +50,13 @@ namespace NoyanHangFire.Controllers
             await _pgJob.RetryOrderForVerify();
             return Ok($"BackgroundJob Job Scheduled Inserted");
         }
+
+        [HttpPost("CheckDigitalSign ")]
+        public async Task<IActionResult> AddCheckDigitalSign()
+        {
+            await _signJob.CheckDigitalSign();
+            return Ok($"BackgroundJob Job Scheduled Inserted");
+        }
+
     }
 }

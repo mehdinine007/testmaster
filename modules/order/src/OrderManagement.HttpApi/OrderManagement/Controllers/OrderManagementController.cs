@@ -97,8 +97,4 @@ public class OrderManagementController
     [HttpGet]
     public async Task<List<ClientOrderDetailDto>> GetOrderDetailList(string nationalCode)
         => await _orderAppService.GetOrderDetailList(nationalCode);
-
-    [HttpPost]
-    public async Task<OrderDetailDto> GetReportOrderDetail(int id)
-        => await _orderAppService.GetReportOrderDetail(id);
 }

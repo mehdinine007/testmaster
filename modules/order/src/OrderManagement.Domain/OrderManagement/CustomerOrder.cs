@@ -1,4 +1,5 @@
 ﻿using OrderManagement.Domain.Shared;
+using OrderManagement.Domain.Shared.OrderManagement.Enums;
 using System;
 using Volo.Abp.Domain.Entities.Auditing;
 
@@ -31,5 +32,12 @@ namespace OrderManagement.Domain
         public DateTime? SendToManufacturerDate { get; set; }
         public DateTime? OrderRejectionDate { get; set; }
         public string TrackingCode { get; set; }
+        public Guid? SignTicketId { get; set; }
+        public SignStatusEnum? SignStatus { get; set; }
+        public DateTime? TransactionCommitDate { get; set; }
+        public string TransactionId { get; set; }
+        public long? PaymentPrice { get; set; }
+
+
     }
 }

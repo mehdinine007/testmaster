@@ -12,6 +12,6 @@ namespace GatewayManagement.Application.Contracts.GatewayManagement.IServices
     {
         Task<SendBoxServiceDto> SendService(SendBoxServiceInput sendBoxService);
         Task<CreateSignOutputDto> CreateSign(CreateSignDto createSignDto);
-        Task<ResponseInquiryIranSign> InquirySign(Guid workflowTicket);
+        Task<InquirySignOutputDto> InquirySign(Guid workflowTicket);
     }
 }

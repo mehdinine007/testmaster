@@ -10,6 +10,7 @@ namespace GatewayManagement.Application.Contracts.GatewayManagement.Dtos.Esale.I
     {
         public string message { get; set; }
         public int resultCode { get; set; }
+        public bool Success { get; set; }
         public ResponseBody responseBody { get; set; }
 
     }

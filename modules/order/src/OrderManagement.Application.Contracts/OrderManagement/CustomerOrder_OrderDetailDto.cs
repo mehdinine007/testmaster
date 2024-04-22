@@ -60,6 +60,11 @@ namespace OrderManagement.Application.Contracts
         public int Id { get; set; }
         public int SaleId { get; set; }
         public string TrackingCode { get; set; }
+        public Guid? SignTicketId { get; set; }
+        public SignStatusEnum? SignStatusId { get; set; }
+        public string SignStatusTitle { get; set; }
+        public long? PaymentPrice { get; set; }
+
 
     }
     public class CustomerOrder_OrderDetailTreeDto

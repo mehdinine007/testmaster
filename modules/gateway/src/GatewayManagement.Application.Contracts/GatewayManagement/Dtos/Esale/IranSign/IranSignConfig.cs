@@ -11,5 +11,7 @@ namespace GatewayManagement.Application.Contracts.GatewayManagement.Dtos.Esale.I
         public string BaseUrl { get; set; }
         public string ApiKey { get; set; }
         public string OwnerUserName { get; set; }
+        public int ProductUid { get; set; }
+        public string KeyStoreType { get; set; }
     }
 }

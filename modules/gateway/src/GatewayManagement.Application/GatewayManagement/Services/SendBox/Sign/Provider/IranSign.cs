@@ -109,6 +109,7 @@ namespace GatewayManagement.Application.GatewayManagement.Services.SendBox.Sign.
                 {
                     ResponseInquiryIranSign result = null;
                     result = JsonConvert.DeserializeObject<ResponseInquiryIranSign>(readContent);
+                    result.Success = true;
                     return result;
                 }
                 else
@@ -122,6 +123,7 @@ namespace GatewayManagement.Application.GatewayManagement.Services.SendBox.Sign.
                         return new ResponseInquiryIranSign
                         {
                             message = _ret.message,
+                            Success = false,
                             resultCode = (int)HttpStatusCode.Unauthorized
                         };
                     }
@@ -130,6 +132,7 @@ namespace GatewayManagement.Application.GatewayManagement.Services.SendBox.Sign.
                         return new ResponseInquiryIranSign
                         {
                             message = _ret.message,
+                            Success = false,
                             resultCode = (int)HttpStatusCode.InternalServerError,
                         };
                     }
@@ -138,12 +141,14 @@ namespace GatewayManagement.Application.GatewayManagement.Services.SendBox.Sign.
                         return new ResponseInquiryIranSign
                         {
                             message = _ret.message,
+                            Success = false,
                             resultCode = (int)HttpStatusCode.BadRequest,
                         };
                     }
                     return new ResponseInquiryIranSign
                     {
                         message = "",
+                        Success = false,
                         resultCode = 99
                     };
                 }
