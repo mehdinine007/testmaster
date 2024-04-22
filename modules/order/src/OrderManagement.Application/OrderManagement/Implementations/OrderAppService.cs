@@ -793,7 +793,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 x.TrackingCode,
                 x.TransactionCommitDate,
                 x.PaymentPrice,
-                x.TransactionId
+                x.TransactionId,
                 x.SignTicketId,
                 x.SignStatus
 
@@ -819,7 +819,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 TrackingCode = x.TrackingCode,
                 SignTicketId = x.SignTicketId,
                 SignStatusId = x.SignStatus,
-                SignStatusTitle = x.SignStatus != null ? EnumHelper.GetDisplayName(x.SignStatus) : null
+                SignStatusTitle = x.SignStatus != null ? EnumHelper.GetDisplayName(x.SignStatus) : null,
                 TransactionCommitDate = x.TransactionCommitDate,
                 PaymentPrice = x.PaymentPrice,
                 TransactionId = x.TransactionId,
@@ -1305,7 +1305,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 {
                     Id = order.Id,
                     OrderStatus = (int)OrderStatusType.PaymentSucceeded,
-                    SignStatus = SignStatusEnum.PreparingContract
+                    SignStatus = SignStatusEnum.PreparingContract,
                     TransactionCommitDate = paymentInformation.TransactionDate,
                     TransactionId = paymentInformation.TransactionCode,
                     PaymentPrice = paymentInformation.Amount
