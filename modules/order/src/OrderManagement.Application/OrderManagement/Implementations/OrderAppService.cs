@@ -789,7 +789,10 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 y.SalePlanEndDate,
                 y.Id,
                 y.SaleId,
-                x.TrackingCode
+                x.TrackingCode,
+                x.TransactionCommitDate,
+                x.PaymentPrice,
+                x.TransactionId
 
             }).Where(x => x.UserId == userId)
             .Select(x => new CustomerOrder_OrderDetailDto
@@ -810,7 +813,10 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 SalePlanEndDate = x.SalePlanEndDate,
                 Id = x.Id,
                 SaleId = x.SaleId,
-                TrackingCode = x.TrackingCode
+                TrackingCode = x.TrackingCode,
+                TransactionCommitDate = x.TransactionCommitDate,
+                PaymentPrice = x.PaymentPrice,
+                TransactionId = x.TransactionId,
             }).ToList();
         var cancleableDate = _configuration.GetValue<string>("CancelableDate");
         var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, customerOrders.Select(x => x.ProductId).ToList(), attachmentType, attachmentlocation);
