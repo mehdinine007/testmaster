@@ -63,6 +63,9 @@ namespace OrderManagement.Application.Contracts
         public Guid? SignTicketId { get; set; }
         public SignStatusEnum? SignStatusId { get; set; }
         public string SignStatusTitle { get; set; }
+        public long? PaymentPrice { get; set; }
+
+
     }
     public class CustomerOrder_OrderDetailTreeDto
     {

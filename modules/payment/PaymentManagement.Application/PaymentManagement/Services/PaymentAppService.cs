@@ -134,7 +134,8 @@ namespace PaymentManagement.Application.Servicess
                 TransactionCode = o.TransactionCode,
                 TransactionDate = o.TransactionDate,
                 TransactionPersianDate = o.TransactionPersianDate,
-                PaymentStatusId = o.PaymentStatusId
+                PaymentStatusId = o.PaymentStatusId,
+                Amount=o.Amount
             }).FirstOrDefault(o => o.PaymentId == paymentId);
         }
         public async Task InsertPaymentLogAsync(PaymentLogDto input)

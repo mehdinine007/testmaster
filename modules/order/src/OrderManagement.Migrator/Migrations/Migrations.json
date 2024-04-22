@@ -179,6 +179,11 @@
       "Id": "20240421063529_add-sign-customerorder",
       "Priority": 21,
       "Version": "4.5.0"
+    },
+    {
+      "Id": "20240415060532_add-payment-customerorder",
+      "Priority": 22,
+      "Version": "4.5.0"
     }
   ]
 }

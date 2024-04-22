@@ -34,5 +34,10 @@ namespace OrderManagement.Domain
         public string TrackingCode { get; set; }
         public Guid? SignTicketId { get; set; }
         public SignStatusEnum? SignStatus { get; set; }
+        public DateTime? TransactionCommitDate { get; set; }
+        public string TransactionId { get; set; }
+        public long? PaymentPrice { get; set; }
+
+
     }
 }

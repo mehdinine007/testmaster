@@ -7,5 +7,6 @@
         public DateTime TransactionDate { get; set; }
         public string TransactionPersianDate { get; set; }
         public int PaymentStatusId { get; set; }
+        public decimal Amount { get; set; }
     }
 }
