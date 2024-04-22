@@ -52,8 +52,8 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             var nationalCode = "0001001000";//_commonAppService.GetNationalCode();
             var signContract = await _signGrpcClient.CreateSign(new CreateSignGrpcClientRequest()
             {
-                Title = "",
-                Description = "",
+                Title = _configuration.GetSection("SignConfig:Title").Value,
+                Description = _configuration.GetSection("SignConfig:Description").Value,
                 DocumentName = "Contract.pdf",
                 DocumentData = contractReport,
                 DocumentParameter = JsonConvert.SerializeObject(documentParameter),
@@ -61,9 +61,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             });
             if (signContract.Success)
             {
-                var customerOrder = (await _customerOrderRepository.GetQueryableAsync())
-                    .AsNoTracking()
-                    .FirstOrDefault(x => x.Id == contractSignDto.OrderId);
+                
                 var responseBody = JsonConvert.DeserializeObject<List<CreateSignResponseBodies>>(signContract.ResponseBody);
                 var result = responseBody.FirstOrDefault();
                 Guid signTicketId = Guid.Parse(result.workflowTicket);
@@ -73,7 +71,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
                     SignStatus = SignStatusEnum.AwaitingSignature,
                     SignTicketId = signTicketId
                 };
-                var customerOrderMap = ObjectMapper.Map<CustomerOrderDto, CustomerOrder>(customerOrderDto, customerOrder);
+                var customerOrderMap = ObjectMapper.Map<CustomerOrderDto, CustomerOrder>(customerOrderDto);
                 await _customerOrderRepository.AttachAsync(customerOrderMap, x => x.SignStatus, x => x.SignTicketId);
                 return signTicketId;
             }
@@ -103,6 +101,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
                 .AsNoTracking();
             var awaitingSignatureOrders = customerOrders
                .Where(x => x.SignStatus == SignStatusEnum.AwaitingSignature)
+               .Take(20)
                .ToList();
             foreach (var awaitingSignatureOrder in awaitingSignatureOrders)
             {
@@ -124,6 +123,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             var intervalDay = Int32.Parse(signatureIntervalDay);
             var preparingContractOrders = customerOrders
                 .Where(x => x.SignStatus == SignStatusEnum.PreparingContract && x.CreationTime <= DateTime.Today.AddDays(-intervalDay))
+                .Take(20)
                 .ToList();
             foreach (var preparingContractOrder in preparingContractOrders)
             {

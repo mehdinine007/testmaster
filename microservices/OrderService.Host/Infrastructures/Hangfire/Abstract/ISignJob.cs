@@ -4,6 +4,6 @@ namespace OrderService.Host.Infrastructures.Hangfire.Abstract
 {
     public interface ISignJob
     {
-         Task CheckSignStatus();
+         Task CheckDigitalSign();
     }
 }

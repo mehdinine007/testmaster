@@ -1,4 +1,5 @@
 ﻿using Hangfire;
+using Microsoft.Extensions.Configuration;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
 using OrderManagement.Application.Contracts.Services;
@@ -13,15 +14,18 @@ namespace OrderService.Host.Infrastructures.Hangfire.Concrete
     public class SignJob : ISignJob
     {
         private readonly ISignService _signService;
-        public SignJob(ISignService signService)
+        private readonly IConfiguration _configuration;
+        public SignJob(ISignService signService, IConfiguration configuration)
         {
             _signService = signService;
+            _configuration= configuration;
         }
 
-        public async Task CheckSignStatus()
+        public async Task CheckDigitalSign()
         {
+            var time = int.Parse(_configuration.GetSection("SignConfig:CheckDigitalSignIntervalMinutes").Value ?? "2");
             await _signService.CheckSignStatus();
-            BackgroundJob.Schedule(() => CheckSignStatus(), TimeSpan.FromMinutes(5));
+            BackgroundJob.Schedule(() => CheckDigitalSign(), TimeSpan.FromMinutes(time));
         }
     }
 }

@@ -30,15 +30,15 @@ namespace SendBoxController
         }
 
 
-        [HttpPost]
-        public async Task<CreateSignOutputDto> Create(CreateSignDto input)
-        {
-            return await _sendBoxService.CreateSign(input);
-        }
-        [HttpGet]
-        public async Task<InquirySignOutputDto> Inquiry(Guid workflowTicket)
-        {
-            return await _sendBoxService.InquirySign(workflowTicket);
-        }
+        //[HttpPost]
+        //public async Task<CreateSignOutputDto> Create(CreateSignDto input)
+        //{
+        //    return await _sendBoxService.CreateSign(input);
+        //}
+        //[HttpGet]
+        //public async Task<InquirySignOutputDto> Inquiry(Guid workflowTicket)
+        //{
+        //    return await _sendBoxService.InquirySign(workflowTicket);
+        //}
     }
 }
