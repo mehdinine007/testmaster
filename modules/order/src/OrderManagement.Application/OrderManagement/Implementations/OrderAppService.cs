@@ -18,7 +18,6 @@ using Microsoft.EntityFrameworkCore;
 using System.Data;
 using OrderManagement.Domain.Shared;
 using IFG.Core.Utility.Results;
-using OrderManagement.Application.Helpers;
 using IFG.Core.DataAccess;
 using Volo.Abp.ObjectMapping;
 using IFG.Core.Caching;
@@ -31,7 +30,6 @@ using Core.Utility.Tools;
 using OrderManagement.Domain.Shared.OrderManagement.Enums;
 using Volo.Abp.Data;
 using Newtonsoft.Json;
-using StackExchange.Redis;
 using OrderManagement.Application.Contracts.OrderManagement;
 using OrderManagement.Application.Contracts.OrderManagement.Dtos.Grpc.Client;
 
@@ -765,14 +763,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
         var userId = _commonAppService.GetUserId();
         var orderRejections = _orderRejectionTypeReadOnlyRepository.WithDetails().ToList();
         var orderStatusTypes = _orderStatusTypeReadOnlyRepository.WithDetails().ToList();
-        var organizations = await _organizationService.GetList(new OrganizationQueryDto() 
-        {
-            AttachmentLocation = new List<AttachmentLocationEnum>(),
-            AttachmentEntityType = new List<AttachmentEntityTypeEnum>()
-        });
         var customerOrders = _commitOrderRepository.WithDetails()
             .AsNoTracking()
-            .Join(_saleDetailRepository.WithDetails(x => x.Product),
+            .Join(await _saleDetailRepository.WithDetailsAsync(x => x.Product.Organization),
             x => x.SaleDetailId,
             y => y.Id,
             (x, y) => new
@@ -814,7 +807,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 SalePlanEndDate = x.SalePlanEndDate,
                 Id = x.Id,
                 SaleId = x.SaleId,
-                TrackingCode = x.TrackingCode
+                TrackingCode = x.TrackingCode,
+                CompanyName = x.Product.Organization.Title
             }).ToList();
         var cancleableDate = _configuration.GetValue<string>("CancelableDate");
         var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, customerOrders.Select(x => x.ProductId).ToList(), attachmentType, attachmentlocation);
@@ -874,8 +868,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
             //else if (x.OrderStatusCode == 40 && x.DeliveryDateDescription.Contains(cancleableDate, StringComparison.InvariantCultureIgnoreCase)) // OrderStatusType.Winner
             //    x.Cancelable = true;
-            var organization = organizations.FirstOrDefault(y => y.Id == x.Product.OrganizationId);
-            x.CompanyName = organization?.Title;
         });
         resultObject.OrderList = customerOrders.OrderByDescending(x => x.OrderId).ToList();
         return resultObject;
@@ -1407,7 +1399,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             .ToList()
             .Where(x => (DateTime.Now - x.CreationTime).TotalMinutes > deadLine)
             .ToList();
-            
+
         if (orders == null || orders.Count == 0)
             return;
         foreach (var order in orders)
