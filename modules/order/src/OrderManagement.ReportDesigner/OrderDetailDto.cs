@@ -5,32 +5,13 @@ namespace OrderManagement.ReportDesigner
 {
     public class OrderDetailDto
     {
-        internal static PersianCalendar _pc;
-
-        internal string FixFormat(int datePart)
-            => datePart.ToString().Length == 2
-                ? $"{datePart}"
-                : $"0{datePart}";
-
-        internal string ToPersian(DateTime? date)
-        {
-            return date.HasValue
-                ? $"{_pc.GetYear(date.Value)}/{FixFormat(_pc.GetMonth(date.Value))}/{FixFormat(_pc.GetDayOfMonth(date.Value))}"
-                : string.Empty;
-        }
-
-        public OrderDetailDto()
-        {
-            _pc = new PersianCalendar();
-        }
-
         public long? PaymentPrice { get; set; }
 
         public string ProductTitle { get; set; }
 
         public DateTime CreationTime { get; set; }
 
-        public string CreationTimePersian => ToPersian(CreationTime);
+        public string CreationTimePersian { get; set; }
 
         public int OrderId { get; set; }
 
@@ -40,13 +21,13 @@ namespace OrderManagement.ReportDesigner
 
         public DateTime? TransactionCommitDate { get; set; }
 
-        public string TransactionCommitDatePersian => ToPersian(TransactionCommitDate);
+        public string TransactionCommitDatePersian { get; set; }
 
         public string TransactionId { get; set; }
 
         public DateTime BirthDate { get; set; }
 
-        public string BirthDatePersian => ToPersian(BirthDate);
+        public string BirthDatePersian { get; set; }
 
         public string IssuingCityTitle { get; set; }
 
@@ -60,7 +41,7 @@ namespace OrderManagement.ReportDesigner
 
         public string BirthCertId { get; set; }
 
-        public string LiveDate => ToPersian(DateTime.Now);
+        public string LiveDate { get; set; }
 
         public string PspTitle { get; set; }
 
