@@ -1540,7 +1540,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 CreationTime = x.CreationTime,
                 OrderId = x.Id,
                 ProductTitle = y.Product.Title,
-                PaymentPrice = (long)y.CarFee,
+                PaymentPrice = x.PaymentPrice,
                 TransactionId = x.TransactionId,
                 TransactionCommitDate = x.TransactionCommitDate,
                 //PspTitle = ?? 
