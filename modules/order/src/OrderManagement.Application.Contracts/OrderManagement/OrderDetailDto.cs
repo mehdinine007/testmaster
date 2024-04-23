@@ -37,5 +37,7 @@
         public string PspTitle { get; set; }
 
         public string NationalCode { get; set; }
+
+        public string BirthCityTitle { get; set; }
     }
 }

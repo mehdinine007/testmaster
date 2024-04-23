@@ -6,7 +6,7 @@
     <DataSources isList="true" count="1">
       <Table Ref="2" type="Stimulsoft.Report.Dictionary.StiBusinessObjectSource" isKey="true">
         <Alias>Table</Alias>
-        <Columns isList="true" count="34">
+        <Columns isList="true" count="44">
           <value>CarDeliverDate,System.DateTime</value>
           <value>SaleDescription,System.String</value>
           <value>UserId,System.Guid</value>
@@ -41,6 +41,16 @@
           <value>TransactionCommitDatePersian,System.String</value>
           <value>PaymentPrice,System.Int64</value>
           <value>ProductTitle,System.String</value>
+          <value>BirthDate,System.DateTime</value>
+          <value>BirthDatePersian,System.String</value>
+          <value>IssuingCityTitle,System.String</value>
+          <value>Tel,System.String</value>
+          <value>Mobile,System.String</value>
+          <value>Address,System.String</value>
+          <value>PostalCode,System.String</value>
+          <value>BirthCertId,System.String</value>
+          <value>LiveDate,System.String</value>
+          <value>PspTitle,System.String</value>
         </Columns>
         <Dictionary isRef="1" />
         <Key>1ccccb6834434069910ba48a4e44b490</Key>
@@ -423,7 +433,7 @@ AJggVAAAAAMi/wMG3oyRm+PkpgAAAABJRU5ErkJggg==</ImageBytes>
         </Text5>
         <Text6 Ref="15" type="Text" isKey="true">
           <Brush>[255:255:255]</Brush>
-          <ClientRectangle>3.7,2.6,0.9,0.2</ClientRectangle>
+          <ClientRectangle>3.2,2.6,1.4,0.2</ClientRectangle>
           <Conditions isList="true" count="0" />
           <Expressions isList="true" count="0" />
           <Font>B Yekan,10</Font>
@@ -468,7 +478,7 @@ AJggVAAAAAMi/wMG3oyRm+PkpgAAAABJRU5ErkJggg==</ImageBytes>
         </Text8>
         <Text9 Ref="18" type="Text" isKey="true">
           <Brush>[255:255:255]</Brush>
-          <ClientRectangle>3.4,2.8,1.6,0.2</ClientRectangle>
+          <ClientRectangle>3.2,2.8,1.8,0.2</ClientRectangle>
           <Conditions isList="true" count="0" />
           <Expressions isList="true" count="0" />
           <Font>B Yekan,10</Font>
@@ -5488,10 +5498,10 @@ AAAAAAAAAAAAAAAAAAAAQMO2A+5A5DqSbSZqAAAAAElFTkSuQmCC</ImageBytes>
     <value>Stimulsoft.Report.Dll</value>
   </ReferencedAssemblies>
   <ReportAlias>Report</ReportAlias>
-  <ReportChanged>4/22/2024 9:11:35 AM</ReportChanged>
+  <ReportChanged>4/23/2024 8:35:11 AM</ReportChanged>
   <ReportCreated>4/21/2024 12:22:08 PM</ReportCreated>
   <ReportFile>C:\dev\e-commerce\E-commerce\microservices\OrderService.Host\Reports\RptFactor.mrt</ReportFile>
-  <ReportGuid>f660c0dfe7f24c3b9fb58a10b367f7cb</ReportGuid>
+  <ReportGuid>ba901eaa2fa345ec9ef0d85fdfecac93</ReportGuid>
   <ReportName>Report</ReportName>
   <ReportUnit>Inches</ReportUnit>
   <ReportVersion>2022.1.1.0</ReportVersion>

@@ -19,6 +19,7 @@ namespace OrderManagement.Application.Contracts
         public static string NoValidFlowOrderStepId = "1005";
 
         public static string ContractReportName = "RptContractForm";
+        public static string FactorReportName = "RptFactor";
 
         public static List<OrderStepEnum> OrderStepWithoutPayment = new List<OrderStepEnum>
         {

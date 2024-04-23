@@ -24,6 +24,7 @@ using Esale.Share.Authorize;
 using UserManagement.Application.Contracts;
 using UserManagement.Domain.Shared;
 using ValidationHelper = IFG.Core.Validation.ValidationHelper;
+using Microsoft.EntityFrameworkCore;
 
 namespace UserManagement.Application.Implementations;
 
@@ -49,7 +50,8 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
                                   IRepository<ClientsOrderDetailByCompany, long> clientsOrderDetailByCompany,
                                   IRepository<CompanyPaypaidPrices, long> companyPaypaidPricesRepository,
                                   IFG.Core.Caching.ICacheManager cacheManager,
-                                  IUserDataAccessService userDataAccessService)
+                                  IUserDataAccessService userDataAccessService
+                                  )
     {
         _configuration = configuration;
         _advocacyUsersRepository = advocacyUsersRepository;
@@ -60,7 +62,6 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
         _clientsOrderDetailByCompany = clientsOrderDetailByCompany;
         _companyPaypaidPricesRepository = companyPaypaidPricesRepository;
         _cacheManager = cacheManager;
-        _userDataAccessService = userDataAccessService;
     }
 
     public async Task RegistrationValidationWithoutCaptcha(RegistrationValidationDto input)
@@ -157,7 +158,12 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
                 x.Name,
                 x.Surname,
                 x.UID,
-                x.Priority
+                x.Priority,
+                x.BirthCertId,
+                x.Address,
+                x.BirthDate,
+                x.Tel,
+                x.PostalCode
             })
             .FirstOrDefault(x => x.UID == userId.ToLower());
 
@@ -182,11 +188,20 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
             SurName = user.Surname,
             Name = user.Name,
             Uid = user.UID,
-            Priority = user.Priority
+            Priority = user.Priority,
+            Address = user.Address,
+            BirthCertId = user.BirthCertId,
+            BirthDate = user.BirthDate,
+            Tel = user.Tel,
+            PostalCode = user.PostalCode,
+            BirthCityTitle = string.Empty,
+            IssuingCityTitle = string.Empty
         };
 
         await _cacheManager.SetStringAsync(cacheKey, prefix, JsonConvert.SerializeObject(usergrpcdto), new CacheOptions
-        { Provider = CacheProviderEnum.Hybrid }, TimeSpan.FromMinutes(5).TotalSeconds);
+        {
+            Provider = CacheProviderEnum.Hybrid
+        }, TimeSpan.FromMinutes(5).TotalSeconds);
 
         return usergrpcdto;
     }
