@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Created="04/24/2024 13:33:54" ReportInfo.Modified="04/24/2024 13:34:38" ReportInfo.CreatorVersion="2021.2.8.0">
+  <Dictionary>
+    <BusinessObjectDataSource Name="Table" ReferenceName="Table" DataType="System.Collections.Generic.List`1[[OrderManagement.ReportDesigner.OrderDetailDto, OrderManagement.RptDesigner, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]" Enabled="true">
+      <Column Name="PaymentPrice" DataType="System.Nullable`1[[System.Int64, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]"/>
+      <Column Name="ProductTitle" DataType="System.String"/>
+      <Column Name="CreationTime" DataType="System.DateTime"/>
+      <Column Name="CreationTimePersian" DataType="System.String"/>
+      <Column Name="OrderId" DataType="System.Int32"/>
+      <Column Name="Name" DataType="System.String"/>
+      <Column Name="SurName" DataType="System.String"/>
+      <Column Name="TransactionCommitDate" DataType="System.Nullable`1[[System.DateTime, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]"/>
+      <Column Name="TransactionCommitDatePersian" DataType="System.String"/>
+      <Column Name="TransactionId" DataType="System.String"/>
+      <Column Name="BirthDate" DataType="System.DateTime"/>
+      <Column Name="BirthDatePersian" DataType="System.String"/>
+      <Column Name="IssuingCityTitle" DataType="System.String"/>
+      <Column Name="Tel" DataType="System.String"/>
+      <Column Name="Mobile" DataType="System.String"/>
+      <Column Name="Address" DataType="System.String"/>
+      <Column Name="PostalCode" DataType="System.String"/>
+      <Column Name="BirthCertId" DataType="System.String"/>
+      <Column Name="LiveDate" DataType="System.String"/>
+      <Column Name="PspTitle" DataType="System.String"/>
+      <Column Name="NationalCode" DataType="System.String"/>
+    </BusinessObjectDataSource>
+  </Dictionary>
+  <ReportPage Name="Page1" Watermark.Font="Arial, 60pt">
+    <ReportTitleBand Name="ReportTitle1" Width="718.2" Height="378">
+      <TextObject Name="Text1" Left="217.35" Top="75.6" Width="198.45" Height="56.7" Text="[Table.NationalCode]" Font="Arial, 10pt"/>
+      <TextObject Name="Text2" Left="103.95" Top="151.2" Width="481.95" Height="18.9" Text="[Table.Address]" Font="Arial, 10pt"/>
+    </ReportTitleBand>
+  </ReportPage>
+</Report>

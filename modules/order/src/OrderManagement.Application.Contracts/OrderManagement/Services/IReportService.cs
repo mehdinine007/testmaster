@@ -10,6 +10,6 @@ namespace OrderManagement.Application.Contracts
 {
     public interface IReportService: IApplicationService
     {
-        Task<string> Execute(string reportName, object data);
+        Task<string> Execute(string reportName,List<OrderDetailDto> data);
     }
 }

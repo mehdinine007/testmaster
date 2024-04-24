@@ -1,5 +1,6 @@
 ﻿using Esale.Share.Authorize;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.Services;
 using System;
@@ -25,7 +26,9 @@ namespace OrderManagement.Application.OrderManagement.Implementations
         public async Task<string> RptOrderDetail(int orderId, string reportName)
         {
             var orderDetail = await _orderAppService.GetReportOrderDetail(orderId);
-            return await _reportService.Execute(reportName, orderDetail);
+            var orderDetails = new List<OrderDetailDto>();
+            orderDetails.Add(orderDetail);
+            return await _reportService.Execute(reportName,orderDetails);
         }
     }
 }
