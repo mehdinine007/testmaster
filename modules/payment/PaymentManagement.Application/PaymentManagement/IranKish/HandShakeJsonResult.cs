@@ -1,6 +1,6 @@
 ﻿namespace PaymentManagement.Application.IranKish
 {
-    public class JsonResult
+    public class HandShakeJsonResult
     {
         public string responseCode { get; set; }
         public object description { get; set; }
