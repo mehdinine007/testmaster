@@ -16,6 +16,7 @@ steps:
   displayName: 'Dotnet Restore .csproj files'
   inputs:
     command: restore
+    arguments: --force
     projects: ${{ parameters.project }}
     verbosityRestore: minimal
     nugetConfigPath: 'nuget.config'
