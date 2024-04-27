@@ -18,7 +18,7 @@ steps:
     command: restore
     # restoreArguments: '--force'
     projects: ${{ parameters.project }}
-    verbosityRestore: minimal
+    verbosityRestore: Diagnostic
     # nugetConfigPath: 'nuget.config'
     # feedsToUse: 'config'
 
