@@ -45,8 +45,22 @@ namespace OrderManagement.RptDesigner
                 {
                     BirthCertId = "123456",
                     NationalCode = "1092271600",
-                    Address = "sdfsdfsfsdfsdfsdfsdfsdfsdfsdfsdfsd"
-
+                    Address = "sdfsdfsfsdfsdfsdfsdfsdfsdfsdfsdfsd",
+                    PaymentPrice = 1233223435,
+                    BirthCityTitle = "اردبیل",
+                    BirthDate = DateTime.Now.AddYears(-23),
+                    CreationTime = DateTime.Now,
+                    IssuingCityTitle = "شابدول عظیم با موتور",
+                    Name = "اصغر",
+                    SurName = "شل شلوار قرمساق تپه ای",
+                    Mobile = "4635463547534",
+                    OrderId = 23123,
+                    PostalCode = "2143234",
+                    Tel = "3554654",
+                    PspTitle = "پاسارگاد",
+                    ProductTitle = "سی جی اگزوز",
+                    TransactionId = "qee2e2332",
+                    TransactionCommitDate= DateTime.Now.AddDays(-126),
                 }
             };
             report.Report.RegisterData(orderdata, "Table");
