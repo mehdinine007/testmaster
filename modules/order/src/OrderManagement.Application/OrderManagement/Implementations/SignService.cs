@@ -49,7 +49,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
         {
             var contractReport = await _orderReportService.RptOrderDetail(contractSignDto.OrderId, OrderConstant.ContractReportName);
             var documentParameter = _configuration.GetSection("SignConfig:Contract:IranSign:DocumentParameter").Get<DocumentParameterSign>();
-            var nationalCode = "0001001000";//_commonAppService.GetNationalCode();
+            var nationalCode = _commonAppService.GetNationalCode();
             var signContract = await _signGrpcClient.CreateSign(new CreateSignGrpcClientRequest()
             {
                 Title = _configuration.GetSection("SignConfig:Title").Value,
