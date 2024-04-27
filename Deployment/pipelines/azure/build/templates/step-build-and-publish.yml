@@ -16,11 +16,11 @@ steps:
   displayName: 'Dotnet Restore .csproj files'
   inputs:
     command: restore
-    restoreArguments: '--force'
+    # restoreArguments: '--force'
     projects: ${{ parameters.project }}
     verbosityRestore: minimal
-    nugetConfigPath: 'nuget.config'
-    feedsToUse: 'config'
+    # nugetConfigPath: 'nuget.config'
+    # feedsToUse: 'config'
 
 - task: DotNetCoreCLI@2
   displayName: 'Dotnet build .csproj files'
