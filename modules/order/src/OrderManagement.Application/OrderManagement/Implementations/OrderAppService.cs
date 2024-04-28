@@ -68,6 +68,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
     private readonly IRepository<CustomerPriority> _customerPriorityRepository;
     private readonly IUserDataAccessService _userDataAccessService;
     private readonly ICompanyGrpcClient _companyGrpcClient;
+    private readonly IRepository<City, int> _cityRepository;
     public OrderAppService(ICommonAppService commonAppService,
                            IBaseInformationService baseInformationAppService,
                            IRepository<SaleDetail, int> saleDetailRepository,
@@ -94,9 +95,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
                            IOrganizationService organizationService,
                            IRepository<CarMakerBlackList, long> blackListRepository,
                            IRepository<CustomerPriority> customerPriorityRepository,
-                           ICompanyGrpcClient companyGrpcClient
-,
-                           IUserDataAccessService userDataAccessService
+                           ICompanyGrpcClient companyGrpcClient,
+                           IUserDataAccessService userDataAccessService,
+                           IRepository<City, int> cityRepository
                            )
     {
         _commonAppService = commonAppService;
@@ -125,6 +126,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         _customerPriorityRepository = customerPriorityRepository;
         _userDataAccessService = userDataAccessService;
         _companyGrpcClient = companyGrpcClient;
+        _cityRepository = cityRepository;
     }
 
 
@@ -1521,6 +1523,50 @@ public class OrderAppService : ApplicationService, IOrderAppService
     }
 
     [SecuredOperation(OrderAppServicePermissionConstants.GetOrderDetailById)]
+    public async Task<OrderDetailDto> GetReportOrderDetail(int id)
+    {
+        var userId = _commonAppService.GetUserId();
+        var orderStatusTypes = _orderStatusTypeReadOnlyRepository.WithDetails().ToList();
+        var customerOrderQuery = await _commitOrderRepository.GetQueryableAsync();
+        PaymentInformationResponseDto paymentInformation = new();
+        var customerOrder = customerOrderQuery
+            .AsNoTracking()
+            .Join(_saleDetailRepository.WithDetails(x => x.Product),
+            x => x.SaleDetailId,
+            y => y.Id,
+            (x, y) => new OrderDetailDto()
+            {
+                UserId = x.UserId,
+                CreationTime = x.CreationTime,
+                OrderId = x.Id,
+                ProductTitle = y.Product.Title,
+                PaymentPrice = x.PaymentPrice,
+                TransactionId = x.TransactionId,
+                TransactionCommitDate = x.TransactionCommitDate,
+                //PspTitle = ?? 
+            }).FirstOrDefault(x => x.UserId == userId && x.OrderId == id);
+        var user = await _esaleGrpcClient.GetUserId(customerOrder.UserId.ToString());
+        var cityIds = new List<int>();
+        var cities = (await _cityRepository.GetQueryableAsync())
+            .AsNoTracking()
+            .Where(x => x.Id == (user.IssuingCityId ?? 0) || x.Id == (user.BirthCityId ?? 0))
+            .ToList();
+        customerOrder.SurName = user.SurName;
+        customerOrder.Name = user.Name;
+        customerOrder.NationalCode = user.NationalCode;
+        customerOrder.Mobile = user.MobileNumber;
+        customerOrder.Address = user.Address;
+        customerOrder.IssuingCityTitle = user.IssuingCityId.HasValue ? cities?.FirstOrDefault(x => x.Id == user.IssuingCityId.Value)?.Name : string.Empty;
+        customerOrder.BirthCertId = user.BirthCertId;
+        customerOrder.BirthDate = user.BirthDate;
+        customerOrder.BirthCityTitle = user.BirthCityId.HasValue ? cities?.FirstOrDefault(x => x.Id == user.BirthCityId.Value)?.Name : string.Empty;
+        customerOrder.PostalCode = user.PostalCode;
+
+
+        return customerOrder;
+    }
+
+    [SecuredOperation(OrderAppServicePermissionConstants.GetOrderDetailById)]
     public async Task<CustomerOrder_OrderDetailDto> GetOrderDetailById(int id, List<AttachmentEntityTypeEnum> attachmentType = null, List<AttachmentLocationEnum> attachmentlocation = null)
     {
         //if (!_commonAppService.IsInRole("Customer"))
@@ -1567,7 +1613,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         if (customerOrder.SalePlanEndDate <= DateTime.Now)
             throw new UserFriendlyException("تاریخ برنامه فروش به پایان و سفارش قابل مشاده نیست");
 
-        
+
         var user = await _esaleGrpcClient.GetUserId(customerOrder.UserId.ToString());
         customerOrder.SurName = user.SurName;
         customerOrder.Name = user.Name;

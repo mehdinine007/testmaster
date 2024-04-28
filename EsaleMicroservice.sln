@@ -243,7 +243,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OldCarService.Host", "micro
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OldCarManagement.HttpApi", "modules\company\src\OldCarManagement.HttpApi\OldCarManagement.HttpApi.csproj", "{1E215FDE-470F-4722-BA22-FD74F9D171FA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderManagement.ReportDesigner", "modules\order\src\OrderManagement.ReportDesigner\OrderManagement.ReportDesigner.csproj", "{346E863C-CE31-4601-BD5C-8171B15CC3DC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderManagement.ReportDesigner", "modules\order\src\OrderManagement.ReportDesigner\OrderManagement.ReportDesigner.csproj", "{346E863C-CE31-4601-BD5C-8171B15CC3DC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderManagement.RptDesigner", "modules\order\src\OrderManagement.RptDesigner\OrderManagement.RptDesigner.csproj", "{5270CA01-63B1-4CE1-A5DB-8733BBC76D58}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -631,6 +633,10 @@ Global
 		{346E863C-CE31-4601-BD5C-8171B15CC3DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{346E863C-CE31-4601-BD5C-8171B15CC3DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{346E863C-CE31-4601-BD5C-8171B15CC3DC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5270CA01-63B1-4CE1-A5DB-8733BBC76D58}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5270CA01-63B1-4CE1-A5DB-8733BBC76D58}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5270CA01-63B1-4CE1-A5DB-8733BBC76D58}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5270CA01-63B1-4CE1-A5DB-8733BBC76D58}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -752,6 +758,7 @@ Global
 		{0D245FA6-B8EF-44A4-AA9B-2C219005EDCD} = {3B26D176-390B-4F51-BE52-E9B422C28A88}
 		{1E215FDE-470F-4722-BA22-FD74F9D171FA} = {CFF27F17-3236-4564-83EB-AC7D054A56F3}
 		{346E863C-CE31-4601-BD5C-8171B15CC3DC} = {FD0243FA-5C37-474B-9649-71813ECB8AFA}
+		{5270CA01-63B1-4CE1-A5DB-8733BBC76D58} = {FD0243FA-5C37-474B-9649-71813ECB8AFA}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {37474F0D-2E52-4D2F-B39B-7FE3FF31B4EC}

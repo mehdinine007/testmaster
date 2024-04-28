@@ -53,6 +53,20 @@ message UserModel{
 	string Uid=16;
 
 	google.protobuf.Int32Value Priority= 17;
+
+	string BirthCertId = 18;
+
+	string Address = 19;
+
+	google.protobuf.Timestamp BirthDate = 20;
+
+	string BirthCityTitle = 21;
+
+	string IssuingCityTitle = 22;
+
+	string Tel = 23;
+
+	string PostalCode = 24;
 }
 
 message UserAdvocacy{

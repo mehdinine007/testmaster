@@ -25,8 +25,8 @@ namespace OrderManagement.ReportDesigner.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("D:\\Works\\Web\\Fava\\Ecommerce\\designerreport\\E-commerce\\microservices\\OrderService." +
-            "Host\\Reports\\")]
+        [global::System.Configuration.DefaultSettingValueAttribute("D:\\Works\\Web\\Fava\\Ecommerce\\factorreport\\E-commerce\\microservices\\OrderService.Ho" +
+            "st\\Reports\\")]
         public string ReportPath {
             get {
                 return ((string)(this["ReportPath"]));

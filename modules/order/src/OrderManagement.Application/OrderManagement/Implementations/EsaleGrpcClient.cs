@@ -64,7 +64,14 @@ public class EsaleGrpcClient : ApplicationService, IEsaleGrpcClient
             CompanyId = user.CompanyId,
             Name = user.Name,
             SurName = user.SurName,
-            Priority = user.Priority
+            Priority = user.Priority,
+            Tel = user.Tel,
+            IssuingCityTitle = user.IssuingCityTitle,
+            PostalCode = user.PostalCode,
+            BirthDate = user.BirthDate.ToDateTime(),
+            BirthCertId = user.BirthCertId,
+            Address = user.Address,
+            BirthCityTitle = user.BirthCityTitle
         };
 
         return userDto;

@@ -9,11 +9,11 @@ namespace OrderManagement.Application.Contracts.Services
 {
     public interface IOrderAppService : IApplicationService
     {
-        Task<CustomerOrder_OrderDetailTreeDto> GetCustomerOrderList(List<AttachmentEntityTypeEnum>? attachmentType=null, List<AttachmentLocationEnum>? attachmentlocation = null);
+        Task<CustomerOrder_OrderDetailTreeDto> GetCustomerOrderList(List<AttachmentEntityTypeEnum>? attachmentType = null, List<AttachmentLocationEnum>? attachmentlocation = null);
 
         Task<CustomerOrder_OrderDetailDto> GetOrderDetailById(int id, List<AttachmentEntityTypeEnum>? attachmentType = null, List<AttachmentLocationEnum>? attachmentlocation = null);
 
-        Task<CustomerOrder_OrderDetailDto> GetSaleDetailByUid(Guid saleDetailUid, List<AttachmentEntityTypeEnum>? attachmentType=null, List<AttachmentLocationEnum>? attachmentlocation = null);
+        Task<CustomerOrder_OrderDetailDto> GetSaleDetailByUid(Guid saleDetailUid, List<AttachmentEntityTypeEnum>? attachmentType = null, List<AttachmentLocationEnum>? attachmentlocation = null);
 
         Task<CustomerOrder_OrderDetailDto> GetDetail(SaleDetail_Order_InquiryDto inquiryDto);
 
@@ -36,5 +36,7 @@ namespace OrderManagement.Application.Contracts.Services
 
         Task<bool> NationalCodeExistsInPriority(string nationalCode);
         Task<List<ClientOrderDetailDto>> GetOrderDetailList(string nationalCode);
+
+        Task<OrderDetailDto> GetReportOrderDetail(int id);
     }
 }

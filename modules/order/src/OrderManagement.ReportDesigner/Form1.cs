@@ -32,27 +32,41 @@ namespace OrderManagement.ReportDesigner
             }
 
             var report = ((IStiDesignerBase)sender).Report;
-
-            report.Save(Properties.Settings.Default.ReportPath + "RptContractForm.mrt");
+            report.Save(report.ReportFile);
 
         }
-        private void button1_Click(object sender, EventArgs e)
+        private StiReport ReportConfig(string reportName)
         {
             var report = new StiReport();
             report.Dictionary.Databases.Clear();
-            var orderdata = new List<CustomerOrder_OrderDetailDto>();
-            string fileName = Properties.Settings.Default.ReportPath + "RptContractForm.mrt";
+            string fileName = Properties.Settings.Default.ReportPath + reportName + ".mrt";
+            report.ReportFile = fileName;
             if (File.Exists(fileName))
             {
                 report.Load(fileName);
             }
+            return report;
+        }
+        private void button1_Click(object sender, EventArgs e)
+        {
+
+            var report = ReportConfig("RptContractForm");
+            var orderdata = new List<OrderDetailDto>();
             report.RegData("Table", orderdata);
             report.Design();
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            this.button1_Click(button1, null);
+            //this.button1_Click(button1, null);
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            var report = ReportConfig("RptFactor");
+            var orderdata = new List<OrderDetailDto>();
+            report.RegData("Table", orderdata);
+            report.Design();
         }
     }
 }
