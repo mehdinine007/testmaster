@@ -40,6 +40,13 @@ namespace OrderManagement.RptDesigner
         {
             var report = ReportConfig("RptContractForm");
             var orderdata = new List<OrderDetailDto>();
+            orderdata.Add(new OrderDetailDto()
+            {
+                ContractNumber = "S140300001",
+                CreationTime = DateTime.Now,
+                TransactionCommitDate = DateTime.Now,
+                BirthDate = DateTime.Now
+            });
             report.Report.RegisterData(orderdata, "Table");
             report.Design();
         }

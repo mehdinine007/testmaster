@@ -23,9 +23,9 @@ public class OrderReportController : Controller
         _reportService = reportService;
     }
 
-    [HttpGet]
-    public Task<string> RptContractForm(int orderId)
-    => _orderReportService.RptOrderDetail(orderId, OrderConstant.ContractReportName);
+    //[HttpGet]
+    //public Task<string> RptContractForm(int orderId)
+    //=> _orderReportService.RptOrderDetail(orderId, OrderConstant.ContractReportName);
 
     [HttpGet]
     public Task<string> RptFactor(int orderId)

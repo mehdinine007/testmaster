@@ -37,6 +37,7 @@ message InquirySignOutput{
 	bool Success = 3;
 	string State = 4;
 	string DocumentLink = 5;
+	string SignedDocumentLink=6;
 }
 
 

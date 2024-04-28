@@ -10,6 +10,7 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Dtos.Sign
     {
         public string State { get; set; }
         public string DocumentLink { get; set; }
+        public string SignedDocumentLink { get; set; }
 
     }
 }

@@ -94,7 +94,8 @@ namespace GatewayManagement.Application.GatewayManagement.Services.SendBox
                     Message = result.message,
                     Success = true,
                     State = result.responseBody.state,
-                    DocumentLink = result.responseBody.documentInfo.documentLink
+                    DocumentLink = result.responseBody.documentInfo.documentLink,
+                    SignedDocumentLink = result.responseBody.signedDocumentInfo.signedDocumentLink
                 };
             }
             return new InquirySignOutputDto

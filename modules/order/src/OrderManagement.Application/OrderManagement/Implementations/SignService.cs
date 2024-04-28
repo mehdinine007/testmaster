@@ -16,6 +16,7 @@ using OrderManagement.Domain.OrderManagement;
 using OrderManagement.Domain.Shared.OrderManagement.Enums;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -47,6 +48,35 @@ namespace OrderManagement.Application.OrderManagement.Implementations
         [SecuredOperation(OrderAppServicePermissionConstants.GetOrderDetailById)]
         public async Task<Guid> ContractSign(ContractSignDto contractSignDto)
         {
+            var customerOrderQuery = (await _customerOrderRepository.GetQueryableAsync())
+               .AsNoTracking();
+            var customerOrder = customerOrderQuery.FirstOrDefault(x => x.Id == contractSignDto.OrderId);
+            if (customerOrder is null)
+            {
+                throw new UserFriendlyException(OrderConstant.OrderNotFound, OrderConstant.OrderNotFoundId);
+            }
+            if (customerOrder.SignStatus != SignStatusEnum.ReadyForSignature)
+            {
+                throw new UserFriendlyException(OrderConstant.OrderAwaitingSignature, OrderConstant.OrderAwaitingSignatureId);
+            }
+         
+            var lastContractNumber = customerOrderQuery.Where(x => x.Id != contractSignDto.OrderId).Max(x => x.ContractNumber);
+            int number = 1;
+            if (lastContractNumber is not null)
+            {
+                number = int.Parse(lastContractNumber.Substring(5));
+                number++;
+            }
+            int year = new PersianCalendar().GetYear(DateTime.Now);
+            var contractNumber = "S" + year.ToString() + string.Format("{0:X}", number.ToString()).PadLeft(6, '0');
+            var contractNumberUpdate = new CustomerOrderDto
+            {
+                Id = contractSignDto.OrderId,
+                ContractNumber = contractNumber
+            };
+            var contractNumberUpdateMap = ObjectMapper.Map<CustomerOrderDto, CustomerOrder>(contractNumberUpdate);
+            await _customerOrderRepository.AttachAsync(contractNumberUpdateMap, x => x.ContractNumber);
+
             var contractReport = await _orderReportService.RptOrderDetail(contractSignDto.OrderId, OrderConstant.ContractReportName);
             var documentParameter = _configuration.GetSection("SignConfig:Contract:IranSign:DocumentParameter").Get<DocumentParameterSign>();
             var nationalCode = _commonAppService.GetNationalCode();
@@ -61,7 +91,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             });
             if (signContract.Success)
             {
-                
+
                 var responseBody = JsonConvert.DeserializeObject<List<CreateSignResponseBodies>>(signContract.ResponseBody);
                 var result = responseBody.FirstOrDefault();
                 Guid signTicketId = Guid.Parse(result.workflowTicket);
@@ -69,7 +99,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
                 {
                     Id = contractSignDto.OrderId,
                     SignStatus = SignStatusEnum.AwaitingSignature,
-                    SignTicketId = signTicketId
+                    SignTicketId = signTicketId,
                 };
                 var customerOrderMap = ObjectMapper.Map<CustomerOrderDto, CustomerOrder>(customerOrderDto);
                 await _customerOrderRepository.AttachAsync(customerOrderMap, x => x.SignStatus, x => x.SignTicketId);
@@ -79,6 +109,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             {
                 throw new UserFriendlyException(signContract.Message, signContract.ResultCode.ToString());
             }
+
         }
 
         public async Task<IDataResult<InquirySignDto>> Inquiry(Guid ticketId)
@@ -90,6 +121,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
                 {
                     State = _inquiry.State,
                     DocumentLink = _inquiry.DocumentLink,
+                    SignedDocumentLink=_inquiry.SignedDocumentLink,
                 });
             }
             return new ErrorDataResult<InquirySignDto>(_inquiry.Message, messageId: _inquiry.ResultCode.ToString());
@@ -99,12 +131,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
         {
             var customerOrders = (await _customerOrderRepository.GetQueryableAsync())
                 .AsNoTracking();
-            var lastContractNumber = customerOrders.Max(x => x.ContractNumber);
-            int number = 0;
-            if (lastContractNumber is not null)
-            {
-                number = int.Parse(lastContractNumber.Substring(5));
-            }
+
             var signatureIntervalDay = _configuration.GetSection("SignConfig:ReadyForSignatureDay").Value ?? "0";
             var intervalDay = Int32.Parse(signatureIntervalDay);
             var preparingContractOrders = customerOrders
@@ -113,12 +140,10 @@ namespace OrderManagement.Application.OrderManagement.Implementations
                 .ToList();
             foreach (var preparingContractOrder in preparingContractOrders)
             {
-                number ++;
                 await _orderAppService.UpdateSignStatus(new CustomerOrderDto()
                 {
                     Id = preparingContractOrder.Id,
                     SignStatus = SignStatusEnum.ReadyForSignature,
-                    ContractNumber= "S1403" + string.Format("{0:X}", number.ToString()).PadLeft(6, '0')
                 });
             }
 
@@ -137,12 +162,11 @@ namespace OrderManagement.Application.OrderManagement.Implementations
                     {
                         Id = awaitingSignatureOrder.Id,
                         SignStatus = signstatus == IranSignStateEnum.COMPLETED ? SignStatusEnum.Signed : signstatus == IranSignStateEnum.CANCELED ? SignStatusEnum.Canceled : SignStatusEnum.AwaitingSignature,
-                        ContractNumber = awaitingSignatureOrder.ContractNumber
                     });
                 }
             }
 
-           
+
             return true;
         }
 

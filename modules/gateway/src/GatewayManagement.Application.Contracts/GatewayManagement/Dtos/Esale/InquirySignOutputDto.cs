@@ -14,5 +14,7 @@ namespace GatewayManagement.Application.Contracts.GatewayManagement.Dtos.Esale
         public bool Success { get; set; }
         public string State { get; set; }
         public string DocumentLink { get; set; }
+        public string SignedDocumentLink { get; set; }
+        
     }
 }
