@@ -26,5 +26,6 @@ namespace OrderManagement.Application.Contracts
         public long? PaymentPrice { get; set; }
         public Guid? SignTicketId { get; set; }
         public SignStatusEnum? SignStatus { get; set; }
+        public string ContractNumber { get; set; }
     }
 }

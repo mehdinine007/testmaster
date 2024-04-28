@@ -21,6 +21,7 @@ namespace OrderManagement.Application.Contracts.Services
 
         Task InsertUserRejectionAdvocacyPlan(string userSmsCode);
         Task UpdateStatus(CustomerOrderDto customerOrderDto);
+        Task UpdateSignStatus(CustomerOrderDto customerOrderDto);
         Task<List<CustomerOrderReportDto>> GetCompaniesCustomerOrders();
 
         Task<List<CustomerOrderPriorityUserDto>> GetCustomerInfoPriorityUser();

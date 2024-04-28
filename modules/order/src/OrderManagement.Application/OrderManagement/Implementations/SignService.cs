@@ -99,6 +99,29 @@ namespace OrderManagement.Application.OrderManagement.Implementations
         {
             var customerOrders = (await _customerOrderRepository.GetQueryableAsync())
                 .AsNoTracking();
+            var lastContractNumber = customerOrders.Max(x => x.ContractNumber);
+            int number = 0;
+            if (lastContractNumber is not null)
+            {
+                number = int.Parse(lastContractNumber.Substring(5));
+            }
+            var signatureIntervalDay = _configuration.GetSection("SignConfig:ReadyForSignatureDay").Value ?? "0";
+            var intervalDay = Int32.Parse(signatureIntervalDay);
+            var preparingContractOrders = customerOrders
+                .Where(x => x.SignStatus == SignStatusEnum.PreparingContract && x.CreationTime <= DateTime.Today.AddDays(-intervalDay))
+                .Take(20)
+                .ToList();
+            foreach (var preparingContractOrder in preparingContractOrders)
+            {
+                number ++;
+                await _orderAppService.UpdateSignStatus(new CustomerOrderDto()
+                {
+                    Id = preparingContractOrder.Id,
+                    SignStatus = SignStatusEnum.ReadyForSignature,
+                    ContractNumber= "S1403" + string.Format("{0:X}", number.ToString()).PadLeft(6, '0')
+                });
+            }
+
             var awaitingSignatureOrders = customerOrders
                .Where(x => x.SignStatus == SignStatusEnum.AwaitingSignature)
                .Take(20)
@@ -110,30 +133,16 @@ namespace OrderManagement.Application.OrderManagement.Implementations
                 {
                     IranSignStateEnum signstatus;
                     Enum.TryParse(signStatus.Data.State, out signstatus);
-                    await _orderAppService.UpdateStatus(new CustomerOrderDto()
+                    await _orderAppService.UpdateSignStatus(new CustomerOrderDto()
                     {
                         Id = awaitingSignatureOrder.Id,
-                        OrderStatus = (int)awaitingSignatureOrder.OrderStatus,
-                        SignStatus = signstatus == IranSignStateEnum.COMPLETED ? SignStatusEnum.Signed : signstatus == IranSignStateEnum.CANCELED ? SignStatusEnum.Canceled : SignStatusEnum.AwaitingSignature
+                        SignStatus = signstatus == IranSignStateEnum.COMPLETED ? SignStatusEnum.Signed : signstatus == IranSignStateEnum.CANCELED ? SignStatusEnum.Canceled : SignStatusEnum.AwaitingSignature,
+                        ContractNumber = awaitingSignatureOrder.ContractNumber
                     });
                 }
             }
 
-            var signatureIntervalDay = _configuration.GetSection("SignConfig:ReadyForSignatureDay").Value ?? "0";
-            var intervalDay = Int32.Parse(signatureIntervalDay);
-            var preparingContractOrders = customerOrders
-                .Where(x => x.SignStatus == SignStatusEnum.PreparingContract && x.CreationTime <= DateTime.Today.AddDays(-intervalDay))
-                .Take(20)
-                .ToList();
-            foreach (var preparingContractOrder in preparingContractOrders)
-            {
-                await _orderAppService.UpdateStatus(new CustomerOrderDto()
-                {
-                    Id = preparingContractOrder.Id,
-                    OrderStatus = (int)preparingContractOrder.OrderStatus,
-                    SignStatus = SignStatusEnum.ReadyForSignature
-                });
-            }
+           
             return true;
         }
 
