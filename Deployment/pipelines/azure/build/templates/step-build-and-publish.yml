@@ -19,8 +19,8 @@ steps:
     # restoreArguments: '--force'
     projects: ${{ parameters.project }}
     verbosityRestore: Minimal
-    # nugetConfigPath: 'nuget.config'
-    # feedsToUse: 'config'
+    nugetConfigPath: 'nuget.config'
+    feedsToUse: 'config'
 
 - task: DotNetCoreCLI@2
   displayName: 'Dotnet build .csproj files'
