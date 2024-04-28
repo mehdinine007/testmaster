@@ -19,6 +19,8 @@ using Newtonsoft.Json;
 using UserManagement.Domain.Shared;
 using MongoDB.Driver;
 using WorkingWithMongoDB.WebAPI.Services;
+using System.Xml.Linq;
+using Volo.Abp.Data;
 #endregion
 
 namespace UserManagement.Application.UserManagement.Implementations;
@@ -33,14 +35,14 @@ public class SendBoxAppService : ApplicationService, ISendBoxAppService
     private readonly ICacheManager _cacheManager;
     private readonly IGetwayGrpcClient _getwayGrpcClient;
     private readonly ICaptchaService _captchaService;
-
+    private readonly IAuditingManager _auditingManager;
     public SendBoxAppService(IConfiguration configuration,
         ICommonAppService CommonAppService,
         IBaseInformationService baseInformationService,
         ICacheManager cacheManager,
         IGetwayGrpcClient getwayGrpcClient,
         ICaptchaService captchaService,
-         IRepository<UserMongo, ObjectId> userMongoRepository)
+         IRepository<UserMongo, ObjectId> userMongoRepository, IAuditingManager auditingManager)
     {
         _configuration = configuration;
         _commonAppService = CommonAppService;
@@ -49,6 +51,7 @@ public class SendBoxAppService : ApplicationService, ISendBoxAppService
         _getwayGrpcClient = getwayGrpcClient;
         _captchaService = captchaService;
         _userMongoRepository = userMongoRepository;
+        _auditingManager = auditingManager;
     }
 
 
@@ -208,8 +211,20 @@ public class SendBoxAppService : ApplicationService, ISendBoxAppService
             }
             else
             {
+                using (var auditingScope = _auditingManager.BeginScope())
+                {
+                    _auditingManager.Current.Log.SetProperty("SendSms", sendService);
+                    _auditingManager.Current.Log.Comments.Add(JsonConvert.SerializeObject(new Dictionary<string, object>
+                      {
+                         { "Success",_retgrpc.Success},
+                         { "DataResult",_retgrpc.DataResult},
+                         { "Message",_retgrpc.Message},
+                         { "MessageCode",_retgrpc.MessageCode}
+                       }));
+                    await auditingScope.SaveAsync();
+                }
                 throw new UserFriendlyException("ارسال پیامک با خطا مواجه شد.");
-            } 
+            }
 
             return new SuccsessResult();
             //grpc
