@@ -121,5 +121,9 @@ namespace OrderManagement.Application.Contracts
         public static string UserDataAccessOldCarNotFoundId = "9006";
         public const string ProductNotFound = "محصول وجود ندارد";
         public const string ProductNotFoundId = "9008";
+        public const string OrderNotFound = "سفارش وجود ندارد";
+        public const string OrderNotFoundId = "9009";
+        public const string OrderAwaitingSignature = "امکان امضای قراردادوجود ندارد";
+        public const string OrderAwaitingSignatureId = "9010";
     }
 }

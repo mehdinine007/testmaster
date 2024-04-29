@@ -22,6 +22,6 @@ namespace GatewayManagement.Application.Contracts.GatewayManagement.Dtos.Esale.I
         public string ownerId { get; set; }
         public DocumentInfo documentInfo { get; set; }
         //public List<Recipients> recipients { get; set; }
-        //public SignedDocumentInfo signedDocumentInfo { get; set; }
+        public SignedDocumentInfo signedDocumentInfo { get; set; }
     }
 }

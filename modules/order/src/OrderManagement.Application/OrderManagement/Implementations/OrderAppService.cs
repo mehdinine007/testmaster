@@ -1386,7 +1386,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
     public async Task UpdateSignStatus(CustomerOrderDto customerOrderDto)
     {
         var order = _objectMapper.Map<CustomerOrderDto, CustomerOrder>(customerOrderDto);
-        await _commitOrderRepository.AttachAsync(order, o => o.SignStatus, o => o.ContractNumber);
+        await _commitOrderRepository.AttachAsync(order, o => o.SignStatus);
         await CurrentUnitOfWork.SaveChangesAsync();
     }
 
@@ -1542,6 +1542,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 PaymentPrice = x.PaymentPrice,
                 TransactionId = x.TransactionId,
                 TransactionCommitDate = x.TransactionCommitDate,
+                ContractNumber=x.ContractNumber
                 //PspTitle = ?? 
             }).FirstOrDefault(x => x.UserId == userId && x.OrderId == id);
         var user = await _esaleGrpcClient.GetUserId(customerOrder.UserId.ToString());

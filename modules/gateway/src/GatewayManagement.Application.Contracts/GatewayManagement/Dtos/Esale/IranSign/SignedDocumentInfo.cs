@@ -8,10 +8,10 @@ namespace GatewayManagement.Application.Contracts.GatewayManagement.Dtos.Esale.I
 {
     public class SignedDocumentInfo
     {
-        public string fileName { get; set; }
-        public string fileSize { get; set; }
-        public string fileType { get; set; }
-        public string signedDocumentReference { get; set; }
+        //public string fileName { get; set; }
+        //public int fileSize { get; set; }
+        //public string fileType { get; set; }
+        //public string signedDocumentReference { get; set; }
         public string signedDocumentLink { get; set; }
     }
 }

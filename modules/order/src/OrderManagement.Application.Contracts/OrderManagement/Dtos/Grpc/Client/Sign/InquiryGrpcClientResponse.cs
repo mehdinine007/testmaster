@@ -13,5 +13,6 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Dtos.Grpc.Client
         public bool Success { get; set; }
         public string State { get; set; }
         public string DocumentLink { get; set; }
+        public string SignedDocumentLink { get; set; }
     }
 }

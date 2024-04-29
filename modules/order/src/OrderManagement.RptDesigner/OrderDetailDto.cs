@@ -69,5 +69,7 @@ namespace OrderManagement.ReportDesigner
         public string NationalCode { get; set; }
 
         public string BirthCityTitle { get; set; }
+        public string ContractNumber { get; set; }
+
     }
 }
