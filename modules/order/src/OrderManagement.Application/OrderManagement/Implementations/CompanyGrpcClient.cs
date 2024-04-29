@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using IFG.Core.Caching;
 using Newtonsoft.Json;
 using OrderManagement.Application.CompanyService;
+using OrderManagement.Application.Contracts.Services;
 
 namespace OrderManagement.Application.OrderManagement.Implementations
 {
@@ -19,14 +20,18 @@ namespace OrderManagement.Application.OrderManagement.Implementations
     {
         private readonly IConfiguration _configuration;
         private readonly ICacheManager _cacheManager;
-        public CompanyGrpcClient(IConfiguration configuration, ICacheManager cacheManager)
+        private readonly ICommonAppService _commonAppService;
+        public CompanyGrpcClient(IConfiguration configuration, ICacheManager cacheManager,
+            ICommonAppService commonAppService)
         {
             _configuration = configuration;
             _cacheManager = cacheManager;
+            _commonAppService = commonAppService;
         }
 
-        public async Task<List<ClientOrderDetailDto>> GetOrderDetailList(string nationalCode)
+        public async Task<List<ClientOrderDetailDto>> GetOrderDetailList()
         {
+          var nationalCode=  _commonAppService.GetNationalCode();
             var httpHandler = new HttpClientHandler();
             httpHandler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
             var channel = GrpcChannel.ForAddress(_configuration.GetValue<string>("Company:GrpcAddress"), new GrpcChannelOptions { HttpHandler = httpHandler });
