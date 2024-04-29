@@ -1630,7 +1630,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         return !string.IsNullOrEmpty(priority);
     }
 
-    public async Task<List<ClientOrderDetailDto>> GetOrderDetailList()
+    public async Task<List<ClientOrderDetailDto>> GetOrderDetailFromOrganizationList()
     {
         var clientOrderDetailDto = await _companyGrpcClient.GetOrderDetailList();
         return clientOrderDetailDto;

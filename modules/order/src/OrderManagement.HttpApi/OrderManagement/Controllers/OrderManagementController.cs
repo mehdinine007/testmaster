@@ -95,6 +95,6 @@ public class OrderManagementController
     public async Task RetryPaymentForVerify()
         => await _orderAppService.RetryPaymentForVerify();
     [HttpGet]
-    public async Task<List<ClientOrderDetailDto>> GetOrderDetailList()
-        => await _orderAppService.GetOrderDetailList();
+    public async Task<List<ClientOrderDetailDto>> GetOrderDetailFromOrganizationList()
+        => await _orderAppService.GetOrderDetailFromOrganizationList();
 }
