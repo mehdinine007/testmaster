@@ -13,6 +13,7 @@
 		<None Remove="Migrations\Patch\20240113100136_add-bank-entity.sql" />
 		<None Remove="Migrations\Patch\20240113110628_add-useuid.sql" />
 		<None Remove="Migrations\Patch\20240214082855_company-shamsidate.sql" />
+		<None Remove="Migrations\Patch\20240505114906_Update_ClientOrderDetailById.sql" />
 		<None Remove="Migrations\Programmability\Job_ConfilictedCustomers.sql" />
 		<None Remove="Migrations\Programmability\Sp_ConfilictedCustomersReport.sql" />
 		<None Remove="Migrations\Programmability\Sp_EsaleCarApplicantsDetailReport.sql" />
@@ -42,6 +43,9 @@
 		</Content>
 		<Content Include="Migrations\Patch\20240113110628_add-useuid.sql">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Migrations\Patch\20240505114906_Update_ClientOrderDetailById.sql">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 		<Content Include="Migrations\Patch\20240214082855_company-shamsidate.sql">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>

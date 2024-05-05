@@ -32,6 +32,8 @@ public class ValidationConstant
     public const string InviteDateConflictId = "0014";
     public const string DeliveryDateConflict = "مغایرت در تاریخ تحویل";
     public const string DeliveryDateConflictId = "0015";
+    public const string UserCompanyIdNotValid = "شناسه سازمان معتبر نمی باشد";
+    public const string UserCompanyIdNotValid_Id = "0016";
 }
 public static class RuleSets
 {

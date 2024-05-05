@@ -67,7 +67,7 @@ public class CompanyAppService : ApplicationService, ICompanyAppService
 
         var userCompanyId = _commonAppService.GetUserCompanyId();
         if (userCompanyId <= 0)
-            throw new UserFriendlyException(ValidationConstant.Forbiden, code: ValidationConstant.ForbidenId);
+            throw new UserFriendlyException(ValidationConstant.UserCompanyIdNotValid, code: ValidationConstant.UserCompanyIdNotValid_Id);
 
         if (!clientsOrderDetailByCompanyDto.RelatedToOrganization)
         {
@@ -124,10 +124,13 @@ public class CompanyAppService : ApplicationService, ICompanyAppService
     [SecuredOperation(CompanyServicePermissionConstants.GetCustomersAndCars)]
     public List<CustomersWithCars> GetCustomersAndCars(GetCustomersAndCarsDto input)
     {
+        var companyId = _commonAppService.GetUserCompanyId();
+        if (companyId <= 0)
+            throw new UserFriendlyException(ValidationConstant.UserCompanyIdNotValid, code: ValidationConstant.UserCompanyIdNotValid_Id);
         var customersAndCarsInputDto = new CustomersAndCarsInputDto()
         {
             SaleId = input.SaleId,
-            CompanyId = int.Parse(GetCompanyId()),
+            CompanyId = companyId,
             PageNo = input.PageNo
         };
 
@@ -147,10 +150,12 @@ public class CompanyAppService : ApplicationService, ICompanyAppService
     public async Task<bool> SubmitOrderInformations(List<ClientsOrderDetailByCompanyDto> clientsOrderDetailByCompnayDtos)
     {
         var clientsOrderDetailByCompnay = ObjectMapper.Map<List<ClientsOrderDetailByCompanyDto>, List<ClientsOrderDetailByCompany>>(clientsOrderDetailByCompnayDtos, new List<ClientsOrderDetailByCompany>());
-        var companyId = GetCompanyId();
+        var companyId = _commonAppService.GetUserCompanyId();
+        if (companyId <= 0)
+            throw new UserFriendlyException(ValidationConstant.UserCompanyIdNotValid, code: ValidationConstant.UserCompanyIdNotValid_Id);
         clientsOrderDetailByCompnay.ForEach(x =>
         {
-            x.CompanyId = int.Parse(companyId);
+            x.CompanyId = companyId;
         });
         await _clientsOrderDetailByCompanyRepository.InsertManyAsync(clientsOrderDetailByCompnay);
         return true;
@@ -165,29 +170,15 @@ public class CompanyAppService : ApplicationService, ICompanyAppService
         return role == Role;
     }
 
-    private string GetCompanyId()
-    {
-        var identity = (ClaimsPrincipal)Thread.CurrentPrincipal;
-        // Get the claims values
-        var CompanyId = _httpContextAccessor.HttpContext.User.Claims.Where(c => c.Type == "CompanyId")
-                           .Select(c => c.Value).SingleOrDefault();
-        if (CompanyId == null)
-        {
-            throw new UserFriendlyException("کد شرکت تعریف نشده است");
-        }
-        return CompanyId;
-    }
-
     [SecuredOperation(CompanyServicePermissionConstants.GetRecentCustomerAndOrder)]
     public async Task<CompaniesCustomerDto> GetRecentCustomerAndOrder(string nationalCode, int saleId)
     {
         if (nationalCode.AsParallel().Any(x => !char.IsDigit(x)) || nationalCode.Length != 10)
             throw new UserFriendlyException("کد ملی مشتری صحیح نیست");
 
-        var companyIdStr = GetCompanyId();
-        if (!int.TryParse(companyIdStr, out int companyId))
-            throw new InvalidCastException($"Unable to cast companyIdStr = {companyIdStr} to int32");
-
+        var companyId = _commonAppService.GetUserCompanyId();
+        if (companyId <= 0)
+            throw new UserFriendlyException(ValidationConstant.UserCompanyIdNotValid, code: ValidationConstant.UserCompanyIdNotValid_Id);
         var user = (await _usermongoRepository.GetQueryableAsync())
             .Select(x => new
             {
