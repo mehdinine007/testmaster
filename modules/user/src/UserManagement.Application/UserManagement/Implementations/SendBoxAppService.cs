@@ -21,6 +21,8 @@ using MongoDB.Driver;
 using WorkingWithMongoDB.WebAPI.Services;
 using System.Xml.Linq;
 using Volo.Abp.Data;
+using UserManagement.Application.Contracts;
+using UserManagement.Application.Contracts.UserManagement.Models;
 #endregion
 
 namespace UserManagement.Application.UserManagement.Implementations;
@@ -58,6 +60,8 @@ public class SendBoxAppService : ApplicationService, ISendBoxAppService
     [Audited]
     public async Task<IFG.Core.Utility.Results.IResult> SendSms(SendSMSDto input)
     {
+        List<SendSmsLog> comments = new List<SendSmsLog>();
+        var _inputLogData = JsonConvert.DeserializeObject<SendSMSDto>(JsonConvert.SerializeObject(input));
         if (!string.IsNullOrEmpty(input.NationalCode) && !ValidationHelper.IsNationalCode(input.NationalCode))
         {
             throw new UserFriendlyException(Messages.NationalCodeNotValid);
@@ -82,7 +86,7 @@ public class SendBoxAppService : ApplicationService, ISendBoxAppService
             var response = await _captchaService.ReCaptcha(new CaptchaInputDto(input.CK, "CreateUser"));
             if (response.Success == false)
             {
-                throw new UserFriendlyException("خطای کپچا");
+                throw new UserFriendlyException(UserMessageConstant.CaptchaErorr, UserMessageConstant.CaptchaErorrId);
             }
 
         }
@@ -114,7 +118,7 @@ public class SendBoxAppService : ApplicationService, ISendBoxAppService
 
                 if (userFromDb == null)
                 {
-                    throw new UserFriendlyException("نام کاربری صحیح نمی باشد");
+                    throw new UserFriendlyException(UserMessageConstant.UsernameIsNotCorrect, UserMessageConstant.UsernameIsNotCorrectId);
                 }
                 input.Recipient = userFromDb.Mobile;
                 PreFix = SMSType.UpdateProfile.ToString();
@@ -127,7 +131,7 @@ public class SendBoxAppService : ApplicationService, ISendBoxAppService
 
                 if (userFromDb == null || userFromDb.Mobile.Replace(" ", "") != input.Recipient)
                 {
-                    throw new UserFriendlyException("کد ملی یا شماره موبایل صحیح نمی باشد");
+                    throw new UserFriendlyException(UserMessageConstant.NationalCodeOrMobileNotCorrect, UserMessageConstant.NationalCodeOrMobileNotCorrectId);
                 }
                 PreFix = SMSType.ForgetPassword.ToString();
                 Message = _configuration.GetSection("ForgetPassText").Value.Replace("{0}", sendSMSDto.SMSCode);
@@ -167,7 +171,7 @@ public class SendBoxAppService : ApplicationService, ISendBoxAppService
                 {
                     if (DateTime.Now.Subtract(sendSMSDFromCache.LastSMSSend).TotalSeconds < 120)
                     {
-                        throw new UserFriendlyException("در دو دقیقه گذشته برای شما پیامک ارسال شده است");
+                        throw new UserFriendlyException(UserMessageConstant.TextSent2MinsAgo, UserMessageConstant.TextSent2MinsAgoId);
                     }
                 }
             }
@@ -211,9 +215,15 @@ public class SendBoxAppService : ApplicationService, ISendBoxAppService
             }
             else
             {
+
+                comments.Add(new SendSmsLog
+                {
+                    Description = "Getway GrpcClient",
+                    Data = JsonConvert.DeserializeObject<Dictionary<string, object>>(JsonConvert.SerializeObject(_inputLogData))
+                });
                 using (var auditingScope = _auditingManager.BeginScope())
                 {
-                    _auditingManager.Current.Log.SetProperty("SendSms", sendService);
+                    _auditingManager.Current.Log.SetProperty("SendSms", comments);
                     _auditingManager.Current.Log.Comments.Add(JsonConvert.SerializeObject(new Dictionary<string, object>
                       {
                          { "Success",_retgrpc.Success},
@@ -223,7 +233,7 @@ public class SendBoxAppService : ApplicationService, ISendBoxAppService
                        }));
                     await auditingScope.SaveAsync();
                 }
-                throw new UserFriendlyException("ارسال پیامک با خطا مواجه شد.");
+                throw new UserFriendlyException(UserMessageConstant.SendSmsErorr,UserMessageConstant.SendSmsErorrId);
             }
 
             return new SuccsessResult();

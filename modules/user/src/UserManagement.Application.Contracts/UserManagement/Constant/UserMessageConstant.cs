@@ -17,4 +17,17 @@ public class UserMessageConstant
 
     public static string UpdatePhoneNumberWrongSmsCode = "کد پیامک ارسالی صحیح نمی باشد";
     public static string UpdatePhoneNumberWrongSmsCodeId = "10101010101";
+    public const string SendSmsErorr = "ارسال پیامک با خطا مواجه شد";
+    public const string SendSmsErorrId = "9009";
+    public const string CaptchaErorr = "خطای کپچا";
+    public const string CaptchaErorrId = "9010";
+    public const string UsernameIsNotCorrect = "نام کاربری صحیح نمی باشد";
+    public const string UsernameIsNotCorrectId = "9011";
+    public const string NationalCodeOrMobileNotCorrect = "کد ملی یا شماره موبایل صحیح نمی باشد";
+    public const string NationalCodeOrMobileNotCorrectId = "9012";
+    public const string TextSent2MinsAgo = "در دو دقیقه گذشته برای شما پیامک ارسال شده است";
+    public const string TextSent2MinsAgoId = "9013";
+
+ 
+
 }
