@@ -10,13 +10,13 @@ using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.ObjectMapping;
 using System.Linq;
-using CompanyManagement.Application.Contracts.CompanyManagement.Constants.Permissions;
 using Esale.Share.Authorize;
 using FluentValidation;
 using CompanyManagement.Application.Contracts.CompanyManagement.FluentValidation;
 using Volo.Abp;
 using CompanyManagement.Application.Contracts.CompanyManagement.Constants.Validation;
 using Microsoft.EntityFrameworkCore;
+using Permission.Company;
 namespace CompanyManagement.Application.CompanyManagement.Implementations
 {
     public class OldCarService : ApplicationService, IOldCarService

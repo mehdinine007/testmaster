@@ -36,6 +36,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Permission\Permission.csproj" />
     <ProjectReference Include="..\WorkFlowManagement.Application.Contracts\WorkFlowManagement.Application.Contracts.csproj" />
     <ProjectReference Include="..\WorkFlowManagement.Domain\WorkFlowManagement.Domain.csproj" />
   </ItemGroup>

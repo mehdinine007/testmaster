@@ -55,6 +55,7 @@
 	</ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\..\..\Permission\Permission.csproj" />
       <ProjectReference Include="..\..\..\..\shared\Authorization\Authorization.csproj" />
       <ProjectReference Include="..\..\..\..\shared\Extensions\Extensions.csproj" />
       <ProjectReference Include="..\..\..\payment\PaymentManagement.Application.Contracts\PaymentManagement.Application.Contracts.csproj" />

@@ -19,7 +19,8 @@ using System.ComponentModel.DataAnnotations;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Volo.Abp.ObjectMapping;
 using Microsoft.EntityFrameworkCore;
-
+using Permission.Order;
+using Permission.User;
 namespace UserManagement.Application.UserManagement.Implementations
 {
     public class RolePermissionService : ApplicationService, IRolePermissionService
@@ -92,16 +93,20 @@ namespace UserManagement.Application.UserManagement.Implementations
             {
                 await DeleteRolePermission(RolePermissionEnum.Customer, rolePermissions);
                 var serviceList = new List<string>();
-                var permission = permissions.Where(x => x.Code == ConstantInfo.ModuleIUser || x.Code == ConstantInfo.ModuleOrder).ToList();
-                foreach (var per in permission)
-                {
-                    var code = per.Children.Select(x => x.Code).ToList();
+             
 
-                    foreach (var child in per.Children)
-                    {
-                        serviceList.AddRange(child.Children.Select(c => c.Code).ToList());
-                    }
-                }
+                serviceList.Add(UserServicePermissionConstants.UpdateUserProfile);
+                serviceList.Add(UserServicePermissionConstants.ChangePassword);
+                serviceList.Add(UserServicePermissionConstants.GetUserProfile);
+                serviceList.Add(OrderAppServicePermissionConstants.GetCustomerOrderList);
+                serviceList.Add(OrderAppServicePermissionConstants.CommitOrder);
+                serviceList.Add(OrderAppServicePermissionConstants.CancelOrder);
+                serviceList.Add(AgencySaleDetailServicePermissionConstants.GetAgencySaleDetail);
+                serviceList.Add(OrderAppServicePermissionConstants.GetOrderDetailById);
+                serviceList.Add(OrderAppServicePermissionConstants.GetSaleDetailByUid);
+                serviceList.Add(OrderAppServicePermissionConstants.GetDetail);
+                serviceList.Add(BaseServicePermissionConstants.CheckBlackList);
+
                 rolePermission.Title = RolePermissionEnum.Customer.ToString();
                 rolePermission.Type = RolePermissionEnum.Customer;
                 rolePermission.Permissions = serviceList;

@@ -28,6 +28,7 @@ using Newtonsoft.Json;
 using MongoDB.Bson.Serialization;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using Esale.Share.Authorize;
+using Permission.Order;
 
 namespace OrderManagement.Application.OrderManagement;
 

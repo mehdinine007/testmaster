@@ -1,5 +1,4 @@
 ﻿using AdminPanelManagement.Application.AdminPanelManagement.Grpc;
-using AdminPanelManagement.Application.Contracts.AdminPanelManagement.Constants.Permissions;
 using AdminPanelManagement.Application.Contracts.AdminPanelManagement.Dtos;
 using AdminPanelManagement.Application.Contracts.AdminPanelManagement.Dtos.report;
 using AdminPanelManagement.Application.Contracts.AdminPanelManagement.IServices;
@@ -10,6 +9,7 @@ using AdminPanelManagement.EntityFrameworkCore.AdminPanelManagement.Repositories
 using Esale.Share.Authorize;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Permission.AdminPanel;
 using System;
 using System.Collections.Generic;
 using System.Linq;

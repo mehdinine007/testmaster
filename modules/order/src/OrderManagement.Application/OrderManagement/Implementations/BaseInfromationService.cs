@@ -20,6 +20,7 @@ using MongoDB.Bson;
 using IFG.Core.Caching;
 using Esale.Share.Authorize;
 using OrderManagement.Domain.Shared.OrderManagement.Enums;
+using Permission.Order;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 

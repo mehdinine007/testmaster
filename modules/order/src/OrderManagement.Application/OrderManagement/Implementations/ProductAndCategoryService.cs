@@ -22,7 +22,6 @@ using System.ComponentModel;
 using IFG.Core.Utility.Tools;
 using Volo.Abp.ObjectMapping;
 using Esale.Share.Authorize;
-using OrderManagement.Application.Contracts.OrderManagement.Constants.Permissions;
 using System.Linq.Dynamic.Core;
 using IFG.Core.IOC;
 using Microsoft.AspNetCore.Http;
@@ -32,6 +31,7 @@ using Microsoft.AspNetCore.Mvc;
 using OfficeOpenXml;
 using OrderManagement.Domain.OrderManagement.MongoWrite;
 using System.IO;
+using Permission.Order;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
