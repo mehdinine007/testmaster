@@ -49,6 +49,9 @@ namespace CompanyManagement.EfCore
                     .HasMaxLength(250);
 
                 entity.HasIndex(x => x.CompanyId);
+
+                entity.Property(x => x.RelatedToOrganization)
+                    .HasDefaultValue(false);
             });
 
             builder.Entity<UserRejectionFromBank>(entity =>

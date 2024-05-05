@@ -40,4 +40,6 @@ public class ClientsOrderDetailByCompany : FullAuditedEntity<long>
     public int FactorMonth { get; set; }
     public int FactorDay { get; set; }
     public int CompanyId { get; set; }
+
+    public bool RelatedToOrganization { get; set; }
 }

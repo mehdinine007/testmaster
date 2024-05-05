@@ -69,17 +69,22 @@ public class CompanyAppService : ApplicationService, ICompanyAppService
         if (userCompanyId <= 0)
             throw new UserFriendlyException(ValidationConstant.Forbiden, code: ValidationConstant.ForbidenId);
 
-        var companyIdFromInquiry = await _orderGrpcClientService.GetOrderById(clientsOrderDetailByCompanyDto.OrderId);
-        if (companyIdFromInquiry is null)
-            throw new UserFriendlyException(ValidationConstant.CompanyIdNotFound, code: ValidationConstant.CompanyIdNotFoundId);
-        if (userCompanyId != companyIdFromInquiry.OrganizationId)
-            throw new UserFriendlyException(ValidationConstant.OrderIsNotRelatedToThisCompany,
-                code: ValidationConstant.OrderIsNotRelatedToThisCompanyId);
+        if (!clientsOrderDetailByCompanyDto.RelatedToOrganization)
+        {
+            var companyIdFromInquiry = await _orderGrpcClientService.GetOrderById(clientsOrderDetailByCompanyDto.OrderId);
+            if (companyIdFromInquiry is null)
+                throw new UserFriendlyException(ValidationConstant.CompanyIdNotFound, code: ValidationConstant.CompanyIdNotFoundId);
+
+            if (userCompanyId != companyIdFromInquiry.OrganizationId)
+                throw new UserFriendlyException(ValidationConstant.OrderIsNotRelatedToThisCompany,
+                    code: ValidationConstant.OrderIsNotRelatedToThisCompanyId);
+        }
 
         var clientOrderDetailsByCompany = (await _clientsOrderDetailByCompanyRepository.GetQueryableAsync())
             .AsNoTracking()
             .Include(x => x.Paypaidprice)
-            .Where(x => x.OrderId == clientsOrderDetailByCompanyDto.OrderId)
+            .Where(x => x.OrderId == clientsOrderDetailByCompanyDto.OrderId &&
+                x.RelatedToOrganization == clientsOrderDetailByCompanyDto.RelatedToOrganization)
             .OrderByDescending(x => x.Id)
             .FirstOrDefault();
         if (clientOrderDetailsByCompany is not null)
