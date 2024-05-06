@@ -32,5 +32,13 @@
         public string Name { get; set; }
 
         public int? Priority { get; set; }
+
+        public string BirthCertId { get; set; }
+        public string Address { get; set; }
+        public DateTime BirthDate { get; set; }
+        public string BirthCityTitle { get; set; }
+        public string IssuingCityTitle { get; set; }
+        public string Tel { get; set; }
+        public string PostalCode { get; set; }
     }
 }

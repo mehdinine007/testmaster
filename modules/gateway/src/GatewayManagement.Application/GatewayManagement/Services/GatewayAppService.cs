@@ -40,6 +40,8 @@ namespace GatewayManagement.Application.Servicess
 
             return new() { Result = jresponse };
         }
+
+        #region HandShake      
         public async Task<OutputDto> HandShakeWithIranKish(IranKishHandShakeInputDto input)
         {
             WebHelper webHelper = new();
@@ -147,7 +149,8 @@ namespace GatewayManagement.Application.Servicess
                 input.ServiceCode,
                 input.ServiceType,
                 input.TerminalNumber,
-                NationalCode = !string.IsNullOrEmpty(input.NationalCode) ? AesOperation.EncryptString("0|" + input.NationalCode + "|12345678|", input.Key, input.IV) : string.Empty
+                NationalCode = !string.IsNullOrEmpty(input.NationalCode) ? AesOperation.EncryptString("0|" + input.NationalCode + "|12345678|", input.Key, input.IV) : string.Empty,
+                input.Pans
             });
 
             HttpContent queryString = new StringContent(requestJson, Encoding.UTF8, "application/json");
@@ -155,6 +158,9 @@ namespace GatewayManagement.Application.Servicess
             string jresponse = response.Content.ReadAsStringAsync().Result;
             return new() { Result = jresponse };
         }
+        #endregion
+
+        #region Verify    
         public async Task<OutputDto> VerifyToIranKish(IranKishVerifyInputDto input)
         {
             WebHelper webHelper = new();
@@ -213,6 +219,9 @@ namespace GatewayManagement.Application.Servicess
             string jresponse = response.Content.ReadAsStringAsync().Result;
             return new() { Result = jresponse };
         }
+        #endregion
+
+        #region Inquiry
         public async Task<OutputDto> InquiryToIranKish(IranKishInquiryInputDto input)
         {
             WebHelper webHelper = new();
@@ -271,6 +280,9 @@ namespace GatewayManagement.Application.Servicess
             string jresponse = response.Content.ReadAsStringAsync().Result;
             return new() { Result = jresponse };
         }
+        #endregion
+
+        #region Reverse
         public async Task<OutputDto> ReverseToIranKish(IranKishReverseInputDto input)
         {
             WebHelper webHelper = new();
@@ -329,5 +341,6 @@ namespace GatewayManagement.Application.Servicess
             string jresponse = response.Content.ReadAsStringAsync().Result;
             return new() { Result = jresponse };
         }
+        #endregion
     }
 }

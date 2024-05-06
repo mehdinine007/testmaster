@@ -61,7 +61,7 @@ public class OrderManagementController
 
     [RemoteService(IsEnabled = false)]
     public async Task<CustomerOrder_OrderDetailDto> GetSaleDetailByUid(Guid saleDetailUid, string attachmentEntityType, string attachmentlocation)
-        => await _orderAppService.GetSaleDetailByUid(saleDetailUid, EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(attachmentEntityType),EnumHelper.ConvertStringToEnum<AttachmentLocationEnum>(attachmentlocation));
+        => await _orderAppService.GetSaleDetailByUid(saleDetailUid, EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(attachmentEntityType), EnumHelper.ConvertStringToEnum<AttachmentLocationEnum>(attachmentlocation));
 
     [DisableAuditing]
     [HttpPost]
@@ -95,7 +95,6 @@ public class OrderManagementController
     public async Task RetryPaymentForVerify()
         => await _orderAppService.RetryPaymentForVerify();
     [HttpGet]
-    public async Task<List<ClientOrderDetailDto>> GetOrderDetailList(string nationalCode)
-        => await _orderAppService.GetOrderDetailList(nationalCode);
-
+    public async Task<List<ClientOrderDetailDto>> GetOrderDetailFromOrganizationList()
+        => await _orderAppService.GetOrderDetailFromOrganizationList();
 }

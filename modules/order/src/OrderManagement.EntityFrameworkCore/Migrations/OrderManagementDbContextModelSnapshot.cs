@@ -1120,6 +1120,9 @@ namespace OrderManagement.EfCore.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
+                    b.Property<string>("ContractNumber")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2")
                         .HasColumnName("CreationTime");
@@ -1178,6 +1181,9 @@ namespace OrderManagement.EfCore.Migrations
                     b.Property<int?>("PaymentId")
                         .HasColumnType("int");
 
+                    b.Property<long?>("PaymentPrice")
+                        .HasColumnType("bigint");
+
                     b.Property<int?>("PaymentSecret")
                         .HasColumnType("int");
 
@@ -1202,8 +1208,20 @@ namespace OrderManagement.EfCore.Migrations
                     b.Property<DateTime?>("SendToManufacturerDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("SignStatus")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("SignTicketId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("TrackingCode")
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime?>("TransactionCommitDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("TransactionId")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");

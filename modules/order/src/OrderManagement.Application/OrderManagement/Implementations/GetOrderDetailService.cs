@@ -20,7 +20,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
 
         public async Task<List<ClientOrderDetailDto>> GetOrderDetailList(string nationalCode)
         {
-            var orderDetails = await _companyGrpcClient.GetOrderDetailList(nationalCode);
+            var orderDetails = await _companyGrpcClient.GetOrderDetailList();
             return orderDetails;
         }
     }

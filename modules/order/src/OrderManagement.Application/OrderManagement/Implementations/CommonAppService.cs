@@ -387,6 +387,7 @@ public class CommonAppService : ApplicationService, ICommonAppService
             throw new UserFriendlyException("لطفا لاگین کنید");
 
 
+        
         return new Guid(userIdStr);
     }
 

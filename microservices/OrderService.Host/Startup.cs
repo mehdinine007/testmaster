@@ -82,6 +82,7 @@ namespace OrderService.Host
             services.AddSingleton<IRedisCacheManager, RedisCacheManager>();
             services.AddSingleton<ICapacityControlJob, CapacityControlJob>();
             services.AddSingleton<IIpgJob, IpgJob>();
+            services.AddSingleton<ISignJob, SignJob>();
             ServiceTool.Create(services);
         }
 

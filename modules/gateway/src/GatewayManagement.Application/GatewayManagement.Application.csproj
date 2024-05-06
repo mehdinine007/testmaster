@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <None Remove="GatewayManagement\Protos\GatewayGrpcService.proto" />
+    <None Remove="GatewayManagement\Protos\SignGrpcService.proto" />
     <None Remove="GatewayManagement\Protos\UserGrpcService.proto" />
   </ItemGroup>
 
@@ -36,6 +37,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Protobuf Include="GatewayManagement\Protos\SignGrpcService.proto" GrpcServices="Server">
+      <GrpcService>Server</GrpcService>
+    </Protobuf>
     <Protobuf Include="GatewayManagement\Protos\UserGrpcService.proto">
 	  <GrpcService>Server</GrpcService>
 	  </Protobuf>
