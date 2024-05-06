@@ -101,7 +101,10 @@ namespace GatewayManagement.Application.GatewayManagement.Services.SendBox
             return new InquirySignOutputDto
             {
                 Message = result.message,
-                Success = result.Success
+                Success = result.Success,
+                State="",
+                DocumentLink="",
+                SignedDocumentLink="",
             };
         }
         public async Task<SendBoxServiceDto> SendService(SendBoxServiceInput sendBoxService)
