@@ -1654,4 +1654,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
         return clientOrderDetailDto;
 
     }
+
+    public async Task<bool> ExistsWinner(string natinalCode)
+    {
+        throw new NotImplementedException();
+    }
 }
