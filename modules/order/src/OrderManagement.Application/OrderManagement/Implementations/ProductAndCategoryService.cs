@@ -243,29 +243,28 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
             productAndCategoryQuery = productAndCategoryQuery.Where(x => x.OrganizationId == input.OrganizationId);
 
         var attachments = new List<AttachmentDto>();
-        switch (input.Type)
+        if (input.Type is null || input.Type == ProductAndCategoryType.Category)
         {
-            case ProductAndCategoryType.Category:
-                var parent = productAndCategoryQuery
-                    .Include(x => x.Childrens.Where(y => y.Type == ProductAndCategoryType.Category))
-                    .Where(x => EF.Functions.Like(x.Code, input.NodePath + "%") && x.Type == ProductAndCategoryType.Category)
+            var parent = productAndCategoryQuery
+                .Include(x => x.Childrens.Where(y => (input.Type == null || y.Type == ProductAndCategoryType.Category)))
+                .Where(x => EF.Functions.Like(x.Code, input.NodePath + "%") && (input.Type == null || x.Type == ProductAndCategoryType.Category))
+                .ToList();
+            attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, parent.Select(x => x.Id).ToList(), EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(input.attachmentType), EnumHelper.ConvertStringToEnum<AttachmentLocationEnum>(input.attachmentlocation));
+            ls = string.IsNullOrWhiteSpace(input.NodePath)
+                ? parent.Where(x => x.ParentId == null).ToList()
+                : parent.Where(x => x.Code != input.NodePath).ToList();
+            if (input.ProductLevelId != null && input.ProductLevelId > 0)
+                ls = ls.Where(x => x.ProductLevelId == input.ProductLevelId)
                     .ToList();
-                attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, parent.Select(x => x.Id).ToList(), EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(input.attachmentType), EnumHelper.ConvertStringToEnum<AttachmentLocationEnum>(input.attachmentlocation));
-                ls = string.IsNullOrWhiteSpace(input.NodePath)
-                    ? parent.Where(x => x.ParentId == null).ToList()
-                    : parent.Where(x => x.Code != input.NodePath).ToList();
-                if (input.ProductLevelId != null && input.ProductLevelId > 0)
-                    ls = ls.Where(x => x.ProductLevelId == input.ProductLevelId)
-                        .ToList();
-                break;
-            case ProductAndCategoryType.Product:
-                ls = productAndCategoryQuery.Where(x => EF.Functions.Like(x.Code, input.NodePath + "%") && x.Type == ProductAndCategoryType.Product).ToList();
-                if (input.AdvancedSearch != null && input.AdvancedSearch.Count > 0)
-                {
-                    ls = await GetProductFilter(input.AdvancedSearch, ls);
-                }
-                attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, ls.Select(x => x.Id).ToList(), EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(input.attachmentType), EnumHelper.ConvertStringToEnum<AttachmentLocationEnum>(input.attachmentlocation));
-                break;
+        }
+        else if (input.Type == ProductAndCategoryType.Product)
+        {
+            ls = productAndCategoryQuery.Where(x => EF.Functions.Like(x.Code, input.NodePath + "%") && x.Type == ProductAndCategoryType.Product).ToList();
+            if (input.AdvancedSearch != null && input.AdvancedSearch.Count > 0)
+            {
+                ls = await GetProductFilter(input.AdvancedSearch, ls);
+            }
+            attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, ls.Select(x => x.Id).ToList(), EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(input.attachmentType), EnumHelper.ConvertStringToEnum<AttachmentLocationEnum>(input.attachmentlocation));
         }
         var productAndCategories = ObjectMapper.Map<List<ProductAndCategory>, List<ProductAndCategoryWithChildDto>>(ls);
         productAndCategories = await FillAttachmentAndProperty(productAndCategories, attachments, input.HasProperty);

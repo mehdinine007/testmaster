@@ -7,12 +7,20 @@ parameters:
     type: string
 
 steps:
+- task: NuGetAuthenticate@1
+  displayName: 'Nuget Authentication'
+  inputs:
+    forceReinstallCredentialProvider: true
+
 - task: DotNetCoreCLI@2
   displayName: 'Dotnet Restore .csproj files'
   inputs:
     command: restore
+    # restoreArguments: '--force'
     projects: ${{ parameters.project }}
-    verbosityRestore: minimal
+    verbosityRestore: Minimal
+    nugetConfigPath: 'nuget.config'
+    feedsToUse: 'config'
 
 - task: DotNetCoreCLI@2
   displayName: 'Dotnet build .csproj files'

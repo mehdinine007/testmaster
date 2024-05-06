@@ -54,10 +54,16 @@ public class CustomerOrder_OrderDetailDto
 
     public ProductAndCategoryViewModel Product { get; set; }
 
-    public string CompanyName { get; set; }
-    public int Id { get; set; }
-    public int SaleId { get; set; }
-    public string TrackingCode { get; set; }
+        public string CompanyName { get; set; }
+        public int Id { get; set; }
+        public int SaleId { get; set; }
+        public string TrackingCode { get; set; }
+        public Guid? SignTicketId { get; set; }
+        public SignStatusEnum? SignStatusId { get; set; }
+        public string SignStatusTitle { get; set; }
+        public long? PaymentPrice { get; set; }
+
+    
 
 }
 public class CustomerOrder_OrderDetailTreeDto

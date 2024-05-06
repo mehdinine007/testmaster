@@ -1,13 +1,6 @@
-﻿using Azure.Core;
-using Esale.UserServiceGrpc;
+﻿using Esale.UserServiceGrpc;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UserManagement.Application.Contracts.Models;
 using UserManagement.Application.Contracts.Services;
 using UserManagement.Application.Contracts.UserManagement.Services;
 using UserManagement.Domain.Shared.UserManagement.Enums;
@@ -35,11 +28,11 @@ namespace UserManagement.Application.UserManagement.Implementations
 
         public override async Task<UserDataAccessResponse> GetUDAByNationalCode(GetUDAByNationalCodeRequest request, ServerCallContext context)
         {
-            var getUserDataAccess = await _userDataAccessService.GetListByNationalcode(request.NationalCode,(RoleTypeEnum)request.Type);
+            var getUserDataAccess = await _userDataAccessService.GetListByNationalcode(request.NationalCode, (RoleTypeEnum)request.Type);
             var userDataAccess = new UserDataAccessResponse();
-            userDataAccess.UserDataAccessModel.AddRange(getUserDataAccess.Select(x=> new UserDataAccessModel
+            userDataAccess.UserDataAccessModel.AddRange(getUserDataAccess.Select(x => new UserDataAccessModel
             {
-                UserId = x.UserId !=null ? x.UserId.ToString():""  ,
+                UserId = x.UserId != null ? x.UserId.ToString() : "",
                 Nationalcode = x.Nationalcode,
                 RoleTypeId = (int)x.RoleTypeId,
                 Data = x.Data
@@ -70,7 +63,7 @@ namespace UserManagement.Application.UserManagement.Implementations
             return Task.FromResult(new UserAdvocacy()
             {
                 AccountNumber = userAdvocacy.AccountNumber,
-                BankId = userAdvocacy.BankId??0,
+                BankId = userAdvocacy.BankId ?? 0,
                 ShebaNumber = userAdvocacy.ShebaNumber,
                 //GenderCode = userAdvocacy.GenderCode
             });
@@ -78,7 +71,7 @@ namespace UserManagement.Application.UserManagement.Implementations
 
         public override async Task<UserModel> GetUserById(GetUserModel request, ServerCallContext context)
         {
-                       try
+            try
             {
                 var user = await _baseInformationSevice.GetUserByIdAsync(request.UserId);
                 if (user == null)
@@ -87,7 +80,7 @@ namespace UserManagement.Application.UserManagement.Implementations
                 return new UserModel()
                 {
                     AccountNumber = user.AccountNumber,
-                    BankId = user.BankId == null? 0: (int)user.BankId,
+                    BankId = user.BankId == null ? 0 : (int)user.BankId,
                     BirthCityId = user.BirthCityId,
                     BirthProvinceId = user.BirthProvinceId,
                     HabitationCityId = user.HabitationCityId,
@@ -103,6 +96,13 @@ namespace UserManagement.Application.UserManagement.Implementations
                     SurName = user.SurName,
                     Uid = user.Uid,
                     Priority = user.Priority,
+                    BirthCertId = user.BirthCertId,
+                    Address = user.Address,
+                    BirthDate = user.BirthDate.ToUniversalTime().ToTimestamp(),
+                    BirthCityTitle = user.BirthCityTitle,
+                    IssuingCityTitle= user.IssuingCityTitle,
+                    PostalCode= user.PostalCode,
+                    Tel = user.Tel,
                 };
             }
             catch (Exception)

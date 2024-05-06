@@ -19,20 +19,21 @@ namespace PaymentManagement.Application.PaymentManagement.Services
 
         public override Task<PaymentInformationResponse> GetPaymentInformation(PaymentInformationRequest request, ServerCallContext context)
         {
-            
+
             var paymentInformation = _paymentAppService.GetPaymentInfo(request.PaymentId);
             if (paymentInformation == null)
                 throw new InvalidOperationException();
             return Task.FromResult(new PaymentInformationResponse()
             {
                 PaymentId = paymentInformation.PaymentId,
-                TransactionCode  = paymentInformation.TransactionCode,
+                TransactionCode = paymentInformation.TransactionCode,
                 TransactionDate = Timestamp.FromDateTimeOffset(paymentInformation.TransactionDate),
-                TransactionPersianDate =  paymentInformation.TransactionPersianDate,
-                PaymentStatusId = paymentInformation.PaymentStatusId
+                TransactionPersianDate = paymentInformation.TransactionPersianDate,
+                PaymentStatusId = paymentInformation.PaymentStatusId,
+                Amount = decimal.ToInt64(paymentInformation.Amount)
             });
         }
-        public override Task<PaymentStatusViewModel> GetPaymentStatusList(PaymentGetStatusDto paymentStatusDto,ServerCallContext context)
+        public override Task<PaymentStatusViewModel> GetPaymentStatusList(PaymentGetStatusDto paymentStatusDto, ServerCallContext context)
         {
             var paymentStatus = _paymentAppService.InquiryWithFilterParam(paymentStatusDto.RelationId, paymentStatusDto.RelationIdB, paymentStatusDto.RelationIdC, paymentStatusDto.RelationIdD
                 , paymentStatusDto.IsRelationIdGroup
@@ -68,10 +69,10 @@ namespace PaymentManagement.Application.PaymentManagement.Services
                 Count = x.Count,
                 Message = x.Message,
                 Status = x.Status,
-                F1 = x.filterParam1 == null ? 0: (int)x.filterParam1,
-                F2 = x.filterParam2 == null ? 0: (int)x.filterParam2,
-                F3 = x.filterParam3 == null ? 0: (int)x.filterParam3,
-                F4 = x.filterParam4 == null ? 0: (int)x.filterParam4,
+                F1 = x.filterParam1 == null ? 0 : (int)x.filterParam1,
+                F2 = x.filterParam2 == null ? 0 : (int)x.filterParam2,
+                F3 = x.filterParam3 == null ? 0 : (int)x.filterParam3,
+                F4 = x.filterParam4 == null ? 0 : (int)x.filterParam4,
 
             }).ToList());
             return Task.FromResult(paymentViewModel);

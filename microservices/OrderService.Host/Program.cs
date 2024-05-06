@@ -6,6 +6,7 @@ using Microsoft.Extensions.Hosting;
 using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.Elasticsearch;
+using Stimulsoft.Base;
 
 namespace OrderService.Host
 {
@@ -13,7 +14,6 @@ namespace OrderService.Host
     {
         public static int Main(string[] args)
         {
-            //TODO: Temporary: it's not good to read appsettings.json here just to configure logging
             var environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 
             var configuration = new ConfigurationBuilder()

@@ -20,6 +20,7 @@
         <PackageReference Include="AspNetCore.HealthChecks.UI" Version="7.0.0" />
         <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="7.0.0" />
         <PackageReference Include="AspNetCore.HealthChecks.Uris" Version="7.0.0" />
+        <PackageReference Include="FastReport.OpenSource.Export.PdfSimple" Version="2024.2.1" />
         <PackageReference Include="Hangfire.SqlServer" Version="1.7.29" />
         <PackageReference Include="Serilog.AspNetCore" Version="6.1.0" />
         <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
@@ -68,9 +69,35 @@
     </ItemGroup>
 
     <ItemGroup>
+      <None Remove="Reports\RptContractForm.frx" />
+      <None Remove="Reports\RptContractForm.mrt" />
+      <None Remove="Reports\RptFactor.frx" />
+      <None Remove="Reports\RptFactor.mrt" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="Reports\RptContractForm.frx">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="Reports\RptContractForm.mrt">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="Reports\RptFactor.frx">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="Reports\RptFactor.mrt">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
+
+    <ItemGroup>
       <Content Update="web.config">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
     </ItemGroup>
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+		<Exec Command="xcopy /y /d &quot;$(ProjectDir)ExteraPackages\*.*&quot; &quot;$(ProjectDir)$(OutDir)&quot;" />
+	</Target>
+
 
 </Project>

@@ -23,6 +23,7 @@ namespace OrderManagement.Application.Contracts.Services
 
         Task InsertUserRejectionAdvocacyPlan(string userSmsCode);
         Task UpdateStatus(CustomerOrderDto customerOrderDto);
+        Task UpdateSignStatus(CustomerOrderDto customerOrderDto);
         Task<List<CustomerOrderReportDto>> GetCompaniesCustomerOrders();
 
         Task<List<CustomerOrderPriorityUserDto>> GetCustomerInfoPriorityUser();
@@ -37,6 +38,10 @@ namespace OrderManagement.Application.Contracts.Services
         Task<IPaymentResult> CheckoutPayment(IPgCallBackRequest callBackRequest);
 
         Task<bool> NationalCodeExistsInPriority(string nationalCode);
-        public Task<List<ClientOrderDetailDto>> GetOrderDetailList(string nationalCode);
+        Task<List<ClientOrderDetailDto>> GetOrderDetailFromOrganizationList();
+
+        Task<OrderDetailDto> GetReportOrderDetail(int id);
+
+        Task<bool> ExistsWinner(string natinalCode);
     }
 }

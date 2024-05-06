@@ -4,7 +4,7 @@ namespace OrderManagement.Application.Contracts
 {
     public class ProductAndCategoryGetListQueryDto
     {
-        public ProductAndCategoryType Type { get; set; }
+        public ProductAndCategoryType? Type { get; set; }
         public string NodePath { get; set; }
         public int? ProductLevelId { get; set; }
         public List<AdvancedSearchDto> AdvancedSearch { get; set; }
