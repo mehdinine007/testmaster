@@ -42,6 +42,6 @@ namespace OrderManagement.Application.Contracts.Services
 
         Task<OrderDetailDto> GetReportOrderDetail(int id);
 
-        Task<bool> ExistsWinner(string natinalCode);
+        Task<bool> ExistsWinnerByNationalCode(string nationalCode);
     }
 }

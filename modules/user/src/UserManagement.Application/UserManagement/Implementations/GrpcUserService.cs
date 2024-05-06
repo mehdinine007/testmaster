@@ -54,6 +54,41 @@ namespace UserManagement.Application.UserManagement.Implementations
             return userDataAccess;
         }
 
+        public override async Task<UserModel> GetUserByNationalCode(GetUserByNationalCodeRequest request, ServerCallContext context)
+        {
+            var user = await _baseInformationSevice.GetUserByNationalCode(request.NationalCode);
+            if (user == null)
+                return new UserModel();
+
+            return new UserModel()
+            {
+                AccountNumber = user.AccountNumber,
+                BankId = user.BankId == null ? 0 : (int)user.BankId,
+                BirthCityId = user.BirthCityId,
+                BirthProvinceId = user.BirthProvinceId,
+                HabitationCityId = user.HabitationCityId,
+                HabitationProvinceId = user.HabitationProvinceId,
+                IssuingCityId = user.IssuingCityId,
+                IssuingProvinceId = user.IssuingProvinceId,
+                NationalCode = user.NationalCode,
+                Shaba = user.Shaba,
+                MobileNumber = user.MobileNumber,
+                GenderCode = user.GenderCode,
+                CompanyId = user.CompanyId,
+                Name = user.Name,
+                SurName = user.SurName,
+                Uid = user.Uid,
+                Priority = user.Priority,
+                BirthCertId = user.BirthCertId,
+                Address = user.Address,
+                BirthDate = user.BirthDate.ToUniversalTime().ToTimestamp(),
+                BirthCityTitle = user.BirthCityTitle,
+                IssuingCityTitle = user.IssuingCityTitle,
+                PostalCode = user.PostalCode,
+                Tel = user.Tel,
+            };
+        }
+
         public override Task<UserAdvocacy> GetUserAdvocacy(UserAdvocacyRequest request, ServerCallContext context)
         {
             var userAdvocacy = _bankAppService.CheckAdvocacy(request.NationalCode);
@@ -71,48 +106,42 @@ namespace UserManagement.Application.UserManagement.Implementations
 
         public override async Task<UserModel> GetUserById(GetUserModel request, ServerCallContext context)
         {
-            try
+            var user = await _baseInformationSevice.GetUserByIdAsync(request.UserId);
+            if (user == null)
+                return new UserModel();
+
+            return new UserModel()
             {
-                var user = await _baseInformationSevice.GetUserByIdAsync(request.UserId);
-                if (user == null)
-                    return new UserModel();
-
-                return new UserModel()
-                {
-                    AccountNumber = user.AccountNumber,
-                    BankId = user.BankId == null ? 0 : (int)user.BankId,
-                    BirthCityId = user.BirthCityId,
-                    BirthProvinceId = user.BirthProvinceId,
-                    HabitationCityId = user.HabitationCityId,
-                    HabitationProvinceId = user.HabitationProvinceId,
-                    IssuingCityId = user.IssuingCityId,
-                    IssuingProvinceId = user.IssuingProvinceId,
-                    NationalCode = user.NationalCode,
-                    Shaba = user.Shaba,
-                    MobileNumber = user.MobileNumber,
-                    GenderCode = user.GenderCode,
-                    CompanyId = user.CompanyId,
-                    Name = user.Name,
-                    SurName = user.SurName,
-                    Uid = user.Uid,
-                    Priority = user.Priority,
-                    BirthCertId = user.BirthCertId,
-                    Address = user.Address,
-                    BirthDate = user.BirthDate.ToUniversalTime().ToTimestamp(),
-                    BirthCityTitle = user.BirthCityTitle,
-                    IssuingCityTitle= user.IssuingCityTitle,
-                    PostalCode= user.PostalCode,
-                    Tel = user.Tel,
-                };
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-
+                AccountNumber = user.AccountNumber,
+                BankId = user.BankId == null ? 0 : (int)user.BankId,
+                BirthCityId = user.BirthCityId,
+                BirthProvinceId = user.BirthProvinceId,
+                HabitationCityId = user.HabitationCityId,
+                HabitationProvinceId = user.HabitationProvinceId,
+                IssuingCityId = user.IssuingCityId,
+                IssuingProvinceId = user.IssuingProvinceId,
+                NationalCode = user.NationalCode,
+                Shaba = user.Shaba,
+                MobileNumber = user.MobileNumber,
+                GenderCode = user.GenderCode,
+                CompanyId = user.CompanyId,
+                Name = user.Name,
+                SurName = user.SurName,
+                Uid = user.Uid,
+                Priority = user.Priority,
+                BirthCertId = user.BirthCertId,
+                Address = user.Address,
+                BirthDate = user.BirthDate.ToUniversalTime().ToTimestamp(),
+                BirthCityTitle = user.BirthCityTitle,
+                IssuingCityTitle = user.IssuingCityTitle,
+                PostalCode = user.PostalCode,
+                Tel = user.Tel,
+            };
 
         }
+
+        
+
         public override async Task<AuthenticateResponse> Authenticate(AuthenticateRequest request, ServerCallContext context)
         {
             var model = new AuthenticateModel()

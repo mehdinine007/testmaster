@@ -256,4 +256,67 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
         return zipCodeInquiry;
     }
 
+    public async Task<UserGrpcDto> GetUserByNationalCode(string nationalCode)
+    {
+        var userQueryable = await _userMongoRepository.GetQueryableAsync();
+        var user = userQueryable
+            .Select(x => new
+            {
+                x.AccountNumber,
+                x.BankId,
+                x.BirthCityId,
+                x.BirthProvinceId,
+                x.HabitationCityId,
+                x.HabitationProvinceId,
+                x.IssuingCityId,
+                x.IssuingProvinceId,
+                x.Mobile,
+                x.NationalCode,
+                x.Shaba,
+                x.CompanyId,
+                x.Gender,
+                x.Name,
+                x.Surname,
+                x.UID,
+                x.Priority,
+                x.BirthCertId,
+                x.Address,
+                x.BirthDate,
+                x.Tel,
+                x.PostalCode
+            })
+            .FirstOrDefault(x => x.NationalCode == nationalCode);
+
+        if (user == null)
+            return null;
+
+        var usergrpcdto = new UserGrpcDto
+        {
+            AccountNumber = user.AccountNumber,
+            BankId = user.BankId,
+            BirthCityId = user.BirthCityId,
+            BirthProvinceId = user.BirthProvinceId,
+            HabitationCityId = user.HabitationCityId,
+            HabitationProvinceId = user.HabitationProvinceId,
+            IssuingCityId = user.IssuingCityId,
+            IssuingProvinceId = user.IssuingProvinceId,
+            MobileNumber = user.Mobile,
+            NationalCode = user.NationalCode,
+            Shaba = user.Shaba,
+            GenderCode = (int)user.Gender,
+            CompanyId = user.CompanyId,
+            SurName = user.Surname,
+            Name = user.Name,
+            Uid = user.UID,
+            Priority = user.Priority,
+            Address = user.Address,
+            BirthCertId = user.BirthCertId,
+            BirthDate = user.BirthDate,
+            Tel = user.Tel,
+            PostalCode = user.PostalCode,
+            BirthCityTitle = string.Empty,
+            IssuingCityTitle = string.Empty
+        };
+        return usergrpcdto;
+    }
 }

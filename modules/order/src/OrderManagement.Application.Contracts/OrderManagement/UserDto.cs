@@ -40,5 +40,6 @@
         public string IssuingCityTitle { get; set; }
         public string Tel { get; set; }
         public string PostalCode { get; set; }
+        public Guid Uid { get; set; }
     }
 }

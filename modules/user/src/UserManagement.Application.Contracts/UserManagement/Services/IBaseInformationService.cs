@@ -10,6 +10,7 @@ public interface IBaseInformationService : IApplicationService
 
     Task<bool> CheckWhiteListAsync(WhiteListEnumType whiteListEnumType, string Nationalcode);
     Task<UserGrpcDto> GetUserByIdAsync(string userId);
+    Task<UserGrpcDto> GetUserByNationalCode(string nationalCode);
     Task<bool> RegistrationValidationAsync(RegistrationValidationDto input);
     Task<string> AddressInquiry(AddressInquiryDto input);
 }

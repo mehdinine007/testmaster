@@ -76,6 +76,50 @@ public class EsaleGrpcClient : ApplicationService, IEsaleGrpcClient
 
         return userDto;
     }
+
+    public async Task<UserDto> GetUserByNationalCode(string nationalCode)
+    {
+        var httpHandler = new HttpClientHandler();
+        httpHandler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+        var channel = GrpcChannel.ForAddress(_configuration.GetValue<string>("Esale:GrpcAddress"), new GrpcChannelOptions { HttpHandler = httpHandler });
+
+        var client = new UserServiceGrpc.UserServiceGrpcClient(channel);
+
+        var user = await client.GetUserByNationalCodeAsync(new() { NationalCode = nationalCode });
+
+        if (string.IsNullOrEmpty(user.Uid))
+            return null;
+        var userDto = new UserDto
+        {
+            AccountNumber = user.AccountNumber,
+            BankId = user.BankId,
+            BirthCityId = user.BirthCityId,
+            BirthProvinceId = user.BirthProvinceId,
+            HabitationCityId = user.HabitationCityId,
+            HabitationProvinceId = user.HabitationProvinceId,
+            IssuingCityId = user.IssuingCityId,
+            IssuingProvinceId = user.IssuingProvinceId,
+            NationalCode = user.NationalCode,
+            Shaba = user.Shaba,
+            MobileNumber = user.MobileNumber,
+            GenderCode = user.GenderCode,
+            CompanyId = user.CompanyId,
+            Name = user.Name,
+            SurName = user.SurName,
+            Priority = user.Priority,
+            Tel = user.Tel,
+            IssuingCityTitle = user.IssuingCityTitle,
+            PostalCode = user.PostalCode,
+            BirthDate = user.BirthDate.ToDateTime(),
+            BirthCertId = user.BirthCertId,
+            Address = user.Address,
+            BirthCityTitle = user.BirthCityTitle,
+            Uid = Guid.Parse(user.Uid)
+        };
+
+        return userDto;
+    }
+
     public async Task<AdvocacyUserDto> GetUserAdvocacyByNationalCode(string nationlCode)
     {
         var httpHandler = new HttpClientHandler();
@@ -324,4 +368,5 @@ public class EsaleGrpcClient : ApplicationService, IEsaleGrpcClient
         }).ToList();
         return _ret;
     }
+
 }

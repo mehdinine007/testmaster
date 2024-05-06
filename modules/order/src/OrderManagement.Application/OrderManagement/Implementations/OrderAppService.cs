@@ -1655,8 +1655,14 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
     }
 
-    public async Task<bool> ExistsWinner(string natinalCode)
+    public async Task<bool> ExistsWinnerByNationalCode(string nationalCode)
     {
-        throw new NotImplementedException();
+        var user = await _esaleGrpcClient.GetUserByNationalCode(nationalCode);
+        if (user is null)
+            return true;
+        var _ret = (await _commitOrderRepository.GetQueryableAsync())
+            .AsNoTracking()
+            .Any(x => x.UserId == user.Uid && x.OrderStatus == OrderStatusType.Winner);
+        return _ret;
     }
 }

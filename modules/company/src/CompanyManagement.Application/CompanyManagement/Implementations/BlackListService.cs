@@ -1,6 +1,8 @@
 ﻿using CompanyManagement.Application.Contracts.CompanyManagement;
 using CompanyManagement.Application.Contracts.CompanyManagement.Dto;
+using CompanyManagement.Application.Contracts.CompanyManagement.Enums;
 using CompanyManagement.Application.Contracts.CompanyManagement.Services;
+using CompanyManagement.Application.Contracts.Services;
 using CompanyManagement.Domain.CompanyManagement;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -18,10 +20,12 @@ namespace CompanyManagement.Application.CompanyManagement.Implementations
     {
 
         private readonly IRepository<ClientsOrderDetailByCompany, long> _clientsOrderDetailByCompanyRepository;
+        private readonly IOrderGrpcClientService _orderGrpcClientService;
         public BlackListService(
-            IRepository<ClientsOrderDetailByCompany, long> clientsOrderDetailByCompanyRepository)
+            IRepository<ClientsOrderDetailByCompany, long> clientsOrderDetailByCompanyRepository, IOrderGrpcClientService orderGrpcClientService)
         {
             _clientsOrderDetailByCompanyRepository = clientsOrderDetailByCompanyRepository;
+            _orderGrpcClientService = orderGrpcClientService;
         }
 
         public async Task<bool> Inquiry(string nationalCode)
@@ -34,8 +38,10 @@ namespace CompanyManagement.Application.CompanyManagement.Implementations
             {
                 return false;
             }
-            return clientsOrderDetailByCompany.Paypaidprice.Any();
-           
+            if (clientsOrderDetailByCompany.Paypaidprice.Any())
+                return true;
+            var _hasWinner = await _orderGrpcClientService.ExistsWinnerByNationalCode(nationalCode,GrpcProviderEnum.External);
+            return _hasWinner;
         }
     }
 }

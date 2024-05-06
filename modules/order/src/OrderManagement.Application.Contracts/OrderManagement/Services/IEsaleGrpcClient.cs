@@ -7,6 +7,7 @@ namespace OrderManagement.Application.Contracts.Services
     public interface IEsaleGrpcClient : IApplicationService
     {
         Task<UserDto> GetUserId(string userId);
+        Task<UserDto> GetUserByNationalCode(string nationalCode);
         Task<AdvocacyUserDto> GetUserAdvocacyByNationalCode(string nationlCode);
         Task<PaymentInformationResponseDto> GetPaymentInformation(int paymentId);
         Task<List<PaymentStatusModel>> GetPaymentStatusList(PaymentStatusDto paymentStatusDto);
