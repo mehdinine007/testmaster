@@ -32,7 +32,7 @@ namespace CompanyManagement.Application.CompanyManagement.Implementations
                             .FirstOrDefault(x => x.NationalCode == nationalCode);
             if (clientsOrderDetailByCompany is  null)
             {
-                throw new UserFriendlyException(CompanyConstants.ClientsOrderDetailByCompanyNotFound, CompanyConstants.ClientsOrderDetailByCompanyNotFoundId);
+                return false;
             }
             return clientsOrderDetailByCompany.Paypaidprice.Any();
            
