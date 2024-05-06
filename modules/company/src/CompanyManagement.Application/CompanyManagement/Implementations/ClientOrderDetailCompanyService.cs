@@ -1,5 +1,4 @@
 ﻿using CompanyManagement.Application.Contracts.CompanyManagement;
-using CompanyManagement.Application.Contracts.CompanyManagement.Constants.Permissions;
 using CompanyManagement.Application.Contracts.CompanyManagement.Dto;
 using CompanyManagement.Application.Contracts.CompanyManagement.Services;
 using CompanyManagement.Domain.CompanyManagement;

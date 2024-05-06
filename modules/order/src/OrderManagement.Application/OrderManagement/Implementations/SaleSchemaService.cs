@@ -18,6 +18,7 @@ using Volo.Abp.Domain.Repositories;
 using Volo.Abp.ObjectMapping;
 using Volo.Abp.Uow;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Model;
+using Permission.Order;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 

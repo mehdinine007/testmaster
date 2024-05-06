@@ -36,6 +36,7 @@ using IFG.Core.Utility.Tools;
 using UserManagement.Domain.UserManagement.Enums;
 using Abp.Runtime.Caching;
 using IFG.Core.Validation;
+using Permission.User;
 #endregion
 
 namespace UserManagement.Application.UserManagement.Implementations;

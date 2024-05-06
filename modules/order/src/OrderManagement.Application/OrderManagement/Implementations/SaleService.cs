@@ -17,6 +17,7 @@ using OrderManagement.Domain.Shared;
 using OrderManagement.Application.Contracts.OrderManagement;
 using IFG.Core.Utility.Tools;
 using Esale.Share.Authorize;
+using Permission.Order;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
