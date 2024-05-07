@@ -12,6 +12,8 @@ public class CompanyServicePermissionConstants
     public const string SubmitOrderInformations_DisplayName = "ثبت اطلاعات سفارش";
     public const string GetRecentCustomerAndOrder = ConstantInfo.ModuleCompany + ServiceIdentifier + "0004";
     public const string GetRecentCustomerAndOrder_DisplayName = "گرفتن اطلاعات مشتریان برای شرکت های خودرو ساز";
+    public const string SaveOrderInformation = ConstantInfo.ModuleCompany + ServiceIdentifier + "0005";
+    public const string SaveOrderInformation_DisplayName = "ثبت اطلاعات سفارش به صورت تکی";
 
 
     public const string ServiceIdentifier = "0001";

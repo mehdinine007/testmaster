@@ -65,6 +65,11 @@
       "Id": "20240214082855_company-shamsidate",
       "Priority": 4,
       "Version": "4.2.0"
+    },
+    {
+      "Id": "20240505114906_Update_ClientOrderDetailById",
+      "Priority": 4,
+      "Version": "4.2.0"
     }
   ]
 }

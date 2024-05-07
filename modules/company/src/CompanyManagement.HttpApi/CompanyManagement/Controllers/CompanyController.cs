@@ -21,10 +21,11 @@ public class CompanyController : Controller
     private readonly ICompanyAppService _companyAppService;
     private readonly IClientOrderDetailCompanyService _clientOrderDetailCompanyService;
     public CompanyController(ICompanyAppService companyAppService, IClientOrderDetailCompanyService clientOrderDetailCompanyService)
-    { _companyAppService = companyAppService;
+    {
+        _companyAppService = companyAppService;
         _clientOrderDetailCompanyService = clientOrderDetailCompanyService;
     }
-        
+
     [HttpPost]
     public List<CustomersWithCars> GetCustomersAndCars(GetCustomersAndCarsDto input)
     => _companyAppService.GetCustomersAndCars(input);
@@ -42,4 +43,11 @@ public class CompanyController : Controller
     [HttpGet]
     public async Task<CompaniesCustomerDto> GetRecentCustomerAndOrder(string nationalCode, int saleId)
         => await _companyAppService.GetRecentCustomerAndOrder(nationalCode, saleId);
+
+    [HttpPost]
+    public async Task<bool> SaveOrderInformation(ClientsOrderDetailByCompanyDto request)
+    {
+        await _companyAppService.SaveOrderInformation(request);
+        return true;
+    }
 }

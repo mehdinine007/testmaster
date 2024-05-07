@@ -1,27 +1,28 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFramework>net7.0</TargetFramework>
-        <RootNamespace />
-    </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net7.0</TargetFramework>
+		<RootNamespace />
+	</PropertyGroup>
 
 	<PropertyGroup>
 		<RootNamespace>OrderManagement.Application</RootNamespace>
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <Compile Remove="CompanyManagement\**" />
-	  <EmbeddedResource Remove="CompanyManagement\**" />
-	  <None Remove="CompanyManagement\**" />
+		<Compile Remove="CompanyManagement\**" />
+		<EmbeddedResource Remove="CompanyManagement\**" />
+		<None Remove="CompanyManagement\**" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <None Remove="OrderManagement\Protos\CompanyServiceClient.proto" />
-	  <None Remove="OrderManagement\Protos\PaymentGrpcService.proto" />
+		<None Remove="OrderManagement\Protos\CompanyServiceClient.proto" />
+		<None Remove="OrderManagement\Protos\OrderGrpcService.proto" />
+		<None Remove="OrderManagement\Protos\PaymentGrpcService.proto" />
 	  <None Remove="OrderManagement\Protos\SignGrpcClientService.proto" />
 	</ItemGroup>
 
-    <ItemGroup>
+	<ItemGroup>
 		<PackageReference Include="EPPlus" Version="6.2.10" />
 		<PackageReference Include="FastReport.OpenSource" Version="2024.2.1" />
 		<PackageReference Include="FastReport.OpenSource.Export.PdfSimple" Version="2024.2.1" />
@@ -30,10 +31,10 @@
 		<PackageReference Include="google.protobuf" Version="3.22.4" />
 		<PackageReference Include="grpc.net.client" Version="2.53.0" />
 		<PackageReference Include="grpc.tools" Version="2.54.0" />
+		<PackageReference Include="Volo.Abp.AutoMapper" Version="7.2.1" />
         <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
 		<PackageReference Include="Stimulsoft.Reports.Engine.NetCore" Version="2020.2.1" />
 		<PackageReference Include="Stimulsoft.Reports.Web.NetCore" Version="2020.2.1" />
-		<PackageReference Include="Volo.Abp.AutoMapper" Version="7.2.1" />
 		<PackageReference Include="restsharp" Version="110.2.0" />
 		<PackageReference Include="StackExchange.Redis.Extensions.Newtonsoft" Version="9.1.0" />
 		<PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="7.0.1" />
@@ -49,19 +50,23 @@
 		  <GrpcService>Server</GrpcService>
 		</Protobuf>
 		<Protobuf Include="OrderManagement\Protos\PaymentGrpcService.proto" GrpcService="Client">
-		  <GrpcService>Server</GrpcService>
+			<GrpcService>Server</GrpcService>
+		</Protobuf>
+		<Protobuf Include="OrderManagement\Protos\OrderGrpcService.proto">
+			<GrpcService>Server</GrpcService>
 		</Protobuf>
 		<Protobuf Include="OrderManagement\Protos\TestOrder.proto" GrpcService="Server" />
+		<Protobuf Include="OrderManagement\Protos\OrderGrpcService.proto" GrpcService="Server" />
 	</ItemGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\..\..\..\shared\Authorization\Authorization.csproj" />
-      <ProjectReference Include="..\..\..\..\shared\Extensions\Extensions.csproj" />
-      <ProjectReference Include="..\..\..\payment\PaymentManagement.Application.Contracts\PaymentManagement.Application.Contracts.csproj" />
-      <ProjectReference Include="..\OrderManagement.Application.Contracts\OrderManagement.Application.Contracts.csproj" />
-      <ProjectReference Include="..\OrderManagement.Domain\OrderManagement.Domain.csproj" />
-      <ProjectReference Include="..\OrderManagement.EntityFrameworkCore\OrderManagement.EntityFrameworkCore.csproj" />
-    </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\..\..\..\shared\Authorization\Authorization.csproj" />
+		<ProjectReference Include="..\..\..\..\shared\Extensions\Extensions.csproj" />
+		<ProjectReference Include="..\..\..\payment\PaymentManagement.Application.Contracts\PaymentManagement.Application.Contracts.csproj" />
+		<ProjectReference Include="..\OrderManagement.Application.Contracts\OrderManagement.Application.Contracts.csproj" />
+		<ProjectReference Include="..\OrderManagement.Domain\OrderManagement.Domain.csproj" />
+		<ProjectReference Include="..\OrderManagement.EntityFrameworkCore\OrderManagement.EntityFrameworkCore.csproj" />
+	</ItemGroup>
 
 	<!--<ItemGroup>
 		<Protobuf Include="CompanyManagement\Protos\CompanyService.proto" GrpcServices="Server" />

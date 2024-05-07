@@ -1,0 +1,1 @@
+EXEC('ALTER TABLE [ClientsOrderDetailByCompany] ADD [RelatedToOrganization] bit NOT NULL DEFAULT CAST(0 AS bit)');

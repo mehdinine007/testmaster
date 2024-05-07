@@ -35,6 +35,7 @@ using Volo.Abp.FluentValidation;
 using Licence;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using HealthChecks.UI.Client;
+using OrderManagement.Application.GrpcServer.OrderService;
 
 namespace OrderService.Host
 {
@@ -149,7 +150,7 @@ System.AppDomain.CurrentDomain.BaseDirectory));
             //});
 
 
-            
+
             context.Services.AddEsaleResultWrapper();
             IdentityModelEventSource.ShowPII = true;
             ConfigureHangfire(context, configuration);
@@ -196,14 +197,15 @@ System.AppDomain.CurrentDomain.BaseDirectory));
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapGrpcService<CompanyGrpcClient>();
+                endpoints.MapGrpcService<OrderGrpcServiceImplementor>();
                 endpoints.MapHealthChecks("/health", new HealthCheckOptions
                 {
-                    Predicate = _=> true,
+                    Predicate = _ => true,
                     ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
                 });
 
             });
-          
+
 
             app.UseAbpRequestLocalization(); //TODO: localization?
             app.UseSwagger();
