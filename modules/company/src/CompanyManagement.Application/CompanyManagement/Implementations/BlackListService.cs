@@ -4,7 +4,9 @@ using CompanyManagement.Application.Contracts.CompanyManagement.Enums;
 using CompanyManagement.Application.Contracts.CompanyManagement.Services;
 using CompanyManagement.Application.Contracts.Services;
 using CompanyManagement.Domain.CompanyManagement;
+using Esale.Share.Authorize;
 using Microsoft.EntityFrameworkCore;
+using Permission.Company;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,7 +29,7 @@ namespace CompanyManagement.Application.CompanyManagement.Implementations
             _clientsOrderDetailByCompanyRepository = clientsOrderDetailByCompanyRepository;
             _orderGrpcClientService = orderGrpcClientService;
         }
-
+        [SecuredOperation(BlackListServicePermissionConstants.Inquiry)] 
         public async Task<bool> Inquiry(string nationalCode)
         {
             var clientsOrderDetailByCompany = (await _clientsOrderDetailByCompanyRepository.GetQueryableAsync()).AsNoTracking()
