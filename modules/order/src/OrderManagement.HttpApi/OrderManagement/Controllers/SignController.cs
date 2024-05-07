@@ -41,7 +41,8 @@ public class SignController : Controller
         {
             return _ret.Data;
         }
-        return null;
+        throw new UserFriendlyException(_ret.Message, OrderConstant.ErrorInConnectionId);
+     
     }
 
 
