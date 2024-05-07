@@ -48,7 +48,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
                 attachmentDto.Priority = _priroity;
             }
 
-            await _attachementRepository.InsertAsync(attachmentDto, autoSave: true);
+            await _attachementRepository.InsertAsync(attachmentDto);
             return attachmentDto.Id;
         }
 
@@ -62,6 +62,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             }
             attachment.EntityType = attachmentDto.Type;
             attachment.Content = JsonConvert.SerializeObject(attachmentDto.Content);
+            attachment.FileExtension = attachment.FileExtension;
             await UpdateAttachment(attachment);
             return attachment.Id;
         }
@@ -72,10 +73,11 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             attachment.EntityType = attachmentDto.EntityType;
             attachment.Priority = attachmentDto.Priority;
             attachment.Location = attachmentDto.Location;
+            attachment.FileExtension = attachmentDto.FileExtension;
             attachment.Content = attachmentDto.Content;
             attachment.Description = attachmentDto.Description;
             attachment.Device=attachmentDto.Device;
-            await _attachementRepository.UpdateAsync(attachment, autoSave: true);
+            await _attachementRepository.UpdateAsync(attachment);
             return attachment.Id;
         }
         [SecuredOperation(AttachmentServicePermissionConstants.Delete)]
