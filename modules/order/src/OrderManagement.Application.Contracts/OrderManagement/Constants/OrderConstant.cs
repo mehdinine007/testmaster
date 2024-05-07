@@ -125,5 +125,7 @@ namespace OrderManagement.Application.Contracts
         public const string OrderNotFoundId = "9009";
         public const string OrderAwaitingSignature = "امکان امضای قراردادوجود ندارد";
         public const string OrderAwaitingSignatureId = "9010";
+        public static string ErrorInConnection = "خطا در برقراری ارتباط";
+        public static string ErrorInConnectionId = "9011";
     }
 }

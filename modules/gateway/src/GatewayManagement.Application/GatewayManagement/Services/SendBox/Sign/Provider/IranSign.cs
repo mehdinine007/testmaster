@@ -10,6 +10,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
+
 namespace GatewayManagement.Application.GatewayManagement.Services.SendBox.Sign.Provider
 {
     public class IranSign
@@ -36,7 +37,22 @@ namespace GatewayManagement.Application.GatewayManagement.Services.SendBox.Sign.
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 client.DefaultRequestHeaders.Add("api-key", _config.ApiKey);
                 var content = new StringContent(JsonConvert.SerializeObject(createIranSignDto), Encoding.UTF8, "application/json");
-                var response = await client.PostAsync("/dms/api/v1/clientOrg/workflow/create", content);
+                HttpResponseMessage response = new HttpResponseMessage();
+                try
+                {
+                     response = await client.PostAsync("/dms/api/v1/clientOrg/workflow/create", content);
+                }
+                catch (Exception)
+                {
+                    return new ResponseCreateIranSign
+                    {
+                        Success = false,
+                        message = "خطا در برقراری ارتباط",
+                        resultCode = 99
+                    };
+
+                }
+               
                 string readContent = await response.Content.ReadAsStringAsync();
 
                 if (response.IsSuccessStatusCode)
@@ -51,7 +67,7 @@ namespace GatewayManagement.Application.GatewayManagement.Services.SendBox.Sign.
                     ErrorResponseIranSign _ret = null;
                     List<ErrorResponseIranSign> result = null;
                     result = JsonConvert.DeserializeObject<List<ErrorResponseIranSign>>(readContent);
-                     _ret=result.FirstOrDefault();
+                    _ret = result.FirstOrDefault();
                     if (response.StatusCode == HttpStatusCode.Unauthorized)
                     {
                         return new ResponseCreateIranSign
@@ -67,7 +83,7 @@ namespace GatewayManagement.Application.GatewayManagement.Services.SendBox.Sign.
                         {
                             Success = false,
                             resultCode = (int)HttpStatusCode.InternalServerError,
-                            message= _ret.message
+                            message = _ret.message
                         };
                     }
                     if (response.StatusCode == HttpStatusCode.BadRequest)
@@ -102,9 +118,24 @@ namespace GatewayManagement.Application.GatewayManagement.Services.SendBox.Sign.
                 client.BaseAddress = new Uri(_config.BaseUrl);
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 client.DefaultRequestHeaders.Add("api-key", _config.ApiKey);
-                var response = await client.GetAsync($"/dms/api/v1/clientOrg/workflow/{workflowTicket}/ownerDetails?");
+                HttpResponseMessage response = new HttpResponseMessage();
+                try
+                {
+                    response = await client.GetAsync($"/dms/api/v1/clientOrg/workflow/{workflowTicket}/ownerDetails?");
+                }
+                catch (Exception ex)
+                {
+                   
+                    return new ResponseInquiryIranSign
+                    {
+                        message = "خطا در برقراری ارتباط",
+                        Success = false,
+                        resultCode = 99
+                    };
+                }
+
                 string readContent = await response.Content.ReadAsStringAsync();
-                
+
                 if (response.IsSuccessStatusCode)
                 {
                     ResponseInquiryIranSign result = null;
@@ -117,7 +148,7 @@ namespace GatewayManagement.Application.GatewayManagement.Services.SendBox.Sign.
                     ErrorResponseIranSign _ret = null;
                     List<ErrorResponseIranSign> result = null;
                     result = JsonConvert.DeserializeObject<List<ErrorResponseIranSign>>(readContent);
-                     _ret = result.FirstOrDefault();
+                    _ret = result.FirstOrDefault();
                     if (response.StatusCode == HttpStatusCode.Unauthorized)
                     {
                         return new ResponseInquiryIranSign
