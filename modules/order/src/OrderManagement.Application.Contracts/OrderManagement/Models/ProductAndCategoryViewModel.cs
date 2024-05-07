@@ -19,7 +19,7 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Models
         public int? ParentId { get; set; }
 
         public int LevelId { get; set; }
-
+        public int OrganizationId { get; set; }
         public List<AttachmentViewModel> Attachments { get; set; }
 
 

@@ -786,10 +786,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
         var userId = _commonAppService.GetUserId();
         var orderRejections = _orderRejectionTypeReadOnlyRepository.WithDetails().ToList();
         var orderStatusTypes = _orderStatusTypeReadOnlyRepository.WithDetails().ToList();
-        var parents = await _productAndCategoryService.GetAllParent();
         var customerOrders = _commitOrderRepository.WithDetails()
             .AsNoTracking()
-            .Join(_saleDetailRepository.WithDetails(x => x.Product),
+            .Join(await _saleDetailRepository.WithDetailsAsync(x => x.Product.Organization),
             x => x.SaleDetailId,
             y => y.Id,
             (x, y) => new
@@ -836,13 +835,15 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 SalePlanEndDate = x.SalePlanEndDate,
                 Id = x.Id,
                 SaleId = x.SaleId,
-                TrackingCode = x.TrackingCode,
+              
                 SignTicketId = x.SignTicketId,
                 SignStatusId = x.SignStatus,
                 SignStatusTitle = x.SignStatus != null ? EnumHelper.GetDisplayName(x.SignStatus) : null,
                 TransactionCommitDate = x.TransactionCommitDate,
                 PaymentPrice = x.PaymentPrice,
                 TransactionId = x.TransactionId,
+                TrackingCode = x.TrackingCode,
+                CompanyName = x.Product.Organization.Title
             }).ToList();
         var cancleableDate = _configuration.GetValue<string>("CancelableDate");
         var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, customerOrders.Select(x => x.ProductId).ToList(), attachmentType, attachmentlocation);
@@ -902,11 +903,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
             //else if (x.OrderStatusCode == 40 && x.DeliveryDateDescription.Contains(cancleableDate, StringComparison.InvariantCultureIgnoreCase)) // OrderStatusType.Winner
             //    x.Cancelable = true;
-            var Parent = parents.FirstOrDefault(y => y.Code == x.Product.Code.Substring(0, 4));
-            if (Parent is not null)
-            {
-                x.CompanyName = Parent.Title;
-            }
         });
         resultObject.OrderList = customerOrders.OrderByDescending(x => x.OrderId).ToList();
         return resultObject;
