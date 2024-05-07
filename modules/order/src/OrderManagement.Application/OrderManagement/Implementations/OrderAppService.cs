@@ -1651,4 +1651,15 @@ public class OrderAppService : ApplicationService, IOrderAppService
         return clientOrderDetailDto;
 
     }
+
+    public async Task<bool> ExistsWinnerByNationalCode(string nationalCode)
+    {
+        var user = await _esaleGrpcClient.GetUserByNationalCode(nationalCode);
+        if (user is null)
+            return true;
+        var _ret = (await _commitOrderRepository.GetQueryableAsync())
+            .AsNoTracking()
+            .Any(x => x.UserId == user.Uid && x.OrderStatus == OrderStatusType.Winner);
+        return _ret;
+    }
 }

@@ -10,6 +10,7 @@ package UserService;
 service UserServiceGrpc{
 	rpc GetUserAdvocacy(UserAdvocacyRequest) returns (UserAdvocacy);
 	rpc GetUserById(GetUserModel) returns (UserModel);
+	rpc GetUserByNationalCode(GetUserByNationalCodeRequest) returns (UserModel);
 	rpc Authenticate(AuthenticateRequest) returns (AuthenticateResponse);
 	rpc GetUDAByNationalCode(GetUDAByNationalCodeRequest) returns (UserDataAccessResponse);
 	rpc GetUDAByUserId(GetUDAByUserIdRequest) returns (UserDataAccessResponse);
@@ -17,6 +18,10 @@ service UserServiceGrpc{
 
 message GetUserModel{
 	string userId = 1;
+}
+
+message GetUserByNationalCodeRequest{
+	string NationalCode = 1;
 }
 
 message UserModel{

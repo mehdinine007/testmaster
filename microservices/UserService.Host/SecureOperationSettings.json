@@ -1354,6 +1354,20 @@
             "children": []
           }
         ]
+      },
+      {
+        "title": "BlackListService",
+        "code": "00030005",
+        "displayName": "سرویس بلک لیست ",
+        "children": [
+          {
+            "title": "Inquiry",
+            "code": "000300050001",
+            "displayName": "استعلام بلک لیست با کد ملی",
+            "children": []
+          }
+         
+        ]
       }
 
     ]

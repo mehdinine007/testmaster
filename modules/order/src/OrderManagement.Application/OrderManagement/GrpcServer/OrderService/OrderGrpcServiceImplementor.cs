@@ -24,4 +24,14 @@ public class OrderGrpcServiceImplementor : OrderGrpcService.OrderGrpcServiceBase
             ProductId = order.ProductId
         };
     }
+
+    public override async Task<ExistsWinnerByNationalCodeResponse> ExistsWinnerByNationalCode(ExistsWinnerByNationalCodeRequest request, ServerCallContext context)
+    {
+        var _ret = await _orderAppService.ExistsWinnerByNationalCode(request.NationalCode);
+        return new ExistsWinnerByNationalCodeResponse
+        {
+            HasWinner = _ret
+        };
+    }
+
 }

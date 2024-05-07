@@ -7,6 +7,7 @@ package OrderGrpcService;
 
 service OrderGrpcService{
 	rpc GetOrderById(GetOrderByIdRequest) returns (GetOrderByIdResponse);
+	rpc ExistsWinnerByNationalCode(ExistsWinnerByNationalCodeRequest) returns (ExistsWinnerByNationalCodeResponse);
 }
 
 message GetOrderByIdRequest{
@@ -18,4 +19,12 @@ message GetOrderByIdResponse{
 	string ProductCode = 2;
 	int32 OrganizationId = 3;
 	int32 OrderStatus = 4;
+}
+
+message ExistsWinnerByNationalCodeRequest{
+	string NationalCode = 1;
+}
+
+message ExistsWinnerByNationalCodeResponse{
+	 bool HasWinner=1;
 }
