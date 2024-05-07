@@ -19,7 +19,6 @@ using MongoDB.Driver;
 using MongoDB.Bson.Serialization;
 using IFG.Core.Utility.Tools;
 using Esale.Share.Authorize;
-using OrderManagement.Application.Contracts.OrderManagement.Constants.Permissions;
 using System.Linq.Dynamic.Core;
 using IFG.Core.IOC;
 using Microsoft.AspNetCore.Http;
@@ -28,6 +27,7 @@ using OrderManagement.Domain.Shared.OrderManagement.Enums;
 using OfficeOpenXml;
 using OrderManagement.Domain.OrderManagement.MongoWrite;
 using System.IO;
+using Permission.Order;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 

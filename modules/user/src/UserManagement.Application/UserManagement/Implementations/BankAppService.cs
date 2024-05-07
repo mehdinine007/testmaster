@@ -11,6 +11,7 @@ using MongoDB.Bson;
 using Esale.Share.Authorize;
 using Abp.Auditing;
 using UserManagement.Application.Contracts.UserManagement.Constant;
+using Permission.User;
 
 namespace UserManagement.Application.UserManagement.Implementations;
 

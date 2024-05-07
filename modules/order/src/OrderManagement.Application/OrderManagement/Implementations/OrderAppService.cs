@@ -33,6 +33,7 @@ using Newtonsoft.Json;
 using OrderManagement.Application.Contracts.OrderManagement;
 using OrderManagement.Application.Contracts.OrderManagement.Dtos.Grpc.Client;
 using IFG.Core.Utility.Tools;
+using Permission.Order;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 

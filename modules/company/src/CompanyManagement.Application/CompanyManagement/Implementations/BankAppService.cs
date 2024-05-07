@@ -1,10 +1,10 @@
 ﻿using Abp.Domain.Uow;
 using Abp.Runtime.Session;
-using CompanyManagement.Application.Contracts.CompanyManagement.Constants.Permissions;
 using CompanyManagement.Application.Contracts.CompanyManagement.Dto.BankDtos;
 using CompanyManagement.Application.Contracts.CompanyManagement.Services;
 using CompanyManagement.Domain.CompanyManagement;
 using Esale.Share.Authorize;
+using Permission.Company;
 using System;
 using System.Collections.Generic;
 using System.Linq;

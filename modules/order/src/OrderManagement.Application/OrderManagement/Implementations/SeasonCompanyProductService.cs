@@ -1,8 +1,8 @@
 ﻿using Esale.Share.Authorize;
 using OrderManagement.Application.Contracts;
-using OrderManagement.Application.Contracts.Constants.Permissions;
 using OrderManagement.Application.Contracts.Services;
 using OrderManagement.Domain;
+using Permission.Order;
 using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp;

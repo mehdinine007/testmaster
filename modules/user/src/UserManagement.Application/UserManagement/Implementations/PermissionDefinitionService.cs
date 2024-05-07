@@ -17,6 +17,7 @@ using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
 using Esale.Share.Authorize;
 using Newtonsoft.Json;
+using Permission.User;
 
 namespace UserManagement.Application.UserManagement.Implementations
 {

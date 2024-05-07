@@ -9,7 +9,6 @@ using System.Text;
 using System.Threading.Tasks;
 using UserManagement.Application.Contracts;
 using UserManagement.Application.Contracts.Models;
-using UserManagement.Application.Contracts.UserManagement.Constant.Permission;
 using UserManagement.Application.Contracts.UserManagement.Models;
 using UserManagement.Application.Contracts.UserManagement.Services;
 using UserManagement.Domain.Shared.UserManagement.Enums;

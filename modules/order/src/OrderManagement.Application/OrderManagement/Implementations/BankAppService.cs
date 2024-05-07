@@ -13,7 +13,7 @@ using Volo.Abp;
 using MongoDB.Driver;
 using Microsoft.EntityFrameworkCore;
 using Esale.Share.Authorize;
-using OrderManagement.Application.Contracts.OrderManagement.Constants.Permissions;
+using Permission.Order;
 
 namespace OrderManagement.Application.OrderManagement.Implementations
 {
