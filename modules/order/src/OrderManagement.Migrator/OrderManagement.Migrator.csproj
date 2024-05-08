@@ -49,7 +49,11 @@
     <None Remove="Migrations\Programmability\Sp_EsaleCarApplicantCountChart.sql" />
     <None Remove="Migrations\Programmability\sp_InsertUserDataAccess.sql" />
     <None Remove="Migrations\Schema\SchemaBase.sql" />
+    <None Remove="Migrations\Tables\Agency.sql" />
+    <None Remove="Migrations\Tables\AgencySaleDetail.sql" />
+    <None Remove="Migrations\Tables\Color.sql" />
     <None Remove="Migrations\Tables\ProductAndCategory_CarTip.sql" />
+    <None Remove="Migrations\Tables\SaleDetailCarColor.sql" />
   </ItemGroup>
 
   <ItemGroup>
@@ -178,6 +182,18 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Migrations\Schema\SchemaBase.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Migrations\Tables\AgencySaleDetail.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Migrations\Tables\Agency.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Migrations\Tables\SaleDetailCarColor.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Migrations\Tables\Color.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Migrations\Tables\ProductAndCategory_CarTip.sql">
