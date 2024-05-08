@@ -1,4 +1,5 @@
-﻿using OrderManagement.Domain.Shared;
+﻿using OrderManagement.Domain.OrderManagement;
+using OrderManagement.Domain.Shared;
 using OrderManagement.Domain.Shared.OrderManagement.Enums;
 using System;
 using Volo.Abp.Domain.Entities.Auditing;
@@ -38,6 +39,7 @@ namespace OrderManagement.Domain
         public string TransactionId { get; set; }
         public long? PaymentPrice { get; set; }
         public string ContractNumber { get; set; }
-
+        public int? SeasonAllocationId { get; set; }
+        public  SeasonAllocation SeasonAllocation { get; set; }
     }
 }

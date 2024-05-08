@@ -1235,6 +1235,43 @@
             "children": []
           }
         ]
+      },
+      {
+        "title": "SeasonAllocationService",
+        "code": "00020028",
+        "displayName": "سرویس تخصیص فصل",
+        "children": [
+          {
+            "title": "Add",
+            "code": "000200280001",
+            "displayName": "ایجادتخصیص فصل",
+            "children": []
+          },
+          {
+            "title": "Delete",
+            "code": "000200280002",
+            "displayName": "حذف تخصیص فصل",
+            "children": []
+          },
+          {
+            "title": "GetById",
+            "code": "000200280003",
+            "displayName": "نمایش تخصیص فصل با شناسه",
+            "children": []
+          },
+          {
+            "title": "GetList",
+            "code": "000200280004",
+            "displayName": "نمایش تخصیص فصل",
+            "children": []
+          },
+          {
+            "title": "Update",
+            "code": "000200280005",
+            "displayName": "بروزرسانی تخصیص فصل",
+            "children": []
+          }
+        ]
       }
     ]
   },

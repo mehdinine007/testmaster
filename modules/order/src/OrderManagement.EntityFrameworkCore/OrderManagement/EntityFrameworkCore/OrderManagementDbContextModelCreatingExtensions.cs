@@ -38,6 +38,10 @@ public static class OrderManagementDbContextModelCreatingExtensions
             entity.ConfigureSoftDelete();
             entity.ToTable(nameof(CustomerOrder));
 
+            entity.HasOne<SeasonAllocation>(x => x.SeasonAllocation)
+                .WithMany(x => x.CustomerOrders)
+                .HasForeignKey(x => x.SeasonAllocationId);
+            entity.HasIndex(u => u.SeasonAllocationId);
             entity.HasIndex(co => new { co.SaleDetailId, co.UserId })
                 .HasFilter($"{nameof(CustomerOrder.IsDeleted)} = 0 and " +
                 $"{nameof(CustomerOrder.PriorityId)} IS NOT NULL and " +

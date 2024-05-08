@@ -115,12 +115,16 @@ namespace OrderManagement
                 .ReverseMap();
 
             CreateMap<SaleDetail, SaleDetailDto>()
+                  .ForMember(x => x.SalePlanDescription, opt => opt.MapFrom(y => System.Text.Encoding.UTF8.GetString(System.Convert.FromBase64String(y.SalePlanDescription))))
                 .ReverseMap()
                 .IgnoreFullAuditedObjectProperties();
             CreateMap<SaleDetail, SaleDetailOrderDto>();
             CreateMap<Agency, AgencyDto>().ReverseMap();
             //CreateMap<ApiResult, HandShakeResultDto>();
-            CreateMap<SaleDetail, CreateSaleDetailDto>().ReverseMap();
+            CreateMap<SaleDetail, CreateSaleDetailDto>()
+                .ReverseMap()
+                 .ForMember(x => x.SalePlanDescription, opt => opt.MapFrom(y => System.Text.Encoding.UTF8.GetString(System.Convert.FromBase64String(y.SalePlanDescription))));
+
             CreateMap<SaleDetail, SaleDetailForDropDownDto>()
                 .ReverseMap()
                 .IgnoreFullAuditedObjectProperties();
@@ -133,6 +137,7 @@ namespace OrderManagement
             CreateMap<Color, ColorDto>()
                 .ReverseMap();
             CreateMap<SaleSchema, SaleSchemaDto>()
+                .ForMember(o => o.Description, opt => opt.MapFrom(y => System.Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(y.Description))))
                .ReverseMap();
             CreateMap<PspHandShakeRequest, PaymentHandShakeDto>();
             CreateMap<PaymentHandShakeViewModel, IpgApiResult>();
@@ -156,7 +161,9 @@ namespace OrderManagement
                 .ForMember(x => x.OrderDeliveryStatusDescription, opt => opt.Ignore())
                 .ForMember(x => x.AvailableDeliveryStatusList, opt => opt.Ignore())
                 .ForMember(x => x.RejectionDate, opt => opt.Ignore());
-            CreateMap<CreateSaleSchemaDto, SaleSchema>().ReverseMap();
+            CreateMap<CreateSaleSchemaDto, SaleSchema>()
+                .ForMember(x => x.Description, opt => opt.MapFrom(y => System.Text.Encoding.UTF8.GetString(System.Convert.FromBase64String(y.Description))))
+                .ReverseMap();
             CreateMap<ProductAndCategoryCreateDto, ProductAndCategory>();
             CreateMap<ProductAndCategory, ProductAndSaleDetailListDto>().ReverseMap();
             CreateMap<SaleDetail, SaleDetailListDto>()
@@ -219,6 +226,9 @@ namespace OrderManagement
             CreateMap<SaleDetailAllocation, SaleDetailAllocationDto>()
                 .ReverseMap()
                 .IgnoreFullAuditedObjectProperties();
+
+            CreateMap<SeasonAllocation, SeasonAllocationDto>().ReverseMap();
+            CreateMap<SeasonAllocation, SeasonAllocationCreateOrUpdateDto>().ReverseMap();
         }
     }
 }

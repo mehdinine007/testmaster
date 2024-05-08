@@ -189,7 +189,19 @@
       "Id": "20240422132448_Add-ContractNumber-CustomerOrder",
       "Priority": 23,
       "Version": "4.5.0"
+    },
+    {
+      "Id": "20240508101254_add-SeasonAllocation-table",
+      "Priority": 24,
+      "Version": "4.5.0"
+    },
+    {
+      "Id": "20240508101254_FkCustomerOrderSeasonAllocation",
+      "Priority": 25,
+      "Version": "4.5.0"
     }
+
+
 
   ]
 }
