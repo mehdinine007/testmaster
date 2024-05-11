@@ -14,8 +14,8 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Services
 
         Task<List<SeasonAllocationDto>> GetList();
         Task<SeasonAllocationDto> GetById(int id);
-        Task<SeasonAllocationDto> Add(SeasonAllocationCreateOrUpdateDto SeasonAllocationCreateOrUpdateDto);
-        Task<SeasonAllocationDto> Update(SeasonAllocationCreateOrUpdateDto SeasonAllocationCreateOrUpdateDto);
+        Task<SeasonAllocationDto> Add(SeasonAllocationCreateDto seasonAllocationCreateDto);
+        Task<SeasonAllocationDto> Update(SeasonAllocationUpdateDto seasonAllocationUpdateDto);
         Task<bool> Delete(int id);
       
 

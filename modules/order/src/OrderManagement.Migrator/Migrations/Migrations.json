@@ -199,9 +199,19 @@
       "Id": "20240508101254_FkCustomerOrderSeasonAllocation",
       "Priority": 25,
       "Version": "4.5.0"
+    },
+    {
+      "Id": "20240511050723_add-title-saledetail",
+      "Priority": 26,
+      "Version": "4.5.0"
+    },
+    {
+      "Id": "20240511050723_ConvertSeasonAllocation",
+      "Priority": 27,
+      "Version": "4.5.0"
     }
-
 
 
   ]
 }
+

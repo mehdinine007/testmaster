@@ -5,12 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OrderManagement.Application.Contracts
+namespace OrderManagement.Application.Contracts.OrderManagement
 {
-    public class SeasonAllocationCreateOrUpdateDto
+    public class SeasonAllocationUpdateDto
     {
         public int Id { get; set; }
-        public int Code { get; set; }
         public string Title { get; set; }
         public SeasonTypeEnum SeasonId { get; set; }
         public int Year { get; set; }

@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using OrderManagement.Application.Contracts;
 using OrderManagement.Application.Contracts.OrderManagement;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
 using System;
@@ -20,8 +19,8 @@ namespace OrderManagement.HttpApi.OrderManagement.Controllers
         public SeasonAllocationController(ISeasonAllocationService seasonAllocationService)
             => _seasonAllocationService = seasonAllocationService;
         [HttpPost]
-        public Task<SeasonAllocationDto> Add(SeasonAllocationCreateOrUpdateDto SeasonAllocationCreateOrUpdateDto)
-        =>_seasonAllocationService.Add(SeasonAllocationCreateOrUpdateDto);
+        public Task<SeasonAllocationDto> Add(SeasonAllocationCreateDto seasonAllocationCreateDto)
+        =>_seasonAllocationService.Add(seasonAllocationCreateDto);
         [HttpDelete]
         public Task<bool> Delete(int id)
         =>_seasonAllocationService.Delete(id); 
@@ -32,7 +31,7 @@ namespace OrderManagement.HttpApi.OrderManagement.Controllers
         public Task<List<SeasonAllocationDto>> GetList()
         => _seasonAllocationService.GetList();
         [HttpPut]
-        public Task<SeasonAllocationDto> Update(SeasonAllocationCreateOrUpdateDto SeasonAllocationCreateOrUpdateDto)
-        =>_seasonAllocationService.Update(SeasonAllocationCreateOrUpdateDto);   
+        public Task<SeasonAllocationDto> Update(SeasonAllocationUpdateDto seasonAllocationUpdateDto)
+        =>_seasonAllocationService.Update(seasonAllocationUpdateDto);   
     }
 }

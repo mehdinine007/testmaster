@@ -21,14 +21,22 @@ namespace OrderManagement.Application.OrderManagement.Implementations
     public class SeasonAllocationService : ApplicationService, ISeasonAllocationService
     {
         private readonly IRepository<SeasonAllocation> _seasonAllocationRepository;
-        public SeasonAllocationService(IRepository<SeasonAllocation> seasonAllocationRepository) 
+        public SeasonAllocationService(IRepository<SeasonAllocation> seasonAllocationRepository)
         {
             _seasonAllocationRepository = seasonAllocationRepository;
         }
         [SecuredOperation(SeasonAllocationPermissionConstants.Add)]
-        public async Task<SeasonAllocationDto> Add(SeasonAllocationCreateOrUpdateDto SeasonAllocationCreateOrUpdateDto)
+        public async Task<SeasonAllocationDto> Add(SeasonAllocationCreateDto seasonAllocationCreateDto)
         {
-            var seasonAllocation = ObjectMapper.Map<SeasonAllocationCreateOrUpdateDto, SeasonAllocation>(SeasonAllocationCreateOrUpdateDto);
+            var seasonAllocationQuery = (await _seasonAllocationRepository.GetQueryableAsync()).AsNoTracking().ToList();
+            int maxCode = 1;
+            if (seasonAllocationQuery.Count > 0)
+            {
+                maxCode = seasonAllocationQuery.Max(x => x.Code);
+                maxCode++;
+            }
+            var seasonAllocation = ObjectMapper.Map<SeasonAllocationCreateDto, SeasonAllocation>(seasonAllocationCreateDto);
+            seasonAllocation.Code = maxCode;
             var entity = await _seasonAllocationRepository.InsertAsync(seasonAllocation);
             await CurrentUnitOfWork.SaveChangesAsync();
             return ObjectMapper.Map<SeasonAllocation, SeasonAllocationDto>(entity);
@@ -55,9 +63,10 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             return seasonAllocationDto;
         }
         [SecuredOperation(SeasonAllocationPermissionConstants.Update)]
-        public async Task<SeasonAllocationDto> Update(SeasonAllocationCreateOrUpdateDto SeasonAllocationCreateOrUpdateDto)
+        public async Task<SeasonAllocationDto> Update(SeasonAllocationUpdateDto seasonAllocationUpdateDto)
         {
-            var seasonAllocation = ObjectMapper.Map<SeasonAllocationCreateOrUpdateDto, SeasonAllocation>(SeasonAllocationCreateOrUpdateDto);
+           var seasonAllocation=await Validation(seasonAllocationUpdateDto.Id);
+            var seasonAllocationMap = ObjectMapper.Map<SeasonAllocationUpdateDto, SeasonAllocation>(seasonAllocationUpdateDto, seasonAllocation);
             var entity = await _seasonAllocationRepository.UpdateAsync(seasonAllocation);
             await CurrentUnitOfWork.SaveChangesAsync();
             return ObjectMapper.Map<SeasonAllocation, SeasonAllocationDto>(entity);
