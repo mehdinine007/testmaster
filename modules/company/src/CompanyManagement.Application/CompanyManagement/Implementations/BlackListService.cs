@@ -36,11 +36,7 @@ namespace CompanyManagement.Application.CompanyManagement.Implementations
                 .Include(x => x.Paypaidprice)
                             .OrderByDescending(x => x.Id)
                             .FirstOrDefault(x => x.NationalCode == nationalCode);
-            if (clientsOrderDetailByCompany is  null)
-            {
-                return false;
-            }
-            if (clientsOrderDetailByCompany.Paypaidprice.Any())
+            if (clientsOrderDetailByCompany is not null  && clientsOrderDetailByCompany.Paypaidprice.Any())
                 return true;
             var _hasWinner = await _orderGrpcClientService.ExistsWinnerByNationalCode(nationalCode,GrpcProviderEnum.External);
             return _hasWinner;
