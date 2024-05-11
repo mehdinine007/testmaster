@@ -68,7 +68,6 @@ namespace OrderManagement.Application.OrderManagement.Implementations
            var seasonAllocation=await Validation(seasonAllocationUpdateDto.Id);
             var seasonAllocationMap = ObjectMapper.Map<SeasonAllocationUpdateDto, SeasonAllocation>(seasonAllocationUpdateDto, seasonAllocation);
             var entity = await _seasonAllocationRepository.UpdateAsync(seasonAllocation);
-            await CurrentUnitOfWork.SaveChangesAsync();
             return ObjectMapper.Map<SeasonAllocation, SeasonAllocationDto>(entity);
         }
 

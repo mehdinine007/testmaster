@@ -541,9 +541,9 @@ public static class OrderManagementDbContextModelCreatingExtensions
         {
             entity.ToTable(nameof(SaleDetailAllocation));
 
-            entity.HasOne<Year>(x => x.Year)
-                .WithMany(x => x.SeasonCompanyProducts)
-                .HasForeignKey(x => x.YearId);
+            entity.HasOne<SeasonAllocation>(x => x.SeasonAllocation)
+                .WithMany(x => x.SaleDetailAllocations)
+                .HasForeignKey(x => x.SeasonAllocationId);
 
             entity.HasOne<SaleDetail>(x => x.SaleDetail)
                 .WithMany(x => x.SeasonCompanyProducts)

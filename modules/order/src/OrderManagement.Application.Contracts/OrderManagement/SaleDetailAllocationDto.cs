@@ -2,11 +2,10 @@
 
 public sealed record SaleDetailAllocationDto
 (
-    int SeasonId,
+    int? SeasonAllocationId,
     int SaleDetailId,
     int Count,
     bool IsComplete,
-    int? YearId,
     int? TotalCount,
     int Id
 );

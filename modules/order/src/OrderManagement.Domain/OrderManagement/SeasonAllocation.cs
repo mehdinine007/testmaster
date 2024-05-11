@@ -16,6 +16,7 @@ namespace OrderManagement.Domain.OrderManagement
         public SeasonTypeEnum SeasonId { get; set; }
         public int Year { get; set; }
         public ICollection<CustomerOrder> CustomerOrders { get; set; }
+        public ICollection<SaleDetailAllocation> SaleDetailAllocations { get; set; }
 
     }
 }
