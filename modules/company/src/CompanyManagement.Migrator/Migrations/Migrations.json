@@ -43,6 +43,11 @@
       "Id": "Sp_EsaleCompanyCarDescList",
       "Priority": 8,
       "Type": "proc"
+    },
+    {
+      "Id": "Sp_CompanyProductPlanChart",
+      "Priority": 9,
+      "Type": "proc"
     }
   ],
   "Patch": [

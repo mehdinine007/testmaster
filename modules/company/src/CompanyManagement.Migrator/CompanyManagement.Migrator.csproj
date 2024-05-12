@@ -17,6 +17,7 @@
 		<None Remove="Migrations\Patch\20240512060209_add-companyid-companyproduction.sql" />
 		<None Remove="Migrations\Patch\20240512100136_convert_companyId.sql" />
 		<None Remove="Migrations\Programmability\Job_ConfilictedCustomers.sql" />
+		<None Remove="Migrations\Programmability\Sp_CompanyProductPlanChart.sql" />
 		<None Remove="Migrations\Programmability\Sp_ConfilictedCustomersReport.sql" />
 		<None Remove="Migrations\Programmability\Sp_EsaleCarApplicantsDetailReport.sql" />
 		<None Remove="Migrations\Programmability\Sp_EsaleCarApplicantsReport.sql" />
@@ -60,6 +61,9 @@
 		</Content>
 		<Content Include="Migrations\Programmability\Job_ConfilictedCustomers.sql">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Migrations\Programmability\Sp_CompanyProductPlanChart.sql">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 		<Content Include="Migrations\Programmability\Sp_ConfilictedCustomersReport.sql">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
