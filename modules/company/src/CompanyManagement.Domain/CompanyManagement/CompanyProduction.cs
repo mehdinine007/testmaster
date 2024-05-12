@@ -13,5 +13,6 @@ namespace CompanyManagement.Domain.CompanyManagement
         public string CarDesc { get; set; }
         public DateTime ProductionDate { get; set; }
         public int ProductionCount { get; set; }
+        public int CompanyId { get; set; }
     }
 }

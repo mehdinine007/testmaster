@@ -43,6 +43,11 @@
       "Id": "Sp_EsaleCompanyCarDescList",
       "Priority": 8,
       "Type": "proc"
+    },
+    {
+      "Id": "Sp_CompanyProductPlanChart",
+      "Priority": 9,
+      "Type": "proc"
     }
   ],
   "Patch": [
@@ -69,6 +74,16 @@
     {
       "Id": "20240505114906_Update_ClientOrderDetailById",
       "Priority": 4,
+      "Version": "4.2.0"
+    },
+    {
+      "Id": "20240512060209_add-companyid-companyproduction",
+      "Priority": 6,
+      "Version": "4.2.0"
+    },
+    {
+      "Id": "20240512100136_convert_companyId",
+      "Priority": 7,
       "Version": "4.2.0"
     }
   ]
