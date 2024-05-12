@@ -1271,6 +1271,12 @@
             "code": "000300010004",
             "displayName": "گرفتن اطلاعات مشتریان برای شرکت های خودرو ساز",
             "children": []
+          },
+          {
+            "title": "SaveOrderInformation",
+            "code": "000300010005",
+            "displayName": "ثبت اطلاعات سفارش به صورت تکی",
+            "children": []
           }
         ]
       },
