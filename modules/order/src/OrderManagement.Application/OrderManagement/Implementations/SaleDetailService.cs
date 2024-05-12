@@ -118,7 +118,6 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
         {
             CarDeliverDate = x.CarDeliverDate,
             CarFee = x.CarFee,
-            CircularSaleCode = x.CircularSaleCode,
             CoOperatingProfitPercentage = x.CoOperatingProfitPercentage,
             Id = x.Id,
             DeliverDaysCount = x.DeliverDaysCount,
@@ -210,15 +209,15 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
         }
 
 
-        var resultQuery = await _saleDetailRepository.InsertAsync(saleDetail, autoSave: true);
-
+        var resultQuery = await _saleDetailRepository.InsertAsync(saleDetail);
+        await CurrentUnitOfWork.SaveChangesAsync();
 
         SaleDetailCarColor saleDetailCarColor = new SaleDetailCarColor
         {
             ColorId = createSaleDetailDto.ColorId,
             SaleDetailId = resultQuery.Id
         };
-        await _saleDetailCarColor.InsertAsync(saleDetailCarColor, autoSave: true);
+        await _saleDetailCarColor.InsertAsync(saleDetailCarColor);
 
         return saleDetail.Id;
     }
@@ -242,11 +241,8 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
             throw new UserFriendlyException(" نوع طرح فروش انتخاب شده وجود ندارد");
         }
 
-        var saleDetail = ObjectMapper.Map<CreateSaleDetailDto, SaleDetail>(createSaleDetailDto);
-        await _saleDetailRepository.AttachAsync(saleDetail, c => c.CircularSaleCode, s => s.SalePlanCode, s => s.SalePlanDescription,
-        c => c.CarTipId, m => m.ManufactureDate, s => s.SalePlanStartDate, m => m.ManufactureDate, s => s.SalePlanEndDate,
-        c => c.CarDeliverDate, s => s.SaleTypeCapacity, c => c.CoOperatingProfitPercentage, r => r.RefuseProfitPercentage, e => e.ESaleTypeId, c => c.CarFee, d => d.DeliverDaysCount,
-        d => d.MinimumAmountOfProxyDeposit, s => s.SaleId, v => v.Visible,x=>x.Title);
+        var saleDetail = ObjectMapper.Map<CreateSaleDetailDto, SaleDetail>(createSaleDetailDto, result);
+        await _saleDetailRepository.UpdateAsync(saleDetail);
         await _cacheManager.RemoveAsync(saleDetail.UID.ToString(), RedisConstants.SaleDetailPrefix, new CacheOptions() { Provider = CacheProviderEnum.Hybrid });
         return saleDetail.Id;
     }

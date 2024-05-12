@@ -131,5 +131,14 @@ namespace OrderManagement.Application.Contracts
         public static string SeasonAllocationNotFoundId = "9012";
 
         
+        public const string OrderWinnerFound = "شما قبلا سفارش ثبت نموده اید لطفا نسبت به جایگزینی آن اقدام فرمایید";
+        public const string OrderWinnerFoundId = "9009";
+        public const string RecentlyAdded = "سفارش درحال پرداخت می باشد.شما مجاز به ثبت سفارش جدید نمی باشید.";
+        public const string RecentlyAddedId = "1001";
+        public const string PaymentSucceeded = "شما قبلا سفارش از نوع موفق درسامانه دارید.مجاز به ثبت سفارش جدید نمی باشید.";
+        public const string PaymentSucceededId = "1002";
+
+
+        
     }
 }
