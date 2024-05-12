@@ -48,6 +48,7 @@
     <None Remove="Migrations\Programmability\spUserInfo.sql" />
     <None Remove="Migrations\Programmability\Sp_EsaleCarApplicantCountChart.sql" />
     <None Remove="Migrations\Programmability\sp_InsertUserDataAccess.sql" />
+    <None Remove="Migrations\Programmability\Sp_OrderPaymentInformation.sql" />
     <None Remove="Migrations\Schema\SchemaBase.sql" />
     <None Remove="Migrations\Tables\Agency.sql" />
     <None Remove="Migrations\Tables\AgencySaleDetail.sql" />
@@ -170,6 +171,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Migrations\Programmability\spGetReportQuestionnaire.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Migrations\Programmability\Sp_OrderPaymentInformation.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Migrations\Programmability\spUserInfo.sql">

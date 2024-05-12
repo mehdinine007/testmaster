@@ -94,17 +94,17 @@ namespace UserManagement.Application.UserManagement.Implementations
                 await DeleteRolePermission(RolePermissionEnum.Customer, rolePermissions);
                 var serviceList = new List<string>();
              
-
                 serviceList.Add(UserServicePermissionConstants.UpdateUserProfile);
                 serviceList.Add(UserServicePermissionConstants.ChangePassword);
                 serviceList.Add(UserServicePermissionConstants.GetUserProfile);
                 serviceList.Add(OrderAppServicePermissionConstants.GetCustomerOrderList);
                 serviceList.Add(OrderAppServicePermissionConstants.CommitOrder);
                 serviceList.Add(OrderAppServicePermissionConstants.CancelOrder);
-                serviceList.Add(AgencySaleDetailServicePermissionConstants.GetAgencySaleDetail);
+                serviceList.Add(OrderAppServicePermissionConstants.InsertUserRejectionAdvocacyPlan);
                 serviceList.Add(OrderAppServicePermissionConstants.GetOrderDetailById);
                 serviceList.Add(OrderAppServicePermissionConstants.GetSaleDetailByUid);
                 serviceList.Add(OrderAppServicePermissionConstants.GetDetail);
+                serviceList.Add(AgencySaleDetailServicePermissionConstants.GetAgencySaleDetail);
                 serviceList.Add(BaseServicePermissionConstants.CheckBlackList);
 
                 rolePermission.Title = RolePermissionEnum.Customer.ToString();

@@ -82,6 +82,11 @@
             "Id": "sp_InsertUserDataAccess",
             "Priority": 13,
             "Type": "proc"
+        },
+        {
+            "Id": "Sp_OrderPaymentInformation",
+            "Priority": 14,
+            "Type": "proc"
         }
     ],
     "Patch": [
