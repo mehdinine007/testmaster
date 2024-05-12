@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OrderManagement.EfCore;
 using Volo.Abp.EntityFrameworkCore;
@@ -12,9 +13,11 @@ using Volo.Abp.EntityFrameworkCore;
 namespace OrderManagement.EfCore.Migrations
 {
     [DbContext(typeof(OrderManagementDbContext))]
-    partial class OrderManagementDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240508101254_add-SeasonAllocation-table")]
+    partial class addSeasonAllocationtable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -3034,9 +3037,6 @@ namespace OrderManagement.EfCore.Migrations
                     b.Property<int>("SaleTypeCapacity")
                         .HasColumnType("int");
 
-                    b.Property<string>("Title")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<Guid>("UID")
                         .HasColumnType("uniqueidentifier");
 
@@ -3108,7 +3108,7 @@ namespace OrderManagement.EfCore.Migrations
                     b.Property<int>("SaleDetailId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("SeasonAllocationId")
+                    b.Property<int>("SeasonId")
                         .HasColumnType("int");
 
                     b.Property<int?>("TotalCount")
@@ -3120,8 +3120,6 @@ namespace OrderManagement.EfCore.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("SaleDetailId");
-
-                    b.HasIndex("SeasonAllocationId");
 
                     b.HasIndex("YearId");
 
@@ -4415,17 +4413,13 @@ namespace OrderManagement.EfCore.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("OrderManagement.Domain.OrderManagement.SeasonAllocation", "SeasonAllocation")
-                        .WithMany("SaleDetailAllocations")
-                        .HasForeignKey("SeasonAllocationId");
-
-                    b.HasOne("OrderManagement.Domain.Year", null)
+                    b.HasOne("OrderManagement.Domain.Year", "Year")
                         .WithMany("SeasonCompanyProducts")
                         .HasForeignKey("YearId");
 
                     b.Navigation("SaleDetail");
 
-                    b.Navigation("SeasonAllocation");
+                    b.Navigation("Year");
                 });
 
             modelBuilder.Entity("OrderManagement.Domain.Season_Product_Category", b =>
@@ -4626,8 +4620,6 @@ namespace OrderManagement.EfCore.Migrations
             modelBuilder.Entity("OrderManagement.Domain.OrderManagement.SeasonAllocation", b =>
                 {
                     b.Navigation("CustomerOrders");
-
-                    b.Navigation("SaleDetailAllocations");
                 });
 
             modelBuilder.Entity("OrderManagement.Domain.Province", b =>

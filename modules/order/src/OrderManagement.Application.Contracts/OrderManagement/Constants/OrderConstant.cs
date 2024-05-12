@@ -127,5 +127,9 @@ namespace OrderManagement.Application.Contracts
         public const string OrderAwaitingSignatureId = "9010";
         public static string ErrorInConnection = "خطا در برقراری ارتباط";
         public static string ErrorInConnectionId = "9011";
+        public static string SeasonAllocationNotFound = "تخصیص فصل وجود ندارد";
+        public static string SeasonAllocationNotFoundId = "9012";
+
+        
     }
 }

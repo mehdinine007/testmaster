@@ -205,7 +205,33 @@
             "Id": "20240422132448_Add-ContractNumber-CustomerOrder",
             "Priority": 23,
             "Version": "4.5.0"
+        },
+        {
+            "Id": "20240508101254_add-SeasonAllocation-table",
+            "Priority": 24,
+            "Version": "4.5.0"
+        },
+        {
+            "Id": "20240508101254_FkCustomerOrderSeasonAllocation",
+            "Priority": 25,
+            "Version": "4.5.0"
+        },
+        {
+            "Id": "20240511050723_add-title-saledetail",
+            "Priority": 26,
+            "Version": "4.5.0"
+        },
+        {
+            "Id": "20240511050723_ConvertSeasonAllocation",
+            "Priority": 27,
+            "Version": "4.5.0"
+        },
+        {
+            "Id": "20240511125024_add-SeasonAllocationId",
+            "Priority": 28,
+            "Version": "4.5.0"
         }
+
 
     ]
 }

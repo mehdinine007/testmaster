@@ -246,7 +246,7 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
         await _saleDetailRepository.AttachAsync(saleDetail, c => c.CircularSaleCode, s => s.SalePlanCode, s => s.SalePlanDescription,
         c => c.CarTipId, m => m.ManufactureDate, s => s.SalePlanStartDate, m => m.ManufactureDate, s => s.SalePlanEndDate,
         c => c.CarDeliverDate, s => s.SaleTypeCapacity, c => c.CoOperatingProfitPercentage, r => r.RefuseProfitPercentage, e => e.ESaleTypeId, c => c.CarFee, d => d.DeliverDaysCount,
-        d => d.MinimumAmountOfProxyDeposit, s => s.SaleId, v => v.Visible);
+        d => d.MinimumAmountOfProxyDeposit, s => s.SaleId, v => v.Visible,x=>x.Title);
         await _cacheManager.RemoveAsync(saleDetail.UID.ToString(), RedisConstants.SaleDetailPrefix, new CacheOptions() { Provider = CacheProviderEnum.Hybrid });
         return saleDetail.Id;
     }

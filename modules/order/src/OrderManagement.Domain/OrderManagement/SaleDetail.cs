@@ -18,7 +18,7 @@ public class SaleDetail : FullAuditedEntity<int>
     private ICollection<SaleDetailAllocation> _seasonCompanyProducts;
 
     public Guid UID { get; set; }
-
+    public string Title { get; set; }
     public int CircularSaleCode { get; set; } // شماره بخشنامه فروش
     public int SaleId { get; set; }
     public int SalePlanCode { get; set; } // شماره برنامه فروش 
