@@ -62,6 +62,12 @@ public class SendBoxAppService : ApplicationService, ISendBoxAppService
     {
         List<SendSmsLog> comments = new List<SendSmsLog>();
         var _inputLogData = JsonConvert.DeserializeObject<SendSMSDto>(JsonConvert.SerializeObject(input));
+        comments.Add(new SendSmsLog
+        {
+            Description = "Start SendSms",
+            Data = JsonConvert.DeserializeObject<Dictionary<string, object>>(JsonConvert.SerializeObject(_inputLogData))
+        });
+
         if (!string.IsNullOrEmpty(input.NationalCode) && !ValidationHelper.IsNationalCode(input.NationalCode))
         {
             throw new UserFriendlyException(Messages.NationalCodeNotValid);
@@ -199,10 +205,27 @@ public class SendBoxAppService : ApplicationService, ISendBoxAppService
                 Provider = ProviderSmsTypeEnum.Magfa,
                 Type = TypeMessageEnum.Sms
             };
+            comments.Add(new SendSmsLog
+            {
+                Description = "Text SendSms",
+                Data = JsonConvert.DeserializeObject<Dictionary<string, object>>(JsonConvert.SerializeObject(sendService))
+            });
 
             //_ret = await _magfa.Send(Message, input.Recipient);
             //_ret = (IDataResult<string>)await _getwayGrpcClient.SendService(sendService);
             var _retgrpc = await _getwayGrpcClient.SendService(sendService);
+            using (var auditingScope = _auditingManager.BeginScope())
+            {
+                _auditingManager.Current.Log.SetProperty("SendSms", comments);
+                _auditingManager.Current.Log.Comments.Add(JsonConvert.SerializeObject(new Dictionary<string, object>
+                      {
+                         { "Success",_retgrpc.Success},
+                         { "DataResult",_retgrpc.DataResult},
+                         { "Message",_retgrpc.Message},
+                         { "MessageCode",_retgrpc.MessageCode}
+                       }));
+                await auditingScope.SaveAsync();
+            }
             if (_retgrpc.Success)
             {
                 sendSMSDto.LastSMSSend = DateTime.Now;
@@ -216,24 +239,7 @@ public class SendBoxAppService : ApplicationService, ISendBoxAppService
             else
             {
 
-                comments.Add(new SendSmsLog
-                {
-                    Description = "Getway GrpcClient",
-                    Data = JsonConvert.DeserializeObject<Dictionary<string, object>>(JsonConvert.SerializeObject(_inputLogData))
-                });
-                using (var auditingScope = _auditingManager.BeginScope())
-                {
-                    _auditingManager.Current.Log.SetProperty("SendSms", comments);
-                    _auditingManager.Current.Log.Comments.Add(JsonConvert.SerializeObject(new Dictionary<string, object>
-                      {
-                         { "Success",_retgrpc.Success},
-                         { "DataResult",_retgrpc.DataResult},
-                         { "Message",_retgrpc.Message},
-                         { "MessageCode",_retgrpc.MessageCode}
-                       }));
-                    await auditingScope.SaveAsync();
-                }
-                throw new UserFriendlyException(UserMessageConstant.SendSmsErorr,UserMessageConstant.SendSmsErorrId);
+                throw new UserFriendlyException(UserMessageConstant.SendSmsErorr, UserMessageConstant.SendSmsErorrId);
             }
 
             return new SuccsessResult();
