@@ -37,19 +37,19 @@ public class IpgGrpcServiceProvider : ApplicationService, IIpgServiceProvider
     {
         using (var auditingScope = _auditingManager.BeginScope())
         {
-            List<OrderLog> comments = new List<OrderLog>();
+            List<CommentLog> comments = new List<CommentLog>();
 
             try
             {
 
-                comments.Add(new OrderLog
+                comments.Add(new CommentLog
                 {
                     Description = "Start HandShakeWithPsp",
                     Data = JsonConvert.DeserializeObject<Dictionary<string, object>>(JsonConvert.SerializeObject(handShakeRequest))
                 });
 
                 var handshakeResult = await _esaleGrpcClient.HandShake(ObjectMapper.Map<PspHandShakeRequest, PaymentHandShakeDto>(handShakeRequest));
-                comments.Add(new OrderLog
+                comments.Add(new CommentLog
                 {
                     Description = "OutPut EsaleGrpcClient",
                     Data = JsonConvert.DeserializeObject<Dictionary<string, object>>(JsonConvert.SerializeObject(handshakeResult))
@@ -57,7 +57,7 @@ public class IpgGrpcServiceProvider : ApplicationService, IIpgServiceProvider
 
                 if (handshakeResult != null && handshakeResult.StatusCode == 0)
                 {
-                    comments.Add(new OrderLog
+                    comments.Add(new CommentLog
                     {
                         Description = "Success EsaleGrpcClient",
                     });
@@ -80,7 +80,7 @@ public class IpgGrpcServiceProvider : ApplicationService, IIpgServiceProvider
             }
             catch (Exception ex)
             {
-                comments.Add(new OrderLog
+                comments.Add(new CommentLog
                 {
                     Description = $"عملیات با خطا مواجه شد"
                 });

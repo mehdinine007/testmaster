@@ -121,6 +121,11 @@ namespace OrderManagement.Application.Contracts
         public static string UserDataAccessOldCarNotFoundId = "9006";
         public const string ProductNotFound = "محصول وجود ندارد";
         public const string ProductNotFoundId = "9008";
+        public const string ExcelSheetCountValidate = "تعداد شیت اکسل ورودی باید یک عدد باشد";
+        public const string ExcelSheetCountValidateId = "9007";
+        public const string ExcelImportError = "عملیات با خطا مواجه شد.شماره ردیف : ";
+        public const string ExcelImportErrorId = "9006";
+
         public const string OrderNotFound = "سفارش وجود ندارد";
         public const string OrderNotFoundId = "9009";
         public const string OrderAwaitingSignature = "امکان امضای قراردادوجود ندارد";

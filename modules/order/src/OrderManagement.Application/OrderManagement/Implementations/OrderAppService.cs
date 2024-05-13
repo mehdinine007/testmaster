@@ -1155,11 +1155,11 @@ public class OrderAppService : ApplicationService, IOrderAppService
             var (status, paymentId, paymentSecret) =
             (callBackRequest.StatusCode, callBackRequest.PaymentId, callBackRequest.AdditionalData);
             int orderId = default;
-            List<OrderLog> comments = new List<OrderLog>();
+            List<CommentLog> comments = new List<CommentLog>();
             var _iPgCallBackLogData = JsonConvert.DeserializeObject<IPgCallBackLogData>(JsonConvert.SerializeObject(callBackRequest));
             try
             {
-                comments.Add(new OrderLog
+                comments.Add(new CommentLog
                 {
                     Description = "Start CheckPayment",
                     Data = JsonConvert.DeserializeObject<Dictionary<string, object>>(JsonConvert.SerializeObject(_iPgCallBackLogData))
@@ -1169,7 +1169,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                   .FirstOrDefault(x => x.PaymentId == paymentId);
                 if (order is null)
                 {
-                    comments.Add(new OrderLog
+                    comments.Add(new CommentLog
                     {
                         Description = $"سفارش  وجود ندارد"
                     });
@@ -1182,14 +1182,14 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     };
                 }
                 _iPgCallBackLogData.OrderId = order.Id;
-                comments.Add(new OrderLog
+                comments.Add(new CommentLog
                 {
                     Description = "GetOrder",
                     Data = JsonConvert.DeserializeObject<Dictionary<string, object>>(JsonConvert.SerializeObject(order))
                 });
                 if (order.OrderStatus != OrderStatusType.RecentlyAdded)
                 {
-                    comments.Add(new OrderLog
+                    comments.Add(new CommentLog
                     {
                         Description = "Check OrderStatus"
                     });
@@ -1204,7 +1204,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 if (order is null || (!int.TryParse(paymentSecret, out var numericPaymentSecret) || (order.PaymentSecret.HasValue && order.PaymentSecret.Value != numericPaymentSecret)))
                 {
 
-                    comments.Add(new OrderLog
+                    comments.Add(new CommentLog
                     {
                         Description = "Check Payment Secret"
                     });
@@ -1221,7 +1221,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
                 if (status != 0)
                 {
-                    comments.Add(new OrderLog
+                    comments.Add(new CommentLog
                     {
                         Description = "Payment Canceled"
                     });
@@ -1236,7 +1236,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 }
 
 
-                comments.Add(new OrderLog
+                comments.Add(new CommentLog
                 {
                     Description = "Check Capacity Control"
                 });
@@ -1244,7 +1244,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 if (!capacityControl.Success)
                 {
                     await _ipgServiceProvider.ReverseTransaction(paymentId);
-                    comments.Add(new OrderLog
+                    comments.Add(new CommentLog
                     {
                         Description = capacityControl.Message
                     });
@@ -1257,13 +1257,13 @@ public class OrderAppService : ApplicationService, IOrderAppService
                         OrderId = order.Id
                     };
                 }
-                comments.Add(new OrderLog
+                comments.Add(new CommentLog
                 {
                     Description = "callgrpc GetPaymentInformation"
                 });
 
                 var paymentInformation = await _esaleGrpcClient.GetPaymentInformation(paymentId);
-                comments.Add(new OrderLog
+                comments.Add(new CommentLog
                 {
                     Description = "VerifyTransaction"
                 });
@@ -1278,7 +1278,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     TransactionId = paymentInformation.TransactionCode,
                     PaymentPrice = paymentInformation.Amount
                 });
-                comments.Add(new OrderLog
+                comments.Add(new CommentLog
                 {
                     Description = "Payment Succeeded"
                 });
@@ -1294,7 +1294,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
             catch (Exception e)
             {
-                comments.Add(new OrderLog
+                comments.Add(new CommentLog
                 {
                     Description = $"عملیات با خطا مواجه شد"
                 });

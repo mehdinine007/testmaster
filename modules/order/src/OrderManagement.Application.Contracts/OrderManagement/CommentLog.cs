@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace OrderManagement.Application.Contracts.OrderManagement
 {
-    public class OrderLog
+    public class CommentLog
     {
         public string Description { get; set; }
         public Dictionary<string, object> Data { get; set; }
