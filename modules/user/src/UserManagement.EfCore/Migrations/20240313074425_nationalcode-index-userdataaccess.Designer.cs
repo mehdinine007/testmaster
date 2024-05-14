@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using UserManagement.EfCore.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore;
@@ -12,9 +13,11 @@ using Volo.Abp.EntityFrameworkCore;
 namespace UserManagement.EfCore.Migrations
 {
     [DbContext(typeof(UsermanagementDbContext))]
-    partial class UsermanagementDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240313074425_nationalcode-index-userdataaccess")]
+    partial class nationalcodeindexuserdataaccess
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -89,7 +92,7 @@ namespace UserManagement.EfCore.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AdvocacyUsers", (string)null);
+                    b.ToTable("AdvocacyUsers");
                 });
 
             modelBuilder.Entity("UserManagement.Domain.UserManagement.Advocacy.AdvocacyUsersFromBank", b =>
@@ -159,7 +162,7 @@ namespace UserManagement.EfCore.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AdvocacyUsersFromBank", (string)null);
+                    b.ToTable("AdvocacyUsersFromBank");
                 });
 
             modelBuilder.Entity("UserManagement.Domain.UserManagement.Advocacy.UserRejectionFromBank", b =>
@@ -240,7 +243,7 @@ namespace UserManagement.EfCore.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("UserRejectionFromBank", (string)null);
+                    b.ToTable("UserRejectionFromBank");
                 });
 
             modelBuilder.Entity("UserManagement.Domain.UserManagement.Authorization.Users.UserSQL", b =>
@@ -548,7 +551,7 @@ namespace UserManagement.EfCore.Migrations
 
                     b.HasIndex("NationalCode", "WhiteListType");
 
-                    b.ToTable("WhiteList", (string)null);
+                    b.ToTable("WhiteList");
                 });
 
             modelBuilder.Entity("UserManagement.Domain.UserManagement.CompanyService.ClientsOrderDetailByCompany", b =>

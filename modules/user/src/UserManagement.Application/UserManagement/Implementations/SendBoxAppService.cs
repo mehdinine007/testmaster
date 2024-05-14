@@ -20,6 +20,10 @@ using UserManagement.Domain.Shared;
 using MongoDB.Driver;
 using WorkingWithMongoDB.WebAPI.Services;
 using IResult = IFG.Core.Utility.Results.IResult;
+using System.Xml.Linq;
+using Volo.Abp.Data;
+using UserManagement.Application.Contracts;
+using UserManagement.Application.Contracts.UserManagement.Models;
 #endregion
 
 namespace UserManagement.Application.UserManagement.Implementations;
@@ -34,14 +38,14 @@ public class SendBoxAppService : ApplicationService, ISendBoxAppService
     private readonly ICacheManager _cacheManager;
     private readonly IGetwayGrpcClient _getwayGrpcClient;
     private readonly ICaptchaService _captchaService;
-
+    private readonly IAuditingManager _auditingManager;
     public SendBoxAppService(IConfiguration configuration,
         ICommonAppService CommonAppService,
         IBaseInformationService baseInformationService,
         ICacheManager cacheManager,
         IGetwayGrpcClient getwayGrpcClient,
         ICaptchaService captchaService,
-         IRepository<UserMongo, ObjectId> userMongoRepository)
+         IRepository<UserMongo, ObjectId> userMongoRepository, IAuditingManager auditingManager)
     {
         _configuration = configuration;
         _commonAppService = CommonAppService;
@@ -50,12 +54,21 @@ public class SendBoxAppService : ApplicationService, ISendBoxAppService
         _getwayGrpcClient = getwayGrpcClient;
         _captchaService = captchaService;
         _userMongoRepository = userMongoRepository;
+        _auditingManager = auditingManager;
     }
 
 
     [Audited]
     public async Task<IResult> SendSms(SendSMSDto input)
     {
+        List<SendSmsLog> comments = new List<SendSmsLog>();
+        var _inputLogData = JsonConvert.DeserializeObject<SendSMSDto>(JsonConvert.SerializeObject(input));
+        comments.Add(new SendSmsLog
+        {
+            Description = "Start SendSms",
+            Data = JsonConvert.DeserializeObject<Dictionary<string, object>>(JsonConvert.SerializeObject(_inputLogData))
+        });
+
         if (!string.IsNullOrEmpty(input.NationalCode) && !ValidationHelper.IsNationalCode(input.NationalCode))
         {
             throw new UserFriendlyException(Messages.NationalCodeNotValid);
@@ -80,7 +93,7 @@ public class SendBoxAppService : ApplicationService, ISendBoxAppService
             var response = await _captchaService.ReCaptcha(new CaptchaInputDto(input.CK, "CreateUser"));
             if (response.Success == false)
             {
-                throw new UserFriendlyException("خطای کپچا");
+                throw new UserFriendlyException(UserMessageConstant.CaptchaErorr, UserMessageConstant.CaptchaErorrId);
             }
 
         }
@@ -112,7 +125,7 @@ public class SendBoxAppService : ApplicationService, ISendBoxAppService
 
                 if (userFromDb == null)
                 {
-                    throw new UserFriendlyException("نام کاربری صحیح نمی باشد");
+                    throw new UserFriendlyException(UserMessageConstant.UsernameIsNotCorrect, UserMessageConstant.UsernameIsNotCorrectId);
                 }
                 input.Recipient = userFromDb.Mobile;
                 PreFix = SMSType.UpdateProfile.ToString();
@@ -125,7 +138,7 @@ public class SendBoxAppService : ApplicationService, ISendBoxAppService
 
                 if (userFromDb == null || userFromDb.Mobile.Replace(" ", "") != input.Recipient)
                 {
-                    throw new UserFriendlyException("کد ملی یا شماره موبایل صحیح نمی باشد");
+                    throw new UserFriendlyException(UserMessageConstant.NationalCodeOrMobileNotCorrect, UserMessageConstant.NationalCodeOrMobileNotCorrectId);
                 }
                 PreFix = SMSType.ForgetPassword.ToString();
                 Message = _configuration.GetSection("ForgetPassText").Value.Replace("{0}", sendSMSDto.SMSCode);
@@ -165,7 +178,7 @@ public class SendBoxAppService : ApplicationService, ISendBoxAppService
                 {
                     if (DateTime.Now.Subtract(sendSMSDFromCache.LastSMSSend).TotalSeconds < 120)
                     {
-                        throw new UserFriendlyException("در دو دقیقه گذشته برای شما پیامک ارسال شده است");
+                        throw new UserFriendlyException(UserMessageConstant.TextSent2MinsAgo, UserMessageConstant.TextSent2MinsAgoId);
                     }
                 }
             }
@@ -193,10 +206,27 @@ public class SendBoxAppService : ApplicationService, ISendBoxAppService
                 Provider = ProviderSmsTypeEnum.Magfa,
                 Type = TypeMessageEnum.Sms
             };
+            comments.Add(new SendSmsLog
+            {
+                Description = "Text SendSms",
+                Data = JsonConvert.DeserializeObject<Dictionary<string, object>>(JsonConvert.SerializeObject(sendService))
+            });
 
             //_ret = await _magfa.Send(Message, input.Recipient);
             //_ret = (IDataResult<string>)await _getwayGrpcClient.SendService(sendService);
             var _retgrpc = await _getwayGrpcClient.SendService(sendService);
+            using (var auditingScope = _auditingManager.BeginScope())
+            {
+                _auditingManager.Current.Log.SetProperty("SendSms", comments);
+                _auditingManager.Current.Log.Comments.Add(JsonConvert.SerializeObject(new Dictionary<string, object>
+                      {
+                         { "Success",_retgrpc.Success},
+                         { "DataResult",_retgrpc.DataResult},
+                         { "Message",_retgrpc.Message},
+                         { "MessageCode",_retgrpc.MessageCode}
+                       }));
+                await auditingScope.SaveAsync();
+            }
             if (_retgrpc.Success)
             {
                 sendSMSDto.LastSMSSend = DateTime.Now;
@@ -206,6 +236,11 @@ public class SendBoxAppService : ApplicationService, ISendBoxAppService
                         Provider = CacheProviderEnum.Redis,
                         RedisHash = false
                     }, 120);
+            }
+            else
+            {
+
+                throw new UserFriendlyException(UserMessageConstant.SendSmsErorr, UserMessageConstant.SendSmsErorrId);
             }
 
             return new SuccsessResult();
