@@ -48,7 +48,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
                 attachmentDto.Priority = _priroity;
                
             }
-            attachmentDto.VersionNumber = 1000;
+            attachmentDto.VersionNumber = 1;
             await _attachementRepository.InsertAsync(attachmentDto);
             return attachmentDto.Id;
         }
