@@ -168,7 +168,6 @@
     <Content Include="Migrations\Patch\20240511050723_ConvertSeasonAllocation.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Migrations\Programmability\CustomerCarDeliveryTime.sql">
     <Content Include="Migrations\Patch\20240313074425_nationalcode-index-userdataaccess.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
