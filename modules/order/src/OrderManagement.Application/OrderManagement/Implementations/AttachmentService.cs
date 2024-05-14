@@ -46,8 +46,9 @@ namespace OrderManagement.Application.OrderManagement.Implementations
                 if (attachment != null && attachment.Count > 1)
                     _priroity = attachment.Max(x => x.Priority) + 1;
                 attachmentDto.Priority = _priroity;
+               
             }
-
+            attachmentDto.VersionNumber = 1000;
             await _attachementRepository.InsertAsync(attachmentDto);
             return attachmentDto.Id;
         }
@@ -77,6 +78,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             attachment.Content = attachmentDto.Content;
             attachment.Description = attachmentDto.Description;
             attachment.Device=attachmentDto.Device;
+            attachment.VersionNumber ++;
             await _attachementRepository.UpdateAsync(attachment);
             return attachment.Id;
         }
