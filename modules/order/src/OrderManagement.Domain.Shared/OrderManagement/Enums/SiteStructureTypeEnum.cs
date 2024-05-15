@@ -20,5 +20,7 @@ public enum SiteStructureTypeEnum
     Advertisement = 7,
     [EnumProperty(Description = "سازمان")]
     Organization = 8,
+    [EnumProperty(Description = "نمایندگی")]
+    Agency =10,
 
 }

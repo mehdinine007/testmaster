@@ -119,7 +119,10 @@ namespace OrderManagement
                 .ReverseMap()
                 .IgnoreFullAuditedObjectProperties();
             CreateMap<SaleDetail, SaleDetailOrderDto>();
-            CreateMap<Agency, AgencyDto>().ReverseMap();
+            CreateMap<Agency, AgencyDto>()
+                 .ForMember(x => x.ProvinceTitle, c => c.MapFrom(o=>o.Province.Name))
+                 .ForMember(x => x.CityIdTitle, c => c.MapFrom(o=>o.City.Name))
+                .ReverseMap();
             //CreateMap<ApiResult, HandShakeResultDto>();
             CreateMap<SaleDetail, CreateSaleDetailDto>()
                 .ReverseMap()

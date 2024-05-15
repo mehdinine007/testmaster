@@ -14,5 +14,7 @@ namespace OrderManagement.Domain
 
         public int ProvinceId { get; set; }
         public virtual Province Province { get; set; }
+        public virtual ICollection<Agency> Agencies { get; set; }
+        
     }
 }
