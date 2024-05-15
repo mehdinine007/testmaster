@@ -18,7 +18,6 @@ namespace OrderManagement.Application.Contracts
         public int EntityId { get; set; }
         public DeviceEnum Device { get; set; }
         public string DeviceTitle { get; set; }
-        public int VersionNumber { get; set; }
 
     }
 }

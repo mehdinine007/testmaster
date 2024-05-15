@@ -236,11 +236,6 @@
       "Id": "20240514072152_add-versionnumber-attachment",
       "Priority": 29,
       "Version": "4.5.0"
-    },
-    {
-      "Id": "20240514072152_SetDefaultValueVersionNumber",
-      "Priority": 30,
-      "Version": "4.5.0"
     }
   ]
 }
