@@ -142,8 +142,12 @@ namespace OrderManagement.Application.Contracts
         public const string RecentlyAddedId = "1001";
         public const string PaymentSucceeded = "شما قبلا سفارش از نوع موفق درسامانه دارید.مجاز به ثبت سفارش جدید نمی باشید.";
         public const string PaymentSucceededId = "1002";
+        public static string ProvinceNotFound = "استان وجود ندارد";
+        public static string ProvinceNotFoundId = "1101";
+        public static string CityNotFound = "شهر وجود ندارد";
+        public static string CityNotFoundId = "1102";
 
 
-        
+
     }
 }

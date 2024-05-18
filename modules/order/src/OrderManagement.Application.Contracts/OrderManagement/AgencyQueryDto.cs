@@ -14,8 +14,6 @@ namespace OrderManagement.Application.Contracts.OrderManagement
         public int? CityId { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
-        public string CityIdTitle { get; set; }
-        public string ProvinceTitle { get; set; }
         public AgencyTypeEnum? AgencyType { get; set; }
         public List<AttachmentEntityTypeEnum> AttachmentEntityType { get; set; }
         public List<AttachmentLocationEnum> AttachmentLocation { get; set; }

@@ -21,6 +21,7 @@ using Permission.Order;
 using OrderManagement.Application.Contracts.OrderManagement;
 using OrderManagement.Domain.OrderManagement;
 using OrderManagement.Domain.Shared;
+using Volo.Abp.Domain.Entities;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -28,24 +29,27 @@ public class AgencyService : ApplicationService, IAgencyService
 {
     private readonly IRepository<Agency> _agencyRepository;
     private readonly IRepository<Province> _provinceRepository;
+    private readonly IRepository<City> _cityRepository;
     private readonly ICacheManager _cacheManager;
     private readonly IAttachmentService _attachmentService;
     public AgencyService(IRepository<Agency> agencyRepository, IRepository<Province> provinceRepository,
-         ICacheManager cacheManager, IAttachmentService attachmentService)
+         ICacheManager cacheManager, IAttachmentService attachmentService, IRepository<City> cityRepository)
     {
         _agencyRepository = agencyRepository;
         _provinceRepository = provinceRepository;
         _cacheManager = cacheManager;
         _attachmentService = attachmentService;
+        _cityRepository = cityRepository;
     }
 
 
     [SecuredOperation(AgencyServicePermissionConstants.Delete)]
     public async Task<bool> Delete(int id)
     {
-        await _agencyRepository.DeleteAsync(x => x.Id == id, autoSave: true);
-
+        await Validation(id, null, null);
+        await _agencyRepository.DeleteAsync(x => x.Id == id);
         await _cacheManager.RemoveByPrefixAsync(RedisConstants.AgencyPrefix, new CacheOptions() { Provider = CacheProviderEnum.Hybrid });
+        await _attachmentService.DeleteByEntityId(AttachmentEntityEnum.Agency, id);
         return true;
     }
 
@@ -63,44 +67,30 @@ public class AgencyService : ApplicationService, IAgencyService
 
     }
     [UnitOfWork]
-    [SecuredOperation(AgencyServicePermissionConstants.Save)]
-    public async Task<int> Add(AgencyDto agencyDto)
+    [SecuredOperation(AgencyServicePermissionConstants.Add)]
+    public async Task<AgencyDto> Add(AgencyCreateDto agencyDto)
     {
-        var province = await _provinceRepository.FirstOrDefaultAsync(x => x.Id == agencyDto.ProvinceId);
-        if (province == null)
-        {
-            throw new UserFriendlyException("استان وجود ندارد.");
-        }
-        var agency = ObjectMapper.Map<AgencyDto, Agency>(agencyDto);
-        await _agencyRepository.InsertAsync(agency, autoSave: true);
-        return agency.Id;
+        await Validation(null, null, agencyDto);
+        var agency = ObjectMapper.Map<AgencyCreateDto, Agency>(agencyDto);
+        var entity = await _agencyRepository.InsertAsync(agency);
+        await CurrentUnitOfWork.SaveChangesAsync();
+        return ObjectMapper.Map<Agency, AgencyDto>(entity);
     }
 
     [SecuredOperation(AgencyServicePermissionConstants.Update)]
-    public async Task<int> Update(AgencyDto agencyDto)
+    public async Task<AgencyDto> Update(AgencyUpdateDto agencyDto)
     {
-        var result = await _agencyRepository.FirstOrDefaultAsync(x => x.Id == agencyDto.Id);
-        if (result == null)
-        {
-            throw new UserFriendlyException("نمایندگی انتخاب شده وجود ندارد.");
-        }
-        var province = await _provinceRepository.FirstOrDefaultAsync(x => x.Id == agencyDto.ProvinceId);
-
-        if (province == null)
-        {
-            throw new UserFriendlyException("استان وجود ندارد.");
-        }
-        result.Name = agencyDto.Name;
-        result.ProvinceId = agencyDto.ProvinceId;
-        await _agencyRepository.UpdateAsync(result, autoSave: true);
+        var _agency=await Validation(agencyDto.Id, agencyDto, null);
+        var agency = ObjectMapper.Map<AgencyUpdateDto, Agency>(agencyDto, _agency);
+        var entity = await _agencyRepository.UpdateAsync(agency);
         await _cacheManager.RemoveByPrefixAsync(RedisConstants.AgencyPrefix, new CacheOptions() { Provider = CacheProviderEnum.Hybrid });
-        return result.Id;
+        return ObjectMapper.Map<Agency, AgencyDto>(entity);
     }
 
 
     public async Task<AgencyDto> GetById(int id, List<AttachmentEntityTypeEnum> attachmentType = null, List<AttachmentLocationEnum> attachmentlocation = null)
     {
-        var agency = await Validation(id);
+        var agency = await Validation(id, null, null);
         var agencyDto = ObjectMapper.Map<Agency, AgencyDto>(agency);
         var attachments = await _attachmentService.GetList(AttachmentEntityEnum.Agency, new List<int>() { id }, attachmentType, attachmentlocation);
         agencyDto.Attachments = ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(attachments);
@@ -114,30 +104,27 @@ public class AgencyService : ApplicationService, IAgencyService
         {
             agencyQuery = agencyQuery.Where(x => x.ProvinceId == agencyQueryDto.ProvinceId);
         }
-        if (agencyQueryDto.CityId is null)
+        if (agencyQueryDto.CityId is not null)
         {
             agencyQuery = agencyQuery.Where(x => x.CityId == agencyQueryDto.CityId);
         }
-        if (agencyQueryDto.Code is not null)
+        if (!agencyQueryDto.Code.IsNullOrEmpty())
         {
             agencyQuery = agencyQuery.Where(x => x.Code == agencyQueryDto.Code);
         }
 
-        if (agencyQueryDto.Name.IsNullOrEmpty())
+        if (!agencyQueryDto.Name.IsNullOrEmpty())
         {
             agencyQuery = agencyQuery.Where(x => x.Name == agencyQueryDto.Name);
         }
-        if (agencyQueryDto.Code.IsNullOrEmpty())
-        {
-            agencyQuery = agencyQuery.Where(x => x.Name == agencyQueryDto.Name);
-        }
+        
         if (agencyQueryDto.AgencyType is not null)
         {
             agencyQuery = agencyQuery.Where(x => x.AgencyType == agencyQueryDto.AgencyType);
         }
         var resultquery = agencyQuery.Include(x => x.Province).Include(x => x.City).ToList();
         var agencyDto = ObjectMapper.Map<List<Agency>, List<AgencyDto>>(resultquery);
-        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.Organization, agencyDto.Select(x => x.Id).ToList(), agencyQueryDto.AttachmentEntityType, agencyQueryDto.AttachmentLocation);
+        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.Agency, agencyDto.Select(x => x.Id).ToList(), agencyQueryDto.AttachmentEntityType, agencyQueryDto.AttachmentLocation);
         agencyDto.ForEach(x =>
         {
             var attachment = attachments.Where(y => y.EntityId == x.Id).ToList();
@@ -145,16 +132,46 @@ public class AgencyService : ApplicationService, IAgencyService
         });
         return agencyDto;
     }
-    private async Task<Agency> Validation(int id)
+    private async Task<Agency> Validation(int? id, AgencyUpdateDto agencyUpdateDto, AgencyCreateDto agencyCreateDto)
     {
-        var agency = (await _agencyRepository.GetQueryableAsync()).AsNoTracking()
-            .FirstOrDefault(x => x.Id == id);
-        if (agency is null)
+        
+        var agency = new Agency();
+        if (id is not null)
         {
-            throw new UserFriendlyException(OrderConstant.AgencyNotFound, OrderConstant.AgencyId);
+            var agencyQuery = (await _agencyRepository.GetQueryableAsync()).AsNoTracking().Include(x=>x.City).Include(x => x.Province);
+            agency = agencyQuery.FirstOrDefault(x => x.Id == id);
+            if (agency is null)
+                throw new UserFriendlyException(OrderConstant.AgencyNotFound, OrderConstant.AgencyId);
+        }
+
+        if (agencyUpdateDto is not null)
+        {
+            var province = (await _provinceRepository.GetQueryableAsync()).AsNoTracking().FirstOrDefault(x => x.Id == agencyUpdateDto.ProvinceId);
+            if (province is null)
+                throw new UserFriendlyException(OrderConstant.ProvinceNotFound, OrderConstant.ProvinceNotFoundId);
+
+            var city = (await _cityRepository.GetQueryableAsync()).AsNoTracking().FirstOrDefault(x => x.Id == agencyUpdateDto.CityId);
+            if (city is null)
+                throw new UserFriendlyException(OrderConstant.CityNotFound, OrderConstant.CityNotFoundId);
+        }
+
+        if (agencyCreateDto is not null)
+        {
+            var province = (await _provinceRepository.GetQueryableAsync()).AsNoTracking().FirstOrDefault (x => x.Id == agencyCreateDto.ProvinceId);
+            if (province is null)
+                throw new UserFriendlyException(OrderConstant.ProvinceNotFound, OrderConstant.ProvinceNotFoundId);
+
+            var city = (await _cityRepository.GetQueryableAsync()).AsNoTracking().FirstOrDefault(x => x.Id == agencyCreateDto.CityId);
+            if (city is null)
+                throw new UserFriendlyException(OrderConstant.CityNotFound, OrderConstant.CityNotFoundId);
         }
         return agency;
     }
-
-
+    [SecuredOperation(AgencyServicePermissionConstants.UploadFile)]
+    public async Task<Guid> UploadFile(UploadFileDto uploadFile)
+    {
+        var announcement = await Validation(uploadFile.Id, null,null);
+        return await _attachmentService.UploadFile(AttachmentEntityEnum.Agency, uploadFile);
+       
+    }
 }

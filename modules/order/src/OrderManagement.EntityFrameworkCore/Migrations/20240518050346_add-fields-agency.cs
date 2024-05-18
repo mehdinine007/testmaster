@@ -77,8 +77,7 @@ namespace OrderManagement.EfCore.Migrations
                 column: "CityId",
                 principalSchema: "aucbase",
                 principalTable: "City",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                principalColumn: "Id");
         }
 
         /// <inheritdoc />

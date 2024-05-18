@@ -11,10 +11,11 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Services
     public interface IAgencyService : IApplicationService
     {
         Task<PagedResultDto<AgencyDto>> GetAgencies(int pageNo, int sizeNo);
-        Task<int> Add(AgencyDto agencyDto);
-        Task<int> Update(AgencyDto agencyDto);
+        Task<AgencyDto> Add(AgencyCreateDto agencyDto);
+        Task<AgencyDto> Update(AgencyUpdateDto agencyDto);
         Task<bool> Delete(int id);
         Task<AgencyDto> GetById(int id, List<AttachmentEntityTypeEnum> attachmentType = null, List<AttachmentLocationEnum> attachmentlocation = null);
         Task<List<AgencyDto>> GetList(AgencyQueryDto agencyQueryDto);
+        Task<Guid> UploadFile(UploadFileDto uploadFile);
     }
 }

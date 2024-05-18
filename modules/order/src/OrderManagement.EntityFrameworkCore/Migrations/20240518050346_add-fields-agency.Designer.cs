@@ -13,7 +13,7 @@ using Volo.Abp.EntityFrameworkCore;
 namespace OrderManagement.EfCore.Migrations
 {
     [DbContext(typeof(OrderManagementDbContext))]
-    [Migration("20240515140340_add-fields-agency")]
+    [Migration("20240518050346_add-fields-agency")]
     partial class addfieldsagency
     {
         /// <inheritdoc />
@@ -4127,7 +4127,7 @@ namespace OrderManagement.EfCore.Migrations
                     b.HasOne("OrderManagement.Domain.City", "City")
                         .WithMany("Agencies")
                         .HasForeignKey("CityId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired();
 
                     b.HasOne("OrderManagement.Domain.Province", "Province")

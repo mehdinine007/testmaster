@@ -4124,7 +4124,7 @@ namespace OrderManagement.EfCore.Migrations
                     b.HasOne("OrderManagement.Domain.City", "City")
                         .WithMany("Agencies")
                         .HasForeignKey("CityId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired();
 
                     b.HasOne("OrderManagement.Domain.Province", "Province")
