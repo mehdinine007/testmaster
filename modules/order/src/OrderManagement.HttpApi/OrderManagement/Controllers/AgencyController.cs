@@ -41,14 +41,14 @@ public class AgencyController : Controller
      => await _agencyServicecs.Add(agencyDto);
 
     [HttpPut]
-    public async Task<AgencyDto> Update(AgencyUpdateDto agencyDto)
+    public async Task<AgencyDto> Update(AgencyCreateOrUpdateDto agencyDto)
      => await _agencyServicecs.Update(agencyDto);
     [HttpGet]
     public async Task<AgencyDto> GetById(int id, string attachmentType, string attachmentlocation)
     => await _agencyServicecs.GetById(id, EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(attachmentType), EnumHelper.ConvertStringToEnum<AttachmentLocationEnum>(attachmentlocation));
     [HttpGet]
     public async Task<List<AgencyDto>> GetList(int? provinceId, int? cityId, string code, string name, AgencyTypeEnum? agencyType, string attachmentType, string attachmentlocation)
-    =>await _agencyServicecs.GetList(new AgencyQueryDto { ProvinceId= provinceId ,CityId=cityId,Code=code,AgencyType=agencyType,
+    =>await _agencyServicecs.GetList(new AgencyQueryDto { ProvinceId= provinceId ,CityId=cityId,Code=code, Name=name,AgencyType=agencyType,
         AttachmentEntityType= EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(attachmentType)
         ,AttachmentLocation= EnumHelper.ConvertStringToEnum<AttachmentLocationEnum>(attachmentlocation)
     });

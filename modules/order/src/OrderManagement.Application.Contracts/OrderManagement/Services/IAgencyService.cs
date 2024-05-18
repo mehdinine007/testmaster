@@ -12,7 +12,7 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Services
     {
         Task<PagedResultDto<AgencyDto>> GetAgencies(int pageNo, int sizeNo);
         Task<AgencyDto> Add(AgencyCreateDto agencyDto);
-        Task<AgencyDto> Update(AgencyUpdateDto agencyDto);
+        Task<AgencyDto> Update(AgencyCreateOrUpdateDto agencyDto);
         Task<bool> Delete(int id);
         Task<AgencyDto> GetById(int id, List<AttachmentEntityTypeEnum> attachmentType = null, List<AttachmentLocationEnum> attachmentlocation = null);
         Task<List<AgencyDto>> GetList(AgencyQueryDto agencyQueryDto);

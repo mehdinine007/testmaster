@@ -18,7 +18,7 @@ namespace OrderManagement.Application.Contracts.OrderManagement
         public decimal? Latitude { get; set; }
         public AgencyTypeEnum AgencyType { get; set; }
         public int ProvinceId { get; set; }
-        public int CityId { get; set; }
+        public int? CityId { get; set; }
       
     }
 }
