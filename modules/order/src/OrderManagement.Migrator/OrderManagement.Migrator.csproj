@@ -39,6 +39,7 @@
     <None Remove="Migrations\Patch\20240511050723_add-title-saledetail.sql" />
     <None Remove="Migrations\Patch\20240511050723_ConvertSeasonAllocation.sql" />
     <None Remove="Migrations\Patch\20240511125024_add-SeasonAllocationId.sql" />
+    <None Remove="Migrations\Patch\20240514072152_add-versionnumber-attachment.sql" />
     <None Remove="Migrations\Programmability\CustomerCarDeliveryTime.sql" />
     <None Remove="Migrations\Patch\20240313074425_nationalcode-index-userdataaccess.sql" />
     <None Remove="Migrations\Programmability\GetRecentCustomerAndOrder.sql" />

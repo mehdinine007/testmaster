@@ -16,7 +16,7 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Services
         Task<OrganizationDto> Update(OrganizationAddOrUpdateDto orgDto);
         Task<bool> Delete(int id);
         Task<OrganizationDto> GetById(int id, List<AttachmentEntityTypeEnum>? attachmentType = null, List<AttachmentLocationEnum> attachmentlocation = null);
-        Task<bool> UploadFile(UploadFileDto uploadFile);
+        Task<Guid> UploadFile(UploadFileDto uploadFile);
         Task<bool> Move(OrganizationPriorityDto input);
     }
 }

@@ -65,9 +65,17 @@ namespace OrderManagement
             CreateMap<Attachment, AttachmentDto>()
                 .ReverseMap();
             CreateMap<Attachment, AttachFileDto>()
+                .ForMember(x => x.Content, c => c.MapFrom(m => !string.IsNullOrWhiteSpace(m.Content) ? JsonConvert.DeserializeObject<List<string>>(m.Content) : null))
+                .ForMember(x => x.AttachmentId, c => c.MapFrom(m => m.Id))
+                .ReverseMap()
+                .ForMember(x => x.Id, c => c.MapFrom(m => m.AttachmentId));
+            CreateMap<UploadFileDto, AttachFileDto>()
+                .ForMember(x => x.EntityType, c => c.MapFrom(m => m.Type))
                 .ReverseMap();
             CreateMap<Attachment, AttachmentUpdateDto>()
-                .ReverseMap();
+                .ReverseMap()
+                .ForMember(x => x.EntityType, c => c.MapFrom(m => m.Type))
+                .ForMember(x => x.Content, c => c.MapFrom(m => m.Content != null ? JsonConvert.SerializeObject(m.Content) : null));
             CreateMap<AttachmentDto, AttachmentViewModel>()
                 .ForMember(x => x.FileName, c => c.MapFrom(m => m.Id + "." + m.FileExtension))
                 .ForMember(x => x.Type, c => c.MapFrom(m => m.EntityType))

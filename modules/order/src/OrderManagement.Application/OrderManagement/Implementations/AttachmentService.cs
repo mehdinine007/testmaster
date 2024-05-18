@@ -46,8 +46,8 @@ namespace OrderManagement.Application.OrderManagement.Implementations
                 if (attachment != null && attachment.Count > 1)
                     _priroity = attachment.Max(x => x.Priority) + 1;
                 attachmentDto.Priority = _priroity;
+               
             }
-
             await _attachementRepository.InsertAsync(attachmentDto);
             return attachmentDto.Id;
         }
@@ -55,28 +55,13 @@ namespace OrderManagement.Application.OrderManagement.Implementations
         [SecuredOperation(AttachmentServicePermissionConstants.Update)]
         public async Task<Guid> Update(AttachmentUpdateDto attachmentDto)
         {
-            var attachment = ObjectMapper.Map<AttachmentUpdateDto, Attachment>(attachmentDto);
+            var attachment = await Validation(attachmentDto.Id, ObjectMapper.Map<AttachmentUpdateDto, Attachment>(attachmentDto));
             if (attachmentDto.File != null)
             {
-                attachment = CopyFile(ObjectMapper.Map<AttachmentUpdateDto, AttachFileDto>(attachmentDto));
+                var attachFileDto = ObjectMapper.Map<Attachment, AttachFileDto>(ObjectMapper.Map(attachmentDto, attachment));
+                attachFileDto.File = attachmentDto.File;
+                attachment = CopyFile(attachFileDto);
             }
-            attachment.EntityType = attachmentDto.Type;
-            attachment.Content = JsonConvert.SerializeObject(attachmentDto.Content);
-            attachment.FileExtension = attachment.FileExtension;
-            await UpdateAttachment(attachment);
-            return attachment.Id;
-        }
-        private async Task<Guid> UpdateAttachment(Attachment attachmentDto)
-        {
-            var attachment = await Validation(attachmentDto.Id, attachmentDto);
-            attachment.Title = attachmentDto.Title;
-            attachment.EntityType = attachmentDto.EntityType;
-            attachment.Priority = attachmentDto.Priority;
-            attachment.Location = attachmentDto.Location;
-            attachment.FileExtension = attachmentDto.FileExtension;
-            attachment.Content = attachmentDto.Content;
-            attachment.Description = attachmentDto.Description;
-            attachment.Device=attachmentDto.Device;
             await _attachementRepository.UpdateAsync(attachment);
             return attachment.Id;
         }
@@ -95,6 +80,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             if (id != null)
             {
                 attachment = (await _attachementRepository.GetQueryableAsync())
+                    .AsNoTracking()
                     .FirstOrDefault(x => x.Id == id);
                 if (attachment is null)
                 {
@@ -114,6 +100,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             if (attachmentDto != null)
             {
                 var attachmentPriority = (await _attachementRepository.GetQueryableAsync())
+                    .AsNoTracking()
                     .FirstOrDefault(x => x.Id != id && x.Entity == attachmentDto.Entity && x.EntityId == attachmentDto.EntityId && x.EntityType == attachmentDto.EntityType && x.Device == attachmentDto.Device);
                 if (attachmentPriority != null && attachmentDto.EntityType != AttachmentEntityTypeEnum.Gallery)
                 {
@@ -121,6 +108,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
                 }
 
                 attachmentPriority = (await _attachementRepository.GetQueryableAsync())
+                    .AsNoTracking()
                     .FirstOrDefault(x => x.Id != id && x.Priority == attachmentDto.Priority && x.Entity == attachmentDto.Entity && x.EntityId == attachmentDto.EntityId && x.EntityType == attachmentDto.EntityType && x.Device == attachmentDto.Device);
                 if (attachmentPriority != null)
                 {
@@ -137,20 +125,10 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             {
                 throw new UserFriendlyException(OrderConstant.AttachmentEntityIdNotFound, OrderConstant.AttachmentEntityIdNotFoundId);
             }
-            var attachDto = new AttachFileDto()
-            {
-                Entity = entity,
-                EntityId = uploadFile.Id,
-                EntityType = uploadFile.Type,
-                File = uploadFile.File,
-                Description = uploadFile.Description,
-                Title = uploadFile.Title,
-                Content = uploadFile.Content,
-                Location = uploadFile.Location,
-                Priority = uploadFile.Priority,
-                Device=uploadFile.Device,
-            };
-            attachDto.Id = Guid.NewGuid();
+            var attachDto = ObjectMapper.Map<UploadFileDto, AttachFileDto>(uploadFile);
+            attachDto.AttachmentId = Guid.NewGuid();
+            attachDto.Entity = entity;
+            attachDto.EntityId = uploadFile.Id;
             var attachment = CopyFile(attachDto);
             return await Add(attachment);
         }
@@ -168,10 +146,14 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             var attachment = ObjectMapper.Map<AttachFileDto, Attachment>(attachDto);
             attachment.FileExtension = fileExtention.Replace(".", "");
             attachment.Content = JsonConvert.SerializeObject(attachDto.Content);
-            string fileName = attachDto.Id.ToString() + "." + attachment.FileExtension;
+            attachment.VersionNumber++;
+            string fileName = attachDto.AttachmentId.ToString()+ "." + attachment.FileExtension;
+            var files = Directory.EnumerateFiles(basePath).Where(f => f.Contains(attachDto.AttachmentId.ToString()));
+            foreach (var file in files)
+            {
+                File.Delete(file);
+            }
             string filePath = Path.Combine(basePath, fileName);
-            if (File.Exists(filePath))
-                File.Delete(filePath);
             using (Stream stream = new FileStream(filePath, FileMode.Create))
             {
                 attachDto.File.CopyTo(stream);

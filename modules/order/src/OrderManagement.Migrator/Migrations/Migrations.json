@@ -239,6 +239,11 @@
             "Id": "20240313074425_nationalcode-index-userdataaccess",
             "Priority": 29,
             "Version": "4.4.0"
+        },
+        {
+            "Id": "20240514072152_add-versionnumber-attachment",
+            "Priority": 30,
+            "Version": "4.5.0"
         }
 
     ]
