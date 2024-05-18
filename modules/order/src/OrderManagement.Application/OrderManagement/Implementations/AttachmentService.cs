@@ -147,7 +147,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             attachment.FileExtension = fileExtention.Replace(".", "");
             attachment.Content = JsonConvert.SerializeObject(attachDto.Content);
             attachment.VersionNumber++;
-            string fileName = attachDto.AttachmentId.ToString()+"_" + attachment.VersionNumber.ToString() + "." + attachment.FileExtension;
+            string fileName = attachDto.AttachmentId.ToString()+ "." + attachment.FileExtension;
             var files = Directory.EnumerateFiles(basePath).Where(f => f.Contains(attachDto.AttachmentId.ToString()));
             foreach (var file in files)
             {
