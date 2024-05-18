@@ -1,0 +1,1 @@
+exec(N'update Agency set code =Id where code is null')
