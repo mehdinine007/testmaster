@@ -225,11 +225,11 @@
       "Priority": 26,
       "Version": "4.5.0"
     },
-    //{
-    //  "Id": "20240511050723_ConvertSeasonAllocation",
-    //  "Priority": 27,
-    //  "Version": "4.5.0"
-    //},
+    {
+      "Id": "20240511050723_ConvertSeasonAllocation",
+      "Priority": 27,
+      "Version": "4.5.0"
+    },
     {
       "Id": "20240511125024_add-SeasonAllocationId",
       "Priority": 28,
