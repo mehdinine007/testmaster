@@ -142,8 +142,13 @@ namespace OrderManagement.Application.Contracts
         public const string RecentlyAddedId = "1001";
         public const string PaymentSucceeded = "شما قبلا سفارش از نوع موفق درسامانه دارید.مجاز به ثبت سفارش جدید نمی باشید.";
         public const string PaymentSucceededId = "1002";
+        public const string SaleDetailAllocationNotFound = "تخصیص جزییات سفارش وجود ندارد";
+        public const string SaleDetailAllocationNotFoundId = "1101";
+        public const string SaleDetailNotFound = "جزییات فروش وجود ندارد";
+        public const string SaleDetailNotFoundId = "1102";
+       
 
 
-        
+
     }
 }

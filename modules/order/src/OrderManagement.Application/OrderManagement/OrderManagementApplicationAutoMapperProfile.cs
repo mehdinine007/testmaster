@@ -234,7 +234,8 @@ namespace OrderManagement
             CreateMap<SaleDetailAllocation, SaleDetailAllocationDto>()
                 .ReverseMap()
                 .IgnoreFullAuditedObjectProperties();
-
+            CreateMap<SaleDetailAllocation, SaleDetailAllocationCreateOrUpdateDto>()
+               .ReverseMap();
             CreateMap<SeasonAllocation, SeasonAllocationDto>()
                .ForMember(x => x.SeasonTitle, c => c.MapFrom(m => m.SeasonId != 0 ? EnumHelper.GetDescription(m.SeasonId) : ""))
                 .ReverseMap();
