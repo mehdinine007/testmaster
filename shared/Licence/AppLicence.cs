@@ -2,9 +2,9 @@
 {
     public class AppLicence
     {
-        public static string Version = "4.6.0-rc.2";
+        public static string Version = "4.6.0-rc.3";
         public static string FixVersion = "4.6.0";
-        public static string ReleaseDate = "1403/02/18";
+        public static string ReleaseDate = "1403/02/30";
         public static LicenceInfo GetLicence(string serialNumber)
         {
             LicenceInfo licenceInfo = new LicenceInfo();
