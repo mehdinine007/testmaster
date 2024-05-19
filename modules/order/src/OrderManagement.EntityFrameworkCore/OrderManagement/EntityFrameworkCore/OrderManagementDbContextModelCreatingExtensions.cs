@@ -282,6 +282,10 @@ public static class OrderManagementDbContextModelCreatingExtensions
             entity.HasOne<Province>(x => x.Province)
                 .WithMany(x => x.Agencies)
                 .HasForeignKey(x => x.ProvinceId);
+            entity.HasOne<City>(x => x.City)
+                .WithMany(x => x.Agencies)
+                .HasForeignKey(x => x.CityId)
+              .OnDelete(DeleteBehavior.ClientCascade);
         });
 
         builder.Entity<AgencySaleDetail>(entity =>

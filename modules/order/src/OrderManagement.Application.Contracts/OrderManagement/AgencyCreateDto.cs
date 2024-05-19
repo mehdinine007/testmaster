@@ -1,13 +1,14 @@
 ﻿using OrderManagement.Domain.Shared.OrderManagement.Enums;
+using System;
 using System.Collections.Generic;
-using Volo.Abp.Domain.Entities.Auditing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace OrderManagement.Domain
+namespace OrderManagement.Application.Contracts.OrderManagement
 {
-    public class Agency : FullAuditedEntity<int>
+    public class AgencyCreateDto
     {
-        private ICollection<AgencySaleDetail> _agencySaleDetails;
-
         public string Name { get; set; }
         public string Code { get; set; }
         public string Address { get; set; }
@@ -17,14 +18,7 @@ namespace OrderManagement.Domain
         public decimal? Latitude { get; set; }
         public AgencyTypeEnum AgencyType { get; set; }
         public int ProvinceId { get; set; }
-        public virtual Province Province { get; set; }
         public int? CityId { get; set; }
-        public virtual City City { get; set; }
-       
-        public virtual ICollection<AgencySaleDetail> AgencySaleDetails
-        {
-            get => _agencySaleDetails ?? (_agencySaleDetails = new List<AgencySaleDetail>());
-            protected set => _agencySaleDetails = value;
-        }
+      
     }
 }

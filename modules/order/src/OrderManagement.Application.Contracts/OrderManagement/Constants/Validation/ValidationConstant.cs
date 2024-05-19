@@ -37,6 +37,10 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Constants
         public const string AdvertisementNotFoundId = "0014";
         public const string AddAdvertisementIdValue = "شناسه وارد شده معتبر نمیباشد";
         public const string AddAdvertisementIdValueid = "0015";
+        public const string CodeNotFound = "کد خالی است";
+        public const string CodeNotFoundId = "0016";
+        public const string ProvinceNotFound = "استان خالی است";
+        public const string ProvinceNotFoundId = "0018";
     }
     public static class RuleSets
     {

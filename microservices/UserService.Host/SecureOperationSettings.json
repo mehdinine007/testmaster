@@ -427,7 +427,7 @@
             "children": []
           },
           {
-            "title": "Save",
+            "title": "Add",
             "code": "000200080003",
             "displayName": "ثبت",
             "children": []
@@ -436,6 +436,12 @@
             "title": "Update",
             "code": "000200080004",
             "displayName": "بروزرسانی",
+            "children": []
+          },
+          {
+            "title": "UploadFile",
+            "code": "000200080005",
+            "displayName": "اپلود فایل",
             "children": []
           }
         ]

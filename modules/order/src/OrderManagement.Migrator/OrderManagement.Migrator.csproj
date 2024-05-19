@@ -41,6 +41,8 @@
     <None Remove="Migrations\Patch\20240511125024_add-SeasonAllocationId.sql" />
     <None Remove="Migrations\Patch\20240511125024_SaleDetailAllocation_SeasonId_Nullable.sql" />
     <None Remove="Migrations\Patch\20240514072152_add-versionnumber-attachment.sql" />
+    <None Remove="Migrations\Patch\20240515140340_add-fields-agency.sql" />
+    <None Remove="Migrations\Patch\20240515140340_Convert_Code_Agency.sql" />
     <None Remove="Migrations\Programmability\CustomerCarDeliveryTime.sql" />
     <None Remove="Migrations\Patch\20240313074425_nationalcode-index-userdataaccess.sql" />
     <None Remove="Migrations\Programmability\GetRecentCustomerAndOrder.sql" />
@@ -174,6 +176,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Migrations\Patch\20240313074425_nationalcode-index-userdataaccess.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Migrations\Patch\20240515140340_Convert_Code_Agency.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Migrations\Patch\20240515140340_add-fields-agency.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Migrations\Programmability\GetRecentCustomerAndOrder.sql">
