@@ -5,11 +5,8 @@ namespace OrderManagement.Application.Contracts
     public class SaleDetailForDropDownDto
     {
         public int Id { get; set; }
-
+        public string Title { get; set; }
         public string SalePlanDescription { get; set; }
-
-
         public SaleProcessType SaleProcess { get; set; }
-
     }
 }

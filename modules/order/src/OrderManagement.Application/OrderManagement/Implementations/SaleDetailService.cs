@@ -257,7 +257,13 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
         return ObjectMapper.Map<List<SaleDetail>, List<SaleDetailForDropDownDto>>(saledetails);
     }
 
-
+    public async Task<List<SaleDetailDto>> GetList(int? saleId)
+    {
+        var saleDetailQuery = (await _saleDetailRepository.GetQueryableAsync()).AsNoTracking().Include(x=>x.Product).ThenInclude(x=>x.Organization);
+        var saledetails = saleId is not null ? saleDetailQuery.Where(x => x.SaleId == saleId).ToList() : saleDetailQuery.ToList();
+        var saledetailDto = ObjectMapper.Map<List<SaleDetail>, List<SaleDetailDto>>(saledetails);
+        return saledetailDto;
+    }
 
 
 }

@@ -11,4 +11,5 @@ public interface ISaleDetailAllocationService : IApplicationService
     Task<SaleDetailAllocationDto> GetById(int seasonCompanyProductId);
 
     Task Delete(int seasonCompanyProductId);
+    Task<List<SaleDetailAllocationDto>> GetList();
 }

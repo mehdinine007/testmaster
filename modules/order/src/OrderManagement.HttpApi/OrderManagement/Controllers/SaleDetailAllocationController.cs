@@ -32,4 +32,7 @@ public class SaleDetailAllocationController : Controller
     [HttpPut]
     public async Task<SaleDetailAllocationDto> Update(SaleDetailAllocationDto seasonCompanyProductDto)
         => await _seasonCompanyProductService.Update(seasonCompanyProductDto);
+    [HttpGet]
+    public async Task<System.Collections.Generic.List<SaleDetailAllocationDto>> GetList()
+        => await _seasonCompanyProductService.GetList();
 }
