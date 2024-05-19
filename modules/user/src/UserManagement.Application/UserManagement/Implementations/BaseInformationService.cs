@@ -62,6 +62,7 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
         _clientsOrderDetailByCompany = clientsOrderDetailByCompany;
         _companyPaypaidPricesRepository = companyPaypaidPricesRepository;
         _cacheManager = cacheManager;
+        _userDataAccessService = userDataAccessService;
     }
 
     public async Task RegistrationValidationWithoutCaptcha(RegistrationValidationDto input)
