@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Permission.Order
 {
-    public class SeasonCompanyProductServicePermissionConstants
+    public class SaleDetailAllocationServicePermissionConstants
     {
         public const string Create = ConstantInfo.ModuleOrder + ServiceIdentifier + "0001";
         public const string Create_DisplayName = "ایجاد برنامه تولید خودرو ساز به اضای فصل";

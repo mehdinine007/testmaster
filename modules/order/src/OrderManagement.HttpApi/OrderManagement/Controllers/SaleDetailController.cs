@@ -50,4 +50,8 @@ public class SaleDetailController:Controller, ISaleDetailService
     [HttpGet]
     public  List<SaleDetailForDropDownDto> GetAll()
           => _saleDetailService.GetAll();
+
+    [HttpGet]
+    public async Task<List<SaleDetailDto>> GetList(int? saleId)
+          =>await _saleDetailService.GetList(saleId);
 }
