@@ -4,6 +4,8 @@ using Volo.Abp;
 using OrderManagement.Application.Contracts.Services;
 using System.Threading.Tasks;
 using OrderManagement.Application.Contracts;
+using OrderManagement.Application.Contracts.OrderManagement;
+using System.Collections.Generic;
 
 namespace OrderManagement.HttpApi.Controllers;
 
@@ -18,7 +20,7 @@ public class SaleDetailAllocationController : Controller
         => _seasonCompanyProductService = seasonCompanyProductService;
 
     [HttpPost]
-    public async Task<SaleDetailAllocationDto> Create([FromBody] SaleDetailAllocationDto seasonCompanyProductDto)
+    public async Task<SaleDetailAllocationDto> Create([FromBody] SaleDetailAllocationCreateOrUpdateDto seasonCompanyProductDto)
         => await _seasonCompanyProductService.Create(seasonCompanyProductDto);
 
     [HttpDelete]
@@ -30,9 +32,9 @@ public class SaleDetailAllocationController : Controller
         => await _seasonCompanyProductService.GetById(seasonCompanyProductId);
 
     [HttpPut]
-    public async Task<SaleDetailAllocationDto> Update(SaleDetailAllocationDto seasonCompanyProductDto)
+    public async Task<SaleDetailAllocationDto> Update(SaleDetailAllocationCreateOrUpdateDto seasonCompanyProductDto)
         => await _seasonCompanyProductService.Update(seasonCompanyProductDto);
     [HttpGet]
-    public async Task<System.Collections.Generic.List<SaleDetailAllocationDto>> GetList()
+    public async Task<List<SaleDetailAllocationDto>> GetList()
         => await _seasonCompanyProductService.GetList();
 }

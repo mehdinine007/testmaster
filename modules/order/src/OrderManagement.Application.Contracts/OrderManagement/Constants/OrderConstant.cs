@@ -146,6 +146,11 @@ namespace OrderManagement.Application.Contracts
         public static string ProvinceNotFoundId = "1101";
         public static string CityNotFound = "شهر وجود ندارد";
         public static string CityNotFoundId = "1102";
+        public const string SaleDetailAllocationNotFound = "تخصیص جزییات سفارش وجود ندارد";
+        public const string SaleDetailAllocationNotFoundId = "1101";
+        public const string SaleDetailNotFound = "جزییات فروش وجود ندارد";
+        public const string SaleDetailNotFoundId = "1102";
+       
 
 
 
