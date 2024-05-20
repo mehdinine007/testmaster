@@ -44,6 +44,7 @@ public class SaleDetailAllocationService : ApplicationService, ISaleDetailAlloca
         await Validation(null, saleDetailAllocationDto);
         var input = ObjectMapper.Map<SaleDetailAllocationCreateOrUpdateDto, SaleDetailAllocation>(saleDetailAllocationDto);
         input.IsComplete = false;
+        input.TotalCount = saleDetailAllocationDto.Count;
         var entity = await _saleDetailAllocationRepository.InsertAsync(input, autoSave: true);
         await CurrentUnitOfWork.SaveChangesAsync();
         return await GetById(entity.Id);
@@ -77,7 +78,7 @@ public class SaleDetailAllocationService : ApplicationService, ISaleDetailAlloca
     {
         var saleDetailAllocation = await Validation(saleDetailAllocationDto.Id, saleDetailAllocationDto);
         var mappedEntity = ObjectMapper.Map<SaleDetailAllocationCreateOrUpdateDto, SaleDetailAllocation>(saleDetailAllocationDto, saleDetailAllocation);
-
+        mappedEntity.TotalCount = saleDetailAllocationDto.Count;
         var result = await _saleDetailAllocationRepository.UpdateAsync(mappedEntity);
         return await GetById(result.Id);
     }
