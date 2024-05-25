@@ -156,26 +156,6 @@
       "Version": "4.2.0"
     },
     {
-      "Id": "20240224142027_Add_SeasonCompanyProduct",
-      "Priority": 17,
-      "Version": "4.4.0"
-    },
-    {
-      "Id": "20240226082020_Change_IsComplete_Type_SeasonCompanyProduct",
-      "Priority": 18,
-      "Version": "4.4.0"
-    },
-    {
-      "Id": "20240408091808_Update_SeasonCompanyProduct_2",
-      "Priority": 19,
-      "Version": "4.5.0"
-    },
-    {
-      "Id": "20240409082357_RenamingSeasonSaleDetail_To_SaleDetailAllocation",
-      "Priority": 20,
-      "Version": "4.5.0"
-    },
-    {
       "Id": "20240421063529_add-sign-customerorder",
       "Priority": 21,
       "Version": "4.5.0"
