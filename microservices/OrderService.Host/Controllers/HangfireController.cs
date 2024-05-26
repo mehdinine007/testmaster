@@ -51,7 +51,7 @@ namespace NoyanHangFire.Controllers
             return Ok($"BackgroundJob Job Scheduled Inserted");
         }
 
-        [HttpPost("CheckDigitalSign ")]
+        [HttpPost("AddCheckDigitalSign")]
         public async Task<IActionResult> AddCheckDigitalSign()
         {
             await _signJob.CheckDigitalSign();
