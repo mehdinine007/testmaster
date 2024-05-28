@@ -59,7 +59,11 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Constants
         public const string SaleProcessNotFoundId = "0027";
         public const string AgencyTypeNotFound = "مقدار نوع نمایندگی معتبر نیست";
         public const string AgencyTypeNotFoundId = "0028";
-        
+        public const string YearNotValid = "مقدار سال معتبر نیست";
+        public const string YearNotValidId = "0029";
+        public const string SeasonIdNotFound = "مقدار شناسه فصل معتبر نیست";
+        public const string SeasonIdNotFoundId = "0030";
+
     }
     public static class RuleSets
     {
