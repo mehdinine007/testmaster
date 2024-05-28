@@ -34,7 +34,6 @@
     <None Remove="Migrations\Patch\20240508101254_FKCustomerOrderSeasonAllocation.sql" />
     <None Remove="Migrations\Patch\20240511050723_add-title-saledetail.sql" />
     <None Remove="Migrations\Patch\20240511050723_ConvertSeasonAllocation.sql" />
-    <None Remove="Migrations\Patch\20240511125024_add-SeasonAllocationId.sql" />
     <None Remove="Migrations\Patch\20240511125024_SaleDetailAllocation_SeasonId_Nullable.sql" />
     <None Remove="Migrations\Patch\20240514072152_add-versionnumber-attachment.sql" />
     <None Remove="Migrations\Patch\20240515140340_add-fields-agency.sql" />
@@ -61,14 +60,12 @@
     <None Remove="Migrations\Tables\Color.sql" />
     <None Remove="Migrations\Tables\AbpUsers.sql" />
     <None Remove="Migrations\Tables\ProductAndCategory_CarTip.sql" />
+    <None Remove="Migrations\Tables\SaleDetailAllocation.sql" />
     <None Remove="Migrations\Tables\SaleDetailCarColor.sql" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include="Migrations\Patch\20240511125024_SaleDetailAllocation_SeasonId_Nullable.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Migrations\Patch\20240511125024_add-SeasonAllocationId.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -214,6 +211,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Migrations\Tables\Agency.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Migrations\Tables\SaleDetailAllocation.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Migrations\Tables\SaleDetailCarColor.sql">

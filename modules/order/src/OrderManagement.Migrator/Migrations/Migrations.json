@@ -29,6 +29,10 @@
         {
             "Id": "AbpUsers",
             "Priority": 6
+        },
+        {
+            "Id": "SaleDetailAllocation",
+            "Priority": 7
         }
     ],
     "Programmability": [
@@ -211,11 +215,6 @@
             "Version": "4.5.0"
         },
         {
-            "Id": "20240511125024_add-SeasonAllocationId",
-            "Priority": 28,
-            "Version": "4.5.0"
-        },
-        {
             "Id": "20240313074425_nationalcode-index-userdataaccess",
             "Priority": 29,
             "Version": "4.4.0"
@@ -223,11 +222,6 @@
         {
             "Id": "20240514072152_add-versionnumber-attachment",
             "Priority": 30,
-            "Version": "4.5.0"
-        },
-        {
-            "Id": "20240511125024_SaleDetailAllocation_SeasonId_Nullable",
-            "Priority": 31,
             "Version": "4.5.0"
         },
         {
