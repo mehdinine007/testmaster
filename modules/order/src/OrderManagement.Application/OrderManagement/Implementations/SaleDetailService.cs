@@ -23,6 +23,7 @@ using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Uow;
 using Permission.Order;
+using Volo.Abp.ObjectMapping;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -70,23 +71,18 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
     [SecuredOperation(SaleDetailServicePermissionConstants.Delete)]
     public async Task<bool> Delete(int id)
     {
-        var saleDetail = await _saleDetailRepository.FirstOrDefaultAsync(x => x.Id == id);
-        if (saleDetail != null)
-        {
-            await _saleDetailRepository.DeleteAsync(x => x.Id == id, autoSave: true);
-            await _cacheManager.RemoveAsync(saleDetail.UID.ToString(), RedisConstants.SaleDetailPrefix, new CacheOptions() { Provider = CacheProviderEnum.Hybrid });
-        }
-
+        var saleDetail = await Validation(id, null);
+        await _saleDetailRepository.DeleteAsync(x => x.Id == id);
+        await _cacheManager.RemoveAsync(saleDetail.UID.ToString(), RedisConstants.SaleDetailPrefix, new CacheOptions() { Provider = CacheProviderEnum.Hybrid });
         return true;
 
     }
 
     [SecuredOperation(SaleDetailServicePermissionConstants.GetActiveList)]
-    public List<SaleDetailDto> GetActiveList()
+    public async Task<List<SaleDetailDto>> GetActiveList()
     {
         var currentTime = DateTime.Now;
-        var saledetails = _saleDetailRepository
-            .WithDetails()
+        var saledetails = (await _saleDetailRepository.GetQueryableAsync())
             .AsNoTracking()
             .Where(x => x.SalePlanStartDate <= currentTime && currentTime <= x.SalePlanEndDate && x.Visible)
             .ToList();
@@ -94,12 +90,15 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
     }
 
     //[SecuredOperation(SaleDetailServicePermissionConstants.GetById)]
-    public SaleDetailDto GetById(int id)
+    public async Task<SaleDetailDto> GetById(int id)
     {
-        var saleDetail = _saleDetailRepository
-            .WithDetails(x => x.Product)
-            .AsNoTracking()
-            .FirstOrDefault(x => x.Id == id);
+        var saleDetailQuery = (await _saleDetailRepository.GetQueryableAsync()).AsNoTracking()
+            .Include(x => x.Product).ThenInclude(x => x.Organization)
+            .Include(x => x.ESaleType)
+            .Include(x => x.SaleSchema);
+        var saleDetail = saleDetailQuery.FirstOrDefault(x => x.Id == id);
+        if (saleDetail is null)
+            throw new UserFriendlyException(OrderConstant.SaleDetailNotFound, OrderConstant.SaleDetailNotFoundId);
         var result = ObjectMapper.Map<SaleDetail, SaleDetailDto>(saleDetail);
         return result;
     }
@@ -107,94 +106,43 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
     [SecuredOperation(SaleDetailServicePermissionConstants.GetSaleDetails)]
     public async Task<PagedResultDto<SaleDetailDto>> GetSaleDetails(BaseInquery input)
     {
-        var count = await _saleDetailRepository.CountAsync();
-        var saleDetails = _saleDetailRepository.WithDetails(
-            x => x.SaleDetailCarColors,
-            x => x.SaleDetailCarColors,
-            x => x.SaleSchema,
-            x => x.SaleDetailCarColors,
-            x => x.Product);
-        var queryResult = saleDetails.PageBy(input).Select(x => new SaleDetailDto()
-        {
-            CarDeliverDate = x.CarDeliverDate,
-            CarFee = x.CarFee,
-            CoOperatingProfitPercentage = x.CoOperatingProfitPercentage,
-            Id = x.Id,
-            DeliverDaysCount = x.DeliverDaysCount,
-            EsaleName = x.ESaleType.SaleTypeName,
-            EsaleTypeId = x.ESaleTypeId,
-            ManufactureDate = x.ManufactureDate,
-            Visible = x.Visible,
-            SaleId = x.SaleId,
-            SaleTitle = x.SaleSchema.Title,
-            SalePlanCode = x.SalePlanCode,
-            UID = x.UID,
-            SaleTypeCapacity = x.SaleTypeCapacity,
-            SalePlanEndDate = x.SalePlanEndDate,
-            SalePlanStartDate = x.SalePlanStartDate,
-            SalePlanDescription = x.SalePlanDescription,
-            RefuseProfitPercentage = x.RefuseProfitPercentage,
-            MinimumAmountOfProxyDeposit = x.MinimumAmountOfProxyDeposit,
-            ProductId = x.ProductId,
-            Product = ObjectMapper.Map<ProductAndCategory, ProductAndCategoryViewModel>(x.Product)
-        }).ToList();
-        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, queryResult.Select(x => x.ProductId).ToList());
-        var saleDetailIds = queryResult.Select(x => x.Id).ToList();
-        var saleDetailColors = (await _saleDetailColorRepository.GetQueryableAsync()).Where(x => saleDetailIds.Any(y => y == x.SaleDetailId));
-        var colorIds = saleDetailColors.Select(x => x.ColorId);
-        var colors = (await _colorRepository.GetQueryableAsync()).Where(x => colorIds.Any(y => y == x.Id));
-        queryResult.ForEach(x =>
-        {
+        var saleDetailsQuery = (await _saleDetailRepository.GetQueryableAsync())
+           .AsNoTracking();
 
+        saleDetailsQuery= saleDetailsQuery.Include(x => x.SaleDetailCarColors)
+           .Include(x => x.SaleDetailCarColors)
+           .ThenInclude(x=>x.Color)
+           .Include(x => x.SaleSchema)
+           .Include(x => x.SaleDetailCarColors)
+           .Include(x => x.Product)
+           .ThenInclude(x=>x.Organization);
+      
+
+        saleDetailsQuery = input.SaleId is not null
+           ? saleDetailsQuery.Where(x => x.SaleId == input.SaleId)
+           : saleDetailsQuery;
+
+        var count =await saleDetailsQuery.CountAsync();
+       var  saleDetails = saleDetailsQuery.OrderByDescending(x=>x.Id).PageBy(input).ToList();
+        var saleDetailDto = ObjectMapper.Map<List<SaleDetail>, List<SaleDetailDto>>(saleDetails);
+        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.ProductAndCategory, saleDetailDto.Select(x => x.ProductId).ToList());
+        saleDetailDto.ForEach(x =>
+        {
             var attachment = attachments.Where(y => y.EntityId == x.ProductId).ToList();
             x.Product.Attachments = ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(attachment);
-            var saleDetailColor = saleDetailColors.FirstOrDefault(y => y.SaleDetailId == x.Id);
-            if (saleDetailColor != null)
-            {
-                var color = colors.FirstOrDefault(y => y.Id == saleDetailColor.ColorId);
-                if (color != null)
-                {
-                    x.ColorTitle = color.ColorName;
-                    x.ColorId = color.Id;
-                }
-            }
         });
         return new PagedResultDto<SaleDetailDto>
         {
             TotalCount = count,
-            Items = queryResult
+            Items = saleDetailDto
         };
     }
 
     [UnitOfWork(isTransactional: false)]
     [SecuredOperation(SaleDetailServicePermissionConstants.Save)]
-    public async Task<int> Save(CreateSaleDetailDto createSaleDetailDto)
+    public async Task<SaleDetailDto> Save(CreateSaleDetailDto createSaleDetailDto)
     {
-
-        if (createSaleDetailDto.SalePlanEndDate < createSaleDetailDto.SalePlanStartDate)
-        {
-            throw new UserFriendlyException("تاریخ پایان بایدبزرگتراز تاریخ شروع باشد.");
-        }
-
-        var product = await _productAndCategoryService.GetById(createSaleDetailDto.ProductId, false);
-        if (product == null)
-        {
-            throw new UserFriendlyException(OrderConstant.ProductAndCategoryNotFound, OrderConstant.ProductAndCategoryFoundId);
-        }
-        var esalType = await _eSaleTypeRepository.FirstOrDefaultAsync(x => x.Id == createSaleDetailDto.EsaleTypeId);
-        if (esalType == null)
-        {
-            throw new UserFriendlyException("نوع طرح فروش انتخاب شده وجود ندارد");
-        }
-
-        var color = await _colorRepository.FirstOrDefaultAsync(x => x.Id == createSaleDetailDto.ColorId);
-        if (color == null)
-        {
-            throw new UserFriendlyException("رنگ انتخاب شده موجود نمیباشد");
-        }
-        // control sale schema exists
-        await _saleSchemaService.GetById(createSaleDetailDto.SaleId);
-
+        await Validation(null, createSaleDetailDto);
         var uid = Guid.NewGuid();
 
         var result = await _saleDetailRepository.SingleOrDefaultAsync(x => x.UID == uid);
@@ -207,51 +155,31 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
             result = await _saleDetailRepository.SingleOrDefaultAsync(x => x.UID == uid);
 
         }
-
-
         var resultQuery = await _saleDetailRepository.InsertAsync(saleDetail);
         await CurrentUnitOfWork.SaveChangesAsync();
-
         SaleDetailCarColor saleDetailCarColor = new SaleDetailCarColor
         {
             ColorId = createSaleDetailDto.ColorId,
             SaleDetailId = resultQuery.Id
         };
         await _saleDetailCarColor.InsertAsync(saleDetailCarColor);
-
-        return saleDetail.Id;
+        return await GetById(saleDetail.Id); ;
     }
 
     [SecuredOperation(SaleDetailServicePermissionConstants.Update)]
-    public async Task<int> Update(CreateSaleDetailDto createSaleDetailDto)
+    public async Task<SaleDetailDto> Update(CreateSaleDetailDto createSaleDetailDto)
     {
-        var result = await _saleDetailRepository.WithDetails().AsNoTracking().FirstOrDefaultAsync(x => x.Id == createSaleDetailDto.Id);
-        if (result == null)
-        {
-            throw new UserFriendlyException("رکوردی برای ویرایش وجود ندارد");
-        }
-        if (createSaleDetailDto.SalePlanEndDate < createSaleDetailDto.SalePlanStartDate)
-        {
-            throw new UserFriendlyException("تاریخ پایان بایدبزرگتراز تاریخ شروع باشد.");
-        }
 
-        var esalTypeId = await _eSaleTypeRepository.FirstOrDefaultAsync(x => x.Id == createSaleDetailDto.EsaleTypeId);
-        if (esalTypeId == null)
-        {
-            throw new UserFriendlyException(" نوع طرح فروش انتخاب شده وجود ندارد");
-        }
-
-        var saleDetail = ObjectMapper.Map<CreateSaleDetailDto, SaleDetail>(createSaleDetailDto, result);
+        var saleDetail = await Validation(createSaleDetailDto.Id, createSaleDetailDto);
         await _saleDetailRepository.UpdateAsync(saleDetail);
         await _cacheManager.RemoveAsync(saleDetail.UID.ToString(), RedisConstants.SaleDetailPrefix, new CacheOptions() { Provider = CacheProviderEnum.Hybrid });
-        return saleDetail.Id;
+        return await GetById(saleDetail.Id);
     }
 
 
-    public List<SaleDetailForDropDownDto> GetAll()
+    public async Task<List<SaleDetailForDropDownDto>> GetAll()
     {
-        var saledetails = _saleDetailRepository
-            .WithDetails()
+        var saledetails = (await _saleDetailRepository.GetQueryableAsync())
             .AsNoTracking()
             .ToList();
         return ObjectMapper.Map<List<SaleDetail>, List<SaleDetailForDropDownDto>>(saledetails);
@@ -259,10 +187,55 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
 
     public async Task<List<SaleDetailDto>> GetList(int? saleId)
     {
-        var saleDetailQuery = (await _saleDetailRepository.GetQueryableAsync()).AsNoTracking().Include(x=>x.Product).ThenInclude(x=>x.Organization);
+        var saleDetailQuery = (await _saleDetailRepository.GetQueryableAsync()).AsNoTracking()
+            .Include(x => x.Product).ThenInclude(x => x.Organization)
+            .Include(x => x.ESaleType)
+           .Include(x => x.SaleSchema);
         var saledetails = saleId is not null ? saleDetailQuery.Where(x => x.SaleId == saleId).ToList() : saleDetailQuery.ToList();
         var saledetailDto = ObjectMapper.Map<List<SaleDetail>, List<SaleDetailDto>>(saledetails);
         return saledetailDto;
+    }
+
+    private async Task<SaleDetail> Validation(int? id, CreateSaleDetailDto createSaleDetailDto)
+    {
+        var saleDetailQuery = (await _saleDetailRepository.GetQueryableAsync()).AsNoTracking();
+        SaleDetail saleDetail = new SaleDetail();
+        if (id is not null)
+        {
+            saleDetail = saleDetailQuery.FirstOrDefault(x => x.Id == id);
+            if (saleDetail is null)
+                throw new UserFriendlyException(OrderConstant.SaleDetailNotFound, OrderConstant.SaleDetailNotFoundId);
+        }
+        if (createSaleDetailDto is not null)
+        {
+            if (createSaleDetailDto.SalePlanEndDate < createSaleDetailDto.SalePlanStartDate)
+            {
+                throw new UserFriendlyException(OrderConstant.SalePlanEndDate, OrderConstant.SalePlanEndDateId);
+            }
+
+            var product = await _productAndCategoryService.GetById(createSaleDetailDto.ProductId, false);
+            if (product == null)
+            {
+                throw new UserFriendlyException(OrderConstant.ProductAndCategoryNotFound, OrderConstant.ProductAndCategoryFoundId);
+            }
+            var esalType = await _eSaleTypeRepository.FirstOrDefaultAsync(x => x.Id == createSaleDetailDto.EsaleTypeId);
+            if (esalType == null)
+            {
+                throw new UserFriendlyException(OrderConstant.EsaleTypeIdNotFound, OrderConstant.EsaleTypeIdNotFoundId);
+            }
+
+            var color = await _colorRepository.FirstOrDefaultAsync(x => x.Id == createSaleDetailDto.ColorId);
+            if (color == null)
+            {
+                throw new UserFriendlyException(OrderConstant.ColorIdNotFound, OrderConstant.ColorIdNotFoundId);
+            }
+            // control sale schema exists
+            await _saleSchemaService.GetById(createSaleDetailDto.SaleId);
+
+        }
+
+
+        return saleDetail;
     }
 
 

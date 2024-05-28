@@ -123,13 +123,15 @@ namespace OrderManagement
                 .ReverseMap();
 
             CreateMap<SaleDetail, SaleDetailDto>()
-                  .ForMember(o => o.SalePlanDescription, opt => opt.MapFrom(y => System.Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(y.SalePlanDescription))))
+                 .ForMember(x => x.EsaleName, c => c.MapFrom(m => m.ESaleTypeId == 1 ? EnumHelper.GetDisplayName(ESaleTypeEnums.NormalSale) : m.ESaleTypeId == 2 ? EnumHelper.GetDisplayName(ESaleTypeEnums.YouthSale) : m.ESaleTypeId == 3 ? EnumHelper.GetDisplayName(ESaleTypeEnums.WornOutSale) : ""))
+                 .ForMember(x => x.SaleTitle, c => c.MapFrom(m => m.SaleSchema.Title))
+                .ForMember(o => o.SalePlanDescription, opt => opt.MapFrom(y => System.Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(y.SalePlanDescription))))
                 .ReverseMap()
                 .IgnoreFullAuditedObjectProperties();
             CreateMap<SaleDetail, SaleDetailOrderDto>();
             CreateMap<Agency, AgencyDto>()
-                 .ForMember(x => x.ProvinceTitle, c => c.MapFrom(o=>o.Province.Name))
-                 .ForMember(x => x.CityTitle, c => c.MapFrom(o=>o.City.Name))
+                 .ForMember(x => x.ProvinceTitle, c => c.MapFrom(o => o.Province.Name))
+                 .ForMember(x => x.CityTitle, c => c.MapFrom(o => o.City.Name))
                  .ForMember(x => x.AgencyTypeTitle, c => c.MapFrom(m => m.AgencyType != 0 ? EnumHelper.GetDescription(m.AgencyType) : ""))
                 .ReverseMap();
             CreateMap<Agency, AgencyCreateDto>().ReverseMap();
@@ -247,7 +249,7 @@ namespace OrderManagement
             CreateMap<SeasonAllocation, SeasonAllocationDto>()
                .ForMember(x => x.SeasonTitle, c => c.MapFrom(m => m.SeasonId != 0 ? EnumHelper.GetDescription(m.SeasonId) : ""))
                 .ReverseMap();
-            
+
             CreateMap<SeasonAllocation, SeasonAllocationUpdateDto>().ReverseMap();
             CreateMap<SeasonAllocation, SeasonAllocationCreateDto>().ReverseMap();
         }

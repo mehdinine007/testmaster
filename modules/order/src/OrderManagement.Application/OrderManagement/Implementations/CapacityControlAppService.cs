@@ -57,7 +57,7 @@ public class CapacityControlAppService : ApplicationService, ICapacityControlApp
     }
     public async Task<IResult> SaleDetail()
     {
-        var saledetails = _saleDetailService.GetActiveList();
+        var saledetails = await _saleDetailService.GetActiveList();
         if (saledetails != null && saledetails.Count > 0)
         {
             foreach (var saledetail in saledetails)
@@ -85,7 +85,7 @@ public class CapacityControlAppService : ApplicationService, ICapacityControlApp
 
     public async Task<IResult> Payment()
     {
-        var saledetails = _saleDetailService.GetActiveList();
+        var saledetails = await _saleDetailService.GetActiveList();
         if (saledetails != null && saledetails.Count > 0)
         {
             foreach (var saledetail in saledetails)
@@ -454,7 +454,7 @@ public class CapacityControlAppService : ApplicationService, ICapacityControlApp
 
     public async Task<IResult> AgencyValidation(int saledetailid, int? agencyId, List<PaymentStatusModel> paymentDtos)
     {
-        var saledetail = _saleDetailService.GetById(saledetailid);
+        var saledetail =await _saleDetailService.GetById(saledetailid);
         var agencySaledetail = await _agencySaleDetailService.GetBySaleDetailId(saledetail.Id, agencyId ?? 0);
         if (agencySaledetail == null)
         {
@@ -504,7 +504,7 @@ public class CapacityControlAppService : ApplicationService, ICapacityControlApp
     }
     public async Task<IDataResult<List<PaymentStatusModel>>> Validation(int saleDetaild, int? agencyId)
     {
-        var saledetail = _saleDetailService.GetById(saleDetaild);
+        var saledetail =await _saleDetailService.GetById(saleDetaild);
         if (saledetail == null)
         {
             return new ErrorDataResult<List<PaymentStatusModel>>("خطا در بازیابی برنامه های فروش", OrderConstant.NoCapacityCreateTicketId);

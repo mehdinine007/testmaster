@@ -10,13 +10,13 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Services
 {
     public interface ISaleDetailService:IApplicationService
     {
-        SaleDetailDto GetById(int id);
-        List<SaleDetailDto> GetActiveList();
+        Task<SaleDetailDto> GetById(int id);
+        Task<List<SaleDetailDto>> GetActiveList();
         Task<PagedResultDto<SaleDetailDto>> GetSaleDetails(BaseInquery input);
-        Task<int> Save(CreateSaleDetailDto createSaleDetailDto);
-        Task<int> Update(CreateSaleDetailDto createSaleDetailDto);
+        Task<SaleDetailDto> Save(CreateSaleDetailDto createSaleDetailDto);
+        Task<SaleDetailDto> Update(CreateSaleDetailDto createSaleDetailDto);
         Task<bool> Delete(int id);
-        List<SaleDetailForDropDownDto> GetAll();
+        Task<List<SaleDetailForDropDownDto>> GetAll();
         Task<List<SaleDetailDto>> GetList(int? saleId);
     }
 }
