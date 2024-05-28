@@ -23,14 +23,10 @@
     <None Remove="Migrations\Patch\20240110080635_IsRequiredtitle-title-advertisement.sql" />
     <None Remove="Migrations\Patch\20240129082810_add-userdataaccess.sql" />
     <None Remove="Migrations\Patch\20240129124922_nullableuserid.sql" />
-    <None Remove="Migrations\Patch\20240224142027_Add_SeasonCompanyProduct.sql" />
-    <None Remove="Migrations\Patch\20240226082020_Change_IsComplete_Type_SeasonCompanyProduct.sql" />
     <None Remove="Migrations\Patch\20240221065931_addorganizationid.sql" />
     <None Remove="Migrations\Patch\20240221065931_addorganizationidindex.sql" />
     <None Remove="Migrations\Patch\20240221065931_deleteandupdatelevel1product.sql" />
     <None Remove="Migrations\Patch\20240221080039_update-organization.sql" />
-    <None Remove="Migrations\Patch\20240408091808_Update_SeasonCompanyProduct_2.sql" />
-    <None Remove="Migrations\Patch\20240409082357_RenamingSeasonSaleDetail_To_SaleDetailAllocation.sql" />
     <None Remove="Migrations\Patch\20240421063529_add-sign-customerorder.sql" />
     <None Remove="Migrations\Patch\20240415060532_add-payment-customerorder.sql" />
     <None Remove="Migrations\Patch\20240422132448_Add-ContractNumber-CustomerOrder.sql" />
@@ -97,12 +93,6 @@
     <Content Include="Migrations\Patch\20231213112901_Add_CustomerPriority.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Migrations\Patch\20240409082357_RenamingSeasonSaleDetail_To_SaleDetailAllocation.sql">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Migrations\Patch\20240408091808_Update_SeasonCompanyProduct_2.sql">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="Migrations\Patch\20231216072246_Add_Active_Announcement.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -131,12 +121,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Migrations\Patch\20240129082810_add-userdataaccess.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Migrations\Patch\20240226082020_Change_IsComplete_Type_SeasonCompanyProduct.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Migrations\Patch\20240224142027_Add_SeasonCompanyProduct.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Migrations\Patch\20240221080039_update-organization.sql">
