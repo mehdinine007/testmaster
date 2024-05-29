@@ -47,7 +47,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
         {
             var lastPriority = await _bankRepository.MaxAsync(x => x.Priority);
             var bank = ObjectMapper.Map<BankCreateOrUpdateDto, Bank>(bankCreateOrUpdateDto);
-            bank.Priority = lastPriority++;
+            bank.Priority = lastPriority + 1;
             var entity = await _bankRepository.InsertAsync(bank);
             return ObjectMapper.Map<Bank, BankDto>(entity);
         }
