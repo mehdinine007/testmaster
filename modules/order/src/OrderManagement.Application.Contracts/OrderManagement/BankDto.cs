@@ -10,6 +10,6 @@
         public string PhoneNumber { get; set; }
         public string Url { get; set; }
         public List<AttachmentViewModel> Attachments { get; set; }
-
+        public int Priority { get; set; }
     }
 }

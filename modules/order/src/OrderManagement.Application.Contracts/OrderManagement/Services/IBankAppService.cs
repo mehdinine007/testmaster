@@ -20,5 +20,6 @@ namespace OrderManagement.Application.Contracts.Services
         Task<AdvocacyUserFromBankDto> CheckAdvocacy(string NationalCode);
         Task<AdvocacyUserFromBankExportDto> InquiryAdvocacyUserReport(string nationalCode);
         Task<List<AdvocacyUsersFromBankWithCompanyDto>> GetAdvocacyUserByCompanyId();
+        Task<bool> Move(MoveDto input);
     }
 }
