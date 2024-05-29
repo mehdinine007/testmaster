@@ -14,6 +14,7 @@ using MongoDB.Driver;
 using Microsoft.EntityFrameworkCore;
 using Esale.Share.Authorize;
 using Permission.Order;
+using OrderManagement.Domain.Shared.OrderManagement.Enums;
 
 namespace OrderManagement.Application.OrderManagement.Implementations
 {
@@ -44,8 +45,10 @@ namespace OrderManagement.Application.OrderManagement.Implementations
         [SecuredOperation(BankAppServicePermissionConstants.Add)]
         public async Task<BankDto> Add(BankCreateOrUpdateDto bankCreateOrUpdateDto)
         {
+            var lastPriority = await _bankRepository.MaxAsync(x => x.Priority);
             var bank = ObjectMapper.Map<BankCreateOrUpdateDto, Bank>(bankCreateOrUpdateDto);
-            var entity = await _bankRepository.InsertAsync(bank, autoSave: true);
+            bank.Priority = lastPriority++;
+            var entity = await _bankRepository.InsertAsync(bank);
             return ObjectMapper.Map<Bank, BankDto>(entity);
         }
 
@@ -53,10 +56,8 @@ namespace OrderManagement.Application.OrderManagement.Implementations
         public async Task<BankDto> Update(BankCreateOrUpdateDto bankCreateOrUpdateDto)
         {
             var bank = await Validation(bankCreateOrUpdateDto.Id, bankCreateOrUpdateDto);
-            bank.Title= bankCreateOrUpdateDto.Title;
-            bank.PhoneNumber= bankCreateOrUpdateDto.PhoneNumber;
-            bank.Url= bankCreateOrUpdateDto.Url;
-            await _bankRepository.UpdateAsync(bank, autoSave: true);
+            var _bank = ObjectMapper.Map<BankCreateOrUpdateDto, Bank>(bankCreateOrUpdateDto, bank);
+            await _bankRepository.UpdateAsync(_bank);
             return await GetById(bank.Id);
             
         }
@@ -94,6 +95,44 @@ namespace OrderManagement.Application.OrderManagement.Implementations
         {
             var bank = await Validation(uploadFile.Id, null);
             await _attachmentService.UploadFile(AttachmentEntityEnum.Bank, uploadFile);
+            return true;
+        }
+        [SecuredOperation(BankAppServicePermissionConstants.Move)]
+        public async Task<bool> Move(MoveDto input)
+        {
+            await Validation(input.Id, null);
+            var bankQuery = (await _bankRepository.GetQueryableAsync()).AsNoTracking().OrderBy(x => x.Priority);
+            var currentBank = bankQuery.FirstOrDefault(x => x.Id == input.Id);
+            var currentPriority = currentBank.Priority;
+
+            if (MoveTypeEnum.Up == input.MoveType)
+            {
+                var previousBank = await bankQuery.OrderByDescending(x => x.Priority).FirstOrDefaultAsync(x => x.Priority < currentBank.Priority);
+                if (previousBank is null)
+                {
+                    throw new UserFriendlyException(OrderConstant.FirstPriority, OrderConstant.FirstPriorityId);
+                }
+                var previousPriority = previousBank.Priority;
+
+                currentBank.Priority = previousPriority;
+
+                await _bankRepository.UpdateAsync(currentBank);
+                previousBank.Priority = currentPriority;
+                await _bankRepository.UpdateAsync(previousBank);
+            }
+            else if (MoveTypeEnum.Down == input.MoveType)
+            {
+                var nextBank = await bankQuery.FirstOrDefaultAsync(x => x.Priority > currentBank.Priority);
+                if (nextBank is null)
+                {
+                    throw new UserFriendlyException(OrderConstant.LastPriority, OrderConstant.LastPriorityId);
+                }
+                var nextpriority = nextBank.Priority;
+                currentBank.Priority = nextpriority;
+                await _bankRepository.UpdateAsync(currentBank);
+                nextBank.Priority = currentPriority;
+                await _bankRepository.UpdateAsync(nextBank);
+            }
             return true;
         }
 

@@ -18,5 +18,7 @@ namespace OrderManagement.Domain
             set => _advocacyUsersFromBanks = value;
         }
         public virtual Gallery Gallery { get; set; }
+        public int Priority { get; set; }
+
     }
 }

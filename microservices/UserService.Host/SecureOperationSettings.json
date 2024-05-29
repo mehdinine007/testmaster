@@ -900,6 +900,12 @@
             "code": "000200190006",
             "displayName": "بروزرسانی فایل",
             "children": []
+          },
+          {
+            "title": "Move",
+            "code": "000200190007",
+            "displayName": "جابه جایی اولویت ها",
+            "children": []
           }
 
         ]

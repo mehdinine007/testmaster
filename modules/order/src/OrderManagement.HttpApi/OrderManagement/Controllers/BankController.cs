@@ -51,6 +51,9 @@ namespace OrderManagement.HttpApi.OrderManagement.Controllers
         [HttpPost]
         public Task<bool> UploadFile([FromForm] UploadFileDto uploadFile)
        => _bankAppService.UploadFile(uploadFile);
+        [HttpPost]
+        public async Task<bool> Move(MoveDto moveDto)
+        =>await _bankAppService.Move(moveDto);
 
     }
 }

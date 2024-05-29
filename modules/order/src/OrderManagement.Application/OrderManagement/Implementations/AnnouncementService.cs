@@ -8,6 +8,7 @@ using OrderManagement.Application.Contracts.OrderManagement;
 using OrderManagement.Application.Contracts.OrderManagement.Services;
 using OrderManagement.Domain;
 using OrderManagement.Domain.Shared;
+using OrderManagement.Domain.Shared.OrderManagement.Enums;
 using Permission.Order;
 using System;
 using System.Collections.Generic;
@@ -90,6 +91,23 @@ public class AnnouncementService : ApplicationService, IAnnouncementService
             announcementResult = announcementResult.Where(x => x.CompanyId.Value == input.CompanyId.Value);
         if (input.Active.HasValue)
             announcementResult = announcementResult.Where(x => x.Active == input.Active.Value);
+        if (input.Status.HasValue)
+        {
+            if(input.Status== AnnouncementStatusEnum.Awaiting)
+            {
+                announcementResult = announcementResult.Where(m => DateTime.Now < m.FromDate);
+            }
+
+            if (input.Status == AnnouncementStatusEnum.Publishing)
+            {
+                announcementResult = announcementResult.Where(m => DateTime.Now >= m.FromDate && DateTime.Now <= m.ToDate);
+            }
+            if (input.Status == AnnouncementStatusEnum.Expired)
+            {
+                announcementResult = announcementResult.Where(m => DateTime.Now > m.ToDate);
+            }
+        }
+           
         var count = announcementResult.Count();
         var announcementList = announcementResult
             .AsNoTracking()
