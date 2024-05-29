@@ -45,8 +45,10 @@ namespace OrderManagement.Application.OrderManagement.Implementations
         [SecuredOperation(BankAppServicePermissionConstants.Add)]
         public async Task<BankDto> Add(BankCreateOrUpdateDto bankCreateOrUpdateDto)
         {
+            var lastPriority = await _bankRepository.MaxAsync(x => x.Priority);
             var bank = ObjectMapper.Map<BankCreateOrUpdateDto, Bank>(bankCreateOrUpdateDto);
-            var entity = await _bankRepository.InsertAsync(bank, autoSave: true);
+            bank.Priority = lastPriority++;
+            var entity = await _bankRepository.InsertAsync(bank);
             return ObjectMapper.Map<Bank, BankDto>(entity);
         }
 
@@ -54,11 +56,8 @@ namespace OrderManagement.Application.OrderManagement.Implementations
         public async Task<BankDto> Update(BankCreateOrUpdateDto bankCreateOrUpdateDto)
         {
             var bank = await Validation(bankCreateOrUpdateDto.Id, bankCreateOrUpdateDto);
-            bank.Title= bankCreateOrUpdateDto.Title;
-            bank.PhoneNumber= bankCreateOrUpdateDto.PhoneNumber;
-            bank.Url= bankCreateOrUpdateDto.Url;
-            bank.Priority= bankCreateOrUpdateDto.Priority;
-            await _bankRepository.UpdateAsync(bank, autoSave: true);
+            var _bank = ObjectMapper.Map<BankCreateOrUpdateDto, Bank>(bankCreateOrUpdateDto, bank);
+            await _bankRepository.UpdateAsync(_bank);
             return await GetById(bank.Id);
             
         }
