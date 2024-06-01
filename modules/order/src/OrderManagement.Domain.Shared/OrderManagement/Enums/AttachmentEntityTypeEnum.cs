@@ -21,5 +21,8 @@ public enum AttachmentEntityTypeEnum
     [EnumProperty(Description = "اطلاعیه")]
     Announcement = 7,
    [EnumProperty(Description = "تبلیغات")]
-    AdvertisementDetail = 8
+    AdvertisementDetail = 8,
+    [EnumProperty(Description = "ویدیو")]
+    Video = 9
+
 }
