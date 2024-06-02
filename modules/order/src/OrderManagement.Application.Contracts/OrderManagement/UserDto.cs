@@ -41,5 +41,9 @@
         public string Tel { get; set; }
         public string PostalCode { get; set; }
         public Guid Uid { get; set; }
+
+        public string Plaque { get; set; }
+
+        public string FatherName { get; set; }
     }
 }

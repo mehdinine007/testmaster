@@ -86,6 +86,7 @@ namespace UserManagement.Application.UserManagement.Implementations
                 IssuingCityTitle = user.IssuingCityTitle,
                 PostalCode = user.PostalCode,
                 Tel = user.Tel,
+                Plaque = user.Plaque
             };
         }
 
@@ -136,6 +137,7 @@ namespace UserManagement.Application.UserManagement.Implementations
                 IssuingCityTitle = user.IssuingCityTitle,
                 PostalCode = user.PostalCode,
                 Tel = user.Tel,
+                FatherName = user.FatherName
             };
 
         }

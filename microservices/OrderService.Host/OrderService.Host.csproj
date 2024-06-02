@@ -69,28 +69,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Remove="Reports\RptContractForm.frx" />
-      <None Remove="Reports\RptContractForm.mrt" />
-      <None Remove="Reports\RptFactor.frx" />
-      <None Remove="Reports\RptFactor.mrt" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Content Include="Reports\RptContractForm.frx">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
-      <Content Include="Reports\RptContractForm.mrt">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
-      <Content Include="Reports\RptFactor.frx">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
-      <Content Include="Reports\RptFactor.mrt">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
-    </ItemGroup>
-
-    <ItemGroup>
       <Content Update="web.config">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>

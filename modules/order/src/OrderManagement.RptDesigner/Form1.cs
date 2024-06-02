@@ -1,14 +1,7 @@
-﻿using FastReport;
-using OrderManagement.ReportDesigner;
+﻿using OrderManagement.ReportDesigner;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace OrderManagement.RptDesigner
@@ -38,7 +31,7 @@ namespace OrderManagement.RptDesigner
 
         private void button1_Click(object sender, EventArgs e)
         {
-            var report = ReportConfig("RptContractForm");
+            var report = ReportConfig("RptContractForm" + "_" + Properties.Settings.Default.OrganizationPrefix);
             var orderdata = new List<OrderDetailDto>();
             orderdata.Add(new OrderDetailDto()
             {
@@ -53,7 +46,7 @@ namespace OrderManagement.RptDesigner
 
         private void button2_Click(object sender, EventArgs e)
         {
-            var report = ReportConfig("RptFactor");
+            var report = ReportConfig("RptFactor" + "_" + Properties.Settings.Default.OrganizationPrefix);
             var orderdata = new List<OrderDetailDto>();
             report.Report.RegisterData(orderdata, "Table");
             report.Design();

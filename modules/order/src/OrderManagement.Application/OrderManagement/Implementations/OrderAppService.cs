@@ -66,6 +66,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
     private readonly IUserDataAccessService _userDataAccessService;
     private readonly ICompanyGrpcClient _companyGrpcClient;
     private readonly IRepository<City, int> _cityRepository;
+    private readonly IRepository<Province, int> _provienceRepository;
     public OrderAppService(ICommonAppService commonAppService,
                            IBaseInformationService baseInformationAppService,
                            IRepository<SaleDetail, int> saleDetailRepository,
@@ -94,7 +95,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
                            IRepository<CustomerPriority> customerPriorityRepository,
                            ICompanyGrpcClient companyGrpcClient,
                            IUserDataAccessService userDataAccessService,
-                           IRepository<City, int> cityRepository
+                           IRepository<City, int> cityRepository,
+                           IRepository<Province, int> provienceRepository
                            )
     {
         _commonAppService = commonAppService;
@@ -124,6 +126,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         _userDataAccessService = userDataAccessService;
         _companyGrpcClient = companyGrpcClient;
         _cityRepository = cityRepository;
+        _provienceRepository = provienceRepository;
     }
 
 
@@ -365,7 +368,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         if (SaleDetailDto.SaleProcess == SaleProcessType.CashSale)
         {
 
-            var order = orderQueryResult.FirstOrDefault(x => x.OrderStatus == OrderStatusType.RecentlyAdded || x.OrderStatus== OrderStatusType.PaymentSucceeded);
+            var order = orderQueryResult.FirstOrDefault(x => x.OrderStatus == OrderStatusType.RecentlyAdded || x.OrderStatus == OrderStatusType.PaymentSucceeded);
             if (order != null)
             {
                 if (order.OrderStatus == OrderStatusType.RecentlyAdded)
@@ -388,7 +391,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             }
         }
 
-        
+
 
         string EsaleTypeId = await _cacheManager.GetStringAsync("_EsaleType", RedisConstants.CommitOrderPrefix + userId.ToString()
            , new CacheOptions()
@@ -789,7 +792,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 SalePlanEndDate = x.SalePlanEndDate,
                 Id = x.Id,
                 SaleId = x.SaleId,
-              
+
                 SignTicketId = x.SignTicketId,
                 SignStatusId = x.SignStatus,
                 SignStatusTitle = x.SignStatus != null ? EnumHelper.GetDisplayName(x.SignStatus) : null,
@@ -1508,7 +1511,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 PaymentPrice = x.PaymentPrice,
                 TransactionId = x.TransactionId,
                 TransactionCommitDate = x.TransactionCommitDate,
-                ContractNumber=x.ContractNumber
+                ContractNumber = x.ContractNumber
                 //PspTitle = ?? 
             }).FirstOrDefault(x => x.UserId == userId && x.OrderId == id);
         var user = await _esaleGrpcClient.GetUserId(customerOrder.UserId.ToString());
@@ -1517,6 +1520,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
             .AsNoTracking()
             .Where(x => x.Id == (user.IssuingCityId ?? 0) || x.Id == (user.BirthCityId ?? 0))
             .ToList();
+        var habitationProvienceName = user.HabitationProvinceId.HasValue
+            ? (await _provienceRepository.GetQueryableAsync()).FirstOrDefault(x => x.Id == user.HabitationProvinceId.Value).Name
+            : string.Empty;
         customerOrder.SurName = user.SurName;
         customerOrder.Name = user.Name;
         customerOrder.NationalCode = user.NationalCode;
@@ -1527,7 +1533,10 @@ public class OrderAppService : ApplicationService, IOrderAppService
         customerOrder.BirthDate = user.BirthDate;
         customerOrder.BirthCityTitle = user.BirthCityId.HasValue ? cities?.FirstOrDefault(x => x.Id == user.BirthCityId.Value)?.Name : string.Empty;
         customerOrder.PostalCode = user.PostalCode;
-
+        customerOrder.HabitationCity = user.HabitationCityId.HasValue ? cities?.FirstOrDefault(x => x.Id == user.HabitationCityId.Value)?.Name : string.Empty;
+        customerOrder.HabitationProvience = habitationProvienceName;
+        customerOrder.Plaque = user.Plaque;
+        customerOrder.FatherName = user.FatherName;
 
         return customerOrder;
     }

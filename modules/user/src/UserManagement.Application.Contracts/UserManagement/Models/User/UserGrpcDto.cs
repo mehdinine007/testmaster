@@ -28,4 +28,6 @@ public class UserGrpcDto
     public string IssuingCityTitle { get; set; }
     public string Tel { get; set; }
     public string PostalCode { get; set; }
+    public string Plaque { get; set; }
+    public string FatherName { get; set; }
 }
