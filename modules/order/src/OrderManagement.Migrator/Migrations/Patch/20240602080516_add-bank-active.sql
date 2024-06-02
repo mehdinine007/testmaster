@@ -1,3 +1,3 @@
 
-ALTER TABLE [Bank] ADD [Active] int NOT NULL DEFAULT 1;
+ALTER TABLE [Bank] ADD [Active] bit NOT NULL DEFAULT 1;
 
