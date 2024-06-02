@@ -11,5 +11,6 @@
         public string Url { get; set; }
         public List<AttachmentViewModel> Attachments { get; set; }
         public int Priority { get; set; }
+        public bool Active { get; set; }
     }
 }

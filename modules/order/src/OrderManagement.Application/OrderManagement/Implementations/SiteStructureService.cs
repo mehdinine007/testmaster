@@ -142,7 +142,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
                 if (x.Type == SiteStructureTypeEnum.Bank)
 
                 {
-                    x.CarouselData = await _bankAppServiceService.GetList(new List<AttachmentEntityTypeEnum> { AttachmentEntityTypeEnum.Logo });
+                    x.CarouselData = await _bankAppServiceService.GetList(true,new List<AttachmentEntityTypeEnum> { AttachmentEntityTypeEnum.Logo });
                 }
                 if (x.Type == SiteStructureTypeEnum.Announcement)
                 {

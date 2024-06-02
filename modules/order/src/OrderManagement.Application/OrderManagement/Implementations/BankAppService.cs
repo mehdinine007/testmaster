@@ -28,9 +28,14 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             _bankRepository = bankRepository;
             _attachmentService = attachmentService;
         }
-        public async Task<List<BankDto>> GetList(List<AttachmentEntityTypeEnum> attachmentType = null, List<AttachmentLocationEnum> attachmentlocation = null)
+        public async Task<List<BankDto>> GetList(bool IsActiveFilter,List<AttachmentEntityTypeEnum> attachmentType = null, List<AttachmentLocationEnum> attachmentlocation = null)
         {
-            var banks = (await _bankRepository.GetQueryableAsync()).ToList();
+            var banksQuery = (await _bankRepository.GetQueryableAsync());
+            if (IsActiveFilter)
+                banksQuery = banksQuery.Where(x => x.Active);
+            var banks = banksQuery
+                .OrderBy(x=> x.Priority)
+                .ToList();
             var attachments = await _attachmentService.GetList(AttachmentEntityEnum.Bank, banks.Select(x => x.Id).ToList(), attachmentType, attachmentlocation);
             var banksDto = ObjectMapper.Map<List<Bank>, List<BankDto>>(banks);
             banksDto.ForEach(x =>

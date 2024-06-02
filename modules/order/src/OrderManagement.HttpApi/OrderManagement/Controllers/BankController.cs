@@ -32,8 +32,8 @@ namespace OrderManagement.HttpApi.OrderManagement.Controllers
 
 
         [HttpGet]
-        public Task<List<BankDto>> GetList(string attachmentType, string attachmentlocation)
-        => _bankAppService.GetList(EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(attachmentType), EnumHelper.ConvertStringToEnum<AttachmentLocationEnum>(attachmentlocation));
+        public Task<List<BankDto>> GetList(bool IsActiveFilter, string attachmentType, string attachmentlocation)
+        => _bankAppService.GetList(IsActiveFilter, EnumHelper.ConvertStringToEnum<AttachmentEntityTypeEnum>(attachmentType), EnumHelper.ConvertStringToEnum<AttachmentLocationEnum>(attachmentlocation));
 
 
         [HttpPost]

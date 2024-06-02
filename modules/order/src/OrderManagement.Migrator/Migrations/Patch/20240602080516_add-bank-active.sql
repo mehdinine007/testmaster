@@ -1,0 +1,3 @@
+
+ALTER TABLE [Bank] ADD [Active] int NOT NULL DEFAULT 1;
+

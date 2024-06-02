@@ -12,5 +12,6 @@ namespace OrderManagement.Application.Contracts
         public string Title { get; set; }
         public string PhoneNumber { get; set; }
         public string Url { get; set; }
+        public bool Active { get; set; }
     }
 }
