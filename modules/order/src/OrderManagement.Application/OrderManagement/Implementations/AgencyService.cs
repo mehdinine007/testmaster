@@ -57,7 +57,7 @@ public class AgencyService : ApplicationService, IAgencyService
     public async Task<PagedResultDto<AgencyDto>> GetAgencies(int pageNo, int sizeNo)
     {
         var count = await _agencyRepository.CountAsync();
-        var agencies = await _agencyRepository.WithDetailsAsync(x => x.Province);
+        var agencies =( await _agencyRepository.GetQueryableAsync()).Include(x => x.Province).Include(x=>x.City);
         var queryResult = await agencies.Skip(pageNo * sizeNo).Take(sizeNo).ToListAsync();
         return new PagedResultDto<AgencyDto>
         {

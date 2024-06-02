@@ -41,6 +41,29 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Constants
         public const string CodeNotFoundId = "0016";
         public const string ProvinceNotFound = "استان خالی است";
         public const string ProvinceNotFoundId = "0018";
+        public const string SalePlanDescriptionNotFound = "توضیحات برنامه فروش  خالی است";
+        public const string SalePlanDescriptionNotFoundId = "0019";
+        public const string SalePlanStartDateNotFound = "تاریخ و ساعت شروع برنامه فروش خالی است";
+        public const string SalePlanStartDateNotFoundId = "0020";
+        public const string SalePlanEndDateNotFound = "تاریخ و ساعت پایان برنامه فروش برنامه فروش خالی است";
+        public const string SalePlanEndDateNotFoundId = "0021";
+        public const string EsaleTypeIdNotFound = "مقدار نوع فروش معتبر نیست";
+        public const string EsaleTypeIdNotFoundId = "0022";
+        public const string CarFeeNotFound = "مقدار قیمت خودرو معتبرنیست";
+        public const string CarFeeNotFoundId = "0023";
+        public const string MinimumAmountOfProxyDepositNotFound = "مقدار حداقل مبلغ پیش پرداخت، وکالتی  معتبر نیست";
+        public const string MinimumAmountOfProxyDepositNotFoundId = "0025";
+        public const string SaleIdNotFound = " مقدار شناسه بخشنامه معتبر نیست";
+        public const string SaleIdNotFoundId = "0026";
+        public const string SaleProcessNotFound = "مقدار نوع طرح معتبر نیست";
+        public const string SaleProcessNotFoundId = "0027";
+        public const string AgencyTypeNotFound = "مقدار نوع نمایندگی معتبر نیست";
+        public const string AgencyTypeNotFoundId = "0028";
+        public const string YearNotValid = "مقدار سال معتبر نیست";
+        public const string YearNotValidId = "0029";
+        public const string SeasonIdNotFound = "مقدار شناسه فصل معتبر نیست";
+        public const string SeasonIdNotFoundId = "0030";
+
     }
     public static class RuleSets
     {
@@ -58,9 +81,6 @@ namespace OrderManagement.Application.Contracts.OrderManagement.Constants
         public const string MoveId = "0007";
         public const string UploadFile = "UploadFile";
         public const string UploadFileId = "0008";
-
-
-
-
+      
     }
 }

@@ -150,9 +150,12 @@ namespace OrderManagement.Application.Contracts
         public const string SaleDetailAllocationNotFoundId = "1101";
         public const string SaleDetailNotFound = "جزییات فروش وجود ندارد";
         public const string SaleDetailNotFoundId = "1102";
-       
-
-
+        public const string SalePlanEndDate = "تاریخ پایان بایدبزرگتراز تاریخ شروع باشد";
+        public const string SalePlanEndDateId = "1103";
+        public const string EsaleTypeIdNotFound = "نوع طرح فروش انتخاب شده وجود ندارد";
+        public const string EsaleTypeIdNotFoundId = "1104";
+        public const string ColorIdNotFound = "رنگ انتخاب شده موجود نمیباشد";
+        public const string ColorIdNotFoundId = "1105";
 
     }
 }
