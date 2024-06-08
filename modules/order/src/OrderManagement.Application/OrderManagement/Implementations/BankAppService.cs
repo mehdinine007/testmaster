@@ -54,6 +54,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             var bank = ObjectMapper.Map<BankCreateOrUpdateDto, Bank>(bankCreateOrUpdateDto);
             bank.Priority = lastPriority + 1;
             var entity = await _bankRepository.InsertAsync(bank);
+            await CurrentUnitOfWork.SaveChangesAsync();
             return ObjectMapper.Map<Bank, BankDto>(entity);
         }
 
