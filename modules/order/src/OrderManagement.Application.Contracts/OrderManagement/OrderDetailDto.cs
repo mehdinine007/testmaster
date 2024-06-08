@@ -68,6 +68,14 @@ public class OrderDetailDto
     public string NationalCode { get; set; }
 
     public string BirthCityTitle { get; set; }
+
     public string ContractNumber { get; set; }
 
+    public string Plaque { get; set; }
+
+    public string HabitationProvience { get; set; }
+
+    public string HabitationCity { get; set; }
+
+    public string FatherName { get; set; }
 }

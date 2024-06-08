@@ -71,7 +71,9 @@ public class EsaleGrpcClient : ApplicationService, IEsaleGrpcClient
             BirthDate = user.BirthDate.ToDateTime(),
             BirthCertId = user.BirthCertId,
             Address = user.Address,
-            BirthCityTitle = user.BirthCityTitle
+            BirthCityTitle = user.BirthCityTitle,
+            Plaque = user.Plaque,
+            FatherName = user.FatherName
         };
 
         return userDto;

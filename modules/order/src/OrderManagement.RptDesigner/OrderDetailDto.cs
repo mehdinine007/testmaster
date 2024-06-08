@@ -8,9 +8,7 @@ namespace OrderManagement.ReportDesigner
         internal static PersianCalendar _pc;
 
         internal string FixFormat(int datePart)
-            => datePart.ToString().Length == 2
-                ? $"{datePart}"
-                : $"0{datePart}";
+            => datePart.ToString().PadLeft(2, '0');
 
         internal string ToPersian(DateTime? date)
         {
@@ -69,7 +67,15 @@ namespace OrderManagement.ReportDesigner
         public string NationalCode { get; set; }
 
         public string BirthCityTitle { get; set; }
+
         public string ContractNumber { get; set; }
 
+        public string HabitationProvience { get; set; }
+
+        public string HabitationCity { get; set; }
+
+        public string Plaque { get; set; }
+
+        public string FatherName { get; set; }
     }
 }

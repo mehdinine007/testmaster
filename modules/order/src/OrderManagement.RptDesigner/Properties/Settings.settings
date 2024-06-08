@@ -3,7 +3,10 @@
   <Profiles />
   <Settings>
     <Setting Name="ReportPath" Type="System.String" Scope="User">
-      <Value Profile="(Default)">C:\dev\e-commerce\E-commerce\microservices\OrderService.Host\Reports\</Value>
+      <Value Profile="(Default)">..\..\..\..\..\..\microservices\OrderService.Host\Reports\</Value>
+    </Setting>
+    <Setting Name="OrganizationPrefix" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Barsavosh</Value>
     </Setting>
   </Settings>
 </SettingsFile>

@@ -28,12 +28,12 @@ namespace OrderManagement.Application.Contracts
             OrderStepEnum.SaveOrder
         };
 
-        public static List<OrderStepEnum> OrderStepWithPayment = new List<OrderStepEnum> 
-        { 
-            OrderStepEnum.Start, 
-            OrderStepEnum.SubmitOrder, 
+        public static List<OrderStepEnum> OrderStepWithPayment = new List<OrderStepEnum>
+        {
+            OrderStepEnum.Start,
+            OrderStepEnum.SubmitOrder,
             OrderStepEnum.PreviewOrder,
-            OrderStepEnum.SaveOrder 
+            OrderStepEnum.SaveOrder
         };
 
         public static string AttachmentNotFound = "ضمیمه وجود ندارد";
@@ -135,7 +135,7 @@ namespace OrderManagement.Application.Contracts
         public static string SeasonAllocationNotFound = "تخصیص فصل وجود ندارد";
         public static string SeasonAllocationNotFoundId = "9012";
 
-        
+
         public const string OrderWinnerFound = "شما قبلا سفارش ثبت نموده اید لطفا نسبت به جایگزینی آن اقدام فرمایید";
         public const string OrderWinnerFoundId = "9009";
         public const string RecentlyAdded = "سفارش درحال پرداخت می باشد.شما مجاز به ثبت سفارش جدید نمی باشید.";
@@ -156,6 +156,10 @@ namespace OrderManagement.Application.Contracts
         public const string EsaleTypeIdNotFoundId = "1104";
         public const string ColorIdNotFound = "رنگ انتخاب شده موجود نمیباشد";
         public const string ColorIdNotFoundId = "1105";
+
+        public const string OrgnizationPrefixNotFound = "تنظیم عنوان تعریف نشده است";
+        public const string OrgnizationPrefixNotFoundId = "1103";
+
 
     }
 }

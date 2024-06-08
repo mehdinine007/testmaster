@@ -84,6 +84,10 @@ message UserModel{
 	string Tel = 23;
 
 	string PostalCode = 24;
+
+	string Plaque = 25;
+
+	string FatherName = 26;
 }
 message AuthenticateRequest{
 	string UserNameOrEmailAddress=1;
