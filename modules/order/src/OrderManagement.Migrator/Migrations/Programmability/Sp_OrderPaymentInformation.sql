@@ -10,12 +10,16 @@
     ,@SaleDetailId NVARCHAR(max)
     ,@SaleId NVARCHAR(max)
     ,@ProductId NVARCHAR(max)
+	,@PageNum as int
+	,@PageSize as int
 AS
 
 BEGIN
 	SET NOCOUNT ON;
 	SET XACT_ABORT ON 
 	DECLARE  @Command NVARCHAR(max)
+	declare @offsetcount as int
+	set @offsetcount=(@PageNum-1)*@PageSize
 	SET @Command = 
 	'SELECT 
 		ROW_NUMBER() OVER(ORDER BY customerOrder.ID) AS [ردیف]
@@ -32,6 +36,7 @@ BEGIN
 		,customerOrder.PaymentPrice AS [مبلغ]
 		,customerOrder.ContractNumber AS [شماره قرارداد]
 		,CustomerOrder.SignTicketId
+		,Count(1) OVER () as TotalCount
 	FROM 
 		OrderDb.dbo.CustomerOrder AS customerOrder
 		INNER JOIN OrderDb.dbo.SaleDetail AS SaleDetail ON customerOrder.SaleDetailId = SaleDetail.Id
@@ -54,8 +59,9 @@ BEGIN
 		'+CASE WHEN ISNULL(@SaleDetailId,'') != '' THEN +' AND customerOrder.SaleDetailId in ('+@SaleDetailId+')' ELSE'' END +' 
 		'+CASE WHEN ISNULL(@SaleId,'') != '' THEN +' AND SaleDetail.SaleId in ('+@SaleId+')' ELSE'' END +' 
 		'+CASE WHEN ISNULL(@ProductId,'') != '' THEN +' AND productAndCategory.Id in ('+@ProductId+')' ELSE'' END +' 
-		'+CASE WHEN ISNULL(@TransactionId,'') != '' THEN +' AND customerOrder.TransactionId = '''+@TransactionId+'''' ELSE'' END +' '
-
+		'+CASE WHEN ISNULL(@TransactionId,'') != '' THEN +' AND customerOrder.TransactionId = '''+@TransactionId+'''' ELSE'' END +' 
+    order by customerOrder.TransactionCommitDate
+    offset '+convert(nvarchar(15),@offsetcount)+' ROWS fetch next '+convert(nvarchar(15),@PageSize)+' ROWS ONLY ' 
 	EXEC(@Command)
 		
 END 
