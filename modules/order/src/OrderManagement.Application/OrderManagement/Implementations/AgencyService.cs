@@ -59,10 +59,17 @@ public class AgencyService : ApplicationService, IAgencyService
         var count = await _agencyRepository.CountAsync();
         var agencies =( await _agencyRepository.GetQueryableAsync()).Include(x => x.Province).Include(x=>x.City);
         var queryResult = await agencies.Skip(pageNo * sizeNo).Take(sizeNo).ToListAsync();
+        var agencyDto = ObjectMapper.Map<List<Agency>, List<AgencyDto>>(queryResult);
+        var attachments = await _attachmentService.GetList(AttachmentEntityEnum.Agency, agencyDto.Select(x => x.Id).ToList());
+        agencyDto.ForEach(x =>
+        {
+            var attachment = attachments.Where(y => y.EntityId == x.Id).ToList();
+            x.Attachments = ObjectMapper.Map<List<AttachmentDto>, List<AttachmentViewModel>>(attachment);
+        });
         return new PagedResultDto<AgencyDto>
         {
             TotalCount = count,
-            Items = ObjectMapper.Map<List<Agency>, List<AgencyDto>>(queryResult)
+            Items = agencyDto
         };
 
     }
