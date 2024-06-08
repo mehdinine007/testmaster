@@ -69,6 +69,32 @@
     </ItemGroup>
 
     <ItemGroup>
+      <None Remove="Reports\RptContractForm_Barsavosh.frx" />
+      <None Remove="Reports\RptContractForm_Moein.frx" />
+      <None Remove="Reports\RptContractForm_Moein.mrt" />
+      <None Remove="Reports\RptFactor_Moein.frx" />
+      <None Remove="Reports\RptFactor_Moein.mrt" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="Reports\RptContractForm_Barsavosh.frx">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="Reports\RptContractForm_Moein.frx">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="Reports\RptContractForm_Moein.mrt">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="Reports\RptFactor_Moein.frx">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="Reports\RptFactor_Moein.mrt">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
+
+    <ItemGroup>
       <Content Update="web.config">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
