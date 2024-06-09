@@ -35,10 +35,11 @@ namespace OrderManagement.Application.OrderManagement.Implementations
         private readonly IAnnouncementService _announcementService;
         private readonly IAdvertisementService _advertisementService;
         private readonly IOrganizationService _organizationService;
+        private readonly IAgencyService _agencyService;
 
         public SiteStructureService(IRepository<SiteStructure, int> siteStructureRepository, IAttachmentService attachmentService, ICarClassService carClassService, IProductAndCategoryService productAndCategoryService
             , IRepository<ESaleType, int> eSaleTypeRepository, IBankAppService bankAppServiceService, IAnnouncementService announcementService
-            , IAdvertisementService advertisementService, IOrganizationService organizationService)
+            , IAdvertisementService advertisementService, IOrganizationService organizationService, IAgencyService agencyService)
         {
             _siteStructureRepository = siteStructureRepository;
             _attachmentService = attachmentService;
@@ -49,6 +50,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
             _announcementService = announcementService;
             _advertisementService = advertisementService;
             _organizationService = organizationService;
+            _agencyService = agencyService;
         }
         [SecuredOperation(SiteStructureServicePermissionConstant.Add)]
         public async Task<SiteStructureDto> Add(SiteStructureAddOrUpdateDto siteStructureDto)
@@ -140,7 +142,7 @@ namespace OrderManagement.Application.OrderManagement.Implementations
                 if (x.Type == SiteStructureTypeEnum.Bank)
 
                 {
-                    x.CarouselData = await _bankAppServiceService.GetList(new List<AttachmentEntityTypeEnum> { AttachmentEntityTypeEnum.Logo });
+                    x.CarouselData = await _bankAppServiceService.GetList(true,new List<AttachmentEntityTypeEnum> { AttachmentEntityTypeEnum.Logo });
                 }
                 if (x.Type == SiteStructureTypeEnum.Announcement)
                 {
@@ -157,7 +159,11 @@ namespace OrderManagement.Application.OrderManagement.Implementations
                     var organizations = await _organizationService.GetList(JsonConvert.DeserializeObject<OrganizationQueryDto>(x.Content));
                     x.CarouselData = organizations;
                 }
-
+                if (x.Type == SiteStructureTypeEnum.Agency)
+                {
+                    var agencies = await _agencyService.GetList(JsonConvert.DeserializeObject<AgencyQueryDto>(x.Content));
+                    x.CarouselData = agencies;
+                }
                 x.Content = null;
             });
             return siteStructures;

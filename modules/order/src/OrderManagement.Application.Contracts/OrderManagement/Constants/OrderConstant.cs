@@ -28,12 +28,12 @@ namespace OrderManagement.Application.Contracts
             OrderStepEnum.SaveOrder
         };
 
-        public static List<OrderStepEnum> OrderStepWithPayment = new List<OrderStepEnum> 
-        { 
-            OrderStepEnum.Start, 
-            OrderStepEnum.SubmitOrder, 
+        public static List<OrderStepEnum> OrderStepWithPayment = new List<OrderStepEnum>
+        {
+            OrderStepEnum.Start,
+            OrderStepEnum.SubmitOrder,
             OrderStepEnum.PreviewOrder,
-            OrderStepEnum.SaveOrder 
+            OrderStepEnum.SaveOrder
         };
 
         public static string AttachmentNotFound = "ضمیمه وجود ندارد";
@@ -121,11 +121,45 @@ namespace OrderManagement.Application.Contracts
         public static string UserDataAccessOldCarNotFoundId = "9006";
         public const string ProductNotFound = "محصول وجود ندارد";
         public const string ProductNotFoundId = "9008";
+        public const string ExcelSheetCountValidate = "تعداد شیت اکسل ورودی باید یک عدد باشد";
+        public const string ExcelSheetCountValidateId = "9007";
+        public const string ExcelImportError = "عملیات با خطا مواجه شد.شماره ردیف : ";
+        public const string ExcelImportErrorId = "9006";
+
         public const string OrderNotFound = "سفارش وجود ندارد";
         public const string OrderNotFoundId = "9009";
         public const string OrderAwaitingSignature = "امکان امضای قراردادوجود ندارد";
         public const string OrderAwaitingSignatureId = "9010";
         public static string ErrorInConnection = "خطا در برقراری ارتباط";
         public static string ErrorInConnectionId = "9011";
+        public static string SeasonAllocationNotFound = "تخصیص فصل وجود ندارد";
+        public static string SeasonAllocationNotFoundId = "9012";
+
+
+        public const string OrderWinnerFound = "شما قبلا سفارش ثبت نموده اید لطفا نسبت به جایگزینی آن اقدام فرمایید";
+        public const string OrderWinnerFoundId = "9009";
+        public const string RecentlyAdded = "سفارش درحال پرداخت می باشد.شما مجاز به ثبت سفارش جدید نمی باشید.";
+        public const string RecentlyAddedId = "1001";
+        public const string PaymentSucceeded = "شما قبلا سفارش از نوع موفق درسامانه دارید.مجاز به ثبت سفارش جدید نمی باشید.";
+        public const string PaymentSucceededId = "1002";
+        public static string ProvinceNotFound = "استان وجود ندارد";
+        public static string ProvinceNotFoundId = "1101";
+        public static string CityNotFound = "شهر وجود ندارد";
+        public static string CityNotFoundId = "1102";
+        public const string SaleDetailAllocationNotFound = "تخصیص جزییات سفارش وجود ندارد";
+        public const string SaleDetailAllocationNotFoundId = "1101";
+        public const string SaleDetailNotFound = "جزییات فروش وجود ندارد";
+        public const string SaleDetailNotFoundId = "1102";
+        public const string SalePlanEndDate = "تاریخ پایان بایدبزرگتراز تاریخ شروع باشد";
+        public const string SalePlanEndDateId = "1103";
+        public const string EsaleTypeIdNotFound = "نوع طرح فروش انتخاب شده وجود ندارد";
+        public const string EsaleTypeIdNotFoundId = "1104";
+        public const string ColorIdNotFound = "رنگ انتخاب شده موجود نمیباشد";
+        public const string ColorIdNotFoundId = "1105";
+
+        public const string OrgnizationPrefixNotFound = "تنظیم عنوان تعریف نشده است";
+        public const string OrgnizationPrefixNotFoundId = "1103";
+
+
     }
 }

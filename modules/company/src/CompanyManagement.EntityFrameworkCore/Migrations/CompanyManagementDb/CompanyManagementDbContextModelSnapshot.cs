@@ -323,6 +323,9 @@ namespace OrderManagement.EfCore.Migrations.CompanyManagementDb
                     b.Property<string>("CarDesc")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2")
                         .HasColumnName("CreationTime");

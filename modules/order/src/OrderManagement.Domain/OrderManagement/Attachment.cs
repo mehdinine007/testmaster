@@ -26,5 +26,7 @@ namespace OrderManagement.Domain.OrderManagement
         public string Content { get; set; }
         public int Priority { get; set; }
         public DeviceEnum Device { get; set; }
+        public int VersionNumber { get; set; }
+
     }
 }

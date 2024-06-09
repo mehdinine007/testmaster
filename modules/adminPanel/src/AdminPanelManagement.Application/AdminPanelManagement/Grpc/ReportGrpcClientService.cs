@@ -140,7 +140,7 @@ namespace AdminPanelManagement.Application.AdminPanelManagement.Grpc
             {
                 MultiSelect = x.MultiSelect,
                 Name = x.Name,
-                Value = x.Value,
+                Value = !string.IsNullOrEmpty(x.Value)? x.Value : "",
                 Values = x.Values != null && x.Values.Count > 0 ? JsonConvert.SerializeObject(x.Values) : "",
                 Type = (ConditionTypeEnum)x.Type
             });

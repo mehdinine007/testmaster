@@ -38,6 +38,10 @@ public static class OrderManagementDbContextModelCreatingExtensions
             entity.ConfigureSoftDelete();
             entity.ToTable(nameof(CustomerOrder));
 
+            entity.HasOne<SeasonAllocation>(x => x.SeasonAllocation)
+                .WithMany(x => x.CustomerOrders)
+                .HasForeignKey(x => x.SeasonAllocationId);
+            entity.HasIndex(u => u.SeasonAllocationId);
             entity.HasIndex(co => new { co.SaleDetailId, co.UserId })
                 .HasFilter($"{nameof(CustomerOrder.IsDeleted)} = 0 and " +
                 $"{nameof(CustomerOrder.PriorityId)} IS NOT NULL and " +
@@ -278,6 +282,10 @@ public static class OrderManagementDbContextModelCreatingExtensions
             entity.HasOne<Province>(x => x.Province)
                 .WithMany(x => x.Agencies)
                 .HasForeignKey(x => x.ProvinceId);
+            entity.HasOne<City>(x => x.City)
+                .WithMany(x => x.Agencies)
+                .HasForeignKey(x => x.CityId)
+              .OnDelete(DeleteBehavior.ClientCascade);
         });
 
         builder.Entity<AgencySaleDetail>(entity =>
@@ -537,9 +545,9 @@ public static class OrderManagementDbContextModelCreatingExtensions
         {
             entity.ToTable(nameof(SaleDetailAllocation));
 
-            entity.HasOne<Year>(x => x.Year)
-                .WithMany(x => x.SeasonCompanyProducts)
-                .HasForeignKey(x => x.YearId);
+            entity.HasOne<SeasonAllocation>(x => x.SeasonAllocation)
+                .WithMany(x => x.SaleDetailAllocations)
+                .HasForeignKey(x => x.SeasonAllocationId);
 
             entity.HasOne<SaleDetail>(x => x.SaleDetail)
                 .WithMany(x => x.SeasonCompanyProducts)

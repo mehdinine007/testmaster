@@ -99,7 +99,6 @@ public class SaleService : ApplicationService, ISaleService
         {
             CarDeliverDate = x.CarDeliverDate,
             CarFee = x.CarFee,
-            CircularSaleCode = x.CircularSaleCode,
             CoOperatingProfitPercentage = x.CoOperatingProfitPercentage,
             Id = x.Id,
             DeliverDaysCount = x.DeliverDaysCount,

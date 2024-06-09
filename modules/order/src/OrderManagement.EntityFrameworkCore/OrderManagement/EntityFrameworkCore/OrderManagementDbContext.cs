@@ -124,6 +124,7 @@ namespace OrderManagement.EfCore
         public DbSet<AdvertisementDetail> AdvertisementDetail { get; set; }
 
         public DbSet<SaleDetailAllocation> SeasonCompanyProduct { get; set; }
+        public DbSet<SeasonAllocation> SeasonAllocation { get; set; }
 
         public OrderManagementDbContext(DbContextOptions<OrderManagementDbContext> options)
             : base(options)

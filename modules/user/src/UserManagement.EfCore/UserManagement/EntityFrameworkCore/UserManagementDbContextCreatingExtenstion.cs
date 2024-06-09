@@ -73,6 +73,7 @@ namespace UserManagement.EfCore.EntityFrameworkCore
             {
                 entity.ToTable(nameof(UserDataAccess));
                 entity.Property(x => x.Nationalcode).HasMaxLength(10);
+                entity.HasIndex(x => x.Nationalcode);
             });
 
 

@@ -12,7 +12,7 @@ namespace OrderManagement.Domain
 
         public string Description { get; set; }
 
-        public int SaleStatus { get; set; }
+        public int Code { get; set; }
 
         public virtual ICollection<SaleDetail> SaleDetails
         { 

@@ -31,23 +31,27 @@ public class SaleDetailController:Controller, ISaleDetailService
     public async Task<bool> Delete(int id)
       => await _saleDetailService.Delete(id);
     [HttpGet]
-    public List<SaleDetailDto> GetActiveList()
-    => _saleDetailService.GetActiveList();
+    public  async Task<List<SaleDetailDto>> GetActiveList()
+    => await _saleDetailService.GetActiveList();
     [HttpGet]
-    public SaleDetailDto GetById(int id)
-    =>_saleDetailService.GetById(id);
+    public async Task<SaleDetailDto> GetById(int id)
+    =>await _saleDetailService.GetById(id);
 
     [HttpGet]
     public async Task<PagedResultDto<SaleDetailDto>> GetSaleDetails(BaseInquery input)
       => await _saleDetailService.GetSaleDetails(input);
     [HttpPost]
-    public async Task<int> Save(CreateSaleDetailDto createSaleDetailDto)
+    public async Task<SaleDetailDto> Save(CreateSaleDetailDto createSaleDetailDto)
       => await _saleDetailService.Save(createSaleDetailDto);
     [HttpPut]
-    public async Task<int> Update(CreateSaleDetailDto createSaleDetailDto)
+    public async Task<SaleDetailDto> Update(CreateSaleDetailDto createSaleDetailDto)
     => await _saleDetailService.Update(createSaleDetailDto);
 
     [HttpGet]
-    public  List<SaleDetailForDropDownDto> GetAll()
-          => _saleDetailService.GetAll();
+    public async Task<List<SaleDetailForDropDownDto>> GetAll()
+          =>await _saleDetailService.GetAll();
+
+    [HttpGet]
+    public async Task<List<SaleDetailDto>> GetList(int? saleId)
+          =>await _saleDetailService.GetList(saleId);
 }

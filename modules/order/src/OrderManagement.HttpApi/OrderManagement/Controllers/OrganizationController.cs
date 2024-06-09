@@ -8,6 +8,7 @@ using Volo.Abp.Application.Dtos;
 using OrderManagement.Application.Contracts.OrderManagement;
 using IFG.Core.Utility.Tools;
 using OrderManagement.Domain.Shared;
+using System;
 
 namespace OrderManagement.HttpApi.OrderManagement.Controllers;
 
@@ -39,7 +40,7 @@ public class OrganizationController : Controller
     => await _organizationService.Update(orgDto);
 
     [HttpPost]
-    public async Task<bool> UploadFile([FromForm] UploadFileDto uploadFile)
+    public async Task<Guid> UploadFile([FromForm] UploadFileDto uploadFile)
          =>await _organizationService.UploadFile(uploadFile);
     [HttpPost]
     public async Task<bool> Move(OrganizationPriorityDto input)

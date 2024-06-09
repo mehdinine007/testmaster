@@ -28,6 +28,11 @@ using OfficeOpenXml;
 using OrderManagement.Domain.OrderManagement.MongoWrite;
 using System.IO;
 using Permission.Order;
+using Volo.Abp.Auditing;
+using System.Xml.Linq;
+using Newtonsoft.Json;
+using Stimulsoft.Base.Gauge.GaugeGeoms;
+using Volo.Abp.Data;
 
 namespace OrderManagement.Application.OrderManagement.Implementations;
 
@@ -45,6 +50,8 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
     private readonly IRepository<Organization, int> _organizationRepository;
     private readonly IRepository<PropertyCategory, ObjectId> _propertyDefinitionRepository;
     private readonly IRepository<ProductPropertyWrite, ObjectId> _productPropertyWriteRepository;
+    private readonly IAuditingManager _auditingManager;
+
     public ProductAndCategoryService(IRepository<ProductAndCategory, int> productAndCategoryRepository,
                                      IAttachmentService attachmentService,
                                      IProductPropertyService productPropertyService,
@@ -55,7 +62,8 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
                                      IConfiguration configuration,
                                      IRepository<Organization, int> organizationRepository,
                                      IRepository<PropertyCategory, ObjectId> propertyDefinitionRepository,
-                                     IRepository<ProductPropertyWrite, ObjectId> productPropertyWriteRepository)
+                                     IRepository<ProductPropertyWrite, ObjectId> productPropertyWriteRepository,
+                                     IAuditingManager auditingManager)
     {
         _productAndCategoryRepository = productAndCategoryRepository;
         _attachmentService = attachmentService;
@@ -69,6 +77,7 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
         _organizationRepository = organizationRepository;
         _propertyDefinitionRepository = propertyDefinitionRepository;
         _productPropertyWriteRepository = productPropertyWriteRepository;
+        _auditingManager = auditingManager;
     }
     [SecuredOperation(ProductAndCategoryServicePermissionConstants.Delete)]
     public async Task Delete(int id)
@@ -460,21 +469,35 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
     [SecuredOperation(ProductAndCategoryServicePermissionConstants.Import)]
     public async Task<bool> Import(ImportExcelDto importExcelDto)
     {
+        var comments = new List<CommentLog>();
         using (var stream = new MemoryStream())
         {
             await importExcelDto.File.CopyToAsync(stream);
             using (var package = new ExcelPackage(stream))
             {
+                if (package.Workbook.Worksheets.Count != 1)
+                {
+                    throw new UserFriendlyException(OrderConstant.ExcelSheetCountValidate, OrderConstant.ExcelSheetCountValidateId);
+                }
                 ExcelWorksheet worksheet = package.Workbook.Worksheets.FirstOrDefault();
                 var rowcount = worksheet.Dimension.Rows;
                 var colcount = worksheet.Dimension.Columns;
                 var code = worksheet.Name;
+                comments.Add(new CommentLog
+                {
+                    Description = "Sheet Code :" + worksheet.Name
+                });
                 var productQuery = (await _productAndCategoryRepository.GetQueryableAsync()).AsNoTracking();
                 var product = productQuery.FirstOrDefault(x => x.Id == importExcelDto.ProductId);
                 if (product is null)
                 {
-                    throw new UserFriendlyException(OrderConstant.ProductNotFound, OrderConstant.ProductNotFound);
+                    throw new UserFriendlyException(OrderConstant.ProductNotFound, OrderConstant.ProductNotFoundId);
                 };
+                comments.Add(new CommentLog
+                {
+                    Description = "GetProduct",
+                    Data = JsonConvert.DeserializeObject<Dictionary<string, object>>(JsonConvert.SerializeObject(product))
+                });
                 var productMongo = (await _productPropertyRepository.GetMongoQueryableAsync()).Where(x => x.ProductId == product.Id).ToList();
                 if (productMongo.Count > 0)
                 {
@@ -483,19 +506,44 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
                 }
                 var propertyCategories = (await _propertyDefinitionRepository.GetMongoQueryableAsync()).ToList();
                 List<PropertyDto> propertyList = new List<PropertyDto>();
+                comments.Add(new CommentLog
+                {
+                    Description = "Sheet RowCount :" + rowcount.ToString(),
+                });
                 for (int row = 2; row <= rowcount; row++)
                 {
-
-                    var key = worksheet.Cells[row, 1].Value.ToString();
-                    var title = worksheet.Cells[row, 2].Value.ToString();
-                    var value = worksheet.Cells[row, 3].Value.ToString();
-                    foreach (var category in propertyCategories)
+                    comments.Add(new CommentLog
                     {
-                        foreach (var property in category.Properties)
+                        Description = "Row : " + row.ToString(),
+                    });
+                    try
+                    {
+                        var key = worksheet.Cells[row, 1].Value.ToString();
+                        var title = worksheet.Cells[row, 2].Value.ToString();
+                        var value = worksheet.Cells[row, 3].Value.ToString();
+                        foreach (var category in propertyCategories)
                         {
-                            if (property.Key == key)
-                                property.Value = value;
+                            foreach (var property in category.Properties)
+                            {
+                                if (property.Key == key)
+                                    property.Value = value;
+                            }
                         }
+                    }
+                    catch (Exception e)
+                    {
+                        string errorDescription = OrderConstant.ExcelImportError + row.ToString();
+                        comments.Add(new CommentLog
+                        {
+                            Description = errorDescription
+                        });
+                        using (var auditingScope = _auditingManager.BeginScope())
+                        {
+                            _auditingManager.Current.Log.SetProperty("ProductImportLog", comments);
+                            _auditingManager.Current.Log.Exceptions.Add(e);
+                            await auditingScope.SaveAsync();
+                        }
+                        throw new UserFriendlyException(errorDescription, OrderConstant.ExcelImportErrorId);
                     }
                 }
                 var productPropertyDto = new ProductPropertyDto()
@@ -506,6 +554,11 @@ public class ProductAndCategoryService : ApplicationService, IProductAndCategory
                 await _productPropertyWriteRepository.InsertAsync(ObjectMapper.Map<ProductPropertyDto, ProductPropertyWrite>(productPropertyDto));
 
             }
+        }
+        using (var auditingScope = _auditingManager.BeginScope())
+        {
+            _auditingManager.Current.Log.SetProperty("ProductImportLog", comments);
+            await auditingScope.SaveAsync();
         }
         return true;
     }

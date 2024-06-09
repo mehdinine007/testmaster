@@ -1,4 +1,6 @@
-﻿namespace OrderManagement.Application.Contracts
+﻿using OrderManagement.Domain.Shared.OrderManagement.Enums;
+
+namespace OrderManagement.Application.Contracts
 {
     public class AgencyDto
     {
@@ -7,5 +9,18 @@
         public string Name { get; set; }
 
         public int ProvinceId { get; set; }
+        public string ProvinceTitle { get; set; }
+        public string Code { get; set; }
+        public string Address { get; set; }
+        public string PhoneNumber { get; set; }
+        public bool Visible { get; set; }
+        public decimal? Longitude { get; set; }
+        public decimal? Latitude { get; set; }
+        public int? CityId { get; set; }
+        public string CityTitle { get; set; }
+        public AgencyTypeEnum AgencyType { get; set; }
+        public string AgencyTypeTitle { get; set; }
+        public List<AttachmentViewModel> Attachments { get; set; }
+
     }
 }

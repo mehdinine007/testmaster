@@ -89,7 +89,7 @@ namespace UserManagement.EfCore.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AdvocacyUsers");
+                    b.ToTable("AdvocacyUsers", (string)null);
                 });
 
             modelBuilder.Entity("UserManagement.Domain.UserManagement.Advocacy.AdvocacyUsersFromBank", b =>
@@ -159,7 +159,7 @@ namespace UserManagement.EfCore.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AdvocacyUsersFromBank");
+                    b.ToTable("AdvocacyUsersFromBank", (string)null);
                 });
 
             modelBuilder.Entity("UserManagement.Domain.UserManagement.Advocacy.UserRejectionFromBank", b =>
@@ -240,7 +240,7 @@ namespace UserManagement.EfCore.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("UserRejectionFromBank");
+                    b.ToTable("UserRejectionFromBank", (string)null);
                 });
 
             modelBuilder.Entity("UserManagement.Domain.UserManagement.Authorization.Users.UserSQL", b =>
@@ -548,7 +548,7 @@ namespace UserManagement.EfCore.Migrations
 
                     b.HasIndex("NationalCode", "WhiteListType");
 
-                    b.ToTable("WhiteList");
+                    b.ToTable("WhiteList", (string)null);
                 });
 
             modelBuilder.Entity("UserManagement.Domain.UserManagement.CompanyService.ClientsOrderDetailByCompany", b =>
@@ -705,6 +705,8 @@ namespace UserManagement.EfCore.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Nationalcode");
 
                     b.ToTable("UserDataAccess", (string)null);
                 });

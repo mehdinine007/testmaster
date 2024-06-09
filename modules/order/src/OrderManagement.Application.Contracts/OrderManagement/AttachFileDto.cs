@@ -11,7 +11,7 @@ namespace OrderManagement.Application.Contracts
 {
     public class AttachFileDto  
     {
-        public Guid? Id { get; set; }
+        public Guid? AttachmentId { get; set; }
         public string Title { get; set; }
         public AttachmentEntityEnum Entity { get; set; }
         public int EntityId { get; set; }
@@ -19,8 +19,9 @@ namespace OrderManagement.Application.Contracts
         public AttachmentLocationEnum Location { get; set; }
         public IFormFile File { get; set; }
         public string Description { get; set; }
-        public List<string> Content { get; set; }
+        public List<string>? Content { get; set; }
         public int Priority { get; set; }
         public DeviceEnum Device { get; set; }
+        public int VersionNumber { get; set; }
     }
 }

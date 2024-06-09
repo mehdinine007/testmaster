@@ -64,10 +64,16 @@ namespace GatewayManagement.Application.GatewayManagement.Services.SendBox.Sign.
                 }
                 else
                 {
-                    ErrorResponseIranSign _ret = null;
-                    List<ErrorResponseIranSign> result = null;
-                    result = JsonConvert.DeserializeObject<List<ErrorResponseIranSign>>(readContent);
-                    _ret = result.FirstOrDefault();
+                    if (response.StatusCode == HttpStatusCode.ServiceUnavailable)
+                    {
+                        return new ResponseCreateIranSign
+                        {
+                            Success = false,
+                            resultCode = (int)HttpStatusCode.ServiceUnavailable
+                        };
+                    }
+                    var result = JsonConvert.DeserializeObject<List<ErrorResponseIranSign>>(readContent);
+                    var _ret = result.FirstOrDefault();
                     if (response.StatusCode == HttpStatusCode.Unauthorized)
                     {
                         return new ResponseCreateIranSign

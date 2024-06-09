@@ -69,23 +69,27 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Remove="Reports\RptContractForm.frx" />
-      <None Remove="Reports\RptContractForm.mrt" />
-      <None Remove="Reports\RptFactor.frx" />
-      <None Remove="Reports\RptFactor.mrt" />
+      <None Remove="Reports\RptContractForm_Barsavosh.frx" />
+      <None Remove="Reports\RptContractForm_Moein.frx" />
+      <None Remove="Reports\RptContractForm_Moein.mrt" />
+      <None Remove="Reports\RptFactor_Moein.frx" />
+      <None Remove="Reports\RptFactor_Moein.mrt" />
     </ItemGroup>
 
     <ItemGroup>
-      <Content Include="Reports\RptContractForm.frx">
+      <Content Include="Reports\RptContractForm_Barsavosh.frx">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
-      <Content Include="Reports\RptContractForm.mrt">
+      <Content Include="Reports\RptContractForm_Moein.frx">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
-      <Content Include="Reports\RptFactor.frx">
+      <Content Include="Reports\RptContractForm_Moein.mrt">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
-      <Content Include="Reports\RptFactor.mrt">
+      <Content Include="Reports\RptFactor_Moein.frx">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="Reports\RptFactor_Moein.mrt">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
     </ItemGroup>

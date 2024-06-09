@@ -65,9 +65,17 @@ namespace OrderManagement
             CreateMap<Attachment, AttachmentDto>()
                 .ReverseMap();
             CreateMap<Attachment, AttachFileDto>()
+                .ForMember(x => x.Content, c => c.MapFrom(m => !string.IsNullOrWhiteSpace(m.Content) ? JsonConvert.DeserializeObject<List<string>>(m.Content) : null))
+                .ForMember(x => x.AttachmentId, c => c.MapFrom(m => m.Id))
+                .ReverseMap()
+                .ForMember(x => x.Id, c => c.MapFrom(m => m.AttachmentId));
+            CreateMap<UploadFileDto, AttachFileDto>()
+                .ForMember(x => x.EntityType, c => c.MapFrom(m => m.Type))
                 .ReverseMap();
             CreateMap<Attachment, AttachmentUpdateDto>()
-                .ReverseMap();
+                .ReverseMap()
+                .ForMember(x => x.EntityType, c => c.MapFrom(m => m.Type))
+                .ForMember(x => x.Content, c => c.MapFrom(m => m.Content != null ? JsonConvert.SerializeObject(m.Content) : null));
             CreateMap<AttachmentDto, AttachmentViewModel>()
                 .ForMember(x => x.FileName, c => c.MapFrom(m => m.Id + "." + m.FileExtension))
                 .ForMember(x => x.Type, c => c.MapFrom(m => m.EntityType))
@@ -115,12 +123,26 @@ namespace OrderManagement
                 .ReverseMap();
 
             CreateMap<SaleDetail, SaleDetailDto>()
+                 .ForMember(x => x.EsaleName, c => c.MapFrom(m => m.ESaleTypeId == 1 ? EnumHelper.GetDisplayName(ESaleTypeEnums.NormalSale) : m.ESaleTypeId == 2 ? EnumHelper.GetDisplayName(ESaleTypeEnums.YouthSale) : m.ESaleTypeId == 3 ? EnumHelper.GetDisplayName(ESaleTypeEnums.WornOutSale) : ""))
+                 .ForMember(x => x.SaleTitle, c => c.MapFrom(m => m.SaleSchema.Title))
+                .ForMember(o => o.SalePlanDescription, opt => opt.MapFrom(y => System.Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(y.SalePlanDescription))))
                 .ReverseMap()
                 .IgnoreFullAuditedObjectProperties();
             CreateMap<SaleDetail, SaleDetailOrderDto>();
-            CreateMap<Agency, AgencyDto>().ReverseMap();
+            CreateMap<Agency, AgencyDto>()
+                 .ForMember(x => x.ProvinceTitle, c => c.MapFrom(o => o.Province.Name))
+                 .ForMember(x => x.CityTitle, c => c.MapFrom(o => o.City.Name))
+                 .ForMember(x => x.AgencyTypeTitle, c => c.MapFrom(m => m.AgencyType != 0 ? EnumHelper.GetDescription(m.AgencyType) : ""))
+                .ReverseMap();
+            CreateMap<Agency, AgencyCreateDto>().ReverseMap();
+            CreateMap<Agency, AgencyCreateOrUpdateDto>().ReverseMap();
+            CreateMap<AgencyCreateDto, AgencyCreateOrUpdateDto>().ReverseMap();
+
             //CreateMap<ApiResult, HandShakeResultDto>();
-            CreateMap<SaleDetail, CreateSaleDetailDto>().ReverseMap();
+            CreateMap<SaleDetail, CreateSaleDetailDto>()
+                .ReverseMap()
+                .ForMember(x => x.SalePlanDescription, opt => opt.MapFrom(y => System.Text.Encoding.UTF8.GetString(System.Convert.FromBase64String(y.SalePlanDescription))));
+
             CreateMap<SaleDetail, SaleDetailForDropDownDto>()
                 .ReverseMap()
                 .IgnoreFullAuditedObjectProperties();
@@ -133,6 +155,7 @@ namespace OrderManagement
             CreateMap<Color, ColorDto>()
                 .ReverseMap();
             CreateMap<SaleSchema, SaleSchemaDto>()
+                .ForMember(o => o.Description, opt => opt.MapFrom(y => System.Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(y.Description))))
                .ReverseMap();
             CreateMap<PspHandShakeRequest, PaymentHandShakeDto>();
             CreateMap<PaymentHandShakeViewModel, IpgApiResult>();
@@ -156,7 +179,9 @@ namespace OrderManagement
                 .ForMember(x => x.OrderDeliveryStatusDescription, opt => opt.Ignore())
                 .ForMember(x => x.AvailableDeliveryStatusList, opt => opt.Ignore())
                 .ForMember(x => x.RejectionDate, opt => opt.Ignore());
-            CreateMap<CreateSaleSchemaDto, SaleSchema>().ReverseMap();
+            CreateMap<CreateSaleSchemaDto, SaleSchema>()
+               .ForMember(x => x.Description, opt => opt.MapFrom(y => System.Text.Encoding.UTF8.GetString(System.Convert.FromBase64String(y.Description))))
+                .ReverseMap();
             CreateMap<ProductAndCategoryCreateDto, ProductAndCategory>();
             CreateMap<ProductAndCategory, ProductAndSaleDetailListDto>().ReverseMap();
             CreateMap<SaleDetail, SaleDetailListDto>()
@@ -219,6 +244,14 @@ namespace OrderManagement
             CreateMap<SaleDetailAllocation, SaleDetailAllocationDto>()
                 .ReverseMap()
                 .IgnoreFullAuditedObjectProperties();
+            CreateMap<SaleDetailAllocation, SaleDetailAllocationCreateOrUpdateDto>()
+               .ReverseMap();
+            CreateMap<SeasonAllocation, SeasonAllocationDto>()
+               .ForMember(x => x.SeasonTitle, c => c.MapFrom(m => m.SeasonId != 0 ? EnumHelper.GetDescription(m.SeasonId) : ""))
+                .ReverseMap();
+
+            CreateMap<SeasonAllocation, SeasonAllocationUpdateDto>().ReverseMap();
+            CreateMap<SeasonAllocation, SeasonAllocationCreateDto>().ReverseMap();
         }
     }
 }

@@ -1,0 +1,3 @@
+
+ALTER TABLE [Bank] ADD [Active] bit NOT NULL DEFAULT 1;
+

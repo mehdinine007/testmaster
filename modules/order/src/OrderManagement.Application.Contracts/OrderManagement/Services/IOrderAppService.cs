@@ -1,4 +1,5 @@
-﻿using OrderManagement.Application.Contracts.OrderManagement.Dtos.Grpc.Client;
+﻿using OrderManagement.Application.Contracts.OrderManagement;
+using OrderManagement.Application.Contracts.OrderManagement.Dtos.Grpc.Client;
 using OrderManagement.Domain.Shared;
 using System;
 using System.Collections.Generic;
@@ -10,8 +11,7 @@ namespace OrderManagement.Application.Contracts.Services
     public interface IOrderAppService : IApplicationService
     {
         Task<GetOrderByIdResponseDto> GetOrderById(int orderId);
-
-        Task<CustomerOrder_OrderDetailTreeDto> GetCustomerOrderList(List<AttachmentEntityTypeEnum>? attachmentType = null, List<AttachmentLocationEnum>? attachmentlocation = null);
+        Task<CustomerOrder_OrderDetailTreeDto> GetCustomerOrderList(CustomerOrderQueryDto customerOrderQueryDto);
 
         Task<CustomerOrder_OrderDetailDto> GetOrderDetailById(int id, List<AttachmentEntityTypeEnum>? attachmentType = null, List<AttachmentLocationEnum>? attachmentlocation = null);
 

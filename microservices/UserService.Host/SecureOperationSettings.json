@@ -427,7 +427,7 @@
             "children": []
           },
           {
-            "title": "Save",
+            "title": "Add",
             "code": "000200080003",
             "displayName": "ثبت",
             "children": []
@@ -436,6 +436,12 @@
             "title": "Update",
             "code": "000200080004",
             "displayName": "بروزرسانی",
+            "children": []
+          },
+          {
+            "title": "UploadFile",
+            "code": "000200080005",
+            "displayName": "اپلود فایل",
             "children": []
           }
         ]
@@ -894,6 +900,12 @@
             "code": "000200190006",
             "displayName": "بروزرسانی فایل",
             "children": []
+          },
+          {
+            "title": "Move",
+            "code": "000200190007",
+            "displayName": "جابه جایی اولویت ها",
+            "children": []
           }
 
         ]
@@ -1235,6 +1247,43 @@
             "children": []
           }
         ]
+      },
+      {
+        "title": "SeasonAllocationService",
+        "code": "00020028",
+        "displayName": "سرویس تخصیص فصل",
+        "children": [
+          {
+            "title": "Add",
+            "code": "000200280001",
+            "displayName": "ایجادتخصیص فصل",
+            "children": []
+          },
+          {
+            "title": "Delete",
+            "code": "000200280002",
+            "displayName": "حذف تخصیص فصل",
+            "children": []
+          },
+          {
+            "title": "GetById",
+            "code": "000200280003",
+            "displayName": "نمایش تخصیص فصل با شناسه",
+            "children": []
+          },
+          {
+            "title": "GetList",
+            "code": "000200280004",
+            "displayName": "نمایش تخصیص فصل",
+            "children": []
+          },
+          {
+            "title": "Update",
+            "code": "000200280005",
+            "displayName": "بروزرسانی تخصیص فصل",
+            "children": []
+          }
+        ]
       }
     ]
   },
@@ -1270,6 +1319,12 @@
             "title": "GetRecentCustomerAndOrder",
             "code": "000300010004",
             "displayName": "گرفتن اطلاعات مشتریان برای شرکت های خودرو ساز",
+            "children": []
+          },
+          {
+            "title": "SaveOrderInformation",
+            "code": "000300010005",
+            "displayName": "ثبت اطلاعات سفارش به صورت تکی",
             "children": []
           }
         ]

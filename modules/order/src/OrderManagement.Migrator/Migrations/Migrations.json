@@ -9,6 +9,30 @@
     {
       "Id": "ProductAndCategory_CarTip",
       "Priority": 1
+    },
+    {
+      "Id": "Color",
+      "Priority": 2
+    },
+    {
+      "Id": "SaleDetailCarColor",
+      "Priority": 3
+    },
+    {
+      "Id": "Agency",
+      "Priority": 4
+    },
+    {
+      "Id": "AgencySaleDetail",
+      "Priority": 5
+    },
+    {
+      "Id": "AbpUsers",
+      "Priority": 6
+    },
+    {
+      "Id": "SaleDetailAllocation",
+      "Priority": 7
     }
   ],
   "Programmability": [
@@ -58,11 +82,6 @@
       "Type": "proc"
     },
     {
-      "Id": "CustomerCarDeliveryTime",
-      "Priority": 11,
-      "Type": "proc"
-    },
-    {
       "Id": "Sp_EsaleCarApplicantCountChart",
       "Priority": 12,
       "Type": "proc"
@@ -71,105 +90,164 @@
       "Id": "sp_InsertUserDataAccess",
       "Priority": 13,
       "Type": "proc"
+    },
+    {
+      "Id": "Sp_OrderPaymentInformation",
+      "Priority": 14,
+      "Type": "proc"
     }
   ],
-  "Patch": [
-    {
-      "Id": "20231213112901_Add_CustomerPriority",
-      "Priority": 1,
-      "Version": "4.2.0"
-    },
-    {
-      "Id": "20231216072246_Add_Active_Announcement",
-      "Priority": 2,
-      "Version": "4.2.0"
-    },
-    {
-      "Id": "20231218043917_add-QuestionGroup",
-      "Priority": 3,
-      "Version": "4.2.0"
-    },
-    {
-      "Id": "20231218074256_add-questinrelationship",
-      "Priority": 4,
-      "Version": "4.2.0"
-    },
-    {
-      "Id": "20231218074437_add-deviceenum",
-      "Priority": 5,
-      "Version": "4.2.0"
-    },
-    {
-      "Id": "20231220090409_addQuestionGroup-to-Question",
-      "Priority": 6,
-      "Version": "4.2.0"
-    },
-    {
-      "Id": "20231226055406_removeuniquegroupid",
-      "Priority": 7,
-      "Version": "4.2.0"
-    },
-    {
-      "Id": "20240102103313_add-advertisement",
-      "Priority": 8,
-      "Version": "4.2.0"
-    },
-    {
-      "Id": "20240106123506_add-priority-advertisementdetail",
-      "Priority": 9,
-      "Version": "4.2.0"
-    },
-    {
-      "Id": "20240110080635_IsRequiredtitle-title-advertisement",
-      "Priority": 10,
-      "Version": "4.2.0"
-    },
-    {
-      "Id": "20240129082810_add-userdataaccess",
-      "Priority": 11,
-      "Version": "4.2.0"
-    },
-    {
-      "Id": "20240129124922_nullableuserid",
-      "Priority": 12,
-      "Version": "4.2.0"
-    },
+    "Patch": [
+        {
+            "Id": "20231213112901_Add_CustomerPriority",
+            "Priority": 1,
+            "Version": "4.2.0"
+        },
+        {
+            "Id": "20231216072246_Add_Active_Announcement",
+            "Priority": 2,
+            "Version": "4.2.0"
+        },
+        {
+            "Id": "20231218043917_add-QuestionGroup",
+            "Priority": 3,
+            "Version": "4.2.0"
+        },
+        {
+            "Id": "20231218074256_add-questinrelationship",
+            "Priority": 4,
+            "Version": "4.2.0"
+        },
+        {
+            "Id": "20231218074437_add-deviceenum",
+            "Priority": 5,
+            "Version": "4.2.0"
+        },
+        {
+            "Id": "20231220090409_addQuestionGroup-to-Question",
+            "Priority": 6,
+            "Version": "4.2.0"
+        },
+        {
+            "Id": "20231226055406_removeuniquegroupid",
+            "Priority": 7,
+            "Version": "4.2.0"
+        },
+        {
+            "Id": "20240102103313_add-advertisement",
+            "Priority": 8,
+            "Version": "4.2.0"
+        },
+        {
+            "Id": "20240106123506_add-priority-advertisementdetail",
+            "Priority": 9,
+            "Version": "4.2.0"
+        },
+        {
+            "Id": "20240110080635_IsRequiredtitle-title-advertisement",
+            "Priority": 10,
+            "Version": "4.2.0"
+        },
+        {
+            "Id": "20240129082810_add-userdataaccess",
+            "Priority": 11,
+            "Version": "4.2.0"
+        },
+        {
+            "Id": "20240129124922_nullableuserid",
+            "Priority": 12,
+            "Version": "4.2.0"
+        },
 
-    {
-      "Id": "20240221080039_update-organization",
-      "Priority": 13,
-      "Version": "4.2.0"
-    },
-    {
-      "Id": "20240221065931_addorganizationid",
-      "Priority": 14,
-      "Version": "4.2.0"
-    },
-    {
-      "Id": "20240221065931_addorganizationidindex",
-      "Priority": 15,
-      "Version": "4.2.0"
-    },
-    {
-      "Id": "20240221065931_deleteandupdatelevel1product",
-      "Priority": 16,
-      "Version": "4.2.0"
-    },
-    {
-      "Id": "20240421063529_add-sign-customerorder",
-      "Priority": 21,
-      "Version": "4.5.0"
-    },
-    {
-      "Id": "20240415060532_add-payment-customerorder",
-      "Priority": 22,
-      "Version": "4.5.0"
-    },
-    {
-      "Id": "20240422132448_Add-ContractNumber-CustomerOrder",
-      "Priority": 23,
-      "Version": "4.5.0"
-    }
-
-  ]
+        {
+            "Id": "20240221080039_update-organization",
+            "Priority": 13,
+            "Version": "4.2.0"
+        },
+        {
+            "Id": "20240221065931_addorganizationid",
+            "Priority": 14,
+            "Version": "4.2.0"
+        },
+        {
+            "Id": "20240221065931_addorganizationidindex",
+            "Priority": 15,
+            "Version": "4.2.0"
+        },
+        {
+            "Id": "20240221065931_deleteandupdatelevel1product",
+            "Priority": 16,
+            "Version": "4.2.0"
+        },
+        {
+            "Id": "20240421063529_add-sign-customerorder",
+            "Priority": 21,
+            "Version": "4.5.0"
+        },
+        {
+            "Id": "20240415060532_add-payment-customerorder",
+            "Priority": 22,
+            "Version": "4.5.0"
+        },
+        {
+            "Id": "20240422132448_Add-ContractNumber-CustomerOrder",
+            "Priority": 23,
+            "Version": "4.5.0"
+        },
+        {
+            "Id": "20240508101254_add-SeasonAllocation-table",
+            "Priority": 24,
+            "Version": "4.5.0"
+        },
+        {
+            "Id": "20240508101254_FkCustomerOrderSeasonAllocation",
+            "Priority": 25,
+            "Version": "4.5.0"
+        },
+        {
+            "Id": "20240511050723_add-title-saledetail",
+            "Priority": 26,
+            "Version": "4.5.0"
+        },
+        {
+            "Id": "20240511050723_ConvertSeasonAllocation",
+            "Priority": 27,
+            "Version": "4.5.0"
+        },
+        {
+            "Id": "20240313074425_nationalcode-index-userdataaccess",
+            "Priority": 29,
+            "Version": "4.4.0"
+        },
+        {
+            "Id": "20240514072152_add-versionnumber-attachment",
+            "Priority": 30,
+            "Version": "4.5.0"
+        },
+        {
+            "Id": "20240515140340_add-fields-agency",
+            "Priority": 32,
+            "Version": "4.4.0"
+        },
+        {
+            "Id": "20240515140340_Convert_Code_Agency",
+            "Priority": 33,
+            "Version": "4.4.0"
+        },
+        {
+            "Id": "20240529083157_add-priority-bank",
+            "Priority": 34,
+            "Version": "4.4.0"
+        },
+        {
+            "Id": "20240515140340_Update_Priority_Bank",
+            "Priority": 35,
+            "Version": "4.4.0"
+        },
+        {
+            "Id": "20240602080516_add-bank-active",
+            "Priority": 36,
+            "Version": "4.4.0"
+        }
+    ]
 }

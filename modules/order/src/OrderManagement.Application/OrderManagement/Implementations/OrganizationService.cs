@@ -108,11 +108,10 @@ public class OrganizationService : ApplicationService, IOrganizationService
 
 
     [SecuredOperation(OrganizationServicePermissionConstants.UploadFile)]
-    public async Task<bool> UploadFile(UploadFileDto uploadFile)
+    public async Task<Guid> UploadFile(UploadFileDto uploadFile)
     {
         var announcement = await Validation(uploadFile.Id, null);
-        await _attachmentService.UploadFile(AttachmentEntityEnum.Organization, uploadFile);
-        return true;
+        return await _attachmentService.UploadFile(AttachmentEntityEnum.Organization, uploadFile);
     }
 
     private async Task<Organization> Validation(int id, OrganizationAddOrUpdateDto organDto)

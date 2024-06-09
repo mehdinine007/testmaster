@@ -13,6 +13,7 @@
         Questionnaire = 8,
         Organization = 9,
         Advertisement= 10,
+        Agency= 11,
     }
 }
 

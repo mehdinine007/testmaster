@@ -30,7 +30,19 @@
     <None Remove="Migrations\Patch\20240421063529_add-sign-customerorder.sql" />
     <None Remove="Migrations\Patch\20240415060532_add-payment-customerorder.sql" />
     <None Remove="Migrations\Patch\20240422132448_Add-ContractNumber-CustomerOrder.sql" />
+    <None Remove="Migrations\Patch\20240508101254_add-SeasonAllocation-table.sql" />
+    <None Remove="Migrations\Patch\20240508101254_FKCustomerOrderSeasonAllocation.sql" />
+    <None Remove="Migrations\Patch\20240511050723_add-title-saledetail.sql" />
+    <None Remove="Migrations\Patch\20240511050723_ConvertSeasonAllocation.sql" />
+    <None Remove="Migrations\Patch\20240511125024_SaleDetailAllocation_SeasonId_Nullable.sql" />
+    <None Remove="Migrations\Patch\20240514072152_add-versionnumber-attachment.sql" />
+    <None Remove="Migrations\Patch\20240515140340_add-fields-agency.sql" />
+    <None Remove="Migrations\Patch\20240515140340_Convert_Code_Agency.sql" />
+    <None Remove="Migrations\Patch\20240515140340_Update_Priority_Bank.sql" />
+    <None Remove="Migrations\Patch\20240529083157_add-priority-bank.sql" />
+    <None Remove="Migrations\Patch\20240602080516_add-bank-active.sql" />
     <None Remove="Migrations\Programmability\CustomerCarDeliveryTime.sql" />
+    <None Remove="Migrations\Patch\20240313074425_nationalcode-index-userdataaccess.sql" />
     <None Remove="Migrations\Programmability\GetRecentCustomerAndOrder.sql" />
     <None Remove="Migrations\Programmability\Hangfire.sql" />
     <None Remove="Migrations\Programmability\spApplicantsReport.sql" />
@@ -44,8 +56,21 @@
     <None Remove="Migrations\Programmability\spUserInfo.sql" />
     <None Remove="Migrations\Programmability\Sp_EsaleCarApplicantCountChart.sql" />
     <None Remove="Migrations\Programmability\sp_InsertUserDataAccess.sql" />
+    <None Remove="Migrations\Programmability\Sp_OrderPaymentInformation.sql" />
     <None Remove="Migrations\Schema\SchemaBase.sql" />
+    <None Remove="Migrations\Tables\Agency.sql" />
+    <None Remove="Migrations\Tables\AgencySaleDetail.sql" />
+    <None Remove="Migrations\Tables\Color.sql" />
+    <None Remove="Migrations\Tables\AbpUsers.sql" />
     <None Remove="Migrations\Tables\ProductAndCategory_CarTip.sql" />
+    <None Remove="Migrations\Tables\SaleDetailAllocation.sql" />
+    <None Remove="Migrations\Tables\SaleDetailCarColor.sql" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Migrations\Patch\20240511125024_SaleDetailAllocation_SeasonId_Nullable.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
@@ -122,7 +147,34 @@
     <Content Include="Migrations\Patch\20240422132448_Add-ContractNumber-CustomerOrder.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Migrations\Programmability\CustomerCarDeliveryTime.sql">
+    <Content Include="Migrations\Patch\20240508101254_FkCustomerOrderSeasonAllocation.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Migrations\Patch\20240508101254_add-SeasonAllocation-table.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Migrations\Patch\20240511050723_add-title-saledetail.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Migrations\Patch\20240511050723_ConvertSeasonAllocation.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Migrations\Patch\20240313074425_nationalcode-index-userdataaccess.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Migrations\Patch\20240515140340_Update_Priority_Bank.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Migrations\Patch\20240515140340_Convert_Code_Agency.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Migrations\Patch\20240515140340_add-fields-agency.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Migrations\Patch\20240602080516_add-bank-active.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Migrations\Patch\20240529083157_add-priority-bank.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Migrations\Programmability\GetRecentCustomerAndOrder.sql">
@@ -152,6 +204,9 @@
     <Content Include="Migrations\Programmability\spGetReportQuestionnaire.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Migrations\Programmability\Sp_OrderPaymentInformation.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Migrations\Programmability\spUserInfo.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -162,6 +217,24 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Migrations\Schema\SchemaBase.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Migrations\Tables\AgencySaleDetail.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Migrations\Tables\Agency.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Migrations\Tables\SaleDetailAllocation.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Migrations\Tables\SaleDetailCarColor.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Migrations\Tables\Color.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Migrations\Tables\AbpUsers.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Migrations\Tables\ProductAndCategory_CarTip.sql">

@@ -4,8 +4,8 @@ namespace OrderManagement.Application.Contracts.OrderManagement
 {
     public class CreateSaleDetailDto
     {
-        public Guid Uid { get; set; } 
-        public int Id { get; set; } 
+        public int Id { get; set; }
+        public string Title { get; set; }
         public int CircularSaleCode { get; set; } // شماره بخشنامه فروش
        
         public int SaleId { get; set; }

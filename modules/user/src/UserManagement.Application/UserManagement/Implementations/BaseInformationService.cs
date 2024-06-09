@@ -164,7 +164,8 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
                 x.Address,
                 x.BirthDate,
                 x.Tel,
-                x.PostalCode
+                x.PostalCode,
+                x.FatherName
             })
             .FirstOrDefault(x => x.UID == userId.ToLower());
 
@@ -196,7 +197,8 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
             Tel = user.Tel,
             PostalCode = user.PostalCode,
             BirthCityTitle = string.Empty,
-            IssuingCityTitle = string.Empty
+            IssuingCityTitle = string.Empty,
+            FatherName = user.FatherName,
         };
 
         await _cacheManager.SetStringAsync(cacheKey, prefix, JsonConvert.SerializeObject(usergrpcdto), new CacheOptions
@@ -284,7 +286,8 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
                 x.Address,
                 x.BirthDate,
                 x.Tel,
-                x.PostalCode
+                x.PostalCode,
+                x.Pelaq
             })
             .FirstOrDefault(x => x.NationalCode == nationalCode);
 
@@ -316,7 +319,8 @@ public class BaseInformationService : ApplicationService, IBaseInformationServic
             Tel = user.Tel,
             PostalCode = user.PostalCode,
             BirthCityTitle = string.Empty,
-            IssuingCityTitle = string.Empty
+            IssuingCityTitle = string.Empty,
+            Plaque = user.Pelaq
         };
         return usergrpcdto;
     }
