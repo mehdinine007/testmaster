@@ -171,7 +171,8 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
     {
 
         var saleDetail = await Validation(createSaleDetailDto.Id, createSaleDetailDto);
-        await _saleDetailRepository.UpdateAsync(saleDetail);
+        var _saleDetail = ObjectMapper.Map<CreateSaleDetailDto,SaleDetail>(createSaleDetailDto,saleDetail);
+        await _saleDetailRepository.UpdateAsync(_saleDetail);
         await _cacheManager.RemoveAsync(saleDetail.UID.ToString(), RedisConstants.SaleDetailPrefix, new CacheOptions() { Provider = CacheProviderEnum.Hybrid });
         return await GetById(saleDetail.Id);
     }
