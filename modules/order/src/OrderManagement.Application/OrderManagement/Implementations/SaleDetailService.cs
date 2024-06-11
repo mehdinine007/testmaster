@@ -157,12 +157,15 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
         }
         var resultQuery = await _saleDetailRepository.InsertAsync(saleDetail);
         await CurrentUnitOfWork.SaveChangesAsync();
-        SaleDetailCarColor saleDetailCarColor = new SaleDetailCarColor
+        if (createSaleDetailDto.ColorId != null)
         {
-            ColorId = createSaleDetailDto.ColorId,
-            SaleDetailId = resultQuery.Id
-        };
-        await _saleDetailCarColor.InsertAsync(saleDetailCarColor);
+            SaleDetailCarColor saleDetailCarColor = new SaleDetailCarColor
+            {
+                ColorId = createSaleDetailDto.ColorId ?? 0,
+                SaleDetailId = resultQuery.Id
+            };
+            await _saleDetailCarColor.InsertAsync(saleDetailCarColor);
+        }
         return await GetById(saleDetail.Id); ;
     }
 
@@ -171,7 +174,8 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
     {
 
         var saleDetail = await Validation(createSaleDetailDto.Id, createSaleDetailDto);
-        await _saleDetailRepository.UpdateAsync(saleDetail);
+        var _saleDetail = ObjectMapper.Map<CreateSaleDetailDto,SaleDetail>(createSaleDetailDto,saleDetail);
+        await _saleDetailRepository.UpdateAsync(_saleDetail);
         await _cacheManager.RemoveAsync(saleDetail.UID.ToString(), RedisConstants.SaleDetailPrefix, new CacheOptions() { Provider = CacheProviderEnum.Hybrid });
         return await GetById(saleDetail.Id);
     }
@@ -224,10 +228,13 @@ public class SaleDetailService : ApplicationService, ISaleDetailService
                 throw new UserFriendlyException(OrderConstant.EsaleTypeIdNotFound, OrderConstant.EsaleTypeIdNotFoundId);
             }
 
-            var color = await _colorRepository.FirstOrDefaultAsync(x => x.Id == createSaleDetailDto.ColorId);
-            if (color == null)
+            if (createSaleDetailDto.ColorId != null)
             {
-                throw new UserFriendlyException(OrderConstant.ColorIdNotFound, OrderConstant.ColorIdNotFoundId);
+                var color = await _colorRepository.FirstOrDefaultAsync(x => x.Id == createSaleDetailDto.ColorId);
+                if (color == null)
+                {
+                    throw new UserFriendlyException(OrderConstant.ColorIdNotFound, OrderConstant.ColorIdNotFoundId);
+                }
             }
             // control sale schema exists
             await _saleSchemaService.GetById(createSaleDetailDto.SaleId);

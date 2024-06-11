@@ -30,7 +30,6 @@
     <None Remove="Migrations\Patch\20240421063529_add-sign-customerorder.sql" />
     <None Remove="Migrations\Patch\20240415060532_add-payment-customerorder.sql" />
     <None Remove="Migrations\Patch\20240422132448_Add-ContractNumber-CustomerOrder.sql" />
-    <None Remove="Migrations\Patch\20240508101254_add-SeasonAllocation-table.sql" />
     <None Remove="Migrations\Patch\20240508101254_FKCustomerOrderSeasonAllocation.sql" />
     <None Remove="Migrations\Patch\20240511050723_add-title-saledetail.sql" />
     <None Remove="Migrations\Patch\20240511050723_ConvertSeasonAllocation.sql" />
@@ -65,6 +64,7 @@
     <None Remove="Migrations\Tables\ProductAndCategory_CarTip.sql" />
     <None Remove="Migrations\Tables\SaleDetailAllocation.sql" />
     <None Remove="Migrations\Tables\SaleDetailCarColor.sql" />
+    <None Remove="Migrations\Tables\SeasonAllocation.sql" />
   </ItemGroup>
 
   <ItemGroup>
@@ -150,9 +150,6 @@
     <Content Include="Migrations\Patch\20240508101254_FkCustomerOrderSeasonAllocation.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Migrations\Patch\20240508101254_add-SeasonAllocation-table.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="Migrations\Patch\20240511050723_add-title-saledetail.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -160,6 +157,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Migrations\Patch\20240313074425_nationalcode-index-userdataaccess.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Migrations\Patch\20240514072152_add-versionnumber-attachment.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Migrations\Patch\20240515140340_Update_Priority_Bank.sql">
@@ -238,6 +238,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Migrations\Tables\ProductAndCategory_CarTip.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Migrations\Tables\SeasonAllocation.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

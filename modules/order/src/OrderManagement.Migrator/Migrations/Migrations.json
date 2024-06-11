@@ -1,102 +1,106 @@
 {
-  "Schema": [
-    {
-      "Id": "SchemaBase",
-      "Priority": 1
-    }
-  ],
-  "Tables": [
-    {
-      "Id": "ProductAndCategory_CarTip",
-      "Priority": 1
-    },
-    {
-      "Id": "Color",
-      "Priority": 2
-    },
-    {
-      "Id": "SaleDetailCarColor",
-      "Priority": 3
-    },
-    {
-      "Id": "Agency",
-      "Priority": 4
-    },
-    {
-      "Id": "AgencySaleDetail",
-      "Priority": 5
-    },
-    {
-      "Id": "AbpUsers",
-      "Priority": 6
-    },
-    {
-      "Id": "SaleDetailAllocation",
-      "Priority": 7
-    }
-  ],
-  "Programmability": [
-    {
-      "Id": "spUserInfo",
-      "Priority": 1,
-      "Type": "proc"
-    },
-    {
-      "Id": "spGetReportQuestionnaire",
-      "Priority": 3,
-      "Type": "proc"
-    },
-    {
-      "Id": "spGetOrderStatusTypeReadOnly",
-      "Priority": 4,
-      "Type": "proc"
-    },
-    {
-      "Id": "spGetOrderRejectionTypeReadOnly",
-      "Priority": 5,
-      "Type": "proc"
-    },
-    {
-      "Id": "spGetCustomerOrderList",
-      "Priority": 6,
-      "Type": "proc"
-    },
-    {
-      "Id": "SpCompanyProductionReports",
-      "Priority": 7,
-      "Type": "proc"
-    },
-    {
-      "Id": "spClientOrderReport",
-      "Priority": 8,
-      "Type": "proc"
-    },
-    {
-      "Id": "spApplicantsReport",
-      "Priority": 9,
-      "Type": "proc"
-    },
-    {
-      "Id": "GetRecentCustomerAndOrder",
-      "Priority": 10,
-      "Type": "proc"
-    },
-    {
-      "Id": "Sp_EsaleCarApplicantCountChart",
-      "Priority": 12,
-      "Type": "proc"
-    },
-    {
-      "Id": "sp_InsertUserDataAccess",
-      "Priority": 13,
-      "Type": "proc"
-    },
-    {
-      "Id": "Sp_OrderPaymentInformation",
-      "Priority": 14,
-      "Type": "proc"
-    }
-  ],
+    "Schema": [
+        {
+            "Id": "SchemaBase",
+            "Priority": 1
+        }
+    ],
+    "Tables": [
+        {
+            "Id": "ProductAndCategory_CarTip",
+            "Priority": 1
+        },
+        {
+            "Id": "Color",
+            "Priority": 2
+        },
+        {
+            "Id": "SaleDetailCarColor",
+            "Priority": 3
+        },
+        {
+            "Id": "Agency",
+            "Priority": 4
+        },
+        {
+            "Id": "AgencySaleDetail",
+            "Priority": 5
+        },
+        {
+            "Id": "AbpUsers",
+            "Priority": 6
+        },
+        {
+            "Id": "SeasonAllocation",
+            "Priority": 7
+        },
+        {
+            "Id": "SaleDetailAllocation",
+            "Priority": 8
+        }
+    ],
+    "Programmability": [
+        {
+            "Id": "spUserInfo",
+            "Priority": 1,
+            "Type": "proc"
+        },
+        {
+            "Id": "spGetReportQuestionnaire",
+            "Priority": 3,
+            "Type": "proc"
+        },
+        {
+            "Id": "spGetOrderStatusTypeReadOnly",
+            "Priority": 4,
+            "Type": "proc"
+        },
+        {
+            "Id": "spGetOrderRejectionTypeReadOnly",
+            "Priority": 5,
+            "Type": "proc"
+        },
+        {
+            "Id": "spGetCustomerOrderList",
+            "Priority": 6,
+            "Type": "proc"
+        },
+        {
+            "Id": "SpCompanyProductionReports",
+            "Priority": 7,
+            "Type": "proc"
+        },
+        {
+            "Id": "spClientOrderReport",
+            "Priority": 8,
+            "Type": "proc"
+        },
+        {
+            "Id": "spApplicantsReport",
+            "Priority": 9,
+            "Type": "proc"
+        },
+        {
+            "Id": "GetRecentCustomerAndOrder",
+            "Priority": 10,
+            "Type": "proc"
+        },
+        {
+            "Id": "Sp_EsaleCarApplicantCountChart",
+            "Priority": 12,
+            "Type": "proc"
+        },
+        {
+            "Id": "sp_InsertUserDataAccess",
+            "Priority": 13,
+            "Type": "proc"
+        },
+        {
+            "Id": "Sp_OrderPaymentInformation",
+            "Priority": 14,
+            "Type": "proc"
+        }
+    ],
     "Patch": [
         {
             "Id": "20231213112901_Add_CustomerPriority",
@@ -192,11 +196,6 @@
         {
             "Id": "20240422132448_Add-ContractNumber-CustomerOrder",
             "Priority": 23,
-            "Version": "4.5.0"
-        },
-        {
-            "Id": "20240508101254_add-SeasonAllocation-table",
-            "Priority": 24,
             "Version": "4.5.0"
         },
         {

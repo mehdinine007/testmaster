@@ -36,7 +36,7 @@ namespace OrderManagement.Application.Contracts.OrderManagement
         public int DeliverDaysCount { get; set; }
 
         public bool Visible { get; set; }
-        public int ColorId { get; set; }
+        public int? ColorId { get; set; }
         public int ProductId { get; set; }
 
         public SaleProcessType SaleProcess { get; set; }
